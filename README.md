@@ -23,6 +23,7 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 ## Changes:
 
 *General:*
+- Monet (Material You)
 - HQ Voice Messages,
 - No content restrictions,
 - Support of up to 10 accounts,
@@ -49,11 +50,16 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 - VKUI icons in app,
 - Back button from IOS (Beta),
 - Hiding your phone number from settings and menu,
-- Flat statusbar,
+- Flat statusbar is enabled by default,
 - Mutual contact icon in contacts list,
+- Showing ID in profile,
+- Showing DC in profile,
 - Avatar as menu header background,
 - Blur menu header background,
-- Darken menu header background.
+- Darken menu header background,
+- Enabling/Disabling "Saved messages" button in menu,
+- Enabling/Disabling "Archived chats" button in menu,
+- Enabling/Disabling "People Nearby" button in menu.
 
 *Cherrygram Chats Preferences:*
 - Stickers size amplifier (changer),
@@ -65,7 +71,6 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 - Disabling quick reactions,
 - Disabling quick reactions animation,
 - Hiding keyboard while scrolling,
-- Showing DC in profile,
 - Hiding "All chats" tab,
 - Hiding messages counter in tabs,
 - Showing tabs on forwarding messages screen,
