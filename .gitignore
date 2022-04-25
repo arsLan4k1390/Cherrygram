@@ -4,8 +4,8 @@
 afat/
 build/
 obj/
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.java
 *.iml
 local.properties
-Extra.java
 Keytool.zip
 Cherrygram.jks
