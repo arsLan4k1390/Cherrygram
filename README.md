@@ -37,14 +37,16 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 
 *Chats:*
 - Bubble radius is set to 17,
-- Chat Blur support for all themes (by default),
+- Chat Blur support for all devices and themes (Blur is enabled by default),
 - Fast search (Open a search by holding dialog name),
 - Jump to the beginning of any chat,
+- Delete all OWN messages,
 - Added "Remove file from cache",
-- Added IOS's incoming message sound,
+- Messages history from any user and channel in any chat,
+- Select messages between A and B,
 - Recent stickers value is raised from 20 to max value coming from backend,
-- Viewing admins (Group info) for all members,
-- Opening linked channel from a group,
+- View admins (Group info) for all members,
+- Open the linked channel from a group,
 - Open avatar by swiping down in profile,
 - Mention in chat by name (long press on username).
 
