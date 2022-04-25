@@ -23,7 +23,6 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 ## Changes:
 
 *General:*
-- No ADS,
 - HQ Voice Messages,
 - No content restrictions,
 - Support of up to 10 accounts,
