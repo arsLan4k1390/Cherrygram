@@ -57,29 +57,37 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 - Avatar as menu header background,
 - Blur menu header background,
 - Darken menu header background,
-- Enabling/Disabling "Saved messages" button in menu,
-- Enabling/Disabling "Archived chats" button in menu,
-- Enabling/Disabling "People Nearby" button in menu.
+- Enable/Disable "Saved messages" button in menu,
+- Enable/Disable "Archived chats" button in menu,
+- Enable/Disable "People Nearby" button in menu.
 
 *Cherrygram Chats Preferences:*
 - Stickers size amplifier (changer),
-- Hiding time on stickers,
-- Disable members rounding,
-- Asking before call,
-- Showing forwarded message date,
-- Showing seconds in timestamps,
-- Disabling quick reactions,
-- Disabling quick reactions animation,
-- Hiding keyboard while scrolling,
-- Hiding "All chats" tab,
-- Hiding messages counter in tabs,
-- Showing tabs on forwarding messages screen,
-- Enabling/Disabling playing video on volume button click,
+- Hide time on stickers,
+- Showing unread chats counter on "Back" button like on IOS,
+- Enable/Disable members rounding,
+- Ask before a call,
+- Show forwarded message date,
+- Show seconds in timestamps,
+- Enable/Disable quick reactions,
+- Enable/Disable quick reactions animation,
+- Enable/Disable transition to the next channel,
+- Hide keyboard while scrolling a chat,
+- Enable/Disable "Send as channel" button,
+- Recent emojis counter (amplifier),
+- Hide "All chats" tab,
+- Hide messages counter in tabs,
+- Show tabs on forwarding messages screen,
+- Tab icon style (emojis),
+- Play GIFs as videos,
+- Enable/Disable playing video on volume button click,
+- Auto pause video while switching to the background
 - Pause music while playing voice and video messages,
+- Disable in-app vibration,
 - Disable camera in attachments menu,
 - Using rear camera by default for video messages,
-- Enabling/Disabling proxymity sensor actions,
-- Enabling/Disabling incoming message sound from Telegram IOS app,
+- Enable/Disable proxymity sensor actions,
+- Enable/Disable incoming message sound from Telegram IOS app,
 - Silence notifications from non-contacts.
 
 
@@ -93,8 +101,6 @@ MTproto protocol manuals: https://core.telegram.org/mtproto
 ## Thanks to:
 - [Catogram](https://github.com/Catogram/Catogram)
 - [Nekogram](https://gitlab.com/Nekogram/Nekogram)
-- [Nekogram Lite](https://github.com/satouriko/nekolite)
 - [Nekogram X](https://github.com/NekoX-Dev/NekoX)
+- [Telegram Monet](https://github.com/c3r5b8/Telegram-Monet)
 - [Telegram-FOSS](https://github.com/Telegram-FOSS-Team/Telegram-FOSS)
-- [Forkgram](https://github.com/Forkgram/TelegramAndroid)
-- [KangramX](https://github.com/alissonlauffer/KangramX)
