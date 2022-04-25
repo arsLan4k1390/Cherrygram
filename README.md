@@ -43,7 +43,7 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 - Delete all OWN messages,
 - Added "Remove file from cache",
 - Messages history from any user and channel in any chat,
-- Select messages between A and B,
+- Select messages in chat between message A and message B,
 - Recent stickers value is raised from 20 to max value coming from backend,
 - View admins (Group info) for all members,
 - Open the linked channel from a group,
