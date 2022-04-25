@@ -112,5 +112,5 @@ MTproto protocol manuals: https://core.telegram.org/mtproto
 - [Catogram](https://github.com/Catogram/Catogram)
 - [Nekogram](https://gitlab.com/Nekogram/Nekogram)
 - [Nekogram X](https://github.com/NekoX-Dev/NekoX)
-- [Telegram Monet](https://github.com/c3r5b8/Telegram-Monet)
 - [Telegram-FOSS](https://github.com/Telegram-FOSS-Team/Telegram-FOSS)
+- [Telegram Monet](https://github.com/c3r5b8/Telegram-Monet)
