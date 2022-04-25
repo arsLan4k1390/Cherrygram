@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- by t.me/arsLan-->
+    <string name="CG_AppName" translatable="false">Cherrygram</string>
+    <string name="CG_AppNameBeta" translatable="false">Cherrygram Beta</string>
+    <!--<string name="CG_Version">Cherrygram %1$s\nBased on Telegram %2$s\nModded by %3$s</string>-->
+    
+    <!--Sign in screen-->
+    <string name="CG_ProxyInfo">You may need to set up a proxy before you login, in case your country or ISP blocks Telegram.</string>
+    <string name="CG_ProxySettings">Proxy Settings</string>
+
+    <!--Cherrygram Preferences-->
+    <string name="CGP_AdvancedSettings">Cherrygram Preferences</string>
+    <string name="CGP_About_Desc">An experimental Telegram app modification.</string>
+    <string name="CGP_Header_About">About Cherrygram</string>
+    <string name="CGP_ToChannel">Official channel:</string>
+    <string name="CGP_ToChat">Official chat:</string>
+    <string name="CGP_Header_Categories">Categories</string>
+    
+    <!--Appearance Preferences-->
+    <string name="AP_Header_Appearance">Appearance</string>
+    <string name="AP_RedesignCategory">Redesign</string>
+    <string name="AP_IconReplacements">Icon replacements</string>
+    <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
+    <string name="AP_IconReplacement_Default">Default</string>
+    <string name="AP_BackButton">New \"back\" icon (beta)</string>
+    <string name="AP_BackButton_Desc">This will also change menu button</string>
+    
+    <string name="AP_General">General</string>
+    <string name="AP_HideUserPhone">Hide phone number</string>
+    <string name="AP_HideUserPhoneSummary">in drawer (restart app to apply) and settings</string>
+    <string name="AP_Hidden">Hidden</string>
+    <string name="AP_FlatSB">Flat statusbar</string>
+    <string name="AP_FlatSB_Desc">For Android 6+</string>
+    <string name="AP_MutualContacts">Show mutual contacts</string>
+    <string name="AP_MutualContacts_Desc">A mutual contact icon will appear in contacts list</string>
+    <string name="AP_MutualContacts_Description">This is a mutual contact.</string>
+
+    <string name="AP_ProfileCategory">Profile</string>
+    <string name="AP_ShowID">Show ID in profile</string>
+    <string name="AP_ShowDC">Show DC in profile</string>
+
+    <string name="AP_DrawerCategory">Drawer</string>
+    <string name="AP_DrawerAvatar">Avatar as header background</string>
+    <string name="AP_DrawerBlur">Blur header background</string>
+    <string name="AP_DrawerDarken">Darken header background</string>
+
+    <string name="AP_DrawerButtonsCategory">Drawer buttons (restart app to apply)</string>
+    <string name="AP_DrawerButtonsSaved">Show \"Saved Messages\" button</string>
+    <string name="AP_DrawerButtonsArchived">Show \"Archived chats\" button</string>
+    <string name="AP_DrawerButtonsPeopleNearby">Show \"People Nearby\" button</string>
+
+    <!--Chats Preferences-->
+    <string name="CP_Header_Chats">Chats</string>
+    <string name="CP_Slider_StickerAmplifier">Sticker size amplifier</string>
+    <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
+
+    <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
+    <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
+    <string name="CP_NoRounding">Disable number rounding</string>
+    <string name="CP_NoRoundingSummary">1.2K -> 1234</string>
+    <string name="CP_ConfirmCalls">Ask before calling</string>
+    <string name="CP_ConfirmCalling_Header">Confirm call</string>
+    <string name="CP_ConfirmCalling_Question">Call to %s?</string>
+    <string name="CP_ConfirmCalling_Action">Confirm</string>
+    <string name="CP_ConfirmCalling_Action_Cancel">Cancel</string>
+    <string name="CP_ForwardMsgDate">Show forwarded message date</string>
+    <string name="CP_ShowSeconds">Show seconds in timestamps</string>
+    <string name="CP_ShowSeconds_Desc">Shows the seconds of the time of sent messages (restart app to apply)</string>
+    <string name="CP_DoubleTapReact">Disable quick reactions</string>
+    <string name="CP_DisableReactionAnim">Disable reaction animation</string>
+    <string name="CP_DisableReactionAnim_Desc">(when reacting to a message)</string>
+    <string name="CP_DisableSwipeToNext">Disable transition to the next channel</string>
+    <string name="CP_DisableSwipeToNext_Desc">Disable switching to the next channel when scrolling through any channel</string>
+    <string name="CP_HideKbdOnScroll">Hide keyboard on scroll</string>
+    <string name="CP_HideSendAsChannel">Hide \"Send as channel\"</string>
+
+    <string name="CP_Slider_RecentEmojisAmplifier">Recent emojis counter (restart app to apply)</string>
+
+    <string name="CP_Filters_Header">Folders (restart app to apply)</string>
+    <string name="CP_NewTabs_RemoveAllChats">Hide \"All chats\" tab</string>
+    <!--<string name="CP_NewTabs_RemoveAllChats_Desc">This will hide \"All chats\" tab</string>-->
+    <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
+    <string name="CP_NewTabs_NoCounter_Desc">This will hide unread messages counter</string>
+    <string name="CP_ShowTabsOnForward">Show tabs on forward screen</string>
+    <string name="CP_TabIconMode_Title">Tab icon type</string>
+    <string name="CP_TabIconMode_Disabled">Disabled</string>
+    <string name="CP_TabIconMode_Append">Append to tab title</string>
+    <string name="CP_TabIconMode_Replace">Replace tab title</string>
+
+    <string name="CP_Header_Record">Media</string>
+    <string name="CP_GIFasVideo">Play GIFs as Videos</string>
+    <string name="CP_PlayVideo">Play video on volume button click</string>
+    <string name="CP_PlayVideo_Desc">When you press the volume button, any video on the screen in chat will be played</string>
+    <string name="CP_AutoPauseVideo">Auto pause video</string>
+    <string name="CP_AutoPauseVideo_Desc">When lock screen or switch to background</string>
+    <string name="CP_AudioFocus">Pause music while playing media</string>
+    <string name="CP_AudioFocus_Desc">Pause music while listening voice messages or playing videos. If disabled, music will be quieter, but won\'t be turned off</string>
+    <string name="CP_DisableVibration">Disable vibration</string>
+    <string name="CP_DisablePhotoTapAction">Disable \"Flip photos\"</string>
+    <string name="CP_DisablePhotoTapAction_Desc">This disables flipping photos while tapping at the edge of the screen</string>
+    <string name="CP_DisableCam">Disable cam in media attach menu</string>
+    <string name="CP_DisableCam_Desc">Enable if media attach menu lags</string>
+    <string name="CP_RearCam">Use rear camera</string>
+    <string name="CP_RearCam_Desc">Instead of front camera for video messages</string>
+    <string name="CP_Proximity">Enable proximity actions</string>
+    <string name="CP_Proximity_Desc">By turning it off you will get rid of the annoying screen shutdown when listening to voice messages (restart app to apply)</string>
+
+    <string name="CP_Header_Notification">Notifications</string>
+    <string name="CP_IOSSound">Use Telegram IOS sound</string>
+    <string name="CP_IOSSound_Desc">This will enable incoming message sound from Telegram app for IOS (restart app to apply)</string>
+    <string name="CP_SilenceNonContacts">Silence non-contacts</string>
+    <string name="CP_SilenceNonContacts_Desc">If enabled, notifications with sound will come only from contacts. You can add a person to your contacts even without a phone number, do it in their profile</string>
+
+    <!--Security Preferences-->
+    <string name="SP_Category_Security">Security</string>
+    <string name="SP_Header_Privacy">Privacy</string>
+    <string name="SP_NoProxyPromo">Don\'t show proxy sponsor</string>
+    <string name="SP_SecureFlag">Enable Flag_Secure</string>
+
+    <!--Donations-->
+    <string name="DP_Donate">Donate</string>
+    <string name="DP_Donate_Method">Choose method</string>
+
+    <!--Chats screen-->
+    <string name="CG_ViewUserHistory">Messages history</string>
+    <string name="CG_DeleteAllFromSelf">Delete own messages</string>
+    <string name="CG_DeleteAllFromSelfAlert">Warning! This will **delete all messages from you** in this chat for **all** participants.</string>
+    <string name="CG_DeleteAllFromSelfAdmin">With admin rights</string>
+    <string name="CG_JumpToBeginning">To the beginning</string>
+    <string name="CG_ToSaved">Save message</string>
+
+    <string name="CG_ClearFromCache">Clear from cache</string>
+    <string name="CG_ClearedFromCache">Cleared from cache</string>
+    <string name="CG_AllowStorage">Due to changes introduced by Google in Android 11+, Cherrygram needs your permission to see non-media files.</string>
+
+    <string name="CG_CreateMention">Create Mention</string>
+
+    <string name="CG_FwdMenu_EnableNoForward">Disable forward authorship</string>
+    <string name="CG_FwdMenu_DisableNoForward">Enable forward authorship</string>
+    <string name="CG_Without_Authorship">Without authorship</string>
+    <string name="CG_FwdMenu_NoNotify">Don\'t notify</string>
+    <string name="CG_FwdMenu_Notify">Notify</string>
+    <string name="CG_FwdMenu_EnableCaptions">Enable captions</string>
+    <string name="CG_FwdMenu_DisableCaptions">Hide captions</string>
+
+    <!--Lockscreen-->
+    <string name="LS_EnterPasscode">Enter your Cherrygram passcode</string>
+
+    <!--Misc-->
+    <string name="CG_SwitchBackend">You\'re going to switch to the test server. Please don\'t press OK if you don\'t know what you\'re doing. You can switch to normal server by pressing "Switch backend" in debug menu again.</string>
+    <string name="CG_Restart">Restart app</string>
+    
+</resources>

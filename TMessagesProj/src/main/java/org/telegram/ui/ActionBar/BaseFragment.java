@@ -1,0 +1,797 @@
+/*
+ * This is the source code of Telegram for Android v. 5.x.x.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ *
+ * Copyright Nikolai Kudashov, 2013-2018.
+ */
+
+package org.telegram.ui.ActionBar;
+
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.Window;
+import android.view.accessibility.AccessibilityManager;
+import android.widget.FrameLayout;
+
+import androidx.annotation.CallSuper;
+import androidx.core.graphics.ColorUtils;
+
+import org.telegram.messenger.AccountInstance;
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.ContactsController;
+import org.telegram.messenger.DownloadController;
+import org.telegram.messenger.FileLoader;
+import org.telegram.messenger.FileLog;
+import org.telegram.messenger.LocationController;
+import org.telegram.messenger.MediaController;
+import org.telegram.messenger.MediaDataController;
+import org.telegram.messenger.MessagesController;
+import org.telegram.messenger.MessagesStorage;
+import org.telegram.messenger.NotificationCenter;
+import org.telegram.messenger.NotificationsController;
+import org.telegram.messenger.SecretChatHelper;
+import org.telegram.messenger.SendMessagesHelper;
+import org.telegram.messenger.UserConfig;
+import org.telegram.tgnet.ConnectionsManager;
+import org.telegram.ui.Components.LayoutHelper;
+
+import java.util.ArrayList;
+
+import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.helpers.MessageHelper;
+import uz.unnarsx.cherrygram.utils.VibrateUtil;
+
+public abstract class BaseFragment {
+
+    private boolean isFinished;
+    protected boolean finishing;
+    protected Dialog visibleDialog;
+    protected int currentAccount = UserConfig.selectedAccount;
+
+    protected View fragmentView;
+    public ActionBarLayout parentLayout;
+    protected ActionBar actionBar;
+    protected boolean inPreviewMode;
+    protected boolean inMenuMode;
+    protected boolean inBubbleMode;
+    protected int classGuid;
+    protected Bundle arguments;
+    protected boolean hasOwnBackground = false;
+    protected boolean isPaused = true;
+    protected Dialog parentDialog;
+    protected boolean inTransitionAnimation = false;
+    protected boolean fragmentBeginToShow;
+    private boolean removingFromStack;
+
+    public BaseFragment() {
+        classGuid = ConnectionsManager.generateClassGuid();
+    }
+
+    public BaseFragment(Bundle args) {
+        arguments = args;
+        classGuid = ConnectionsManager.generateClassGuid();
+    }
+
+    public void setCurrentAccount(int account) {
+        if (fragmentView != null) {
+            throw new IllegalStateException("trying to set current account when fragment UI already created");
+        }
+        currentAccount = account;
+    }
+
+    public ActionBar getActionBar() {
+        return actionBar;
+    }
+
+    public View getFragmentView() {
+        return fragmentView;
+    }
+
+    public View createView(Context context) {
+        return null;
+    }
+
+    public Bundle getArguments() {
+        return arguments;
+    }
+
+    public int getCurrentAccount() {
+        return currentAccount;
+    }
+
+    public int getClassGuid() {
+        return classGuid;
+    }
+
+    public boolean isSwipeBackEnabled(MotionEvent event) {
+        return true;
+    }
+
+    public void setInBubbleMode(boolean value) {
+        inBubbleMode = value;
+    }
+
+    public boolean isInBubbleMode() {
+        return inBubbleMode;
+    }
+
+    public boolean isInPreviewMode() {
+        return inPreviewMode;
+    }
+
+    public boolean getInPassivePreviewMode() {
+        return parentLayout != null && parentLayout.isInPassivePreviewMode();
+    }
+
+    protected void setInPreviewMode(boolean value) {
+        inPreviewMode = value;
+        if (actionBar != null) {
+            if (inPreviewMode) {
+                actionBar.setOccupyStatusBar(false);
+            } else {
+                actionBar.setOccupyStatusBar(Build.VERSION.SDK_INT >= 21);
+            }
+        }
+    }
+
+    protected void setInMenuMode(boolean value) {
+        inMenuMode = value;
+    }
+
+    protected void onPreviewOpenAnimationEnd() {
+    }
+
+    protected boolean hideKeyboardOnShow() {
+        return true;
+    }
+
+    protected void clearViews() {
+        if (fragmentView != null) {
+            ViewGroup parent = (ViewGroup) fragmentView.getParent();
+            if (parent != null) {
+                try {
+                    onRemoveFromParent();
+                    parent.removeViewInLayout(fragmentView);
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
+            }
+            fragmentView = null;
+        }
+        if (actionBar != null) {
+            ViewGroup parent = (ViewGroup) actionBar.getParent();
+            if (parent != null) {
+                try {
+                    parent.removeViewInLayout(actionBar);
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
+            }
+            actionBar = null;
+        }
+        parentLayout = null;
+    }
+
+    protected void onRemoveFromParent() {
+
+    }
+
+    public void setParentFragment(BaseFragment fragment) {
+        setParentLayout(fragment.parentLayout);
+        fragmentView = createView(parentLayout.getContext());
+        if (CherrygramConfig.INSTANCE.getDisableVibration()) {
+            VibrateUtil.disableHapticFeedback(fragmentView);
+        }
+    }
+
+    protected void setParentLayout(ActionBarLayout layout) {
+        if (parentLayout != layout) {
+            parentLayout = layout;
+            inBubbleMode = parentLayout != null && parentLayout.isInBubbleMode();
+            if (fragmentView != null) {
+                ViewGroup parent = (ViewGroup) fragmentView.getParent();
+                if (parent != null) {
+                    try {
+                        onRemoveFromParent();
+                        parent.removeViewInLayout(fragmentView);
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                    }
+                }
+                if (parentLayout != null && parentLayout.getContext() != fragmentView.getContext()) {
+                    fragmentView = null;
+                }
+            }
+            if (actionBar != null) {
+                boolean differentParent = parentLayout != null && parentLayout.getContext() != actionBar.getContext();
+                if (actionBar.shouldAddToContainer() || differentParent) {
+                    ViewGroup parent = (ViewGroup) actionBar.getParent();
+                    if (parent != null) {
+                        try {
+                            parent.removeViewInLayout(actionBar);
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+                    }
+                }
+                if (differentParent) {
+                    actionBar = null;
+                }
+            }
+            if (parentLayout != null && actionBar == null) {
+                actionBar = createActionBar(parentLayout.getContext());
+                actionBar.parentFragment = this;
+            }
+        }
+    }
+
+    protected ActionBar createActionBar(Context context) {
+        ActionBar actionBar = new ActionBar(context);
+        actionBar.setBackgroundColor(getThemedColor(Theme.key_actionBarDefault));
+        actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarDefaultSelector), false);
+        actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
+        actionBar.setItemsColor(getThemedColor(Theme.key_actionBarDefaultIcon), false);
+        actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
+        if (inPreviewMode || inBubbleMode) {
+            actionBar.setOccupyStatusBar(false);
+        }
+        return actionBar;
+    }
+
+    public void movePreviewFragment(float dy) {
+        parentLayout.movePreviewFragment(dy);
+    }
+
+    public void finishPreviewFragment() {
+        parentLayout.finishPreviewFragment();
+    }
+
+    public void finishFragment() {
+        if (parentDialog != null) {
+            parentDialog.dismiss();
+            return;
+        }
+        finishFragment(true);
+    }
+
+    public void finishFragment(boolean animated) {
+        if (isFinished || parentLayout == null) {
+            return;
+        }
+        finishing = true;
+        parentLayout.closeLastFragment(animated);
+    }
+
+    public void removeSelfFromStack() {
+        if (isFinished || parentLayout == null) {
+            return;
+        }
+        if (parentDialog != null) {
+            parentDialog.dismiss();
+            return;
+        }
+        parentLayout.removeFragmentFromStack(this);
+    }
+
+    protected boolean isFinishing() {
+        return finishing;
+    }
+
+    public boolean onFragmentCreate() {
+        return true;
+    }
+
+    @CallSuper
+    public void onFragmentDestroy() {
+        getConnectionsManager().cancelRequestsForGuid(classGuid);
+        getMessagesStorage().cancelTasksForGuid(classGuid);
+        isFinished = true;
+        if (actionBar != null) {
+            actionBar.setEnabled(false);
+        }
+
+        if (hasForceLightStatusBar() && !AndroidUtilities.isTablet() && getParentLayout().getLastFragment() == this && getParentActivity() != null && !finishing) {
+            AndroidUtilities.setLightStatusBar(getParentActivity().getWindow(), Theme.getColor(Theme.key_actionBarDefault) == Color.WHITE);
+        }
+    }
+
+    public boolean needDelayOpenAnimation() {
+        return false;
+    }
+
+    protected void resumeDelayedFragmentAnimation() {
+        if (parentLayout != null) {
+            parentLayout.resumeDelayedFragmentAnimation();
+        }
+    }
+
+    @CallSuper
+    public void onResume() {
+        isPaused = false;
+    }
+
+    @CallSuper
+    public void onPause() {
+        if (actionBar != null) {
+            actionBar.onPause();
+        }
+        isPaused = true;
+        try {
+            if (visibleDialog != null && visibleDialog.isShowing() && dismissDialogOnPause(visibleDialog)) {
+                visibleDialog.dismiss();
+                visibleDialog = null;
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
+    public BaseFragment getFragmentForAlert(int offset) {
+        if (parentLayout == null || parentLayout.fragmentsStack.size() <= 1 + offset) {
+            return this;
+        }
+        return parentLayout.fragmentsStack.get(parentLayout.fragmentsStack.size() - 2 - offset);
+    }
+
+    public void onConfigurationChanged(android.content.res.Configuration newConfig) {
+
+    }
+
+    public boolean onBackPressed() {
+        return true;
+    }
+
+    public void onActivityResultFragment(int requestCode, int resultCode, Intent data) {
+
+    }
+
+    public void onRequestPermissionsResultFragment(int requestCode, String[] permissions, int[] grantResults) {
+
+    }
+
+    public void saveSelfArgs(Bundle args) {
+
+    }
+
+    public void restoreSelfArgs(Bundle args) {
+
+    }
+
+    public boolean isLastFragment() {
+        return parentLayout != null && !parentLayout.fragmentsStack.isEmpty() && parentLayout.fragmentsStack.get(parentLayout.fragmentsStack.size() - 1) == this;
+    }
+
+    public ActionBarLayout getParentLayout() {
+        return parentLayout;
+    }
+
+    public FrameLayout getLayoutContainer() {
+        if (fragmentView != null) {
+            final ViewParent parent = fragmentView.getParent();
+            if (parent instanceof FrameLayout) {
+                return (FrameLayout) parent;
+            }
+        }
+        return null;
+    }
+
+    public boolean presentFragmentAsPreview(BaseFragment fragment) {
+        return allowPresentFragment() && parentLayout != null && parentLayout.presentFragmentAsPreview(fragment);
+    }
+
+    public boolean presentFragmentAsPreviewWithMenu(BaseFragment fragment, View menu) {
+        return allowPresentFragment() && parentLayout != null && parentLayout.presentFragmentAsPreviewWithMenu(fragment, menu);
+    }
+
+    public boolean presentFragment(BaseFragment fragment) {
+        return allowPresentFragment() && parentLayout != null && parentLayout.presentFragment(fragment);
+    }
+
+    public boolean presentFragment(BaseFragment fragment, boolean removeLast) {
+        return allowPresentFragment() && parentLayout != null && parentLayout.presentFragment(fragment, removeLast);
+    }
+
+    public boolean presentFragment(BaseFragment fragment, boolean removeLast, boolean forceWithoutAnimation) {
+        return allowPresentFragment() && parentLayout != null && parentLayout.presentFragment(fragment, removeLast, forceWithoutAnimation, true, false, null);
+    }
+
+    public Activity getParentActivity() {
+        if (parentLayout != null) {
+            return parentLayout.parentActivity;
+        }
+        return null;
+    }
+
+    protected void setParentActivityTitle(CharSequence title) {
+        Activity activity = getParentActivity();
+        if (activity != null) {
+            activity.setTitle(title);
+        }
+    }
+
+    public void startActivityForResult(final Intent intent, final int requestCode) {
+        if (parentLayout != null) {
+            parentLayout.startActivityForResult(intent, requestCode);
+        }
+    }
+
+    public void dismissCurrentDialog() {
+        if (visibleDialog == null) {
+            return;
+        }
+        try {
+            visibleDialog.dismiss();
+            visibleDialog = null;
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
+    public boolean dismissDialogOnPause(Dialog dialog) {
+        return true;
+    }
+
+    public boolean canBeginSlide() {
+        return true;
+    }
+
+    public void onBeginSlide() {
+        try {
+            if (visibleDialog != null && visibleDialog.isShowing()) {
+                visibleDialog.dismiss();
+                visibleDialog = null;
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        if (actionBar != null) {
+            actionBar.onPause();
+        }
+    }
+
+    protected void onSlideProgress(boolean isOpen, float progress) {
+
+    }
+
+    protected void onTransitionAnimationProgress(boolean isOpen, float progress) {
+
+    }
+
+    protected void onTransitionAnimationStart(boolean isOpen, boolean backward) {
+        inTransitionAnimation = true;
+        if (isOpen) {
+            fragmentBeginToShow = true;
+        }
+    }
+
+    protected void onTransitionAnimationEnd(boolean isOpen, boolean backward) {
+        inTransitionAnimation = false;
+    }
+
+    protected void onBecomeFullyVisible() {
+        AccessibilityManager mgr = (AccessibilityManager) ApplicationLoader.applicationContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
+        if (mgr.isEnabled()) {
+            ActionBar actionBar = getActionBar();
+            if (actionBar != null) {
+                String title = actionBar.getTitle();
+                if (!TextUtils.isEmpty(title)) {
+                    setParentActivityTitle(title);
+                }
+            }
+        }
+    }
+
+    protected int getPreviewHeight() {
+        return LayoutHelper.MATCH_PARENT;
+    }
+
+    protected void onBecomeFullyHidden() {
+
+    }
+
+    protected AnimatorSet onCustomTransitionAnimation(boolean isOpen, final Runnable callback) {
+        return null;
+    }
+
+    public void onLowMemory() {
+
+    }
+
+    public Dialog showDialog(Dialog dialog) {
+        return showDialog(dialog, false, null);
+    }
+
+    public Dialog showDialog(Dialog dialog, Dialog.OnDismissListener onDismissListener) {
+        return showDialog(dialog, false, onDismissListener);
+    }
+
+    public Dialog showDialog(Dialog dialog, boolean allowInTransition, final Dialog.OnDismissListener onDismissListener) {
+        if (dialog == null || parentLayout == null || parentLayout.animationInProgress || parentLayout.startedTracking || !allowInTransition && parentLayout.checkTransitionAnimation()) {
+            return null;
+        }
+        try {
+            if (visibleDialog != null) {
+                visibleDialog.dismiss();
+                visibleDialog = null;
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        try {
+            visibleDialog = dialog;
+            visibleDialog.setCanceledOnTouchOutside(true);
+            visibleDialog.setOnDismissListener(dialog1 -> {
+                if (onDismissListener != null) {
+                    onDismissListener.onDismiss(dialog1);
+                }
+                onDialogDismiss((Dialog) dialog1);
+                if (dialog1 == visibleDialog) {
+                    visibleDialog = null;
+                }
+            });
+            visibleDialog.show();
+            return visibleDialog;
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        return null;
+    }
+
+    protected void onDialogDismiss(Dialog dialog) {
+
+    }
+
+    protected void onPanTranslationUpdate(float y) {
+
+    }
+
+    protected void onPanTransitionStart() {
+
+    }
+
+    protected void onPanTransitionEnd() {
+
+    }
+
+    public Dialog getVisibleDialog() {
+        return visibleDialog;
+    }
+
+    public void setVisibleDialog(Dialog dialog) {
+        visibleDialog = dialog;
+    }
+
+    public boolean extendActionMode(Menu menu) {
+        return false;
+    }
+
+    public ArrayList<ThemeDescription> getThemeDescriptions() {
+        return new ArrayList<>();
+    }
+
+    public AccountInstance getAccountInstance() {
+        return AccountInstance.getInstance(currentAccount);
+    }
+
+    public MessagesController getMessagesController() {
+        return getAccountInstance().getMessagesController();
+    }
+
+    protected ContactsController getContactsController() {
+        return getAccountInstance().getContactsController();
+    }
+
+    public MediaDataController getMediaDataController() {
+        return getAccountInstance().getMediaDataController();
+    }
+
+    public ConnectionsManager getConnectionsManager() {
+        return getAccountInstance().getConnectionsManager();
+    }
+
+    public LocationController getLocationController() {
+        return getAccountInstance().getLocationController();
+    }
+
+    protected NotificationsController getNotificationsController() {
+        return getAccountInstance().getNotificationsController();
+    }
+
+    public MessagesStorage getMessagesStorage() {
+        return getAccountInstance().getMessagesStorage();
+    }
+
+    public SendMessagesHelper getSendMessagesHelper() {
+        return getAccountInstance().getSendMessagesHelper();
+    }
+
+    public FileLoader getFileLoader() {
+        return getAccountInstance().getFileLoader();
+    }
+
+    protected SecretChatHelper getSecretChatHelper() {
+        return getAccountInstance().getSecretChatHelper();
+    }
+
+    public DownloadController getDownloadController() {
+        return getAccountInstance().getDownloadController();
+    }
+
+    protected SharedPreferences getNotificationsSettings() {
+        return getAccountInstance().getNotificationsSettings();
+    }
+
+    public NotificationCenter getNotificationCenter() {
+        return getAccountInstance().getNotificationCenter();
+    }
+
+    public MediaController getMediaController() {
+        return MediaController.getInstance();
+    }
+
+    public UserConfig getUserConfig() {
+        return getAccountInstance().getUserConfig();
+    }
+
+    public void setFragmentPanTranslationOffset(int offset) {
+        if (parentLayout != null) {
+            parentLayout.setFragmentPanTranslationOffset(offset);
+        }
+    }
+
+    public MessageHelper getMessageHelper() {
+        return MessageHelper.getInstance(currentAccount);
+    }
+
+    public void saveKeyboardPositionBeforeTransition() {
+
+    }
+
+    protected Animator getCustomSlideTransition(boolean topFragment, boolean backAnimation, float distanceToMove) {
+        return null;
+    }
+
+    protected boolean shouldOverrideSlideTransition(boolean topFragment, boolean backAnimation) {
+        return false;
+    }
+
+    protected void prepareFragmentToSlide(boolean topFragment, boolean beginSlide) {
+
+    }
+
+    public void setProgressToDrawerOpened(float v) {
+
+    }
+
+    public ActionBarLayout[] showAsSheet(BaseFragment fragment) {
+        if (getParentActivity() == null) {
+            return null;
+        }
+        ActionBarLayout[] actionBarLayout = new ActionBarLayout[]{new ActionBarLayout(getParentActivity())};
+        BottomSheet bottomSheet = new BottomSheet(getParentActivity(), true) {
+            {
+                actionBarLayout[0].init(new ArrayList<>());
+                actionBarLayout[0].addFragmentToStack(fragment);
+                actionBarLayout[0].showLastFragment();
+                actionBarLayout[0].setPadding(backgroundPaddingLeft, 0, backgroundPaddingLeft, 0);
+                containerView = actionBarLayout[0];
+                setApplyBottomPadding(false);
+                setApplyBottomPadding(false);
+                setOnDismissListener(dialog -> fragment.onFragmentDestroy());
+            }
+
+            @Override
+            protected boolean canDismissWithSwipe() {
+                return false;
+            }
+
+            @Override
+            public void onBackPressed() {
+                if (actionBarLayout[0] == null || actionBarLayout[0].fragmentsStack.size() <= 1) {
+                    super.onBackPressed();
+                } else {
+                    actionBarLayout[0].onBackPressed();
+                }
+            }
+
+            @Override
+            public void dismiss() {
+                super.dismiss();
+                actionBarLayout[0] = null;
+            }
+        };
+        fragment.setParentDialog(bottomSheet);
+        bottomSheet.show();
+        return actionBarLayout;
+    }
+
+    public int getThemedColor(String key) {
+        return Theme.getColor(key, getResourceProvider());
+    }
+
+    public Drawable getThemedDrawable(String key) {
+        return Theme.getThemeDrawable(key);
+    }
+
+    /**
+     * @return If this fragment should have light status bar even if it's disabled in debug settings
+     */
+    public boolean hasForceLightStatusBar() {
+        return false;
+    }
+
+    public int getNavigationBarColor() {
+        return Theme.getColor(Theme.key_windowBackgroundGray);
+    }
+
+    public void setNavigationBarColor(int color) {
+        Activity activity = getParentActivity();
+        if (activity != null) {
+            Window window = activity.getWindow();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && window != null && window.getNavigationBarColor() != color) {
+                window.setNavigationBarColor(color);
+                final float brightness = AndroidUtilities.computePerceivedBrightness(color);
+                AndroidUtilities.setLightNavigationBar(window, brightness >= 0.721f);
+            }
+        }
+    }
+
+    public boolean isBeginToShow() {
+        return fragmentBeginToShow;
+    }
+
+    private void setParentDialog(Dialog dialog) {
+        parentDialog = dialog;
+    }
+
+    public Theme.ResourcesProvider getResourceProvider() {
+        return null;
+    }
+
+    protected boolean allowPresentFragment() {
+        return true;
+    }
+
+    public boolean isRemovingFromStack() {
+        return removingFromStack;
+    }
+
+    public void setRemovingFromStack(boolean b) {
+        removingFromStack = b;
+    }
+
+    public boolean isLightStatusBar() {
+        if (hasForceLightStatusBar() && !Theme.getCurrentTheme().isDark()) {
+            return true;
+        }
+        Theme.ResourcesProvider resourcesProvider = getResourceProvider();
+        int color;
+        String key = Theme.key_actionBarDefault;
+        if (actionBar != null && actionBar.isActionModeShowed()) {
+            key = Theme.key_actionBarActionModeDefault;
+        }
+        if (resourcesProvider != null) {
+            color = resourcesProvider.getColorOrDefault(key);
+        } else {
+            color = Theme.getColor(key, null, true);
+        }
+        return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+}
