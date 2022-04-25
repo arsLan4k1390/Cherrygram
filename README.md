@@ -98,6 +98,16 @@ Telegram API manuals: https://core.telegram.org/api
 MTproto protocol manuals: https://core.telegram.org/mtproto
 
 
+## Compilation Guide
+
+1. Download the Nekogram source code ( `git clone https://github.com/arslan4k1390/Cherrygram.git` )
+1. Fill out storeFile, storePassword, keyAlias, keyPassword in app's build.gradle to sign your app
+1. Go to https://console.firebase.google.com/, create two android apps with application IDs uz.unnarsx.cherrygram and uz.unnarsx.cherrygram.beta, turn on firebase messaging and download `google-services.json`, which should be copied into `TMessagesProj` folder.
+1. Open the project in the Studio (note that it should be opened, NOT imported).
+1. Fill out values in `TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.java` – there’s a link for each of the variables showing where and which data to obtain.
+1. You are ready to compile and use Cherrygram.
+
+
 ## Thanks to:
 - [Catogram](https://github.com/Catogram/Catogram)
 - [Nekogram](https://gitlab.com/Nekogram/Nekogram)
