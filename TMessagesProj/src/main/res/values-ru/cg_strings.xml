@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- by t.me/arsLan-->
+    <!--<string name="CG_Version">Cherrygram %1$s\nBased on Telegram %2$s\nModded by %3$s</string>-->
+    
+    <!--Экран авторизации-->
+    <string name="CG_ProxyInfo">Вам может потребоваться настроить прокси перед входом в учетную запись, если ваша страна или интернет-провайдер блокирует Telegram.</string>
+    <string name="CG_ProxySettings">Настройки прокси</string>
+
+    <!--Настройки Cherrygram-->
+    <string name="CGP_AdvancedSettings">Настройки Cherrygram</string>
+    <string name="CGP_About_Desc">Экспериметальная модификация официального приложения Telegram.</string>
+    <string name="CGP_Header_About">О Cherrygram</string>
+    <string name="CGP_ToChannel">Официальный канал:</string>
+    <string name="CGP_ToChat">Официальный чат:</string>
+    <string name="CGP_Header_Categories">Категории</string>
+    
+    <!--Внешний вид-->
+    <string name="AP_Header_Appearance">Внешний вид</string>
+    <string name="AP_RedesignCategory">Редизайн</string>
+    <string name="AP_IconReplacements">Замена иконок</string>
+    <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
+    <string name="AP_IconReplacement_Default">Стандартные иконки</string>
+    <string name="AP_BackButton">Новая иконка \"назад\" (бета)</string>
+    <string name="AP_BackButton_Desc">Это также изменит кнопку меню (требуется перезапуск приложения)</string>
+    
+    <string name="AP_General">Основные</string>
+    <string name="AP_HideUserPhone">Скрыть номер телефона</string>
+    <string name="AP_HideUserPhoneSummary">В меню (требуется перезапуск приложения) и настройках</string>
+    <string name="AP_Hidden">Скрыто</string>
+    <string name="AP_FlatSB">Прозрачный статусбар</string>
+    <string name="AP_FlatSB_Desc">Только для Android 6+</string>
+    <string name="AP_MutualContacts">Показывать взаимные контакты</string>
+    <string name="AP_MutualContacts_Desc">В списке контактов появится значок взаимного контакта</string>
+    <string name="AP_MutualContacts_Description">Этот контакт является взаимным.</string>
+
+    <string name="AP_ProfileCategory">Профиль</string>
+    <string name="AP_ShowID">Показывать ID в профиле</string>
+    <string name="AP_ShowDC">Показывать DC в профиле</string>
+
+    <string name="AP_DrawerCategory">Меню</string>
+    <string name="AP_DrawerAvatar">Аватар как фон меню</string>
+    <string name="AP_DrawerBlur">Размыть фон меню</string>
+    <string name="AP_DrawerDarken">Затемнить фон меню</string>
+
+    <string name="AP_DrawerButtonsCategory">Кнопки меню (требуется перезапуск приложения)</string>
+    <string name="AP_DrawerButtonsSaved">Показывать кнопку \"Избранное\"</string>
+    <string name="AP_DrawerButtonsArchived">Показывать кнопку \"Архив\"</string>
+    <string name="AP_DrawerButtonsPeopleNearby">Показывать кнопку \"Люди рядом\"</string>
+
+    <!--Диалоги-->
+    <string name="CP_Header_Chats">Диалоги</string>
+    <string name="CP_Slider_StickerAmplifier">Размер стикеров</string>
+    <string name="CP_TimeOnStick">Скрыть время отправки на стикерах</string>
+
+    <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
+    <string name="CP_UnreadBadgeOnBackButton_Desc">Включить счетчик непрочитанных чатов на кнопке «Назад» в открытом чате</string>
+    <string name="CP_NoRounding">Отключить округление чисел</string>
+    <string name="CP_NoRoundingSummary">1.2K -> 1234</string>
+    <string name="CP_ConfirmCalls">Спрашивать перед звонком</string>
+    <string name="CP_ConfirmCalling_Header">Подтвердить звонок</string>
+    <string name="CP_ConfirmCalling_Question">Позвонить %s?</string>
+    <string name="CP_ConfirmCalling_Action">Подтвердить</string>
+    <string name="CP_ConfirmCalling_Action_Cancel">Отменить</string>
+    <string name="CP_ForwardMsgDate">Показывать дату пересланного сообщения</string>
+    <string name="CP_ShowSeconds">Показывать секунды в метках времени</string>
+    <string name="CP_ShowSeconds_Desc">Показывает секунды у времени отправленных сообщений (требуется перезапуск приложения)</string>
+    <string name="CP_DoubleTapReact">Отключить быстрые реакции</string>
+    <string name="CP_DisableReactionAnim">Отключить анимацию реакций</string>
+    <string name="CP_DisableReactionAnim_Desc">(во время реакции на сообщение)</string>
+    <string name="CP_DisableSwipeToNext">Отключить переход на следующий канал</string>
+    <string name="CP_DisableSwipeToNext_Desc">Отключить переключение на следующий канал при прокрутке любого канала</string>
+    <string name="CP_HideKbdOnScroll">Скрыть клавиатуру при прокрутке</string>
+    <string name="CP_HideSendAsChannel">Скрыть \"Отправить как канал\"</string>
+
+    <string name="CP_Slider_RecentEmojisAmplifier">Счетчик недавних эмодзи (требуется перезапуск приложения)</string>
+
+    <string name="CP_Filters_Header">Папки (требуется перезапуск приложения)</string>
+    <string name="CP_NewTabs_RemoveAllChats">Скрыть вкладку \"Все чаты\"</string>
+    <!--<string name="CP_NewTabs_RemoveAllChats_Desc">Это скроет вкладку \"Все чаты\"</string>-->
+    <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
+    <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
+    <string name="CP_ShowTabsOnForward">Показывать папки при пересылке</string>
+    <string name="CP_TabIconMode_Title">Тип иконки вкладок</string>
+    <string name="CP_TabIconMode_Disabled">Отключить</string>
+    <string name="CP_TabIconMode_Append">Добавить к названию вкладки</string>
+    <string name="CP_TabIconMode_Replace">Заменить название вкладки</string>
+
+    <string name="CP_Header_Record">Медиа</string>
+    <string name="CP_GIFasVideo">Воспроизводить ГИФ как видео</string>
+    <string name="CP_PlayVideo">Воспроизводить видео по нажатию на кнопку громкости</string>
+    <string name="CP_PlayVideo_Desc">При нажатии на кнопку громкости будет включено видео на экране в диалоге</string>
+    <string name="CP_AutoPauseVideo">Останавливать видео</string>
+    <string name="CP_AutoPauseVideo_Desc">При блокировке экрана или сворачивании приложения</string>
+    <string name="CP_AudioFocus">Заглушить музыку при включении медиа</string>
+    <string name="CP_DisableVibration">Отключить вибрацию</string>
+    <string name="CP_DisablePhotoTapAction">Отключить \"Перелистывание фотографий\"</string>
+    <string name="CP_DisablePhotoTapAction_Desc">Это отключает перелистывание фотографий при нажатии на края экрана</string>
+    <string name="CP_AudioFocus_Desc">Заглушить музыку при прослушивании аудио/видеосообщения. Если выключено, то при прослушивании голосового/видеосообщения музыка будет тише, но не будет выключена</string>
+    <string name="CP_DisableCam">Отключить камеру в меню выбора фото</string>
+    <string name="CP_DisableCam_Desc">Включите это если меню тормозит</string>
+    <string name="CP_RearCam">Использовать заднюю камеру</string>
+    <string name="CP_RearCam_Desc">Вместо фронтальной камеры при записи видеосообщений</string>
+    <string name="CP_Proximity">Включить датчик приближения</string>
+    <string name="CP_Proximity_Desc">При выключении вы избавитесь от раздражающего черного экрана при прослушивании аудио/видеосообщения (требуется перезапуск приложения)</string>
+
+    <string name="CP_Header_Notification">Уведомления</string>
+    <string name="CP_IOSSound">Звук из Telegram IOS</string>
+    <string name="CP_IOSSound_Desc">Это включит звук входящего сообщения из Telegram для IOS (требуется перезапуск приложения)</string>
+    <string name="CP_SilenceNonContacts">Заглушить не-контакты</string>
+    <string name="CP_SilenceNonContacts_Desc">Если включено, то уведомления со звуком будут приходить только от контактов. Вы можете добавить человека в контакты без наличия его номера телефона (в профиле человека)</string>
+
+    <!--Безопасность-->
+    <string name="SP_Category_Security">Безопасность</string>
+    <string name="SP_Header_Privacy">Приватность</string>
+    <string name="SP_NoProxyPromo">Не показывать спонсора прокси</string>
+    <string name="SP_SecureFlag">Включить Flag_Secure</string>
+
+    <!--Поддержать разработку-->
+    <string name="DP_Donate">Поддержать разработку</string>
+    <string name="DP_Donate_Method">Выберите метод</string>
+
+    <!--Экран чатов-->
+    <string name="CG_ViewUserHistory">История сообщений</string>
+    <string name="CG_DeleteAllFromSelf">Удалить мои сообщения</string>
+    <string name="CG_DeleteAllFromSelfAlert">Внимание! Это **удалит все ваши сообщения** в этом чате для **всех**.</string>
+    <string name="CG_DeleteAllFromSelfAdmin">С правами администратора</string>
+    <string name="CG_JumpToBeginning">В начало</string>
+    <string name="CG_ToSaved">Сохранить сообщение</string>
+
+    <string name="CG_ClearFromCache">Удалить из кеша</string>
+    <string name="CG_ClearedFromCache">Удалено из кеша</string>
+    <string name="CG_AllowStorage">Из-за изменений, внесённых Google в Android 11+, Cherrygram требует Ваше разрешение для просмотра немедийных файлов.</string>
+
+    <string name="CG_CreateMention">Упомянуть</string>
+
+    <string name="CG_FwdMenu_EnableNoForward">Удалять автора сообщений</string>
+    <string name="CG_FwdMenu_DisableNoForward">Не удалять автора сообщений</string>
+    <string name="CG_Without_Authorship">Без авторства</string>
+    <string name="CG_FwdMenu_NoNotify">Не уведомлять</string>
+    <string name="CG_FwdMenu_Notify">Уведомлять</string>
+    <string name="CG_FwdMenu_EnableCaptions">Включить подписи</string>
+    <string name="CG_FwdMenu_DisableCaptions">Скрыть подписи</string>
+
+    <!--Экран блокировки-->
+    <string name="LS_EnterPasscode">Введите свой код-пароль от Cherrygram</string>
+
+    <!--Прочее-->
+    <string name="CG_SwitchBackend">Вы переключитесь на тестовый сервер. Пожалуйста не нажимайте ОК, если вы не знаете, что делаете. Вы можете снова переключиться на обычный сервер, нажав на \"Переключить сервер\" в меню отладки.</string>
+    <string name="CG_Restart">Перезапустить приложение</string>
+    
+</resources>
