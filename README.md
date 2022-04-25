@@ -4,6 +4,8 @@ Cherrygram is a third-party Telegram client with not many but useful modificatio
 
 This is an unofficial fork of the original [Telegram App for Android](https://github.com/DrKLO/Telegram).
 
+This repo contains the official source code for [Telegram App for Android](https://play.google.com/store/apps/details?id=org.telegram.messenger).
+
 ## Current Maintainers
 
 - [arsLan4k1390](https://github.com/arsLan4k1390)
