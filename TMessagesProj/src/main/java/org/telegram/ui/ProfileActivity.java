@@ -7404,7 +7404,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 break;
                         }
 //                        cell.setText(LocaleController.formatString("CG_Version", R.string.AP_Version, String.format(Locale.US, "v%s (%d) %s", pInfo.versionName, code, abi), String.format(Locale.US, "v%s (%d)", BuildVars.BUILD_VERSION_STRING, BuildVars.BUILD_VERSION), "@arsLan"));
-                        cell.setText("Cherrygram Beta v" + CherrygramExtras.INSTANCE.getCG_VERSION() + "\nTelegram v" + BuildVars.BUILD_VERSION_STRING + "_" + BuildVars.BUILD_VERSION + "\n" + CherrygramExtras.INSTANCE.getCG_AUTHOR());
+                        cell.setText("Cherrygram v" + CherrygramExtras.INSTANCE.getCG_VERSION() + "\nTelegram v" + BuildVars.BUILD_VERSION_STRING + "_" + BuildVars.BUILD_VERSION + "\n" + CherrygramExtras.INSTANCE.getCG_AUTHOR());
                     } catch (Exception e) {
                         FileLog.e(e);
                     }

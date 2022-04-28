@@ -33,6 +33,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-datatransport'
     implementation 'com.google.firebase:firebase-appindexing'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-analytics'
 
     //Google services
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
@@ -310,7 +315,7 @@ android {
         }
     }
 
-    defaultConfig.versionCode = 2634
+    defaultConfig.versionCode = 2635
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
@@ -329,7 +334,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
-        versionName "8.7.2"
+        versionName "8.7.3"
 
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
 
@@ -343,3 +348,4 @@ android {
 }
 
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
