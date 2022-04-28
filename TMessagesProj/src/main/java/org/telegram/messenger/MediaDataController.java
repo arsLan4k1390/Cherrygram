@@ -78,8 +78,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 @SuppressWarnings("unchecked")
 public class MediaDataController extends BaseController {
+
+    private static int MAX_RECENT_STICKERS_COUNT = (int) (CherrygramConfig.INSTANCE.getSlider_RecentStickersAmplifier());
+
     public final static String ATTACH_MENU_BOT_ANIMATED_ICON_KEY = "android_animated",
             ATTACH_MENU_BOT_STATIC_ICON_KEY = "default_static",
             ATTACH_MENU_BOT_PLACEHOLDER_STATIC_KEY = "placeholder_static",
@@ -551,7 +556,7 @@ public class MediaDataController extends BaseController {
 
     public ArrayList<TLRPC.Document> getRecentStickers(int type) {
         ArrayList<TLRPC.Document> arrayList = recentStickers[type];
-        return new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), Integer.MAX_VALUE))); //Show more then 20 recent stickers
+        return new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), MAX_RECENT_STICKERS_COUNT))); //Show more then 20 recent stickers
     }
 
     public ArrayList<TLRPC.Document> getRecentStickersNoCopy(int type) {

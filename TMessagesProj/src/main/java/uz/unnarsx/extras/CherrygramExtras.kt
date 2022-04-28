@@ -5,13 +5,9 @@ import android.content.res.Resources
 import android.graphics.*
 import uz.unnarsx.cherrygram.CherrygramConfig.drawerBlur
 import android.graphics.drawable.BitmapDrawable
-import android.view.WindowManager
-import android.os.Vibrator
 import androidx.annotation.ColorInt
 import org.telegram.messenger.SharedConfig
 import org.telegram.tgnet.TLRPC
-import android.view.View
-import android.view.Window
 import org.telegram.messenger.FileLoader
 import org.telegram.messenger.Utilities
 import java.io.DataInputStream
@@ -22,7 +18,7 @@ import java.lang.Exception
 
 object CherrygramExtras {
 
-    var CG_VERSION = "6.0.0"
+    var CG_VERSION = "6.1.0"
     var CG_AUTHOR = "Updates: t.me/cherry_gram"
     @JvmField
     var currentAccountBitmap: BitmapDrawable? = null

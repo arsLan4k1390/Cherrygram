@@ -15,7 +15,18 @@
     <string name="CGP_Header_About">About Cherrygram</string>
     <string name="CGP_ToChannel">Official channel:</string>
     <string name="CGP_ToChat">Official chat:</string>
+    <string name="CGP_Source">Source code:</string>
     <string name="CGP_Header_Categories">Categories</string>
+    <string name="CGP_Updates_Category">Updates</string>
+
+    <!--OTA-->
+    <string name="CG_Auto_OTA">Automatically check for updates</string>
+    <string name="CG_Auto_OTA_summary">on app launch</string>
+    <string name="CG_OTA">Search for update</string>
+    <string name="CG_Not_Found">Cherrygram is up to date</string>
+    <string name="CG_Found">Update</string>
+    <string name="CG_Changelog">Changelog</string>
+    <string name="CG_Download">Download</string>
     
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Appearance</string>
@@ -76,6 +87,7 @@
     <string name="CP_HideSendAsChannel">Hide \"Send as channel\"</string>
 
     <string name="CP_Slider_RecentEmojisAmplifier">Recent emojis counter (restart app to apply)</string>
+    <string name="CP_Slider_RecentStickersAmplifier">Recent stickers counter (restart app to apply)</string>
 
     <string name="CP_Filters_Header">Folders (restart app to apply)</string>
     <string name="CP_NewTabs_RemoveAllChats">Hide \"All chats\" tab</string>

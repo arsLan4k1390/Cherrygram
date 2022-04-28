@@ -169,6 +169,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.ota.OTA;
 import uz.unnarsx.cherrygram.helpers.MonetHelper;
 import uz.unnarsx.cherrygram.vkui.CGUIResources;
 import uz.unnarsx.redesign.BottomSlideFragment;
@@ -331,6 +332,10 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         }
 
         super.onCreate(savedInstanceState);
+
+        if (CherrygramConfig.INSTANCE.getAutoOTA())
+            OTA.download(this, false);
+
         if (Build.VERSION.SDK_INT >= 24) {
             AndroidUtilities.isInMultiwindow = isInMultiWindowMode();
         }

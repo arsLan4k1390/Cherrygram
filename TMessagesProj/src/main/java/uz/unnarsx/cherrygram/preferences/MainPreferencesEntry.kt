@@ -48,13 +48,13 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     it.presentFragment(CherrygramPreferencesNavigator.createSecurity())
                 }
             }
-//            textIcon {
-//                title = LocaleController.getString("UP_Updates_Category", R.string.UP_Updates_Category)
-//                icon = R.drawable.outline_send
-//                listener = TGKitTextIconRow.TGTIListener {
-//                    it.presentFragment(CherrygramPreferencesNavigator.createUpdates())
-//                }
-//            }
+            textIcon {
+                title = LocaleController.getString("CGP_Updates_Category", R.string.CGP_Updates_Category)
+                icon = R.drawable.outline_send
+                listener = TGKitTextIconRow.TGTIListener {
+                    it.presentFragment(CherrygramPreferencesNavigator.createUpdates())
+                }
+            }
             textIcon {
                 title = LocaleController.getString("DP_Donate", R.string.DP_Donate)
                 icon = R.drawable.money_circle_outline_28
@@ -65,7 +65,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
 
             category(LocaleController.getString("AS_Header_About", R.string.CGP_Header_About)) {
                 textDetail {
-                    title = "Cherrygram Beta v" + CherrygramExtras.CG_VERSION + " [" + BuildVars.BUILD_VERSION_STRING + "]"
+                    title = "Cherrygram v" + CherrygramExtras.CG_VERSION + " [" + BuildVars.BUILD_VERSION_STRING + "]"
                     detail = LocaleController.getString("CGP_About_Desc", R.string.CGP_About_Desc)
                 }
 
@@ -83,13 +83,13 @@ class MainPreferencesEntry : BasePreferencesEntry {
                         goToChat(it)
                     }
                 }
-//                textIcon {
-//                    title = LocaleController.getString("CGP_Source", R.string.CGP_Source)
-//                    value = "Github"
-//                    listener = TGKitTextIconRow.TGTIListener {
-//                        goToGithub(it)
-//                    }
-//                }
+                textIcon {
+                    title = LocaleController.getString("CGP_Source", R.string.CGP_Source)
+                    value = "Github"
+                    listener = TGKitTextIconRow.TGTIListener {
+                        goToGithub(it)
+                    }
+                }
             }
         }
     }
@@ -113,11 +113,12 @@ class MainPreferencesEntry : BasePreferencesEntry {
             bf.parentActivity.startActivity(intent)
         }
 
-//        private fun goToGithub(bf: BaseFragment) {
-//            val openURL = Intent(android.content.Intent.ACTION_VIEW)
-//            openURL.data = Uri.parse("https://github.com/Cherrygram/Cherrygram")
-//            bf.parentActivity.startActivity(openURL)
-//        }
+        private fun goToGithub(bf: BaseFragment) {
+            val openURL = Intent(android.content.Intent.ACTION_VIEW)
+            openURL.data = Uri.parse("https://github.com/arsLan4k1390/Cherrygram")
+            bf.parentActivity.startActivity(openURL)
+        }
+
         fun onProvideAssistContent(outContent: AssistContent) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 outContent.webUri = Uri.parse(

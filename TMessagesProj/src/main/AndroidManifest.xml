@@ -85,6 +85,10 @@
         android:preserveLegacyExternalStorage="true"
         android:allowAudioPlaybackCapture="true"
         tools:replace="android:supportsRtl">
+        <receiver
+            android:name="uz.unnarsx.cherrygram.ota.NotificationActionService"
+            android:enabled="true"
+            android:exported="true" />
 
         <activity
             android:name="org.telegram.ui.LaunchActivity"

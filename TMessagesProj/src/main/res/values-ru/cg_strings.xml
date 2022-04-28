@@ -13,7 +13,18 @@
     <string name="CGP_Header_About">О Cherrygram</string>
     <string name="CGP_ToChannel">Официальный канал:</string>
     <string name="CGP_ToChat">Официальный чат:</string>
+    <string name="CGP_Source">Исходный код:</string>
     <string name="CGP_Header_Categories">Категории</string>
+    <string name="CGP_Updates_Category">Обновления</string>
+
+    <!--OTA-->
+    <string name="CG_Auto_OTA">Автоматически проверять обновления</string>
+    <string name="CG_Auto_OTA_summary">при запуске приложения</string>
+    <string name="CG_OTA">Проверить обновления</string>
+    <string name="CG_Not_Found">Используется последняя версия Cherrygram</string>
+    <string name="CG_Found">Обновление</string>
+    <string name="CG_Changelog">Список изменений</string>
+    <string name="CG_Download">Загрузить</string>
     
     <!--Внешний вид-->
     <string name="AP_Header_Appearance">Внешний вид</string>
@@ -74,6 +85,7 @@
     <string name="CP_HideSendAsChannel">Скрыть \"Отправить как канал\"</string>
 
     <string name="CP_Slider_RecentEmojisAmplifier">Счетчик недавних эмодзи (требуется перезапуск приложения)</string>
+    <string name="CP_Slider_RecentStickersAmplifier">Счетчик недавних стикеров (требуется перезапуск приложения)</string>
 
     <string name="CP_Filters_Header">Папки (требуется перезапуск приложения)</string>
     <string name="CP_NewTabs_RemoveAllChats">Скрыть вкладку \"Все чаты\"</string>

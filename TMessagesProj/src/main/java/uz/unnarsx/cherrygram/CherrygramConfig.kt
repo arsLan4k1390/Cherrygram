@@ -2,15 +2,12 @@ package uz.unnarsx.cherrygram
 
 import android.app.Activity
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import org.telegram.messenger.ApplicationLoader
 import uz.unnarsx.cherrygram.preferences.ktx.boolean
 import uz.unnarsx.cherrygram.preferences.ktx.int
-import uz.unnarsx.cherrygram.ui.CherrygramToasts
 import uz.unnarsx.cherrygram.vkui.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.vkui.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.vkui.icon_replaces.VkIconReplace
-import kotlin.system.exitProcess
 
 object CherrygramConfig {
 
@@ -51,6 +48,7 @@ object CherrygramConfig {
     var hideKeyboardOnScroll by sharedPreferences.boolean("CP_HideKbdOnScroll", false)
     var hideSendAsChannel by sharedPreferences.boolean("CP_HideSendAsChannel", false)
     var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
+    var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
     //Folders
     var newTabs_hideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
     var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
@@ -73,14 +71,14 @@ object CherrygramConfig {
     //Privacy
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
 
+    //OTA
+    var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", true)
+
     //Misc
     var forwardNoAuthorship by sharedPreferences.boolean("CG_ForwardNoAuthorship", false)
     var forwardWithoutCaptions by sharedPreferences.boolean("CG_ForwardWithoutCaptions", false)
     var forwardNotify by sharedPreferences.boolean("CG_ForwardNotify", true)
     var noAuthorship by sharedPreferences.boolean("CG_NoAuthorship", false)
-
-    //ToDO
-//    var autoOta by sharedPreferences.boolean("cg_auto_ota", true)
 
 
     fun getIconReplacement(): BaseIconReplace {

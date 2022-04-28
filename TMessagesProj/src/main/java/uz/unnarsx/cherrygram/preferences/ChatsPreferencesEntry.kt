@@ -163,6 +163,28 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
             }
         }
 
+        category(LocaleController.getString("CP_Slider_RecentStickersAmplifier", R.string.CP_Slider_RecentStickersAmplifier)) {
+            slider {
+                contract = object : TGSLContract {
+                    override fun setValue(value: Int) {
+                        CherrygramConfig.slider_RecentStickersAmplifier = value
+                    }
+
+                    override fun getPreferenceValue(): Int {
+                        return CherrygramConfig.slider_RecentStickersAmplifier
+                    }
+
+                    override fun getMin(): Int {
+                        return 20
+                    }
+
+                    override fun getMax(): Int {
+                        return 120
+                    }
+                }
+            }
+        }
+
         category(LocaleController.getString("AS_Filters_Header", R.string.CP_Filters_Header)) {
             switch {
                 title = LocaleController.getString("CP_NewTabs_RemoveAllChats", R.string.CP_NewTabs_RemoveAllChats)
