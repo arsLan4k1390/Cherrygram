@@ -1479,6 +1479,27 @@ public class AndroidUtilities {
                         t = builder.build();
                     } else {
                         t = Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), assetPath);
+                    } if (CherrygramConfig.INSTANCE.getSystemFonts()) {
+                        switch (assetPath) {
+                            case "fonts/rmedium.ttf":
+                                t = Typeface.create("sans-serif-medium", Typeface.NORMAL);
+                                break;
+                            case "fonts/ritalic.ttf":
+                                t = Typeface.create("sans-serif", Typeface.ITALIC);
+                                break;
+                            case "fonts/rmediumitalic.ttf":
+                                t = Typeface.create("sans-serif-medium", Typeface.ITALIC);
+                                break;
+                            case "fonts/rmono.ttf":
+                                t = Typeface.MONOSPACE;
+                                break;
+                            case "fonts/mw_bold.ttf":
+                                t = Typeface.create("serif", Typeface.BOLD);
+                                break;
+                            case "fonts/rcondensedbold.ttf":
+                                t = Typeface.create("sans-serif-condensed", Typeface.BOLD);
+                                break;
+                        }
                     }
                     typefaceCache.put(assetPath, t);
                 } catch (Exception e) {

@@ -20,6 +20,7 @@ object CherrygramConfig {
     var hidePhoneNumber by sharedPreferences.boolean("AP_HideUserPhone", false)
     var flatActionbar by sharedPreferences.boolean("AP_FlatSB", true)
     var mutualContacts by sharedPreferences.boolean("AP_MutualContacts", true)
+    var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
     // Profile
     var showId by sharedPreferences.boolean("AP_ShowID", false)
     var showDc by sharedPreferences.boolean("AP_ShowDC", false)

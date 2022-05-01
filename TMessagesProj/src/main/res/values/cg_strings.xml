@@ -46,6 +46,8 @@
     <string name="AP_MutualContacts">Show mutual contacts</string>
     <string name="AP_MutualContacts_Desc">A mutual contact icon will appear in contacts list</string>
     <string name="AP_MutualContacts_Description">This is a mutual contact.</string>
+    <string name="AP_SystemFonts">Use system fonts</string>
+    <string name="AP_SystemFonts_Desc">Disable this (restart app to apply) if your font does not support formatting (Bold, Italic, Monospace)</string>
 
     <string name="AP_ProfileCategory">Profile</string>
     <string name="AP_ShowID">Show ID in profile</string>

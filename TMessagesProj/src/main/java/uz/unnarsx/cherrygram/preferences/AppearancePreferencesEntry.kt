@@ -81,6 +81,16 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     CherrygramConfig.mutualContacts = it
                 }
             }
+            switch {
+                title = LocaleController.getString("AP_SystemFonts", R.string.AP_SystemFonts)
+                summary = LocaleController.getString("AP_SystemFonts_Desc", R.string.AP_SystemFonts_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.systemFonts
+                }) {
+                    CherrygramConfig.systemFonts = it
+                }
+            }
         }
 
         category(LocaleController.getString("AP_ProfileCategory", R.string.AP_ProfileCategory)) {

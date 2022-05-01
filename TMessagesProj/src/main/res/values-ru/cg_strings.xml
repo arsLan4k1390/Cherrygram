@@ -44,6 +44,8 @@
     <string name="AP_MutualContacts">Показывать взаимные контакты</string>
     <string name="AP_MutualContacts_Desc">В списке контактов появится значок взаимного контакта</string>
     <string name="AP_MutualContacts_Description">Этот контакт является взаимным.</string>
+    <string name="AP_SystemFonts">Использовать системный шрифт</string>
+    <string name="AP_SystemFonts_Desc">Отключите это (требуется перезапуск приложения), если ваш шрифт не поддерживает форматирование (Жирный, Курсив, Моноширинный)</string>
 
     <string name="AP_ProfileCategory">Профиль</string>
     <string name="AP_ShowID">Показывать ID в профиле</string>
