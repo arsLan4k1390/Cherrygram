@@ -32,6 +32,11 @@
     <string name="AP_Header_Appearance">Appearance</string>
     <string name="AP_RedesignCategory">Redesign</string>
     <string name="AP_IconReplacements">Icon replacements</string>
+    <string name="AP_ChangeIcon">Application icon</string>
+    <string name="AP_ChangeIcon_Default">Default</string>
+    <string name="AP_ChangeIcon_Monet_Samsung">Monet (For OneUI 4)</string>
+    <string name="AP_ChangeIcon_Monet_Pixel">Monet (For Pixel Experience)</string>
+    <string name="AP_ChangeIcon_White">White icon</string>
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Default">Default</string>
     <string name="AP_BackButton">New \"back\" icon (beta)</string>
@@ -42,7 +47,6 @@
     <string name="AP_HideUserPhoneSummary">in drawer (restart app to apply) and settings</string>
     <string name="AP_Hidden">Hidden</string>
     <string name="AP_FlatSB">Flat statusbar</string>
-    <string name="AP_FlatSB_Desc">For Android 6+</string>
     <string name="AP_MutualContacts">Show mutual contacts</string>
     <string name="AP_MutualContacts_Desc">A mutual contact icon will appear in contacts list</string>
     <string name="AP_MutualContacts_Description">This is a mutual contact.</string>

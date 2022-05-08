@@ -1,4 +1,4 @@
-package uz.unnarsx.cherrygram.preferences.ktx
+package uz.unnarsx.cherrygram.preferences
 
 import android.content.SharedPreferences
 import kotlin.properties.ReadWriteProperty

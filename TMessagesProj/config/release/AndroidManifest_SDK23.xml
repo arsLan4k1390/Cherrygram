@@ -22,8 +22,7 @@
 
     <application
         android:allowBackup="false"
-        android:icon="@mipmap/ic_launcher_sa"
-        android:roundIcon="@mipmap/ic_launcher_sa"
+        android:icon="@mipmap/cg_launcher_default"
         android:label="@string/CG_AppName"
         android:theme="@style/Theme.TMessages.Start"
         android:name=".ApplicationLoader"

@@ -3,8 +3,8 @@ package uz.unnarsx.cherrygram
 import android.app.Activity
 import android.content.SharedPreferences
 import org.telegram.messenger.ApplicationLoader
-import uz.unnarsx.cherrygram.preferences.ktx.boolean
-import uz.unnarsx.cherrygram.preferences.ktx.int
+import uz.unnarsx.cherrygram.preferences.boolean
+import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.vkui.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.vkui.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.vkui.icon_replaces.VkIconReplace
@@ -14,6 +14,8 @@ object CherrygramConfig {
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
     // Appearance Settings
     // Redesign
+    var change_Icon by sharedPreferences.int("AP_ChangeIcon", 0)
+    var change_Icon2 by sharedPreferences.int("AP_ChangeIcon2", 0)
     var iconReplacement by sharedPreferences.int("AP_IconReplacements", 0)
     var BackButton by sharedPreferences.boolean("AP_BackButton", false)
     // General

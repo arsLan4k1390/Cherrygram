@@ -41,7 +41,7 @@ dependencies {
 
     //Google services
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
-    implementation 'com.google.android.gms:play-services-auth:20.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.2.0'
     implementation 'com.google.android.gms:play-services-vision:20.1.3'
     implementation 'com.google.android.gms:play-services-wearable:17.1.0'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
@@ -143,7 +143,7 @@ android {
         debug {
             debuggable true
             jniDebuggable true
-            signingConfig signingConfigs.debug
+//            signingConfig signingConfigs.release
             applicationIdSuffix ".beta"
             minifyEnabled false
             shrinkResources false

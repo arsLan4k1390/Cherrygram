@@ -4,8 +4,6 @@ import androidx.core.util.Pair
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.ActionBar.Theme
-//import uz.unnarsx.cherrygram.CGFeatureHooks
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.preferences.ktx.*
 import uz.unnarsx.tgkit.preference.types.TGKitSliderPreference.TGSLContract

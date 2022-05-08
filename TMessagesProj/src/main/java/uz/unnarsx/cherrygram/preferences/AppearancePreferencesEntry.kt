@@ -2,6 +2,7 @@ package uz.unnarsx.cherrygram.preferences
 
 import android.graphics.Color
 import android.os.Build
+import android.os.Build.VERSION_CODES.S
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.messenger.SharedConfig
@@ -11,10 +12,55 @@ import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.preferences.ktx.*
 import uz.unnarsx.extras.CherrygramExtras
+import uz.unnarsx.extras.IconExtras
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)) {
         category(LocaleController.getString("AP_RedesignCategory", R.string.AP_RedesignCategory)) {
+            if (Build.VERSION.SDK_INT == 31 || Build.VERSION.SDK_INT== 32) {
+                list {
+                    title = LocaleController.getString("AP_ChangeIcon", R.string.AP_ChangeIcon)
+
+                    contractIcons({
+                        return@contractIcons listOf(
+                            Triple(0, LocaleController.getString("AP_ChangeIcon_Default", R.string.AP_ChangeIcon_Default), R.mipmap.cg_launcher_default),
+                            Triple(1, LocaleController.getString("AP_ChangeIcon_White", R.string.AP_ChangeIcon_White), R.mipmap.cg_launcher_white),
+                            Triple(2, LocaleController.getString("AP_ChangeIcon_Monet_Samsung", R.string.AP_ChangeIcon_Monet_Samsung), R.mipmap.cg_launcher_monet_samsung),
+                            Triple(3, LocaleController.getString("AP_ChangeIcon_Monet_Pixel", R.string.AP_ChangeIcon_Monet_Pixel), R.mipmap.cg_launcher_monet_samsung),
+                        )
+                    }, {
+                        return@contractIcons when (CherrygramConfig.change_Icon) {
+                            1 -> LocaleController.getString("AP_ChangeIcon_White", R.string.AP_ChangeIcon_White)
+                            2 -> LocaleController.getString("AP_ChangeIcon_Monet_Samsung", R.string.AP_ChangeIcon_Monet_Samsung)
+                            3 -> LocaleController.getString("AP_ChangeIcon_Monet_Pixel", R.string.AP_ChangeIcon_Monet_Pixel)
+                            else -> LocaleController.getString("AP_ChangeIcon_Default", R.string.AP_ChangeIcon_Default)
+                        }
+                    }) {
+                        CherrygramConfig.change_Icon = it
+                        IconExtras.setIcon(it)
+                    }
+                }
+            }
+            if (Build.VERSION.SDK_INT <= 30 || Build.VERSION.SDK_INT == 33) {
+                list {
+                    title = LocaleController.getString("AP_ChangeIcon", R.string.AP_ChangeIcon)
+
+                    contractIcons({
+                        return@contractIcons listOf(
+                            Triple(0, LocaleController.getString("AP_ChangeIcon_Default", R.string.AP_ChangeIcon_Default), R.mipmap.cg_launcher_default),
+                            Triple(1, LocaleController.getString("AP_ChangeIcon_White", R.string.AP_ChangeIcon_White), R.mipmap.cg_launcher_white),
+                        )
+                    }, {
+                        return@contractIcons when (CherrygramConfig.change_Icon2) {
+                            1 -> LocaleController.getString("AP_ChangeIcon_White", R.string.AP_ChangeIcon_White)
+                            else -> LocaleController.getString("AP_ChangeIcon_Default", R.string.AP_ChangeIcon_Default)
+                        }
+                    }) {
+                        CherrygramConfig.change_Icon2 = it
+                        IconExtras.setIcon(it)
+                    }
+                }
+            }
             list {
                 title = LocaleController.getString("AP_IconReplacements", R.string.AP_IconReplacements)
 
@@ -57,16 +103,14 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     CherrygramConfig.hidePhoneNumber = it
                 }
             }
-            switch {
-                title = LocaleController.getString("AP_FlatSB", R.string.AP_FlatSB)
-                summary = LocaleController.getString("AP_FlatSB_Desc", R.string.AP_FlatSB_Desc)
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                switch {
+                    title = LocaleController.getString("AP_FlatSB", R.string.AP_FlatSB)
 
-                contract({
-                    return@contract SharedConfig.noStatusBar
-                }) {
-                    SharedConfig.toggleNoStatusBar()
-//                    bf.parentActivity.window.statusBarColor = if (Theme.getColor(Theme.key_actionBarDefault, null, true) == Color.WHITE) CherrygramExtras.lightStatusbarColor else CherrygramExtras.darkStatusbarColor
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    contract({
+                        return@contract SharedConfig.noStatusBar
+                    }) {
+                        SharedConfig.toggleNoStatusBar()
                         bf.parentActivity.window.statusBarColor = if (Theme.getColor(Theme.key_actionBarDefault, null, true) == Color.WHITE) CherrygramExtras.lightStatusbarColor else CherrygramExtras.darkStatusbarColor
                     }
                 }

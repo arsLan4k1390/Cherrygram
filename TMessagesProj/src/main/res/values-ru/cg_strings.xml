@@ -30,6 +30,11 @@
     <string name="AP_Header_Appearance">Внешний вид</string>
     <string name="AP_RedesignCategory">Редизайн</string>
     <string name="AP_IconReplacements">Замена иконок</string>
+    <string name="AP_ChangeIcon">Иконка приложения</string>
+    <string name="AP_ChangeIcon_Default">По умолчанию</string>
+    <string name="AP_ChangeIcon_Monet_Samsung">Monet (Для OneUI 4)</string>
+    <string name="AP_ChangeIcon_Monet_Pixel">Monet (Для Pixel Experience)</string>
+    <string name="AP_ChangeIcon_White">Белая иконка</string>
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
     <string name="AP_BackButton">Новая иконка \"назад\" (бета)</string>
@@ -40,7 +45,6 @@
     <string name="AP_HideUserPhoneSummary">В меню (требуется перезапуск приложения) и настройках</string>
     <string name="AP_Hidden">Скрыто</string>
     <string name="AP_FlatSB">Прозрачный статусбар</string>
-    <string name="AP_FlatSB_Desc">Только для Android 6+</string>
     <string name="AP_MutualContacts">Показывать взаимные контакты</string>
     <string name="AP_MutualContacts_Desc">В списке контактов появится значок взаимного контакта</string>
     <string name="AP_MutualContacts_Description">Этот контакт является взаимным.</string>
