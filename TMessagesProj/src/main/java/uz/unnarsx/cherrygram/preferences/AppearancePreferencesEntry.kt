@@ -41,7 +41,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     }
                 }
             }
-            if (Build.VERSION.SDK_INT <= 30 || Build.VERSION.SDK_INT == 33) {
+            if (Build.VERSION.SDK_INT == 26 || Build.VERSION.SDK_INT == 27 || Build.VERSION.SDK_INT == 28 || Build.VERSION.SDK_INT == 29 || Build.VERSION.SDK_INT == 30 || Build.VERSION.SDK_INT == 33) {
                 list {
                     title = LocaleController.getString("AP_ChangeIcon", R.string.AP_ChangeIcon)
 
