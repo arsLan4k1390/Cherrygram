@@ -16,6 +16,9 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.DialogObject;
@@ -26,6 +29,7 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.support.LongSparseIntArray;
+import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
@@ -49,10 +53,9 @@ import org.telegram.ui.Components.RecyclerListView;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.tabs.FolderIconHelper;
+import uz.unnarsx.cherrygram.tabs.IconSelectorAlert;
 
 public class FilterCreateActivity extends BaseFragment {
 
@@ -97,6 +100,7 @@ public class FilterCreateActivity extends BaseFragment {
     private MessagesController.DialogFilter filter;
     private boolean creatingNew;
     private String newFilterName;
+    private String newFilterEmoticon;
     private int newFilterFlags;
     private ArrayList<Long> newAlwaysShow;
     private ArrayList<Long> newNeverShow;
@@ -105,6 +109,7 @@ public class FilterCreateActivity extends BaseFragment {
     private static final int MAX_NAME_LENGTH = 12;
 
     private static final int done_button = 1;
+    private IconSelectorAlert iconSelectorAlert;
 
     @SuppressWarnings("FieldCanBeLocal")
     public static class HintInnerCell extends FrameLayout {
@@ -154,6 +159,7 @@ public class FilterCreateActivity extends BaseFragment {
             creatingNew = true;
         }
         newFilterName = filter.name;
+        newFilterEmoticon = filter.emoticon;
         newFilterFlags = filter.flags;
         newAlwaysShow = new ArrayList<>(filter.alwaysShow);
         if (alwaysShow != null) {
@@ -426,6 +432,14 @@ public class FilterCreateActivity extends BaseFragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        try {
+            iconSelectorAlert.dismiss();
+        } catch (Exception ignored) {}
+    }
+
+    @Override
     public boolean onBackPressed() {
         return checkDiscard();
     }
@@ -436,42 +450,51 @@ public class FilterCreateActivity extends BaseFragment {
         }
         int flags = newFilterFlags & MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS;
         String newName = "";
+        String newEmoticon = "";
         if ((flags & MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) == MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) {
             if ((newFilterFlags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_READ) != 0) {
                 newName = LocaleController.getString("FilterNameUnread", R.string.FilterNameUnread);
+                newEmoticon = "\u2705";
             } else if ((newFilterFlags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0) {
                 newName = LocaleController.getString("FilterNameNonMuted", R.string.FilterNameNonMuted);
+                newEmoticon = "\uD83D\uDD14";
             }
         } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_CONTACTS) != 0) {
             flags &=~ MessagesController.DIALOG_FILTER_FLAG_CONTACTS;
             if (flags == 0) {
                 newName = LocaleController.getString("FilterContacts", R.string.FilterContacts);
+                newEmoticon = "\uD83D\uDC64";
             }
         } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS) != 0) {
             flags &=~ MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS;
             if (flags == 0) {
                 newName = LocaleController.getString("FilterNonContacts", R.string.FilterNonContacts);
+                newEmoticon = "\uD83D\uDC64";
             }
         } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_GROUPS) != 0) {
             flags &=~ MessagesController.DIALOG_FILTER_FLAG_GROUPS;
             if (flags == 0) {
                 newName = LocaleController.getString("FilterGroups", R.string.FilterGroups);
+                newEmoticon = "\uD83D\uDC65";
             }
         } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_BOTS) != 0) {
             flags &=~ MessagesController.DIALOG_FILTER_FLAG_BOTS;
             if (flags == 0) {
                 newName = LocaleController.getString("FilterBots", R.string.FilterBots);
+                newEmoticon = "\uD83E\uDD16";
             }
         } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_CHANNELS) != 0) {
             flags &=~ MessagesController.DIALOG_FILTER_FLAG_CHANNELS;
             if (flags == 0) {
                 newName = LocaleController.getString("FilterChannels", R.string.FilterChannels);
+                newEmoticon = "\uD83D\uDCE2";
             }
         }
         if (newName != null && newName.length() > MAX_NAME_LENGTH) {
             newName = "";
         }
         newFilterName = newName;
+        newFilterEmoticon = newEmoticon;
         RecyclerView.ViewHolder holder = listView.findViewHolderForAdapterPosition(nameRow);
         if (holder != null) {
             adapter.onViewAttachedToWindow(holder);
@@ -556,13 +579,13 @@ public class FilterCreateActivity extends BaseFragment {
     }
 
     private void processDone() {
-        saveFilterToServer(filter, newFilterFlags, newFilterName, newAlwaysShow, newNeverShow, newPinned, creatingNew, false, hasUserChanged, true, true, this, () -> {
+        saveFilterToServer(filter, newFilterFlags, newFilterEmoticon, newFilterName, newAlwaysShow, newNeverShow, newPinned, creatingNew, false, hasUserChanged, true, true, this, () -> {
             getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
             finishFragment();
         });
     }
 
-    private static void processAddFilter(MessagesController.DialogFilter filter, int newFilterFlags, String newFilterName, ArrayList<Long> newAlwaysShow, ArrayList<Long> newNeverShow, boolean creatingNew, boolean atBegin, boolean hasUserChanged, boolean resetUnreadCounter, BaseFragment fragment, Runnable onFinish) {
+    private static void processAddFilter(MessagesController.DialogFilter filter, int newFilterFlags, String newFilterEmoticon, String newFilterName, ArrayList<Long> newAlwaysShow, ArrayList<Long> newNeverShow, boolean creatingNew, boolean atBegin, boolean hasUserChanged, boolean resetUnreadCounter, BaseFragment fragment, Runnable onFinish) {
         if (filter.flags != newFilterFlags || hasUserChanged) {
             filter.pendingUnreadCount = -1;
             if (resetUnreadCounter) {
@@ -571,6 +594,7 @@ public class FilterCreateActivity extends BaseFragment {
         }
         filter.flags = newFilterFlags;
         filter.name = newFilterName;
+        filter.emoticon = newFilterEmoticon;
         filter.neverShow = newNeverShow;
         filter.alwaysShow = newAlwaysShow;
         if (creatingNew) {
@@ -584,7 +608,7 @@ public class FilterCreateActivity extends BaseFragment {
         }
     }
 
-    public static void saveFilterToServer(MessagesController.DialogFilter filter, int newFilterFlags, String newFilterName, ArrayList<Long> newAlwaysShow, ArrayList<Long> newNeverShow, LongSparseIntArray newPinned, boolean creatingNew, boolean atBegin, boolean hasUserChanged, boolean resetUnreadCounter, boolean progress, BaseFragment fragment, Runnable onFinish) {
+    public static void saveFilterToServer(MessagesController.DialogFilter filter, int newFilterFlags, String newFilterEmoticon, String newFilterName, ArrayList<Long> newAlwaysShow, ArrayList<Long> newNeverShow, LongSparseIntArray newPinned, boolean creatingNew, boolean atBegin, boolean hasUserChanged, boolean resetUnreadCounter, boolean progress, BaseFragment fragment, Runnable onFinish) {
         if (fragment == null || fragment.getParentActivity() == null) {
             return;
         }
@@ -610,6 +634,10 @@ public class FilterCreateActivity extends BaseFragment {
         req.filter.exclude_archived = (newFilterFlags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_ARCHIVED) != 0;
         req.filter.id = filter.id;
         req.filter.title = newFilterName;
+        if (newFilterEmoticon != null) {
+            req.filter.emoticon = newFilterEmoticon;
+            req.filter.flags |= ConnectionsManager.FileTypeVideo;
+        }
         MessagesController messagesController = fragment.getMessagesController();
         ArrayList<Long> pinArray = new ArrayList<>();
         if (newPinned.size() != 0) {
@@ -685,11 +713,11 @@ public class FilterCreateActivity extends BaseFragment {
                 } catch (Exception e) {
                     FileLog.e(e);
                 }
-                processAddFilter(filter, newFilterFlags, newFilterName, newAlwaysShow, newNeverShow, creatingNew, atBegin, hasUserChanged, resetUnreadCounter, fragment, onFinish);
+                processAddFilter(filter, newFilterFlags, newFilterEmoticon, newFilterName, newAlwaysShow, newNeverShow, creatingNew, atBegin, hasUserChanged, resetUnreadCounter, fragment, onFinish);
             }
         }));
         if (!progress) {
-            processAddFilter(filter, newFilterFlags, newFilterName, newAlwaysShow, newNeverShow, creatingNew, atBegin, hasUserChanged, resetUnreadCounter, fragment, onFinish);
+            processAddFilter(filter, newFilterFlags, newFilterEmoticon, newFilterName, newAlwaysShow, newNeverShow, creatingNew, atBegin, hasUserChanged, resetUnreadCounter, fragment, onFinish);
         }
     }
 
@@ -719,6 +747,9 @@ public class FilterCreateActivity extends BaseFragment {
             }
         }
         if (!TextUtils.equals(filter.name, newFilterName)) {
+            return true;
+        }
+        if (!TextUtils.equals(filter.emoticon, newFilterEmoticon)) {
             return true;
         }
         if (filter.flags != newFilterFlags) {
@@ -800,7 +831,20 @@ public class FilterCreateActivity extends BaseFragment {
                     break;
                 }
                 case 2: {
-                    PollEditTextCell cell = new PollEditTextCell(mContext, null);
+                    PollEditTextCell cell = new PollEditTextCell(mContext, false, null, view1 -> {
+                        iconSelectorAlert = new IconSelectorAlert(mContext) {
+                            @Override
+                            protected void onItemClick(int pos) {
+                                super.onItemClick(pos);
+                                ImageView pollEditTextCell = (ImageView) view1;
+                                pollEditTextCell.setImageResource(FolderIconHelper.icons[pos]);
+                                newFilterEmoticon = FolderIconHelper.emojis[pos];
+                                checkDoneButton(true);
+                            }
+                        };
+                        iconSelectorAlert.show();
+                    });
+                    cell.setIcon(FolderIconHelper.getTabIcon(newFilterEmoticon, false));
                     cell.createErrorTextView();
                     cell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     cell.addTextWatcher(new TextWatcher() {

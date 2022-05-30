@@ -40,6 +40,7 @@ object CherrygramConfig {
     var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
     //Chats
+    var scrollableChatPreview by sharedPreferences.boolean("CP_ScrollableChatPreview", true)
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
     var noRounding by sharedPreferences.boolean("CP_NoRounding", false)
     var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
@@ -57,6 +58,7 @@ object CherrygramConfig {
     var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
     var showTabsOnForward by sharedPreferences.boolean("CP_ShowTabsOnForward", true)
     var newTabs_iconsV2_mode by sharedPreferences.int("CP_TabIconMode_Title", 0)
+    var tabMode by sharedPreferences.int("CG_FoldersType", 0)
     // Media
     var playGIFasVideo by sharedPreferences.boolean("CP_GIFasVideo", true)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
@@ -73,6 +75,7 @@ object CherrygramConfig {
 
     //Privacy
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
+    var kaboom by sharedPreferences.boolean("SP_Kaboom", false)
 
     //OTA
     var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", true)
@@ -89,6 +92,18 @@ object CherrygramConfig {
             1 -> NoIconReplace()
             else -> VkIconReplace()
         }
+    }
+
+    @JvmName("setTabMode1")
+    fun setTabMode(mode: Int) {
+        tabMode = mode
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "owlconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putInt("tabMode", tabMode)
+        editor.apply()
     }
 
 //    init {

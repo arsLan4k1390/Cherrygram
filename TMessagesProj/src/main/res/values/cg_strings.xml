@@ -72,6 +72,7 @@
     <string name="CP_Slider_StickerAmplifier">Sticker size amplifier</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
 
+    <string name="CP_ScrollableChatPreview">Scrollable Chat Preview</string>
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
     <string name="CP_NoRounding">Disable number rounding</string>
@@ -101,10 +102,14 @@
     <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
     <string name="CP_NewTabs_NoCounter_Desc">This will hide unread messages counter</string>
     <string name="CP_ShowTabsOnForward">Show tabs on forward screen</string>
-    <string name="CP_TabIconMode_Title">Tab icon type</string>
-    <string name="CP_TabIconMode_Disabled">Disabled</string>
-    <string name="CP_TabIconMode_Append">Append to tab title</string>
-    <string name="CP_TabIconMode_Replace">Replace tab title</string>
+
+    <!--Telegram, Cherrygram Folders-->
+    <string name="CG_FoldersType_Header">Tab icon type</string>
+    <string name="CG_FoldersTypeTitles">Only titles</string>
+    <string name="CG_FoldersTypeIcons">Only icons</string>
+    <string name="CG_FoldersTypeIconsTitles">Icons with Titles</string>
+    <string name="CG_ChooseFolderIcon">Choose an Icon</string>
+    <!--Telegram, Cherrygram Folders-->
 
     <string name="CP_Header_Record">Media</string>
     <string name="CP_GIFasVideo">Play GIFs as Videos</string>
@@ -134,7 +139,12 @@
     <string name="SP_Category_Security">Security</string>
     <string name="SP_Header_Privacy">Privacy</string>
     <string name="SP_NoProxyPromo">Don\'t show proxy sponsor</string>
-    <string name="SP_SecureFlag">Enable Flag_Secure</string>
+    <string name="SP_Kaboom">Show \"Kaboom\"</string>
+    <string name="SP_Kaboom_Desc">You can find the \"Kaboom\" feature in Storage Usage Settings. Moreover, it can be accessed without the Cherrygram password, through the system settings. This feature completely erases all your local (Cherrygram\'s) data. It can be used in emergency situations.</string>
+
+    <string name="SP_Category_Account">Account</string>
+    <string name="SP_DeleteAccount">Delete Telegram account</string>
+    <string name="SP_DeleteAccountConformation">Type \"yes\" in capital to continue.</string>
 
     <!--Donations-->
     <string name="DP_Donate">Donate</string>

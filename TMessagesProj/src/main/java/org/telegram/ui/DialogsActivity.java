@@ -2446,8 +2446,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
                     linearLayout.setMinimumWidth(AndroidUtilities.dp(200));
                     linearLayout.setOrientation(LinearLayout.VERTICAL);
-                    scrimPopupWindowItems = new ActionBarMenuSubItem[3];
-                    for (int a = 0, N = (tabView.getId() == Integer.MAX_VALUE ? 2 : 3); a < N; a++) {
+                    scrimPopupWindowItems = new ActionBarMenuSubItem[4];
+                    boolean hasUnread = getTabCounter(tabView.getId()) != 0;
+                    for (int a = 0, N = (tabView.getId() == Integer.MAX_VALUE ? 2 : 3) + (hasUnread ? 1 : 0); a < N; a++) {
                         ActionBarMenuSubItem cell = new ActionBarMenuSubItem(getParentActivity(), a == 0, a == N - 1);
                         if (a == 0) {
                             if (getMessagesController().dialogFilters.size() <= 1) {
@@ -2460,6 +2461,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             } else {
                                 cell.setTextAndIcon(LocaleController.getString("FilterEdit", R.string.FilterEdit), R.drawable.msg_edit);
                             }
+                        } else if (hasUnread && a == 2) {
+                            cell.setTextAndIcon(LocaleController.getString("MarkAsRead", R.string.MarkAsRead), R.drawable.msg_markread);
                         } else {
                             cell.setTextAndIcon(LocaleController.getString("FilterDeleteItem", R.string.FilterDeleteItem), R.drawable.msg_delete);
                         }
@@ -2477,7 +2480,17 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 } else {
                                     presentFragment(new FilterCreateActivity(dialogFilter));
                                 }
-                            } else if (i == 2) {
+                            } else if (hasUnread && i == 2) {
+                                if (dialogFilter == null) {
+                                    getMessagesStorage().readAllDialogs(0);
+                                } else {
+                                    if (dialogFilter.dialogs.isEmpty()) getMessagesController().loadTabDialogs(dialogFilter);
+                                    for (var dialog : dialogFilter.dialogs) {
+                                        if (dialog.unread_count == 0 && dialog.unread_mentions_count == 0) continue;
+                                        getMessagesController().markDialogAsRead(dialog.id, dialog.top_message, dialog.top_message, dialog.last_message_date, false, 0, dialog.unread_count, true, 0);
+                                    }
+                                }
+                            } else {
                                 showDeleteAlert(dialogFilter);
                             }
                             if (scrimPopupWindow != null) {
@@ -2914,7 +2927,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
                 @Override
                 public void onLongClickRelease() {
-                    finishPreviewFragment();
+                    if (!CherrygramConfig.INSTANCE.getScrollableChatPreview()) {
+                        finishPreviewFragment();
+                    } else {
+                        movePreviewFragment(0);
+                    }
                 }
 
                 @Override
@@ -4094,7 +4111,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                         filter.neverShow.remove(alwaysShow.get(a));
                                     }
                                     filter.alwaysShow.addAll(alwaysShow);
-                                    FilterCreateActivity.saveFilterToServer(filter, filter.flags, filter.name, filter.alwaysShow, filter.neverShow, filter.pinnedDialogs, false, false, true, true, false, DialogsActivity.this, null);
+                                    FilterCreateActivity.saveFilterToServer(filter, filter.flags, filter.emoticon, filter.name, filter.alwaysShow, filter.neverShow, filter.pinnedDialogs, false, false, true, true, false, DialogsActivity.this, null);
                                 }
                                 long did;
                                 if (alwaysShow.size() == 1) {
@@ -4130,7 +4147,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 filter.alwaysShow.remove(did);
                                 filter.pinnedDialogs.delete(did);
                             }
-                            FilterCreateActivity.saveFilterToServer(filter, filter.flags, filter.name, filter.alwaysShow, filter.neverShow, filter.pinnedDialogs, false, false, true, false, false, DialogsActivity.this, null);
+                            FilterCreateActivity.saveFilterToServer(filter, filter.flags, filter.emoticon, filter.name, filter.alwaysShow, filter.neverShow, filter.pinnedDialogs, false, false, true, false, false, DialogsActivity.this, null);
                         }
                         long did;
                         if (neverShow.size() == 1) {
@@ -4227,9 +4244,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     filterTabsView.resetTabId();
                 }
                 filterTabsView.removeTabs();
-                if (!CherrygramConfig.INSTANCE.getNewTabs_hideAllChats()) filterTabsView.addTab(Integer.MAX_VALUE, 0, LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
+                if (!CherrygramConfig.INSTANCE.getNewTabs_hideAllChats()) filterTabsView.addTab(Integer.MAX_VALUE, 0, LocaleController.getString("FilterAllChats", R.string.FilterAllChats), null);
                 for (int a = 0, N = filters.size(); a < N; a++) {
-                    filterTabsView.addTab(a, filters.get(a).localId, filters.get(a).name);
+                    filterTabsView.addTab(a, filters.get(a).localId, filters.get(a).name, filters.get(a).emoticon);
                 }
                 id = filterTabsView.getCurrentTabId();
                 boolean updateCurrentTab = CherrygramConfig.INSTANCE.getNewTabs_hideAllChats();
@@ -5534,7 +5551,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (!movingDialogFilters.isEmpty()) {
             for (int a = 0, N = movingDialogFilters.size(); a < N; a++) {
                 MessagesController.DialogFilter filter = movingDialogFilters.get(a);
-                FilterCreateActivity.saveFilterToServer(filter, filter.flags, filter.name, filter.alwaysShow, filter.neverShow, filter.pinnedDialogs, false, false, true, true, false, DialogsActivity.this, null);
+                FilterCreateActivity.saveFilterToServer(filter, filter.flags, filter.emoticon, filter.name, filter.alwaysShow, filter.neverShow, filter.pinnedDialogs, false, false, true, true, false, DialogsActivity.this, null);
             }
             movingDialogFilters.clear();
         }
@@ -5949,7 +5966,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
         if (action == pin || action == pin2) {
             if (filter != null) {
-                FilterCreateActivity.saveFilterToServer(filter, filter.flags, filter.name, filter.alwaysShow, filter.neverShow, filter.pinnedDialogs, false, false, true, true, false, DialogsActivity.this, null);
+                FilterCreateActivity.saveFilterToServer(filter, filter.flags, filter.emoticon, filter.name, filter.alwaysShow, filter.neverShow, filter.pinnedDialogs, false, false, true, true, false, DialogsActivity.this, null);
             } else {
                 getMessagesController().reorderPinnedDialogs(folderId, null, 0);
             }

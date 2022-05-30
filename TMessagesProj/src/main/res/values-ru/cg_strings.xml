@@ -70,6 +70,7 @@
     <string name="CP_Slider_StickerAmplifier">Размер стикеров</string>
     <string name="CP_TimeOnStick">Скрыть время отправки на стикерах</string>
 
+    <string name="CP_ScrollableChatPreview">Прокрутка при предосмотре чата</string>
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включить счетчик непрочитанных чатов на кнопке «Назад» в открытом чате</string>
     <string name="CP_NoRounding">Отключить округление чисел</string>
@@ -99,10 +100,14 @@
     <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
     <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
     <string name="CP_ShowTabsOnForward">Показывать папки при пересылке</string>
-    <string name="CP_TabIconMode_Title">Тип иконки вкладок</string>
-    <string name="CP_TabIconMode_Disabled">Отключить</string>
-    <string name="CP_TabIconMode_Append">Добавить к названию вкладки</string>
-    <string name="CP_TabIconMode_Replace">Заменить название вкладки</string>
+
+    <!--Папки Telegram, Cherrygram-->
+    <string name="CG_FoldersType_Header">Тип иконок</string>
+    <string name="CG_FoldersTypeTitles">Только названия</string>
+    <string name="CG_FoldersTypeIcons">Только иконки</string>
+    <string name="CG_FoldersTypeIconsTitles">Иконки с названиями</string>
+    <string name="CG_ChooseFolderIcon">Выберите иконку</string>
+    <!--Папки Telegram, Cherrygram-->
 
     <string name="CP_Header_Record">Медиа</string>
     <string name="CP_GIFasVideo">Воспроизводить ГИФ как видео</string>
@@ -132,7 +137,12 @@
     <string name="SP_Category_Security">Безопасность</string>
     <string name="SP_Header_Privacy">Приватность</string>
     <string name="SP_NoProxyPromo">Не показывать спонсора прокси</string>
-    <string name="SP_SecureFlag">Включить Flag_Secure</string>
+    <string name="SP_Kaboom">Показать \"Kaboom\"</string>
+    <string name="SP_Kaboom_Desc">Функция \"Kaboom\" доступна в настройках очистки кеша. Также, доступ к ней можно получить без пароля Cherrygram, через системные настройки. Эта функция полностью удаляет все данные приложения. Ее можно использовать в аварийных ситуациях.</string>
+
+    <string name="SP_Category_Account">Аккаунт</string>
+    <string name="SP_DeleteAccount">Удаление аккаунта</string>
+    <string name="SP_DeleteAccountConformation">Напишите \"yes\" заглавными чтобы продолжить.</string>
 
     <!--Поддержать разработку-->
     <string name="DP_Donate">Поддержать разработку</string>

@@ -18,11 +18,8 @@ import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.Utilities;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import uz.unnarsx.cherrygram.tabs.TabIconManager;
 
 @SuppressWarnings("unchecked")
 public class TLRPC {
@@ -19152,10 +19149,7 @@ public class TLRPC {
             id = stream.readInt32(exception);
             title = stream.readString(exception);
             if ((flags & 33554432) != 0) {
-                byte[] emoji = stream.readStringAsByteArray(exception);
-                TabIconManager.addTab(id, emoji);
-                emoticon = new String(emoji, StandardCharsets.UTF_8);
-                //emoticon = stream.readString(exception);
+                emoticon = stream.readString(exception);
             }
             int magic = stream.readInt32(exception);
             if (magic != 0x1cb5c415) {
@@ -52215,37 +52209,37 @@ public class TLRPC {
         }
     }
 
-//    public static class TL_channels_viewSponsoredMessage extends TLObject {
-//        public static int constructor = 0xbeaedb94;
-//
-//        public InputChannel channel;
-//        public byte[] random_id;
-//
-//        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
-//            return Bool.TLdeserialize(stream, constructor, exception);
-//        }
-//
-//        public void serializeToStream(AbstractSerializedData stream) {
-//            stream.writeInt32(constructor);
-//            channel.serializeToStream(stream);
-//            stream.writeByteArray(random_id);
-//        }
-//    }
-//
-//    public static class TL_channels_getSponsoredMessages extends TLObject {
-//        public static int constructor = 0xec210fbf;
-//
-//        public InputChannel channel;
-//
-//        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
-//            return TL_messages_sponsoredMessages.TLdeserialize(stream, constructor, exception);
-//        }
-//
-//        public void serializeToStream(AbstractSerializedData stream) {
-//            stream.writeInt32(constructor);
-//            channel.serializeToStream(stream);
-//        }
-//    }
+    public static class TL_channels_viewSponsoredMessage extends TLObject {
+        public static int constructor = 0xbeaedb94;
+
+        public InputChannel channel;
+        public byte[] random_id;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            channel.serializeToStream(stream);
+            stream.writeByteArray(random_id);
+        }
+    }
+
+    public static class TL_channels_getSponsoredMessages extends TLObject {
+        public static int constructor = 0xec210fbf;
+
+        public InputChannel channel;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return TL_messages_sponsoredMessages.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            channel.serializeToStream(stream);
+        }
+    }
 
     public static class TL_channels_getSendAs extends TLObject {
         public static int constructor = 0xdc770ee;
@@ -54450,7 +54444,7 @@ public class TLRPC {
                     break;
             }
             if (result == null && exception) {
-                 throw new RuntimeException(String.format("can't parse magic %x in Message", constructor));
+                throw new RuntimeException(String.format("can't parse magic %x in Message", constructor));
             }
             if (result != null) {
                 result.readParams(stream, exception);

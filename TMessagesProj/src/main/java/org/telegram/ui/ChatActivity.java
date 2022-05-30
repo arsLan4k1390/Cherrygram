@@ -11991,9 +11991,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private void moveScrollToLastMessage(boolean skipSponsored) {
         if (chatListView != null && !messages.isEmpty() && !pinchToZoomHelper.isInOverlayMode()) {
             int position = 0;
-//            if (skipSponsored) {
-//                position += getSponsoredMessagesCount();
-//            }
+            if (skipSponsored) {
+                position += getSponsoredMessagesCount();
+            }
             chatLayoutManager.scrollToPositionWithOffset(position, 0);
             chatListView.stopScroll();
         }
@@ -17201,28 +17201,35 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     }
 
     private boolean sponsoredMessagesAdded;
-    private int addSponsoredMessages(boolean animated) {
-        if (sponsoredMessagesAdded || chatMode != 0 || !ChatObject.isChannel(currentChat) || currentChat.megagroup || currentChat.gigagroup || !forwardEndReached[0]) {
-            return 0;
+    private void addSponsoredMessages(boolean animated) {
+        if (sponsoredMessagesAdded || chatMode != 0 || !ChatObject.isChannel(currentChat) || !forwardEndReached[0]) {
+            return;
         }
-//        ArrayList<MessageObject> arrayList = getMessagesController().getSponsoredMessages(dialog_id);
-//        if (arrayList == null) {
-//            return;
-//        }
-//        for (int i = 0; i < arrayList.size(); i++) {
-//            MessageObject messageObject = arrayList.get(i);
-//            messageObject.resetLayout();
-//            long dialogId = MessageObject.getPeerId(messageObject.messageOwner.from_id);
-//            int messageId = 0 ;
-//            if (messageObject.sponsoredChannelPost != 0) {
-//                messageId = messageObject.sponsoredChannelPost;
-//            }
+        ArrayList<MessageObject> arrayList = getMessagesController().getSponsoredMessages(dialog_id);
+        if (arrayList == null) {
+            return;
+        }
+        ArrayList<MessageObject> arrayList2 = new ArrayList<>();
+        for (int i = 0; i < arrayList.size(); i++) {
+            MessageObject messageObject = arrayList.get(i);
+            messageObject.resetLayout();
+            long dialogId = MessageObject.getPeerId(messageObject.messageOwner.from_id);
+            int messageId = 0 ;
+            if (messageObject.sponsoredChannelPost != 0) {
+                messageId = messageObject.sponsoredChannelPost;
+            }
+            if (!messageObject.isSponsored()) {
+                getMessagesController().ensureMessagesLoaded(dialogId, messageId, null);
+                arrayList2.add(messageObject);
+            } else {
+                markSponsoredAsRead(messageObject);
+            }
 //            getMessagesController().ensureMessagesLoaded(dialogId, messageId, null);
-//
-//        }
-//        sponsoredMessagesAdded = true;
+        }
+        sponsoredMessagesAdded = true;
+        if (arrayList2.isEmpty()) return;
 //        processNewMessages(arrayList);
-        return 0;
+        processNewMessages(arrayList2);
     }
 
     private void checkGroupCallJoin(boolean fromServer) {
@@ -17932,10 +17939,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     placeToPaste = messages.size();
                 }
 
-//                int sponsoredMessagesCount = getSponsoredMessagesCount();
-//                if (!isAd && placeToPaste < sponsoredMessagesCount && (currentChat == null || ChatObject.isChannelAndNotMegaGroup(currentChat))) {
-//                    placeToPaste = sponsoredMessagesCount;
-//                }
+                int sponsoredMessagesCount = getSponsoredMessagesCount();
+                if (!isAd && placeToPaste < sponsoredMessagesCount && (currentChat == null || ChatObject.isChannelAndNotMegaGroup(currentChat))) {
+                    placeToPaste = sponsoredMessagesCount;
+                }
                 if (dayArray == null) {
                     dayArray = new ArrayList<>();
                     messagesByDays.put(obj.dateKey, dayArray);
@@ -18144,16 +18151,17 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         updateReplyMessageHeader(true);
     }
 
-//    private int getSponsoredMessagesCount() {
-//        int sponsoredMessagesCount = 0;
-//        while (sponsoredMessagesCount < messages.size()) {
-//            if (!messages.get(sponsoredMessagesCount).isSponsored()) {
-//                break;
-//            }
-//            sponsoredMessagesCount++;
-//        }
-//        return sponsoredMessagesCount;
-//    }
+    private int getSponsoredMessagesCount() {
+        if (true) return 0;
+        int sponsoredMessagesCount = 0;
+        while (sponsoredMessagesCount < messages.size()) {
+            if (!messages.get(sponsoredMessagesCount).isSponsored()) {
+                break;
+            }
+            sponsoredMessagesCount++;
+        }
+        return sponsoredMessagesCount;
+    }
 
     private void processDeletedMessages(ArrayList<Integer> markAsDeletedMessages, long channelId) {
         ArrayList<Integer> removedIndexes = new ArrayList<>();
@@ -21794,7 +21802,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             } else {
                 isReactionsAvailable = !isSecretChat() && !isInScheduleMode() && message.isReactionsAvailable() && (chatInfo != null && !chatInfo.available_reactions.isEmpty() || (chatInfo == null && !ChatObject.isChannel(currentChat)) || currentUser != null) && !availableReacts.isEmpty();
             }
-            boolean showMessageSeen = !isReactionsViewAvailable && !isInScheduleMode() && currentChat != null && message.isOutOwner() && message.isSent() && !message.isEditing() && !message.isSending() && !message.isSendError() && !message.isContentUnread() && !message.isUnread() && (ConnectionsManager.getInstance(currentAccount).getCurrentTime() - message.messageOwner.date < getMessagesController().chatReadMarkExpirePeriod)  && (ChatObject.isMegagroup(currentChat) || !ChatObject.isChannel(currentChat)) && chatInfo != null && chatInfo.participants_count < getMessagesController().chatReadMarkSizeThreshold && !(message.messageOwner.action instanceof TLRPC.TL_messageActionChatJoinedByRequest) && (v instanceof ChatMessageCell);
+            boolean showMessageSeen = !isReactionsViewAvailable && !isInScheduleMode() && currentChat != null && message.isOutOwner() && message.isSent() && !message.isEditing() && !message.isSending() && !message.isSendError() && !message.isContentUnread() && !message.isUnread() && (ConnectionsManager.getInstance(currentAccount).getCurrentTime() - message.messageOwner.date < getMessagesController().chatReadMarkExpirePeriod)  && (ChatObject.isMegagroup(currentChat) || !ChatObject.isChannel(currentChat)) && chatInfo != null && chatInfo.participants_count <= getMessagesController().chatReadMarkSizeThreshold && !(message.messageOwner.action instanceof TLRPC.TL_messageActionChatJoinedByRequest) && (v instanceof ChatMessageCell);
 
             int flags = 0;
             if (isReactionsViewAvailable || showMessageSeen) {
@@ -24828,18 +24836,19 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         }
     }
 
-    private int markSponsoredAsRead(MessageObject object) {
-        return 0;
+    private void markSponsoredAsRead(MessageObject object) {
+        if (!object.isSponsored() || object.viewsReloaded) {
+            return;
         }
-//        object.viewsReloaded = true;
-//        TLRPC.TL_channels_viewSponsoredMessage req = new TLRPC.TL_channels_viewSponsoredMessage();
-//        req.channel = MessagesController.getInputChannel(currentChat);
-//        req.random_id = object.sponsoredId;
-//        getConnectionsManager().sendRequest(req, (response, error) -> {
-//
-//        });
-//        getMessagesController().markSponsoredAsRead(dialog_id, object);
-//    }
+        object.viewsReloaded = true;
+        TLRPC.TL_channels_viewSponsoredMessage req = new TLRPC.TL_channels_viewSponsoredMessage();
+        req.channel = MessagesController.getInputChannel(currentChat);
+        req.random_id = object.sponsoredId;
+        getConnectionsManager().sendRequest(req, (response, error) -> {
+
+        });
+        getMessagesController().markSponsoredAsRead(dialog_id, object);
+    }
 
     @Override
     public boolean canBeginSlide() {

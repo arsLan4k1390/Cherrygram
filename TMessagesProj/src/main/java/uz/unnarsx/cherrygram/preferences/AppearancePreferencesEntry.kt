@@ -137,6 +137,38 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             }
         }
 
+        category(LocaleController.getString("AS_Filters_Header", R.string.CP_Filters_Header)) {
+            switch {
+                title = LocaleController.getString("CP_NewTabs_RemoveAllChats", R.string.CP_NewTabs_RemoveAllChats)
+                /*summary = LocaleController.getString("CP_NewTabs_RemoveAllChats_Desc", R.string.CP_NewTabs_RemoveAllChats_Desc)*/
+
+                contract({
+                    return@contract CherrygramConfig.newTabs_hideAllChats
+                }) {
+                    CherrygramConfig.newTabs_hideAllChats = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_NewTabs_NoCounter", R.string.CP_NewTabs_NoCounter)
+                summary = LocaleController.getString("CP_NewTabs_NoCounter_Desc", R.string.CP_NewTabs_NoCounter_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.newTabs_noUnread
+                }) {
+                    CherrygramConfig.newTabs_noUnread = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_ShowTabsOnForward", R.string.CP_ShowTabsOnForward)
+
+                contract({
+                    return@contract CherrygramConfig.showTabsOnForward
+                }) {
+                    CherrygramConfig.showTabsOnForward = it
+                }
+            }
+        }
+
         category(LocaleController.getString("AP_ProfileCategory", R.string.AP_ProfileCategory)) {
             switch {
                 title = LocaleController.getString("AP_ShowID", R.string.AP_ShowID)

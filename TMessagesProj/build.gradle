@@ -24,7 +24,7 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.sharetarget:sharetarget:1.1.0"
 
-    compileOnly 'org.checkerframework:checker-qual:3.21.4'
+    compileOnly 'org.checkerframework:checker-qual:3.22.0'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.5'
 
     //Firebase
@@ -98,7 +98,8 @@ android {
     sourceSets.main {
         res.srcDirs = [
                 'src/main/res',
-                'src/main/res-vkui'
+                'src/main/res-vkui',
+                'src/main/res-tabs'
         ]
     }
 
@@ -107,8 +108,8 @@ android {
 //    }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
 
         coreLibraryDesugaringEnabled true
     }

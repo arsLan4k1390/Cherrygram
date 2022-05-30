@@ -43,6 +43,15 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
 
         category(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {
             switch {
+                title = LocaleController.getString("CP_ScrollableChatPreview", R.string.CP_ScrollableChatPreview)
+
+                contract({
+                    return@contract CherrygramConfig.scrollableChatPreview
+                }) {
+                    CherrygramConfig.scrollableChatPreview = it
+                }
+            }
+            switch {
                 title = LocaleController.getString("CP_UnreadBadgeOnBackButton", R.string.CP_UnreadBadgeOnBackButton)
                 summary = LocaleController.getString("CP_UnreadBadgeOnBackButton_Desc", R.string.CP_UnreadBadgeOnBackButton_Desc)
 
@@ -179,59 +188,6 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     override fun getMax(): Int {
                         return 120
                     }
-                }
-            }
-        }
-
-        category(LocaleController.getString("AS_Filters_Header", R.string.CP_Filters_Header)) {
-            switch {
-                title = LocaleController.getString("CP_NewTabs_RemoveAllChats", R.string.CP_NewTabs_RemoveAllChats)
-                /*summary = LocaleController.getString("CP_NewTabs_RemoveAllChats_Desc", R.string.CP_NewTabs_RemoveAllChats_Desc)*/
-
-                contract({
-                    return@contract CherrygramConfig.newTabs_hideAllChats
-                }) {
-                    CherrygramConfig.newTabs_hideAllChats = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_NewTabs_NoCounter", R.string.CP_NewTabs_NoCounter)
-                summary = LocaleController.getString("CP_NewTabs_NoCounter_Desc", R.string.CP_NewTabs_NoCounter_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.newTabs_noUnread
-                }) {
-                    CherrygramConfig.newTabs_noUnread = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_ShowTabsOnForward", R.string.CP_ShowTabsOnForward)
-
-                contract({
-                    return@contract CherrygramConfig.showTabsOnForward
-                }) {
-                    CherrygramConfig.showTabsOnForward = it
-                }
-            }
-
-            list {
-                title = LocaleController.getString("CP_TabIconMode_Title", R.string.CP_TabIconMode_Title)
-
-                contract({
-                    return@contract listOf(
-                            Pair(0, LocaleController.getString("CP_TabIconMode_Disabled", R.string.CP_TabIconMode_Disabled)),
-                            Pair(1, LocaleController.getString("CP_TabIconMode_Append", R.string.CP_TabIconMode_Append)),
-                            Pair(2, LocaleController.getString("CP_TabIconMode_Replace", R.string.CP_TabIconMode_Replace))
-                    )
-                }, {
-                    return@contract when (CherrygramConfig.newTabs_iconsV2_mode) {
-                        1 -> LocaleController.getString("CP_TabIconMode_Append", R.string.CP_TabIconMode_Append)
-                        2 -> LocaleController.getString("CP_TabIconMode_Replace", R.string.CP_TabIconMode_Replace)
-                        else -> LocaleController.getString("CP_TabIconMode_Disabled", R.string.CP_TabIconMode_Disabled)
-                    }
-                }) {
-                    CherrygramConfig.newTabs_iconsV2_mode = it
-                    bf.messagesController.loadRemoteFilters(true)
                 }
             }
         }

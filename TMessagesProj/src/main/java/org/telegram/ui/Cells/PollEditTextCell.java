@@ -11,10 +11,13 @@ package org.telegram.ui.Cells;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
@@ -52,10 +55,14 @@ public class PollEditTextCell extends FrameLayout {
     private boolean alwaysShowText2;
 
     public PollEditTextCell(Context context, OnClickListener onDelete) {
-        this(context, false, onDelete);
+        this(context, false, onDelete, null);
     }
 
     public PollEditTextCell(Context context, boolean caption, OnClickListener onDelete) {
+        this(context, caption, onDelete, null);
+    }
+
+    public PollEditTextCell(Context context, boolean caption, OnClickListener onDelete, OnClickListener onChangeIcon) {
         super(context);
 
         if (caption) {
@@ -178,9 +185,36 @@ public class PollEditTextCell extends FrameLayout {
                 }
                 onCheckBoxClick(PollEditTextCell.this, !checkBox.isChecked());
             });
+        } else if (onChangeIcon != null) {
+            addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 19 : 58, 0, !LocaleController.isRTL ? 19 : 58, 0));
+            moveImageView = new ImageView(context) {
+                @Override
+                protected void onDraw(Canvas canvas) {
+                    super.onDraw(canvas);
+                }
+            };
+            moveImageView.setFocusable(false);
+            moveImageView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_stickers_menuSelector)));
+            moveImageView.setScaleType(ImageView.ScaleType.CENTER);
+            moveImageView.setOnClickListener(onChangeIcon);
+            moveImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.MULTIPLY));
+            addView(moveImageView, LayoutHelper.createFrame(48, 50, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 6, 2, 6, 0));
         } else {
             addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL, 19, 0, 19, 0));
         }
+    }
+
+    public void setIcon(int icon) {
+        @SuppressLint("DrawAllocation")
+        PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.SRC_ATOP);
+        @SuppressLint("DrawAllocation")
+        Rect boundRect = new Rect(0, 0,getMeasuredWidth(),getMeasuredHeight());
+        Drawable ic = getResources().getDrawable(icon);
+        ic.setBounds(boundRect);
+        ic.setAlpha(255);
+        ic.setColorFilter(colorFilter);
+        moveImageView.setImageResource(icon);
+        moveImageView.invalidate();
     }
 
     public void createErrorTextView() {
