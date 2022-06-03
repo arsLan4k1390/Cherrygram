@@ -25,11 +25,10 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 ## Changes:
 
 *General:*
-- Monet (Material You)
+- Material You (Monet) themes and app icon,
 - HQ Voice Messages,
 - No content restrictions,
 - Support of up to 10 accounts,
-- Keep-alive service is enabled by default,
 - Added ability to see avatar uploading date,
 - Increased avatars limit from 80 to 100,
 - Allow to set a proxy before login,
