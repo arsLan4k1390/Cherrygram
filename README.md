@@ -105,8 +105,8 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 - Enable/Disable incoming message sound from Telegram IOS app,
 - Silence notifications from non-contacts.
 
-*Cherrygram Chats Preferences:*
-- "Kaboom",
+*Cherrygram Security Preferences:*
+- "Kaboom" (Erase all Cherrygram data in 1 click),
 - Delete your Telegram account.
 
 
