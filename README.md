@@ -32,9 +32,11 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 - Added ability to see avatar uploading date,
 - Increased avatars limit from 80 to 100,
 - Allow to set a proxy before login,
-- Added native biometrics support.
+- Added native biometrics support,
+- "tg://user?id=int" Links support (e.g. "tg://user?id=282287840").
 
 *Chats:*
+- "Mark as read" support for folders,
 - Bubble radius is set to 17,
 - Chat Blur support for all devices and themes (Blur is enabled by default),
 - Fast search (Open a search by holding dialog name),
@@ -47,7 +49,8 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 - View admins (Group info) for all members,
 - Open the linked channel from a group,
 - Open avatar by swiping down in profile,
-- Mention in chat by name (long press on username).
+- Mention in chat by name (long press on username),
+- Added "View Stats" button to the context menu.
 
 *Telegram Folders Settings (Tab icon style):*
 - Only titles,
