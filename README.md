@@ -50,12 +50,23 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 - Open avatar by swiping down in profile,
 - Mention in chat by name (long press on username).
 
+*Telegram Folders Settings:*
+Tab icon style:
+- Only titles,
+- Only icons,
+- Icons with titles.
+
 *Cherrygram Appearance Preferences:*
+- App Icon: Default, White and Material You (Monet),
 - VKUI icons in app,
 - Back button from IOS (Beta),
 - Hiding your phone number from settings and menu,
-- Flat statusbar is enabled by default,
+- Flat statusbar,
 - Mutual contact icon in contacts list,
+- Enable/Disable System fonts,
+- Hide "All chats" tab,
+- Hide messages counter in tabs,
+- Show tabs on forward screen,
 - Showing ID in profile,
 - Showing DC in profile,
 - Avatar as menu header background,
@@ -68,6 +79,7 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 *Cherrygram Chats Preferences:*
 - Stickers size amplifier (changer),
 - Hide time on stickers,
+- Scrollable chat preview,
 - Showing unread chats counter on "Back" button like on IOS,
 - Enable/Disable members rounding,
 - Ask before a call,
@@ -79,20 +91,22 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 - Hide keyboard while scrolling a chat,
 - Enable/Disable "Send as channel" button,
 - Recent emojis counter (amplifier),
-- Hide "All chats" tab,
-- Hide messages counter in tabs,
-- Show tabs on forwarding messages screen,
-- Tab icon style (emojis),
+- Recent stickers counter (amplifier),
 - Play GIFs as videos,
 - Enable/Disable playing video on volume button click,
 - Auto pause video while switching to the background
 - Pause music while playing voice and video messages,
 - Disable in-app vibration,
+- Disable "Flip" photos,
 - Disable camera in attachments menu,
-- Using rear camera by default for video messages,
+- Rear camera by default for video messages,
 - Enable/Disable proxymity sensor actions,
 - Enable/Disable incoming message sound from Telegram IOS app,
 - Silence notifications from non-contacts.
+
+*Cherrygram Chats Preferences:*
+- "Kaboom",
+- Delete your Telegram account.
 
 
 ## API, Protocol documentation
@@ -116,5 +130,6 @@ MTproto protocol manuals: https://core.telegram.org/mtproto
 - [Catogram](https://github.com/Catogram/Catogram)
 - [Nekogram](https://gitlab.com/Nekogram/Nekogram)
 - [Nekogram X](https://github.com/NekoX-Dev/NekoX)
+- [OwlGram](https://github.com/OwlGramDev/OwlGram)
 - [Telegram-FOSS](https://github.com/Telegram-FOSS-Team/Telegram-FOSS)
 - [Telegram Monet](https://github.com/c3r5b8/Telegram-Monet)
