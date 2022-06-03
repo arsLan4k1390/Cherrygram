@@ -50,8 +50,7 @@ Join the [Cherrygram official group](https://t.me/cherry_gram_support)
 - Open avatar by swiping down in profile,
 - Mention in chat by name (long press on username).
 
-*Telegram Folders Settings:*
-Tab icon style:
+*Telegram Folders Settings (Tab icon style):*
 - Only titles,
 - Only icons,
 - Icons with titles.
