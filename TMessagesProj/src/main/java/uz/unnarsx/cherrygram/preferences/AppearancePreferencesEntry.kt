@@ -10,9 +10,11 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.ktx.*
 import uz.unnarsx.extras.CherrygramExtras
 import uz.unnarsx.extras.IconExtras
+import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)) {
@@ -79,30 +81,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     (bf.parentActivity as? LaunchActivity)?.reloadResources()
                 }
             }
-            switch {
-                title = LocaleController.getString("AP_BackButton", R.string.AP_BackButton)
-                summary = LocaleController.getString("AP_BackButton_Desc", R.string.AP_BackButton_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.BackButton
-                }) {
-                    CherrygramConfig.BackButton = it
-                    (bf.parentActivity as? LaunchActivity)?.reloadResources()
-                }
-            }
-        }
-
-        category(LocaleController.getString("AP_General", R.string.AP_General)) {
-            switch {
-                title = LocaleController.getString("AP_HideUserPhone", R.string.AP_HideUserPhone)
-                summary = LocaleController.getString("AP_HideUserPhoneSummary", R.string.AP_HideUserPhoneSummary)
-
-                contract({
-                    return@contract CherrygramConfig.hidePhoneNumber
-                }) {
-                    CherrygramConfig.hidePhoneNumber = it
-                }
-            }
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                 switch {
                     title = LocaleController.getString("AP_FlatSB", R.string.AP_FlatSB)
@@ -116,13 +94,14 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = LocaleController.getString("AP_MutualContacts", R.string.AP_MutualContacts)
-                summary = LocaleController.getString("AP_MutualContacts_Desc", R.string.AP_MutualContacts_Desc)
+                title = LocaleController.getString("AP_BackButton", R.string.AP_BackButton)
+                summary = LocaleController.getString("AP_BackButton_Desc", R.string.AP_BackButton_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.mutualContacts
+                    return@contract CherrygramConfig.BackButton
                 }) {
-                    CherrygramConfig.mutualContacts = it
+                    CherrygramConfig.BackButton = it
+                    (bf.parentActivity as? LaunchActivity)?.reloadResources()
                 }
             }
             switch {
@@ -169,26 +148,14 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             }
         }
 
-        category(LocaleController.getString("AP_ProfileCategory", R.string.AP_ProfileCategory)) {
-            switch {
-                title = LocaleController.getString("AP_ShowID", R.string.AP_ShowID)
-                contract({
-                    return@contract CherrygramConfig.showId
-                }) {
-                    CherrygramConfig.showId = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("AP_ShowDC", R.string.AP_ShowDC)
-                contract({
-                    return@contract CherrygramConfig.showDc
-                }) {
-                    CherrygramConfig.showDc = it
-                }
-            }
-        }
-
         category(LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)) {
+            textIcon {
+                title = LocaleController.getString("AP_DrawerButtonsCategory", R.string.AP_DrawerButtonsCategory)
+                icon = R.drawable.msg_list
+                listener = TGKitTextIconRow.TGTIListener {
+                    it.presentFragment(DrawerPreferencesEntry())
+                }
+            }
             switch {
                 title = LocaleController.getString("AP_DrawerAvatar", R.string.AP_DrawerAvatar)
 
@@ -216,34 +183,50 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     CherrygramConfig.drawerDarken = it
                 }
             }
+            /*textIcon {
+                title = LocaleController.getString("AP_DrawerButtonsCategory", R.string.AP_DrawerButtonsCategory)
+                icon = R.drawable.msg_list
+                listener = TGKitTextIconRow.TGTIListener {
+                    it.presentFragment(DrawerPreferencesEntry())
+                }
+            }*/
         }
 
-        category(LocaleController.getString("AP_DrawerButtonsCategory", R.string.AP_DrawerButtonsCategory)) {
+        category(LocaleController.getString("AP_ProfileCategory", R.string.AP_ProfileCategory)) {
             switch {
-                title = LocaleController.getString("AP_DrawerButtonsSaved", R.string.AP_DrawerButtonsSaved)
+                title = LocaleController.getString("AP_HideUserPhone", R.string.AP_HideUserPhone)
+                summary = LocaleController.getString("AP_HideUserPhoneSummary", R.string.AP_HideUserPhoneSummary)
 
                 contract({
-                    return@contract CherrygramConfig.savedMessagesDrawerButton
+                    return@contract CherrygramConfig.hidePhoneNumber
                 }) {
-                    CherrygramConfig.savedMessagesDrawerButton = it
+                    CherrygramConfig.hidePhoneNumber = it
                 }
             }
             switch {
-                title = LocaleController.getString("AP_DrawerButtonsArchived", R.string.AP_DrawerButtonsArchived)
+                title = LocaleController.getString("AP_MutualContacts", R.string.AP_MutualContacts)
+                summary = LocaleController.getString("AP_MutualContacts_Desc", R.string.AP_MutualContacts_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.archivedChatsDrawerButton
+                    return@contract CherrygramConfig.mutualContacts
                 }) {
-                    CherrygramConfig.archivedChatsDrawerButton = it
+                    CherrygramConfig.mutualContacts = it
                 }
             }
             switch {
-                title = LocaleController.getString("AP_DrawerButtonsPeopleNearby", R.string.AP_DrawerButtonsPeopleNearby)
-
+                title = LocaleController.getString("AP_ShowID", R.string.AP_ShowID)
                 contract({
-                    return@contract CherrygramConfig.peopleNearbyDrawerButton
+                    return@contract CherrygramConfig.showId
                 }) {
-                    CherrygramConfig.peopleNearbyDrawerButton = it
+                    CherrygramConfig.showId = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("AP_ShowDC", R.string.AP_ShowDC)
+                contract({
+                    return@contract CherrygramConfig.showDc
+                }) {
+                    CherrygramConfig.showDc = it
                 }
             }
         }

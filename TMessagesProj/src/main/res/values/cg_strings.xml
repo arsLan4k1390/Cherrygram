@@ -39,33 +39,38 @@
     <string name="AP_ChangeIcon_White">White icon</string>
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Default">Default</string>
+    <string name="AP_FlatSB">Flat statusbar</string>
     <string name="AP_BackButton">New \"back\" icon (beta)</string>
     <string name="AP_BackButton_Desc">This will also change menu button</string>
-    
-    <string name="AP_General">General</string>
-    <string name="AP_HideUserPhone">Hide phone number</string>
-    <string name="AP_HideUserPhoneSummary">in drawer (restart app to apply) and settings</string>
-    <string name="AP_Hidden">Hidden</string>
-    <string name="AP_FlatSB">Flat statusbar</string>
-    <string name="AP_MutualContacts">Show mutual contacts</string>
-    <string name="AP_MutualContacts_Desc">A mutual contact icon will appear in contacts list</string>
-    <string name="AP_MutualContacts_Description">This is a mutual contact.</string>
     <string name="AP_SystemFonts">Use system fonts</string>
     <string name="AP_SystemFonts_Desc">Disable this (restart app to apply) if your font does not support formatting (Bold, Italic, Monospace)</string>
 
-    <string name="AP_ProfileCategory">Profile</string>
-    <string name="AP_ShowID">Show ID in profile</string>
-    <string name="AP_ShowDC">Show DC in profile</string>
+    <string name="CP_Filters_Header">Folders (restart app to apply)</string>
+    <string name="CP_NewTabs_RemoveAllChats">Hide \"All chats\" tab</string>
+    <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
+    <string name="CP_NewTabs_NoCounter_Desc">This will hide unread messages counter</string>
+    <string name="CP_ShowTabsOnForward">Show tabs on forward screen</string>
 
     <string name="AP_DrawerCategory">Drawer</string>
     <string name="AP_DrawerAvatar">Avatar as header background</string>
     <string name="AP_DrawerBlur">Blur header background</string>
     <string name="AP_DrawerDarken">Darken header background</string>
+    <string name="AP_DrawerButtonsCategory">Drawer buttons</string>
+    <string name="AP_DrawerIconPack_Header">Drawer icons</string>
+    <string name="AP_DrawerIconPack">Icon pack</string>
+    <string name="AP_NewYear">New Year</string>
+    <string name="AP_ValentinesDay">Valentine\'s Day</string>
+    <string name="AP_Halloween">Halloween</string>
 
-    <string name="AP_DrawerButtonsCategory">Drawer buttons (restart app to apply)</string>
-    <string name="AP_DrawerButtonsSaved">Show \"Saved Messages\" button</string>
-    <string name="AP_DrawerButtonsArchived">Show \"Archived chats\" button</string>
-    <string name="AP_DrawerButtonsPeopleNearby">Show \"People Nearby\" button</string>
+    <string name="AP_ProfileCategory">Profile and Contacts</string>
+    <string name="AP_HideUserPhone">Hide your phone number</string>
+    <string name="AP_HideUserPhoneSummary">in drawer (restart app to apply) and settings</string>
+    <string name="AP_Hidden">Hidden</string>
+    <string name="AP_MutualContacts">Show mutual contacts</string>
+    <string name="AP_MutualContacts_Desc">A mutual contact icon will appear in contacts list</string>
+    <string name="AP_MutualContacts_Description">This is a mutual contact.</string>
+    <string name="AP_ShowID">Show ID in profile</string>
+    <string name="AP_ShowDC">Show DC in profile</string>
 
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
@@ -95,13 +100,6 @@
 
     <string name="CP_Slider_RecentEmojisAmplifier">Recent emojis counter (restart app to apply)</string>
     <string name="CP_Slider_RecentStickersAmplifier">Recent stickers counter (restart app to apply)</string>
-
-    <string name="CP_Filters_Header">Folders (restart app to apply)</string>
-    <string name="CP_NewTabs_RemoveAllChats">Hide \"All chats\" tab</string>
-    <!--<string name="CP_NewTabs_RemoveAllChats_Desc">This will hide \"All chats\" tab</string>-->
-    <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
-    <string name="CP_NewTabs_NoCounter_Desc">This will hide unread messages counter</string>
-    <string name="CP_ShowTabsOnForward">Show tabs on forward screen</string>
 
     <!--Telegram, Cherrygram Folders-->
     <string name="CG_FoldersType_Header">Tab icon type</string>

@@ -37,33 +37,38 @@
     <string name="AP_ChangeIcon_White">Белая иконка</string>
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
+    <string name="AP_FlatSB">Прозрачный статусбар</string>
     <string name="AP_BackButton">Новая иконка \"назад\" (бета)</string>
     <string name="AP_BackButton_Desc">Это также изменит кнопку меню (требуется перезапуск приложения)</string>
-    
-    <string name="AP_General">Основные</string>
-    <string name="AP_HideUserPhone">Скрыть номер телефона</string>
-    <string name="AP_HideUserPhoneSummary">В меню (требуется перезапуск приложения) и настройках</string>
-    <string name="AP_Hidden">Скрыто</string>
-    <string name="AP_FlatSB">Прозрачный статусбар</string>
-    <string name="AP_MutualContacts">Показывать взаимные контакты</string>
-    <string name="AP_MutualContacts_Desc">В списке контактов появится значок взаимного контакта</string>
-    <string name="AP_MutualContacts_Description">Этот контакт является взаимным.</string>
     <string name="AP_SystemFonts">Использовать системный шрифт</string>
     <string name="AP_SystemFonts_Desc">Отключите это (требуется перезапуск приложения), если ваш шрифт не поддерживает форматирование (Жирный, Курсив, Моноширинный)</string>
 
-    <string name="AP_ProfileCategory">Профиль</string>
-    <string name="AP_ShowID">Показывать ID в профиле</string>
-    <string name="AP_ShowDC">Показывать DC в профиле</string>
+    <string name="CP_Filters_Header">Папки (требуется перезапуск приложения)</string>
+    <string name="CP_NewTabs_RemoveAllChats">Скрыть вкладку \"Все чаты\"</string>
+    <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
+    <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
+    <string name="CP_ShowTabsOnForward">Показывать папки при пересылке</string>
 
-    <string name="AP_DrawerCategory">Меню</string>
+    <string name="AP_DrawerCategory">Боковое меню</string>
     <string name="AP_DrawerAvatar">Аватар как фон меню</string>
     <string name="AP_DrawerBlur">Размыть фон меню</string>
     <string name="AP_DrawerDarken">Затемнить фон меню</string>
+    <string name="AP_DrawerButtonsCategory">Кнопки меню</string>
+    <string name="AP_DrawerIconPack_Header">Иконки меню</string>
+    <string name="AP_DrawerIconPack">Стиль иконок</string>
+    <string name="AP_NewYear">Новый год</string>
+    <string name="AP_ValentinesDay">День святого Валентина</string>
+    <string name="AP_Halloween">Хэллоуин</string>
 
-    <string name="AP_DrawerButtonsCategory">Кнопки меню (требуется перезапуск приложения)</string>
-    <string name="AP_DrawerButtonsSaved">Показывать кнопку \"Избранное\"</string>
-    <string name="AP_DrawerButtonsArchived">Показывать кнопку \"Архив\"</string>
-    <string name="AP_DrawerButtonsPeopleNearby">Показывать кнопку \"Люди рядом\"</string>
+    <string name="AP_ProfileCategory">Профиль и контакты</string>
+    <string name="AP_HideUserPhone">Скрыть ваш номер телефона</string>
+    <string name="AP_HideUserPhoneSummary">В меню (требуется перезапуск приложения) и настройках</string>
+    <string name="AP_Hidden">Скрыто</string>
+    <string name="AP_MutualContacts">Показывать взаимные контакты</string>
+    <string name="AP_MutualContacts_Desc">В списке контактов появится значок взаимного контакта</string>
+    <string name="AP_MutualContacts_Description">Этот контакт является взаимным.</string>
+    <string name="AP_ShowID">Показывать ID в профиле</string>
+    <string name="AP_ShowDC">Показывать DC в профиле</string>
 
     <!--Диалоги-->
     <string name="CP_Header_Chats">Диалоги</string>
@@ -93,13 +98,6 @@
 
     <string name="CP_Slider_RecentEmojisAmplifier">Счетчик недавних эмодзи (требуется перезапуск приложения)</string>
     <string name="CP_Slider_RecentStickersAmplifier">Счетчик недавних стикеров (требуется перезапуск приложения)</string>
-
-    <string name="CP_Filters_Header">Папки (требуется перезапуск приложения)</string>
-    <string name="CP_NewTabs_RemoveAllChats">Скрыть вкладку \"Все чаты\"</string>
-    <!--<string name="CP_NewTabs_RemoveAllChats_Desc">Это скроет вкладку \"Все чаты\"</string>-->
-    <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
-    <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
-    <string name="CP_ShowTabsOnForward">Показывать папки при пересылке</string>
 
     <!--Папки Telegram, Cherrygram-->
     <string name="CG_FoldersType_Header">Тип иконок</string>

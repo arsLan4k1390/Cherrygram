@@ -331,6 +331,10 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
                 path = null;
                 return;
             }
+            if (MessageObject.getStickerSetId(document) == 1510769529645432834L) {
+                path = null;
+                return;
+            }
         }
         getPaint().setFlags(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
         if (streamSize != 0 && (document != null || location != null)) {
