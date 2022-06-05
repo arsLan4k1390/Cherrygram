@@ -16,7 +16,15 @@ object CherrygramConfig {
     // Redesign
     var change_Icon by sharedPreferences.int("AP_ChangeIcon", 0)
     var change_Icon2 by sharedPreferences.int("AP_ChangeIcon2", 0)
+
     var iconReplacement by sharedPreferences.int("AP_IconReplacements", 0)
+    fun getIconReplacement(): BaseIconReplace {
+        return when (iconReplacement) {
+            1 -> NoIconReplace()
+            else -> VkIconReplace()
+        }
+    }
+
     var BackButton by sharedPreferences.boolean("AP_BackButton", false)
     // General
     var hidePhoneNumber by sharedPreferences.boolean("AP_HideUserPhone", false)
@@ -31,9 +39,126 @@ object CherrygramConfig {
     var drawerBlur by sharedPreferences.boolean("AP_DrawerBlur", true)
     var drawerDarken by sharedPreferences.boolean("AP_DrawerDarken", true)
     // Drawer buttons
-    var savedMessagesDrawerButton by sharedPreferences.boolean("AP_SavedMessagesDrawerButton", true)
-    var archivedChatsDrawerButton by sharedPreferences.boolean("AP_ArchivedChatsDrawerButton", true)
-    var peopleNearbyDrawerButton by sharedPreferences.boolean("AP_PeopleNearbyDrawerButton", true)
+    var CreateGroupDrawerButton by sharedPreferences.boolean("AP_CreateGroupDrawerButton", false)
+    fun toggleCreateGroupDrawerButton() {
+        CreateGroupDrawerButton = !CreateGroupDrawerButton
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_CreateGroupDrawerButton", CreateGroupDrawerButton)
+        editor.apply()
+    }
+
+    var SecretChatDrawerButton by sharedPreferences.boolean("AP_SecretChatDrawerButton", false)
+    fun toggleSecretChatDrawerButton() {
+        SecretChatDrawerButton = !SecretChatDrawerButton
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_SecretChatDrawerButton", SecretChatDrawerButton)
+        editor.apply()
+    }
+
+    var CreateChannelDrawerButton by sharedPreferences.boolean("AP_CreateChannelDrawerButton", false)
+    fun toggleCreateChannelDrawerButton() {
+        CreateChannelDrawerButton = !CreateChannelDrawerButton
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_CreateChannelDrawerButton", CreateChannelDrawerButton)
+        editor.apply()
+    }
+
+    var ContactsDrawerButton by sharedPreferences.boolean("AP_ContactsDrawerButton", false)
+    fun toggleContactsDrawerButton() {
+        ContactsDrawerButton = !ContactsDrawerButton
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_ContactsDrawerButton", ContactsDrawerButton)
+        editor.apply()
+    }
+
+    var CallsDrawerButton by sharedPreferences.boolean("AP_CallsDrawerButton", true)
+    fun toggleCallsDrawerButton() {
+        CallsDrawerButton = !CallsDrawerButton
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_CallsDrawerButton", CallsDrawerButton)
+        editor.apply()
+    }
+
+    var SavedMessagesDrawerButton by sharedPreferences.boolean("AP_SavedMessagesDrawerButton", true)
+    fun toggleSavedMessagesDrawerButton() {
+        SavedMessagesDrawerButton = !SavedMessagesDrawerButton
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_SavedMessagesDrawerButton", SavedMessagesDrawerButton)
+        editor.apply()
+    }
+
+    var ArchivedChatsDrawerButton by sharedPreferences.boolean("AP_ArchivedChatsDrawerButton", true)
+    fun toggleArchivedChatsDrawerButton() {
+        ArchivedChatsDrawerButton = !ArchivedChatsDrawerButton
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_ArchivedChatsDrawerButton", ArchivedChatsDrawerButton)
+        editor.apply()
+    }
+
+    var PeopleNearbyDrawerButton by sharedPreferences.boolean("AP_PeopleNearbyDrawerButton", false)
+    fun togglePeopleNearbyDrawerButton() {
+        PeopleNearbyDrawerButton = !PeopleNearbyDrawerButton
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_PeopleNearbyDrawerButton", PeopleNearbyDrawerButton)
+        editor.apply()
+    }
+
+    var ScanQRDrawerButton by sharedPreferences.boolean("AP_ScanQRDrawerButton", true)
+    fun toggleScanQRDrawerButton() {
+        ScanQRDrawerButton = !ScanQRDrawerButton
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_ScanQRDrawerButton", ScanQRDrawerButton)
+        editor.apply()
+    }
+
+    var eventType by sharedPreferences.int("eventType", 0)
+    @JvmName("eventType")
+    fun setEventType(event: Int) {
+        eventType = event
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putInt("eventType", eventType)
+        editor.apply()
+    }
 
     // Chats Settings
     // Stickers
@@ -57,8 +182,21 @@ object CherrygramConfig {
     var newTabs_hideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
     var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
     var showTabsOnForward by sharedPreferences.boolean("CP_ShowTabsOnForward", true)
-    var newTabs_iconsV2_mode by sharedPreferences.int("CP_TabIconMode_Title", 0)
+    var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
+
     var tabMode by sharedPreferences.int("CG_FoldersType", 0)
+    @JvmName("tabMode")
+    fun setTabMode(mode: Int) {
+        tabMode = mode
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putInt("tabMode", tabMode)
+        editor.apply()
+    }
+
     // Media
     var playGIFasVideo by sharedPreferences.boolean("CP_GIFasVideo", true)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
@@ -86,25 +224,6 @@ object CherrygramConfig {
     var forwardNotify by sharedPreferences.boolean("CG_ForwardNotify", true)
     var noAuthorship by sharedPreferences.boolean("CG_NoAuthorship", false)
 
-
-    fun getIconReplacement(): BaseIconReplace {
-        return when (iconReplacement) {
-            1 -> NoIconReplace()
-            else -> VkIconReplace()
-        }
-    }
-
-    @JvmName("setTabMode1")
-    fun setTabMode(mode: Int) {
-        tabMode = mode
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "owlconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putInt("tabMode", tabMode)
-        editor.apply()
-    }
 
 //    init {
 //        CherrygramToasts.init(sharedPreferences)

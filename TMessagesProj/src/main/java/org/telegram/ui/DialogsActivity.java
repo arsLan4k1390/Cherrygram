@@ -189,6 +189,8 @@ import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class DialogsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
+    private boolean showFolderNameInHeader = CherrygramConfig.INSTANCE.getFolderNameInHeader();
+
     private boolean canShowFilterTabsView;
     private boolean filterTabsViewIsVisible;
     private int initialSearchType = -1;
@@ -1080,6 +1082,15 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 );
                             }
                         }
+
+                        int tabId = viewPages[1].selectedType;
+                        if(tabId == Integer.MAX_VALUE) {
+                            setActionBarTitle(null, true);
+                        }else {
+                            setActionBarTitle(getMessagesController().dialogFilters.get(tabId), false);
+                        }
+
+
                         tabsAnimation.setInterpolator(interpolator);
 
                         int width = getMeasuredWidth();
@@ -2203,7 +2214,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 actionBar.setTitle(LocaleController.getString("ArchivedChats", R.string.ArchivedChats));
             } else {
                 if (BuildVars.DEBUG_VERSION) {
-                    actionBar.setTitle("Telegram Beta");
+                    actionBar.setTitle(LocaleController.getString("CG_AppNameBeta", R.string.CG_AppNameBeta));
                 } else {
                     actionBar.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
                 }
@@ -2328,6 +2339,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     showScrollbars(false);
                     switchToCurrentSelectedMode(true);
                     animatingForward = forward;
+
+                    int tabId = viewPages[1].selectedType;
+                    if(tabId == Integer.MAX_VALUE) {
+                        setActionBarTitle(null, true);
+                    }else {
+                        setActionBarTitle(getMessagesController().dialogFilters.get(tabId), false);
+                    }
                 }
 
                 @Override
@@ -8396,6 +8414,15 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             color = Theme.getColor(Theme.key_actionBarActionModeDefault);
         }
         return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
+    private void setActionBarTitle(MessagesController.DialogFilter filter, boolean tabAll){
+        if(!showFolderNameInHeader || getMessagesController().dialogFilters.isEmpty()) return;
+        if(tabAll) {
+            actionBar.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
+        }else if(filter != null && !TextUtils.isEmpty(filter.name)){
+            actionBar.setTitle(filter.name);
+        }
     }
 }
 

@@ -128,6 +128,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.MonetHelper;
 
 public class Theme {
@@ -5637,11 +5638,11 @@ public class Theme {
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
 
         int eventType = -1;
-        if (monthOfYear == 11 && dayOfMonth >= 24 && dayOfMonth <= 31 || monthOfYear == 0 && dayOfMonth == 1) {
+        if ((monthOfYear == 11 && dayOfMonth >= 24 && dayOfMonth <= 31 || monthOfYear == 0 && dayOfMonth == 1) || (CherrygramConfig.INSTANCE.getEventType() == 1)) {
             eventType = 0;
-        } else if (monthOfYear == 1 && dayOfMonth == 14) {
+        } else if ((monthOfYear == 1 && dayOfMonth == 14) || (CherrygramConfig.INSTANCE.getEventType() == 2)) {
             eventType = 1;
-        } else if (monthOfYear == 9 && dayOfMonth >= 30 || monthOfYear == 10 && dayOfMonth == 1 && hour < 12) {
+        } else if ((monthOfYear == 9 && dayOfMonth >= 30 || monthOfYear == 10 && dayOfMonth == 1 && hour < 12) || (CherrygramConfig.INSTANCE.getEventType() == 3)) {
             eventType = 2;
         }
         return eventType;
