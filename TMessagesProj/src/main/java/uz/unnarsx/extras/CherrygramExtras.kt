@@ -18,7 +18,7 @@ import java.lang.Exception
 
 object CherrygramExtras {
 
-    var CG_VERSION = "6.5.1"
+    var CG_VERSION = "6.6.0"
     var CG_AUTHOR = "Updates: t.me/cherry_gram"
     @JvmField
     var currentAccountBitmap: BitmapDrawable? = null

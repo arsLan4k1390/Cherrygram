@@ -49,6 +49,13 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
+                title = LocaleController.getString("EP_Category_Experimental", R.string.EP_Category_Experimental)
+                icon = R.drawable.favorite_outline_28
+                listener = TGKitTextIconRow.TGTIListener {
+                    it.presentFragment(ExperimentalPrefenrecesEntry())
+                }
+            }
+            textIcon {
                 title = LocaleController.getString("CGP_Updates_Category", R.string.CGP_Updates_Category)
                 icon = R.drawable.outline_send
                 listener = TGKitTextIconRow.TGTIListener {

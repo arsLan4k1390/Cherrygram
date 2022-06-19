@@ -33,6 +33,8 @@ import org.telegram.ui.Components.ExtendedGridLayoutManager;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class IconSelectorAlert extends BottomSheet {
 
     private final LinearLayout linearLayout;
@@ -218,6 +220,9 @@ public class IconSelectorAlert extends BottomSheet {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             FolderIconView folderIconView = (FolderIconView) holder.itemView;
             folderIconView.setIcon(FolderIconHelper.icons[position]);
+            if (CherrygramConfig.INSTANCE.getFilledIcons()){
+                folderIconView.setIcon(FolderIconHelper.icons_filled[position]);
+            }
         }
 
         @Override

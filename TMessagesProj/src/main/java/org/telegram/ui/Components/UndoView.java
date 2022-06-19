@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
@@ -37,6 +38,8 @@ import android.widget.TextView;
 
 import androidx.annotation.Keep;
 
+import com.jakewharton.processphoenix.ProcessPhoenix;
+
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ContactsController;
@@ -54,6 +57,7 @@ import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PaymentFormActivity;
 
 import java.util.ArrayList;
@@ -173,6 +177,8 @@ public class UndoView extends FrameLayout {
     public final static int ACTION_UNPIN_DIALOGS = 79;
     public final static int ACTION_EMAIL_COPIED = 80;
     public final static int ACTION_CLEAR_DATES = 81;
+
+    public final static int ACTION_NEED_RESTART = 1000;
 
     public final static int ACTION_PREVIEW_MEDIA_DESELECTED = 82;
     public static int ACTION_RINGTONE_ADDED = 83;
@@ -318,7 +324,7 @@ public class UndoView extends FrameLayout {
     }
 
     private boolean isTooltipAction() {
-        return currentAction == ACTION_ARCHIVE_HIDDEN || currentAction == ACTION_ARCHIVE_HINT || currentAction == ACTION_ARCHIVE_FEW_HINT ||
+        return currentAction == ACTION_NEED_RESTART || currentAction == ACTION_ARCHIVE_HIDDEN || currentAction == ACTION_ARCHIVE_HINT || currentAction == ACTION_ARCHIVE_FEW_HINT ||
                 currentAction == ACTION_ARCHIVE_PINNED || currentAction == ACTION_CONTACT_ADDED || currentAction == ACTION_OWNER_TRANSFERED_CHANNEL ||
                 currentAction == ACTION_OWNER_TRANSFERED_GROUP || currentAction == ACTION_QUIZ_CORRECT || currentAction == ACTION_QUIZ_INCORRECT || currentAction == ACTION_CACHE_WAS_CLEARED ||
                 currentAction == ACTION_ADDED_TO_FOLDER || currentAction == ACTION_REMOVED_FROM_FOLDER || currentAction == ACTION_PROFILE_PHOTO_CHANGED ||
@@ -486,7 +492,28 @@ public class UndoView extends FrameLayout {
 
         infoTextView.setMovementMethod(null);
 
-        if (isTooltipAction()) {
+        if (currentAction == ACTION_NEED_RESTART) {
+            infoTextView.setText(LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply));
+
+            layoutParams.leftMargin = AndroidUtilities.dp(58);
+            layoutParams.topMargin = AndroidUtilities.dp(13);
+            layoutParams.rightMargin = 0;
+
+            infoTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+            undoButton.setVisibility(VISIBLE);
+            infoTextView.setTypeface(Typeface.DEFAULT);
+            subinfoTextView.setVisibility(GONE);
+
+            leftImageView.setVisibility(VISIBLE);
+            leftImageView.setAnimation(R.raw.chats_infotip, 36, 36);
+            leftImageView.setProgress(0);
+            leftImageView.playAnimation();
+            undoImageView.setVisibility(GONE);
+
+            undoTextView.setText(LocaleController.getString("ApplyTheme", R.string.ApplyTheme));
+            currentCancelRunnable = () -> ProcessPhoenix.triggerRebirth(getContext(), new Intent(getContext(), LaunchActivity.class));
+
+        } else if (isTooltipAction()) {
             CharSequence infoText;
             CharSequence subInfoText;
             int icon;

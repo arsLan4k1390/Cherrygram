@@ -32,7 +32,7 @@
     <string name="AP_IconReplacements">Замена иконок</string>
     <string name="AP_ChangeIcon">Иконка приложения</string>
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
-    <string name="AP_ChangeIcon_Monet_Samsung">Monet (Для OneUI 4)</string>
+    <string name="AP_ChangeIcon_Monet_Samsung">Monet (Для OneUI и MIUI)</string>
     <string name="AP_ChangeIcon_Monet_Pixel">Monet (Для Pixel Experience)</string>
     <string name="AP_ChangeIcon_White">Белая иконка</string>
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
@@ -50,6 +50,7 @@
     <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
     <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
     <string name="CP_ShowTabsOnForward">Показывать папки при пересылке</string>
+    <string name="AP_FilledIcons">Использовать залитые иконки папок</string>
 
     <string name="AP_DrawerCategory">Боковое меню</string>
     <string name="AP_DrawerAvatar">Аватар как фон меню</string>
@@ -148,6 +149,18 @@
     <string name="DP_Donate">Поддержать разработку</string>
     <string name="DP_Donate_Method">Выберите метод</string>
 
+    <!--Экспериментальные-->
+    <string name="EP_Category_Experimental">Экспериментальные</string>
+    <string name="EP_CameraType">Тип камеры</string>
+    <string name="EP_CameraTypeDefault">По умолчанию</string>
+    <string name="EP_DefaultCameraDesc">Встроенная камера Telegram.</string>
+    <string name="EP_CameraXDesc">CameraX поддерживается только на <![CDATA[<a href="https://developer.android.com/training/camerax/devices">выбранных устройствах</a>]]>, эффекты и линзы зависят от вашего производителя.</string>
+    <string name="EP_PerformanceMode">Производительный режим</string>
+    <string name="EP_PerformanceModeDesc">Качество CameraX будет снижено в пользу производительности</string>
+    <string name="EP_MotionSmoothness">Сглаживание движения</string>
+    <string name="EP_CameraTypeSystem">Системная</string>
+    <string name="EP_SystemCameraDesc">Позволяет получить доступ напрямую к системной камере (не применимо к видеосообщениям).</string>
+
     <!--Экран чатов-->
     <string name="CG_ViewUserHistory">История сообщений</string>
     <string name="CG_DeleteAllFromSelf">Удалить мои сообщения</string>
@@ -176,5 +189,6 @@
     <!--Прочее-->
     <string name="CG_SwitchBackend">Вы переключитесь на тестовый сервер. Пожалуйста не нажимайте ОК, если вы не знаете, что делаете. Вы можете снова переключиться на обычный сервер, нажав на \"Переключить сервер\" в меню отладки.</string>
     <string name="CG_Restart">Перезапустить приложение</string>
+    <string name="CG_RestartToApply">Перезапустите приложение.</string>
     
 </resources>

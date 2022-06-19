@@ -34,7 +34,7 @@
     <string name="AP_IconReplacements">Icon replacements</string>
     <string name="AP_ChangeIcon">Application icon</string>
     <string name="AP_ChangeIcon_Default">Default</string>
-    <string name="AP_ChangeIcon_Monet_Samsung">Monet (For OneUI 4)</string>
+    <string name="AP_ChangeIcon_Monet_Samsung">Monet (For OneUI and MIUI)</string>
     <string name="AP_ChangeIcon_Monet_Pixel">Monet (For Pixel Experience)</string>
     <string name="AP_ChangeIcon_White">White icon</string>
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
@@ -52,6 +52,7 @@
     <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
     <string name="CP_NewTabs_NoCounter_Desc">This will hide unread messages counter</string>
     <string name="CP_ShowTabsOnForward">Show tabs on forward screen</string>
+    <string name="AP_FilledIcons">Use filled tab icons</string>
 
     <string name="AP_DrawerCategory">Drawer</string>
     <string name="AP_DrawerAvatar">Avatar as header background</string>
@@ -150,6 +151,18 @@
     <string name="DP_Donate">Donate</string>
     <string name="DP_Donate_Method">Choose method</string>
 
+    <!--Experimental-->
+    <string name="EP_Category_Experimental">Experimental</string>
+    <string name="EP_CameraType">Camera Type</string>
+    <string name="EP_CameraTypeDefault">Default</string>
+    <string name="EP_DefaultCameraDesc">Use the Telegram\'s built-in camera.</string>
+    <string name="EP_CameraXDesc">CameraX is only supported on <![CDATA[<a href="https://developer.android.com/training/camerax/devices">selected devices</a>]]>, effects and lenses support depends on your manufacturer.</string>
+    <string name="EP_PerformanceMode">Performance Mode</string>
+    <string name="EP_PerformanceModeDesc">CameraX\'s quality will be reduced in favor of performance</string>
+    <string name="EP_MotionSmoothness">Motion Smoothness</string>
+    <string name="EP_CameraTypeSystem">System</string>
+    <string name="EP_SystemCameraDesc">Access directly the system camera (not applicable for video messages).</string>
+
     <!--Chats screen-->
     <string name="CG_ViewUserHistory">Messages history</string>
     <string name="CG_DeleteAllFromSelf">Delete own messages</string>
@@ -178,5 +191,6 @@
     <!--Misc-->
     <string name="CG_SwitchBackend">You\'re going to switch to the test server. Please don\'t press OK if you don\'t know what you\'re doing. You can switch to normal server by pressing "Switch backend" in debug menu again.</string>
     <string name="CG_Restart">Restart app</string>
+    <string name="CG_RestartToApply">Restart app to apply changes.</string>
     
 </resources>

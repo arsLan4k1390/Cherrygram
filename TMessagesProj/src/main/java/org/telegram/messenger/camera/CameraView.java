@@ -24,7 +24,6 @@ import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.hardware.Camera;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaCodec;
@@ -42,14 +41,12 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.core.graphics.ColorUtils;
@@ -83,8 +80,10 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL;
 
+import uz.unnarsx.cherrygram.camera.BaseCameraView;
+
 @SuppressLint("NewApi")
-public class CameraView extends FrameLayout implements TextureView.SurfaceTextureListener {
+public class CameraView extends BaseCameraView implements TextureView.SurfaceTextureListener {
 
     private Size previewSize;
     private Size pictureSize;

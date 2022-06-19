@@ -59,6 +59,9 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.camera.core.MeteringPointFactory;
+import androidx.camera.core.Preview;
+import androidx.camera.core.SurfaceOrientedMeteringPointFactory;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
@@ -112,6 +115,8 @@ import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.camera.CameraXController;
+import uz.unnarsx.cherrygram.camera.CameraXUtilities;
 
 @TargetApi(18)
 public class InstantCameraView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
@@ -162,6 +167,10 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     private TextureView textureView;
     private BackupImageView textureOverlayView;
     private CameraSession cameraSession;
+    @TargetApi(21)
+    private CameraXController cameraXController;
+    @TargetApi(21)
+    private CameraXController.CameraLifecycle camLifecycle;
     private boolean needDrawFlickerStub;
 
     private float panTranslationY;
@@ -318,10 +327,17 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         switchCameraButton.setContentDescription(LocaleController.getString("AccDescrSwitchCamera", R.string.AccDescrSwitchCamera));
         addView(switchCameraButton, LayoutHelper.createFrame(62, 62, Gravity.LEFT | Gravity.BOTTOM, 8, 0, 0, 0));
         switchCameraButton.setOnClickListener(v -> {
-            if (!cameraReady || cameraSession == null || !cameraSession.isInitied() || cameraThread == null) {
-                return;
+            if (!CameraXUtilities.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                if (!cameraReady || cameraSession == null || !cameraSession.isInitied() || cameraThread == null) {
+                    return;
+                }
+                switchCamera();
+            } else {
+                if(!cameraXController.isInitied() || cameraThread == null){
+                    return;
+                }
+                switchCameraX();
             }
-            switchCamera();
             if (switchCameraDrawable != null) {
                 switchCameraDrawable.start();
             }
@@ -475,9 +491,18 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     }
 
     public void destroy(boolean async, final Runnable beforeDestroyRunnable) {
-        if (cameraSession != null) {
-            cameraSession.destroy();
-            CameraController.getInstance().close(cameraSession, !async ? new CountDownLatch(1) : null, beforeDestroyRunnable);
+        if (!CameraXUtilities.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+            if (cameraSession != null) {
+                cameraSession.destroy();
+                CameraController.getInstance().close(cameraSession, !async ? new CountDownLatch(1) : null, beforeDestroyRunnable);
+            }
+        } else {
+            try {
+                cameraXController.stopVideoRecording(true);
+            } catch (Exception ignored) {}
+            try {
+                cameraXController.closeCamera();
+            }  catch (Exception ignored) {}
         }
     }
 
@@ -555,8 +580,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         if (textureView != null) {
             return;
         }
-
-
+        camLifecycle = new CameraXController.CameraLifecycle();
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             switchCameraDrawable = (AnimatedVectorDrawable) ContextCompat.getDrawable(getContext(), R.drawable.avd_flip);
@@ -633,8 +657,17 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     cameraThread.shutdown(0);
                     cameraThread = null;
                 }
-                if (cameraSession != null) {
-                    CameraController.getInstance().close(cameraSession, null, null);
+                if (!CameraXUtilities.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                    if (cameraSession != null) {
+                        CameraController.getInstance().close(cameraSession, null, null);
+                    }
+                } else {
+                    try {
+                        cameraXController.stopVideoRecording(false);
+                    } catch (Exception ignored) {}
+                    try {
+                        cameraXController.closeCamera();
+                    }  catch (Exception ignored) {}
                 }
                 return true;
             }
@@ -890,6 +923,18 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         textureView = null;
         cameraContainer.setImageReceiver(null);
     }
+    @TargetApi(21)
+    private void switchCameraX(){
+        saveLastCameraBitmap();
+        if (lastBitmap != null) {
+            needDrawFlickerStub = false;
+            textureOverlayView.setImageBitmap(lastBitmap);
+            textureOverlayView.setAlpha(1f);
+        }
+        isFrontface = !isFrontface;
+        cameraReady = false;
+        cameraThread.reinitForNewCamera();
+    }
 
     private void switchCamera() {
         saveLastCameraBitmap();
@@ -990,16 +1035,32 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             }
 
             surfaceTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
-            cameraSession = new CameraSession(selectedCamera, previewSize, pictureSize, ImageFormat.JPEG, true);
-            cameraThread.setCurrentSession(cameraSession);
-            CameraController.getInstance().openRound(cameraSession, surfaceTexture, () -> {
-                if (cameraSession != null) {
-                    if (BuildVars.LOGS_ENABLED) {
-                        FileLog.d("camera initied");
+            if (!CameraXUtilities.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                cameraSession = new CameraSession(selectedCamera, previewSize, pictureSize, ImageFormat.JPEG, true);
+                cameraThread.setCurrentSession(cameraSession);
+                CameraController.getInstance().openRound(cameraSession, surfaceTexture, () -> {
+                    if (cameraSession != null) {
+                        if (BuildVars.LOGS_ENABLED) {
+                            FileLog.d("camera initied");
+                        }
+                        cameraSession.setInitied();
                     }
-                    cameraSession.setInitied();
-                }
-            }, () -> cameraThread.setCurrentSession(cameraSession));
+                }, () -> cameraThread.setCurrentSession(cameraSession));
+            } else {
+                MeteringPointFactory factory = new SurfaceOrientedMeteringPointFactory(previewSize.getWidth(), previewSize.getHeight());
+                Preview.SurfaceProvider surfaceProvider = request -> {
+                    Surface surface = new Surface(surfaceTexture);
+                    request.provideSurface(surface, ContextCompat.getMainExecutor(getContext()), result -> {});
+                };
+                cameraXController = new CameraXController(camLifecycle, factory, surfaceProvider);
+                cameraXController.setStableFPSPreviewOnly(true);
+                cameraXController.initCamera(getContext(), isFrontface, ()-> {
+                    if (cameraThread != null) {
+                        cameraThread.setOrientation();
+                    }
+                });
+                camLifecycle.start();
+            }
         });
     }
 
@@ -1106,6 +1167,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         private final int DO_SHUTDOWN_MESSAGE = 1;
         private final int DO_REINIT_MESSAGE = 2;
         private final int DO_SETSESSION_MESSAGE = 3;
+        private final int DO_SETORIENTATION_MESSAGE = 4;
 
         private int drawProgram;
         private int vertexMatrixHandle;
@@ -1328,6 +1390,14 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             }
         }
 
+        @TargetApi(21)
+        public void setOrientation() {
+            Handler handler = getHandler();
+            if (handler != null) {
+                sendMessage(handler.obtainMessage(DO_SETORIENTATION_MESSAGE), 0);
+            }
+        }
+
         private void onDraw(Integer cameraId) {
             if (!initied) {
                 return;
@@ -1346,7 +1416,15 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             if (!recording) {
                 videoEncoder.startRecording(cameraFile, EGL14.eglGetCurrentContext());
                 recording = true;
-                int orientation = currentSession.getCurrentOrientation();
+                int orientation = 0;
+                if (!CameraXUtilities.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                    orientation = currentSession.getCurrentOrientation();
+                } else {
+                    float temp = scaleX;
+                    //noinspection SuspiciousNameCombination
+                    scaleX = scaleY;
+                    scaleY = temp;
+                }
                 if (orientation == 90 || orientation == 270) {
                     float temp = scaleX;
                     scaleX = scaleY;
@@ -1451,6 +1529,13 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                         currentSession = newSession;
                     }
                     break;
+                }
+                case DO_SETORIENTATION_MESSAGE: {
+                    int rotationAngle = cameraXController.getDisplayOrientation();
+                    android.opengl.Matrix.setIdentityM(mMVPMatrix, 0);
+                    if (rotationAngle != 0) {
+                        android.opengl.Matrix.rotateM(mMVPMatrix, 0, rotationAngle, 0, 0, 1);
+                    }
                 }
             }
         }
@@ -1706,7 +1791,8 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         };
 
         public void startRecording(File outputFile, android.opengl.EGLContext sharedContext) {
-            int resolution = MessagesController.getInstance(currentAccount).roundVideoSize;
+            //int resolution = MessagesController.getInstance(currentAccount).roundVideoSize;
+            int resolution = 640;
             int bitrate = MessagesController.getInstance(currentAccount).roundVideoBitrate * 1024;
 
             videoFile = outputFile;
@@ -2635,7 +2721,11 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             pinchScale = (float) Math.hypot(ev.getX(index2) - ev.getX(index1), ev.getY(index2) - ev.getY(index1)) / pinchStartDistance;
             float zoom = Math.min(1f, Math.max(0, pinchScale - 1f));
 
-            cameraSession.setZoom(zoom);
+            if (!CameraXUtilities.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                cameraSession.setZoom(zoom);
+            } else {
+                cameraXController.setZoom(zoom);
+            }
         } else if ((ev.getActionMasked() == MotionEvent.ACTION_UP || (ev.getActionMasked() == MotionEvent.ACTION_POINTER_UP && checkPointerIds(ev)) || ev.getActionMasked() == MotionEvent.ACTION_CANCEL) && isInPinchToZoomTouchMode) {
             isInPinchToZoomTouchMode = false;
             finishZoom();
@@ -2655,7 +2745,11 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             finishZoomTransition = ValueAnimator.ofFloat(zoom, 0);
             finishZoomTransition.addUpdateListener(valueAnimator -> {
                 if (cameraSession != null) {
-                    cameraSession.setZoom((float) valueAnimator.getAnimatedValue());
+                    if (!CameraXUtilities.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                        cameraSession.setZoom((float) valueAnimator.getAnimatedValue());
+                    } else {
+                        cameraXController.setZoom((float) valueAnimator.getAnimatedValue());
+                    }
                 }
             });
             finishZoomTransition.addListener(new AnimatorListenerAdapter() {

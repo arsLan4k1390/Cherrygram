@@ -4296,6 +4296,16 @@ public class AndroidUtilities {
         return null;
     }
 
+    public static int getTransparentColor(int color, float opacity){
+        int alpha = Color.alpha(color);
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        // Set alpha based on your logic, here I'm making it 25% of it's initial value.
+        alpha *= opacity;
+        return Color.argb(alpha, red, green, blue);
+    }
+
     public static boolean isNumeric(String str) {
         try {
             Double.parseDouble(str);
