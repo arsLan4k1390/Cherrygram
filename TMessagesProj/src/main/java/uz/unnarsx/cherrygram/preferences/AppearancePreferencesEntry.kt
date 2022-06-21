@@ -156,6 +156,16 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     CherrygramConfig.showTabsOnForward = it
                 }
             }
+
+            switch {
+                title = LocaleController.getString("AP_FilledIcons", R.string.AP_FilledIcons)
+
+                contract({
+                    return@contract CherrygramConfig.filledIcons
+                }) {
+                    CherrygramConfig.filledIcons = it
+                }
+            }
         }
 
         category(LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)) {
