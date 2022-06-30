@@ -125,6 +125,8 @@
     <string name="CP_DisableCam_Desc">Enable if media attach menu lags</string>
     <string name="CP_RearCam">Use rear camera</string>
     <string name="CP_RearCam_Desc">Instead of front camera for video messages</string>
+    <string name="CP_RoundCamera16to9">Use 16:9 camera</string>
+    <string name="CP_RoundCamera16to9_Desc">Turn this on if you face quality issues in videomessages</string>
     <string name="CP_Proximity">Enable proximity actions</string>
     <string name="CP_Proximity_Desc">By turning it off you will get rid of the annoying screen shutdown when listening to voice messages (restart app to apply)</string>
 

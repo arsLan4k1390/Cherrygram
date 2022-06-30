@@ -17031,13 +17031,14 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
 
     private boolean sponsoredMessagesAdded;
     private void addSponsoredMessages(boolean animated) {
-        if (sponsoredMessagesAdded || chatMode != 0 || !ChatObject.isChannel(currentChat) || !forwardEndReached[0] || getUserConfig().isPremium()) {
+        if (sponsoredMessagesAdded || chatMode != 0 || !ChatObject.isChannel(currentChat) || !forwardEndReached[0]) {
             return;
         }
         ArrayList<MessageObject> arrayList = getMessagesController().getSponsoredMessages(dialog_id);
         if (arrayList == null) {
             return;
         }
+        ArrayList<MessageObject> arrayList2 = new ArrayList<>();
         for (int i = 0; i < arrayList.size(); i++) {
             MessageObject messageObject = arrayList.get(i);
             messageObject.resetLayout();
@@ -17046,11 +17047,18 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
             if (messageObject.sponsoredChannelPost != 0) {
                 messageId = messageObject.sponsoredChannelPost;
             }
-            getMessagesController().ensureMessagesLoaded(dialogId, messageId, null);
-
+            if (!messageObject.isSponsored()) {
+                getMessagesController().ensureMessagesLoaded(dialogId, messageId, null);
+                arrayList2.add(messageObject);
+            } else {
+                markSponsoredAsRead(messageObject);
+            }
+//            getMessagesController().ensureMessagesLoaded(dialogId, messageId, null);
         }
         sponsoredMessagesAdded = true;
-        processNewMessages(arrayList);
+        if (arrayList2.isEmpty()) return;
+//        processNewMessages(arrayList);
+        processNewMessages(arrayList2);
     }
 
     private void checkGroupCallJoin(boolean fromServer) {
@@ -17976,6 +17984,7 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
     }
 
     private int getSponsoredMessagesCount() {
+        if (true) return 0;
         int sponsoredMessagesCount = 0;
         while (sponsoredMessagesCount < messages.size()) {
             if (!messages.get(sponsoredMessagesCount).isSponsored()) {

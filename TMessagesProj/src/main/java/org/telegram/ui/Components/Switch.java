@@ -25,7 +25,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
-import android.media.AudioManager;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
@@ -107,7 +106,9 @@ public class Switch extends View {
         paint2.setStrokeCap(Paint.Cap.ROUND);
         paint2.setStrokeWidth(AndroidUtilities.dp(2));
 
-        setHapticFeedbackEnabled(CherrygramConfig.INSTANCE.getDisableVibration());
+        if (CherrygramConfig.INSTANCE.getDisableVibration()){
+            setHapticFeedbackEnabled(true);
+        }
     }
 
     @Keep

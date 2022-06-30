@@ -121,6 +121,8 @@
     <string name="CP_DisableCam_Desc">Включите это если меню тормозит</string>
     <string name="CP_RearCam">Использовать заднюю камеру</string>
     <string name="CP_RearCam_Desc">Вместо фронтальной камеры при записи видеосообщений</string>
+    <string name="CP_RoundCamera16to9">Использовать камеру 16:9</string>
+    <string name="CP_RoundCamera16to9_Desc">Включите это если вы сталкиваетесь с проблемой качества видеосообщений</string>
     <string name="CP_Proximity">Включить датчик приближения</string>
     <string name="CP_Proximity_Desc">При выключении вы избавитесь от раздражающего черного экрана при прослушивании аудио/видеосообщения (требуется перезапуск приложения)</string>
 

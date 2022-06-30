@@ -164,7 +164,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     private CameraGLThread cameraThread;
     private Size previewSize;
     private Size pictureSize;
-    private Size aspectRatio = SharedConfig.roundCamera16to9 ? new Size(1, 1) : new Size(4, 3);
+    private Size aspectRatio = CherrygramConfig.INSTANCE.getRoundCamera16to9() ? new Size(16, 9) : new Size(1, 1);
     private TextureView textureView;
     private BackupImageView textureOverlayView;
     private CameraSession cameraSession;
@@ -977,8 +977,8 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
 
         ArrayList<Size> previewSizes = selectedCamera.getPreviewSizes();
         ArrayList<Size> pictureSizes = selectedCamera.getPictureSizes();
-        previewSize = chooseOptimalSize(previewSizes);
-        pictureSize = chooseOptimalSize(pictureSizes);
+        previewSize = CameraController.chooseOptimalSize(previewSizes, 480, 270, aspectRatio);
+        pictureSize = CameraController.chooseOptimalSize(pictureSizes, 480, 270, aspectRatio);
         if (previewSize.mWidth != pictureSize.mWidth) {
             boolean found = false;
             for (int a = previewSizes.size() - 1; a >= 0; a--) {

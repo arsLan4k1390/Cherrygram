@@ -263,6 +263,16 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("CP_RoundCamera16to9", R.string.CP_RoundCamera16to9)
+                summary = LocaleController.getString("CP_RoundCamera16to9_Desc", R.string.CP_RoundCamera16to9_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.roundCamera16to9
+                }) {
+                    CherrygramConfig.roundCamera16to9 = it
+                }
+            }
+            switch {
                 title = LocaleController.getString("CP_Proximity", R.string.CP_Proximity)
                 summary = LocaleController.getString("CP_Proximity_Desc", R.string.CP_Proximity_Desc)
 

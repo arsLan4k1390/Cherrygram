@@ -34,7 +34,7 @@ object CherrygramConfig {
     var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
     var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
     var showTabsOnForward by sharedPreferences.boolean("CP_ShowTabsOnForward", true)
-    var filledIcons by sharedPreferences.boolean("AP_FilledIcons", false)
+    var filledIcons by sharedPreferences.boolean("AP_FilledIcons", true)
 
     const val TAB_TYPE_TEXT = 0
     const val TAB_TYPE_MIX = 1
@@ -209,6 +209,7 @@ object CherrygramConfig {
     var disablePhotoTapAction by sharedPreferences.boolean("CP_DisablePhotoTapAction", false)
     var disableAttachCamera by sharedPreferences.boolean("CP_DisableCam", false)
     var rearCam by sharedPreferences.boolean("CP_RearCam", false)
+    var roundCamera16to9 by sharedPreferences.boolean("CP_RoundCamera16to9", false)
     var enableProximity by sharedPreferences.boolean("CP_Proximity", true)
     //Notifications
     var iosSound by sharedPreferences.boolean("CP_IOSSound", false)
