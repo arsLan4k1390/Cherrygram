@@ -163,7 +163,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     private CameraGLThread cameraThread;
     private Size previewSize;
     private Size pictureSize;
-    private Size aspectRatio = SharedConfig.roundCamera16to9 ? new Size(16, 9) : new Size(4, 3);
+    private Size aspectRatio = SharedConfig.roundCamera16to9 ? new Size(1, 1) : new Size(4, 3);
     private TextureView textureView;
     private BackupImageView textureOverlayView;
     private CameraSession cameraSession;
@@ -1792,7 +1792,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
 
         public void startRecording(File outputFile, android.opengl.EGLContext sharedContext) {
             //int resolution = MessagesController.getInstance(currentAccount).roundVideoSize;
-            int resolution = 640;
+            int resolution = 512;
             int bitrate = MessagesController.getInstance(currentAccount).roundVideoBitrate * 1024;
 
             videoFile = outputFile;
