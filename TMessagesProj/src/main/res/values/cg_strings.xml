@@ -34,9 +34,9 @@
     <string name="AP_IconReplacements">Icon replacements</string>
     <string name="AP_ChangeIcon">Application icon</string>
     <string name="AP_ChangeIcon_Default">Default</string>
-    <string name="AP_ChangeIcon_Monet_Samsung">Monet (For OneUI and MIUI)</string>
-    <string name="AP_ChangeIcon_Monet_Pixel">Monet (For Pixel Experience)</string>
-    <string name="AP_ChangeIcon_White">White icon</string>
+    <string name="AP_ChangeIcon_Monet_Samsung">Monet (OneUI &amp; MIUI)</string>
+    <string name="AP_ChangeIcon_Monet_Pixel">Monet (Pixel)</string>
+    <string name="AP_ChangeIcon_White">White</string>
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Default">Default</string>
     <string name="AP_FlatSB">Flat statusbar</string>
@@ -48,7 +48,6 @@
     <string name="CP_Filters_Header">Folders (restart app to apply)</string>
     <string name="AP_FolderNameInHeader">Folder name instead of \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">This will change \"Cherrygram\" in action bar to your folder\'s name (useful if you have only icons instead of folders names)</string>
-    <string name="CP_NewTabs_RemoveAllChats">Hide \"All chats\" tab</string>
     <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
     <string name="CP_NewTabs_NoCounter_Desc">This will hide unread messages counter</string>
     <string name="CP_ShowTabsOnForward">Show tabs on forward screen</string>
@@ -80,7 +79,6 @@
     <string name="CP_Slider_StickerAmplifier">Sticker size amplifier</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
 
-    <string name="CP_ScrollableChatPreview">Scrollable Chat Preview</string>
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
     <string name="CP_NoRounding">Disable number rounding</string>

@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.MessagesController;
@@ -453,7 +452,7 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
         }
     }
 
-    public boolean initIfEmpty(ImageLocation imageLocation, ImageLocation thumbLocation) {
+    public boolean initIfEmpty(ImageLocation imageLocation, ImageLocation thumbLocation, boolean reload) {
         if (imageLocation == null || thumbLocation == null || settingMainPhoto != 0) {
             return false;
         }
@@ -461,9 +460,15 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
             if (!imagesLocations.isEmpty()) {
                 prevImageLocation = imageLocation;
                 MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 100, 0, true, parentClassGuid);
+                if (reload) {
+                    MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 100, 0, true, parentClassGuid);
+                }
                 return true;
             } else {
                 MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 100, 0, true, parentClassGuid);
+                if (reload) {
+                    MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 100, 0, true, parentClassGuid);
+                }
             }
         }
         if (!imagesLocations.isEmpty()) {
@@ -977,7 +982,7 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
                     needProgress = true;
                     String filter;
                     if (isProfileFragment && videoLocation != null && videoLocation.imageType == FileLoader.IMAGE_TYPE_ANIMATION) {
-                        filter = ImageLoader.AUTOPLAY_FILTER;
+                        filter = "avatar";
                     } else {
                         filter = null;
                     }

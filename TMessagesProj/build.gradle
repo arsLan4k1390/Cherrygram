@@ -49,13 +49,13 @@ dependencies {
     implementation 'com.googlecode.mp4parser:isoparser:1.0.6'
     implementation 'com.stripe:stripe-android:2.0.2'
     implementation 'com.google.mlkit:language-id:17.0.3'
+    implementation "com.android.billingclient:billing:5.0.0"
     implementation files('libs/libgsaverification-client.aar')
 
     //Cherrygram
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation 'com.google.android.material:material:1.6.0-rc01'
-    implementation 'com.android.billingclient:billing:5.0.0'
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.4'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
@@ -122,10 +122,10 @@ android {
         coreLibraryDesugaringEnabled true
     }
 
-    def propFile = new File('local.properties')
+    /*def propFile = new File('local.properties')
 
     def Properties props = new Properties()
-    props.load(new FileInputStream(propFile))
+    props.load(new FileInputStream(propFile))*/
 
 
     signingConfigs {
@@ -213,96 +213,30 @@ android {
     flavorDimensions "minApi"
 
     productFlavors {
-        armv7 {
+        bundleAfat {
             ndk {
-                abiFilters "armeabi-v7a"
+                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
             ext {
                 abiVersionCode = 1
             }
         }
-        x86 {
+        bundleAfat_SDK23 {
             ndk {
-                abiFilters "x86"
+                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
+            sourceSets.debug {
+                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.release {
+                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
+            }
+            sourceSets.standalone {
+                manifest.srcFile 'config/release/AndroidManifest_standalone.xml'
+            }
+            minSdkVersion 23
             ext {
                 abiVersionCode = 2
-            }
-        }
-        armv7_SDK23 {
-            ndk {
-                abiFilters "armeabi-v7a"
-            }
-            sourceSets.debug {
-                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
-            }
-            sourceSets.release {
-                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
-            }
-            minSdkVersion 23
-            ext {
-                abiVersionCode = 3
-            }
-        }
-        x86_SDK23 {
-            ndk {
-                abiFilters "x86"
-            }
-            sourceSets.debug {
-                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
-            }
-            sourceSets.release {
-                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
-            }
-            minSdkVersion 23
-            ext {
-                abiVersionCode = 4
-            }
-        }
-        arm64 {
-            ndk {
-                abiFilters "arm64-v8a"
-            }
-            ext {
-                abiVersionCode = 5
-            }
-        }
-        x64 {
-            ndk {
-                abiFilters "x86_64"
-            }
-            ext {
-                abiVersionCode = 6
-            }
-        }
-        arm64_SDK23 {
-            ndk {
-                abiFilters "arm64-v8a"
-            }
-            sourceSets.debug {
-                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
-            }
-            sourceSets.release {
-                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
-            }
-            minSdkVersion 23
-            ext {
-                abiVersionCode = 7
-            }
-        }
-        x64_SDK23 {
-            ndk {
-                abiFilters "x86_64"
-            }
-            sourceSets.debug {
-                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
-            }
-            sourceSets.release {
-                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
-            }
-            minSdkVersion 23
-            ext {
-                abiVersionCode = 8
             }
         }
         afat {
@@ -324,7 +258,7 @@ android {
         }
     }
 
-    defaultConfig.versionCode = 2636
+    defaultConfig.versionCode = 2711
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
@@ -343,7 +277,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
-        versionName "8.7.4"
+        versionName "8.8.4"
 
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
 

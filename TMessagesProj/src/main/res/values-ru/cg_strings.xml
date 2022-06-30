@@ -32,8 +32,6 @@
     <string name="AP_IconReplacements">Замена иконок</string>
     <string name="AP_ChangeIcon">Иконка приложения</string>
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
-    <string name="AP_ChangeIcon_Monet_Samsung">Monet (Для OneUI и MIUI)</string>
-    <string name="AP_ChangeIcon_Monet_Pixel">Monet (Для Pixel Experience)</string>
     <string name="AP_ChangeIcon_White">Белая иконка</string>
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
@@ -46,7 +44,6 @@
     <string name="CP_Filters_Header">Папки (требуется перезапуск приложения)</string>
     <string name="AP_FolderNameInHeader">Название папки вместо \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Это изменит \"Cherrygram\" в заголовке сверху на название вашей папки (удобно при отображении иконок вместо названий папок)</string>
-    <string name="CP_NewTabs_RemoveAllChats">Скрыть вкладку \"Все чаты\"</string>
     <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
     <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
     <string name="CP_ShowTabsOnForward">Показывать папки при пересылке</string>
@@ -78,7 +75,6 @@
     <string name="CP_Slider_StickerAmplifier">Размер стикеров</string>
     <string name="CP_TimeOnStick">Скрыть время отправки на стикерах</string>
 
-    <string name="CP_ScrollableChatPreview">Прокрутка при предосмотре чата</string>
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включить счетчик непрочитанных чатов на кнопке «Назад» в открытом чате</string>
     <string name="CP_NoRounding">Отключить округление чисел</string>

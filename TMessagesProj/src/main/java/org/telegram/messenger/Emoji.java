@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Spannable;
 import android.text.Spanned;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
@@ -27,12 +28,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.File;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicReference;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
@@ -104,9 +106,6 @@ public class Emoji {
             } else {
                 imageResize = 1;
             }
-
-            String imageName;
-            File imageFile;
 
             Bitmap bitmap = null;
             try {
@@ -229,6 +228,7 @@ public class Emoji {
         private boolean fullSize = false;
         private static Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
         private static Rect rect = new Rect();
+        public int placeholderColor = 0x20000000;
 
         public EmojiDrawable(DrawableInfo i) {
             info = i;
@@ -252,7 +252,9 @@ public class Emoji {
         public void draw(Canvas canvas) {
             if (!isLoaded()) {
                 loadEmoji(info.page, info.page2);
-                canvas.drawRect(getBounds(), placeholderPaint);
+                placeholderPaint.setColor(placeholderColor);
+                Rect bounds = getBounds();
+                canvas.drawCircle(bounds.centerX(), bounds.centerY(), bounds.width() * .4f, placeholderPaint);
                 return;
             }
 
@@ -315,37 +317,41 @@ public class Emoji {
         return false;
     }
 
-    public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, int size, boolean createNew) {
-        return replaceEmoji(cs, fontMetrics, size, createNew, null);
+    public static class EmojiSpanRange {
+        public EmojiSpanRange(int start, int end, CharSequence code) {
+            this.start = start;
+            this.end = end;
+            this.code = code;
+        }
+        int start;
+        int end;
+        CharSequence code;
     }
 
-    public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, int size, boolean createNew, int[] emojiOnly) {
-        if (SharedConfig.useSystemEmoji || cs == null || cs.length() == 0) {
-            return cs;
-        }
-        Spannable s;
-        if (!createNew && cs instanceof Spannable) {
-            s = (Spannable) cs;
-        } else {
-            s = Spannable.Factory.getInstance().newSpannable(cs.toString());
+    public static boolean fullyConsistsOfEmojis(CharSequence cs) {
+        int[] emojiOnly = new int[1];
+        parseEmojis(cs, emojiOnly);
+        return emojiOnly[0] > 0;
+    }
+
+    public static ArrayList<EmojiSpanRange> parseEmojis(CharSequence cs) {
+        return parseEmojis(cs, null);
+    }
+
+    public static ArrayList<EmojiSpanRange> parseEmojis(CharSequence cs, int[] emojiOnly) {
+        ArrayList<EmojiSpanRange> emojis = new ArrayList<>();
+        if (cs == null || cs.length() <= 0) {
+            return emojis;
         }
         long buf = 0;
-        int emojiCount = 0;
         char c;
         int startIndex = -1;
         int startLength = 0;
         int previousGoodIndex = 0;
         StringBuilder emojiCode = new StringBuilder(16);
-        StringBuilder addionalCode = new StringBuilder(2);
-        boolean nextIsSkinTone;
-        EmojiDrawable drawable;
-        EmojiSpan span;
         int length = cs.length();
         boolean doneEmoji = false;
-        int nextValidLength;
-        boolean nextValid;
         boolean notOnlyEmoji;
-        //s.setSpansCount(emojiCount);
 
         try {
             for (int i = 0; i < length; i++) {
@@ -458,28 +464,64 @@ public class Emoji {
                     if (emojiOnly != null) {
                         emojiOnly[0]++;
                     }
-                    CharSequence code = emojiCode.subSequence(0, emojiCode.length());
-                    drawable = Emoji.getEmojiDrawable(code);
-                    if (drawable != null) {
-                        span = new EmojiSpan(drawable, DynamicDrawableSpan.ALIGN_BOTTOM, size, fontMetrics);
-                        s.setSpan(span, startIndex, startIndex + startLength, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        emojiCount++;
-                    }
+                    emojis.add(new EmojiSpanRange(startIndex, startIndex + startLength, emojiCode.subSequence(0, emojiCode.length())));
                     startLength = 0;
                     startIndex = -1;
                     emojiCode.setLength(0);
                     doneEmoji = false;
                 }
-                if ((Build.VERSION.SDK_INT < 23 || Build.VERSION.SDK_INT >= 29) && !BuildVars.DEBUG_PRIVATE_VERSION && emojiCount >= 50) {
-                    break;
-                }
             }
         } catch (Exception e) {
             FileLog.e(e);
-            return cs;
         }
         if (emojiOnly != null && emojiCode.length() != 0) {
             emojiOnly[0] = 0;
+        }
+        return emojis;
+    }
+
+    public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, int size, boolean createNew) {
+        return replaceEmoji(cs, fontMetrics, size, createNew, null, false, null);
+    }
+
+    public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, int size, boolean createNew, boolean allowAnimated, AtomicReference<WeakReference<View>> viewRef) {
+        return replaceEmoji(cs, fontMetrics, size, createNew, null, allowAnimated, viewRef);
+    }
+
+    public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, int size, boolean createNew, int[] emojiOnly) {
+        return replaceEmoji(cs, fontMetrics, size, createNew, emojiOnly, false, null);
+    }
+
+    public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, int size, boolean createNew, int[] emojiOnly, boolean allowAnimated, AtomicReference<WeakReference<View>> viewRef) {
+        allowAnimated = false;
+        if (SharedConfig.useSystemEmoji || cs == null || cs.length() == 0) {
+            return cs;
+        }
+        Spannable s;
+        if (!createNew && cs instanceof Spannable) {
+            s = (Spannable) cs;
+        } else {
+            s = Spannable.Factory.getInstance().newSpannable(cs.toString());
+        }
+        ArrayList<EmojiSpanRange> emojis = parseEmojis(s, emojiOnly);
+
+        EmojiSpan span;
+        Drawable drawable;
+        for (int i = 0; i < emojis.size(); ++i) {
+            EmojiSpanRange emojiRange = emojis.get(i);
+
+            try {
+                drawable = Emoji.getEmojiDrawable(emojiRange.code);
+                if (drawable != null) {
+                    span = new EmojiSpan(drawable, DynamicDrawableSpan.ALIGN_BOTTOM, size, fontMetrics);
+                    s.setSpan(span, emojiRange.start, emojiRange.end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+            if ((Build.VERSION.SDK_INT < 23 || Build.VERSION.SDK_INT >= 29) && !BuildVars.DEBUG_PRIVATE_VERSION && (i + 1) >= 50) {
+                break;
+            }
         }
         return s;
     }
@@ -488,7 +530,7 @@ public class Emoji {
         private Paint.FontMetricsInt fontMetrics;
         private int size = AndroidUtilities.dp(20);
 
-        public EmojiSpan(EmojiDrawable d, int verticalAlignment, int s, Paint.FontMetricsInt original) {
+        public EmojiSpan(Drawable d, int verticalAlignment, int s, Paint.FontMetricsInt original) {
             super(d, verticalAlignment);
             fontMetrics = original;
             if (original != null) {
@@ -557,6 +599,14 @@ public class Emoji {
             if (restoreAlpha) {
                 getDrawable().setAlpha(255);
             }
+        }
+
+        @Override
+        public void updateDrawState(TextPaint ds) {
+            if (getDrawable() instanceof EmojiDrawable) {
+                ((EmojiDrawable) getDrawable()).placeholderColor = 0x20ffffff & ds.getColor();
+            }
+            super.updateDrawState(ds);
         }
     }
 

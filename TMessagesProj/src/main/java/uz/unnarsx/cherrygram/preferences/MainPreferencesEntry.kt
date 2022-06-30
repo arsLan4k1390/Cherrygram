@@ -35,7 +35,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
 
             textIcon {
                 title = LocaleController.getString("СP_Header_Chats", R.string.CP_Header_Chats)
-                icon = R.drawable.menu_chats
+                icon = R.drawable.msg_msgbubble3
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CherrygramPreferencesNavigator.createChats())
                 }
@@ -43,7 +43,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
 
             textIcon {
                 title = LocaleController.getString("SP_Category_Security", R.string.SP_Category_Security)
-                icon = R.drawable.menu_secret
+                icon = R.drawable.msg_secret
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CherrygramPreferencesNavigator.createSecurity())
                 }
@@ -57,7 +57,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
             }
             textIcon {
                 title = LocaleController.getString("CGP_Updates_Category", R.string.CGP_Updates_Category)
-                icon = R.drawable.outline_send
+                icon = R.drawable.msg_send
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CherrygramPreferencesNavigator.createUpdates())
                 }

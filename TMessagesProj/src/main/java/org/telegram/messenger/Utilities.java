@@ -65,7 +65,7 @@ public class Utilities {
     private native static void aesIgeEncryption(ByteBuffer buffer, byte[] key, byte[] iv, boolean encrypt, int offset, int length);
     private native static void aesIgeEncryptionByteArray(byte[] buffer, byte[] key, byte[] iv, boolean encrypt, int offset, int length);
     public native static void aesCtrDecryption(ByteBuffer buffer, byte[] key, byte[] iv, int offset, int length);
-    public native static void aesCtrDecryptionByteArray(byte[] buffer, byte[] key, byte[] iv, int offset, int length, int n);
+    public native static void aesCtrDecryptionByteArray(byte[] buffer, byte[] key, byte[] iv, int offset, long length, int n);
     private native static void aesCbcEncryptionByteArray(byte[] buffer, byte[] key, byte[] iv, int offset, int length, int n, int encrypt);
     public native static void aesCbcEncryption(ByteBuffer buffer, byte[] key, byte[] iv, int offset, int length, int encrypt);
     public native static String readlink(String path);
@@ -283,10 +283,10 @@ public class Utilities {
         return computeSHA256(convertme, 0, convertme.length);
     }
 
-    public static byte[] computeSHA256(byte[] convertme, int offset, int len) {
+    public static byte[] computeSHA256(byte[] convertme, int offset, long len) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(convertme, offset, len);
+            md.update(convertme, offset, (int) len);
             return md.digest();
         } catch (Exception e) {
             FileLog.e(e);
@@ -403,8 +403,14 @@ public class Utilities {
         return null;
     }
 
-    public static float clamp(float value, float top, float bottom) {
-        return Math.max(Math.min(value, top), bottom);
+    public static float clamp(float value, float maxValue, float minValue) {
+        if (Float.isNaN(value)) {
+            return minValue;
+        }
+        if (Float.isInfinite(value)) {
+            return maxValue;
+        }
+        return Math.max(Math.min(value, maxValue), minValue);
     }
 
     public static String generateRandomString() {

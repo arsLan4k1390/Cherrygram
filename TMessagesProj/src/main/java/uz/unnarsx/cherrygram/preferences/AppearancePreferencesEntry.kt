@@ -13,13 +13,13 @@ import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.ktx.*
 import uz.unnarsx.extras.CherrygramExtras
-import uz.unnarsx.extras.IconExtras
+/*import uz.unnarsx.extras.IconExtras*/
 import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)) {
         category(LocaleController.getString("AP_RedesignCategory", R.string.AP_RedesignCategory)) {
-            if (Build.VERSION.SDK_INT == 31 || Build.VERSION.SDK_INT== 32) {
+            /*if (Build.VERSION.SDK_INT == 31 || Build.VERSION.SDK_INT == 32) {
                 list {
                     title = LocaleController.getString("AP_ChangeIcon", R.string.AP_ChangeIcon)
 
@@ -28,7 +28,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                             Triple(0, LocaleController.getString("AP_ChangeIcon_Default", R.string.AP_ChangeIcon_Default), R.mipmap.cg_launcher_default),
                             Triple(1, LocaleController.getString("AP_ChangeIcon_White", R.string.AP_ChangeIcon_White), R.mipmap.cg_launcher_white),
                             Triple(2, LocaleController.getString("AP_ChangeIcon_Monet_Samsung", R.string.AP_ChangeIcon_Monet_Samsung), R.mipmap.cg_launcher_monet_samsung),
-                            Triple(3, LocaleController.getString("AP_ChangeIcon_Monet_Pixel", R.string.AP_ChangeIcon_Monet_Pixel), R.mipmap.cg_launcher_monet_samsung),
+                            Triple(3, LocaleController.getString("AP_ChangeIcon_Monet_Pixel", R.string.AP_ChangeIcon_Monet_Pixel), R.mipmap.cg_launcher_monet_pixel),
                         )
                     }, {
                         return@contractIcons when (CherrygramConfig.change_Icon) {
@@ -62,14 +62,14 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                         IconExtras.setIcon(it)
                     }
                 }
-            }
+            }*/
             list {
                 title = LocaleController.getString("AP_IconReplacements", R.string.AP_IconReplacements)
 
                 contractIcons({
                     return@contractIcons listOf(
                             Triple(0, LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI), R.drawable.settings_outline_28),
-                            Triple(1, LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default), R.drawable.menu_settings)
+                            Triple(1, LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default), R.drawable.msg_settings)
                     )
                 }, {
                     return@contractIcons when (CherrygramConfig.iconReplacement) {
@@ -125,16 +125,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.folderNameInHeader
                 }) {
                     CherrygramConfig.folderNameInHeader = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_NewTabs_RemoveAllChats", R.string.CP_NewTabs_RemoveAllChats)
-                /*summary = LocaleController.getString("CP_NewTabs_RemoveAllChats_Desc", R.string.CP_NewTabs_RemoveAllChats_Desc)*/
-
-                contract({
-                    return@contract CherrygramConfig.newTabs_hideAllChats
-                }) {
-                    CherrygramConfig.newTabs_hideAllChats = it
                 }
             }
             switch {

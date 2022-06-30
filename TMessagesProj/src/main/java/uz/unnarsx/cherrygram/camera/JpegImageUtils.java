@@ -17,11 +17,9 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.util.Log;
 import android.util.Size;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.ImageProxy;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -134,7 +132,7 @@ public final class JpegImageUtils {
         return out.toByteArray();
     }
 
-    /** Crops byte array with given {@link Rect}. */
+    /** Crops byte array with given {@link android.graphics.Rect}. */
     @NonNull
     public static byte[] cropByteArray(@NonNull byte[] data, @Nullable Rect cropRect)
             throws CodecFailedException {
@@ -229,15 +227,15 @@ public final class JpegImageUtils {
             UNKNOWN
         }
 
-        private final FailureType mFailureType;
+        private final CodecFailedException.FailureType mFailureType;
 
-        CodecFailedException(String message, FailureType failureType) {
+        CodecFailedException(String message, CodecFailedException.FailureType failureType) {
             super(message);
             mFailureType = failureType;
         }
 
         @NonNull
-        public FailureType getFailureType() {
+        public CodecFailedException.FailureType getFailureType() {
             return mFailureType;
         }
     }

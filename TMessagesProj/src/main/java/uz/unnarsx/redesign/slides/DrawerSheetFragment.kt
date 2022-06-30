@@ -20,11 +20,11 @@ import uz.unnarsx.redesign.BaseActionedSwipeFragment
 class DrawerSheetFragment : BaseActionedSwipeFragment() {
     override fun getActions(): List<Action> {
         return mutableListOf<Action>().apply {
-            add(Action("contacts", R.drawable.menu_contacts, LocaleController.getString("Contacts", R.string.Contacts)))
-            add(Action("calls", R.drawable.menu_calls, LocaleController.getString("Calls", R.string.Calls)))
+            add(Action("contacts", R.drawable.msg_contacts, LocaleController.getString("Contacts", R.string.Contacts)))
+            add(Action("calls", R.drawable.msg_calls, LocaleController.getString("Calls", R.string.Calls)))
             add(Action("saved", R.drawable.menu_saved_cg, LocaleController.getString("SavedMessages", R.string.SavedMessages)))
             add(Action("archive", R.drawable.msg_archive, LocaleController.getString("ArchivedChats", R.string.ArchivedChats)))
-            add(Action("settings", R.drawable.menu_settings, LocaleController.getString("Settings", R.string.Settings)))
+            add(Action("settings", R.drawable.msg_settings, LocaleController.getString("Settings", R.string.Settings)))
         }
     }
 

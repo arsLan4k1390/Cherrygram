@@ -388,11 +388,11 @@ public class CameraXController {
             try {
                 camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, vCapture, iCapture);
                 noSupportedSurfaceCombinationWorkaround = false;
-            } catch (IllegalArgumentException e) {
+            } catch (java.lang.IllegalArgumentException e) {
                 noSupportedSurfaceCombinationWorkaround = true;
                 try {
                     camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, iCapture);
-                } catch (IllegalArgumentException ignored) {}
+                } catch (java.lang.IllegalArgumentException ignored) {}
             }
         }
         if (camera != null) {

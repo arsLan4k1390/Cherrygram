@@ -109,6 +109,7 @@ public class CameraScanActivity extends BaseFragment {
     private ImageView flashButton;
     private AnimatorSet flashAnimator;
     private float backShadowAlpha = .5f;
+    protected boolean shownAsBottomSheet = false;
 
     private SpringAnimation qrAppearing = null;
     private float qrAppearingValue = 0;
@@ -125,7 +126,7 @@ public class CameraScanActivity extends BaseFragment {
     private int recognizeIndex = 0;
     private String recognizedText;
 
-    private int sps; // samples per second (already when recognized)
+    private int sps; // samples per second (when already recognized)
 
     private boolean qrLoading = false;
     private boolean qrLoaded = false;
@@ -175,6 +176,7 @@ public class CameraScanActivity extends BaseFragment {
                         dismiss();
                     }
                 };
+                fragment.shownAsBottomSheet = true;
                 fragment.needGalleryButton = gallery;
                 actionBarLayout[0].addFragmentToStack(fragment);
                 actionBarLayout[0].showLastFragment();
@@ -208,9 +210,8 @@ public class CameraScanActivity extends BaseFragment {
         };
         bottomSheet.setUseLightStatusBar(false);
         AndroidUtilities.setLightNavigationBar(bottomSheet.getWindow(), false);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            bottomSheet.getWindow().setNavigationBarColor(0xff000000);
-        }
+        AndroidUtilities.setNavigationBarColor(bottomSheet.getWindow(), 0xff000000, false);
+        bottomSheet.setUseLightStatusBar(false);
         bottomSheet.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         bottomSheet.show();
         return actionBarLayout;
@@ -256,8 +257,15 @@ public class CameraScanActivity extends BaseFragment {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         if (CherrygramConfig.INSTANCE.getBackButton())
             actionBar.setBackButtonImage(R.drawable.arrow_back);
-        actionBar.setItemsColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2), false);
-        actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_actionBarWhiteSelector), false);
+        if (shownAsBottomSheet) {
+            actionBar.setItemsColor(0xffffffff, false);
+            actionBar.setItemsBackgroundColor(0xffffffff, false);
+            actionBar.setTitleColor(0xffffffff);
+        } else {
+            actionBar.setItemsColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2), false);
+            actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_actionBarWhiteSelector), false);
+            actionBar.setTitleColor(Theme.getColor(Theme.key_actionBarDefaultTitle));
+        }
         actionBar.setCastShadows(false);
         if (!AndroidUtilities.isTablet() && !isQr()) {
             actionBar.showActionModeTop();
@@ -427,7 +435,7 @@ public class CameraScanActivity extends BaseFragment {
         fragmentView = viewGroup;
 
         if (currentType == TYPE_QR || currentType == TYPE_QR_LOGIN) {
-            fragmentView.postDelayed(this::initCameraView, 350);
+            fragmentView.postDelayed(this::initCameraView, 450);
         } else {
             initCameraView();
         }

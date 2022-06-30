@@ -16,8 +16,8 @@ object CherrygramConfig {
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
     // Appearance Settings
     // Redesign
-    var change_Icon by sharedPreferences.int("AP_ChangeIcon", 0)
-    var change_Icon2 by sharedPreferences.int("AP_ChangeIcon2", 0)
+    /*var change_Icon by sharedPreferences.int("AP_ChangeIcon", 0)
+    var change_Icon2 by sharedPreferences.int("AP_ChangeIcon2", 0)*/
 
     var iconReplacement by sharedPreferences.int("AP_IconReplacements", 0)
     fun getIconReplacement(): BaseIconReplace {
@@ -32,17 +32,20 @@ object CherrygramConfig {
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
     //Folders
     var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
-    var newTabs_hideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
     var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
     var showTabsOnForward by sharedPreferences.boolean("CP_ShowTabsOnForward", true)
     var filledIcons by sharedPreferences.boolean("AP_FilledIcons", false)
 
+    const val TAB_TYPE_TEXT = 0
+    const val TAB_TYPE_MIX = 1
+    const val TAB_TYPE_ICON = 2
+
     var tabMode by sharedPreferences.int("CG_FoldersType", 0)
-    @JvmName("tabMode")
+    @JvmName("setTabMode1")
     fun setTabMode(mode: Int) {
         tabMode = mode
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
+            "owlconfig",
             Activity.MODE_PRIVATE
         )
         val editor = preferences.edit()
@@ -185,7 +188,6 @@ object CherrygramConfig {
     var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
     //Chats
-    var scrollableChatPreview by sharedPreferences.boolean("CP_ScrollableChatPreview", true)
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
     var noRounding by sharedPreferences.boolean("CP_NoRounding", false)
     var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)

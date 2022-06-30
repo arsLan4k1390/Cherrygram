@@ -122,7 +122,7 @@ public class CameraTypeSelector extends LinearLayout {
                 d.draw(canvas);
             }
         };
-        imageView.setLayoutParams(new LayoutParams(0, LayoutParams.MATCH_PARENT, 1.0f));
+        imageView.setLayoutParams(new LinearLayout.LayoutParams(0, LayoutParams.MATCH_PARENT, 1.0f));
 
         addView(imageView);
 

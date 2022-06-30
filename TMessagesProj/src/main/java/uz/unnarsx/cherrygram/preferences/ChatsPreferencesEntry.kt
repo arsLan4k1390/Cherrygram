@@ -43,15 +43,6 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
 
         category(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {
             switch {
-                title = LocaleController.getString("CP_ScrollableChatPreview", R.string.CP_ScrollableChatPreview)
-
-                contract({
-                    return@contract CherrygramConfig.scrollableChatPreview
-                }) {
-                    CherrygramConfig.scrollableChatPreview = it
-                }
-            }
-            switch {
                 title = LocaleController.getString("CP_UnreadBadgeOnBackButton", R.string.CP_UnreadBadgeOnBackButton)
                 summary = LocaleController.getString("CP_UnreadBadgeOnBackButton_Desc", R.string.CP_UnreadBadgeOnBackButton_Desc)
 

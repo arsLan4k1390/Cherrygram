@@ -89,7 +89,7 @@ public class UndoView extends FrameLayout {
     private String timeLeftString;
     private int textWidth;
 
-    private int currentAction;
+    private int currentAction = -1;
     private ArrayList<Long> currentDialogIds;
     private Runnable currentActionRunnable;
     private Runnable currentCancelRunnable;
@@ -862,6 +862,9 @@ public class UndoView extends FrameLayout {
                 }
                 subInfoText = null;
                 icon = currentAction == ACTION_PIN_DIALOGS ? R.raw.ic_pin :  R.raw.ic_unpin;
+                if (infoObject2 instanceof Integer) {
+                    timeLeft = (int) infoObject2;
+                }
             } else {
                 if (action == ACTION_ARCHIVE_HINT) {
                     infoText = LocaleController.getString("ChatArchived", R.string.ChatArchived);
