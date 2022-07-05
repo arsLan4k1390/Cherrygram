@@ -89,6 +89,10 @@
         android:theme="@style/Theme.TMessages.Start"
         android:allowAudioPlaybackCapture="true"
         tools:replace="android:supportsRtl">
+        <receiver
+            android:name="uz.unnarsx.cherrygram.ota.NotificationActionService"
+            android:enabled="true"
+            android:exported="true" />
 
         <activity-alias
             android:enabled="true"
@@ -149,7 +153,6 @@
             android:name="uz.unnarsx.cherrygram.VintageIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
             android:icon="@mipmap/icon_6_launcher"
-            android:roundIcon="@mipmap/icon_6_launcher_round"
             android:exported="true">
 
             <intent-filter>
@@ -163,7 +166,6 @@
             android:name="uz.unnarsx.cherrygram.AquaIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
             android:icon="@mipmap/icon_4_launcher"
-            android:roundIcon="@mipmap/icon_4_launcher_round"
             android:exported="true">
 
             <intent-filter>
@@ -178,7 +180,6 @@
             android:name="uz.unnarsx.cherrygram.PremiumIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
             android:icon="@mipmap/icon_3_launcher"
-            android:roundIcon="@mipmap/icon_3_launcher_round"
             android:exported="true">
 
             <intent-filter>
@@ -193,7 +194,6 @@
             android:name="uz.unnarsx.cherrygram.TurboIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
             android:icon="@mipmap/icon_5_launcher"
-            android:roundIcon="@mipmap/icon_5_launcher_round"
             android:exported="true">
 
             <intent-filter>
@@ -209,7 +209,6 @@
             android:name="uz.unnarsx.cherrygram.NoxIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
             android:icon="@mipmap/icon_2_launcher"
-            android:roundIcon="@mipmap/icon_2_launcher_round"
             android:exported="true">
 
             <intent-filter>
@@ -263,7 +262,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.uz.unnarsx.cherrygram.android.profile" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -319,8 +318,8 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.telegram.messenger.android.call"/>
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.telegram.messenger.android.call.video"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.uz.unnarsx.cherrygram.android.call"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.uz.unnarsx.cherrygram.android.call.video"/>
             </intent-filter>
         </activity-alias>
         <activity

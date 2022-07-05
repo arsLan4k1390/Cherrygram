@@ -88,8 +88,6 @@ import uz.unnarsx.cherrygram.CherrygramConfig;
 @SuppressWarnings("unchecked")
 public class MediaDataController extends BaseController {
 
-    private static int MAX_RECENT_STICKERS_COUNT = (int) (CherrygramConfig.INSTANCE.getSlider_RecentStickersAmplifier());
-
     public final static String ATTACH_MENU_BOT_ANIMATED_ICON_KEY = "android_animated",
             ATTACH_MENU_BOT_STATIC_ICON_KEY = "default_static",
             ATTACH_MENU_BOT_PLACEHOLDER_STATIC_KEY = "placeholder_static",
@@ -665,7 +663,7 @@ public class MediaDataController extends BaseController {
 
     public ArrayList<TLRPC.Document> getRecentStickers(int type) {
         ArrayList<TLRPC.Document> arrayList = recentStickers[type];
-        return new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), MAX_RECENT_STICKERS_COUNT))); //Show more then 20 recent stickers
+        return new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), CherrygramConfig.INSTANCE.getSlider_RecentStickersAmplifier()+2))); //Show more then 20 recent stickers
     }
 
     public ArrayList<TLRPC.Document> getRecentStickersNoCopy(int type) {
@@ -2206,7 +2204,7 @@ public class MediaDataController extends BaseController {
             }
         });
         Utilities.stageQueue.postRunnable(() -> {
-            if (cache && (res == null || BuildVars.DEBUG_PRIVATE_VERSION || Math.abs(System.currentTimeMillis() / 1000 - date) >= 60 * 60) || !cache && res == null && hash == 0) {
+            if (cache && (res == null || Math.abs(System.currentTimeMillis() / 1000 - date) >= 60 * 60) || !cache && res == null && hash == 0) {
                 AndroidUtilities.runOnUIThread(() -> {
                     if (res != null && hash != 0) {
                         loadHash[type] = hash;

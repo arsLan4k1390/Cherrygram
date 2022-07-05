@@ -21,6 +21,8 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
 
     protected RecyclerListView recyclerListView;
@@ -179,6 +181,8 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
 
             actionBar.setCastShadows(true);
             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+            if (CherrygramConfig.INSTANCE.getBackButton())
+                actionBar.setBackButtonImage(R.drawable.arrow_back);
             actionBar.setTitle(getTitle());
             actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick(){
                 @Override

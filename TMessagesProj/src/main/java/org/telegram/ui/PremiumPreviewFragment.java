@@ -91,6 +91,8 @@ import java.util.Collections;
 import java.util.Currency;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class PremiumPreviewFragment extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     RecyclerListView listView;
     ArrayList<PremiumFeatureData> premiumFeatures = new ArrayList<>();
@@ -476,6 +478,8 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
         actionBar.setBackground(null);
         actionBar.setCastShadows(false);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+        if (CherrygramConfig.INSTANCE.getBackButton())
+            actionBar.setBackButtonImage(R.drawable.arrow_back);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {

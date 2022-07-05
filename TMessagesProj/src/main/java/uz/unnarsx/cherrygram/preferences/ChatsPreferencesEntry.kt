@@ -185,15 +185,6 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
 
         category(LocaleController.getString("AS_Header_Record", R.string.CP_Header_Record)) {
             switch {
-                title = LocaleController.getString("CP_GIFasVideo", R.string.CP_GIFasVideo)
-
-                contract({
-                    return@contract CherrygramConfig.playGIFasVideo
-                }) {
-                    CherrygramConfig.playGIFasVideo = it
-                }
-            }
-            switch {
                 title = LocaleController.getString("CP_PlayVideo", R.string.CP_PlayVideo)
                 summary = LocaleController.getString("CP_PlayVideo_Desc", R.string.CP_PlayVideo_Desc)
 

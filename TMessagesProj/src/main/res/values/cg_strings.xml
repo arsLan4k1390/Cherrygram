@@ -111,7 +111,6 @@
     <!--Telegram, Cherrygram Folders-->
 
     <string name="CP_Header_Record">Media</string>
-    <string name="CP_GIFasVideo">Play GIFs as Videos</string>
     <string name="CP_PlayVideo">Play video on volume button click</string>
     <string name="CP_PlayVideo_Desc">When you press the volume button, any video on the screen in chat will be played</string>
     <string name="CP_AutoPauseVideo">Auto pause video</string>

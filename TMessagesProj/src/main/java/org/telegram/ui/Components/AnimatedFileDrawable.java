@@ -32,6 +32,7 @@ import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.ImageReceiver;
+import org.telegram.messenger.MessageObject;
 import org.telegram.tgnet.TLRPC;
 
 import java.io.File;
@@ -393,6 +394,14 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable {
         isWebmSticker = b;
         if (isWebmSticker) {
             useSharedQueue = true;
+            if (MessageObject.getStickerSetId(document) == 683462835916767409L) {
+                path = null;
+                return;
+            }
+            if (MessageObject.getStickerSetId(document) == 1510769529645432834L) {
+                path = null;
+                return;
+            }
         }
     }
 

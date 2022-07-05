@@ -201,7 +201,7 @@ object CherrygramConfig {
     var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
     var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
     // Media
-    var playGIFasVideo by sharedPreferences.boolean("CP_GIFasVideo", true)
+    var playGIFasVideo by sharedPreferences.boolean("CP_PlayGIFasVideo", true)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
     var audioFocus by sharedPreferences.boolean("CP_AudioFocus", false)

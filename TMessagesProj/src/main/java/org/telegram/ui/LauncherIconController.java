@@ -50,10 +50,10 @@ public class LauncherIconController {
         ALT_MONET_SAMSUNG("CG_Icon_Monet_Samsung", R.color.ic_launcher_background_samsung, R.drawable.ic_launcher_foreground_samsung, R.string.AP_ChangeIcon_Monet_Samsung),
         ALT_MONET_PIXEL("CG_Icon_Monet_Pixel", R.color.ic_launcher_background_pixel, R.drawable.ic_launcher_foreground_pixel, R.string.AP_ChangeIcon_Monet_Pixel),
         VINTAGE("VintageIcon", R.drawable.icon_6_background_sa, R.mipmap.icon_6_foreground_sa, R.string.AppIconVintage),
-        AQUA("AquaIcon", R.drawable.icon_4_background_sa, R.mipmap.icon_foreground_sa, R.string.AppIconAqua),
+        AQUA("AquaIcon", R.drawable.icon_4_background_sa, R.mipmap.ic_launcher_sa_foreground, R.string.AppIconAqua),
         PREMIUM("PremiumIcon", R.drawable.icon_3_background_sa, R.mipmap.icon_3_foreground_sa, R.string.AppIconPremium/*, true*/),
         TURBO("TurboIcon", R.drawable.icon_5_background_sa, R.mipmap.icon_5_foreground_sa, R.string.AppIconTurbo/*, true*/),
-        NOX("NoxIcon", R.drawable.icon_2_background_sa, R.mipmap.icon_foreground_sa, R.string.AppIconNox/*, true*/);
+        NOX("NoxIcon", R.drawable.icon_2_background_sa, R.mipmap.ic_launcher_sa_foreground, R.string.AppIconNox/*, true*/);
 
         public final String key;
         public final int background;

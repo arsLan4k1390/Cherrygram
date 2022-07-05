@@ -107,7 +107,6 @@
     <!--Папки Telegram, Cherrygram-->
 
     <string name="CP_Header_Record">Медиа</string>
-    <string name="CP_GIFasVideo">Воспроизводить ГИФ как видео</string>
     <string name="CP_PlayVideo">Воспроизводить видео по нажатию на кнопку громкости</string>
     <string name="CP_PlayVideo_Desc">При нажатии на кнопку громкости будет включено видео на экране в диалоге</string>
     <string name="CP_AutoPauseVideo">Останавливать видео</string>
