@@ -858,6 +858,7 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
     private final static int OPTION_EDIT_SCHEDULE_TIME = 102;
 
     private final static int OPTION_VIEW_HISTORY = 90;
+    private final static int OPTION_CLEAR_FROM_CACHE = 994;
 
     private final static int[] allowedNotificationsDuringChatListAnimations = new int[]{
             NotificationCenter.messagesRead,
@@ -6819,7 +6820,7 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
                     } else {
                         String name = UserObject.getFirstName(user, false);
                         Spannable spannable = new SpannableString(name + " ");
-                        spannable.setSpan(new URLSpan("tg://user?id=" + user.id), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        spannable.setSpan(new URLSpanUserMention("" + user.id, 3), 0, spannable.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         chatActivityEnterView.replaceWithText(start, len, spannable, false);
                     }
                 }
@@ -13299,7 +13300,8 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
 
                     if (chatMode == MODE_SCHEDULED || !allowChatActions || selectedMessagesIds[0].size() != 0 && selectedMessagesIds[1].size() != 0) {
                         newVisibility = View.GONE;
-                    } else if (selectedCount == 1) {
+                    //} else if (selectedCount == 1) {
+                    } else if (selectedCount > 0) {
                         newVisibility = View.VISIBLE;
                     } else {
                         newVisibility = View.VISIBLE;
@@ -20810,7 +20812,7 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
 
         if (AndroidUtilities.isTablet()) {
             if (AndroidUtilities.isSmallTablet() && ApplicationLoader.applicationContext.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                actionBar.setBackButtonDrawable(new BackDrawable(false));
+                actionBar.setBackButtonImage(R.drawable.ic_ab_back);
             } else {
                 actionBar.setBackButtonDrawable(new BackDrawable(parentLayout == null || parentLayout.fragmentsStack.isEmpty() || parentLayout.fragmentsStack.get(0) == ChatActivity.this || parentLayout.fragmentsStack.size() == 1));
             }
@@ -21419,7 +21421,7 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
                                 }
                             }
                             items.add(LocaleController.getString("CG_ClearFromCache", R.string.CG_ClearFromCache));
-                            options.add(994);
+                            options.add(OPTION_CLEAR_FROM_CACHE);
                             icons.add(R.drawable.clear_cache);
                         } else if (type == 5) {
                             items.add(LocaleController.getString("ApplyLocalizationFile", R.string.ApplyLocalizationFile));
@@ -21456,7 +21458,7 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
                             options.add(OPTION_SHARE);
                             icons.add(R.drawable.msg_shareout);
                             items.add(LocaleController.getString("CG_ClearFromCache", R.string.CG_ClearFromCache));
-                            options.add(994);
+                            options.add(OPTION_CLEAR_FROM_CACHE);
                             icons.add(R.drawable.clear_cache);
                         } else if (type == 7) {
                             if (selectedObject.isMask()) {
@@ -21624,7 +21626,7 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
                                 icons.add(R.drawable.msg_gallery);
                             }
                             items.add(LocaleController.getString("CG_ClearFromCache", R.string.CG_ClearFromCache));
-                            options.add(994);
+                            options.add(OPTION_CLEAR_FROM_CACHE);
                             icons.add(R.drawable.clear_cache);
                         } else if (type == 5) {
                             items.add(LocaleController.getString("ApplyLocalizationFile", R.string.ApplyLocalizationFile));
@@ -21731,8 +21733,7 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
                     ActionBarMenuSubItem backCell = new ActionBarMenuSubItem(getParentActivity(), true, false, themeDelegate);
                     backCell.setItemHeight(44);
                     backCell.setTextAndIcon(LocaleController.getString("Back", R.string.Back), R.drawable.msg_arrow_back);
-                    if (CherrygramConfig.INSTANCE.getBackButton())
-                        backCell.setTextAndIcon(LocaleController.getString("Back", R.string.Back), R.drawable.arrow_back);
+
                     backCell.getTextView().setPadding(LocaleController.isRTL ? 0 : AndroidUtilities.dp(40), 0, LocaleController.isRTL ? AndroidUtilities.dp(40) : 0, 0);
                     backCell.setOnClickListener(v1 -> popupLayout.getSwipeBack().closeForeground());
                     linearLayout.addView(backCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
@@ -21928,8 +21929,7 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
                     ActionBarMenuSubItem cell = new ActionBarMenuSubItem(getParentActivity(), true, false, themeDelegate);
                     cell.setItemHeight(44);
                     cell.setTextAndIcon(LocaleController.getString("Back", R.string.Back), R.drawable.msg_arrow_back);
-                    if (CherrygramConfig.INSTANCE.getBackButton())
-                        cell.setTextAndIcon(LocaleController.getString("Back", R.string.Back), R.drawable.arrow_back);
+
                     cell.getTextView().setPadding(LocaleController.isRTL ? 0 : AndroidUtilities.dp(40), 0, LocaleController.isRTL ? AndroidUtilities.dp(40) : 0, 0);
 
                     FrameLayout backContainer = new FrameLayout(contentView.getContext());
@@ -22897,6 +22897,55 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
                 DialogsActivity fragment = new DialogsActivity(args);
                 fragment.setDelegate(this);
                 presentFragment(fragment);
+                break;
+            }
+            case OPTION_CLEAR_FROM_CACHE: {
+                if (Build.VERSION.SDK_INT >= 23 && getParentActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    getParentActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 4);
+                    selectedObject = null;
+                    selectedObjectGroup = null;
+                    selectedObjectToEditCaption = null;
+                    return;
+                }
+                ChatMessageCell messageCell = null;
+                int count = chatListView.getChildCount();
+                for (int a = 0; a < count; a++) {
+                    View child = chatListView.getChildAt(a);
+                    if (child instanceof ChatMessageCell) {
+                        ChatMessageCell cell = (ChatMessageCell) child;
+                        if (cell.getMessageObject() == selectedObject) {
+                            messageCell = cell;
+                            break;
+                        }
+                    }
+                }
+                String fileName = FileLoader.getDocumentFileName(selectedObject.getDocument());
+                if (TextUtils.isEmpty(fileName)) {
+                    fileName = selectedObject.getFileName();
+                }
+                String path = selectedObject.messageOwner.attachPath;
+                if (path != null && path.length() > 0) {
+                    File temp = new File(path);
+                    if (!temp.exists()) {
+                        path = null;
+                    }
+                }
+                if (path == null || path.length() == 0) {
+                    path = getFileLoader().getPathToMessage(selectedObject.messageOwner).toString();
+                }
+                File file = new File(path);
+                boolean isDeleted = file.delete();
+                if (isDeleted) {
+                    selectedObject.mediaExists = false;
+                    if (messageCell != null) {
+                        messageCell.updateButtonState(false, true, false);
+                    }
+                    undoView.setInfoText(LocaleController.formatString("CG_ClearedFromCache", R.string.CG_ClearedFromCache));
+                    undoView.showWithAction(0, UndoView.ACTION_CACHE_WAS_CLEARED, null, null);
+                }
+                else {
+                    Toast.makeText(getParentActivity(), "Looks like something went wrong.", Toast.LENGTH_SHORT).show();
+                }
                 break;
             }
             case OPTION_COPY: {
@@ -25525,7 +25574,7 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
 
                     @Override
                     public boolean canPerformActions() {
-                        return actionBar != null && !actionBar.isActionModeShowed() && reportType < 0 && !inPreviewMode;
+                        return actionBar != null && !actionBar.isActionModeShowed() && reportType < 0/* && !inPreviewMode*/;
                     }
 
                     @Override
@@ -27752,7 +27801,7 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
 
     @Override
     public int getNavigationBarColor() {
-        return getThemedColor(Theme.key_windowBackgroundGray);
+        return getThemedColor(CherrygramConfig.INSTANCE.getFlatNavbar() ? Theme.key_chat_messagePanelBackground : Theme.key_windowBackgroundGray);
     }
 
     @Override

@@ -196,8 +196,7 @@ public class ProxySettingsActivity extends BaseFragment {
     public View createView(Context context) {
         actionBar.setTitle(LocaleController.getString("ProxyDetails", R.string.ProxyDetails));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(false);
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);

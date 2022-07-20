@@ -110,6 +110,15 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("CP_DisablePremStickAnim", R.string.CP_DisablePremStickAnim)
+
+                contract({
+                    return@contract CherrygramConfig.disablePremStickAnim
+                }) {
+                    CherrygramConfig.disablePremStickAnim = it
+                }
+            }
+            switch {
                 title = LocaleController.getString("CP_DisableSwipeToNext", R.string.CP_DisableSwipeToNext)
                 summary = LocaleController.getString("CP_DisableSwipeToNext_Desc", R.string.CP_DisableSwipeToNext_Desc)
 

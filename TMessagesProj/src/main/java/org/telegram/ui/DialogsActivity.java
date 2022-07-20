@@ -2232,8 +2232,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         searchItem.setContentDescription(LocaleController.getString("Search", R.string.Search));
         if (onlySelect) {
             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
             if (initialDialogsType == 3 && selectAlertString == null) {
                 actionBar.setTitle(LocaleController.getString("ForwardTo", R.string.ForwardTo));
             } else if (initialDialogsType == 10) {
@@ -2242,6 +2241,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 actionBar.setTitle(LocaleController.getString("SelectChat", R.string.SelectChat));
             }
             actionBar.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefault));
+            actionBar.setOnLongClickListener(v -> {
+                if (CherrygramConfig.INSTANCE.getNewTabs_hideAllChats() && filterTabsView != null && filterTabsView.getDefaultTabId() != filterTabsView.getCurrentTabId()) {
+                    filterTabsView.toggleAllTabs(true);
+                    filterTabsView.selectDefaultTab();
+                }
+                return false;
+            });
         } else {
             if (searchString != null || folderId != 0) {
                 actionBar.setBackButtonDrawable(backDrawable = new BackDrawable(false));
@@ -2252,11 +2258,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (folderId != 0) {
                 actionBar.setTitle(LocaleController.getString("ArchivedChats", R.string.ArchivedChats));
             } else {
-                if (BuildVars.DEBUG_VERSION) {
-                    actionBar.setTitle(LocaleController.getString("CG_AppNameBeta", R.string.CG_AppNameBeta));
-                } else {
-                    actionBar.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
-                }
+                actionBar.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
+                actionBar.setOnLongClickListener(v -> {
+                    if (CherrygramConfig.INSTANCE.getNewTabs_hideAllChats() && filterTabsView != null && filterTabsView.getCurrentTabId() != initialDialogsType) {
+                        filterTabsView.toggleAllTabs(true);
+                        filterTabsView.selectDefaultTab();
+                    }
+                    return false;
+                });
             }
             if (folderId == 0) {
                 actionBar.setSupportsHolidayImage(true);
@@ -4348,7 +4357,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     animatedUpdateItems = false;
                 }
                 canShowFilterTabsView = true;
-                boolean updateCurrentTab = filterTabsView.isEmpty();
                 updateFilterTabsVisibility(animated);
                 int id = filterTabsView.getCurrentTabId();
                 int stableId = filterTabsView.getCurrentTabStableId();
@@ -4357,12 +4365,15 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
                 filterTabsView.removeTabs();
                 for (int a = 0, N = filters.size(); a < N; a++) {
+                    MessagesController.DialogFilter dialogFilter = filters.get(a);
                     if (filters.get(a).isDefault()) {
-                        filterTabsView.addTab(a, 0, LocaleController.getString("FilterAllChats", R.string.FilterAllChats), true,  filters.get(a).locked, filters.get(a).emoticon);
+                        if (filterTabsView.showAllChatsTab)
+                            filterTabsView.addTab(a, 0, LocaleController.getString("FilterAllChats", R.string.FilterAllChats), true,  filters.get(a).locked, dialogFilter.emoticon);
                     } else {
                         filterTabsView.addTab(a, filters.get(a).localId, filters.get(a).name, false,  filters.get(a).locked, filters.get(a).emoticon);
                     }
                 }
+                boolean updateCurrentTab = CherrygramConfig.INSTANCE.getNewTabs_hideAllChats();
                 if (stableId >= 0) {
                     if (filterTabsView.getStableId(viewPages[0].selectedType) != stableId) {
                         updateCurrentTab = true;
@@ -5815,7 +5826,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 presentFragmentAsPreviewWithMenu(chatActivity[0] = new ChatActivity(args), previewMenu[0]);
                 if (chatActivity[0] != null) {
-                    chatActivity[0].allowExpandPreviewByClick = true;
+                    chatActivity[0].allowExpandPreviewByClick = false;
                     try {
                         chatActivity[0].getAvatarContainer().getAvatarImageView().performAccessibilityAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
                     } catch (Exception ignore) {}
@@ -6802,7 +6813,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (searchIsShowed) {
                 createActionMode(ACTION_MODE_SEARCH_DIALOGS_TAG);
                 if (actionBar.getBackButton().getDrawable() instanceof MenuDrawable) {
-                    actionBar.setBackButtonDrawable(new BackDrawable(false));
+                    actionBar.setBackButtonImage(R.drawable.ic_ab_back);
                 }
             } else {
                 createActionMode(null);

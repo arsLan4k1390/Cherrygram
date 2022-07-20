@@ -2,8 +2,7 @@ package uz.unnarsx.cherrygram.preferences;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Parcelable;
-import android.view.Gravity;
+import android.transition.TransitionManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -15,53 +14,43 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
-import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
-import org.telegram.ui.Cells.TextSettingsCell;
+import org.telegram.ui.Cells.TextCell;
+import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
-import org.telegram.ui.Components.UndoView;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.prefviews.TextCheckWithIconCell;
+import uz.unnarsx.cherrygram.prefviews.BlurIntensityCell;
+import uz.unnarsx.cherrygram.prefviews.DrawerProfilePreviewCell;
+import uz.unnarsx.cherrygram.prefviews.ThemeSelectorDrawerCell;
 
 public class DrawerPreferencesEntry extends BaseFragment {
-
     private int rowCount;
     private ListAdapter listAdapter;
-    
-    private int iconsHeaderRow;
-    private int eventChooserRow;
-    private int iconsDividerRow;
+    private RecyclerListView listView;
+    private DrawerProfilePreviewCell profilePreviewCell;
 
-    private int drawerHeaderRow;
-    private int newGroupRow;
-    private int newSecretChatRow;
-    private int newChannelRow;
-    private int contactsRow;
-    private int callsRow;
-    private int savedMessagesRow;
-    private int archivedChatsRow;
-    private int peopleNearbyRow;
-    private int scanQrRow;
-
-    private int newGroupIcon;
-    private int newSecretIcon;
-    private int newChannelIcon;
-    private int contactsIcon;
-    private int callsIcon;
-    private int savedIcon;
-    private int archiveIcon;
-    private int settingsIcon;
-    private int peopleNearbyIcon;
-    private int scanQrIcon;
-
-    private UndoView restartTooltip;
+    private int drawerRow;
+    private int drawerAvatarAsBackgroundRow;
+    private int showAvatarRow;
+    private int drawerDarkenBackgroundRow;
+    private int showGradientRow;
+    private int drawerBlurBackgroundRow;
+    private int drawerDividerRow;
+    private int editBlurHeaderRow;
+    private int editBlurRow;
+    private int editBlurDividerRow;
+    private int themeDrawerHeader;
+    private int themeDrawerRow;
+    private int themeDrawerDividerRow;
+    private int menuItemsRow;
 
     @Override
     public boolean onFragmentCreate() {
@@ -69,19 +58,15 @@ public class DrawerPreferencesEntry extends BaseFragment {
         updateRowsId(true);
         return true;
     }
-
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
-        actionBar.setTitle(LocaleController.getString("AP_DrawerButtonsCategory", R.string.AP_DrawerButtonsCategory));
+        
+        actionBar.setTitle(LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory));
         actionBar.setAllowOverlayTitle(false);
-
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);
         }
-
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -90,130 +75,108 @@ public class DrawerPreferencesEntry extends BaseFragment {
                 }
             }
         });
-
         listAdapter = new ListAdapter(context);
         fragmentView = new FrameLayout(context);
         fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
         FrameLayout frameLayout = (FrameLayout) fragmentView;
 
-        RecyclerListView listView = new RecyclerListView(context);
+        listView = new RecyclerListView(context);
         listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         listView.setVerticalScrollBarEnabled(false);
         listView.setAdapter(listAdapter);
-
-        if (listView.getItemAnimator() != null) {
+        if(listView.getItemAnimator() != null){
             ((DefaultItemAnimator) listView.getItemAnimator()).setDelayAnimations(false);
         }
-
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
-            if (position == newGroupRow) {
-                CherrygramConfig.INSTANCE.toggleCreateGroupDrawerButton();
-                if (view instanceof TextCheckWithIconCell) {
-                    ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getCreateGroupDrawerButton());
+            if (position == showAvatarRow) {
+                CherrygramConfig.INSTANCE.toggleDrawerSmallAvatar();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDrawerSmallAvatar());
                 }
-                parentLayout.rebuildAllFragmentViews(false, false);
-            } else if (position == newSecretChatRow) {
-                CherrygramConfig.INSTANCE.toggleSecretChatDrawerButton();
-                if (view instanceof TextCheckWithIconCell) {
-                    ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getSecretChatDrawerButton());
+                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+                listAdapter.notifyItemChanged(drawerRow, new Object());
+            } else if (position == drawerDarkenBackgroundRow) {
+                CherrygramConfig.INSTANCE.toggleDrawerDarken();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDrawerDarken());
                 }
-                parentLayout.rebuildAllFragmentViews(false, false);
-            } else if (position == newChannelRow) {
-                CherrygramConfig.INSTANCE.toggleCreateChannelDrawerButton();
-                if (view instanceof TextCheckWithIconCell) {
-                    ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getCreateChannelDrawerButton());
+                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+                listAdapter.notifyItemChanged(drawerRow, new Object());
+            } else if (position == showGradientRow) {
+                CherrygramConfig.INSTANCE.toggleDrawerGradient();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDrawerGradient());
                 }
-                parentLayout.rebuildAllFragmentViews(false, false);
-            } else if (position == contactsRow) {
-                CherrygramConfig.INSTANCE.toggleContactsDrawerButton();
-                if (view instanceof TextCheckWithIconCell) {
-                    ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getContactsDrawerButton());
+                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+                listAdapter.notifyItemChanged(drawerRow, new Object());
+            }  else if (position == drawerBlurBackgroundRow) {
+                CherrygramConfig.INSTANCE.toggleDrawerBlur();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDrawerBlur());
                 }
-                parentLayout.rebuildAllFragmentViews(false, false);
-            } else if (position == callsRow) {
-                CherrygramConfig.INSTANCE.toggleCallsDrawerButton();
-                if (view instanceof TextCheckWithIconCell) {
-                    ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getCallsDrawerButton());
+                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+                listAdapter.notifyItemChanged(drawerRow, new Object());
+                if(CherrygramConfig.INSTANCE.getDrawerBlur()) {
+                    listAdapter.notifyItemRangeInserted(drawerDividerRow, 3);
+                } else {
+                    listAdapter.notifyItemRangeRemoved(drawerDividerRow, 3);
                 }
-                parentLayout.rebuildAllFragmentViews(false, false);
-            } else if (position == savedMessagesRow) {
-                CherrygramConfig.INSTANCE.toggleSavedMessagesDrawerButton();
-                if (view instanceof TextCheckWithIconCell) {
-                    ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getSavedMessagesDrawerButton());
+                updateRowsId(false);
+            } else if (position == drawerAvatarAsBackgroundRow) {
+                CherrygramConfig.INSTANCE.toggleDrawerAvatar();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDrawerAvatar());
                 }
-                parentLayout.rebuildAllFragmentViews(false, false);
-            } else if (position == archivedChatsRow) {
-                CherrygramConfig.INSTANCE.toggleArchivedChatsDrawerButton();
-                if (view instanceof TextCheckWithIconCell) {
-                    ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getArchivedChatsDrawerButton());
+                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+                TransitionManager.beginDelayedTransition(profilePreviewCell);
+                listAdapter.notifyItemChanged(drawerRow, new Object());
+                if (CherrygramConfig.INSTANCE.getDrawerAvatar()) {
+                    updateRowsId(false);
+                    listAdapter.notifyItemRangeInserted(showGradientRow, 4 + (CherrygramConfig.INSTANCE.getDrawerBlur() ? 3:0));
+                } else {
+                    listAdapter.notifyItemRangeRemoved(showGradientRow, 4 + (CherrygramConfig.INSTANCE.getDrawerBlur() ? 3:0));
+                    updateRowsId(false);
                 }
-                parentLayout.rebuildAllFragmentViews(false, false);
-            } else if (position == peopleNearbyRow) {
-                CherrygramConfig.INSTANCE.togglePeopleNearbyDrawerButton();
-                if (view instanceof TextCheckWithIconCell) {
-                    ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getPeopleNearbyDrawerButton());
-                }
-                parentLayout.rebuildAllFragmentViews(false, false);
-            } else if (position == scanQrRow) {
-                CherrygramConfig.INSTANCE.toggleScanQRDrawerButton();
-                if (view instanceof TextCheckWithIconCell) {
-                    ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getScanQRDrawerButton());
-                }
-                parentLayout.rebuildAllFragmentViews(false, false);
-            } else if (position == eventChooserRow) {
-                if (getParentActivity() == null) {
-                    return;
-                }
-                AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                builder.setTitle(LocaleController.getString("AP_DrawerIconPack", R.string.AP_DrawerIconPack));
-                builder.setItems(new CharSequence[]{
-                        LocaleController.getString("Default", R.string.Default),
-                        LocaleController.getString("AP_NewYear", R.string.AP_NewYear),
-                        LocaleController.getString("AP_ValentinesDay", R.string.AP_ValentinesDay),
-                        LocaleController.getString("AP_Halloween", R.string.AP_Halloween)
-                }, (dialog, which) -> {
-                    CherrygramConfig.INSTANCE.eventType(which);
-                    RecyclerView.ViewHolder holder = listView.findViewHolderForAdapterPosition(eventChooserRow);
-                    if (holder != null) {
-                        listAdapter.onBindViewHolder(holder, eventChooserRow);
-                    }
-                    Parcelable recyclerViewState = null;
-                    if (listView.getLayoutManager() != null) recyclerViewState = listView.getLayoutManager().onSaveInstanceState();
-                    parentLayout.rebuildAllFragmentViews(true, true);
-                    AlertDialog progressDialog = new AlertDialog(context, 3);
-                    progressDialog.show();
-                    AndroidUtilities.runOnUIThread(progressDialog::dismiss, 400);
-                    listView.getLayoutManager().onRestoreInstanceState(recyclerViewState);
-                });
-                builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                showDialog(builder.create());
+            } /*else if (position == menuItemsRow) {
+                presentFragment(new DrawerOrderSettings());
+            }*/ else if (position == menuItemsRow) {
+                presentFragment(new DrawerIconsPreferencesEntry());
             }
         });
-        restartTooltip = new UndoView(context);
-        /*restartTooltip.setInfoText(LocaleController.formatString("RestartRequired", R.string.RestartRequired));*/
-        frameLayout.addView(restartTooltip, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.LEFT, 8, 0, 8, 8));
         return fragmentView;
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private void updateRowsId(boolean notify) {
         rowCount = 0;
+        showAvatarRow = -1;
+        drawerDarkenBackgroundRow = -1;
+        showGradientRow = -1;
+        drawerBlurBackgroundRow = -1;
+        editBlurHeaderRow = -1;
+        editBlurRow = -1;
+        editBlurDividerRow = -1;
 
-        iconsHeaderRow = rowCount++;
-        eventChooserRow = rowCount++;
-        iconsDividerRow = rowCount++;
-    
-        drawerHeaderRow = rowCount++;
-        newGroupRow = rowCount++;
-        newSecretChatRow = rowCount++;
-        newChannelRow = rowCount++;
-        contactsRow = rowCount++;
-        callsRow = rowCount++;
-        savedMessagesRow = rowCount++;
-        archivedChatsRow = rowCount++;
-        peopleNearbyRow = rowCount++;
-        scanQrRow = rowCount++;
+        drawerRow = rowCount++;
+        drawerAvatarAsBackgroundRow = rowCount++;
+        if (CherrygramConfig.INSTANCE.getDrawerAvatar()) {
+            showAvatarRow = rowCount++;
+            drawerDarkenBackgroundRow = rowCount++;
+            showGradientRow = rowCount++;
+            drawerBlurBackgroundRow = rowCount++;
+        }
+        drawerDividerRow = rowCount++;
+        if (CherrygramConfig.INSTANCE.getDrawerBlur() && CherrygramConfig.INSTANCE.getDrawerAvatar()) {
+            editBlurHeaderRow = rowCount++;
+            editBlurRow = rowCount++;
+            editBlurDividerRow = rowCount++;
+        }
+
+        themeDrawerHeader = rowCount++;
+        themeDrawerRow = rowCount++;
+        menuItemsRow = rowCount++;
+        themeDrawerDividerRow = rowCount++;
 
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
@@ -243,105 +206,50 @@ public class DrawerPreferencesEntry extends BaseFragment {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            switch (CherrygramConfig.INSTANCE.getEventType()) {
-                case 1:
-                    newGroupIcon = R.drawable.msg_groups_ny;
-                    newSecretIcon = R.drawable.msg_secret_ny;
-                    newChannelIcon = R.drawable.msg_channel_ny;
-                    contactsIcon = R.drawable.msg_contacts_ny;
-                    callsIcon = R.drawable.msg_calls_ny;
-                    savedIcon = R.drawable.msg_saved_ny;
-                    settingsIcon = R.drawable.msg_settings_ny;
-                    peopleNearbyIcon = R.drawable.msg_nearby_ny;
-                    break;
-                case 2:
-                    newGroupIcon = R.drawable.msg_groups_14;
-                    newSecretIcon = R.drawable.msg_secret_14;
-                    newChannelIcon = R.drawable.msg_channel_14;
-                    contactsIcon = R.drawable.msg_contacts_14;
-                    callsIcon = R.drawable.msg_calls_14;
-                    savedIcon = R.drawable.msg_saved_14;
-                    settingsIcon = R.drawable.msg_settings_14;
-                    peopleNearbyIcon = R.drawable.msg_secret_14;
-                    break;
-                case 3:
-                    newGroupIcon = R.drawable.msg_groups_hw;
-                    newSecretIcon = R.drawable.msg_secret_hw;
-                    newChannelIcon = R.drawable.msg_channel_hw;
-                    contactsIcon = R.drawable.msg_contacts_hw;
-                    callsIcon = R.drawable.msg_calls_hw;
-                    savedIcon = R.drawable.msg_saved_hw;
-                    settingsIcon = R.drawable.msg_settings_hw;
-                    peopleNearbyIcon = R.drawable.msg_secret_hw;
-                    break;
-                default:
-                    newGroupIcon = R.drawable.msg_groups;
-                    newSecretIcon = R.drawable.msg_secret;
-                    newChannelIcon = R.drawable.msg_channel;
-                    contactsIcon = R.drawable.msg_contacts;
-                    callsIcon = R.drawable.msg_calls;
-                    savedIcon = R.drawable.msg_saved;
-                    settingsIcon = R.drawable.msg_settings;
-                    peopleNearbyIcon = R.drawable.msg_nearby;
-                    break;
-            }
             switch (holder.getItemViewType()) {
                 case 1:
                     holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                     break;
                 case 2:
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
-                    if (position == drawerHeaderRow) {
-                        headerCell.setText(LocaleController.getString("AP_DrawerButtonsCategory", R.string.AP_DrawerButtonsCategory));
-                    } else if (position == iconsHeaderRow) {
+                    if (position == editBlurHeaderRow) {
+                        headerCell.setText(LocaleController.getString("AP_DrawerBlurIntensity", R.string.AP_DrawerBlurIntensity));
+                    } else if (position == themeDrawerHeader) {
                         headerCell.setText(LocaleController.getString("AP_DrawerIconPack_Header", R.string.AP_DrawerIconPack_Header));
                     }
                     break;
                 case 3:
-                    TextCheckWithIconCell textCheckWithIconCell = (TextCheckWithIconCell) holder.itemView;
-                    textCheckWithIconCell.setEnabled(true, null);
-                    if (position == newGroupRow) {
-                        textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("NewGroup", R.string.NewGroup), newGroupIcon, CherrygramConfig.INSTANCE.getCreateGroupDrawerButton(), true);
-                    } else if (position == newSecretChatRow) {
-                        textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("NewSecretChat", R.string.NewSecretChat), newSecretIcon, CherrygramConfig.INSTANCE.getSecretChatDrawerButton(), true);
-                    } else if (position == newChannelRow) {
-                        textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("NewChannel", R.string.NewChannel), newChannelIcon, CherrygramConfig.INSTANCE.getCreateChannelDrawerButton(), true);
-                    } else if (position == contactsRow) {
-                        textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("Contacts", R.string.Contacts), contactsIcon, CherrygramConfig.INSTANCE.getContactsDrawerButton(), true);
-                    } else if (position == callsRow) {
-                        textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("Calls", R.string.Calls), callsIcon, CherrygramConfig.INSTANCE.getCallsDrawerButton(), true);
-                    } else if (position == savedMessagesRow) {
-                        textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("SavedMessages", R.string.SavedMessages), savedIcon, CherrygramConfig.INSTANCE.getSavedMessagesDrawerButton(), true);
-                    } else if (position == archivedChatsRow) {
-                        textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("ArchivedChats", R.string.ArchivedChats), R.drawable.msg_archive, CherrygramConfig.INSTANCE.getArchivedChatsDrawerButton(), true);
-                    } else if (position == peopleNearbyRow) {
-                        textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("PeopleNearby", R.string.PeopleNearby), peopleNearbyIcon, CherrygramConfig.INSTANCE.getPeopleNearbyDrawerButton(), true);
-                    } else if (position == scanQrRow) {
-                        textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("AuthAnotherClient", R.string.AuthAnotherClient), R.drawable.msg_qrcode, CherrygramConfig.INSTANCE.getScanQRDrawerButton(), true);
+                    TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
+                    if (position == drawerAvatarAsBackgroundRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("AP_DrawerAvatar", R.string.AP_DrawerAvatar), CherrygramConfig.INSTANCE.getDrawerAvatar(), CherrygramConfig.INSTANCE.getDrawerAvatar());
+                    } else if (position == showAvatarRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("AP_DrawerShowAvatar", R.string.AP_DrawerShowAvatar), CherrygramConfig.INSTANCE.getDrawerSmallAvatar(), drawerBlurBackgroundRow != -1);
+                    } else if (position == drawerDarkenBackgroundRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("AP_DrawerDarken", R.string.AP_DrawerDarken), CherrygramConfig.INSTANCE.getDrawerDarken(), true);
+                    } else if (position == showGradientRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("AP_ShadeBackground", R.string.AP_ShadeBackground), CherrygramConfig.INSTANCE.getDrawerGradient(), true);
+                    } else if (position == drawerBlurBackgroundRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("AP_DrawerBlur", R.string.AP_DrawerBlur), CherrygramConfig.INSTANCE.getDrawerBlur(), !CherrygramConfig.INSTANCE.getDrawerBlur());
                     }
                     break;
                 case 4:
-                    TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
-                    if (position == eventChooserRow) {
-                        String value;
-                        if (CherrygramConfig.INSTANCE.getEventType() == 1) {
-                            value = LocaleController.getString("AP_NewYear", R.string.AP_NewYear);
-                        } else if (CherrygramConfig.INSTANCE.getEventType() == 2) {
-                            value = LocaleController.getString("AP_ValentinesDay", R.string.AP_ValentinesDay);
-                        } else if (CherrygramConfig.INSTANCE.getEventType() == 3) {
-                            value = LocaleController.getString("AP_Halloween", R.string.AP_Halloween);
-                        } else {
-                            value = LocaleController.getString("Default", R.string.Default);
-                        }
-                        textSettingsCell.setTextAndValue(LocaleController.getString("AP_DrawerIconPack", R.string.AP_DrawerIconPack), value, false);
+                    DrawerProfilePreviewCell cell = (DrawerProfilePreviewCell) holder.itemView;
+                    cell.setUser(getUserConfig().getCurrentUser(), false);
+                    break;
+                case 6:
+                    TextCell textCell = (TextCell) holder.itemView;
+                    textCell.setColors(Theme.key_windowBackgroundWhiteBlueText4, Theme.key_windowBackgroundWhiteBlueText4);
+                    if (position == menuItemsRow) {
+                        textCell.setTextAndIcon(LocaleController.getString("AP_DrawerButtonsCategory", R.string.AP_DrawerButtonsCategory), R.drawable.msg_newfilter, false);
                     }
+                    break;
             }
         }
 
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int type = holder.getItemViewType();
-            return type == 3 || type == 7;
+            return type == 3 || type == 6;
         }
 
         @NonNull
@@ -354,11 +262,51 @@ public class DrawerPreferencesEntry extends BaseFragment {
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 3:
-                    view = new TextCheckWithIconCell(mContext);
+                    view = new TextCheckCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 4:
-                    view = new TextSettingsCell(mContext);
+                    view = profilePreviewCell = new DrawerProfilePreviewCell(mContext);
+                    view.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                    break;
+                case 5:
+                    view = new BlurIntensityCell(mContext) {
+                        @Override
+                        protected void onBlurIntensityChange(int percentage, boolean layout) {
+                            super.onBlurIntensityChange(percentage, layout);
+                            CherrygramConfig.INSTANCE.saveDrawerBlurIntensity(percentage);
+                            RecyclerView.ViewHolder holder = listView.findViewHolderForAdapterPosition(editBlurRow);
+                            if (holder != null && holder.itemView instanceof BlurIntensityCell) {
+                                BlurIntensityCell cell = (BlurIntensityCell) holder.itemView;
+                                if (layout) {
+                                    cell.requestLayout();
+                                } else {
+                                    cell.invalidate();
+                                }
+                            }
+                            getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+                            listAdapter.notifyItemChanged(drawerRow, new Object());
+                        }
+                    };
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case 6:
+                    view = new TextCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case 7:
+                    view = new ThemeSelectorDrawerCell(mContext, CherrygramConfig.INSTANCE.getEventType()) {
+                        @Override
+                        protected void onSelectedEvent(int eventSelected) {
+                            super.onSelectedEvent(eventSelected);
+                            CherrygramConfig.INSTANCE.setEventType(eventSelected);
+                            listAdapter.notifyItemChanged(drawerRow, new Object());
+                            Theme.lastHolidayCheckTime = 0;
+                            Theme.dialogs_holidayDrawable = null;
+                            getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+                            updateRowsId(false);
+                        }
+                    };
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 default:
@@ -371,16 +319,20 @@ public class DrawerPreferencesEntry extends BaseFragment {
 
         @Override
         public int getItemViewType(int position) {
-            if (position == iconsDividerRow) {
+            if (position == drawerDividerRow || position == editBlurDividerRow || position == themeDrawerDividerRow){
                 return 1;
-            } else if (position == drawerHeaderRow || position == iconsHeaderRow) {
+            } else if (position == editBlurHeaderRow || position == themeDrawerHeader) {
                 return 2;
-            } else if (position == newGroupRow || position == newSecretChatRow || position == newChannelRow ||
-                       position == contactsRow || position == callsRow || position == savedMessagesRow ||
-                       position == archivedChatsRow || position == peopleNearbyRow || position == scanQrRow) {
+            } else if (position == drawerAvatarAsBackgroundRow || position == showAvatarRow || position == drawerDarkenBackgroundRow || position == showGradientRow || position == drawerBlurBackgroundRow) {
                 return 3;
-            } else if (position == eventChooserRow) {
+            } else if (position == drawerRow) {
                 return 4;
+            } else if (position == editBlurRow) {
+                return 5;
+            } else if (position == menuItemsRow) {
+                return 6;
+            } else if (position == themeDrawerRow) {
+                return 7;
             }
             return 1;
         }

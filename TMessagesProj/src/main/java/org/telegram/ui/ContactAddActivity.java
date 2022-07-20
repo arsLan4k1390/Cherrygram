@@ -112,8 +112,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
         actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_avatar_actionBarSelectorBlue, resourcesProvider), false);
         actionBar.setItemsColor(Theme.getColor(Theme.key_actionBarDefaultIcon, resourcesProvider), false);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         if (addContact) {
             actionBar.setTitle(LocaleController.getString("NewContact", R.string.NewContact));

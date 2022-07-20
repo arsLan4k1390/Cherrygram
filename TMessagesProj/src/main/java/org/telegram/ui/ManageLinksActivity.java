@@ -520,8 +520,7 @@ public class ManageLinksActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("InviteLinks", R.string.InviteLinks));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

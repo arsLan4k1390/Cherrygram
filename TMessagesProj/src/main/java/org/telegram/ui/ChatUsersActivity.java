@@ -646,8 +646,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
         searching = false;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         if (type == TYPE_KICKED) {
             actionBar.setTitle(LocaleController.getString("ChannelPermissions", R.string.ChannelPermissions));

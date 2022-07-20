@@ -515,7 +515,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
 
         actionBar.setAddToContainer(false);
         actionBar.setOccupyStatusBar(Build.VERSION.SDK_INT >= 21 && !AndroidUtilities.isTablet());
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(final int id) {

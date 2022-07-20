@@ -1062,15 +1062,8 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && checkNavigationBar && (!useCurrentFragment || currentFragment == null || !currentFragment.isInPreviewMode())) {
                 final Window window = getWindow();
-                final int color = currentFragment != null && useCurrentFragment ? currentFragment.getNavigationBarColor() : Theme.getColor(Theme.key_windowBackgroundGray, null, true);
-//                Theme.ResourcesProvider resourcesProvider = currentFragment != null ? currentFragment.getResourceProvider() : null;
-//                if (resourcesProvider != null) {
-//                    color = resourcesProvider.getColor(Theme.key_windowBackgroundGray);
-//                }
-//                if (color == null) {
-//                    color = Theme.getColor(Theme.key_windowBackgroundGray, null, true);
-//                }
-                if (window.getNavigationBarColor() != color) {
+                int color = Theme.getColor(CherrygramConfig.INSTANCE.getFlatNavbar() ? Theme.key_chat_messagePanelBackground : Theme.key_windowBackgroundGray, null, true);
+                if (window.getNavigationBarColor() != color || CherrygramConfig.INSTANCE.getFlatNavbar() ) {
                     window.setNavigationBarColor(color);
                     final float brightness = AndroidUtilities.computePerceivedBrightness(color);
                     AndroidUtilities.setLightNavigationBar(getWindow(), brightness >= 0.721f);

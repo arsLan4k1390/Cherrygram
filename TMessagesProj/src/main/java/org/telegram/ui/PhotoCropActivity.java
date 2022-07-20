@@ -421,8 +421,7 @@ public class PhotoCropActivity extends BaseFragment {
         actionBar.setTitleColor(0xffffffff);
         actionBar.setItemsColor(0xffffffff, false);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("CropImage", R.string.CropImage));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

@@ -984,6 +984,20 @@ public class LocaleController {
     }
 
     private String getStringInternal(String key, String fallback, int res) {
+        if (key.equals("AppName")) {
+            try {
+                return ApplicationLoader.applicationContext.getString(R.string.CG_AppName);
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+        if (key.equals("AppNameBeta")) {
+            try {
+                return ApplicationLoader.applicationContext.getString(R.string.CG_AppNameBeta);
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
         String value = BuildVars.USE_CLOUD_STRINGS ? localeValues.get(key) : null;
         if (value == null) {
             if (BuildVars.USE_CLOUD_STRINGS && fallback != null) {

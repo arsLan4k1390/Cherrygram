@@ -473,8 +473,7 @@ public class WallpapersListActivity extends BaseFragment implements Notification
 
         hasOwnBackground = true;
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         if (currentType == TYPE_ALL) {
             actionBar.setTitle(LocaleController.getString("ChatBackground", R.string.ChatBackground));

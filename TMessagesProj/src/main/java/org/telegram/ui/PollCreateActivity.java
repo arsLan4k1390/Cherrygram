@@ -172,8 +172,7 @@ public class PollCreateActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         if (quizOnly == 1) {
             actionBar.setTitle(LocaleController.getString("NewQuiz", R.string.NewQuiz));
         } else {

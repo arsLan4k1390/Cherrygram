@@ -310,8 +310,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
         }
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         if (rulesType == PRIVACY_RULES_TYPE_PHONE) {
             actionBar.setTitle(LocaleController.getString("PrivacyPhone", R.string.PrivacyPhone));

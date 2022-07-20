@@ -418,8 +418,7 @@ public class TranslateAlert extends Dialog {
 
         backButton = new ImageView(context);
         backButton.setImageResource(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            backButton.setImageResource(R.drawable.arrow_back);
+
         backButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogTextBlack), PorterDuff.Mode.MULTIPLY));
         backButton.setScaleType(ImageView.ScaleType.FIT_CENTER);
         backButton.setPadding(AndroidUtilities.dp(16), 0, AndroidUtilities.dp(16), 0);

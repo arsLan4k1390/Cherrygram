@@ -320,8 +320,7 @@ public class InviteContactsActivity extends BaseFragment implements Notification
         currentDeletingSpan = null;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("InviteFriends", R.string.InviteFriends));
 

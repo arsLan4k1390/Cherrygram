@@ -214,7 +214,10 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
             public void onSetBackButtonVisible(boolean visible) {
                 if (actionBarTransitionProgress == 1f) {
                     if (visible) {
-                        AndroidUtilities.updateImageViewImageAnimated(actionBar.getBackButton(), actionBar.getBackButtonDrawable());
+                        if (AndroidUtilities.isTablet() && AndroidUtilities.isSmallTablet()) {
+                            AndroidUtilities.updateImageViewImageAnimated(actionBar.getBackButton(), actionBar.getBackButtonDrawableT());
+                        }
+                        AndroidUtilities.updateImageViewImageAnimated(actionBar.getBackButton(), R.drawable.ic_ab_back);
                     } else {
                         AndroidUtilities.updateImageViewImageAnimated(actionBar.getBackButton(), R.drawable.ic_close_white);
                     }
@@ -283,7 +286,10 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
                         if (newPos == 100f) {
                             AndroidUtilities.updateImageViewImageAnimated(actionBar.getBackButton(), R.drawable.ic_close_white);
                         } else {
-                            AndroidUtilities.updateImageViewImageAnimated(actionBar.getBackButton(), actionBar.getBackButtonDrawable());
+                            if (AndroidUtilities.isTablet() && AndroidUtilities.isSmallTablet()) {
+                                AndroidUtilities.updateImageViewImageAnimated(actionBar.getBackButton(), actionBar.getBackButtonDrawableT());
+                            }
+                            AndroidUtilities.updateImageViewImageAnimated(actionBar.getBackButton(), R.drawable.ic_ab_back);
                         }
                     }
                 }

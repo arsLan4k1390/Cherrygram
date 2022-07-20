@@ -101,6 +101,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.graphics.ColorUtils;
 import androidx.dynamicanimation.animation.DynamicAnimation;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
@@ -4104,6 +4105,8 @@ public class AndroidUtilities {
                 }
             }
 
+            if (CherrygramConfig.INSTANCE.getFlatNavbar()) color = Theme.getColor(Theme.key_chat_messagePanelBackground);
+
             if (!animated) {
                 if (onUpdate != null) {
                     onUpdate.run(color);
@@ -4378,6 +4381,15 @@ public class AndroidUtilities {
         // Set alpha based on your logic, here I'm making it 25% of it's initial value.
         alpha *= opacity;
         return Color.argb(alpha, red, green, blue);
+    }
+
+    public static boolean isLight(int color) {
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        float[] hsl = new float[3];
+        ColorUtils.RGBToHSL(red, green, blue, hsl);
+        return hsl[2] >= 0.5f;
     }
 
     public static boolean isNumeric(String str) {

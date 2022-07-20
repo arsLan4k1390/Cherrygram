@@ -71,8 +71,7 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setTitle(LocaleController.getString("EP_Category_Experimental", R.string.EP_Category_Experimental));
         actionBar.setAllowOverlayTitle(false);
 

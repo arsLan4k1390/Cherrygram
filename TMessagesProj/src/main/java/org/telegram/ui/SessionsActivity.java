@@ -143,8 +143,7 @@ public class SessionsActivity extends BaseFragment implements NotificationCenter
         globalFlickerLoadingView.setIsSingleCell(true);
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         if (currentType == 0) {
             actionBar.setTitle(LocaleController.getString("Devices", R.string.Devices));

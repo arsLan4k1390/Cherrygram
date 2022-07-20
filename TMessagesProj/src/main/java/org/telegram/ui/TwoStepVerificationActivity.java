@@ -195,8 +195,7 @@ public class TwoStepVerificationActivity extends BaseFragment implements Notific
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(false);
         if (!passwordEntered) {
             actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));

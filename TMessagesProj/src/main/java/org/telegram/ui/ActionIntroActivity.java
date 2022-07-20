@@ -61,8 +61,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 @TargetApi(23)
 public class ActionIntroActivity extends BaseFragment implements LocationController.LocationFetchCallback {
 
@@ -127,8 +125,7 @@ public class ActionIntroActivity extends BaseFragment implements LocationControl
             actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
 
             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-            if (CherrygramConfig.INSTANCE.getBackButton())
-                actionBar.setBackButtonImage(R.drawable.arrow_back);
+
             actionBar.setItemsColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText2), false);
             actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_actionBarWhiteSelector), false);
             actionBar.setCastShadows(false);

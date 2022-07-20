@@ -96,8 +96,7 @@ public class LanguageSelectActivity extends BaseFragment implements Notification
         searchWas = false;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("Language", R.string.Language));
 

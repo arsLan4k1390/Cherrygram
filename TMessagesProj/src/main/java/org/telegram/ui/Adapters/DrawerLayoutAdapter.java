@@ -259,7 +259,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             newChannelIcon = R.drawable.msg_channel_ny;
             contactsIcon = R.drawable.msg_contacts_ny;
             callsIcon = R.drawable.msg_calls_ny;
-            savedIcon = R.drawable.msg_saved;
+            savedIcon = R.drawable.msg_saved_ny;
             settingsIcon = R.drawable.msg_settings_ny;
             scanQrIcon = R.drawable.msg_qrcode;
             /*inviteIcon = R.drawable.msg_invite_ny;
@@ -289,6 +289,18 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             /*inviteIcon = R.drawable.msg_invite_hw;
             helpIcon = R.drawable.msg_help_hw;*/
             peopleNearbyIcon = R.drawable.msg_secret_hw;
+        } else if (eventType == 3) {
+            newGroupIcon = R.drawable.menu_groups_cn;
+            newSecretIcon = R.drawable.menu_secret_cn;
+            newChannelIcon = R.drawable.menu_broadcast_cn;
+            contactsIcon = R.drawable.menu_contacts_cn;
+            callsIcon = R.drawable.menu_calls_cn;
+            savedIcon = R.drawable.menu_bookmarks_cn;
+            settingsIcon = R.drawable.menu_settings_cn;
+            scanQrIcon = R.drawable.msg_qrcode;
+            /*inviteIcon = R.drawable.menu_invite_cn;
+            helpIcon = R.drawable.msg_help_hw;*/
+            peopleNearbyIcon = R.drawable.menu_nearby_cn;
         } else {
             newGroupIcon = R.drawable.msg_groups;
             newSecretIcon = R.drawable.msg_secret;
@@ -296,7 +308,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             contactsIcon = R.drawable.msg_contacts;
             callsIcon = R.drawable.msg_calls;
             savedIcon = R.drawable.msg_saved;
-            settingsIcon = R.drawable.msg_settings;
+            settingsIcon = R.drawable.msg_settings_old;
             scanQrIcon = R.drawable.msg_qrcode;
             /*inviteIcon = R.drawable.msg_invite;
             helpIcon = R.drawable.msg_help;*/

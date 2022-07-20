@@ -747,6 +747,7 @@ public abstract class BaseFragment {
 
     public void setNavigationBarColor(int color) {
         Activity activity = getParentActivity();
+        if (CherrygramConfig.INSTANCE.getFlatNavbar()) color = Theme.getColor(Theme.key_chat_messagePanelBackground);
         if (activity != null) {
             Window window = activity.getWindow();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && window != null && window.getNavigationBarColor() != color) {

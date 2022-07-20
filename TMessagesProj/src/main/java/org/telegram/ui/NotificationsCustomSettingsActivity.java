@@ -141,8 +141,7 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
         searchWas = false;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         if (currentType == -1) {
             actionBar.setTitle(LocaleController.getString("NotificationsExceptions", R.string.NotificationsExceptions));

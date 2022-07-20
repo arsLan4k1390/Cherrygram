@@ -48,7 +48,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-wallet:19.1.0'
     implementation 'com.googlecode.mp4parser:isoparser:1.0.6'
     implementation 'com.stripe:stripe-android:2.0.2'
-    implementation 'com.google.mlkit:language-id:17.0.3'
+    implementation 'com.google.mlkit:language-id:17.0.4'
     implementation "com.android.billingclient:billing:5.0.0"
     implementation files('libs/libgsaverification-client.aar')
 
@@ -56,7 +56,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation 'com.google.android.material:material:1.6.0-rc01'
-    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.4'
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.9'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
@@ -83,9 +83,9 @@ android {
         viewBinding true
     }
 
-    compileSdkVersion 31
-    buildToolsVersion '31.0.0'
-    ndkVersion "21.4.7075529"
+    compileSdkVersion 32
+    buildToolsVersion '32.1.0-rc1'
+    ndkVersion '21.4.7075529'
 
     defaultConfig.applicationId = "uz.unnarsx.cherrygram"
 
@@ -110,10 +110,6 @@ android {
                 'src/main/res-tabs'
         ]
     }
-
-//    dexOptions {
-//        jumboMode = true
-//    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
@@ -284,7 +280,7 @@ android {
         externalNativeBuild {
             cmake {
                 version '3.10.2'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-16', "-j=16"
+                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
             }
         }
     }

@@ -540,8 +540,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         actionBar.setItemsColor(Theme.getColor(Theme.key_dialogTextBlack), false);
         actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_dialogButtonSelector), false);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);

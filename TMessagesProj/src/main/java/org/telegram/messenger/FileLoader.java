@@ -1135,26 +1135,26 @@ public class FileLoader extends BaseController {
         return new File("");
     }
 
-    public static File getPathToAttach(TLObject attach) {
+    public File getPathToAttach(TLObject attach) {
         return getPathToAttach(attach, null, false);
     }
 
-    public static File getPathToAttach(TLObject attach, boolean forceCache) {
+    public File getPathToAttach(TLObject attach, boolean forceCache) {
         return getPathToAttach(attach, null, forceCache);
     }
 
-    public static File getPathToAttach(TLObject attach, String ext, boolean forceCache) {
+    public File getPathToAttach(TLObject attach, String ext, boolean forceCache) {
         return getPathToAttach(attach, null, ext, forceCache, true);
     }
 
-    public static File getPathToAttach(TLObject attach, String ext, boolean forceCache, boolean useFileDatabaseQueue) {
+    public File getPathToAttach(TLObject attach, String ext, boolean forceCache, boolean useFileDatabaseQueue) {
         return getPathToAttach(attach, null, ext, forceCache, useFileDatabaseQueue);
     }
 
     /**
      * Return real file name. Used before file.exist()
      */
-    public static File getPathToAttach(TLObject attach, String size, String ext, boolean forceCache, boolean useFileDatabaseQueue) {
+    public File getPathToAttach(TLObject attach, String size, String ext, boolean forceCache, boolean useFileDatabaseQueue) {
         File dir = null;
         long documentId = 0;
         int dcId = 0;

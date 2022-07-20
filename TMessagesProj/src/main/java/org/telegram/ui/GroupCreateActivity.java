@@ -407,8 +407,7 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
         doneButtonVisible = chatType == ChatObject.CHAT_TYPE_CHANNEL;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         if (chatType == ChatObject.CHAT_TYPE_CHANNEL) {
             actionBar.setTitle(LocaleController.getString("ChannelAddSubscribers", R.string.ChannelAddSubscribers));

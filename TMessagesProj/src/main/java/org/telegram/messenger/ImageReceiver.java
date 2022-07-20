@@ -716,6 +716,10 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
     }
 
     public void setImageBitmap(Drawable bitmap) {
+        setImageBitmap(bitmap, true);
+    }
+
+    public void setImageBitmap(Drawable bitmap, boolean notify) {
         ImageLoader.getInstance().cancelLoadingForImageReceiver(this, true);
 
         if (crossfadeWithOldImage) {

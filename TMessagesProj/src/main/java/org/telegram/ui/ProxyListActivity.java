@@ -240,8 +240,7 @@ public class ProxyListActivity extends BaseFragment implements NotificationCente
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setTitle(LocaleController.getString("ProxySettings", R.string.ProxySettings));
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);

@@ -167,8 +167,7 @@ public class ThemeSetUrlActivity extends BaseFragment implements NotificationCen
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         if (creatingNewTheme) {
             actionBar.setTitle(LocaleController.getString("NewThemeTitle", R.string.NewThemeTitle));

@@ -155,8 +155,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 @SuppressLint("HardwareIds")
 public class LoginActivity extends BaseFragment {
     private final static int SHOW_DELAY = SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_AVERAGE ? 150 : 100;
@@ -589,8 +587,7 @@ public class LoginActivity extends BaseFragment {
 
         backButtonView = new ImageView(context);
         backButtonView.setImageResource(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            backButtonView.setImageResource(R.drawable.arrow_back);
+
         backButtonView.setOnClickListener(v -> {
             if (onBackPressed()) {
                 finishFragment();

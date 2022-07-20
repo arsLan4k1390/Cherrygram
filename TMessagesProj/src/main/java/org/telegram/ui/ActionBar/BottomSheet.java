@@ -64,6 +64,8 @@ import org.telegram.ui.Components.LayoutHelper;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class BottomSheet extends Dialog {
     private final static boolean AVOID_SYSTEM_CUTOUT_FULLSCREEN = false;
 
@@ -160,7 +162,7 @@ public class BottomSheet extends Dialog {
     private boolean disableScroll;
     private float currentPanTranslationY;
 
-    protected String navBarColorKey = Theme.key_windowBackgroundGray;
+    protected String navBarColorKey = CherrygramConfig.INSTANCE.getFlatNavbar() ? Theme.key_chat_messagePanelBackground : Theme.key_windowBackgroundGray;
     protected int navBarColor;
 
     private OnDismissListener onHideListener;

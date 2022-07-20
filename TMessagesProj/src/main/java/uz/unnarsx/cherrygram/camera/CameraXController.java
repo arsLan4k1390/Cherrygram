@@ -8,7 +8,6 @@
 package uz.unnarsx.cherrygram.camera;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -68,7 +67,6 @@ import org.telegram.messenger.camera.Size;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -79,7 +77,6 @@ import java.util.concurrent.ExecutionException;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
-@TargetApi(21)
 public class CameraXController {
     static int VIDEO_BITRATE_1080 = 10000000;
     static int VIDEO_BITRATE_720 = 6500000;
@@ -222,56 +219,25 @@ public class CameraXController {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     }
 
-    private String getNextFlashMode(String legacyMode) {
-        String next = null;
+    private int getNextFlashMode(int legacyMode) {
         switch (legacyMode) {
-            case android.hardware.Camera.Parameters.FLASH_MODE_AUTO:
-                next = android.hardware.Camera.Parameters.FLASH_MODE_ON;
-                break;
-            case android.hardware.Camera.Parameters.FLASH_MODE_ON:
-                next = android.hardware.Camera.Parameters.FLASH_MODE_OFF;
-                break;
-            case android.hardware.Camera.Parameters.FLASH_MODE_OFF:
-                next = android.hardware.Camera.Parameters.FLASH_MODE_AUTO;
-                break;
-        }
-        return next;
-    }
-
-    public String setNextFlashMode() {
-        String next = getNextFlashMode(getCurrentFlashMode());
-        int iCaptureFlashMode = ImageCapture.FLASH_MODE_AUTO;
-        switch (next) {
-            case android.hardware.Camera.Parameters.FLASH_MODE_AUTO:
-                iCaptureFlashMode = ImageCapture.FLASH_MODE_AUTO;
-                break;
-            case android.hardware.Camera.Parameters.FLASH_MODE_OFF:
-                iCaptureFlashMode = ImageCapture.FLASH_MODE_OFF;
-                break;
-            case android.hardware.Camera.Parameters.FLASH_MODE_ON:
-                iCaptureFlashMode = ImageCapture.FLASH_MODE_ON;
-                break;
-        }
-        iCapture.setFlashMode(iCaptureFlashMode);
-        return next;
-    }
-
-    @SuppressLint("SwitchIntDef")
-    public String getCurrentFlashMode() {
-        int mode = iCapture.getFlashMode();
-        String legacyMode = null;
-        switch (mode) {
             case ImageCapture.FLASH_MODE_AUTO:
-                legacyMode = android.hardware.Camera.Parameters.FLASH_MODE_AUTO;
-                break;
-            case ImageCapture.FLASH_MODE_OFF:
-                legacyMode = android.hardware.Camera.Parameters.FLASH_MODE_OFF;
-                break;
+                return ImageCapture.FLASH_MODE_ON;
             case ImageCapture.FLASH_MODE_ON:
-                legacyMode = android.hardware.Camera.Parameters.FLASH_MODE_ON;
-                break;
+                return ImageCapture.FLASH_MODE_OFF;
+            default:
+                return ImageCapture.FLASH_MODE_AUTO;
         }
-        return legacyMode;
+    }
+
+    public int setNextFlashMode() {
+        int next = getNextFlashMode(iCapture.getFlashMode());
+        iCapture.setFlashMode(next);
+        return next;
+    }
+
+    public int getCurrentFlashMode() {
+        return iCapture.getFlashMode();
     }
 
     public boolean isFlashAvailable() {
@@ -467,7 +433,7 @@ public class CameraXController {
     }
 
 
-    @SuppressLint("RestrictedApi")
+    @SuppressLint({"RestrictedApi", "MissingPermission"})
     public void recordVideo(final File path, boolean mirror, CameraXView.VideoSavedCallback onStop) {
         if (noSupportedSurfaceCombinationWorkaround) {
             provider.unbindAll();
@@ -571,7 +537,9 @@ public class CameraXController {
     @SuppressLint("RestrictedApi")
     public void stopVideoRecording(final boolean abandon) {
         abandonCurrentVideo = abandon;
-        vCapture.stopRecording();
+        if (vCapture != null) {
+            vCapture.stopRecording();
+        }
     }
 
 
@@ -611,10 +579,7 @@ public class CameraXController {
                         exif.rotate(orientation);
                     }
                     exif.save();
-                } catch (JpegImageUtils.CodecFailedException | FileNotFoundException e) {
-                    e.printStackTrace();
-                    FileLog.e(e);
-                } catch (IOException e) {
+                } catch (JpegImageUtils.CodecFailedException | IOException e) {
                     e.printStackTrace();
                     FileLog.e(e);
                 }
@@ -644,23 +609,17 @@ public class CameraXController {
     public int getDisplayOrientation() {
         WindowManager mgr = (WindowManager) ApplicationLoader.applicationContext.getSystemService(Context.WINDOW_SERVICE);
         int rotation = mgr.getDefaultDisplay().getRotation();
-        int degrees = 0;
-
         switch (rotation) {
-            case Surface.ROTATION_0:
-                degrees = 0;
-                break;
             case Surface.ROTATION_90:
-                degrees = 90;
-                break;
+                return 90;
             case Surface.ROTATION_180:
-                degrees = 180;
-                break;
+                return 180;
             case Surface.ROTATION_270:
-                degrees = 270;
-                break;
+                return 270;
+            case Surface.ROTATION_0:
+            default:
+                return 0;
         }
-        return degrees;
     }
 
     private int getDeviceDefaultOrientation() {

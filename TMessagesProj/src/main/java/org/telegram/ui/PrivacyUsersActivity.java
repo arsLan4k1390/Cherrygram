@@ -113,8 +113,7 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         if (currentType == TYPE_BLOCKED) {
             actionBar.setTitle(LocaleController.getString("BlockedUsers", R.string.BlockedUsers));

@@ -73,7 +73,7 @@ public class ActionBar extends FrameLayout {
         }
     }
 
-    private UnreadImageView backButtonImageView;
+    public UnreadImageView backButtonImageView;
     private Drawable backButtonDrawable;
     private SimpleTextView[] titleTextView = new SimpleTextView[2];
     private SimpleTextView subtitleTextView;
@@ -159,7 +159,7 @@ public class ActionBar extends FrameLayout {
         });
     }
 
-    private void createBackButtonImage() {
+    public void createBackButtonImage() {
         if (backButtonImageView != null) {
             return;
         }
@@ -184,8 +184,11 @@ public class ActionBar extends FrameLayout {
         backButtonImageView.setContentDescription(LocaleController.getString("AccDescrGoBack", R.string.AccDescrGoBack));
     }
 
-    public Drawable getBackButtonDrawable() {
+    public Drawable getBackButtonDrawableT() {
         return backButtonDrawable;
+    }
+    public UnreadImageView getBackButtonDrawable() {
+        return backButtonImageView;
     }
 
     public void setBackButtonDrawable(Drawable drawable) {
@@ -194,8 +197,7 @@ public class ActionBar extends FrameLayout {
         }
         backButtonImageView.setVisibility(drawable == null ? GONE : VISIBLE);
         backButtonImageView.setImageDrawable(backButtonDrawable = drawable);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            backButtonImageView.setImageResource(R.drawable.arrow_back);
+
         if (drawable instanceof BackDrawable) {
             BackDrawable backDrawable = (BackDrawable) drawable;
             backDrawable.setRotation(isActionModeShowed() ? 1 : 0, false);
@@ -314,8 +316,7 @@ public class ActionBar extends FrameLayout {
         backButtonImageView.setVisibility(resource == 0 ? GONE : VISIBLE);
 //        backButtonImageView.setImageResource(resource);
         backButtonImageView.setImageResource(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            backButtonImageView.setImageResource(R.drawable.arrow_back);
+
     }
 
     private void createSubtitleTextView() {
@@ -1627,7 +1628,7 @@ public class ActionBar extends FrameLayout {
 
     private StaticLayout countLayout;
 
-    private class UnreadImageView extends ImageView {
+    public class UnreadImageView extends ImageView {
         public UnreadImageView(Context context) {
             super(context);
         }

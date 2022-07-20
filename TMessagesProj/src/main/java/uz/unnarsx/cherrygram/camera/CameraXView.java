@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 
+import androidx.camera.core.ImageCapture;
 import androidx.camera.view.PreviewView;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -327,11 +328,23 @@ public class CameraXView extends BaseCameraView {
     }
 
     public String setNextFlashMode() {
-        return controller.setNextFlashMode();
+        return mapFlashMode(controller.setNextFlashMode());
     }
 
     public String getCurrentFlashMode() {
-        return controller.getCurrentFlashMode();
+        return mapFlashMode(controller.getCurrentFlashMode());
+    }
+
+    public String mapFlashMode(int result) {
+        switch (result) {
+            case ImageCapture.FLASH_MODE_ON:
+                return "on";
+            case ImageCapture.FLASH_MODE_OFF:
+                return "off";
+            case ImageCapture.FLASH_MODE_AUTO:
+            default:
+                return "auto";
+        }
     }
 
     public boolean isFlashAvailable() {
@@ -480,6 +493,7 @@ public class CameraXView extends BaseCameraView {
         return displayOrientation == worldOrientation;
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void runHaptic() {
         long[] vibrationWaveFormDurationPattern = {0, 1};

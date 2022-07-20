@@ -663,7 +663,7 @@ public class MediaDataController extends BaseController {
 
     public ArrayList<TLRPC.Document> getRecentStickers(int type) {
         ArrayList<TLRPC.Document> arrayList = recentStickers[type];
-        return new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), CherrygramConfig.INSTANCE.getSlider_RecentStickersAmplifier()+2))); //Show more then 20 recent stickers
+        return new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), CherrygramConfig.INSTANCE.getSlider_RecentStickersAmplifier()))); //Show more then 20 recent stickers
     }
 
     public ArrayList<TLRPC.Document> getRecentStickersNoCopy(int type) {

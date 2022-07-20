@@ -60,5 +60,8 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_shareout to R.drawable.share_external_outline_28,
             R.drawable.msg_download to R.drawable.download_outline_28,
             R.drawable.msg_saved to R.drawable.bookmark_outline_28,
+            R.drawable.ic_ab_back to R.drawable.arrow_back,
+            R.drawable.msg_arrow_back to R.drawable.arrow_back,
+            R.drawable.calls_back to R.drawable.arrow_back,
     )
 }

@@ -50,7 +50,6 @@ import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.AlertDialog;
-import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
@@ -547,7 +546,7 @@ public class StatisticActivity extends BaseFragment implements NotificationCente
         avatarContainer.setTitle(chatLocal.title);
         avatarContainer.setSubtitle(LocaleController.getString("Statistics", R.string.Statistics));
 
-        actionBar.setBackButtonDrawable(new BackDrawable(false));
+        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(final int id) {

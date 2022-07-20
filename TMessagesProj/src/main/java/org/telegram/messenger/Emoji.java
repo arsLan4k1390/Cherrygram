@@ -56,9 +56,7 @@ public class Emoji {
     private static Runnable invalidateUiRunnable = () -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.emojiLoaded);
     public static float emojiDrawingYOffset;
     public static boolean emojiDrawingUseAlpha = true;
-
-//    private final static int MAX_RECENT_EMOJI_COUNT = 48;
-    private static int MAX_RECENT_EMOJI_COUNT = (int) (CherrygramConfig.INSTANCE.getSlider_RecentEmojisAmplifier());
+    
 
     static {
         drawImgSize = AndroidUtilities.dp(20);
@@ -615,7 +613,7 @@ public class Emoji {
         if (count == null) {
             count = 0;
         }
-        if (count == 0 && emojiUseHistory.size() >= MAX_RECENT_EMOJI_COUNT) {
+        if (count == 0 && emojiUseHistory.size() >= CherrygramConfig.INSTANCE.getSlider_RecentEmojisAmplifier()) {
             String emoji = recentEmoji.get(recentEmoji.size() - 1);
             emojiUseHistory.remove(emoji);
             recentEmoji.set(recentEmoji.size() - 1, code);
@@ -644,7 +642,7 @@ public class Emoji {
             }
             return 0;
         });
-        while (recentEmoji.size() > MAX_RECENT_EMOJI_COUNT) {
+        while (recentEmoji.size() > CherrygramConfig.INSTANCE.getSlider_RecentEmojisAmplifier()) {
             recentEmoji.remove(recentEmoji.size() - 1);
         }
     }

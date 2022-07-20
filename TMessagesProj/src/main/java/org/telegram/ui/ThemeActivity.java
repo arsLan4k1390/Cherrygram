@@ -833,8 +833,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         lastIsDarkTheme = !Theme.isCurrentThemeDay();
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(false);
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);

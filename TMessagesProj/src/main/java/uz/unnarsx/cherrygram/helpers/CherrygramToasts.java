@@ -1,4 +1,4 @@
-package uz.unnarsx.cherrygram.ui;
+package uz.unnarsx.cherrygram.helpers;
 
 import android.content.SharedPreferences;
 import android.widget.Toast;

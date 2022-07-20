@@ -2,23 +2,25 @@ package uz.unnarsx.cherrygram
 
 import android.app.Activity
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.util.Log
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.SharedConfig
 import uz.unnarsx.cherrygram.camera.CameraXUtilities
+import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.vkui.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.vkui.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.vkui.icon_replaces.VkIconReplace
+import kotlin.system.exitProcess
 
 object CherrygramConfig {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
+
     // Appearance Settings
     // Redesign
-    /*var change_Icon by sharedPreferences.int("AP_ChangeIcon", 0)
-    var change_Icon2 by sharedPreferences.int("AP_ChangeIcon2", 0)*/
-
     var iconReplacement by sharedPreferences.int("AP_IconReplacements", 0)
     fun getIconReplacement(): BaseIconReplace {
         return when (iconReplacement) {
@@ -28,24 +30,25 @@ object CherrygramConfig {
     }
 
     var flatActionbar by sharedPreferences.boolean("AP_FlatSB", true)
-    var BackButton by sharedPreferences.boolean("AP_BackButton", false)
+    var flatNavbar by sharedPreferences.boolean("AP_FlatNB", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
     //Folders
     var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
+    var newTabs_hideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
     var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
     var showTabsOnForward by sharedPreferences.boolean("CP_ShowTabsOnForward", true)
-    var filledIcons by sharedPreferences.boolean("AP_FilledIcons", true)
+    var filledIcons by sharedPreferences.boolean("AP_FilledIcons", false)
 
     const val TAB_TYPE_TEXT = 0
     const val TAB_TYPE_MIX = 1
     const val TAB_TYPE_ICON = 2
 
     var tabMode by sharedPreferences.int("CG_FoldersType", 0)
-    @JvmName("setTabMode1")
+    @JvmName("TabMode")
     fun setTabMode(mode: Int) {
         tabMode = mode
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "owlconfig",
+            "mainconfig",
             Activity.MODE_PRIVATE
         )
         val editor = preferences.edit()
@@ -54,8 +57,77 @@ object CherrygramConfig {
     }
     // Drawer
     var drawerAvatar by sharedPreferences.boolean("AP_DrawerAvatar", true)
-    var drawerBlur by sharedPreferences.boolean("AP_DrawerBlur", true)
+    fun toggleDrawerAvatar() {
+        drawerAvatar = !drawerAvatar
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_DrawerAvatar", drawerAvatar)
+        editor.apply()
+    }
+
+    var drawerGradient by sharedPreferences.boolean("AP_DrawerGradient", true)
+    fun toggleDrawerGradient() {
+        drawerGradient = !drawerGradient
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_DrawerGradient", drawerGradient)
+        editor.apply()
+    }
+
+    var drawerSmallAvatar by sharedPreferences.boolean("AP_DrawerSmallAvatar", true)
+    fun toggleDrawerSmallAvatar() {
+        drawerSmallAvatar = !drawerSmallAvatar
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_DrawerSmallAvatar", drawerSmallAvatar)
+        editor.apply()
+    }
+
     var drawerDarken by sharedPreferences.boolean("AP_DrawerDarken", true)
+    fun toggleDrawerDarken() {
+        drawerDarken = !drawerDarken
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_DrawerDarken", drawerDarken)
+        editor.apply()
+    }
+
+    var drawerBlur by sharedPreferences.boolean("AP_DrawerBlur", true)
+    fun toggleDrawerBlur() {
+        drawerBlur = !drawerBlur
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_DrawerBlur", drawerBlur)
+        editor.apply()
+    }
+
+    var drawerBlurIntensity by sharedPreferences.int("AP_DrawerBlurIntensity", 75)
+    fun saveDrawerBlurIntensity(intensity: Int) {
+        drawerBlurIntensity = intensity
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putInt("AP_DrawerBlurIntensity", drawerBlurIntensity)
+        editor.apply()
+    }
+
     // Drawer buttons
     var CreateGroupDrawerButton by sharedPreferences.boolean("AP_CreateGroupDrawerButton", false)
     fun toggleCreateGroupDrawerButton() {
@@ -179,7 +251,7 @@ object CherrygramConfig {
     }
     // Profile and Contacts
     var hidePhoneNumber by sharedPreferences.boolean("AP_HideUserPhone", false)
-    var mutualContacts by sharedPreferences.boolean("AP_MutualContacts", true)
+    var showMutualContacts by sharedPreferences.boolean("AP_MutualContacts", true)
     var showId by sharedPreferences.boolean("AP_ShowID", false)
     var showDc by sharedPreferences.boolean("AP_ShowDC", false)
 
@@ -195,6 +267,7 @@ object CherrygramConfig {
     var showSeconds by sharedPreferences.boolean("CP_ShowSeconds", false)
     var disableDoubleTabReact by sharedPreferences.boolean("CP_DoubleTapReact", false)
     var disableReactionAnim by sharedPreferences.boolean("CP_DisableReactionAnim", false)
+    var disablePremStickAnim by sharedPreferences.boolean("CP_DisablePremStickAnim", false)
     var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
     var hideKeyboardOnScroll by sharedPreferences.boolean("CP_HideKbdOnScroll", false)
     var hideSendAsChannel by sharedPreferences.boolean("CP_HideSendAsChannel", false)
@@ -257,16 +330,16 @@ object CherrygramConfig {
         editor.apply()
     }
 
-    /*init {
+    init {
         CherrygramToasts.init(sharedPreferences)
         fuckOff()
     }
 
     private fun fuckOff() {
-        val good = "30820311308201f9a0030201020204019cc993300d06092a864886f70d01010b05003039311730150603550403130e4361746f6772616d2044656275673111300f060355040a13084361746f6772616d310b3009060355040613025553301e170d3231303130343139343631395a170d3438303532323139343631395a3039311730150603550403130e4361746f6772616d2044656275673111300f060355040a13084361746f6772616d310b300906035504061302555330820122300d06092a864886f70d01010105000382010f003082010a0282010100b7110aa72a8436c77137971b0dff973799637219f0cfc415a8956309dfd4ea153bd1f8867d981d25d29b7f9e7bc123af03f829520135cee3c90e11338dc9b06f08dac8db85c4232b9daacd76d9d08abecba93981065fbef6e3be979851a843305ae7454fa69c40d174ecc98b6cea0ec95ab83e9de4938c5eca1f689460944ccf13cff85c3db28d276c74a9972ffce529d769bfc39197d39896158fb2c75d536dbc66307c3a100994415685e27a1fa3b6078ba4ce72a689192f8f8433649c4b1ce5a64807d0a5974241b51ab3265d524de544f67fa5cf1c0f9569a041fa5eb64138467d68406cf982f63d0e7c22c22a25518347da1f157a6ba41f3c6e91420ad10203010001a321301f301d0603551d0e0416041491fd9440a4ddf35ebb4e5783baa30e80a4aa0753300d06092a864886f70d01010b050003820101006dbcc10cc3190c4c5f99fac9410dce10d598e494052bc894d4de09b1bf4fc186f53b8a31d3ef47003d65f01b127a0ab9e274ab5b577e2d4bcb9305f1dc0131640e3c0c83a5230df34fa18a693819966540ad80c2e96c66458a5ae4010aa5591a6eb16c96e28dc2ac23a41fd464aed31aa9ee62b0bc755908944f80dcd45f8f81f439cec6a20c1a21a35360ba8dc37b23b98b203716477aca09e9f48c071ba898fceaed278b9f128b2eca7d3172191438a873c84519d5312b71aa1557bba544dae1150928c3bb9152955de7dc7810ef31d1b4e198595a43596fb96c410a5c7604d35acde21c75bde970de79f44c55a9b84a5496539e9f53a83fc7059770929987"
+        val good = "308203953082027da00302010202045c6a100c300d06092a864886f70d01010b0500307a310b300906035504061302555a311230100603550408130953616d61726b616e64311230100603550407130953616d61726b616e643111300f060355040a130854656c656772616d3111300f060355040b130854656c656772616d311d301b060355040313144172736c616e204b6861646a69627564696e6f763020170d3232303130333138343733315a180f32303731313232323138343733315a307a310b300906035504061302555a311230100603550408130953616d61726b616e64311230100603550407130953616d61726b616e643111300f060355040a130854656c656772616d3111300f060355040b130854656c656772616d311d301b060355040313144172736c616e204b6861646a69627564696e6f7630820122300d06092a864886f70d01010105000382010f003082010a0282010100905ab76f19c6fc8d50d50c4e6ae5fa32b72f2b3426bef7098f922a64e75b43af4c065bcc5f70e8d2a5517c7c089c3caddad964e876869c76662811f32e1b0e8ea46eb07375d0e563c4a440646be4b2a1947a83935a20039f1f0a19051561aaae714e9e5fe15494668f950303ab79176b432b2eadde75b9ac5ef61ef7c40db6711bd69b1912adb58802e74ff7cace591fde0b126788bded838303a82a5be479ce69a664745e8c9150d4510e0491608461be3598dfa9ff62e852aa544c7c17b00456dea5ecbb61c3cdb1bee00c5350f274ddd3c3579f812c1dd81b9825c0aa017ac2028c79c2b9a2c25ba29ea7d2a20da48188914b119dec1946280610073309e70203010001a321301f301d0603551d0e04160414282e1a317aa0a6133e8293a4b060ad1160c077c1300d06092a864886f70d01010b050003820101001f34812c430de1aa4644976c4df8686359283f381ab950fc9adc55a7b78a6fa762ad170c5df35baffe08689f1d64c396d610d6265df7fb9384520a97bf0665efabf4014ecd259c86ea4e5a384df3854e7a9e12b9388439f50bd9a70ef4a1b5a204ac717f5e431469ebc7cb4a4494e5681f369a56c11d4a912b15db76191029414749289b703c5739862d0e0bd89921b11a1bda953d529f22cd0596f41161b707f73f5a7e4df7e782bd73346001cb395127ab1a5901ec13518cd733d7b3c7a2e52b7e927e7f52a6e53efb4fde745829a4534f0f9cd04949e8240060ed5ac7373f2f04f5489211702e71fec86ba340ea87aa6e3f221e89a99ece1c33e710bb4efd"
         val info = ApplicationLoader.applicationContext.packageManager.getPackageInfo("uz.unnarsx.cherrygram", PackageManager.GET_SIGNATURES).signatures[0].toCharsString()
         if (info != good) {
             exitProcess(0)
         }
-    }*/
+    }
 }

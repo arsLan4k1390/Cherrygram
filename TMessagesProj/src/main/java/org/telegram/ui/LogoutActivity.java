@@ -92,8 +92,7 @@ public class LogoutActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setTitle(LocaleController.getString("LogOutTitle", R.string.LogOutTitle));
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);

@@ -19,50 +19,6 @@ import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
 class AppearancePreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)) {
         category(LocaleController.getString("AP_RedesignCategory", R.string.AP_RedesignCategory)) {
-            /*if (Build.VERSION.SDK_INT == 31 || Build.VERSION.SDK_INT == 32) {
-                list {
-                    title = LocaleController.getString("AP_ChangeIcon", R.string.AP_ChangeIcon)
-
-                    contractIcons({
-                        return@contractIcons listOf(
-                            Triple(0, LocaleController.getString("AP_ChangeIcon_Default", R.string.AP_ChangeIcon_Default), R.mipmap.cg_launcher_default),
-                            Triple(1, LocaleController.getString("AP_ChangeIcon_White", R.string.AP_ChangeIcon_White), R.mipmap.cg_launcher_white),
-                            Triple(2, LocaleController.getString("AP_ChangeIcon_Monet_Samsung", R.string.AP_ChangeIcon_Monet_Samsung), R.mipmap.cg_launcher_monet_samsung),
-                            Triple(3, LocaleController.getString("AP_ChangeIcon_Monet_Pixel", R.string.AP_ChangeIcon_Monet_Pixel), R.mipmap.cg_launcher_monet_pixel),
-                        )
-                    }, {
-                        return@contractIcons when (CherrygramConfig.change_Icon) {
-                            1 -> LocaleController.getString("AP_ChangeIcon_White", R.string.AP_ChangeIcon_White)
-                            2 -> LocaleController.getString("AP_ChangeIcon_Monet_Samsung", R.string.AP_ChangeIcon_Monet_Samsung)
-                            3 -> LocaleController.getString("AP_ChangeIcon_Monet_Pixel", R.string.AP_ChangeIcon_Monet_Pixel)
-                            else -> LocaleController.getString("AP_ChangeIcon_Default", R.string.AP_ChangeIcon_Default)
-                        }
-                    }) {
-                        CherrygramConfig.change_Icon = it
-                        IconExtras.setIcon(it)
-                    }
-                }
-            }
-            if (Build.VERSION.SDK_INT == 26 || Build.VERSION.SDK_INT == 27 || Build.VERSION.SDK_INT == 28 || Build.VERSION.SDK_INT == 29 || Build.VERSION.SDK_INT == 30 || Build.VERSION.SDK_INT == 33) {
-                list {
-                    title = LocaleController.getString("AP_ChangeIcon", R.string.AP_ChangeIcon)
-
-                    contractIcons({
-                        return@contractIcons listOf(
-                            Triple(0, LocaleController.getString("AP_ChangeIcon_Default", R.string.AP_ChangeIcon_Default), R.mipmap.cg_launcher_default),
-                            Triple(1, LocaleController.getString("AP_ChangeIcon_White", R.string.AP_ChangeIcon_White), R.mipmap.cg_launcher_white),
-                        )
-                    }, {
-                        return@contractIcons when (CherrygramConfig.change_Icon2) {
-                            1 -> LocaleController.getString("AP_ChangeIcon_White", R.string.AP_ChangeIcon_White)
-                            else -> LocaleController.getString("AP_ChangeIcon_Default", R.string.AP_ChangeIcon_Default)
-                        }
-                    }) {
-                        CherrygramConfig.change_Icon2 = it
-                        IconExtras.setIcon(it)
-                    }
-                }
-            }*/
             list {
                 title = LocaleController.getString("AP_IconReplacements", R.string.AP_IconReplacements)
 
@@ -94,14 +50,13 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = LocaleController.getString("AP_BackButton", R.string.AP_BackButton)
-                summary = LocaleController.getString("AP_BackButton_Desc", R.string.AP_BackButton_Desc)
+                title = LocaleController.getString("AP_FlatNB", R.string.AP_FlatNB)
+                summary = LocaleController.getString("AP_FlatNB_Desc", R.string.AP_FlatNB_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.BackButton
+                    return@contract CherrygramConfig.flatNavbar
                 }) {
-                    CherrygramConfig.BackButton = it
-                    (bf.parentActivity as? LaunchActivity)?.reloadResources()
+                    CherrygramConfig.flatNavbar = it
                 }
             }
             switch {
@@ -125,6 +80,16 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.folderNameInHeader
                 }) {
                     CherrygramConfig.folderNameInHeader = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_NewTabs_RemoveAllChats", R.string.CP_NewTabs_RemoveAllChats)
+                /*summary = LocaleController.getString("CP_NewTabs_RemoveAllChats_Desc", R.string.CP_NewTabs_RemoveAllChats_Desc)*/
+
+                contract({
+                    return@contract CherrygramConfig.newTabs_hideAllChats
+                }) {
+                    CherrygramConfig.newTabs_hideAllChats = it
                 }
             }
             switch {
@@ -160,46 +125,12 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
 
         category(LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)) {
             textIcon {
-                title = LocaleController.getString("AP_DrawerButtonsCategory", R.string.AP_DrawerButtonsCategory)
+                title = LocaleController.getString("AP_DrawerPreferences", R.string.AP_DrawerPreferences)
                 icon = R.drawable.msg_list
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(DrawerPreferencesEntry())
                 }
             }
-            switch {
-                title = LocaleController.getString("AP_DrawerAvatar", R.string.AP_DrawerAvatar)
-
-                contract({
-                    return@contract CherrygramConfig.drawerAvatar
-                }) {
-                    CherrygramConfig.drawerAvatar = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("AP_DrawerBlur", R.string.AP_DrawerBlur)
-
-                contract({
-                    return@contract CherrygramConfig.drawerBlur
-                }) {
-                    CherrygramConfig.drawerBlur = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("AP_DrawerDarken", R.string.AP_DrawerDarken)
-
-                contract({
-                    return@contract CherrygramConfig.drawerDarken
-                }) {
-                    CherrygramConfig.drawerDarken = it
-                }
-            }
-            /*textIcon {
-                title = LocaleController.getString("AP_DrawerButtonsCategory", R.string.AP_DrawerButtonsCategory)
-                icon = R.drawable.msg_list
-                listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(DrawerPreferencesEntry())
-                }
-            }*/
         }
 
         category(LocaleController.getString("AP_ProfileCategory", R.string.AP_ProfileCategory)) {
@@ -211,16 +142,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.hidePhoneNumber
                 }) {
                     CherrygramConfig.hidePhoneNumber = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("AP_MutualContacts", R.string.AP_MutualContacts)
-                summary = LocaleController.getString("AP_MutualContacts_Desc", R.string.AP_MutualContacts_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.mutualContacts
-                }) {
-                    CherrygramConfig.mutualContacts = it
                 }
             }
             switch {

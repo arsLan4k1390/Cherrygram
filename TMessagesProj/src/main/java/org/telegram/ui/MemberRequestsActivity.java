@@ -46,8 +46,7 @@ public class MemberRequestsActivity extends BaseFragment {
             }
         });
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setTitle(delegate.isChannel ? LocaleController.getString("SubscribeRequests", R.string.SubscribeRequests) : LocaleController.getString("MemberRequests", R.string.MemberRequests));
 
         ActionBarMenu menu = actionBar.createMenu();

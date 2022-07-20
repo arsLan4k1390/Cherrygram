@@ -140,8 +140,7 @@ public class RestrictedLanguagesSelectActivity extends BaseFragment implements N
         searchWas = false;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("DoNotTranslate", R.string.DoNotTranslate));
 

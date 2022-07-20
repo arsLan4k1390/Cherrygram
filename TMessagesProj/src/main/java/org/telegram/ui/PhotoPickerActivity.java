@@ -483,8 +483,7 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
         actionBar.setItemsColor(Theme.getColor(textKey), false);
         actionBar.setItemsBackgroundColor(Theme.getColor(selectorKey), false);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         if (selectedAlbum != null) {
             actionBar.setTitle(selectedAlbum.bucketName);
         } else if (type == 0) {

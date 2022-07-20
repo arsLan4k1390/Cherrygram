@@ -1810,8 +1810,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
         actionBar.getAdditionalSubtitleTextView().setTextColor(Theme.getColor(Theme.key_voipgroup_speakingText));
         actionBar.setSubtitleColor(Theme.getColor(Theme.key_voipgroup_lastSeenTextUnscrolled));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            actionBar.setBackButtonImage(R.drawable.arrow_back);
+        
         actionBar.setOccupyStatusBar(false);
         actionBar.setAllowOverlayTitle(false);
         actionBar.setItemsColor(Theme.getColor(Theme.key_voipgroup_actionBarItems), false);

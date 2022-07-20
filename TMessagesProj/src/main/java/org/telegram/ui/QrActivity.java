@@ -2,8 +2,6 @@ package org.telegram.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
@@ -78,7 +76,6 @@ import org.telegram.ui.Cells.SettingsSearchCell;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.ChatThemeBottomSheet;
-import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.Easings;
 import org.telegram.ui.Components.FlickerLoadingView;
 import org.telegram.ui.Components.HideViewAfterAnimation;
@@ -93,8 +90,6 @@ import org.telegram.ui.Components.ThemeSmallPreviewView;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class QrActivity extends BaseFragment {
 
@@ -315,8 +310,7 @@ public class QrActivity extends BaseFragment {
         closeImageView = new ImageView(context);
         closeImageView.setBackground(Theme.createSimpleSelectorCircleDrawable(AndroidUtilities.dp(34), 0x28000000, 0x28ffffff));
         closeImageView.setImageResource(R.drawable.ic_ab_back);
-        if (CherrygramConfig.INSTANCE.getBackButton())
-            closeImageView.setImageResource(R.drawable.arrow_back);
+
         closeImageView.setScaleType(ImageView.ScaleType.CENTER);
         closeImageView.setOnClickListener(v -> finishFragment());
         rootLayout.addView(closeImageView, LayoutHelper.createFrame(34, 34));
