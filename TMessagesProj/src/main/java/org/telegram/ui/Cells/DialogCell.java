@@ -826,8 +826,8 @@ public class DialogCell extends BaseCell {
                         } else if (chat.fake) {
                             drawScam = 2;
                             Theme.dialogs_fakeDrawable.checkText();
-                        } else {
-                            drawVerified = chat.verified;
+                        } else if (chat.verified || CherrygramConfig.INSTANCE.isCherryVerified(chat)) {
+                            drawVerified = true;
                         }
                     } else if (user != null) {
                         if (user.scam) {

@@ -14,6 +14,62 @@ class DonatePreferenceEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("DP_Donate", R.string.DP_Donate)) {
         category(LocaleController.getString("DP_Donate_Method", R.string.DP_Donate_Method)) {
             textIcon {
+                title = "VISA (Visa Direct)"
+                divider = true
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    AndroidUtilities.addToClipboard("4278310021797824")
+                    Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
+                }
+            }
+            textIcon {
+                title = "MasterCard (MoneySend)"
+                divider = true
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    AndroidUtilities.addToClipboard("5397170000155375")
+                    Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
+                }
+            }
+            textIcon {
+                title = "HUMO (Uzbekistan)"
+                divider = true
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    AndroidUtilities.addToClipboard("9860100124035617")
+                    Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
+                }
+            }
+            textIcon {
+                title = "UzCard (Uzbekistan)"
+                divider = true
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    AndroidUtilities.addToClipboard("8600490439085465")
+                    Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
+                }
+            }
+            textIcon {
+                title = "Apelsin Donates (Uzbekistan)"
+                divider = true
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    val openURL = Intent(android.content.Intent.ACTION_VIEW)
+                    openURL.data = Uri.parse("https://donate.apelsin.uz/pay/arsLan4k1390")
+                    bf.parentActivity.startActivity(openURL)
+                }
+            }
+            textIcon {
+                title = "Payme (Uzbekistan)"
+                divider = true
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    val openURL = Intent(android.content.Intent.ACTION_VIEW)
+                    openURL.data = Uri.parse("https://payme.uz/@arslan4k1390")
+                    bf.parentActivity.startActivity(openURL)
+                }
+            }
+            textIcon {
                 title = "QIWI Wallet"
                 divider = true
 
@@ -24,7 +80,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                title = "QIWI МИР"
+                title = "QIWI MIR Card"
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
@@ -42,7 +98,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                     bf.parentActivity.startActivity(openURL)
                 }
             }
-            textIcon {
+            /*textIcon {
                 title = "TON Coin"
                 divider = true
 
@@ -50,45 +106,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                     AndroidUtilities.addToClipboard("EQCVVayzZkpm4LoHi9yuJQFjxRqi2qM4o0dqMLvZnXOFFE-3")
                     Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
-            }
-            textIcon {
-                title = "Apelsin Donates"
-                divider = true
-
-                listener = TGKitTextIconRow.TGTIListener {
-                    val openURL = Intent(android.content.Intent.ACTION_VIEW)
-                    openURL.data = Uri.parse("https://donate.apelsin.uz/pay/arsLan4k1390")
-                    bf.parentActivity.startActivity(openURL)
-                }
-            }
-            textIcon {
-                title = "Payme"
-                divider = true
-
-                listener = TGKitTextIconRow.TGTIListener {
-                    val openURL = Intent(android.content.Intent.ACTION_VIEW)
-                    openURL.data = Uri.parse("https://payme.uz/@arslan4k1390")
-                    bf.parentActivity.startActivity(openURL)
-                }
-            }
-            textIcon {
-                title = "UzCard"
-                divider = true
-
-                listener = TGKitTextIconRow.TGTIListener {
-                    AndroidUtilities.addToClipboard("8600490439085465")
-                    Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
-                }
-            }
-            textIcon {
-                title = "HUMO"
-                divider = true
-
-                listener = TGKitTextIconRow.TGTIListener {
-                    AndroidUtilities.addToClipboard("9860100124035617")
-                    Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
-                }
-            }
+            }*/
 //            textIcon {
 //                title = "Bitcoin"
 //                divider = true

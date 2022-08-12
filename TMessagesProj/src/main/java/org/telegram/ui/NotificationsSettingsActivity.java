@@ -64,8 +64,6 @@ import org.telegram.ui.Components.RecyclerListView;
 import java.util.ArrayList;
 import java.util.Map;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class NotificationsSettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     public static class NotificationException {
@@ -176,6 +174,7 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
         otherSection2Row = rowCount++;
 
         otherSectionRow = rowCount++;
+        notificationsServiceRow = rowCount++;
         notificationsServiceConnectionRow = rowCount++;
         androidAutoAlertRow = -1;
         repeatRow = rowCount++;
@@ -342,7 +341,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("NotificationsAndSounds", R.string.NotificationsAndSounds));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
@@ -544,26 +542,26 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                 editor.putBoolean("badgeNumberMessages", getNotificationsController().showBadgeMessages);
                 editor.commit();
                 getNotificationsController().updateBadge();
+            } else if (position == notificationsServiceRow) {
+                SharedPreferences preferences = MessagesController.getNotificationsSettings(currentAccount);
+                enabled = preferences.getBoolean("pushService", getMessagesController().keepAliveService);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean("pushService", !enabled);
+                editor.apply();
+                ApplicationLoader.startPushService();
             } else if (position == notificationsServiceConnectionRow) {
                 SharedPreferences preferences = MessagesController.getNotificationsSettings(currentAccount);
                 enabled = preferences.getBoolean("pushConnection", getMessagesController().backgroundConnection);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean("pushConnection", !enabled);
-                enabled = preferences.getBoolean("pushService", getMessagesController().keepAliveService);
-                editor.putBoolean("pushService", !enabled);
-                editor.commit();
-                if (!enabled) {
-                    ConnectionsManager.getInstance(currentAccount).setPushConnectionEnabled(true);
-                } else {
-                    ConnectionsManager.getInstance(currentAccount).setPushConnectionEnabled(false);
-                }
-                ApplicationLoader.startPushService();
+                editor.apply();
+                ConnectionsManager.getInstance(currentAccount).setPushConnectionEnabled(!enabled);
             } else if (position == accountsAllRow) {
                 SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
                 enabled = preferences.getBoolean("AllAccounts", true);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean("AllAccounts", !enabled);
-                editor.commit();
+                editor.apply();
                 SharedConfig.showNotificationsForAllAccounts = !enabled;
                 for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
                     if (SharedConfig.showNotificationsForAllAccounts) {
@@ -818,8 +816,10 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                         checkCell.setTextAndCheck(LocaleController.getString("PinnedMessages", R.string.PinnedMessages), preferences.getBoolean("PinnedMessages", true), false);
                     } else if (position == androidAutoAlertRow) {
                         checkCell.setTextAndCheck("Android Auto", preferences.getBoolean("EnableAutoNotifications", false), true);
+                    } else if (position == notificationsServiceRow) {
+                        checkCell.setTextAndValueAndCheck(LocaleController.getString("NotificationsService", R.string.NotificationsService), LocaleController.getString("NotificationsServiceInfo", R.string.NotificationsServiceInfo), preferences.getBoolean("pushService", getMessagesController().keepAliveService), true, true);
                     } else if (position == notificationsServiceConnectionRow) {
-                        checkCell.setTextAndValueAndCheck(LocaleController.getString("NotificationsServiceConnection", R.string.NotificationsServiceConnection), "You won't be notified of new messages, if you disable this", preferences.getBoolean("pushConnection", getMessagesController().backgroundConnection), true, true);
+                        checkCell.setTextAndValueAndCheck(LocaleController.getString("NotificationsServiceConnection", R.string.NotificationsServiceConnection), LocaleController.getString("NotificationsServiceConnectionInfo", R.string.NotificationsServiceConnectionInfo), preferences.getBoolean("pushConnection", getMessagesController().backgroundConnection), true, true);
                     } else if (position == badgeNumberShowRow) {
                         checkCell.setTextAndCheck(LocaleController.getString("BadgeNumberShow", R.string.BadgeNumberShow), getNotificationsController().showBadgeNumber, true);
                     } else if (position == badgeNumberMutedRow) {

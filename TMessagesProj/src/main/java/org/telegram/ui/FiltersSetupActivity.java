@@ -21,11 +21,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -50,6 +45,7 @@ import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.RadioCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
+import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Components.CombinedDrawable;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
@@ -74,6 +70,8 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
     private int folderStyleHeaderRow;
     private int folderStyleTitlesRow;
     private int folderStyleEmojiTitlesRow;
+    private int folderStyleFilledEmojiTitlesRow;
+    private int folderStyleNoUnread;
     private int folderStyleEmojiRow;
     private int folderStyleSectionRow;
     private int recommendedHeaderRow;
@@ -451,6 +449,8 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
         folderStyleTitlesRow = rowCount++;
         folderStyleEmojiRow = rowCount++;
         folderStyleEmojiTitlesRow = rowCount++;
+        folderStyleFilledEmojiTitlesRow = rowCount++;
+        folderStyleNoUnread = rowCount++;
         folderStyleSectionRow = rowCount++;
         int count = getMessagesController().dialogFilters.size();
         if (!getUserConfig().isPremium()) {
@@ -561,6 +561,16 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 oldRadioCell.setChecked(false, true);
                 currRadioCell.setChecked(true, true);
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
+            } else if (position == folderStyleFilledEmojiTitlesRow) {
+                CherrygramConfig.INSTANCE.toogleFilledIcons();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getFilledIcons());
+                }
+            } else if (position == folderStyleNoUnread) {
+                CherrygramConfig.INSTANCE.toogleNewTabs_noUnread();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getNewTabs_noUnread());
+                }
             } else if (position >= filtersStartRow && position < filtersEndRow) {
                 int filterPosition = position - filtersStartRow;
                 if (!showAllChats) {
@@ -765,6 +775,10 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                     view = new RadioCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
+                case 7:
+                    view = new TextCheckCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
                 case 5:
                 default:
                     SuggestedFilterCell suggestedFilterCell = new SuggestedFilterCell(mContext);
@@ -917,6 +931,15 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
 
                     break;
                 }
+                case 7: {
+                    TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
+                    if (position == folderStyleFilledEmojiTitlesRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("AP_FilledIcons", R.string.AP_FilledIcons), CherrygramConfig.INSTANCE.getFilledIcons(), true);
+                    } else if (position == folderStyleNoUnread) {
+                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_NewTabs_NoCounter", R.string.CP_NewTabs_NoCounter), LocaleController.getString("CP_NewTabs_NoCounter_Desc", R.string.CP_NewTabs_NoCounter_Desc), CherrygramConfig.INSTANCE.getNewTabs_noUnread(), true, true);
+                    }
+                    break;
+                }
             }
         }
 
@@ -934,6 +957,8 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 return 4;
             } else if (position == folderStyleTitlesRow || position == folderStyleEmojiTitlesRow || position == folderStyleEmojiRow) {
                 return 6;
+            } else if (position == folderStyleFilledEmojiTitlesRow || position == folderStyleNoUnread) {
+                return 7;
             } else {
                 return 5;
             }

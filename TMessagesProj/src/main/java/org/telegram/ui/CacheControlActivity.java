@@ -71,8 +71,6 @@ import org.telegram.ui.Components.UndoView;
 import java.io.File;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class CacheControlActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private ListAdapter listAdapter;
@@ -81,8 +79,10 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private LinearLayoutManager layoutManager;
     AlertDialog progressDialog;
 
-    private int databaseRow;
+    private int forceCleanRow;
+    private int forceCleanInfoRow;
     private int kaboomButton;
+    private int databaseRow;
     private int databaseInfoRow;
     private int keepMediaHeaderRow;
     private int keepMediaInfoRow;
@@ -220,9 +220,10 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         storageUsageRow = rowCount++;
 
         cacheInfoRow = rowCount++;
+        forceCleanRow = rowCount++;
+        forceCleanInfoRow = rowCount++;
+        kaboomButton = rowCount++;
         databaseRow = rowCount++;
-        if (CherrygramConfig.INSTANCE.getKaboom())
-            kaboomButton = rowCount++;
         databaseInfoRow = rowCount++;
     }
 
@@ -286,6 +287,10 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     }
 
     private void cleanupFolders() {
+        cleanupFolders(false);
+    }
+
+    private void cleanupFolders(boolean skipViewCheck) {
         final AlertDialog progressDialog = new AlertDialog(getParentActivity(), 3);
         progressDialog.setCanCancel(false);
         progressDialog.showDelayed(500);
@@ -294,7 +299,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             long clearedSize = 0;
             boolean allItemsClear = true;
             for (int a = 0; a < 7; a++) {
-                if (clearViewData[a] == null || !clearViewData[a].clear) {
+                if ((clearViewData[a] == null || !clearViewData[a].clear) && !skipViewCheck) {
                     if (clearViewData[a] != null) {
                         allItemsClear = false;
                     }
@@ -471,10 +476,12 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     migrateOldFolder();
                 }
-            } else if (position == databaseRow) {
-                clearDatabase();
+            } else if (position == forceCleanRow) {
+                forceClean(context);
             } else if (position == kaboomButton) {
                 kaboomDurov(context);
+            } else if (position == databaseRow) {
+                clearDatabase();
             } else if (position == storageUsageRow) {
                 if (totalSize <= 0 || getParentActivity() == null) {
                     return;
@@ -601,7 +608,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private void kaboomDurov(Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
         builder.setTitle("Kaboom");
-        builder.setMessage("Kaboom??");
+        builder.setMessage(LocaleController.getString("CG_Kaboom", R.string.CG_Kaboom));
         builder.setPositiveButton("Kaboom!", (dialogInterface, i) -> {
             try {
                 if (Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT) {
@@ -621,6 +628,23 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
         }
     }
+
+    private void forceClean(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+        builder.setTitle(LocaleController.getString("CG_ForceCleanInfo1", R.string.CG_ForceCleanInfo1));
+        builder.setPositiveButton((LocaleController.getString("OK", R.string.OK)), (dialogInterface, i) -> {
+            cleanupFolders(true);
+            onBackPressed();
+        });
+        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+        AlertDialog dialog = builder.create();
+        showDialog(dialog);
+        TextView button = (TextView) dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (button != null) {
+            button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+        }
+    }
+
     private void clearDatabase() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
         builder.setTitle(LocaleController.getString("LocalDatabaseClearTextTitle", R.string.LocalDatabaseClearTextTitle));
@@ -681,7 +705,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int position = holder.getAdapterPosition();
-            return position == migrateOldFolderRow || position == databaseRow || position == kaboomButton || (position == storageUsageRow && (totalSize > 0) && !calculating);
+            return position == migrateOldFolderRow || position == databaseRow || position == forceCleanRow || position == kaboomButton || (position == storageUsageRow && (totalSize > 0) && !calculating);
         }
 
         @Override
@@ -749,10 +773,14 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
                     if (position == databaseRow) {
                         textCell.setTextAndValue(LocaleController.getString("ClearLocalDatabase", R.string.ClearLocalDatabase), AndroidUtilities.formatFileSize(databaseSize), false);
+                    } else if (position == forceCleanRow) {
+                        textCell.setCanDisable(false);
+                        textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteRedText));
+                        textCell.setText(LocaleController.getString("CG_ForceClean", R.string.CG_ForceClean), false);
                     } else if (position == kaboomButton) {
                         textCell.setCanDisable(false);
                         textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteRedText));
-                        textCell.setText("Kaboom", false);
+                        textCell.setText("Kaboom", true);
                     } else if (position == migrateOldFolderRow) {
                         textCell.setTextAndValue(LocaleController.getString("MigrateOldFolder", R.string.MigrateOldFolder), null, false);
                     }
@@ -767,6 +795,9 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                         privacyCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                     } else if (position == keepMediaInfoRow) {
                         privacyCell.setText(AndroidUtilities.replaceTags(LocaleController.getString("KeepMediaInfo", R.string.KeepMediaInfo)));
+                        privacyCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                    } else if (position == forceCleanInfoRow) {
+                        privacyCell.setText(AndroidUtilities.replaceTags(LocaleController.getString("CG_ForceCleanInfo", R.string.CG_ForceCleanInfo)));
                         privacyCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                     }
                     break;
@@ -787,7 +818,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 
         @Override
         public int getItemViewType(int i) {
-            if (i == databaseInfoRow || i == cacheInfoRow || i == keepMediaInfoRow) {
+            if (i == databaseInfoRow || i == forceCleanInfoRow || i == cacheInfoRow || i == keepMediaInfoRow) {
                 return 1;
             }
             if (i == storageUsageRow) {

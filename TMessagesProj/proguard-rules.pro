@@ -35,6 +35,9 @@
   public static android.net.Uri buildRawResourceUri(int);
 }
 
+# Keep all class member names of CameraX
+-keep class androidx.camera.extensions.impl.* { *; }
+
 # Methods accessed via reflection in DefaultExtractorsFactory
 -dontnote com.google.android.exoplayer2.ext.flac.FlacLibrary
 -keepclassmembers class com.google.android.exoplayer2.ext.flac.FlacLibrary {

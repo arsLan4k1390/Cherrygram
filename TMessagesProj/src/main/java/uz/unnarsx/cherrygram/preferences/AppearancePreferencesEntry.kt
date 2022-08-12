@@ -2,7 +2,6 @@ package uz.unnarsx.cherrygram.preferences
 
 import android.graphics.Color
 import android.os.Build
-import android.os.Build.VERSION_CODES.S
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.messenger.SharedConfig
@@ -10,10 +9,8 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
-import uz.unnarsx.cherrygram.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.ktx.*
 import uz.unnarsx.extras.CherrygramExtras
-/*import uz.unnarsx.extras.IconExtras*/
 import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
@@ -37,9 +34,18 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     (bf.parentActivity as? LaunchActivity)?.reloadResources()
                 }
             }
+            switch {
+                title = LocaleController.getString("AP_ToolBarShadow", R.string.AP_ToolBarShadow)
+
+                contract({
+                    return@contract CherrygramConfig.flatActionbar
+                }) {
+                    CherrygramConfig.flatActionbar = it
+                }
+            }
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                 switch {
-                    title = LocaleController.getString("AP_FlatSB", R.string.AP_FlatSB)
+                    title = LocaleController.getString("AP_TransparentSB", R.string.AP_TransparentSB)
 
                     contract({
                         return@contract SharedConfig.noStatusBar
@@ -93,16 +99,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = LocaleController.getString("CP_NewTabs_NoCounter", R.string.CP_NewTabs_NoCounter)
-                summary = LocaleController.getString("CP_NewTabs_NoCounter_Desc", R.string.CP_NewTabs_NoCounter_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.newTabs_noUnread
-                }) {
-                    CherrygramConfig.newTabs_noUnread = it
-                }
-            }
-            switch {
                 title = LocaleController.getString("CP_ShowTabsOnForward", R.string.CP_ShowTabsOnForward)
 
                 contract({
@@ -112,15 +108,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
 
-            switch {
-                title = LocaleController.getString("AP_FilledIcons", R.string.AP_FilledIcons)
-
-                contract({
-                    return@contract CherrygramConfig.filledIcons
-                }) {
-                    CherrygramConfig.filledIcons = it
-                }
-            }
         }
 
         category(LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)) {

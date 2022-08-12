@@ -185,6 +185,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
     private int createNewThemeRow;
 
     private int appIconHeaderRow;
+    private int oldNotificationIconRow;
+    private int appIconFilterRow;
     private int appIconSelectorRow;
     private int appIconShadowRow;
 
@@ -526,6 +528,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         createNewThemeRow = -1;
 
         appIconHeaderRow = -1;
+        oldNotificationIconRow = -1;
+        appIconFilterRow = -1;
         appIconSelectorRow = -1;
         appIconShadowRow = -1;
 
@@ -603,6 +607,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             swipeGestureInfoRow = rowCount++;
 
             appIconHeaderRow = rowCount++;
+            oldNotificationIconRow = rowCount++;
+            appIconFilterRow = rowCount++;
             appIconSelectorRow = rowCount++;
             appIconShadowRow = rowCount++;
 
@@ -990,6 +996,16 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 editor.commit();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(!animations);
+                }
+            } else if (position == oldNotificationIconRow) {
+                CherrygramConfig.INSTANCE.toogleOldNotificationIcon();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getOldNotificationIcon());
+                }
+            } else if (position == appIconFilterRow) {
+                CherrygramConfig.INSTANCE.toogleAppIconFilter();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getFilterLauncherIcon());
                 }
             } else if (position == backgroundRow) {
                 presentFragment(new WallpapersListActivity(WallpapersListActivity.TYPE_ALL));
@@ -2167,6 +2183,10 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                         textCheckCell.setTextAndCheck(LocaleController.getString("SendByEnter", R.string.SendByEnter), preferences.getBoolean("send_by_enter", false), true);
                     } else if (position == raiseToSpeakRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("RaiseToSpeak", R.string.RaiseToSpeak), SharedConfig.raiseToSpeak, true);
+                    } else if (position == oldNotificationIconRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("AP_Old_Notification_Icon", R.string.AP_Old_Notification_Icon), CherrygramConfig.INSTANCE.getOldNotificationIcon(), true);
+                    } else if (position == appIconFilterRow) {
+                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("AP_ChangeIconFilter", R.string.AP_ChangeIconFilter), LocaleController.getString("AP_ChangeIconFilter_Desc", R.string.AP_ChangeIconFilter_Desc), CherrygramConfig.INSTANCE.getFilterLauncherIcon(), true, true);
                     } else if (position == customTabsRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("ChromeCustomTabs", R.string.ChromeCustomTabs), LocaleController.getString("ChromeCustomTabsInfo", R.string.ChromeCustomTabsInfo), SharedConfig.customTabs, false, true);
                     } else if (position == directShareRow) {
@@ -2278,7 +2298,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 return TYPE_HEADER;
             } else if (position == automaticBrightnessRow) {
                 return TYPE_BRIGHTNESS;
-            } else if (position == scheduleLocationRow || position == enableAnimationsRow || position == sendByEnterRow ||
+            } else if (position == scheduleLocationRow || position == enableAnimationsRow || position == sendByEnterRow || position == oldNotificationIconRow || position == appIconFilterRow ||
                     position == raiseToSpeakRow || position == customTabsRow ||
                     position == directShareRow || position == chatBlurRow) {
                 return TYPE_TEXT_CHECK;

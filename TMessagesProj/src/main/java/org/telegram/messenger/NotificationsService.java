@@ -8,10 +8,21 @@
 
 package org.telegram.messenger;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
+
+import androidx.core.app.NotificationCompat;
+
+import uz.unnarsx.cherrygram.CGFeatureHooks;
 
 public class NotificationsService extends Service {
 
@@ -19,6 +30,23 @@ public class NotificationsService extends Service {
     public void onCreate() {
         super.onCreate();
         ApplicationLoader.postInitApplication();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String CHANNEL_ID = "push_service_channel";
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, LocaleController.getString("CG_PushService", R.string.CG_PushService), NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+            Intent explainIntent = new Intent("android.intent.action.VIEW");
+            explainIntent.setData(Uri.parse("tg://settings/notifications"));
+            PendingIntent explainPendingIntent = PendingIntent.getActivity(this, 0, explainIntent, 0);
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentIntent(explainPendingIntent)
+                    .setShowWhen(false)
+                    .setOngoing(true)
+                    .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
+                    .setContentText(LocaleController.getString("CG_PushService", R.string.CG_PushService))
+                    .build();
+            startForeground(9999, notification);
+        }
     }
 
     @Override

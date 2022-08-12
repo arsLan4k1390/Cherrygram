@@ -29,6 +29,8 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AvatarDrawable;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class DialogMeUrlCell extends BaseCell {
 
     private TLRPC.RecentMeUrl recentMeUrl;
@@ -104,7 +106,7 @@ public class DialogMeUrlCell extends BaseCell {
 
         if (recentMeUrl instanceof TLRPC.TL_recentMeUrlChat) {
             TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(recentMeUrl.chat_id);
-            drawVerified = chat.verified;
+            drawVerified = chat.verified || CherrygramConfig.INSTANCE.isCherryVerified(chat);
 
             if (!LocaleController.isRTL) {
                 nameLockLeft = AndroidUtilities.dp(AndroidUtilities.leftBaseline);

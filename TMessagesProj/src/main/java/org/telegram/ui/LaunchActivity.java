@@ -2199,6 +2199,8 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                                             open_settings = 4;
                                         } else if (url.contains("change_number")) {
                                             open_settings = 5;
+                                        } else if (url.contains("notifications")) {
+                                            open_settings = 7;
                                         } else {
                                             open_settings = 1;
                                         }
@@ -2531,6 +2533,8 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                     closePrevious = true;
                 } else if (open_settings == 6) {
                     fragment = new EditWidgetActivity(open_widget_edit_type, open_widget_edit);
+                } else if (open_settings == 7) {
+                    fragment = new NotificationsSettingsActivity();
                 } else {
                     fragment = null;
                 }
@@ -4251,7 +4255,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         }
     }
 
-    public void checkAppUpdate(boolean force) {
+    /*public void checkAppUpdate(boolean force) {
         if (true) return;
         if (!force && BuildVars.DEBUG_VERSION || !force && !BuildVars.CHECK_UPDATES) {
             return;
@@ -4294,7 +4298,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                 });
             }
         });
-    }
+    }*/
 
     public AlertDialog showAlertDialog(AlertDialog.Builder builder) {
         try {
@@ -4867,7 +4871,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         } else if (SharedConfig.pendingAppUpdate != null && SharedConfig.pendingAppUpdate.can_not_skip) {
             showUpdateActivity(UserConfig.selectedAccount, SharedConfig.pendingAppUpdate, true);
         }
-        checkAppUpdate(false);
+        /*checkAppUpdate(false);*/
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ApplicationLoader.canDrawOverlays = Settings.canDrawOverlays(this);
@@ -5212,12 +5216,12 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
             }
         } else if (id == NotificationCenter.fileLoaded) {
             String path = (String) args[0];
-            if (SharedConfig.isAppUpdateAvailable()) {
+            /*if (SharedConfig.isAppUpdateAvailable()) {
                 String name = FileLoader.getAttachFileName(SharedConfig.pendingAppUpdate.document);
                 if (name.equals(path)) {
                     updateAppUpdateViews(true);
                 }
-            }
+            }*/
             if (loadingThemeFileName != null) {
                 if (loadingThemeFileName.equals(path)) {
                     loadingThemeFileName = null;
@@ -5283,12 +5287,12 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
             if (path.equals(loadingThemeFileName) || path.equals(loadingThemeWallpaperName)) {
                 onThemeLoadFinish();
             }
-            if (SharedConfig.isAppUpdateAvailable()) {
+            /*if (SharedConfig.isAppUpdateAvailable()) {
                 String name = FileLoader.getAttachFileName(SharedConfig.pendingAppUpdate.document);
                 if (name.equals(path)) {
                     updateAppUpdateViews(true);
                 }
-            }
+            }*/
         } else if (id == NotificationCenter.screenStateChanged) {
             if (ApplicationLoader.mainInterfacePaused) {
                 return;
@@ -5381,7 +5385,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         } else if (id == NotificationCenter.groupCallUpdated) {
             checkWasMutedByAdmin(false);
         } else if (id == NotificationCenter.fileLoadProgressChanged) {
-            if (updateTextView != null && SharedConfig.isAppUpdateAvailable()) {
+            /* if (updateTextView != null && SharedConfig.isAppUpdateAvailable()) {
                 String location = (String) args[0];
                 String fileName = FileLoader.getAttachFileName(SharedConfig.pendingAppUpdate.document);
                 if (fileName != null && fileName.equals(location)) {
@@ -5391,7 +5395,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                     updateLayoutIcon.setProgress(loadProgress, true);
                     updateTextView.setText(LocaleController.formatString("AppUpdateDownloading", R.string.AppUpdateDownloading, (int) (loadProgress * 100)));
                 }
-            }
+            }*/
         } else if (id == NotificationCenter.appUpdateAvailable) {
             updateAppUpdateViews(mainFragmentsStack.size() == 1);
         } else if (id == NotificationCenter.currentUserShowLimitReachedDialog) {

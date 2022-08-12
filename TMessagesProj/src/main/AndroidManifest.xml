@@ -87,8 +87,8 @@
         android:name=".ApplicationLoader"
         android:allowBackup="false"
         android:hardwareAccelerated="@bool/useHardwareAcceleration"
-        android:icon="@mipmap/ic_launcher_sa"
-        android:roundIcon="@mipmap/ic_launcher_sa"
+        android:icon="@mipmap/icon_launcher_cherry"
+        android:roundIcon="@mipmap/icon_launcher_cherry"
         android:largeHeap="true"
         android:manageSpaceActivity="org.telegram.ui.ExternalActionActivity"
         android:requestLegacyExternalStorage="true"
@@ -103,9 +103,9 @@
 
         <activity-alias
             android:enabled="true"
-            android:name="uz.unnarsx.cherrygram.DefaultIcon"
+            android:name="uz.unnarsx.cherrygram.CG_Icon_Cherry"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/cg_launcher_default"
+            android:icon="@mipmap/icon_launcher_cherry"
             android:exported="true">
 
             <intent-filter>
@@ -117,9 +117,9 @@
 
         <activity-alias
             android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.CG_Icon_White"
+            android:name="uz.unnarsx.cherrygram.CG_Icon_White_Cherry"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/cg_launcher_white"
+            android:icon="@mipmap/icon_launcher_cherry_white"
             android:exported="true">
 
             <intent-filter>
@@ -128,11 +128,12 @@
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
             </intent-filter>
         </activity-alias>
+
         <activity-alias
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.CG_Icon_Monet_Samsung"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/cg_launcher_monet_samsung"
+            android:icon="@mipmap/icon_launcher_monet_cherry_samsung"
             android:exported="true">
 
             <intent-filter>
@@ -146,7 +147,7 @@
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.CG_Icon_Monet_Pixel"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/cg_launcher_monet_pixel"
+            android:icon="@mipmap/icon_launcher_monet_cherry_pixel"
             android:exported="true">
 
             <intent-filter>
@@ -158,9 +159,9 @@
 
         <activity-alias
             android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.VintageIcon"
+            android:name="uz.unnarsx.cherrygram.CG_Icon_Aqua"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_6_launcher"
+            android:icon="@mipmap/icon_launcher_cherry_aqua"
             android:exported="true">
 
             <intent-filter>
@@ -169,11 +170,111 @@
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
             </intent-filter>
         </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="uz.unnarsx.cherrygram.CG_Icon_Sunset"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher_cherry_sunset"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="uz.unnarsx.cherrygram.CG_Icon_Turbo"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher_cherry_turbo"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="uz.unnarsx.cherrygram.CG_Icon_Night"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher_cherry_nox"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+<!--        Telegram legacy icons-->
+        <activity-alias
+            android:enabled="false"
+            android:name="uz.unnarsx.cherrygram.Old_Icon"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="uz.unnarsx.cherrygram.White_Icon"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher_white"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="uz.unnarsx.cherrygram.Monet_Icon_Samsung"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher_monet_samsung"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="uz.unnarsx.cherrygram.Monet_Icon_Pixel"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher_monet_pixel"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
         <activity-alias
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.AquaIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_4_launcher"
+            android:icon="@mipmap/icon_launcher_aqua"
             android:exported="true">
 
             <intent-filter>
@@ -187,7 +288,7 @@
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.SunsetIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_7_launcher"
+            android:icon="@mipmap/icon_launcher_sunset"
             android:exported="true">
 
             <intent-filter>
@@ -201,7 +302,7 @@
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.PremiumIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_3_launcher"
+            android:icon="@mipmap/icon_launcher_premium"
             android:exported="true">
 
             <intent-filter>
@@ -215,7 +316,7 @@
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.TurboIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_5_launcher"
+            android:icon="@mipmap/icon_launcher_turbo"
             android:exported="true">
 
             <intent-filter>
@@ -225,12 +326,11 @@
             </intent-filter>
         </activity-alias>
 
-
         <activity-alias
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.NoxIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_2_launcher"
+            android:icon="@mipmap/icon_launcher_nox"
             android:exported="true">
 
             <intent-filter>
@@ -298,7 +398,7 @@
                 <data android:host="t.me" android:scheme="https" />
             </intent-filter>
             <intent-filter
-                android:icon="@mipmap/cg_launcher_default"
+                android:icon="@mipmap/icon_launcher_cherry"
                 android:priority="1">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -307,7 +407,7 @@
             </intent-filter>
 
             <intent-filter
-                android:icon="@mipmap/cg_launcher_default"
+                android:icon="@mipmap/icon_launcher_cherry"
                 android:priority="1">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -359,7 +459,7 @@
             android:exported="true"
             android:theme="@style/Theme.TMessages.Transparent">
             <intent-filter
-                android:icon="@mipmap/cg_launcher_default"
+                android:icon="@mipmap/icon_launcher_cherry"
                 android:priority="1">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -375,7 +475,7 @@
             android:hardwareAccelerated="@bool/useHardwareAcceleration"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
-            <intent-filter android:icon="@mipmap/cg_launcher_default">
+            <intent-filter android:icon="@mipmap/icon_launcher_cherry">
                 <action android:name="org.telegram.passport.AUTHORIZE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
@@ -386,7 +486,7 @@
             android:hardwareAccelerated="@bool/useHardwareAcceleration"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
-            <intent-filter android:icon="@mipmap/cg_launcher_default">
+            <intent-filter android:icon="@mipmap/icon_launcher_cherry">
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
@@ -396,7 +496,7 @@
             android:hardwareAccelerated="@bool/useHardwareAcceleration"
             android:exported="true"
             android:windowSoftInputMode="adjustPan">
-            <intent-filter android:icon="@mipmap/cg_launcher_default">
+            <intent-filter android:icon="@mipmap/icon_launcher_cherry">
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
@@ -405,7 +505,7 @@
 <!--            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"-->
 <!--            android:hardwareAccelerated="@bool/useHardwareAcceleration"-->
 <!--            android:windowSoftInputMode="adjustPan">-->
-<!--            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round">-->
+<!--            <intent-filter android:icon="@mipmap/icon_launcher_cherry" android:roundIcon="@mipmap/icon_launcher_round">-->
 <!--                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>-->
 <!--            </intent-filter>-->
 <!--        </activity>-->

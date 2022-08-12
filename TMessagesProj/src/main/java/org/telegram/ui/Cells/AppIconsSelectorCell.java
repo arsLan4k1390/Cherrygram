@@ -49,6 +49,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class AppIconsSelectorCell extends RecyclerListView implements NotificationCenter.NotificationCenterDelegate {
     public final static float ICONS_ROUND_RADIUS = 100;
 
@@ -79,8 +81,10 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                 IconHolderView holderView = (IconHolderView) holder.itemView;
                 LauncherIconController.LauncherIcon icon = availableIcons.get(position);
-                if (icon == LauncherIconController.LauncherIcon.ALT_MONET_SAMSUNG && Build.VERSION.SDK_INT < 31) return;
-                if (icon == LauncherIconController.LauncherIcon.ALT_MONET_PIXEL && Build.VERSION.SDK_INT < 31) return;
+                if (icon == LauncherIconController.LauncherIcon.MONET_SAMSUNG && Build.VERSION.SDK_INT < 31) return;
+                if (icon == LauncherIconController.LauncherIcon.MONET_PIXEL && Build.VERSION.SDK_INT < 31) return;
+                if (icon == LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG && Build.VERSION.SDK_INT < 31) return;
+                if (icon == LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL && Build.VERSION.SDK_INT < 31) return;
                 holderView.bind(icon);
                 holderView.iconView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(ICONS_ROUND_RADIUS), Color.TRANSPARENT, Theme.getColor(Theme.key_listSelector), Color.BLACK));
                 holderView.iconView.setForeground(icon.foreground);
@@ -155,8 +159,10 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
     private void updateIconsVisibility() {
         availableIcons.clear();
         availableIcons.addAll(Arrays.asList(LauncherIconController.LauncherIcon.values()));
-        if (Build.VERSION.SDK_INT < 31) availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.ALT_MONET_SAMSUNG));
-        if (Build.VERSION.SDK_INT < 31) availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.ALT_MONET_PIXEL));
+        if (Build.VERSION.SDK_INT < 31) availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_SAMSUNG));
+        if (Build.VERSION.SDK_INT < 31) availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_PIXEL));
+        if (Build.VERSION.SDK_INT < 31) availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG));
+        if (Build.VERSION.SDK_INT < 31) availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
         if (MessagesController.getInstance(currentAccount).premiumLocked) {
             for (int i = 0; i < availableIcons.size(); i++) {
                 if (availableIcons.get(i).premium) {
@@ -164,6 +170,27 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
                     i--;
                 }
             }
+        }
+        if (!CherrygramConfig.INSTANCE.getFilterLauncherIcon()) {
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.OLD));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.WHITE));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_SAMSUNG));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_PIXEL));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.AQUA));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNSET));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.PREMIUM));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX));
+        }
+        if (CherrygramConfig.INSTANCE.getFilterLauncherIcon()) {
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.WHITE_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.AQUA_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNSET_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX_CHERRY));
         }
         getAdapter().notifyDataSetChanged();
         invalidateItemDecorations();

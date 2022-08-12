@@ -28,8 +28,6 @@ import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.collection.LongSparseArray;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.util.Consumer;
@@ -976,8 +974,8 @@ public class MessagesController extends BaseController implements NotificationCe
         canRevokePmInbox = mainPreferences.getBoolean("canRevokePmInbox", canRevokePmInbox);
         preloadFeaturedStickers = mainPreferences.getBoolean("preloadFeaturedStickers", false);
         youtubePipType = mainPreferences.getString("youtubePipType", "disabled");
-        keepAliveService = mainPreferences.getBoolean("keepAliveService", true);
-        backgroundConnection = mainPreferences.getBoolean("keepAliveService", true);
+        keepAliveService = mainPreferences.getBoolean("keepAliveService", false);
+        backgroundConnection = mainPreferences.getBoolean("keepAliveService", false);
         promoDialogId = mainPreferences.getLong("proxy_dialog", 0);
         nextPromoInfoCheckTime = mainPreferences.getInt("nextPromoInfoCheckTime", 0);
         promoDialogType = mainPreferences.getInt("promo_dialog_type", 0);
@@ -6284,6 +6282,9 @@ public class MessagesController extends BaseController implements NotificationCe
             AndroidUtilities.runOnUIThread(passwordCheckRunnable);
             lastPasswordCheckTime = currentTime;
         }
+        if (lastPushRegisterSendTime != 0 && Math.abs(SystemClock.elapsedRealtime() - lastPushRegisterSendTime) >= 3 * 60 * 60 * 1000) {
+            GcmPushListenerService.sendRegistrationToServer(SharedConfig.pushString);
+        }
         getLocationController().update();
         checkPromoInfoInternal(false);
         checkTosUpdate();
@@ -11324,7 +11325,7 @@ public class MessagesController extends BaseController implements NotificationCe
                                     }
                                     arr.add(obj);
                                 }
-
+                                // This somehow fixed unread messages
                                 AndroidUtilities.runOnUIThread(() -> {
                                     for (int a = 0; a < messages.size(); a++) {
                                         long key = messages.keyAt(a);
@@ -11333,7 +11334,7 @@ public class MessagesController extends BaseController implements NotificationCe
                                     }
                                     getNotificationCenter().postNotificationName(NotificationCenter.dialogsNeedReload);
                                 });
-
+                                // This somehow fixed unread messages
                                 getMessagesStorage().getStorageQueue().postRunnable(() -> {
                                     if (!pushMessages.isEmpty()) {
                                         AndroidUtilities.runOnUIThread(() -> getNotificationsController().processNewMessages(pushMessages, !(res instanceof TLRPC.TL_updates_differenceSlice), false, null));

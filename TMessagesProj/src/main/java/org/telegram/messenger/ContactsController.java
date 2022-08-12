@@ -302,7 +302,7 @@ public class ContactsController extends BaseController {
     }
 
     public String getInviteText(int contacts) {
-        String link = inviteLink == null ? "https://t.me/cherry_gram" : inviteLink;
+        String link = inviteLink == null ? "https://t.me/Cherry_gram" : inviteLink;
         if (contacts <= 1) {
             return LocaleController.formatString("InviteText2", R.string.InviteText2, link);
         } else {

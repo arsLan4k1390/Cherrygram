@@ -40,6 +40,8 @@ import org.telegram.ui.Components.CheckBox2;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 import org.telegram.ui.NotificationsSettingsActivity;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ProfileSearchCell extends BaseCell implements NotificationCenter.NotificationCenterDelegate {
 
     private CharSequence currentName;
@@ -270,7 +272,10 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
         } else {
             if (chat != null) {
                 dialog_id = -chat.id;
-                drawCheck = chat.verified;
+                if (chat.verified || CherrygramConfig.INSTANCE.isCherryVerified(chat)) {
+                    drawCheck = true;
+                }
+                else drawCheck = false;
                 if (!LocaleController.isRTL) {
                     nameLeft = AndroidUtilities.dp(AndroidUtilities.leftBaseline);
                 } else {

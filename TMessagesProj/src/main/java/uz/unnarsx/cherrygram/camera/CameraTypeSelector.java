@@ -26,9 +26,9 @@ import uz.unnarsx.cherrygram.CherrygramConfig;
 public class CameraTypeSelector extends LinearLayout {
     Paint pickerDividersPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     String[] strings = new String[]{
-            LocaleController.getString("EP_CameraTypeDefault", R.string.EP_CameraTypeDefault),
+            LocaleController.getString("CP_CameraTypeDefault", R.string.CP_CameraTypeDefault),
             "CameraX",
-            LocaleController.getString("EP_CameraTypeSystem", R.string.EP_CameraTypeSystem),
+            LocaleController.getString("CP_CameraTypeSystem", R.string.CP_CameraTypeSystem),
     };
     private final NumberPicker picker1;
 

@@ -21,22 +21,20 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.graphics.ColorUtils;
-
-import com.google.android.exoplayer2.util.Log;
 
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.StickerImageView;
-import org.telegram.ui.DialogsActivity;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.stream.Stream;
+
+import uz.unnarsx.cherrygram.CGFeatureHooks;
 
 @RequiresApi(api = Build.VERSION_CODES.R)
 public class FilesMigrationService extends Service {
@@ -65,7 +63,7 @@ public class FilesMigrationService extends Service {
         Notification notification = new Notification.Builder(this, NotificationsController.OTHER_NOTIFICATIONS_CHANNEL)
                 .setContentTitle(getText(R.string.MigratingFiles))
                 .setAutoCancel(false)
-                .setSmallIcon(R.drawable.notification)
+                .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
                 .build();
 
         isRunning = true;
@@ -179,7 +177,7 @@ public class FilesMigrationService extends Service {
                 Notification notification = new Notification.Builder(FilesMigrationService.this, NotificationsController.OTHER_NOTIFICATIONS_CHANNEL)
                         .setContentTitle(getText(R.string.MigratingFiles))
                         .setContentText(String.format("%s/%s", currentCount, totalFilesCount))
-                        .setSmallIcon(R.drawable.notification)
+                        .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
                         .setAutoCancel(false)
                         .setProgress(totalFilesCount, currentCount, false)
                         .build();

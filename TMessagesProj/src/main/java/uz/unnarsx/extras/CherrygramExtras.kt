@@ -5,8 +5,8 @@ import org.telegram.messenger.SharedConfig
 
 object CherrygramExtras {
 
-    var CG_VERSION = "6.7.9"
-    var CG_AUTHOR = "Updates: t.me/cherry_gram"
+    var CG_VERSION = "6.9.0"
+    var CG_AUTHOR = "Updates: t.me/Cherry_gram"
 
     @JvmStatic
     @get:ColorInt

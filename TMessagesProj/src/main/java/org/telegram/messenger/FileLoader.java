@@ -1221,7 +1221,7 @@ public class FileLoader extends BaseController {
                 if ("s".equals(size)) {
                     dir = getDirectory(MEDIA_DIR_CACHE);
                 } else {
-                    dir = getDirectory(type = MEDIA_DIR_IMAGE);
+                    dir = getDirectory(MEDIA_DIR_IMAGE);
                 }
             } else if (attach instanceof WebFile) {
                 WebFile document = (WebFile) attach;

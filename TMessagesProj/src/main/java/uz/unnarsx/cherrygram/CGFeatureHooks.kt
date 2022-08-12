@@ -22,6 +22,11 @@ object CGFeatureHooks {
     }
 
     @JvmStatic
+    fun getProperNotificationIcon(): Int {
+        return if (CherrygramConfig.oldNotificationIcon) R.drawable.notification else R.drawable.cg_notification
+    }
+
+    @JvmStatic
     fun switchNoAuthor(b: Boolean) {
         // ...
         CherrygramConfig.noAuthorship = b

@@ -198,6 +198,7 @@ import java.util.zip.ZipOutputStream;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.CherrygramPreferencesNavigator;
+import uz.unnarsx.cherrygram.preferences.CGPremiumPreferencesEntry;
 import uz.unnarsx.extras.CherrygramExtras;
 
 public class ProfileActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, SharedMediaLayout.SharedMediaPreloaderDelegate, ImageUpdater.ImageUpdaterDelegate, SharedMediaLayout.Delegate {
@@ -452,6 +453,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int reportRow;
     private int addToGroupButtonRow;
     private int addToGroupInfoRow;
+    private int cherrygramPremiumRow;
     private int premiumRow;
     private int premiumSectionsRow;
 
@@ -1594,6 +1596,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     @Override
     public View createView(Context context) {
+        TLRPC.User user = getMessagesController().getUser(userId);
         Theme.createProfileResources(context);
         Theme.createChatResources(context, false);
         BaseFragment lastFragment = parentLayout.getLastFragment();
@@ -2930,6 +2933,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 presentFragment(new ActionIntroActivity(ActionIntroActivity.ACTION_TYPE_CHANGE_PHONE_NUMBER));
             } else if (position == setAvatarRow) {
                 onWriteButtonClick();
+            } else if (position == cherrygramPremiumRow) {
+                presentFragment(new CGPremiumPreferencesEntry());
             } else if (position == premiumRow) {
                 presentFragment(new PremiumPreviewFragment("settings"));
             } else {
@@ -3010,9 +3015,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 VoIPHelper.showCallDebugSettings(getParentActivity());
                             } else if (which == 8) {
                                 SharedConfig.toggleRoundCamera16to9();
-                            } else if (which == 9) {
+                            } /*else if (which == 9) {
                                 ((LaunchActivity) getParentActivity()).checkAppUpdate(true);
-                            } else if (which == 10) {
+                            }*/ else if (which == 10) {
                                 getMessagesStorage().readAllDialogs(-1);
                             } else if (which == 11) {
                                 SharedConfig.togglePauseMusicOnRecord();
@@ -5929,6 +5934,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void updateRowsIds() {
+        TLRPC.User user = getMessagesController().getUser(userId);
         int prevRowsCount = rowCount;
         rowCount = 0;
 
@@ -5947,6 +5953,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         cherrygramRow = -1;
         notificationRow = -1;
         languageRow = -1;
+        cherrygramPremiumRow = -1;
         premiumRow = -1;
         premiumSectionsRow = -1;
         privacyRow = -1;
@@ -6020,7 +6027,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (LocaleController.isRTL) {
                 emptyRow = rowCount++;
             }
-            TLRPC.User user = getMessagesController().getUser(userId);
+            //TLRPC.User user = getMessagesController().getUser(userId);
 
             if (UserObject.isUserSelf(user)) {
                 if (avatarBig == null && (user.photo == null || !(user.photo.photo_big instanceof TLRPC.TL_fileLocation_layer97) && !(user.photo.photo_big instanceof TLRPC.TL_fileLocationToBeDeprecated)) && (avatarsViewPager == null || avatarsViewPager.getRealCount() == 0)) {
@@ -6060,6 +6067,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 devicesRow = rowCount++;
                 languageRow = rowCount++;
                 devicesSectionRow = rowCount++;
+                cherrygramPremiumRow = rowCount++;
                 if (!getMessagesController().premiumLocked) {
                     premiumRow = rowCount++;
                     premiumSectionsRow = rowCount++;
@@ -6529,6 +6537,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else if (chat.verified) {
                         nameTextView[a].setRightDrawable(getVerifiedCrossfadeDrawable());
                         nameTextViewRightDrawableContentDescription = LocaleController.getString("AccDescrVerified", R.string.AccDescrVerified);
+                    } else if (CherrygramConfig.INSTANCE.isCherryVerified(chat)) {
+                        nameTextView[a].setRightDrawable(getVerifiedCrossfadeDrawable());
                     } else {
                         nameTextView[a].setRightDrawable(null);
                         nameTextViewRightDrawableContentDescription = null;
@@ -6537,6 +6547,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (chat.scam || chat.fake) {
                         nameTextView[a].setRightDrawable(getScamDrawable(chat.scam ? 0 : 1));
                     } else if (chat.verified) {
+                        nameTextView[a].setRightDrawable(getVerifiedCrossfadeDrawable());
+                    } else if (CherrygramConfig.INSTANCE.isCherryVerified(chat)) {
                         nameTextView[a].setRightDrawable(getVerifiedCrossfadeDrawable());
                     } else if (getMessagesController().isDialogMuted(-chatId)) {
                         nameTextView[a].setRightDrawable(getThemedDrawable(Theme.key_drawable_muteIconDrawable));
@@ -7692,7 +7704,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 a = getMessagesController().getChat(chatId).photo.dc_id + "";
                             }
                         } catch (Exception e) {
-                            a = "null";
+                            a = LocaleController.getString("NumberUnknown", R.string.NumberUnknown);
                         }
                             detailCell.setTextAndValue(a, "DC", false);
                     } else if (position == usernameRow) {
@@ -7883,6 +7895,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else if (position == addToGroupButtonRow) {
                         textCell.setTextAndIcon(LocaleController.getString("AddToGroupOrChannel", R.string.AddToGroupOrChannel), R.drawable.msg_groups_create, false);
                         textCell.setColors(Theme.key_windowBackgroundWhiteBlueIcon, Theme.key_windowBackgroundWhiteBlueButton);
+                    } else if (position == cherrygramPremiumRow) {
+                        textCell.setTextAndIcon(LocaleController.getString("CP_Header_Premium", R.string.CP_Header_Premium), R.drawable.msg_fave, true);
                     } else if (position == premiumRow) {
                         textCell.setTextAndIcon(LocaleController.getString("TelegramPremium", R.string.TelegramPremium), PremiumGradient.getInstance().premiumStarMenuDrawable, false);
                         textCell.setImageLeft(23);
@@ -8029,7 +8043,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         position == languageRow || position == setUsernameRow || position == bioRow ||
                         position == versionRow || position == dataRow || position == chatRow ||
                         position == questionRow || position == devicesRow || position == filtersRow || position == stickersRow ||
-                        position == faqRow || position == policyRow || position == sendLogsRow || position == cherrygramRow ||
+                        position == faqRow || position == policyRow || position == sendLogsRow || position == cherrygramRow || position == cherrygramPremiumRow ||
                         position == clearLogsRow ||  position == sendLastLogsRow || position == setAvatarRow || position == addToGroupButtonRow;
             }
             if (holder.itemView instanceof UserCell) {
@@ -8066,7 +8080,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else if (position == settingsTimerRow || position == settingsKeyRow || position == reportRow ||
                     position == subscribersRow || position == subscribersRequestsRow || position == administratorsRow || position == blockedUsersRow ||
                     position == addMemberRow || position == joinRow || position == unblockRow ||
-                    position == sendMessageRow || position == notificationRow || position == cherrygramRow || position == privacyRow ||
+                    position == sendMessageRow || position == notificationRow || position == cherrygramPremiumRow || position == cherrygramRow || position == privacyRow ||
                     position == languageRow || position == dataRow || position == chatRow ||
                     position == questionRow || position == devicesRow || position == filtersRow || position == stickersRow ||
                     position == faqRow || position == policyRow || position == sendLogsRow || position == sendLastLogsRow ||

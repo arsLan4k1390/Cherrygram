@@ -13296,41 +13296,9 @@ ChatActivity extends BaseFragment implements NotificationCenter.NotificationCent
                         allowChatActions = false;
                     }
 
-                    int newVisibility;
+                    int newVisibility = View.VISIBLE;
 
-                    if (chatMode == MODE_SCHEDULED || !allowChatActions || selectedMessagesIds[0].size() != 0 && selectedMessagesIds[1].size() != 0) {
-                        newVisibility = View.GONE;
-                    //} else if (selectedCount == 1) {
-                    } else if (selectedCount > 0) {
-                        newVisibility = View.VISIBLE;
-                    } else {
-                        newVisibility = View.VISIBLE;
-                        long lastGroupId = 0;
-                        for (int a = 0; a < 2; a++) {
-                            for (int b = 0, N = selectedMessagesIds[a].size(); b < N; b++) {
-                                MessageObject message = selectedMessagesIds[a].valueAt(b);
-                                long groupId = message.getGroupId();
-                                if (groupId == 0 || lastGroupId != 0 && lastGroupId != groupId) {
-                                    newVisibility = View.GONE;
-                                    break;
-                                }
-                                lastGroupId = groupId;
-                            }
-                            if (newVisibility == View.GONE) {
-                                break;
-                            }
-                        }
-                    }
-                    if (threadMessageObjects != null && newVisibility == View.VISIBLE) {
-                        for (int b = 0, N = selectedMessagesIds[0].size(); b < N; b++) {
-                            MessageObject message = selectedMessagesIds[0].valueAt(b);
-                            if (threadMessageObjects.contains(message)) {
-                                newVisibility = View.GONE;
-                            }
-                        }
-                    }
-
-                    if (replyButton.getVisibility() != newVisibility) {
+                    if (replyButton.getVisibility() != newVisibility || replyButtonAnimation != null) {
                         if (replyButtonAnimation != null) {
                             replyButtonAnimation.cancel();
                         }

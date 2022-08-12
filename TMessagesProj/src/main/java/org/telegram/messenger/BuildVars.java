@@ -28,7 +28,7 @@ public class BuildVars {
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
 
     public static String SMS_HASH = isStandaloneApp() ? "w0lkcmTZkKh" : (DEBUG_VERSION ? "O2P2z+/jBpJ" : "oLeq9AcOZkT");
-    public static String PLAYSTORE_APP_URL = "https://telegram.me/cherry_gram";
+    public static String PLAYSTORE_APP_URL = "https://telegram.me/Cherry_gram";
 
     // You can use this flag to disable Google Play Billing (If you're making fork and want it to be in Google Play)
     public static boolean IS_BILLING_UNAVAILABLE = false;

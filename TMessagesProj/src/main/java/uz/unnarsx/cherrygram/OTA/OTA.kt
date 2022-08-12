@@ -17,6 +17,7 @@ import okhttp3.Request
 import org.json.JSONObject
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
+import uz.unnarsx.cherrygram.CGFeatureHooks
 import uz.unnarsx.extras.CherrygramExtras
 
 
@@ -110,7 +111,7 @@ object OTA : CoroutineScope by MainScope() {
                 )
 
                 val notification: Notification = NotificationCompat.Builder(context, "channel01")
-                    .setSmallIcon(R.drawable.notification)
+                    .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
                     .setContentTitle(LocaleController.getString("CG_Found", R.string.CG_Found))
                     .setContentText(version)
                     .setDefaults(Notification.DEFAULT_ALL)

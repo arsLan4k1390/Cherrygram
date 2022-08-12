@@ -1,11 +1,14 @@
 package uz.unnarsx.cherrygram.preferences
 
+import android.app.assist.AssistContent
 import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.Browser
 import org.telegram.messenger.BuildVars
 import org.telegram.messenger.LocaleController
+import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramPreferencesNavigator
@@ -16,48 +19,41 @@ import uz.unnarsx.cherrygram.preferences.ktx.tgKitScreen
 import uz.unnarsx.extras.CherrygramExtras
 import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
 
-import android.os.Build
-
-import android.app.assist.AssistContent
-import org.telegram.messenger.R
-
 
 class MainPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("CGP_AdvancedSettings", R.string.CGP_AdvancedSettings)) {
         category(LocaleController.getString("CGP_Header_Categories", R.string.CGP_Header_Categories)) {
             textIcon {
                 title = LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)
-                icon = R.drawable.msg_theme
+                icon = R.drawable.palette_outline_28
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CherrygramPreferencesNavigator.createAppearance())
                 }
             }
-
             textIcon {
                 title = LocaleController.getString("СP_Header_Chats", R.string.CP_Header_Chats)
-                icon = R.drawable.msg_msgbubble3
+                icon = R.drawable.messages_outline_28
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CherrygramPreferencesNavigator.createChats())
                 }
             }
-
+            textIcon {
+                title = LocaleController.getString("CP_Category_Camera", R.string.CP_Category_Camera)
+                icon = R.drawable.camera_outline_28
+                listener = TGKitTextIconRow.TGTIListener {
+                    it.presentFragment(CameraPrefenrecesEntry())
+                }
+            }
             textIcon {
                 title = LocaleController.getString("SP_Category_Security", R.string.SP_Category_Security)
-                icon = R.drawable.msg_secret
+                icon = R.drawable.lock_outline_28
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CherrygramPreferencesNavigator.createSecurity())
                 }
             }
             textIcon {
-                title = LocaleController.getString("EP_Category_Experimental", R.string.EP_Category_Experimental)
-                icon = R.drawable.favorite_outline_28
-                listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(ExperimentalPrefenrecesEntry())
-                }
-            }
-            textIcon {
                 title = LocaleController.getString("CGP_Updates_Category", R.string.CGP_Updates_Category)
-                icon = R.drawable.msg_send
+                icon = R.mipmap.outline_send
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CherrygramPreferencesNavigator.createUpdates())
                 }
@@ -75,9 +71,9 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     title = "Cherrygram v" + CherrygramExtras.CG_VERSION + " [" + BuildVars.BUILD_VERSION_STRING + "]"
                     detail = LocaleController.getString("CGP_About_Desc", R.string.CGP_About_Desc)
                 }
-
                 textIcon {
                     title = LocaleController.getString("CGP_ToChannel", R.string.CGP_ToChannel)
+                    icon = R.drawable.advertising_outline_28
                     value = "@Cherry_gram"
                     listener = TGKitTextIconRow.TGTIListener {
                         goToChannel(it)
@@ -85,16 +81,26 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 }
                 textIcon {
                     title = LocaleController.getString("CGP_ToChat", R.string.CGP_ToChat)
-                    value = "@cherry_gram_support"
+                    icon = R.drawable.chats_outline_28
+                    value = "@CherrygramSupport"
                     listener = TGKitTextIconRow.TGTIListener {
                         goToChat(it)
                     }
                 }
                 textIcon {
                     title = LocaleController.getString("CGP_Source", R.string.CGP_Source)
+                    icon = R.mipmap.outline_source_white_28
                     value = "Github"
                     listener = TGKitTextIconRow.TGTIListener {
                         goToGithub(it)
+                    }
+                }
+                textIcon {
+                    title = LocaleController.getString("CGP_Crowdin", R.string.CGP_Crowdin)
+                    icon = R.drawable.round_translate_24
+                    value = "Crowdin"
+                    listener = TGKitTextIconRow.TGTIListener {
+                        goToCrowdin(it)
                     }
                 }
             }
@@ -112,7 +118,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
         }
 
         private fun goToChat(bf: BaseFragment) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/cherry_gram_support"))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/CherrygramSupport"))
             val componentName = ComponentName(bf.parentActivity.packageName, LaunchActivity::class.java.name)
             intent.component = componentName
             intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true)
@@ -123,6 +129,12 @@ class MainPreferencesEntry : BasePreferencesEntry {
         private fun goToGithub(bf: BaseFragment) {
             val openURL = Intent(android.content.Intent.ACTION_VIEW)
             openURL.data = Uri.parse("https://github.com/arsLan4k1390/Cherrygram")
+            bf.parentActivity.startActivity(openURL)
+        }
+
+        private fun goToCrowdin(bf: BaseFragment) {
+            val openURL = Intent(android.content.Intent.ACTION_VIEW)
+            openURL.data = Uri.parse("https://crowdin.com/project/cherrygram")
             bf.parentActivity.startActivity(openURL)
         }
 

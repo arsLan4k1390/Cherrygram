@@ -30,6 +30,7 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
@@ -47,6 +48,7 @@ import org.telegram.ui.LauncherIconController;
 import java.io.File;
 
 public class ApplicationLoader extends Application {
+    private static PendingIntent pendingIntent;
 
     @SuppressLint("StaticFieldLeak")
     public static volatile Context applicationContext;
@@ -224,41 +226,60 @@ public class ApplicationLoader extends Application {
 
         AndroidUtilities.runOnUIThread(ApplicationLoader::startPushService);
 
+        startPushService();
         LauncherIconController.tryFixLauncherIconIfNeeded();
     }
 
     public static void startPushService() {
+        Utilities.stageQueue.postRunnable(ApplicationLoader::startPushServiceInternal);
+    }
+
+    private static void startPushServiceInternal() {
         SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
         boolean enabled;
         if (preferences.contains("pushService")) {
-            enabled = preferences.getBoolean("pushService", true);
+            enabled = preferences.getBoolean("pushService", false);
         } else {
-            enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", true);
+            enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", false);
             SharedPreferences.Editor editor = preferences.edit();
             editor.putBoolean("pushService", enabled);
             editor.putBoolean("pushConnection", enabled);
-            editor.commit();
-            SharedPreferences preferencesCA = MessagesController.getNotificationsSettings(UserConfig.selectedAccount);
-            SharedPreferences.Editor editorCA = preferencesCA.edit();
-            editorCA.putBoolean("pushConnection", enabled);
-            editorCA.putBoolean("pushService", enabled);
-            editorCA.commit();
-            ConnectionsManager.getInstance(UserConfig.selectedAccount).setPushConnectionEnabled(true);
+            editor.apply();
+            ConnectionsManager.getInstance(UserConfig.selectedAccount).setPushConnectionEnabled(enabled);
         }
         if (enabled) {
-            try {
-                applicationContext.startService(new Intent(applicationContext, NotificationsService.class));
-            } catch (Throwable ignore) {
+            AndroidUtilities.runOnUIThread(() -> {
+                try {
+                    Log.d("TFOSS", "Trying to start push service every 10 minutes");
+                    // Telegram-FOSS: unconditionally enable push service
+                    AlarmManager am = (AlarmManager) applicationContext.getSystemService(Context.ALARM_SERVICE);
+                    Intent i = new Intent(applicationContext, NotificationsService.class);
+                    pendingIntent = PendingIntent.getBroadcast(applicationContext, 0, i, 0);
 
-            }
-        } else {
+                    am.cancel(pendingIntent);
+                    am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 10 * 60 * 1000, pendingIntent);
+
+                    Log.d("TFOSS", "Starting push service...");
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        applicationContext.startForegroundService(new Intent(applicationContext, NotificationsService.class));
+                    } else {
+                        applicationContext.startService(new Intent(applicationContext, NotificationsService.class));
+                    }
+                } catch (Throwable e) {
+                    Log.d("TFOSS", "Failed to start push service");
+                }
+            });
+
+        } else AndroidUtilities.runOnUIThread(() -> {
             applicationContext.stopService(new Intent(applicationContext, NotificationsService.class));
 
-            PendingIntent pintent = null;
-            pintent = PendingIntent.getService(applicationContext, 0, new Intent(applicationContext, NotificationsService.class), PendingIntent.FLAG_MUTABLE);
-            AlarmManager alarm = (AlarmManager)applicationContext.getSystemService(Context.ALARM_SERVICE);
+            PendingIntent pintent = PendingIntent.getService(applicationContext, 0, new Intent(applicationContext, NotificationsService.class), 0);
+            AlarmManager alarm = (AlarmManager) applicationContext.getSystemService(Context.ALARM_SERVICE);
             alarm.cancel(pintent);
-        }
+            if (pendingIntent != null) {
+                alarm.cancel(pendingIntent);
+            }
+        });
     }
 
     @Override

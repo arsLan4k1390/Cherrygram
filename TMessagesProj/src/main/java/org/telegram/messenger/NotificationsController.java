@@ -70,6 +70,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
+import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class NotificationsController extends BaseController {
@@ -3701,7 +3702,7 @@ public class NotificationsController extends BaseController {
             PendingIntent contentIntent = PendingIntent.getActivity(ApplicationLoader.applicationContext, 0, intent, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
             mBuilder.setContentTitle(name)
-                    .setSmallIcon(R.drawable.notification)
+                    .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
                     .setAutoCancel(true)
                     .setNumber(total_unread_count)
                     .setContentIntent(contentIntent)
@@ -4425,7 +4426,7 @@ public class NotificationsController extends BaseController {
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(ApplicationLoader.applicationContext)
                     .setContentTitle(name)
-                    .setSmallIcon(R.drawable.notification)
+                    .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
                     .setContentText(text.toString())
                     .setAutoCancel(true)
                     .setNumber(messageObjects.size())
@@ -4600,8 +4601,6 @@ public class NotificationsController extends BaseController {
                 if (soundOut == 0 && !soundOutLoaded) {
                     soundOutLoaded = true;
                     soundOut = soundPool.load(ApplicationLoader.applicationContext, R.raw.sound_out, 1);
-//                    if (CherrygramConfig.INSTANCE.getIosSounds())
-//                        soundOut = soundPool.load(ApplicationLoader.applicationContext, R.raw.sound_out_ios, 1);
                 }
                 if (soundOut != 0) {
                     try {
