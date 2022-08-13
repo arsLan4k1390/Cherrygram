@@ -83,6 +83,10 @@
 
     <uses-sdk tools:overrideLibrary="androidx.camera.view, androidx.camera.extensions, androidx.camera.lifecycle, androidx.camera.camera2, androidx.camera.core" />
 
+    <queries>
+        <package android:name="com.google.android.apps.maps"/>
+    </queries>
+
     <application
         android:name=".ApplicationLoader"
         android:allowBackup="false"

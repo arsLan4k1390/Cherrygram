@@ -128,6 +128,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
     protected LongSparseArray<TLRPC.Dialog> selectedDialogs = new LongSparseArray<>();
     private SwitchView switchView;
     private int containerViewTop = -1;
+    private boolean fullyShown = false;
 
     private ChatActivity parentFragment;
     private Activity parentActivity;
@@ -474,6 +475,13 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         sendingText[1] = text2;
         useSmoothKeyboard = true;
 
+        super.setDelegate(new BottomSheetDelegate() {
+            @Override
+            public void onOpenAnimationEnd() {
+                fullyShown = true;
+            }
+        });
+
         if (sendingMessageObjects != null) {
             for (int a = 0, N = sendingMessageObjects.size(); a < N; a++) {
                 MessageObject messageObject = sendingMessageObjects.get(a);
@@ -602,7 +610,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
 
                 @Override
                 protected boolean heightAnimationEnabled() {
-                    if (isDismissed()) {
+                    if (isDismissed() || !fullyShown) {
                         return false;
                     }
                     return !commentTextView.isPopupVisible();
@@ -1200,7 +1208,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         containerView.addView(frameLayout2, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM));
         frameLayout2.setOnTouchListener((v, event) -> true);
 
-        commentTextView = new EditTextEmoji(context, sizeNotifierFrameLayout, null, EditTextEmoji.STYLE_DIALOG, resourcesProvider) {
+        commentTextView = new EditTextEmoji(context, sizeNotifierFrameLayout, null, EditTextEmoji.STYLE_DIALOG, true, resourcesProvider) {
 
             private boolean shouldAnimateEditTextWithBounds;
             private int messageEditTextPredrawHeigth;
@@ -1492,178 +1500,221 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         }
     }
 
-//    private boolean showSendersName = true;
-//    private ActionBarPopupWindow sendPopupWindow;
-//    private boolean onSendLongClick(View view) {
-//        if (parentFragment == null) {
-//            return false;
-//        }
-//        LinearLayout layout = new LinearLayout(getContext());
-//        layout.setOrientation(LinearLayout.VERTICAL);
-//        if (sendingMessageObjects != null) {
-//            ActionBarPopupWindow.ActionBarPopupWindowLayout sendPopupLayout1 = new ActionBarPopupWindow.ActionBarPopupWindowLayout(parentActivity, resourcesProvider);
-//            sendPopupLayout1.setAnimationEnabled(false);
-//            sendPopupLayout1.setOnTouchListener(new View.OnTouchListener() {
-//                private android.graphics.Rect popupRect = new android.graphics.Rect();
-//
-//                @Override
-//                public boolean onTouch(View v, MotionEvent event) {
-//                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-//                        if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
-//                            v.getHitRect(popupRect);
-//                            if (!popupRect.contains((int) event.getX(), (int) event.getY())) {
-//                                sendPopupWindow.dismiss();
-//                            }
-//                        }
-//                    }
-//                    return false;
-//                }
-//            });
-//            sendPopupLayout1.setDispatchKeyEventListener(keyEvent -> {
-//                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0 && sendPopupWindow != null && sendPopupWindow.isShowing()) {
-//                    sendPopupWindow.dismiss();
-//                }
-//            });
-//            sendPopupLayout1.setShownFromBottom(false);
-//            sendPopupLayout1.setupRadialSelectors(getThemedColor(Theme.key_dialogButtonSelector));
-//
-//            ActionBarMenuSubItem showSendersNameView = new ActionBarMenuSubItem(getContext(), true, true, false, resourcesProvider);
-//            sendPopupLayout1.addView(showSendersNameView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
-//            showSendersNameView.setTextAndIcon(false ? LocaleController.getString("ShowSenderNames", R.string.ShowSenderNames) : LocaleController.getString("ShowSendersName", R.string.ShowSendersName), 0);
-//            showSendersNameView.setChecked(showSendersName = true);
-//
-//            ActionBarMenuSubItem hideSendersNameView = new ActionBarMenuSubItem(getContext(), true, false, true, resourcesProvider);
-//            sendPopupLayout1.addView(hideSendersNameView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
-//            hideSendersNameView.setTextAndIcon(false ? LocaleController.getString("HideSenderNames", R.string.HideSenderNames) : LocaleController.getString("HideSendersName", R.string.HideSendersName), 0);
-//            hideSendersNameView.setChecked(!showSendersName);
-//            showSendersNameView.setOnClickListener(e -> {
-//                showSendersNameView.setChecked(showSendersName = true);
-//                hideSendersNameView.setChecked(!showSendersName);
-//            });
-//            hideSendersNameView.setOnClickListener(e -> {
-//                showSendersNameView.setChecked(showSendersName = false);
-//                hideSendersNameView.setChecked(!showSendersName);
-//            });
-//
-//            layout.addView(sendPopupLayout1, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, -8));
-//        }
-//
-//        ActionBarPopupWindow.ActionBarPopupWindowLayout sendPopupLayout2 = new ActionBarPopupWindow.ActionBarPopupWindowLayout(parentActivity, resourcesProvider);
-//        sendPopupLayout2.setAnimationEnabled(false);
-//        sendPopupLayout2.setOnTouchListener(new View.OnTouchListener() {
-//            private android.graphics.Rect popupRect = new android.graphics.Rect();
-//
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-//                    if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
-//                        v.getHitRect(popupRect);
-//                        if (!popupRect.contains((int) event.getX(), (int) event.getY())) {
-//                            sendPopupWindow.dismiss();
-//                        }
-//                    }
-//                }
-//                return false;
-//            }
-//        });
-//        sendPopupLayout2.setDispatchKeyEventListener(keyEvent -> {
-//            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0 && sendPopupWindow != null && sendPopupWindow.isShowing()) {
-//                sendPopupWindow.dismiss();
-//            }
-//        });
-//        sendPopupLayout2.setShownFromBottom(false);
-//        sendPopupLayout2.setupRadialSelectors(getThemedColor(Theme.key_dialogButtonSelector));
-//
-//        ActionBarMenuSubItem sendWithoutSound = new ActionBarMenuSubItem(getContext(), true, true, resourcesProvider);
-//        sendWithoutSound.setTextAndIcon(LocaleController.getString("SendWithoutSound", R.string.SendWithoutSound), R.drawable.input_notify_off);
-//        sendWithoutSound.setMinimumWidth(AndroidUtilities.dp(196));
-//        sendPopupLayout2.addView(sendWithoutSound, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
-//        sendWithoutSound.setOnClickListener(v -> {
-//            if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
-//                sendPopupWindow.dismiss();
-//            }
-//            sendInternal(false);
-//        });
-//        ActionBarMenuSubItem sendMessage = new ActionBarMenuSubItem(getContext(), true, true, resourcesProvider);
-//        sendMessage.setTextAndIcon(LocaleController.getString("SendMessage", R.string.SendMessage), R.drawable.msg_forward_send);
-//        sendMessage.setMinimumWidth(AndroidUtilities.dp(196));
-//        sendPopupLayout2.addView(sendMessage, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
-//        sendMessage.setOnClickListener(v -> {
-//            if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
-//                sendPopupWindow.dismiss();
-//            }
-//            sendInternal(true);
-//        });
-//
-//        layout.addView(sendPopupLayout2, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-//
-//        sendPopupWindow = new ActionBarPopupWindow(layout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT);
-//        sendPopupWindow.setAnimationEnabled(false);
-//        sendPopupWindow.setAnimationStyle(R.style.PopupContextAnimation2);
-//        sendPopupWindow.setOutsideTouchable(true);
-//        sendPopupWindow.setClippingEnabled(true);
-//        sendPopupWindow.setInputMethodMode(ActionBarPopupWindow.INPUT_METHOD_NOT_NEEDED);
-//        sendPopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
-//        sendPopupWindow.getContentView().setFocusableInTouchMode(true);
-//        SharedConfig.removeScheduledOrNoSuoundHint();
-//
-//        layout.measure(View.MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(1000), View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(1000), View.MeasureSpec.AT_MOST));
-//        sendPopupWindow.setFocusable(true);
-//        int[] location = new int[2];
-//        view.getLocationInWindow(location);
-//        int y;
-//        if (keyboardVisible && parentFragment.contentView.getMeasuredHeight() > AndroidUtilities.dp(58)) {
-//            y = location[1] + view.getMeasuredHeight();
-//        } else {
-//            y = location[1] - layout.getMeasuredHeight() - AndroidUtilities.dp(2);
-//        }
-//        sendPopupWindow.showAtLocation(view, Gravity.LEFT | Gravity.TOP, location[0] + view.getMeasuredWidth() - layout.getMeasuredWidth() + AndroidUtilities.dp(8), y);
-//        sendPopupWindow.dimBehind();
-//        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-//
-//        return false;
-//    }
-//
-//    private void sendInternal(boolean withSound) {
-//        for (int a = 0; a < selectedDialogs.size(); a++) {
-//            long key = selectedDialogs.keyAt(a);
-//            if (AlertsCreator.checkSlowMode(getContext(), currentAccount, key, frameLayout2.getTag() != null && commentTextView.length() > 0)) {
-//                return;
-//            }
-//        }
-//
-//        if (sendingMessageObjects != null) {
-//            for (int a = 0; a < selectedDialogs.size(); a++) {
-//                long key = selectedDialogs.keyAt(a);
-//                if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-//                    SendMessagesHelper.getInstance(currentAccount).sendMessage(commentTextView.getText().toString(), key, null, null, null, true, null, null, null, withSound, 0, null);
-//                }
-//                SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, !showSendersName,false, withSound, 0);
-//            }
-//            onSend(selectedDialogs, sendingMessageObjects.size());
-//        } else {
-//            int num;
-//            if (switchView != null) {
-//                num = switchView.currentTab;
-//            } else {
-//                num = 0;
-//            }
-//            if (sendingText[num] != null) {
-//                for (int a = 0; a < selectedDialogs.size(); a++) {
-//                    long key = selectedDialogs.keyAt(a);
-//                    if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-//                        SendMessagesHelper.getInstance(currentAccount).sendMessage(commentTextView.getText().toString(), key, null, null, null, true, null, null, null, withSound, 0, null);
-//                    }
-//                    SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingText[num], key, null, null, null, true, null, null, null, withSound, 0, null);
-//                }
-//            }
-//            onSend(selectedDialogs, 1);
-//        }
-//        if (delegate != null) {
-//            delegate.didShare();
-//        }
-//        dismiss();
-//    }
+    @Override
+    public int getContainerViewHeight() {
+        return containerView.getMeasuredHeight() - containerViewTop;
+    }
+
+    /*private boolean showSendersName = true;
+    private ActionBarPopupWindow sendPopupWindow;
+    private boolean onSendLongClick(View view) {
+        if (parentActivity == null) {
+            return false;
+        }
+        LinearLayout layout = new LinearLayout(getContext());
+        layout.setOrientation(LinearLayout.VERTICAL);
+        if (sendingMessageObjects != null) {
+            ActionBarPopupWindow.ActionBarPopupWindowLayout sendPopupLayout1 = new ActionBarPopupWindow.ActionBarPopupWindowLayout(parentActivity, resourcesProvider);
+            if (darkTheme) {
+                sendPopupLayout1.setBackgroundColor(getThemedColor(Theme.key_voipgroup_inviteMembersBackground));
+            }
+            sendPopupLayout1.setAnimationEnabled(false);
+            sendPopupLayout1.setOnTouchListener(new View.OnTouchListener() {
+                private android.graphics.Rect popupRect = new android.graphics.Rect();
+
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                        if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
+                            v.getHitRect(popupRect);
+                            if (!popupRect.contains((int) event.getX(), (int) event.getY())) {
+                                sendPopupWindow.dismiss();
+                            }
+                        }
+                    }
+                    return false;
+                }
+            });
+            sendPopupLayout1.setDispatchKeyEventListener(keyEvent -> {
+                if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0 && sendPopupWindow != null && sendPopupWindow.isShowing()) {
+                    sendPopupWindow.dismiss();
+                }
+            });
+            sendPopupLayout1.setShownFromBottom(false);
+
+            ActionBarMenuSubItem showSendersNameView = new ActionBarMenuSubItem(getContext(), true, true, false, resourcesProvider);
+            if (darkTheme) {
+                showSendersNameView.setTextColor(getThemedColor(Theme.key_voipgroup_nameText));
+            }
+            sendPopupLayout1.addView(showSendersNameView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+            showSendersNameView.setTextAndIcon(false ? LocaleController.getString("ShowSenderNames", R.string.ShowSenderNames) : LocaleController.getString("ShowSendersName", R.string.ShowSendersName), 0);
+            showSendersNameView.setChecked(showSendersName = true);
+
+            ActionBarMenuSubItem hideSendersNameView = new ActionBarMenuSubItem(getContext(), true, false, true, resourcesProvider);
+            if (darkTheme) {
+                hideSendersNameView.setTextColor(getThemedColor(Theme.key_voipgroup_nameText));
+            }
+            sendPopupLayout1.addView(hideSendersNameView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+            hideSendersNameView.setTextAndIcon(false ? LocaleController.getString("HideSenderNames", R.string.HideSenderNames) : LocaleController.getString("HideSendersName", R.string.HideSendersName), 0);
+            hideSendersNameView.setChecked(!showSendersName);
+            showSendersNameView.setOnClickListener(e -> {
+                showSendersNameView.setChecked(showSendersName = true);
+                hideSendersNameView.setChecked(!showSendersName);
+            });
+            hideSendersNameView.setOnClickListener(e -> {
+                showSendersNameView.setChecked(showSendersName = false);
+                hideSendersNameView.setChecked(!showSendersName);
+            });
+            sendPopupLayout1.setupRadialSelectors(getThemedColor(darkTheme ? Theme.key_voipgroup_listSelector : Theme.key_dialogButtonSelector));
+
+            layout.addView(sendPopupLayout1, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, -8));
+        }
+
+        ActionBarPopupWindow.ActionBarPopupWindowLayout sendPopupLayout2 = new ActionBarPopupWindow.ActionBarPopupWindowLayout(parentActivity, resourcesProvider);
+        if (darkTheme) {
+            sendPopupLayout2.setBackgroundColor(Theme.getColor(Theme.key_voipgroup_inviteMembersBackground));
+        }
+        sendPopupLayout2.setAnimationEnabled(false);
+        sendPopupLayout2.setOnTouchListener(new View.OnTouchListener() {
+            private android.graphics.Rect popupRect = new android.graphics.Rect();
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
+                        v.getHitRect(popupRect);
+                        if (!popupRect.contains((int) event.getX(), (int) event.getY())) {
+                            sendPopupWindow.dismiss();
+                        }
+                    }
+                }
+                return false;
+            }
+        });
+        sendPopupLayout2.setDispatchKeyEventListener(keyEvent -> {
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0 && sendPopupWindow != null && sendPopupWindow.isShowing()) {
+                sendPopupWindow.dismiss();
+            }
+        });
+        sendPopupLayout2.setShownFromBottom(false);
+
+        ActionBarMenuSubItem sendWithoutSound = new ActionBarMenuSubItem(getContext(), true, true, resourcesProvider);
+        if (darkTheme) {
+            sendWithoutSound.setTextColor(getThemedColor(Theme.key_voipgroup_nameText));
+            sendWithoutSound.setIconColor(getThemedColor(Theme.key_windowBackgroundWhiteHintText));
+        }
+        sendWithoutSound.setTextAndIcon(LocaleController.getString("SendWithoutSound", R.string.SendWithoutSound), R.drawable.input_notify_off);
+        sendWithoutSound.setMinimumWidth(AndroidUtilities.dp(196));
+        sendPopupLayout2.addView(sendWithoutSound, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+        sendWithoutSound.setOnClickListener(v -> {
+            if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
+                sendPopupWindow.dismiss();
+            }
+            sendInternal(false);
+        });
+        ActionBarMenuSubItem sendMessage = new ActionBarMenuSubItem(getContext(), true, true, resourcesProvider);
+        if (darkTheme) {
+            sendMessage.setTextColor(getThemedColor(Theme.key_voipgroup_nameText));
+            sendMessage.setIconColor(getThemedColor(Theme.key_windowBackgroundWhiteHintText));
+        }
+        sendMessage.setTextAndIcon(LocaleController.getString("SendMessage", R.string.SendMessage), R.drawable.msg_send);
+        sendMessage.setMinimumWidth(AndroidUtilities.dp(196));
+        sendPopupLayout2.addView(sendMessage, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+        sendMessage.setOnClickListener(v -> {
+            if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
+                sendPopupWindow.dismiss();
+            }
+            sendInternal(true);
+        });
+        sendPopupLayout2.setupRadialSelectors(getThemedColor(darkTheme ? Theme.key_voipgroup_listSelector : Theme.key_dialogButtonSelector));
+
+        layout.addView(sendPopupLayout2, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+
+        sendPopupWindow = new ActionBarPopupWindow(layout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT);
+        sendPopupWindow.setAnimationEnabled(false);
+        sendPopupWindow.setAnimationStyle(R.style.PopupContextAnimation2);
+        sendPopupWindow.setOutsideTouchable(true);
+        sendPopupWindow.setClippingEnabled(true);
+        sendPopupWindow.setInputMethodMode(ActionBarPopupWindow.INPUT_METHOD_NOT_NEEDED);
+        sendPopupWindow.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED);
+        sendPopupWindow.getContentView().setFocusableInTouchMode(true);
+        SharedConfig.removeScheduledOrNoSoundHint();
+
+        layout.measure(View.MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(1000), View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(1000), View.MeasureSpec.AT_MOST));
+        sendPopupWindow.setFocusable(true);
+        int[] location = new int[2];
+        view.getLocationInWindow(location);
+        int y;
+        if (keyboardVisible && parentFragment != null && parentFragment.contentView.getMeasuredHeight() > AndroidUtilities.dp(58)) {
+            y = location[1] + view.getMeasuredHeight();
+        } else {
+            y = location[1] - layout.getMeasuredHeight() - AndroidUtilities.dp(2);
+        }
+        sendPopupWindow.showAtLocation(view, Gravity.LEFT | Gravity.TOP, location[0] + view.getMeasuredWidth() - layout.getMeasuredWidth() + AndroidUtilities.dp(8), y);
+        sendPopupWindow.dimBehind();
+        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+
+        return true;
+    }
+
+    protected void sendInternal(boolean withSound) {
+        for (int a = 0; a < selectedDialogs.size(); a++) {
+            long key = selectedDialogs.keyAt(a);
+            if (AlertsCreator.checkSlowMode(getContext(), currentAccount, key, frameLayout2.getTag() != null && commentTextView.length() > 0)) {
+                return;
+            }
+        }
+
+        CharSequence[] text = new CharSequence[] { commentTextView.getText() };
+        ArrayList<TLRPC.MessageEntity> entities = MediaDataController.getInstance(currentAccount).getEntities(text, true);
+        if (sendingMessageObjects != null) {
+            List<Long> removeKeys = new ArrayList<>();
+            for (int a = 0; a < selectedDialogs.size(); a++) {
+                long key = selectedDialogs.keyAt(a);
+                if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
+                    SendMessagesHelper.getInstance(currentAccount).sendMessage(text[0] == null ? null : text[0].toString(), key, null, null, null, true, entities, null, null, withSound, 0, null);
+                }
+                int result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, !showSendersName,false, withSound, 0);
+                if (result != 0) {
+                    removeKeys.add(key);
+                }
+                if (selectedDialogs.size() == 1) {
+                    AlertsCreator.showSendMediaAlert(result, parentFragment, null);
+
+                    if (result != 0) {
+                        break;
+                    }
+                }
+            }
+            for (long key : removeKeys) {
+                selectedDialogs.remove(key);
+            }
+            if (!selectedDialogs.isEmpty()) {
+                onSend(selectedDialogs, sendingMessageObjects.size());
+            }
+        } else {
+            int num;
+            if (switchView != null) {
+                num = switchView.currentTab;
+            } else {
+                num = 0;
+            }
+            if (sendingText[num] != null) {
+                for (int a = 0; a < selectedDialogs.size(); a++) {
+                    long key = selectedDialogs.keyAt(a);
+                    if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
+                        SendMessagesHelper.getInstance(currentAccount).sendMessage(text[0] == null ? null : text[0].toString(), key, null, null, null, true, entities, null, null, withSound, 0, null);
+                    }
+                    SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingText[num], key, null, null, null, true, null, null, null, withSound, 0, null);
+                }
+            }
+            onSend(selectedDialogs, 1);
+        }
+        if (delegate != null) {
+            delegate.didShare();
+        }
+        dismiss();
+    }*/
 
     protected void onSend(LongSparseArray<TLRPC.Dialog> dids, int count) {
 
@@ -1905,6 +1956,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         if (commentTextView != null) {
             AndroidUtilities.hideKeyboard(commentTextView.getEditText());
         }
+        fullyShown = false;
         super.dismiss();
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.dialogsNeedReload);
     }

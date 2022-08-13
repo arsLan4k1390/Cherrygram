@@ -624,7 +624,7 @@ public class QrActivity extends BaseFragment {
         animationSettings.afterStartDescriptionsAddedRunnable = () -> {
             resourcesProvider.initColors(currentTheme, isCurrentThemeDark);
         };
-        parentLayout.animateThemedValues(animationSettings);
+        parentLayout.animateThemedValues(animationSettings, null);
     }
 
     private void performShare() {
@@ -668,7 +668,12 @@ public class QrActivity extends BaseFragment {
                 ex.printStackTrace();
             }
         }
-        AndroidUtilities.runOnUIThread(() -> themesViewController.shareButton.setClickable(true), 500);
+        AndroidUtilities.runOnUIThread(() -> {
+            if (themesViewController == null) {
+                return;
+            }
+            themesViewController.shareButton.setClickable(true);
+        }, 500);
     }
 
     @Override

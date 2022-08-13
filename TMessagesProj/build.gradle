@@ -87,7 +87,7 @@ android {
     buildToolsVersion '32.1.0-rc1'
     ndkVersion '21.4.7075529'
 
-    defaultConfig.applicationId = "uz.unnarsx.cherrygram"
+    defaultConfig.applicationId = APP_PACKAGE
 
     sourceSets.main.jniLibs.srcDirs = ['./jni/']
 
@@ -254,7 +254,7 @@ android {
         }
     }
 
-    defaultConfig.versionCode = 2721
+    defaultConfig.versionCode = Integer.parseInt(APP_VERSION_CODE)
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->
@@ -273,7 +273,7 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
-        versionName "8.8.5"
+        versionName APP_VERSION_NAME
 
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
 
