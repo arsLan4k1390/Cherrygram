@@ -714,7 +714,7 @@ public class MediaDataController extends BaseController {
         if (type == TYPE_PREMIUM_STICKERS) {
             return new ArrayList<>(recentStickers[type]);
         }
-        return new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), 20)));
+        return new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), CherrygramConfig.INSTANCE.getSlider_RecentStickersAmplifier()))); //Show more then 20 recent stickers
     }
 
     public ArrayList<TLRPC.Document> getRecentStickersNoCopy(int type) {
@@ -6685,7 +6685,7 @@ public class MediaDataController extends BaseController {
                 }
             });
             String aliasFinal = alias;
-            if (allowAnimated) {
+            if (allowAnimated && SharedConfig.suggestAnimatedEmoji) {
                 fillWithAnimatedEmoji(result, null, () -> {
                     if (sync != null) {
                         callback.run(result, aliasFinal);

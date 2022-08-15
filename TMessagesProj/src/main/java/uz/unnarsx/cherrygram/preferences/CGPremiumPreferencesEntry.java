@@ -186,7 +186,7 @@ public class CGPremiumPreferencesEntry extends BaseFragment {
                     } else if (position == flagInfoRow) {
                         textDetailCell.setTextAndValueAndIcon(LocaleController.getString("CP_SecureFlag", R.string.CP_SecureFlag), LocaleController.getString("CP_SecureFlag_Desc", R.string.CP_SecureFlag_Desc), R.drawable.msg_screencast, true);
                     } else if (position == supportDonationRow) {
-                        textDetailCell.setTextAndValueAndIcon(LocaleController.getString("DP_Donate", R.string.DP_Donate), LocaleController.getString("DP_DonateInfo", R.string.DP_DonateInfo), R.drawable.money_circle_outline_28, true);
+                        textDetailCell.setTextAndValueAndIcon(LocaleController.getString("DP_Donate", R.string.DP_Donate), LocaleController.getString("DP_DonateInfo", R.string.DP_DonateInfo), R.drawable.money_send_outline_28, true);
                     }
                     break;
             }

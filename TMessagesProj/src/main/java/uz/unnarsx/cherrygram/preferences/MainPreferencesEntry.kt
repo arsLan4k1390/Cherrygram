@@ -60,7 +60,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
             }
             textIcon {
                 title = LocaleController.getString("DP_Donate", R.string.DP_Donate)
-                icon = R.drawable.money_circle_outline_28
+                icon = R.drawable.money_send_outline_28
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CherrygramPreferencesNavigator.createDonate())
                 }
@@ -97,7 +97,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 }
                 textIcon {
                     title = LocaleController.getString("CGP_Crowdin", R.string.CGP_Crowdin)
-                    icon = R.drawable.round_translate_24
+                    icon = R.drawable.hieroglyph_character_outline_28
                     value = "Crowdin"
                     listener = TGKitTextIconRow.TGTIListener {
                         goToCrowdin(it)

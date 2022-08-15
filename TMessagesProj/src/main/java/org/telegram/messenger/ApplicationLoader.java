@@ -116,19 +116,7 @@ public class ApplicationLoader extends Application {
     }
 
     public static String getApplicationId() {
-        return applicationLoaderInstance.onGetApplicationId();
-    }
-
-    protected String onGetApplicationId() {
-        return "uz.unnarsx.cherrygram";
-    }
-
-    public static boolean isHuaweiStoreBuild() {
-        return applicationLoaderInstance.isHuaweiBuild();
-    }
-
-    protected boolean isHuaweiBuild() {
-        return false;
+        return BuildConfig.APPLICATION_ID;
     }
 
     public static File getFilesDirFixed() {

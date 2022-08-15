@@ -979,8 +979,8 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
 
         ArrayList<Size> previewSizes = selectedCamera.getPreviewSizes();
         ArrayList<Size> pictureSizes = selectedCamera.getPictureSizes();
-        previewSize = CameraController.chooseOptimalSize(previewSizes, 480, 270, aspectRatio);
-        pictureSize = CameraController.chooseOptimalSize(pictureSizes, 480, 270, aspectRatio);
+        previewSize = CameraController.chooseOptimalSize(previewSizes, 960, 540, aspectRatio);
+        pictureSize = CameraController.chooseOptimalSize(pictureSizes, 960, 540, aspectRatio);
         if (previewSize.mWidth != pictureSize.mWidth) {
             boolean found = false;
             for (int a = previewSizes.size() - 1; a >= 0; a--) {
@@ -1032,9 +1032,9 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         }
         if (sortedSizes.isEmpty() || SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW || SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_AVERAGE) {
             if (!sortedSizes.isEmpty()) {
-                return CameraController.chooseOptimalSize(sortedSizes, 480, 270, aspectRatio);
+                return CameraController.chooseOptimalSize(sortedSizes, 960, 540, aspectRatio);
             } else {
-                return CameraController.chooseOptimalSize(previewSizes, 480, 270, aspectRatio);
+                return CameraController.chooseOptimalSize(previewSizes, 960, 540, aspectRatio);
             }
         }
         Collections.sort(sortedSizes, (o1, o2) -> {

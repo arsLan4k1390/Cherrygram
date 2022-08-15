@@ -265,7 +265,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             outlinePaint.setStyle(Paint.Style.STROKE);
             outlinePaint.setStrokeWidth(Math.max(2, AndroidUtilities.dp(0.5f)));
 
-            fillPaint.setColor(Color.WHITE);
+            fillPaint.setColor((Theme.getColor(Theme.key_windowBackgroundWhite)));
         }
 
         @Override
