@@ -177,6 +177,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_SAMSUNG));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_PIXEL));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.AQUA));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.GREEN));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNSET));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.PREMIUM));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO));
@@ -188,6 +189,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.AQUA_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.GREEN_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNSET_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX_CHERRY));

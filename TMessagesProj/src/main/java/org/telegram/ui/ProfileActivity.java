@@ -91,6 +91,7 @@ import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ChatThemeController;
@@ -193,6 +194,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.zip.ZipEntry;
@@ -7591,20 +7593,27 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         String abi = "";
                         switch (pInfo.versionCode % 10) {
                             case 1:
-                            case 2:
-                                abi = "store bundled " + Build.CPU_ABI + " " + Build.CPU_ABI2;
+                            case 3:
+                                abi = "arm-v7a";
                                 break;
-                            default:
+                            case 2:
+                            case 4:
+                                abi = "x86";
+                                break;
+                            case 5:
+                            case 7:
+                                abi = "arm64-v8a";
+                                break;
+                            case 6:
+                            case 8:
+                                abi = "x86_64";
+                                break;
+                            case 0:
                             case 9:
-                                if (BuildVars.isStandaloneApp()) {
-                                    abi = "direct " + Build.CPU_ABI + " " + Build.CPU_ABI2;
-                                } else {
-                                    abi = "universal " + Build.CPU_ABI + " " + Build.CPU_ABI2;
-                                }
+                                abi = (!CherrygramConfig.INSTANCE.isDirectApp() ? BuildConfig.BUILD_TYPE : "universal") + " " + Build.SUPPORTED_ABIS[0];
                                 break;
                         }
-//                        cell.setText(LocaleController.formatString("CG_Version", R.string.AP_Version, String.format(Locale.US, "v%s (%d) %s", pInfo.versionName, code, abi), String.format(Locale.US, "v%s (%d)", BuildVars.BUILD_VERSION_STRING, BuildVars.BUILD_VERSION), "@arsLan"));
-                        cell.setText("Cherrygram v" + CherrygramExtras.INSTANCE.getCG_VERSION() + "\nTelegram v" + BuildVars.BUILD_VERSION_STRING + "_" + BuildVars.BUILD_VERSION + "\n" + CherrygramExtras.INSTANCE.getCG_AUTHOR());
+                        cell.setText("Cherrygram v" + CherrygramExtras.INSTANCE.getCG_VERSION() + " " + "("+BuildVars.BUILD_VERSION+")" + " " + abi + "\n Based on Telegram v" + BuildVars.BUILD_VERSION_STRING + " " + "("+BuildVars.BUILD_VERSION+")" + "\n" + CherrygramExtras.INSTANCE.getCG_AUTHOR());
                     } catch (Exception e) {
                         FileLog.e(e);
                     }

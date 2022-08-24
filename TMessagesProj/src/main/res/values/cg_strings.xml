@@ -31,16 +31,6 @@
     <string name="CGP_Source">Source code:</string>
     <string name="CGP_Crowdin">Help with translation</string>
     <string name="CGP_Header_Categories">Categories</string>
-    <string name="CGP_Updates_Category">Updates</string>
-
-    <!--OTA-->
-    <string name="CG_Auto_OTA">Automatically check for updates</string>
-    <string name="CG_Auto_OTA_summary">on app launch</string>
-    <string name="CG_OTA">Search for update</string>
-    <string name="CG_Not_Found">Cherrygram is up to date</string>
-    <string name="CG_Found">Update</string>
-    <string name="CG_Changelog">Changelog</string>
-    <string name="CG_Download">Download</string>
     
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Appearance</string>
@@ -53,6 +43,7 @@
     <string name="AP_ChangeIcon_Monet_Samsung" translatable="false">Monet (OneUI &amp; MIUI)</string>
     <string name="AP_ChangeIcon_Monet_Pixel" translatable="false">Monet (Pixel)</string>
     <string name="AP_ChangeIcon_White">White</string>
+    <string name="AP_ChangeIcon_Green">Green</string>
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Default">Default</string>
@@ -165,6 +156,14 @@
     <string name="CP_IOSSound_Desc">This will enable incoming message sound from Telegram app for IOS (restart app to apply)</string>
     <string name="CP_SilenceNonContacts">Silence non-contacts</string>
     <string name="CP_SilenceNonContacts_Desc">If enabled, notifications with sound will come only from contacts. You can add a person to your contacts even without a phone number, do it in their profile</string>
+
+    <!--Experimental Preferences-->
+    <string name="EP_Category_Experimental">Experimental</string>
+    <string name="EP_DownloadSpeedBoost">Download speed boost</string>
+    <string name="EP_DownloadSpeedBoostNone">Off</string>
+    <string name="EP_DownloadSpeedBoostAverage">On</string>
+    <string name="EP_DownloadSpeedBoostExtreme">Extreme</string>
+    <string name="EP_UploadloadSpeedBoost">Upload speed boost</string>
 
     <!--Security Preferences-->
     <string name="SP_Category_Security">Security</string>

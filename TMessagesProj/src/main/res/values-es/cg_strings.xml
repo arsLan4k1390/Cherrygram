@@ -22,15 +22,6 @@
     <string name="CGP_Source">Código fuente:</string>
     <string name="CGP_Crowdin">Ayuda con la traducción</string>
     <string name="CGP_Header_Categories">Categorías</string>
-    <string name="CGP_Updates_Category">Actualizaciones</string>
-    <!--OTA-->
-    <string name="CG_Auto_OTA">Comprobar actualizaciones automáticamente</string>
-    <string name="CG_Auto_OTA_summary">al iniciar la app</string>
-    <string name="CG_OTA">Buscar actualización</string>
-    <string name="CG_Not_Found">Cherrygram está actualizado</string>
-    <string name="CG_Found">Actualizar</string>
-    <string name="CG_Changelog">Registro de cambios</string>
-    <string name="CG_Download">Descargar</string>
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Apariencia</string>
     <string name="AP_RedesignCategory">Rediseño</string>

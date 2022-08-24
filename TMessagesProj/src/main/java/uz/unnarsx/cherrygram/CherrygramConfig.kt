@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.BuildConfig
 import org.telegram.messenger.SharedConfig
 import org.telegram.tgnet.TLRPC
 import uz.unnarsx.cherrygram.camera.CameraXUtilities
@@ -362,7 +363,7 @@ object CherrygramConfig {
         editor.apply()
     }
     //Camera
-    var roundCamera16to9 by sharedPreferences.boolean("CP_RoundCamera16to9", false)
+    var roundCamera16to9 by sharedPreferences.boolean("CP_RoundCamera16to9", true)
     fun toggleRoundCamera16to9() {
         roundCamera16to9 = !roundCamera16to9
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
@@ -401,8 +402,35 @@ object CherrygramConfig {
     // Privacy
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
 
-    // OTA
-    var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", true)
+    // Experimental
+    const val BOOST_NONE = 0
+    const val BOOST_AVERAGE = 1
+    const val BOOST_EXTREME = 2
+
+    var downloadSpeedBoost by sharedPreferences.int("EP_DownloadSpeedBoost", BOOST_NONE)
+    @JvmName("setDownloadSpeedBoost1")
+    fun setDownloadSpeedBoost(boost: Int) {
+        downloadSpeedBoost = boost
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putInt("downloadSpeedBoost", boost)
+        editor.apply()
+    }
+
+    var uploadSpeedBoost by sharedPreferences.boolean("EP_UploadSpeedBoost", false)
+    fun toggleUploadSpeedBoost() {
+        uploadSpeedBoost = !uploadSpeedBoost
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("uploadSpeedBoost", uploadSpeedBoost)
+        editor.apply()
+    }
 
     // Misc
     var forwardNoAuthorship by sharedPreferences.boolean("CG_ForwardNoAuthorship", false)
@@ -425,6 +453,10 @@ object CherrygramConfig {
 
     fun isCherryVerified(chat: TLRPC.Chat): Boolean {
         return LocalVerifications.getVerify().stream().anyMatch { id: Long -> id == chat.id }
+    }
+
+    fun isDirectApp(): Boolean {
+        return "release" == BuildConfig.BUILD_TYPE || "debug" == BuildConfig.BUILD_TYPE
     }
 
 

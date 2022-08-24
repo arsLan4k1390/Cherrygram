@@ -22,15 +22,6 @@
     <string name="CGP_Source">Исходный код:</string>
     <string name="CGP_Crowdin">Помогите нам с переводом</string>
     <string name="CGP_Header_Categories">Категории</string>
-    <string name="CGP_Updates_Category">Обновления</string>
-    <!--OTA-->
-    <string name="CG_Auto_OTA">Автоматически проверять обновления</string>
-    <string name="CG_Auto_OTA_summary">при запуске приложения</string>
-    <string name="CG_OTA">Проверить обновления</string>
-    <string name="CG_Not_Found">Используется последняя версия Cherrygram</string>
-    <string name="CG_Found">Обновление</string>
-    <string name="CG_Changelog">Список изменений</string>
-    <string name="CG_Download">Загрузить</string>
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Внешний вид</string>
     <string name="AP_RedesignCategory">Редизайн</string>
@@ -39,6 +30,7 @@
     <string name="AP_ChangeIconFilter_Desc">Вам нужно перезайти в этот раздел, чтобы увидеть новые иконки</string>
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
     <string name="AP_ChangeIcon_White">Белая иконка</string>
+    <string name="AP_ChangeIcon_Green">Зеленая иконка</string>
     <string name="AP_ChangeIcon_Sunset">Закат</string>
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
@@ -140,6 +132,13 @@
     <string name="CP_IOSSound_Desc">Это включит звук входящего сообщения из Telegram для IOS (требуется перезапуск приложения)</string>
     <string name="CP_SilenceNonContacts">Заглушить не-контакты</string>
     <string name="CP_SilenceNonContacts_Desc">Если включено, то уведомления со звуком будут приходить только от контактов. Вы можете добавить человека в контакты без наличия его номера телефона (в профиле человека)</string>
+    <!--Experimental Preferences-->
+    <string name="EP_Category_Experimental">Экспериментальные</string>
+    <string name="EP_DownloadSpeedBoost">Увеличение скорости загрузки</string>
+    <string name="EP_DownloadSpeedBoostNone">Выкл.</string>
+    <string name="EP_DownloadSpeedBoostAverage">Вкл.</string>
+    <string name="EP_DownloadSpeedBoostExtreme">Экстра</string>
+    <string name="EP_UploadloadSpeedBoost">Увеличение скорости отдачи</string>
     <!--Security Preferences-->
     <string name="SP_Category_Security">Безопасность</string>
     <string name="SP_Header_Privacy">Приватность</string>
