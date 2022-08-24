@@ -47,7 +47,7 @@ public class BuildVars {
     }
 
     public static boolean useInvoiceBilling() {
-        return DEBUG_VERSION || isStandaloneApp() || isBetaApp();
+        return DEBUG_VERSION || isStandaloneApp() || isBetaApp() || isHuaweiStoreApp();
     }
 
     private static Boolean standaloneApp;
@@ -59,4 +59,8 @@ public class BuildVars {
         return false;
     }
 
+
+    public static boolean isHuaweiStoreApp() {
+        return ApplicationLoader.isHuaweiStoreBuild();
+    }
 }

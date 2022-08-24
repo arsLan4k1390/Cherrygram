@@ -11,6 +11,5 @@ object CherrygramPreferencesNavigator {
     fun createAppearance() = TGKitSettingsFragment(AppearancePreferencesEntry())
     fun createSecurity() = TGKitSettingsFragment(SecurityPreferencesEntry())
 //    fun createDB() = TGKitSettingsFragment(DoubleBottomPreferencesEntry())
-    fun createUpdates() = TGKitSettingsFragment(UpdatesPreferenceEntry())
     fun createDonate() = TGKitSettingsFragment(DonatePreferenceEntry())
 }

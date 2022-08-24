@@ -1,6 +1,5 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.google.gms.google-services'
 
 repositories {
     mavenCentral()
@@ -50,16 +49,15 @@ dependencies {
     implementation 'com.stripe:stripe-android:2.0.2'
     implementation 'com.google.mlkit:language-id:17.0.4'
     implementation "com.android.billingclient:billing:5.0.0"
-    implementation files('libs/libgsaverification-client.aar')
 
     //Cherrygram
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'androidx.biometric:biometric:1.1.0'
     implementation 'com.google.android.material:material:1.6.0-rc01'
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.9'
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.21'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
     implementation 'com.jakewharton:process-phoenix:2.1.2'
     implementation 'com.facebook.rebound:rebound:0.3.8'
 
@@ -76,7 +74,7 @@ dependencies {
 
 android {
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
 
     buildFeatures {
@@ -85,9 +83,7 @@ android {
 
     compileSdkVersion 32
     buildToolsVersion '32.1.0-rc1'
-    ndkVersion '21.4.7075529'
-
-    defaultConfig.applicationId = APP_PACKAGE
+    ndkVersion "21.4.7075529"
 
     sourceSets.main.jniLibs.srcDirs = ['./jni/']
 
@@ -118,25 +114,22 @@ android {
         coreLibraryDesugaringEnabled true
     }
 
-    /*def propFile = new File('local.properties')
+    defaultConfig.versionCode = Integer.parseInt(APP_VERSION_CODE)
 
-    def Properties props = new Properties()
-    props.load(new FileInputStream(propFile))*/
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 30
+        versionName APP_VERSION_NAME
 
+        vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
 
-    signingConfigs {
-        debug {
-            storeFile file('../Your_Key.jks')
-            storePassword 'Your_Password'
-            keyAlias 'Your_Alias'
-            keyPassword 'Your_Password'
-        }
+        multiDexEnabled true
 
-        release {
-            storeFile file('../Your_Key.jks')
-            storePassword 'Your_Password'
-            keyAlias 'Your_Alias'
-            keyPassword 'Your_Password'
+        externalNativeBuild {
+            cmake {
+                version '3.10.2'
+                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
+            }
         }
     }
 
@@ -148,140 +141,39 @@ android {
         debug {
             debuggable true
             jniDebuggable true
-//            signingConfig signingConfigs.release
-            applicationIdSuffix ".beta"
             minifyEnabled false
             shrinkResources false
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
 
         HA {
             debuggable false
             jniDebuggable false
-            signingConfig signingConfigs.debug
-            applicationIdSuffix ".beta"
             minifyEnabled true
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
 
         standalone {
             debuggable false
             jniDebuggable false
-            signingConfig signingConfigs.release
             minifyEnabled true
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
 
         release {
             debuggable false
             jniDebuggable false
-            signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources false
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
-        }
-    }
-
-    sourceSets.debug {
-        manifest.srcFile 'config/debug/AndroidManifest.xml'
-    }
-
-    sourceSets.HA {
-        manifest.srcFile 'config/debug/AndroidManifest.xml'
-    }
-
-    sourceSets.standalone {
-        manifest.srcFile 'config/release/AndroidManifest.xml'
-    }
-
-    sourceSets.release {
-        manifest.srcFile 'config/release/AndroidManifest.xml'
-    }
-
-    flavorDimensions "minApi"
-
-    productFlavors {
-        bundleAfat {
-            ndk {
-                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-            }
-            ext {
-                abiVersionCode = 1
-            }
-        }
-        bundleAfat_SDK23 {
-            ndk {
-                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-            }
-            sourceSets.debug {
-                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
-            }
-            sourceSets.release {
-                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
-            }
-            sourceSets.standalone {
-                manifest.srcFile 'config/release/AndroidManifest_standalone.xml'
-            }
-            minSdkVersion 23
-            ext {
-                abiVersionCode = 2
-            }
-        }
-        afat {
-            ndk {
-                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-            }
-            sourceSets.debug {
-                manifest.srcFile 'config/debug/AndroidManifest_SDK23.xml'
-            }
-            sourceSets.release {
-                manifest.srcFile 'config/release/AndroidManifest_SDK23.xml'
-            }
-            sourceSets.standalone {
-                manifest.srcFile 'config/release/AndroidManifest_standalone.xml'
-            }
-            ext {
-                abiVersionCode = 9
-            }
-        }
-    }
-
-    defaultConfig.versionCode = Integer.parseInt(APP_VERSION_CODE)
-
-    applicationVariants.all { variant ->
-        variant.outputs.all { output ->
-            outputFileName = "Cherrygram.apk"
-            output.versionCodeOverride = defaultConfig.versionCode * 10 + variant.productFlavors.get(0).abiVersionCode
-        }
-    }
-
-    variantFilter { variant ->
-        def names = variant.flavors*.name
-        if (variant.buildType.name != "release" && !names.contains("afat")) {
-            setIgnore(true)
-        }
-    }
-
-    defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionName APP_VERSION_NAME
-
-        vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
-
-        externalNativeBuild {
-            cmake {
-                version '3.10.2'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
-            }
         }
     }
 }

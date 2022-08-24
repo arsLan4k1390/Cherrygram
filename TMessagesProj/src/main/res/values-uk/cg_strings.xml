@@ -22,15 +22,6 @@
     <string name="CGP_Source">Вихідний код:</string>
     <string name="CGP_Crowdin">Допомогти з перекладом</string>
     <string name="CGP_Header_Categories">Категорії</string>
-    <string name="CGP_Updates_Category">Оновлення</string>
-    <!--OTA-->
-    <string name="CG_Auto_OTA">Автоматично перевіряти оновлення</string>
-    <string name="CG_Auto_OTA_summary">під час запуску додатку</string>
-    <string name="CG_OTA">Перевірити оновлення</string>
-    <string name="CG_Not_Found">Використовується остання версія Cherrygram</string>
-    <string name="CG_Found">Оновлення</string>
-    <string name="CG_Changelog">Список змін</string>
-    <string name="CG_Download">Завантажити</string>
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Зовнішній вигляд</string>
     <string name="AP_RedesignCategory">Редизайн</string>
@@ -39,6 +30,7 @@
     <string name="AP_ChangeIconFilter_Desc">Вам потрібно перейти в цей розділ, щоб побачити нові іконки</string>
     <string name="AP_ChangeIcon_Default">По замовчуванню</string>
     <string name="AP_ChangeIcon_White">Біла іконка</string>
+    <string name="AP_ChangeIcon_Green">Зелена іконка</string>
     <string name="AP_ChangeIcon_Sunset">Вечiрня</string>
     <string name="AP_IconReplacement_VKUI">Іконки VKUI</string>
     <string name="AP_IconReplacement_Default">Стандартні іконки</string>
@@ -140,6 +132,13 @@
     <string name="CP_IOSSound_Desc">Це включить звук вхідного повідомлення з Telegram для IOS (потрібен перезапуск додатку)</string>
     <string name="CP_SilenceNonContacts">Заглушити не-контакти</string>
     <string name="CP_SilenceNonContacts_Desc">Якщо увімкнено, то сповіщення зі звуком приходитимуть тільки від контактів. Ви можете добавить людину в контакти без номера його телефона (в профілі людини)</string>
+    <!--Experimental Preferences-->
+    <string name="EP_Category_Experimental">Експериментальні</string>
+    <string name="EP_DownloadSpeedBoost">Збільшення швидкості завантаження</string>
+    <string name="EP_DownloadSpeedBoostNone">Вимкнено</string>
+    <string name="EP_DownloadSpeedBoostAverage">Увімкнено</string>
+    <string name="EP_DownloadSpeedBoostExtreme">Екстра</string>
+    <string name="EP_UploadloadSpeedBoost">Збільшення швидкості вивантаження</string>
     <!--Security Preferences-->
     <string name="SP_Category_Security">Безпека</string>
     <string name="SP_Header_Privacy">Приватність</string>

@@ -116,7 +116,19 @@ public class ApplicationLoader extends Application {
     }
 
     public static String getApplicationId() {
-        return BuildConfig.APPLICATION_ID;
+        return applicationLoaderInstance.onGetApplicationId();
+    }
+
+    protected String onGetApplicationId() {
+        return null;
+    }
+
+    public static boolean isHuaweiStoreBuild() {
+        return applicationLoaderInstance.isHuaweiBuild();
+    }
+
+    protected boolean isHuaweiBuild() {
+        return false;
     }
 
     public static File getFilesDirFixed() {
