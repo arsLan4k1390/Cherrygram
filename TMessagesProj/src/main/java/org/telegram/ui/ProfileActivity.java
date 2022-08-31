@@ -6081,7 +6081,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 devicesRow = rowCount++;
                 languageRow = rowCount++;
                 devicesSectionRow = rowCount++;
-                cherrygramPremiumRow = rowCount++;
+                if (!ApplicationLoader.isHuaweiStoreBuild()) {
+                    cherrygramPremiumRow = rowCount++;
+                }
                 if (!getMessagesController().premiumLocked) {
                     premiumRow = rowCount++;
                     premiumSectionsRow = rowCount++;

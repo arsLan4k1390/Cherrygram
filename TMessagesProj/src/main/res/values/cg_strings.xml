@@ -6,7 +6,11 @@
     <!--<string name="CG_Version">Cherrygram %1$s\nBased on Telegram %2$s\nModded by %3$s</string>-->
     
     <!--Sign in screen-->
-    <string name="CG_ProxyInfo">You may need to set up a proxy before you login, in case your country or ISP blocks Telegram.</string>
+    <string name="CG_StartText">Please confirm your Country/Region code and enter your phone number.</string>
+    <string name="CG_Country">Country/Region</string>
+    <string name="CG_ChooseCountry">Choose a Country/Region</string>
+    <string name="CG_WrongCountry">Invalid Country/Region code</string>
+    <string name="CG_ProxyInfo">You may need to set up a proxy before you login, in case your Country/Region or ISP block Telegram.</string>
     <string name="CG_ProxySettings">Proxy Settings</string>
 
     <!--Cherrygram Premium Preferences-->

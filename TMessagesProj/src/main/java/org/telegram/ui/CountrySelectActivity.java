@@ -110,6 +110,9 @@ public class CountrySelectActivity extends BaseFragment {
         
         actionBar.setAllowOverlayTitle(false);
         actionBar.setTitle(LocaleController.getString("ChooseCountry", R.string.ChooseCountry));
+        if (ApplicationLoader.isHuaweiStoreBuild()) {
+            actionBar.setTitle(LocaleController.getString("CG_ChooseCountry", R.string.CG_ChooseCountry));
+        }
 
         actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
         actionBar.setItemsColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), false);

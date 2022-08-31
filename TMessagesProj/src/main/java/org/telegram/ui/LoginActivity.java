@@ -1609,6 +1609,9 @@ public class LoginActivity extends BaseFragment {
 
             subtitleView = new TextView(context);
             subtitleView.setText(LocaleController.getString(activityMode == MODE_CHANGE_PHONE_NUMBER ? R.string.ChangePhoneHelp : R.string.StartText));
+            if (ApplicationLoader.isHuaweiStoreBuild()) {
+                subtitleView.setText(LocaleController.getString(activityMode == MODE_CHANGE_PHONE_NUMBER ? R.string.ChangePhoneHelp : R.string.CG_StartText));
+            }
             subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             subtitleView.setGravity(Gravity.CENTER);
             subtitleView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
@@ -1643,10 +1646,16 @@ public class LoginActivity extends BaseFragment {
 
             countryOutlineView = new OutlineTextContainerView(context);
             countryOutlineView.setText(LocaleController.getString(R.string.Country));
+            if (ApplicationLoader.isHuaweiStoreBuild()) {
+                countryOutlineView.setText(LocaleController.getString(R.string.CG_Country));
+            }
             countryOutlineView.addView(countryButtonLinearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP, 0, 0, 0, 0));
             countryOutlineView.setForceUseCenter(true);
             countryOutlineView.setFocusable(true);
             countryOutlineView.setContentDescription(LocaleController.getString(R.string.Country));
+            if (ApplicationLoader.isHuaweiStoreBuild()) {
+                countryOutlineView.setContentDescription(LocaleController.getString(R.string.CG_Country));
+            }
             countryOutlineView.setOnFocusChangeListener((v, hasFocus) -> countryOutlineView.animateSelection(hasFocus ? 1 : 0));
             addView(countryOutlineView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, 24, 16, 14));
             countryOutlineView.setOnClickListener(view -> {
@@ -1830,6 +1839,9 @@ public class LoginActivity extends BaseFragment {
 
                         if (countryState == COUNTRY_STATE_INVALID) {
                             setCountryButtonText(LocaleController.getString(R.string.WrongCountry));
+                            if (ApplicationLoader.isHuaweiStoreBuild()) {
+                                setCountryButtonText(LocaleController.getString(R.string.CG_WrongCountry));
+                            }
                         }
                     } else {
                         if (countryState == COUNTRY_STATE_INVALID) {
@@ -2420,10 +2432,16 @@ public class LoginActivity extends BaseFragment {
 
             if (countryState == COUNTRY_STATE_EMPTY) {
                 needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("ChooseCountry", R.string.ChooseCountry));
+                if (ApplicationLoader.isHuaweiStoreBuild()) {
+                    needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("CG_ChooseCountry", R.string.CG_ChooseCountry));
+                }
                 needHideProgress(false);
                 return;
             } else if (countryState == COUNTRY_STATE_INVALID && !BuildVars.DEBUG_VERSION) {
                 needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("WrongCountry", R.string.WrongCountry));
+                if (ApplicationLoader.isHuaweiStoreBuild()) {
+                    needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("CG_WrongCountry", R.string.CG_WrongCountry));
+                }
                 needHideProgress(false);
                 return;
             }
