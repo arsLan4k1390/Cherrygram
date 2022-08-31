@@ -453,7 +453,7 @@ public class ChatAttachAlertAudioLayout extends ChatAttachAlert.AttachAlertLayou
     }
 
     private void showErrorBox(String error) {
-        new AlertDialog.Builder(getContext(), resourcesProvider).setTitle(LocaleController.getString("AppName", R.string.AppName)).setMessage(error).setPositiveButton(LocaleController.getString("OK", R.string.OK), null).show();
+        new AlertDialog.Builder(getContext(), resourcesProvider).setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName)).setMessage(error).setPositiveButton(LocaleController.getString("OK", R.string.OK), null).show();
     }
 
     private void onItemClick(View view) {

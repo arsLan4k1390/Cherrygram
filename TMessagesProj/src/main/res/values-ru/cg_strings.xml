@@ -3,8 +3,11 @@
     <!-- by t.me/arsLan-->
     <!--<string name="CG_Version">Cherrygram %1$s\nBased on Telegram %2$s\nModded by %3$s</string>-->
     <!--Sign in screen-->
-    <string name="CG_ProxyInfo">Вам может потребоваться настроить прокси перед входом в учетную запись, если ваша страна или интернет-провайдер блокирует Telegram.</string>
+    <string name="CG_ProxyInfo">Вам может потребоваться настроить прокси перед входом в учетную запись, если ваша Страна/Регион или интернет-провайдер блокирует Telegram.</string>
     <string name="CG_ProxySettings">Настройки прокси</string>
+    <string name="CG_TestBackendNumber">Тестовый номер</string>
+    <string name="CG_TestBackendOn">Авторизация на тестовом сервере.</string>
+    <string name="CG_TestBackendOff">Авторизация на основном сервере.</string>
     <!--Cherrygram Premium Preferences-->
     <!--    <string name="CP_GhostMode">Ghost mode</string>-->
     <!--    <string name="CP_GhostMode_Desc">Dialogs, messages, voice and videomessages, mentions, and reactions will not be marked as read. \"Mark as read\" button will not work too. You can change \"Online\" status in Telegram privacy settings.</string>-->

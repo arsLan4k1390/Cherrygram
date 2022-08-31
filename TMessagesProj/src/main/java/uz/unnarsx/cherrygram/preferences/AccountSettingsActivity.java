@@ -165,7 +165,7 @@ public class AccountSettingsActivity extends BaseFragment {
                                     errorText += "\n" + error.text;
                                 }
                                 AlertDialog.Builder builder1 = new AlertDialog.Builder(getParentActivity());
-                                builder1.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                                builder1.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
                                 builder1.setMessage(errorText);
                                 builder1.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
                                 builder1.show();

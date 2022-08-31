@@ -12,6 +12,10 @@
     <string name="CG_WrongCountry">Invalid Country/Region code</string>
     <string name="CG_ProxyInfo">You may need to set up a proxy before you login, in case your Country/Region or ISP block Telegram.</string>
     <string name="CG_ProxySettings">Proxy Settings</string>
+    <string name="CG_TestBackendNumber">Test Number</string>
+    <string name="CG_TestBackend" translatable="false">Test Backend</string>
+    <string name="CG_TestBackendOn">This account will connect to the test backend.</string>
+    <string name="CG_TestBackendOff">This account will connect to the production backend.</string>
 
     <!--Cherrygram Premium Preferences-->
     <string name="CP_Header_Premium" translatable="false">Cherrygram Premium</string>

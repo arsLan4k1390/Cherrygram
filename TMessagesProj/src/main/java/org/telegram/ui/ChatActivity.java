@@ -6626,7 +6626,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                         if (!preferences.getBoolean("secretbot", false)) {
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity(), themeDelegate);
-                            builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                            builder.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
                             builder.setMessage(LocaleController.getString("SecretChatContextBotAlert", R.string.SecretChatContextBotAlert));
                             builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
                             showDialog(builder.create());
@@ -24294,7 +24294,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 if ("CHANNEL_PRIVATE".equals(error2.text)) {
                                     if (getParentActivity() != null) {
                                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity(), themeDelegate);
-                                        builder.setTitle(LocaleController.getString("AppName", R.string.AppName));
+                                        builder.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
                                         builder.setMessage(LocaleController.getString("JoinByPeekChannelText", R.string.JoinByPeekChannelText));
                                         builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
                                         showDialog(builder.create());

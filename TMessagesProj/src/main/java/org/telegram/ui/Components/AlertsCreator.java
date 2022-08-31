@@ -652,7 +652,7 @@ public class AlertsCreator {
             return null;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(title == null ? LocaleController.getString("AppName", R.string.AppName) : title);
+        builder.setTitle(title == null ? LocaleController.getString("CG_AppName", R.string.CG_AppName) : title);
         builder.setMessage(text);
         builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
         return builder;

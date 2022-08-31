@@ -1970,40 +1970,57 @@ public class LoginActivity extends BaseFragment {
             addView(addProxyButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 42, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 10, 0, 10, 10));
             addProxyButton.setOnClickListener(view -> presentFragment(new ProxyListActivity()));
 
-            if (true) {
-                syncContactsBox = new CheckBoxCell(context, 2);
-                syncContactsBox.setText(LocaleController.getString("SyncContacts", R.string.SyncContacts), "", syncContacts, false);
-                addView(syncContactsBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
-                bottomMargin -= 24;
-                syncContactsBox.setOnClickListener(v -> {
-                    if (getParentActivity() == null) {
-                        return;
-                    }
-                    CheckBoxCell cell = (CheckBoxCell) v;
-                    syncContacts = !syncContacts;
-                    cell.setChecked(syncContacts, true);
-                    if (syncContacts) {
-                        BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_on, LocaleController.getString("SyncContactsOn", R.string.SyncContactsOn)).show();
-                    } else {
-                        BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_off, LocaleController.getString("SyncContactsOff", R.string.SyncContactsOff)).show();
-                    }
-                });
-            }
+            //if (newAccount && activityMode == MODE_LOGIN) {
+            syncContactsBox = new CheckBoxCell(context, 2);
+            syncContactsBox.setText(LocaleController.getString("SyncContacts", R.string.SyncContacts), "", syncContacts, false);
+            addView(syncContactsBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
+            bottomMargin -= 24;
+            syncContactsBox.setOnClickListener(v -> {
+                if (getParentActivity() == null) {
+                    return;
+                }
+                CheckBoxCell cell = (CheckBoxCell) v;
+                syncContacts = !syncContacts;
+                cell.setChecked(syncContacts, true);
+                if (syncContacts) {
+                    BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_on, LocaleController.getString("SyncContactsOn", R.string.SyncContactsOn)).show();
+                } else {
+                    BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_off, LocaleController.getString("SyncContactsOff", R.string.SyncContactsOff)).show();
+                }
+            });
+            //}
 
-            if (BuildVars.DEBUG_PRIVATE_VERSION && activityMode == MODE_LOGIN) {
-                testBackendCheckBox = new CheckBoxCell(context, 2);
-                testBackendCheckBox.setText("Test Backend", "", testBackend, false);
-                addView(testBackendCheckBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
-                bottomMargin -= 24;
-                testBackendCheckBox.setOnClickListener(v -> {
-                    if (getParentActivity() == null) {
-                        return;
-                    }
-                    CheckBoxCell cell = (CheckBoxCell) v;
-                    testBackend = !testBackend;
-                    cell.setChecked(testBackend, true);
-                });
-            }
+            testBackendCheckBox = new CheckBoxCell(context, 2);
+            testBackendCheckBox.setText("Test Backend", "", testBackend, false);
+            addView(testBackendCheckBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
+            bottomMargin -= 24;
+            testBackendCheckBox.setOnClickListener(v -> {
+                if (getParentActivity() == null) {
+                    return;
+                }
+                CheckBoxCell cell = (CheckBoxCell) v;
+                testBackend = !testBackend;
+                cell.setChecked(testBackend, true);
+                CountrySelectActivity.Country countryWithCode = new CountrySelectActivity.Country();
+                String test_code = "999";
+                countryWithCode.name = LocaleController.getString("CG_TestBackendNumber", R.string.CG_TestBackendNumber);
+                countryWithCode.code = test_code;
+                countryWithCode.shortname = "";
+                if (testBackend) {
+                    countriesArray.add(countryWithCode);
+                    codesMap.put(test_code, countryWithCode);
+                    List<String> phoneFormats = new ArrayList<>();
+                    phoneFormats.add("XX X XXXX");
+                    phoneFormatMap.put(test_code, phoneFormats);
+                    BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.chats_infotip, LocaleController.getString("CG_TestBackendOn", R.string.CG_TestBackendOn)).show();
+                } else {
+                    countriesArray.remove(countryWithCode);
+                    codesMap.remove(test_code);
+                    phoneFormatMap.remove(test_code);
+                    BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.chats_infotip, LocaleController.getString("CG_TestBackendOff", R.string.CG_TestBackendOff)).show();
+                }
+                codeField.setText(codeField.getText());
+            });
             if (bottomMargin > 0 && !AndroidUtilities.isSmallScreen()) {
                 Space bottomSpacer = new Space(context);
                 bottomSpacer.setMinimumHeight(AndroidUtilities.dp(bottomMargin));
@@ -2118,14 +2135,6 @@ public class LoginActivity extends BaseFragment {
                                 }
                             }
                         }
-                        CountrySelectActivity.Country countryWithCode = new CountrySelectActivity.Country();
-                        String test_code = "999";
-                        countryWithCode.name = "Test Backend";
-                        countryWithCode.code = test_code;
-                        countryWithCode.shortname = "EX";
-                        countriesArray.add(countryWithCode);
-                        codesMap.put(test_code, countryWithCode);
-                        phoneFormatMap.put(test_code, Collections.singletonList("66 X XXXX"));
                     }
                 });
             }, ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagFailOnServerErrors);
@@ -2446,13 +2455,8 @@ public class LoginActivity extends BaseFragment {
                 return;
             }
             String phone = PhoneFormat.stripExceptNumbers("" + codeField.getText() + phoneField.getText());
-            if (!testBackend && "999".equals(codeField.getText().toString())) {
-                testBackend = true;
-                if (testBackendCheckBox != null) {
-                    testBackendCheckBox.setChecked(true, true);
-                }
-            }
-            boolean testBackend = getConnectionsManager().isTestBackend();
+            //if (activityMode == MODE_LOGIN) {
+            boolean testBackend = /*BuildVars.DEBUG_PRIVATE_VERSION &&*/ getConnectionsManager().isTestBackend();
             if (testBackend != LoginActivity.this.testBackend) {
                 getConnectionsManager().switchBackend(false);
                 testBackend = LoginActivity.this.testBackend;

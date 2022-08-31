@@ -3412,7 +3412,7 @@ public class NotificationsController extends BaseController {
                         name = LocaleController.getString("NotificationHiddenName", R.string.NotificationHiddenName);
                     }
                 } else {
-                    name = LocaleController.getString("AppName", R.string.AppName);
+                    name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                 }
                 replace = false;
             } else {
