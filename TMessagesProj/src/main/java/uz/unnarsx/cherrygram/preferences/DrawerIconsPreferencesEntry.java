@@ -184,9 +184,9 @@ public class DrawerIconsPreferencesEntry extends BaseFragment {
         archivedChatsRow = rowCount++;
         peopleNearbyRow = rowCount++;
         scanQrRow = rowCount++;
-        if (!ApplicationLoader.isHuaweiStoreBuild()) {
+        //if (!ApplicationLoader.isHuaweiStoreBuild()) {
             cgPremiumRow = rowCount++;
-        }
+        //}
 
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();

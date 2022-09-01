@@ -607,12 +607,12 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             swipeGestureInfoRow = rowCount++;
 
             appIconHeaderRow = rowCount++;
-            if (!ApplicationLoader.isHuaweiStoreBuild()) {
+            //if (!ApplicationLoader.isHuaweiStoreBuild()) {
                 oldNotificationIconRow = rowCount++;
-            }
-            if (!ApplicationLoader.isHuaweiStoreBuild()) {
+            //}
+            //if (!ApplicationLoader.isHuaweiStoreBuild()) {
                 appIconFilterRow = rowCount++;
-            }
+            //}
             appIconSelectorRow = rowCount++;
             appIconShadowRow = rowCount++;
 
