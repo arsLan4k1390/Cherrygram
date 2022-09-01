@@ -1,18 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
-    <!--<string name="CG_Version">Cherrygram %1$s\nBased on Telegram %2$s\nModded by %3$s</string>-->
+
+    <!--Telegram screens-->
     <!--Sign in screen-->
+    <string name="CG_StartText">Please confirm your Country/Region code and enter your phone number.</string>
+    <string name="CG_Country">Country/Region</string>
+    <string name="CG_ChooseCountry">Choose a Country/Region</string>
+    <string name="CG_WrongCountry">Invalid Country/Region code</string>
+
     <string name="CG_ProxyInfo">Es posible que deba configurar un proxy antes de iniciar sesión, en caso de que su país o ISP bloqueen Telegram.</string>
     <string name="CG_ProxySettings">Ajustes de proxy</string>
+
+    <string name="CG_TestBackendNumber">Test Number</string>
+    <string name="CG_TestBackendOn">This account will connect to the test backend.</string>
+    <string name="CG_TestBackendOff">This account will connect to the production backend.</string>
+    <!--Sign in screen-->
+
+    <!--Telegram Folders Settings-->
+    <string name="CG_FoldersType_Header">Tipo de icono de pestaña</string>
+    <string name="CG_FoldersTypeTitles">Solo títulos</string>
+    <string name="CG_FoldersTypeIcons">Solo iconos</string>
+    <string name="CG_FoldersTypeIconsTitles">Iconos con títulos</string>
+    <string name="CG_ChooseFolderIcon">Elige un icono</string>
+    <string name="CP_NewTabs_NoCounter">Ocultar contador en pestañas</string>
+    <string name="CP_NewTabs_NoCounter_Desc">Esto ocultará el contador de mensajes no leídos</string>
+    <string name="AP_FilledIcons">Usar iconos de pestañas rellenos</string>
+    <!--Telegram Folders Settings-->
+
+    <!--Chats screen-->
+    <string name="CG_JumpToBeginning">Al inicio</string>
+    <string name="CG_DeleteAllFromSelf">Eliminar mis mensajes</string>
+    <string name="CG_DeleteAllFromSelfAlert">¡Advertencia! Esto **borrará todos los mensajes que hayas enviado** en este chat para **todos** los participantes.</string>
+    <string name="CG_DeleteAllFromSelfAdmin">Con permisos de admin</string>
+    <string name="CG_DeleteAllFromSelfDone">Todos tus mensajes han sido borrados</string>
+
+    <string name="CG_ClearFromCache">Borrar del caché</string>
+    <string name="CG_ClearedFromCache">Limpiado del caché</string>
+    <string name="CG_ViewUserHistory">Historial de mensajes</string>
+    <string name="CG_ToSaved">Guardar mensaje</string>
+
+    <string name="CG_AllowStorage">Debido a los cambios introducidos por Google en Android 11+, Cherrygram necesita tu permiso para ver archivos que no sean multimedia.</string>
+    <string name="CG_CreateMention">Crear mención</string>
+
+    <string name="CG_FwdMenu_EnableNoForward">Desactivar autor del reenvío</string>
+    <string name="CG_FwdMenu_DisableNoForward">Activar autor del reenvío</string>
+    <string name="CG_Without_Authorship">Sin autor</string>
+
+    <string name="CG_FwdMenu_NoNotify">No notificar</string>
+    <string name="CG_FwdMenu_Notify">Notificar</string>
+    <string name="CG_FwdMenu_EnableCaptions">Habilitar textos</string>
+    <string name="CG_FwdMenu_DisableCaptions">Ocultar textos</string>
+    <!--Chats screen-->
+
+    <!--Group permissions-->
+    <string name="GP_UserRestrictionsSendStickers2">Send Stickers</string>
+    <string name="GP_UserRestrictionsSendGifs">Send GIFs</string>
+    <string name="GP_UserRestrictionsSendGames">Send Animated Games</string>
+    <string name="GP_UserRestrictionsUseInlineBot">Use Inline Bots</string>
+    <!--Group permissions-->
+
+    <!--Misc-->
+    <string name="LS_EnterPasscode">Introduzca su código de acceso de Cherrygram</string>
+    <string name="CG_SwitchBackend">Vas a cambiar al servidor de pruebas. Por favor, no presiones OK si no sabes lo que estás haciendo. Puede cambiar al servidor normal pulsando \"Switch backend\" en el menú de depuración de nuevo.</string>
+    <string name="CG_Restart">Reiniciar app</string>
+    <string name="CG_RestartToApply">Reiniciar la app para aplicar los cambios.</string>
+    <string name="CG_PushService">Servicio Push de Cherrygram. Puedes desactivarlo en las notificaciones de Telegram y ajustes de sonidos.</string>
+    <string name="CG_ForceClean">Forzar Borrar caché de Telegram</string>
+    <string name="CG_ForceCleanInfo">Usa esto si te encuentras con un largo \"Calculando…\" al intentar limpiar la caché.\nEsto borrará TODO de tu caché - ¡Ten cuidado!</string>
+    <string name="CG_ForceCleanInfo1">¿Realmente quieres eliminar TODO de tu caché de Telegram?</string>
+    <string name="CG_Kaboom">Se puede acceder a esta función sin la contraseña de Cherrygram, a través de los ajustes del sistema. Esta característica borra por completo todos los datos locales (Cherrygram). Puede ser usada en situaciones de emergencia.</string>
+    <!--Misc-->
+    <!--Telegram screens-->
+
+    <!--Cherrygram screens-->
     <!--Cherrygram Premium Preferences-->
-    <!--    <string name="CP_GhostMode">Ghost mode</string>-->
-    <!--    <string name="CP_GhostMode_Desc">Dialogs, messages, voice and videomessages, mentions, and reactions will not be marked as read. \"Mark as read\" button will not work too. You can change \"Online\" status in Telegram privacy settings.</string>-->
     <string name="CP_ReadState">No enviar estado de lectura</string>
     <string name="CP_ReadState_Desc">Leer mensajes sin enviar estado de lectura para tus contactos (✔✔)</string>
     <string name="CP_TypingStatus">Oculta su estado de Escribiendo</string>
     <string name="CP_TypingStatus_Desc">Cuando escribas algo, el estado Escribiendo no se mostrará para su contacto</string>
+    <string name="CP_DoNotDeleteMessages">Do not delete messages</string>
+    <string name="CP_DoNotDeleteMessages_Desc">Do not delete messages in chats and channels if messages were deleted by other side</string>
+    <string name="CP_DoNotDeleteSecretChats">Do not delete secret chats</string>
+    <string name="CP_DoNotDeleteSecretChats_Desc">Secret chats will not be deleted</string>
     <string name="CP_SecureFlag_Desc">Desactiva esto si quieres tomar capturas de pantalla de multimedia secreta y chats secretos.</string>
+    <!--Cherrygram Premium Preferences-->
+
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Preferencias de Cherrygram</string>
     <string name="CGP_About_Desc">Una modificación experimental de la app de Telegram.</string>
@@ -22,32 +95,34 @@
     <string name="CGP_Source">Código fuente:</string>
     <string name="CGP_Crowdin">Ayuda con la traducción</string>
     <string name="CGP_Header_Categories">Categorías</string>
+    <!--Cherrygram Preferences-->
+
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Apariencia</string>
     <string name="AP_RedesignCategory">Rediseño</string>
     <string name="AP_IconReplacements">Reemplazo de icono</string>
+    <string name="AP_Old_Notification_Icon">Icono de notificación por defecto (Telegram)</string>
     <string name="AP_ChangeIconFilter">Usar iconos de Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Tienes que volver a entrar en esta sección para ver los nuevos iconos</string>
     <string name="AP_ChangeIcon_Default">Por defecto</string>
     <string name="AP_ChangeIcon_White">Blanco</string>
+    <string name="AP_ChangeIcon_Green">Green</string>
     <string name="AP_ChangeIcon_Sunset">Atardecer</string>
     <string name="AP_IconReplacement_VKUI">Iconos VKUI</string>
     <string name="AP_IconReplacement_Default">Por defecto</string>
-    <string name="AP_Old_Notification_Icon">Icono de notificación por defecto (Telegram)</string>
     <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
     <string name="AP_TransparentSB">Barra de estado transparente</string>
     <string name="AP_FlatNB">Barra de navegación transparente</string>
     <string name="AP_FlatNB_Desc">La barra de navegación obtendrá el color del panel de mensajes</string>
     <string name="AP_SystemFonts">Usar fuentes del sistema</string>
     <string name="AP_SystemFonts_Desc">Deshabilite esto (reinicie la app para aplicar) si su fuente no soporta formato (negrita, cursiva, monoespaciado)</string>
+
     <string name="CP_Filters_Header">Carpetas (reiniciar app para aplicar)</string>
     <string name="AP_FolderNameInHeader">Nombre de la carpeta en lugar de \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Esto cambiará \"Cherrygram\" en la barra de acción al nombre de tu carpeta (útil si solo tienes iconos en lugar de nombres de carpetas)</string>
     <string name="CP_NewTabs_RemoveAllChats">Ocultar carpeta \"Todos\"</string>
-    <string name="CP_NewTabs_NoCounter">Ocultar contador en pestañas</string>
-    <string name="CP_NewTabs_NoCounter_Desc">Esto ocultará el contador de mensajes no leídos</string>
     <string name="CP_ShowTabsOnForward">Mostrar carpetas en la pantalla de reenvío</string>
-    <string name="AP_FilledIcons">Usar iconos de pestañas rellenos</string>
+
     <string name="AP_DrawerCategory">Cajón</string>
     <string name="AP_DrawerPreferences">Preferencias del cajón</string>
     <string name="AP_DrawerAvatar">Foto de perfil como fondo del cajón</string>
@@ -58,6 +133,7 @@
     <string name="AP_DrawerBlurIntensity">Intensidad de desenfoque</string>
     <string name="AP_DrawerIconPack_Header">Conjunto de iconos del cajón</string>
     <string name="AP_DrawerButtonsCategory">Botones del cajón</string>
+
     <string name="AP_ProfileCategory">Perfil y Contactos</string>
     <string name="AP_HideUserPhone">Oculta tu número de teléfono</string>
     <string name="AP_HideUserPhoneSummary">en cajón (reiniciar app para aplicar) y ajustes</string>
@@ -65,10 +141,13 @@
     <string name="AP_MutualContacts_Description">Este es un contacto mutuo.</string>
     <string name="AP_ShowID">Mostrar ID en el perfil</string>
     <string name="AP_ShowDC">Mostrar DC en el perfil</string>
+    <!--Appearance Preferences-->
+
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
     <string name="CP_Slider_StickerAmplifier">Aumentar tamaño de sticker</string>
     <string name="CP_TimeOnStick">Ocultar tiempo en los stickers del chat</string>
+
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de chats no leídos</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Activar contador de chats no leídos en el botón atrás en el chat abierto</string>
     <string name="CP_NoRounding">Desactivar redondeo numérico</string>
@@ -80,6 +159,7 @@
     <string name="CP_ForwardMsgDate">Mostrar fecha del mensaje reenviado</string>
     <string name="CP_ShowSeconds">Mostrar segundos en marcas de tiempo</string>
     <string name="CP_ShowSeconds_Desc">Muestra los segundos del tiempo de los mensajes enviados (reinicie la app para aplicar)</string>
+    <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
     <string name="CP_DoubleTapReact">Desactivar reacciones rápidas</string>
     <string name="CP_DisableReactionAnim">Desactivar animación de reacción</string>
     <string name="CP_DisableReactionAnim_Desc">(al reaccionar a un mensaje)</string>
@@ -88,8 +168,30 @@
     <string name="CP_DisableSwipeToNext_Desc">Desactivar el cambio al siguiente canal al desplazarse por cualquier canal</string>
     <string name="CP_HideKbdOnScroll">Ocultar teclado al desplazar</string>
     <string name="CP_HideSendAsChannel">Ocultar \"Enviar como canal\"</string>
+
     <string name="CP_Slider_RecentEmojisAmplifier">Contador de emojis recientes (reiniciar app para aplicar)</string>
     <string name="CP_Slider_RecentStickersAmplifier">Contador de stickers recientes (reinicie la app para aplicar)</string>
+
+    <string name="CP_Header_Record">Medios</string>
+    <string name="CP_PlayVideo">Reproducir video al pulsar el botón de volumen</string>
+    <string name="CP_PlayVideo_Desc">Al pulsar el botón de volumen, se reproducirá cualquier video en la pantalla del chat</string>
+    <string name="CP_AutoPauseVideo">Pausar video automáticamente</string>
+    <string name="CP_AutoPauseVideo_Desc">Cuando se bloquea la pantalla o cambia al fondo</string>
+    <string name="CP_AudioFocus">Pausar música mientras se reproduce el contenido</string>
+    <string name="CP_AudioFocus_Desc">Pausar música mientras escuchas mensajes de voz o reproduce videos. Si está desactivado, la música será más silenciosa, pero no se apagará</string>
+    <string name="CP_DisableVibration">Deshabilitar vibración</string>
+    <string name="CP_DisablePhotoTapAction">Desactivar \"Cambiar fotos\"</string>
+    <string name="CP_DisablePhotoTapAction_Desc">Esto deshabilita pasar las fotos al tocar en el borde de la pantalla</string>
+    <string name="CP_Proximity">Habilitar acciones de proximidad</string>
+    <string name="CP_Proximity_Desc">Al apagarlo se deshará del apagado de la pantalla molesto al escuchar mensajes de voz (reinicie la app para aplicar)</string>
+
+    <string name="CP_Header_Notification">Notificaciones</string>
+    <string name="CP_IOSSound">Usar sonido de Telegram IOS</string>
+    <string name="CP_IOSSound_Desc">Esto activará el sonido de mensaje entrante de la app de Telegram para IOS (reinicia la app para aplicar)</string>
+    <string name="CP_SilenceNonContacts">Silenciar a los no contactos</string>
+    <string name="CP_SilenceNonContacts_Desc">Si está activado, las notificaciones con sonido provendrán únicamente de contactos. Puedes añadir una persona a tus contactos incluso sin un número de teléfono, hazlo en su perfil</string>
+    <!--Chats Preferences-->
+
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Cámara</string>
     <string name="CP_CameraType">Tipo de cámara</string>
@@ -101,76 +203,41 @@
     <string name="CP_MotionSmoothness">Suavizado de movimiento</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Accede directamente a la cámara del sistema (no aplica para videomensajes).</string>
-    <!--Telegram, Cherrygram Folders-->
-    <string name="CG_FoldersType_Header">Tipo de icono de pestaña</string>
-    <string name="CG_FoldersTypeTitles">Solo títulos</string>
-    <string name="CG_FoldersTypeIcons">Solo iconos</string>
-    <string name="CG_FoldersTypeIconsTitles">Iconos con títulos</string>
-    <string name="CG_ChooseFolderIcon">Elige un icono</string>
-    <!--Telegram, Cherrygram Folders-->
-    <string name="CP_Header_Record">Medios</string>
-    <string name="CP_PlayVideo">Reproducir video al pulsar el botón de volumen</string>
-    <string name="CP_PlayVideo_Desc">Al pulsar el botón de volumen, se reproducirá cualquier video en la pantalla del chat</string>
-    <string name="CP_AutoPauseVideo">Pausar video automáticamente</string>
-    <string name="CP_AutoPauseVideo_Desc">Cuando se bloquea la pantalla o cambia al fondo</string>
-    <string name="CP_AudioFocus">Pausar música mientras se reproduce el contenido</string>
-    <string name="CP_AudioFocus_Desc">Pausar música mientras escuchas mensajes de voz o reproduce videos. Si está desactivado, la música será más silenciosa, pero no se apagará</string>
-    <string name="CP_DisableVibration">Deshabilitar vibración</string>
-    <string name="CP_DisablePhotoTapAction">Desactivar \"Cambiar fotos\"</string>
-    <string name="CP_DisablePhotoTapAction_Desc">Esto deshabilita pasar las fotos al tocar en el borde de la pantalla</string>
-    <string name="CP_DisableCam">Desactivar la cámara en el menú de adjuntar medios</string>
-    <string name="CP_DisableCam_Desc">Activar si el menú de adjuntar se relantiza</string>
-    <string name="CP_RearCam">Usar cámara trasera</string>
-    <string name="CP_RearCam_Desc">En lugar de cámara frontal para videomensajes</string>
+
     <string name="CP_RoundCamera16to9">Usar cámara 16:9</string>
     <string name="CP_RoundCamera16to9_Desc">Activar si te enfrentas a problemas de calidad en videomensajes</string>
-    <string name="CP_Proximity">Habilitar acciones de proximidad</string>
-    <string name="CP_Proximity_Desc">Al apagarlo se deshará del apagado de la pantalla molesto al escuchar mensajes de voz (reinicie la app para aplicar)</string>
-    <string name="CP_Header_Notification">Notificaciones</string>
-    <string name="CP_IOSSound">Usar sonido de Telegram IOS</string>
-    <string name="CP_IOSSound_Desc">Esto activará el sonido de mensaje entrante de la app de Telegram para IOS (reinicia la app para aplicar)</string>
-    <string name="CP_SilenceNonContacts">Silenciar a los no contactos</string>
-    <string name="CP_SilenceNonContacts_Desc">Si está activado, las notificaciones con sonido provendrán únicamente de contactos. Puedes añadir una persona a tus contactos incluso sin un número de teléfono, hazlo en su perfil</string>
+    <string name="CP_RearCam">Usar cámara trasera</string>
+    <string name="CP_RearCam_Desc">En lugar de cámara frontal para videomensajes</string>
+    <string name="CP_DisableCam">Desactivar la cámara en el menú de adjuntar medios</string>
+    <string name="CP_DisableCam_Desc">Activar si el menú de adjuntar se relantiza</string>
+    <!--Camera Preferences-->
+
+    <!--Experimental Preferences-->
+    <string name="EP_Category_Experimental">Experimental</string>
+    <string name="EP_DownloadSpeedBoost">Download speed boost</string>
+    <string name="EP_DownloadSpeedBoostNone">Off</string>
+    <string name="EP_DownloadSpeedBoostAverage">On</string>
+    <string name="EP_DownloadSpeedBoostExtreme">Extreme</string>
+    <string name="EP_UploadloadSpeedBoost">Upload speed boost</string>
+    <!--Experimental Preferences-->
+
     <!--Security Preferences-->
     <string name="SP_Category_Security">Seguridad</string>
     <string name="SP_Header_Privacy">Privacidad</string>
     <string name="SP_NoProxyPromo">No mostrar patrocinador del proxy</string>
+
     <string name="SP_CleanOld">Eliminar caché antigua (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Eliminado con éxito</string>
+
     <string name="SP_Category_Account">Cuenta</string>
     <string name="SP_DeleteAccount">Eliminar cuenta de Telegram</string>
-    <string name="SP_DeleteAccountConformation">Escriba \"sí\" en el capital para continuar.</string>
+    <!--Security Preferences-->
+
     <!--Donations-->
     <string name="DP_Donate">Donar</string>
     <string name="DP_DonateInfo">Gastos Premium de Cherrygram a partir de 5 USD. No olvide enviar la captura de pantalla de la transacción a @arsLan si desea obtener las funciones premium de Cherry. Este es un solo pago.</string>
     <string name="DP_Donate_Method">Elegir método</string>
-    <!--Chats screen-->
-    <string name="CG_ViewUserHistory">Historial de mensajes</string>
-    <string name="CG_DeleteAllFromSelf">Eliminar mis mensajes</string>
-    <string name="CG_DeleteAllFromSelfAlert">¡Advertencia! Esto **borrará todos los mensajes que hayas enviado** en este chat para **todos** los participantes.</string>
-    <string name="CG_DeleteAllFromSelfAdmin">Con permisos de admin</string>
-    <string name="CG_JumpToBeginning">Al inicio</string>
-    <string name="CG_ToSaved">Guardar mensaje</string>
-    <string name="CG_ClearFromCache">Borrar del caché</string>
-    <string name="CG_ClearedFromCache">Limpiado del caché</string>
-    <string name="CG_AllowStorage">Debido a los cambios introducidos por Google en Android 11+, Cherrygram necesita tu permiso para ver archivos que no sean multimedia.</string>
-    <string name="CG_CreateMention">Crear mención</string>
-    <string name="CG_FwdMenu_EnableNoForward">Desactivar autor del reenvío</string>
-    <string name="CG_FwdMenu_DisableNoForward">Activar autor del reenvío</string>
-    <string name="CG_Without_Authorship">Sin autor</string>
-    <string name="CG_FwdMenu_NoNotify">No notificar</string>
-    <string name="CG_FwdMenu_Notify">Notificar</string>
-    <string name="CG_FwdMenu_EnableCaptions">Habilitar textos</string>
-    <string name="CG_FwdMenu_DisableCaptions">Ocultar textos</string>
-    <!--Lockscreen-->
-    <string name="LS_EnterPasscode">Introduzca su código de acceso de Cherrygram</string>
-    <!--Misc-->
-    <string name="CG_SwitchBackend">Vas a cambiar al servidor de pruebas. Por favor, no presiones OK si no sabes lo que estás haciendo. Puede cambiar al servidor normal pulsando \"Switch backend\" en el menú de depuración de nuevo.</string>
-    <string name="CG_Restart">Reiniciar app</string>
-    <string name="CG_RestartToApply">Reiniciar la app para aplicar los cambios.</string>
-    <string name="CG_PushService">Servicio Push de Cherrygram. Puedes desactivarlo en las notificaciones de Telegram y ajustes de sonidos.</string>
-    <string name="CG_ForceClean">Forzar Borrar caché de Telegram</string>
-    <string name="CG_ForceCleanInfo">Usa esto si te encuentras con un largo \"Calculando…\" al intentar limpiar la caché.\nEsto borrará TODO de tu caché - ¡Ten cuidado!</string>
-    <string name="CG_ForceCleanInfo1">¿Realmente quieres eliminar TODO de tu caché de Telegram?</string>
-    <string name="CG_Kaboom">Se puede acceder a esta función sin la contraseña de Cherrygram, a través de los ajustes del sistema. Esta característica borra por completo todos los datos locales (Cherrygram). Puede ser usada en situaciones de emergencia.</string>
+    <!--Donations-->
+    <!--Cherrygram screens-->
+
 </resources>

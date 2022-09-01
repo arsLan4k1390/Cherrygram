@@ -296,6 +296,18 @@ object CherrygramConfig {
         editor.putBoolean("AP_ScanQRDrawerButton", ScanQRDrawerButton)
         editor.apply()
     }
+
+    var CgPremiumDrawerButton by sharedPreferences.boolean("AP_CgPremiumDrawerButton", false)
+    fun toggleCgPremiumDrawerButton() {
+        CgPremiumDrawerButton = !CgPremiumDrawerButton
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_CgPremiumDrawerButton", CgPremiumDrawerButton)
+        editor.apply()
+    }
     //Profile and Contacts
     var hidePhoneNumber by sharedPreferences.boolean("AP_HideUserPhone", false)
     var showMutualContacts by sharedPreferences.boolean("AP_MutualContacts", true)
@@ -312,6 +324,7 @@ object CherrygramConfig {
     var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
     var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", false)
     var showSeconds by sharedPreferences.boolean("CP_ShowSeconds", false)
+    var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
     var disableDoubleTabReact by sharedPreferences.boolean("CP_DoubleTapReact", false)
     var disableReactionAnim by sharedPreferences.boolean("CP_DisableReactionAnim", false)
     var disablePremStickAnim by sharedPreferences.boolean("CP_DisablePremStickAnim", false)

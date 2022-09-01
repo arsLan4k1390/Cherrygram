@@ -285,6 +285,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -652,7 +653,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private int startFromVideoTimestamp = -1;
     private int startFromVideoMessageId;
     private boolean needSelectFromMessageId;
-    private int returnToMessageId;
+    private final Stack<Integer> returnToMessageIdStack = new Stack<>();
     private int returnToLoadIndex;
     private int createUnreadMessageAfterId;
     private boolean createUnreadMessageAfterIdLoading;
@@ -1569,6 +1570,26 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
     public ChatActivity(Bundle args) {
         super(args);
+    }
+
+    /**
+     * Scrolls the chat to the bottom by user intention
+     */
+    public void onScrollDown(boolean clearStack) {
+        wasManualScroll = true;
+        textSelectionHelper.cancelTextSelectionRunnable();
+        if (createUnreadMessageAfterId != 0) {
+            scrollToMessageId(createUnreadMessageAfterId, 0, false, returnToLoadIndex, true, 0);
+        } else if (!clearStack && !returnToMessageIdStack.empty()) {
+            scrollToMessageId(returnToMessageIdStack.pop(), 0, true, returnToLoadIndex, true, 0);
+        } else {
+            if (clearStack) returnToMessageIdStack.clear();
+            scrollToLastMessage(false);
+            if (!pinnedMessageIds.isEmpty()) {
+                forceScrollToFirst = true;
+                forceNextPinnedMessageId = pinnedMessageIds.get(0);
+            }
+        }
     }
 
     @Override
@@ -6502,20 +6523,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         pagedownButton = new FrameLayout(context);
         pagedownButton.setVisibility(View.INVISIBLE);
         contentView.addView(pagedownButton, LayoutHelper.createFrame(66, 61, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, -3, 5));
-        pagedownButton.setOnClickListener(view -> {
-            wasManualScroll = true;
-            textSelectionHelper.cancelTextSelectionRunnable();
-            if (createUnreadMessageAfterId != 0) {
-                scrollToMessageId(createUnreadMessageAfterId, 0, false, returnToLoadIndex, true, 0);
-            } else if (returnToMessageId > 0) {
-                scrollToMessageId(returnToMessageId, 0, true, returnToLoadIndex, true, 0);
-            } else {
-                scrollToLastMessage(false);
-                if (!pinnedMessageIds.isEmpty()) {
-                    forceScrollToFirst = true;
-                    forceNextPinnedMessageId = pinnedMessageIds.get(0);
-                }
-            }
+        pagedownButton.setOnClickListener(view -> onScrollDown(false));
+        pagedownButton.setOnLongClickListener(view -> {
+            onScrollDown(true);
+            return true;
         });
 
         mentiondownButton = new FrameLayout(context);
@@ -8482,6 +8493,29 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             updateReactionsMentionButton(false);
         }
         return fragmentView;
+    }
+
+    private void createCGShareAlertSelected() {
+            forwardingMessage = selectedObject;
+            forwardingMessageGroup = selectedObjectGroup;
+            ArrayList<MessageObject> fmessages = new ArrayList<>();
+            if (forwardingMessageGroup == null) {
+                fmessages.add(forwardingMessage);
+            } else fmessages.addAll(forwardingMessageGroup.messages);
+            showDialog(new ShareAlert(getParentActivity(), fmessages, null, ChatObject.isChannel(currentChat), null, false) {
+                @Override
+                public void dismissInternal() {
+                    super.dismissInternal();
+                    AndroidUtilities.requestAdjustResize(getParentActivity(), classGuid);
+                    if (chatActivityEnterView.getVisibility() == View.VISIBLE) {
+                        fragmentView.requestLayout();
+                    }
+                    hideActionMode();
+                    updatePinnedMessageView(true);
+                }
+            });
+            AndroidUtilities.setAdjustResizeToNothing(getParentActivity(), classGuid);
+            fragmentView.requestLayout();
     }
 
     public ActionBarMenuItem getHeaderItem() {
@@ -12532,7 +12566,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 showFloatingDateView(false);
             }
         }
-        returnToMessageId = fromMessageId;
+        if (fromMessageId > 0) returnToMessageIdStack.push(fromMessageId);
         returnToLoadIndex = loadIndex;
         needSelectFromMessageId = select;
     }
@@ -12597,7 +12631,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             }
         } else {
-            returnToMessageId = 0;
+            returnToMessageIdStack.clear();
             newUnreadMessageCount = 0;
             if (pagedownButton.getTag() != null) {
                 pagedownButton.setTag(null);
@@ -12665,7 +12699,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             }
         } else {
-            returnToMessageId = 0;
+            returnToMessageIdStack.clear();
             if (mentiondownButton.getTag() != null) {
                 mentiondownButton.setTag(null);
                 if (mentiondownButtonAnimation != null) {
@@ -22908,7 +22942,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 break;
             }
             case OPTION_FORWARD: {
-                forwardingMessage = selectedObject;
+                /*forwardingMessage = selectedObject;
                 forwardingMessageGroup = selectedObjectGroup;
                 Bundle args = new Bundle();
                 args.putBoolean("onlySelect", true);
@@ -22918,7 +22952,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 args.putBoolean("hasInvoice", forwardingMessage.isInvoice());
                 DialogsActivity fragment = new DialogsActivity(args);
                 fragment.setDelegate(this);
-                presentFragment(fragment);
+                presentFragment(fragment);*/
+                createCGShareAlertSelected();
                 break;
             }
             case OPTION_CLEAR_FROM_CACHE: {
@@ -28556,49 +28591,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
     private void cgbtn_onclick_actionbar(int id) {
         if (id == DeleteAllFromSelf) {
-            Context context = getParentActivity();
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            TextView messageTextView = new TextView(context);
-            messageTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-            messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-            messageTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
-            FrameLayout frameLayout = new FrameLayout(context);
-            builder.setView(frameLayout);
-            AvatarDrawable avatarDrawable = new AvatarDrawable();
-            avatarDrawable.setTextSize(AndroidUtilities.dp(12));
-            BackupImageView imageView = new BackupImageView(context);
-            imageView.setRoundRadius(AndroidUtilities.dp(20));
-            frameLayout.addView(imageView, LayoutHelper.createFrame(40, 40, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 22, 5, 22, 0));
-            avatarDrawable.setInfo(currentChat);
-            imageView.setImage(ImageLocation.getForChat(currentChat, ImageLocation.TYPE_SMALL), "50_50", avatarDrawable, currentChat);
-            TextView textView = new TextView(context);
-            textView.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem));
-            textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-            textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
-            textView.setLines(1);
-            textView.setMaxLines(1);
-            textView.setSingleLine(true);
-            textView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL);
-            textView.setEllipsize(TextUtils.TruncateAt.END);
-            textView.setText(LocaleController.getString("CG_DeleteAllFromSelf", R.string.CG_DeleteAllFromSelf));
-
-            frameLayout.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, (LocaleController.isRTL ? 21 : 76), 11, (LocaleController.isRTL ? 76 : 21), 0));
-            frameLayout.addView(messageTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 24, 57, 24, 9));
-            messageTextView.setText(AndroidUtilities.replaceTags(LocaleController.getString("CG_DeleteAllFromSelfAlert", R.string.CG_DeleteAllFromSelfAlert)));
-            builder.setPositiveButton(LocaleController.getString("DeleteAll", R.string.DeleteAll), (dialogInterface, i) -> {
-                if (ChatObject.isChannel(currentChat) && currentChat.megagroup && ChatObject.canUserDoAction(currentChat, ChatObject.ACTION_DELETE_MESSAGES)) {
-                    getMessagesController().deleteUserChannelHistory(currentChat, UserConfig.getInstance(currentAccount).getCurrentUser(), null, 0);
-                } else {
-                    getMessageHelper().deleteUserChannelHistoryWithSearch(getParentActivity(), dialog_id, UserConfig.getInstance(currentAccount).getCurrentUser());
-                }
-            });
-            builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-            AlertDialog alertDialog = builder.create();
-            showDialog(alertDialog);
-            TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            if (button != null) {
-                button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
-            }
+            getMessageHelper().createDeleteHistoryAlert(ChatActivity.this, currentChat, mergeDialogId, themeDelegate);
         } else if (id == UpgradeGroup) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
             builder.setMessage(LocaleController.getString("ConvertGroupAlert", R.string.ConvertGroupAlert));

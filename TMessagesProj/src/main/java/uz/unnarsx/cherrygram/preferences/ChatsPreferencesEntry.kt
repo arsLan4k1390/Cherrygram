@@ -91,6 +91,15 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("CP_DisableAnimAvatars", R.string.CP_DisableAnimAvatars)
+
+                contract({
+                    return@contract CherrygramConfig.disableAnimatedAvatars
+                }) {
+                    CherrygramConfig.disableAnimatedAvatars = it
+                }
+            }
+            switch {
                 title = LocaleController.getString("CP_DoubleTapReact", R.string.CP_DoubleTapReact)
 
                 contract({

@@ -191,7 +191,7 @@ import uz.unnarsx.cherrygram.CherrygramConfig;
 public class DialogsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     public final static int DIALOGS_TYPE_START_ATTACH_BOT = 14;
 
-    private boolean showFolderNameInHeader = CherrygramConfig.INSTANCE.getFolderNameInHeader();
+    private final boolean showFolderNameInHeader = CherrygramConfig.INSTANCE.getFolderNameInHeader();
 
     private boolean canShowFilterTabsView;
     private boolean filterTabsViewIsVisible;
@@ -1120,9 +1120,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         }
 
                         int tabId = viewPages[1].selectedType;
-                        if(tabId == initialDialogsType) {
+                        if (tabId == filterTabsView.getDefaultTabId()) {
                             setActionBarTitle(null, true);
-                        }else {
+                        } else {
                             setActionBarTitle(getMessagesController().dialogFilters.get(tabId), false);
                         }
 
@@ -2241,13 +2241,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 actionBar.setTitle(LocaleController.getString("SelectChat", R.string.SelectChat));
             }
             actionBar.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefault));
-            actionBar.setOnLongClickListener(v -> {
+            /*actionBar.setOnLongClickListener(v -> {
                 if (CherrygramConfig.INSTANCE.getNewTabs_hideAllChats() && filterTabsView != null && filterTabsView.getDefaultTabId() != filterTabsView.getCurrentTabId()) {
                     filterTabsView.toggleAllTabs(true);
                     filterTabsView.selectDefaultTab();
                 }
                 return false;
-            });
+            });*/
         } else {
             if (searchString != null || folderId != 0) {
                 actionBar.setBackButtonDrawable(backDrawable = new BackDrawable(false));
@@ -2258,15 +2258,16 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             }
             if (folderId != 0) {
                 actionBar.setTitle(LocaleController.getString("ArchivedChats", R.string.ArchivedChats));
+                actionBar.setBackButtonImage(R.drawable.ic_ab_back);
             } else {
                 actionBar.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
-                actionBar.setOnLongClickListener(v -> {
+                /*actionBar.setOnLongClickListener(v -> {
                     if (CherrygramConfig.INSTANCE.getNewTabs_hideAllChats() && filterTabsView != null && filterTabsView.getCurrentTabId() != initialDialogsType) {
                         filterTabsView.toggleAllTabs(true);
                         filterTabsView.selectDefaultTab();
                     }
                     return false;
-                });
+                });*/
             }
             if (folderId == 0) {
                 actionBar.setSupportsHolidayImage(true);
@@ -2392,9 +2393,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     animatingForward = forward;
 
                     int tabId = viewPages[1].selectedType;
-                    if(tabId == initialDialogsType) {
+                    if (tabId == filterTabsView.getDefaultTabId()) {
                         setActionBarTitle(null, true);
-                    }else {
+                    } else {
                         setActionBarTitle(getMessagesController().dialogFilters.get(tabId), false);
                     }
                 }
@@ -8902,11 +8903,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void setActionBarTitle(MessagesController.DialogFilter filter, boolean tabAll){
-        if(!showFolderNameInHeader || getMessagesController().dialogFilters.isEmpty()) return;
-        if(tabAll) {
-            actionBar.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
-        }else if(filter != null && !TextUtils.isEmpty(filter.name)){
+        if (!showFolderNameInHeader || getMessagesController().dialogFilters.isEmpty()) return;
+        if (tabAll) {
+            actionBar.setTitle(LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
+        } else if (filter != null && !TextUtils.isEmpty(filter.name)){
             actionBar.setTitle(filter.name);
         }
     }
+
 }

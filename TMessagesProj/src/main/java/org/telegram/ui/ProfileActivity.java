@@ -451,6 +451,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int usernameRow;
     private int idRow;
     private int dcRow;
+    private String userDcLine;
     private int notificationsDividerRow;
     private int notificationsRow;
     private int infoSectionRow;
@@ -6054,7 +6055,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 bioRow = rowCount++;
                 if (CherrygramConfig.INSTANCE.getShowId())
                     idRow = rowCount++;
-                if (CherrygramConfig.INSTANCE.getShowDc())
+                if (userDcLine != null && CherrygramConfig.INSTANCE.getShowDc())
                     dcRow = rowCount++;
                 settingsSectionRow = rowCount++;
 
@@ -6081,9 +6082,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 devicesRow = rowCount++;
                 languageRow = rowCount++;
                 devicesSectionRow = rowCount++;
-                if (!ApplicationLoader.isHuaweiStoreBuild()) {
-                    cherrygramPremiumRow = rowCount++;
-                }
+                /*cherrygramPremiumRow = rowCount++;*/
                 if (!getMessagesController().premiumLocked) {
                     premiumRow = rowCount++;
                     premiumSectionsRow = rowCount++;
@@ -6119,7 +6118,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 if (CherrygramConfig.INSTANCE.getShowId())
                     idRow = rowCount++;
-                if (CherrygramConfig.INSTANCE.getShowDc())
+                if (userDcLine != null && CherrygramConfig.INSTANCE.getShowDc())
                     dcRow = rowCount++;
                 if (phoneRow != -1 || userInfoRow != -1 || usernameRow != -1) {
                     notificationsDividerRow = rowCount++;
@@ -6175,7 +6174,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
             if (CherrygramConfig.INSTANCE.getShowId())
                 idRow = rowCount++;
-            if (CherrygramConfig.INSTANCE.getShowDc())
+            if (userDcLine != null && CherrygramConfig.INSTANCE.getShowDc())
                 dcRow = rowCount++;
             if (infoHeaderRow != -1) {
                 notificationsDividerRow = rowCount++;
@@ -6459,6 +6458,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
             }
 
+            if (user.photo != null && user.photo.dc_id > 0) {
+                userDcLine = String.format("DC: %d, %s, %s", user.photo.dc_id, CherrygramExtras.INSTANCE.getDCName(user.photo.dc_id) , CherrygramExtras.INSTANCE.getDCGeo(user.photo.dc_id));
+            }
+
             avatarImage.getImageReceiver().setVisible(!PhotoViewer.isShowingImage(photoBig), false);
         } else if (chatId != 0) {
             TLRPC.Chat chat = getMessagesController().getChat(chatId);
@@ -6466,6 +6469,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 currentChat = chat;
             } else {
                 chat = currentChat;
+            }
+
+            if (chat.photo != null && chat.photo.dc_id > 0) {
+                userDcLine = String.format("DC: %d, %s, %s", chat.photo.dc_id, CherrygramExtras.INSTANCE.getDCName(chat.photo.dc_id) , CherrygramExtras.INSTANCE.getDCGeo(chat.photo.dc_id));
             }
 
             String statusString;
@@ -7722,17 +7729,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                         detailCell.setTextAndValue(did + "", "ID", false);
                     } else if (position == dcRow) {
-                        String a;
-                        try {
-                            if (getMessagesController().getUser(userId) != null) {
-                                a = getMessagesController().getUser(userId).photo.dc_id + "";
-                            } else {
-                                a = getMessagesController().getChat(chatId).photo.dc_id + "";
-                            }
-                        } catch (Exception e) {
-                            a = LocaleController.getString("NumberUnknown", R.string.NumberUnknown);
-                        }
-                            detailCell.setTextAndValue(a, "DC", false);
+                        String text = userDcLine;
+                        detailCell.setTextAndValue(text, "DC", false);
                     } else if (position == usernameRow) {
                         String text;
                         if (userId != 0) {

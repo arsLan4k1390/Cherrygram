@@ -40,6 +40,8 @@ public class CGPremiumPreferencesEntry extends BaseFragment {
     private int categoryPrivacyHeaderRow;
     private int readStateInfoRow;
     private int typingStatusInfoRow;
+    private int messagesInfoRow;
+    private int secretChatsInfoRow;
     private int flagInfoRow;
     private int divisorInfoRow;
 
@@ -113,12 +115,16 @@ public class CGPremiumPreferencesEntry extends BaseFragment {
         categoryPrivacyHeaderRow = -1;
         readStateInfoRow = -1;
         typingStatusInfoRow = -1;
+        messagesInfoRow = -1;
+        secretChatsInfoRow = -1;
         flagInfoRow = -1;
         divisorInfoRow = -1;
 
         categoryPrivacyHeaderRow = rowCount++;
         readStateInfoRow = rowCount++;
         typingStatusInfoRow = rowCount++;
+        messagesInfoRow = rowCount++;
+        secretChatsInfoRow = rowCount++;
         flagInfoRow = rowCount++;
         divisorInfoRow = rowCount++;
 
@@ -183,6 +189,10 @@ public class CGPremiumPreferencesEntry extends BaseFragment {
                         textDetailCell.setTextAndValueAndIcon(LocaleController.getString("CP_ReadState", R.string.CP_ReadState), LocaleController.getString("CP_ReadState_Desc", R.string.CP_ReadState_Desc), R.drawable.ghost_outline_28, true);
                     } else if (position == typingStatusInfoRow) {
                         textDetailCell.setTextAndValueAndIcon(LocaleController.getString("CP_TypingStatus", R.string.CP_TypingStatus), LocaleController.getString("CP_TypingStatus_Desc", R.string.CP_TypingStatus_Desc), R.drawable.msg_send, true);
+                    } else if (position == messagesInfoRow) {
+                        textDetailCell.setTextAndValueAndIcon(LocaleController.getString("CP_DoNotDeleteMessages", R.string.CP_DoNotDeleteMessages), LocaleController.getString("CP_DoNotDeleteMessages_Desc", R.string.CP_DoNotDeleteMessages_Desc), R.drawable.clear_data_outline_28, true);
+                    } else if (position == secretChatsInfoRow) {
+                        textDetailCell.setTextAndValueAndIcon(LocaleController.getString("CP_DoNotDeleteSecretChats", R.string.CP_DoNotDeleteSecretChats), LocaleController.getString("CP_DoNotDeleteSecretChats_Desc", R.string.CP_DoNotDeleteSecretChats_Desc), R.drawable.lock_outline_28, true);
                     } else if (position == flagInfoRow) {
                         textDetailCell.setTextAndValueAndIcon(LocaleController.getString("CP_SecureFlag", R.string.CP_SecureFlag), LocaleController.getString("CP_SecureFlag_Desc", R.string.CP_SecureFlag_Desc), R.drawable.msg_screencast, true);
                     } else if (position == supportDonationRow) {
@@ -230,7 +240,7 @@ public class CGPremiumPreferencesEntry extends BaseFragment {
                 return 2;
             } else if (position == categoryPrivacyHeaderRow || position == infoHeaderRow) {
                 return 3;
-            } else if (position == readStateInfoRow || position == typingStatusInfoRow || position == flagInfoRow || position == supportDonationRow){
+            } else if (position == readStateInfoRow || position == typingStatusInfoRow || position == messagesInfoRow || position == secretChatsInfoRow || position == flagInfoRow || position == supportDonationRow){
                 return 4;
             }
             return 1;

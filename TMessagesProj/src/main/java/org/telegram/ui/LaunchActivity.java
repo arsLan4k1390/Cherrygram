@@ -179,6 +179,7 @@ import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.MonetHelper;
+import uz.unnarsx.cherrygram.preferences.CGPremiumPreferencesEntry;
 import uz.unnarsx.cherrygram.vkui.CGUIResources;
 import uz.unnarsx.redesign.BottomSlideFragment;
 
@@ -659,11 +660,6 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                     args.putLong("user_id", UserConfig.getInstance(currentAccount).getClientUserId());
                     presentFragment(new ChatActivity(args));
                     drawerLayoutContainer.closeDrawer(false);
-                } else if (id == 1001) {
-                    Bundle args = new Bundle();
-                    args.putInt("folderId", 1);
-                    presentFragment(new DialogsActivity(args));
-                    drawerLayoutContainer.closeDrawer(false);
                 } else if (id == 12) {
                     if (Build.VERSION.SDK_INT >= 23) {
                         if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -720,6 +716,14 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                     } else {
                         drawerLayoutContainer.setAllowOpenDrawer(true, false);
                     }
+                    drawerLayoutContainer.closeDrawer(false);
+                } else if (id == 1001) {
+                    Bundle args = new Bundle();
+                    args.putInt("folderId", 1);
+                    presentFragment(new DialogsActivity(args));
+                    drawerLayoutContainer.closeDrawer(false);
+                } else if (id == 1002) {
+                    presentFragment(new CGPremiumPreferencesEntry());
                     drawerLayoutContainer.closeDrawer(false);
                 }
             }
@@ -2220,6 +2224,8 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                                             open_settings = 5;
                                         } else if (url.contains("notifications")) {
                                             open_settings = 7;
+                                        } else if (url.contains("cherrygram_premium")) {
+                                            open_settings = 8;
                                         } else {
                                             open_settings = 1;
                                         }
@@ -2555,6 +2561,8 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                     fragment = new EditWidgetActivity(open_widget_edit_type, open_widget_edit);
                 } else if (open_settings == 7) {
                     fragment = new NotificationsSettingsActivity();
+                } else if (open_settings == 8) {
+                    fragment = new CGPremiumPreferencesEntry();
                 } else {
                     fragment = null;
                 }

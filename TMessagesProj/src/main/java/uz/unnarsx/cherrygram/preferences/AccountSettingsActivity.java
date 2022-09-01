@@ -15,11 +15,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
+import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.AlertDialog;
@@ -104,94 +106,65 @@ public class AccountSettingsActivity extends BaseFragment {
                 builder.setMessage(LocaleController.getString("TosDeclineDeleteAccount", R.string.TosDeclineDeleteAccount));
                 builder.setTitle(LocaleController.getString("SP_DeleteAccount", R.string.SP_DeleteAccount));
                 builder.setPositiveButton(LocaleController.getString("Deactivate", R.string.Deactivate), (dialog, which) -> {
-                    AlertDialog.Builder builder12 = new AlertDialog.Builder(getParentActivity());
-                    builder12.setMessage(LocaleController.getString("TosDeclineDeleteAccount", R.string.TosDeclineDeleteAccount));
-                    builder12.setTitle(LocaleController.getString("SP_DeleteAccount", R.string.SP_DeleteAccount));
+                    if (BuildConfig.DEBUG) return;
+                    final AlertDialog progressDialog = new AlertDialog(getParentActivity(), 3);
+                    progressDialog.setCanCancel(false);
 
-                    LinearLayout linearLayout = new LinearLayout(context);
-                    linearLayout.setOrientation(LinearLayout.VERTICAL);
-
-                    EditTextBoldCursor editText = new EditTextBoldCursor(context);
-                    editText.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
-                    editText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                    editText.setHint(LocaleController.getString("SP_DeleteAccountConformation", R.string.SP_DeleteAccountConformation));
-                    linearLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, AndroidUtilities.dp(8), 0, AndroidUtilities.dp(10), 0));
-
-                    builder12.setView(linearLayout);
-
-                    builder12.setPositiveButton(LocaleController.getString("Deactivate", R.string.Deactivate), (dialogInterface, i) -> {
-
-                        if (!editText.getText().toString().equals("YES")) return;
-
-                        final AlertDialog progressDialog = new AlertDialog(getParentActivity(), 3);
-                        progressDialog.setCanCancel(false);
-                        progressDialog.show();
-
-                        // delete dialogs
-                        ArrayList<TLRPC.Dialog> dialogs = new ArrayList<>(getMessagesController().getAllDialogs());
-                        for (TLRPC.Dialog TLdialog : dialogs) {
-                            if (TLdialog instanceof TLRPC.TL_dialogFolder) {
-                                continue;
-                            }
-                            TLRPC.Peer peer = getMessagesController().getPeer((int) TLdialog.id);
-                            if (peer.channel_id != 0) {
-                                TLRPC.Chat chat = getMessagesController().getChat(peer.channel_id);
-                                if (!chat.broadcast) {
-                                    if (ChatObject.isChannel(chat) && chat.megagroup && ChatObject.canUserDoAction(chat, ChatObject.ACTION_DELETE_MESSAGES)) {
-                                        getMessagesController().deleteUserChannelHistory(chat, UserConfig.getInstance(currentAccount).getCurrentUser(), null, 0);
-                                    } else {
-                                        MessageHelper.getInstance(currentAccount).deleteUserChannelHistoryWithSearch(null, TLdialog.id, getMessagesController().getUser(getUserConfig().clientUserId));
-                                    }
-                                }
-                            }
-                            if (peer.user_id != 0) {
-                                getMessagesController().deleteDialog(TLdialog.id, 0, true);
-                            }
-                        }
-                        // delete account
-                        TLRPC.TL_account_deleteAccount req = new TLRPC.TL_account_deleteAccount();
-                        req.reason = "Cherry";
-                        getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-                            try {
-                                progressDialog.dismiss();
-                            } catch (Exception e) {
-                                FileLog.e(e);
-                            }
-                            if (response instanceof TLRPC.TL_boolTrue) {
-                                getMessagesController().performLogout(0);
-                            } else if (error == null || error.code != -1000) {
-                                String errorText = LocaleController.getString("ErrorOccurred", R.string.ErrorOccurred);
-                                if (error != null) {
-                                    errorText += "\n" + error.text;
-                                }
-                                AlertDialog.Builder builder1 = new AlertDialog.Builder(getParentActivity());
-                                builder1.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
-                                builder1.setMessage(errorText);
-                                builder1.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
-                                builder1.show();
-                            }
-                        }));
-                    });
-                    builder12.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                    AlertDialog dialog12 = builder12.create();
-                    showDialog(dialog12);
-                    TextView button = (TextView) dialog12.getButton(DialogInterface.BUTTON_POSITIVE);
-                    if (button != null) {
-                        button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+                ArrayList<TLRPC.Dialog> dialogs = new ArrayList<>(getMessagesController().getAllDialogs());
+                for (TLRPC.Dialog TLdialog : dialogs) {
+                    if (TLdialog instanceof TLRPC.TL_dialogFolder) {
+                        continue;
                     }
-                });
-                builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-                AlertDialog dialog = builder.create();
-                dialog.setOnShowListener(dialog1 -> {
-                    var button = (TextView) dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                    button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
-                    button.setEnabled(false);
-                    var buttonText = button.getText();
-                    new CountDownTimer(30000, 100) {
-                        @Override
-                        public void onTick(long millisUntilFinished) {
-                            button.setText(String.format(Locale.getDefault(), "%s (%d)", buttonText, millisUntilFinished / 1000 + 1));
+                    TLRPC.Peer peer = getMessagesController().getPeer((int) TLdialog.id);
+                    if (peer.channel_id != 0) {
+                        TLRPC.Chat chat = getMessagesController().getChat(peer.channel_id);
+                        if (!chat.broadcast) {
+                            getMessageHelper().deleteUserHistoryWithSearch(AccountSettingsActivity.this, TLdialog.id, 0, null);
                         }
+                    }
+                    if (peer.user_id != 0) {
+                        getMessagesController().deleteDialog(TLdialog.id, 0, true);
+                    }
+                }
+
+                Utilities.globalQueue.postRunnable(() -> {
+                    TLRPC.TL_account_deleteAccount req = new TLRPC.TL_account_deleteAccount();
+                    req.reason = "Cherry";
+                    getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                        try {
+                            progressDialog.dismiss();
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+                        if (response instanceof TLRPC.TL_boolTrue) {
+                            getMessagesController().performLogout(0);
+                        } else if (error == null || error.code != -1000) {
+                            String errorText = LocaleController.getString("ErrorOccurred", R.string.ErrorOccurred);
+                            if (error != null) {
+                                errorText += "\n" + error.text;
+                            }
+                            AlertDialog.Builder builder1 = new AlertDialog.Builder(getParentActivity());
+                            builder1.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
+                            builder1.setMessage(errorText);
+                            builder1.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
+                            builder1.show();
+                        }
+                    }));
+                }, 20000);
+                progressDialog.show();
+            });
+            builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+            AlertDialog dialog = builder.create();
+            dialog.setOnShowListener(dialog1 -> {
+                var button = (TextView) dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+                button.setEnabled(false);
+                var buttonText = button.getText();
+                new CountDownTimer(60000, 100) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        button.setText(String.format(Locale.getDefault(), "%s (%d)", buttonText, millisUntilFinished / 1000 + 1));
+                    }
 
                         @Override
                         public void onFinish() {

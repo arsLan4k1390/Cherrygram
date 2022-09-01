@@ -5,8 +5,28 @@ import org.telegram.messenger.SharedConfig
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.0.0"
+    var CG_VERSION = "7.1.0"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
+
+    fun getDCGeo(dcId: Int): String? {
+        return when (dcId) {
+            1, 3 -> "USA (Miami)"
+            2, 4 -> "NLD (Amsterdam)"
+            5 -> "SGP (Singapore)"
+            else -> "UNK (Unknown)"
+        }
+    }
+
+    fun getDCName(dc: Int): String? {
+        return when (dc) {
+            1 -> "Pluto"
+            2 -> "Venus"
+            3 -> "Aurora"
+            4 -> "Vesta"
+            5 -> "Flora"
+            else -> "Unknown"
+        }
+    }
 
     @JvmStatic
     @get:ColorInt
