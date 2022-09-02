@@ -35,7 +35,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Added native biometrics support,
 - "tg://user?id=int" Links support (e.g. "tg://user?id=282287840"),
 - Allow to set "Keep media" for one day,
-- "Kaboom" (Erase all Cherrygram data in 1 click),
+- "Kaboom" (Erase all Cherrygram data in 1 click) (Thanks to Telegraher),
 - Force clear Telegram cache.
 
 *Chats:*
