@@ -111,7 +111,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Disable camera in attachments menu.
 
 *Cherrygram Security Preferences:*
-- "Kaboom" (Erase all Cherrygram data in 1 click),
+- "Kaboom" (Erase all Cherrygram data in 1 click) - Thanks to Telegraher :),
 - Delete old cache folder (/sdcard/Telegram),
 - Delete your Telegram account.
 
