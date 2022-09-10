@@ -45,6 +45,8 @@ import org.telegram.ui.LauncherIconController;
 
 import java.io.File;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ApplicationLoader extends Application {
     private static PendingIntent pendingIntent;
 
@@ -172,7 +174,7 @@ public class ApplicationLoader extends Application {
 
                     }
 
-                    boolean isSlow = isConnectionSlow();
+                    boolean isSlow = CherrygramConfig.INSTANCE.getSlowNetworkMode();
                     for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
                         ConnectionsManager.getInstance(a).checkConnection();
                         FileLoader.getInstance(a).onNetworkChanged(isSlow);
@@ -425,7 +427,7 @@ public class ApplicationLoader extends Application {
         return false;
     }
 
-    public static boolean isConnectedToWiFi() {
+    /*public static boolean isConnectedToWiFi() {
         try {
             ensureCurrentNetworkGet(false);
             if (currentNetworkInfo != null && (currentNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI || currentNetworkInfo.getType() == ConnectivityManager.TYPE_ETHERNET) && currentNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
@@ -435,7 +437,7 @@ public class ApplicationLoader extends Application {
             FileLog.e(e);
         }
         return false;
-    }
+    }*/
 
     public static boolean isConnectionSlow() {
         try {

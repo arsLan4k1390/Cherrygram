@@ -74,17 +74,6 @@
     <!--Telegram screens-->
 
     <!--Cherrygram screens-->
-    <!--Cherrygram Premium Preferences-->
-    <string name="CP_ReadState">Не подтверждать прочтение</string>
-    <string name="CP_ReadState_Desc">Чтение сообщений без отправки собеседнику статуса \"прочитано\" (✔️✔️)</string>
-    <string name="CP_TypingStatus">Не уведомлять о наборе сообщения</string>
-    <string name="CP_TypingStatus_Desc">Не показывать собеседнику \"печатает...\"</string>
-    <string name="CP_DoNotDeleteMessages">Не удалять сообщения</string>
-    <string name="CP_DoNotDeleteMessages_Desc">Не удалять сообщения в чатах и каналах если ваш собеседник их удалил</string>
-    <string name="CP_DoNotDeleteSecretChats">Не удалять секретные чаты</string>
-    <string name="CP_DoNotDeleteSecretChats_Desc">Секретные чаты не будут удалены</string>
-    <string name="CP_SecureFlag_Desc">Отключите эту функцию если вы хотите делать скриншоты медиа с таймером и секретных чатов.</string>
-    <!--Cherrygram Premium Preferences-->
 
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Настройки Cherrygram</string>
@@ -105,8 +94,9 @@
     <string name="AP_ChangeIconFilter">Использовать иконки Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Вам нужно перезайти в этот раздел, чтобы увидеть новые иконки</string>
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
-    <string name="AP_ChangeIcon_White">Белая иконка</string>
-    <string name="AP_ChangeIcon_Green">Зеленая иконка</string>
+    <string name="AP_ChangeIcon_Dark">Тёмная</string>
+    <string name="AP_ChangeIcon_White">Белая</string>
+    <string name="AP_ChangeIcon_Green">Зеленая</string>
     <string name="AP_ChangeIcon_Sunset">Закат</string>
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
@@ -219,6 +209,7 @@
     <string name="EP_DownloadSpeedBoostAverage">Вкл.</string>
     <string name="EP_DownloadSpeedBoostExtreme">Экстра</string>
     <string name="EP_UploadloadSpeedBoost">Увеличение скорости отдачи</string>
+    <string name="EP_SlowNetworkMode">Режим медленной сети</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->
@@ -235,7 +226,6 @@
 
     <!--Donations-->
     <string name="DP_Donate">Поддержать разработку</string>
-    <string name="DP_DonateInfo">Cherrygram Premium стоит от 5 USD. Не забудьте отправить скриншот транзакции @arsLan, если хотите получить премиум-функции Cherry. Данный платеж является разовым платежом.</string>
     <string name="DP_Donate_Method">Выберите метод</string>
     <!--Donations-->
     <!--Cherrygram screens-->

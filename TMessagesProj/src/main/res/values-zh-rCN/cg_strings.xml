@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- by t.me/arsLan-->
+    <!--Telegram screens-->
+    <!--Sign in screen-->
+    <string name="CG_StartText">请确认您的国家代码，并输入您的手机号码。</string>
+    <string name="CG_Country">国家/地区</string>
+    <string name="CG_ChooseCountry">选择国家/地区</string>
+    <string name="CG_WrongCountry">国家/区域代码无效</string>
+    <string name="CG_ProxyInfo">您可能需要在登录前设置代理，以防您的国家或ISP封锁了Telegram</string>
+    <string name="CG_ProxySettings">代理设置</string>
+    <string name="CG_TestBackendNumber">测试账号</string>
+    <string name="CG_TestBackendOn">使用测试服务器登录账号</string>
+    <string name="CG_TestBackendOff">使用主用服务器登录账号</string>
+    <!--Sign in screen-->
+    <!--Telegram Folders Settings-->
+    <string name="CG_FoldersType_Header">Tab 图标类型</string>
+    <string name="CG_FoldersTypeTitles">仅显示文本</string>
+    <string name="CG_FoldersTypeIcons">仅显示图标</string>
+    <string name="CG_FoldersTypeIconsTitles">带文本的图标</string>
+    <string name="CG_ChooseFolderIcon">选择图标</string>
+    <string name="CP_NewTabs_NoCounter">隐藏Tab栏数字</string>
+    <string name="CP_NewTabs_NoCounter_Desc">隐藏未读消息数量</string>
+    <string name="AP_FilledIcons">图标填满 Tab</string>
+    <!--Telegram Folders Settings-->
+    <!--Chats screen-->
+    <string name="CG_JumpToBeginning">首条消息</string>
+    <string name="CG_DeleteAllFromSelf">快捷自删</string>
+    <string name="CG_DeleteAllFromSelfAlert">警告! 此操作将对本聊天中的 **所有人** **清空您的消息**</string>
+    <string name="CG_DeleteAllFromSelfAdmin">使用管理员权限</string>
+    <string name="CG_DeleteAllFromSelfDone">您所有消息都已删除</string>
+    <string name="CG_ClearFromCache">清除缓存</string>
+    <string name="CG_ClearedFromCache">已清除缓存</string>
+    <string name="CG_ViewUserHistory">消息历史</string>
+    <string name="CG_ToSaved">收藏消息</string>
+    <string name="CG_AllowStorage">由于 Google 在 Android 11+ 中引入的更改，Cherrygram 需要授予相关权限才能查看非媒体文件</string>
+    <string name="CG_CreateMention">创建提及</string>
+    <string name="CG_FwdMenu_EnableNoForward">移除转发来源</string>
+    <string name="CG_FwdMenu_DisableNoForward">显示转发来源</string>
+    <string name="CG_Without_Authorship">无来源转发</string>
+    <string name="CG_FwdMenu_NoNotify">无声通知</string>
+    <string name="CG_FwdMenu_Notify">通知</string>
+    <string name="CG_FwdMenu_EnableCaptions">显示字幕</string>
+    <string name="CG_FwdMenu_DisableCaptions">隐藏字幕</string>
+    <!--Chats screen-->
+    <!--Group permissions-->
+    <string name="GP_UserRestrictionsSendStickers2">发送贴纸</string>
+    <string name="GP_UserRestrictionsSendGifs">发送 GIF</string>
+    <string name="GP_UserRestrictionsSendGames">发送动态游戏</string>
+    <string name="GP_UserRestrictionsUseInlineBot">使用内联机器人发送</string>
+    <!--Group permissions-->
+    <!--Misc-->
+    <string name="LS_EnterPasscode">输入 Cherrygram 密码</string>
+    <string name="CG_SwitchBackend">即将切换到测试服务器。如果您不知道自己在做什么，请立即退出。您可以再次长按调试菜单中的切换后端来切换到普通服务器</string>
+    <string name="CG_Restart">重启应用</string>
+    <string name="CG_RestartToApply">重启应用生效</string>
+    <string name="CG_PushService">Cherrygram 推送服务，您可以在通知与声音设置中禁用本功能</string>
+    <string name="CG_ForceClean">强行清除 Telegram 缓存</string>
+    <string name="CG_ForceCleanInfo">当您尝试清除缓存时，长时间卡在“正在计算…”，可以使用本功能。本功能会清除您所有的数据，谨慎使用！</string>
+    <string name="CG_ForceCleanInfo1">是否删除所有 Telegram 数据？</string>
+    <string name="CG_Kaboom">无需 Cherrygram 密码即可通过系统设置访问此功能。此功能会完全擦除您所有的本地（Cherrygram）数据。</string>
+    <!--Misc-->
+    <!--Telegram screens-->
+    <!--Cherrygram screens-->
+    <!--Cherrygram Preferences-->
+    <string name="CGP_AdvancedSettings">自定义偏好</string>
+    <string name="CGP_About_Desc">一个实验性的 Telegram 第三方客户端</string>
+    <string name="CGP_Header_About">关于 Cherrygram</string>
+    <string name="CGP_ToChannel">官方频道：</string>
+    <string name="CGP_ToChat">官方群组：</string>
+    <string name="CGP_Source">开源代码：</string>
+    <string name="CGP_Crowdin">帮助翻译：</string>
+    <string name="CGP_Header_Categories">自定义偏好</string>
+    <!--Cherrygram Preferences-->
+    <!--Appearance Preferences-->
+    <string name="AP_Header_Appearance">主题</string>
+    <string name="AP_RedesignCategory">应用界面</string>
+    <string name="AP_IconReplacements">替换图标</string>
+    <string name="AP_Old_Notification_Icon">默认通知图标 (Telegram)</string>
+    <string name="AP_ChangeIconFilter">使用 Telegram 原始图标</string>
+    <string name="AP_ChangeIconFilter_Desc">您必须重新进入此部分才可以看到新图标</string>
+    <string name="AP_ChangeIcon_Default">默认</string>
+    <string name="AP_ChangeIcon_Dark">深色</string>
+    <string name="AP_ChangeIcon_White">白色</string>
+    <string name="AP_ChangeIcon_Green">绿色</string>
+    <string name="AP_ChangeIcon_Sunset">日落</string>
+    <string name="AP_IconReplacement_VKUI">VKUI 图标</string>
+    <string name="AP_IconReplacement_Default">默认</string>
+    <string name="AP_ToolBarShadow">禁用工具栏阴影</string>
+    <string name="AP_TransparentSB">透明状态栏</string>
+    <string name="AP_FlatNB">透明导航栏</string>
+    <string name="AP_FlatNB_Desc">导航栏将跟随聊天页面颜色变化</string>
+    <string name="AP_SystemFonts">使用系统字体</string>
+    <string name="AP_SystemFonts_Desc">如果你的字体不支持下述格式（粗体，斜体，等宽），请禁用本功能（重启应用生效）</string>
+    <string name="CP_Filters_Header">文件夹 (重启应用生效）</string>
+    <string name="AP_FolderNameInHeader">使用文件夹名称而非 \"Cherrygram\"</string>
+    <string name="AP_FolderNameInHeader_Desc">这会将操作栏中的“Cherrygram”更改为文件夹名称 (开启仅显示图标时效果最佳)</string>
+    <string name="CP_NewTabs_RemoveAllChats">隐藏所有聊天Tab</string>
+    <string name="CP_ShowTabsOnForward">转发页显示顶部 Tab</string>
+    <string name="AP_DrawerCategory">侧边栏</string>
+    <string name="AP_DrawerPreferences">侧边栏自定义</string>
+    <string name="AP_DrawerAvatar">侧边栏背景使用个人资料图片</string>
+    <string name="AP_DrawerShowAvatar">显示头像</string>
+    <string name="AP_DrawerDarken">暗色背景</string>
+    <string name="AP_ShadeBackground">渐变背景</string>
+    <string name="AP_DrawerBlur">背景模糊</string>
+    <string name="AP_DrawerBlurIntensity">模糊程度</string>
+    <string name="AP_DrawerIconPack_Header">侧边栏图标设置</string>
+    <string name="AP_DrawerButtonsCategory">侧边栏按钮</string>
+    <string name="AP_ProfileCategory">个人资料和联系人</string>
+    <string name="AP_HideUserPhone">隐藏手机号码</string>
+    <string name="AP_HideUserPhoneSummary">在侧边栏（重启应用生效）和设置中隐藏手机号</string>
+    <string name="AP_Hidden">隐藏</string>
+    <string name="AP_MutualContacts_Description">该帐号为双向联系人</string>
+    <string name="AP_ShowID">在个人资料页显示 ID</string>
+    <string name="AP_ShowDC">在个人资料页显示 DC</string>
+    <!--Appearance Preferences-->
+    <!--Chats Preferences-->
+    <string name="CP_Header_Chats">聊天</string>
+    <string name="CP_Slider_StickerAmplifier">调整贴纸大小</string>
+    <string name="CP_TimeOnStick">隐藏贴纸时间</string>
+    <string name="CP_UnreadBadgeOnBackButton">显示未读聊天数量</string>
+    <string name="CP_UnreadBadgeOnBackButton_Desc">在已打开的聊天中显示未读消息数</string>
+    <string name="CP_NoRounding">禁用数字舍入</string>
+    <string name="CP_ConfirmCalls">通话前提醒</string>
+    <string name="CP_ConfirmCalling_Header">确认</string>
+    <string name="CP_ConfirmCalling_Question">是否向 %s 拨号?</string>
+    <string name="CP_ConfirmCalling_Action">确认本次更改</string>
+    <string name="CP_ConfirmCalling_Action_Cancel">取消</string>
+    <string name="CP_ForwardMsgDate">显示转发日期时间</string>
+    <string name="CP_ShowSeconds">在时间戳中显示秒数</string>
+    <string name="CP_ShowSeconds_Desc">显示发送消息时间的秒数（重启应用生效）</string>
+    <string name="CP_DisableAnimAvatars">禁用动态头像</string>
+    <string name="CP_DoubleTapReact">禁用快捷表态</string>
+    <string name="CP_DisableReactionAnim">禁用表态动画</string>
+    <string name="CP_DisableReactionAnim_Desc">对消息表态时禁用其动画</string>
+    <string name="CP_DisablePremStickAnim">禁用 Premium 贴纸动画</string>
+    <string name="CP_DisableSwipeToNext">禁用频道切换</string>
+    <string name="CP_DisableSwipeToNext_Desc">浏览频道消息时禁止切换到下一个频道</string>
+    <string name="CP_HideKbdOnScroll">滚动浏览时收起键盘</string>
+    <string name="CP_HideSendAsChannel">隐藏频道身份发送按钮</string>
+    <string name="CP_Slider_RecentEmojisAmplifier">最近使用的 Emojis 数量（重启应用生效）</string>
+    <string name="CP_Slider_RecentStickersAmplifier">最近使用的贴纸数量（重启应用生效）</string>
+    <string name="CP_Header_Record">媒体</string>
+    <string name="CP_PlayVideo">按下音量键播放视频</string>
+    <string name="CP_PlayVideo_Desc">按下音量键时，播放当前界面任意视频</string>
+    <string name="CP_AutoPauseVideo">自动暂停视频</string>
+    <string name="CP_AutoPauseVideo_Desc">锁屏或切换到后台时</string>
+    <string name="CP_AudioFocus">播放媒体时暂停音乐</string>
+    <string name="CP_AudioFocus_Desc">收听语音消息或播放视频时暂停音乐。禁用本功能后音乐不会自动暂停，但声音会变低</string>
+    <string name="CP_DisableVibration">禁用全局震动</string>
+    <string name="CP_DisablePhotoTapAction">禁用图片翻转</string>
+    <string name="CP_DisablePhotoTapAction_Desc">此功能可以禁止点击屏幕边缘时翻转图片</string>
+    <string name="CP_Proximity">开启接近传感器</string>
+    <string name="CP_Proximity_Desc">关闭本功能后，在您播放语音消息时不会黑屏（重启应用生效）</string>
+    <string name="CP_Header_Notification">通知</string>
+    <string name="CP_IOSSound">使用 Telegram IOS 通知音</string>
+    <string name="CP_IOSSound_Desc">使用 IOS Telegram 通知声音 (重启应用生效)</string>
+    <string name="CP_SilenceNonContacts">静音非联系人消息</string>
+    <string name="CP_SilenceNonContacts_Desc">启用后仅联系人的通知会发出声音，您可以在个人资料页添加联系人</string>
+    <!--Chats Preferences-->
+    <!--Camera Preferences-->
+    <string name="CP_Category_Camera">相机</string>
+    <string name="CP_CameraType">相机类型</string>
+    <string name="CP_CameraTypeDefault">默认</string>
+    <string name="CP_DefaultCameraDesc">使用 Telegram 内置相机</string>
+    <string name="CP_CameraXDesc">CameraX 仅支持 <![CDATA[<a href="https://developer.android.com/training/camerax/devices">下述设备</a>]]>，效果和镜头支持取决于您的硬件</string>
+    <string name="CP_PerformanceMode">高性能模式</string>
+    <string name="CP_PerformanceModeDesc">CameraX的质量会有所降低，提高性能</string>
+    <string name="CP_MotionSmoothness">取景框帧率</string>
+    <string name="CP_CameraTypeSystem">系统相机</string>
+    <string name="CP_SystemCameraDesc">使用系统相机（视频消息不可用）</string>
+    <string name="CP_RoundCamera16to9">使用 16:9 相机</string>
+    <string name="CP_RoundCamera16to9_Desc">当视频消息质量出问题时开启本功能</string>
+    <string name="CP_RearCam">使用后置相机</string>
+    <string name="CP_RearCam_Desc">视频消息不使用前置相机</string>
+    <string name="CP_DisableCam">在媒体菜单中禁用相机</string>
+    <string name="CP_DisableCam_Desc">如果媒体菜单打开过慢，请打开本功能</string>
+    <!--Camera Preferences-->
+    <!--Experimental Preferences-->
+    <string name="EP_Category_Experimental">实验</string>
+    <string name="EP_DownloadSpeedBoost">下载加速</string>
+    <string name="EP_DownloadSpeedBoostNone">关闭</string>
+    <string name="EP_DownloadSpeedBoostAverage">开启</string>
+    <string name="EP_DownloadSpeedBoostExtreme">最快</string>
+    <string name="EP_UploadloadSpeedBoost">上传加速</string>
+    <string name="EP_SlowNetworkMode">Slow network mode</string>
+    <!--Experimental Preferences-->
+    <!--Security Preferences-->
+    <string name="SP_Category_Security">安全</string>
+    <string name="SP_Header_Privacy">隐私</string>
+    <string name="SP_NoProxyPromo">移除代理赞助商</string>
+    <string name="SP_CleanOld">删除旧缓存 (/sdcard/Telegram)</string>
+    <string name="SP_RemovedS">删除成功</string>
+    <string name="SP_Category_Account">帐号</string>
+    <string name="SP_DeleteAccount">删除 Telegram 账号</string>
+    <!--Security Preferences-->
+    <!--Donations-->
+    <string name="DP_Donate">捐赠</string>
+    <string name="DP_Donate_Method">选择付款方法</string>
+    <!--Donations-->
+    <!--Cherrygram screens-->
+</resources>

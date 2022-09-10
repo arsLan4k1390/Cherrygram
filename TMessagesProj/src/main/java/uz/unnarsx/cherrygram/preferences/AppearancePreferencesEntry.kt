@@ -16,22 +16,24 @@ import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
 class AppearancePreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)) {
         category(LocaleController.getString("AP_RedesignCategory", R.string.AP_RedesignCategory)) {
-            list {
-                title = LocaleController.getString("AP_IconReplacements", R.string.AP_IconReplacements)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                list {
+                    title = LocaleController.getString("AP_IconReplacements", R.string.AP_IconReplacements)
 
-                contractIcons({
-                    return@contractIcons listOf(
+                    contractIcons({
+                        return@contractIcons listOf(
                             Triple(0, LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI), R.drawable.settings_outline_28),
                             Triple(1, LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default), R.drawable.msg_settings)
-                    )
-                }, {
-                    return@contractIcons when (CherrygramConfig.iconReplacement) {
-                        1 -> LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default)
-                        else -> LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI)
+                        )
+                    }, {
+                        return@contractIcons when (CherrygramConfig.iconReplacement) {
+                            1 -> LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default)
+                            else -> LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI)
+                        }
+                    }) {
+                        CherrygramConfig.iconReplacement = it
+                        (bf.parentActivity as? LaunchActivity)?.reloadResources()
                     }
-                }) {
-                    CherrygramConfig.iconReplacement = it
-                    (bf.parentActivity as? LaunchActivity)?.reloadResources()
                 }
             }
             switch {

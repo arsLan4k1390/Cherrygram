@@ -55,6 +55,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ConnectionsManager extends BaseController {
 
     public final static int ConnectionTypeGeneric = 1;
@@ -375,7 +377,7 @@ public class ConnectionsManager extends BaseController {
 
     public void checkConnection() {
         native_setIpStrategy(currentAccount, getIpStrategy());
-        native_setNetworkAvailable(currentAccount, ApplicationLoader.isNetworkOnline(), ApplicationLoader.getCurrentNetworkType(), ApplicationLoader.isConnectionSlow());
+        native_setNetworkAvailable(currentAccount, ApplicationLoader.isNetworkOnline(), ApplicationLoader.getCurrentNetworkType(), CherrygramConfig.INSTANCE.getSlowNetworkMode());
     }
 
     public void setPushConnectionEnabled(boolean value) {

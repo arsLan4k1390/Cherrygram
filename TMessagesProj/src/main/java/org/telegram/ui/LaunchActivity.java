@@ -179,7 +179,8 @@ import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.MonetHelper;
-import uz.unnarsx.cherrygram.preferences.CGPremiumPreferencesEntry;
+import uz.unnarsx.cherrygram.preferences.CameraPrefenrecesEntry;
+import uz.unnarsx.cherrygram.preferences.ExperimentalPrefenrecesEntry;
 import uz.unnarsx.cherrygram.vkui.CGUIResources;
 import uz.unnarsx.redesign.BottomSlideFragment;
 
@@ -723,7 +724,10 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                     presentFragment(new DialogsActivity(args));
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (id == 1002) {
-                    presentFragment(new CGPremiumPreferencesEntry());
+                    presentFragment(new CameraPrefenrecesEntry());
+                    drawerLayoutContainer.closeDrawer(false);
+                } else if (id == 1003) {
+                    presentFragment(new ExperimentalPrefenrecesEntry());
                     drawerLayoutContainer.closeDrawer(false);
                 }
             }
@@ -2224,8 +2228,10 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                                             open_settings = 5;
                                         } else if (url.contains("notifications")) {
                                             open_settings = 7;
-                                        } else if (url.contains("cherrygram_premium")) {
+                                        } else if (url.contains("cherrygram_camera")) {
                                             open_settings = 8;
+                                        } else if (url.contains("cherrygram_experimental")) {
+                                            open_settings = 9;
                                         } else {
                                             open_settings = 1;
                                         }
@@ -2562,7 +2568,9 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                 } else if (open_settings == 7) {
                     fragment = new NotificationsSettingsActivity();
                 } else if (open_settings == 8) {
-                    fragment = new CGPremiumPreferencesEntry();
+                    fragment = new CameraPrefenrecesEntry();
+                } else if (open_settings == 9) {
+                    fragment = new ExperimentalPrefenrecesEntry();
                 } else {
                     fragment = null;
                 }

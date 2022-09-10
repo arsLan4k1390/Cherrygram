@@ -334,8 +334,6 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             }
         if (CherrygramConfig.INSTANCE.getScanQRDrawerButton())
             items.add(new Item(15, LocaleController.getString("AuthAnotherClient", R.string.AuthAnotherClient), scanQrIcon));
-        if (CherrygramConfig.INSTANCE.getCgPremiumDrawerButton())
-            items.add(new Item(1002, LocaleController.getString("CP_Header_Premium", R.string.CP_Header_Premium), R.drawable.msg_fave));
         items.add(new Item(8, LocaleController.getString("Settings", R.string.Settings), settingsIcon));
         /*items.add(null); // divider
         if (CherrygramConfig.INSTANCE.getInviteFriendsDrawerButton())

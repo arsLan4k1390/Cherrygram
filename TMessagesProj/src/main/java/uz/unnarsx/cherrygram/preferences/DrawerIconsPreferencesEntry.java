@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
@@ -44,7 +43,6 @@ public class DrawerIconsPreferencesEntry extends BaseFragment {
     private int archivedChatsRow;
     private int peopleNearbyRow;
     private int scanQrRow;
-    private int cgPremiumRow;
 
     private int newGroupIcon;
     private int newSecretIcon;
@@ -156,12 +154,6 @@ public class DrawerIconsPreferencesEntry extends BaseFragment {
                     ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getScanQRDrawerButton());
                 }
                 parentLayout.rebuildAllFragmentViews(false, false);
-            } else if (position == cgPremiumRow) {
-                CherrygramConfig.INSTANCE.toggleCgPremiumDrawerButton();
-                if (view instanceof TextCheckWithIconCell) {
-                    ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getCgPremiumDrawerButton());
-                }
-                parentLayout.rebuildAllFragmentViews(false, false);
             }
         });
         restartTooltip = new UndoView(context);
@@ -184,9 +176,6 @@ public class DrawerIconsPreferencesEntry extends BaseFragment {
         archivedChatsRow = rowCount++;
         peopleNearbyRow = rowCount++;
         scanQrRow = rowCount++;
-        //if (!ApplicationLoader.isHuaweiStoreBuild()) {
-            cgPremiumRow = rowCount++;
-        //}
 
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
@@ -299,8 +288,6 @@ public class DrawerIconsPreferencesEntry extends BaseFragment {
                         textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("PeopleNearby", R.string.PeopleNearby), peopleNearbyIcon, CherrygramConfig.INSTANCE.getPeopleNearbyDrawerButton(), true);
                     } else if (position == scanQrRow) {
                         textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("AuthAnotherClient", R.string.AuthAnotherClient), R.drawable.msg_qrcode, CherrygramConfig.INSTANCE.getScanQRDrawerButton(), true);
-                    } else if (position == cgPremiumRow) {
-                        textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("CP_Header_Premium", R.string.CP_Header_Premium), R.drawable.msg_fave, CherrygramConfig.INSTANCE.getCgPremiumDrawerButton(), true);
                     }
                     break;
             }
@@ -343,7 +330,7 @@ public class DrawerIconsPreferencesEntry extends BaseFragment {
                 return 2;
             } else if (position == newGroupRow || position == newSecretChatRow || position == newChannelRow ||
                        position == contactsRow || position == callsRow || position == savedMessagesRow ||
-                       position == archivedChatsRow || position == peopleNearbyRow || position == scanQrRow || position == cgPremiumRow) {
+                       position == archivedChatsRow || position == peopleNearbyRow || position == scanQrRow) {
                 return 3;
             }
             return 1;

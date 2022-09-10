@@ -23,7 +23,7 @@ object CherrygramConfig {
 
     // Appearance Settings
     //Redesign
-    var iconReplacement by sharedPreferences.int("AP_IconReplacements", 0)
+    var iconReplacement by sharedPreferences.int("AP_IconReplacements", CGFeatureJavaHooks.getDefaultVKUI())
     fun getIconReplacement(): BaseIconReplace {
         return when (iconReplacement) {
             1 -> NoIconReplace()
@@ -296,18 +296,6 @@ object CherrygramConfig {
         editor.putBoolean("AP_ScanQRDrawerButton", ScanQRDrawerButton)
         editor.apply()
     }
-
-    var CgPremiumDrawerButton by sharedPreferences.boolean("AP_CgPremiumDrawerButton", false)
-    fun toggleCgPremiumDrawerButton() {
-        CgPremiumDrawerButton = !CgPremiumDrawerButton
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putBoolean("AP_CgPremiumDrawerButton", CgPremiumDrawerButton)
-        editor.apply()
-    }
     //Profile and Contacts
     var hidePhoneNumber by sharedPreferences.boolean("AP_HideUserPhone", false)
     var showMutualContacts by sharedPreferences.boolean("AP_MutualContacts", true)
@@ -347,7 +335,7 @@ object CherrygramConfig {
 
     // Camera Settings
     //Camera type
-    var cameraType by sharedPreferences.int("cameraType", CameraXUtilities.getDefault());
+    var cameraType by sharedPreferences.int("cameraType", 0) /*CameraXUtilities.getDefault());*/
     fun saveCameraType(type: Int) {
         cameraType = type
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
@@ -356,7 +344,7 @@ object CherrygramConfig {
         editor.apply()
     }
 
-    var useCameraXOptimizedMode by sharedPreferences.boolean("useCameraXOptimizedMode", /*false*/SharedConfig.getDevicePerformanceClass() != SharedConfig.PERFORMANCE_CLASS_HIGH);
+    var useCameraXOptimizedMode by sharedPreferences.boolean("useCameraXOptimizedMode", false)/*SharedConfig.getDevicePerformanceClass() != SharedConfig.PERFORMANCE_CLASS_HIGH)*/;
     fun toggleCameraXOptimizedMode() {
         useCameraXOptimizedMode = !useCameraXOptimizedMode
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
@@ -442,6 +430,18 @@ object CherrygramConfig {
         )
         val editor = preferences.edit()
         editor.putBoolean("uploadSpeedBoost", uploadSpeedBoost)
+        editor.apply()
+    }
+
+    var slowNetworkMode by sharedPreferences.boolean("EP_SlowNetworkMode", false)
+    fun toggleSlowNetworkMode() {
+        slowNetworkMode = !slowNetworkMode
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("EP_SlowNetworkMode", slowNetworkMode)
         editor.apply()
     }
 

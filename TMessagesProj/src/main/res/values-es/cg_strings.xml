@@ -74,17 +74,6 @@
     <!--Telegram screens-->
 
     <!--Cherrygram screens-->
-    <!--Cherrygram Premium Preferences-->
-    <string name="CP_ReadState">No enviar estado de lectura</string>
-    <string name="CP_ReadState_Desc">Leer mensajes sin enviar estado de lectura para tus contactos (✔✔)</string>
-    <string name="CP_TypingStatus">Oculta su estado de Escribiendo</string>
-    <string name="CP_TypingStatus_Desc">Cuando escribas algo, el estado Escribiendo no se mostrará para su contacto</string>
-    <string name="CP_DoNotDeleteMessages">Do not delete messages</string>
-    <string name="CP_DoNotDeleteMessages_Desc">Do not delete messages in chats and channels if messages were deleted by other side</string>
-    <string name="CP_DoNotDeleteSecretChats">Do not delete secret chats</string>
-    <string name="CP_DoNotDeleteSecretChats_Desc">Secret chats will not be deleted</string>
-    <string name="CP_SecureFlag_Desc">Desactiva esto si quieres tomar capturas de pantalla de multimedia secreta y chats secretos.</string>
-    <!--Cherrygram Premium Preferences-->
 
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Preferencias de Cherrygram</string>
@@ -235,7 +224,6 @@
 
     <!--Donations-->
     <string name="DP_Donate">Donar</string>
-    <string name="DP_DonateInfo">Gastos Premium de Cherrygram a partir de 5 USD. No olvide enviar la captura de pantalla de la transacción a @arsLan si desea obtener las funciones premium de Cherry. Este es un solo pago.</string>
     <string name="DP_Donate_Method">Elegir método</string>
     <!--Donations-->
     <!--Cherrygram screens-->

@@ -215,6 +215,7 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         wrapped.getValue(name, outValue, resolveRefs)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun updateConfiguration(config: Configuration?, metrics: DisplayMetrics?) {
         wrapped.updateConfiguration(config, metrics)
     }

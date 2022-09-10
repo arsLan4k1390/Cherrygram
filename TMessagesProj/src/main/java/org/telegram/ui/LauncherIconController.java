@@ -54,22 +54,24 @@ public class LauncherIconController {
 
     public enum LauncherIcon {
         CHERRY("CG_Icon_Cherry", R.drawable.icon_background_default, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Cherry),
-        WHITE_CHERRY("CG_Icon_White_Cherry", R.drawable.icon_background_white, R.drawable.ic_launcher_foreground_white, R.string.AP_ChangeIcon_White),
         MONET_CHERRY_SAMSUNG("CG_Icon_Monet_Samsung", R.color.icon_background_cherry_samsung, R.drawable.icon_foreground_cherry_samsung, R.string.AP_ChangeIcon_Monet_Samsung),
         MONET_CHERRY_PIXEL("CG_Icon_Monet_Pixel", R.color.icon_background_cherry_pixel, R.drawable.icon_foreground_cherry_pixel, R.string.AP_ChangeIcon_Monet_Pixel),
+        DARK_CHERRY("CG_Icon_Dark", R.drawable.icon_background_dark, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Dark),
+        WHITE_CHERRY("CG_Icon_White_Cherry", R.drawable.icon_background_white, R.drawable.ic_launcher_foreground_white, R.string.AP_ChangeIcon_White),
         AQUA_CHERRY("CG_Icon_Aqua", R.drawable.icon_background_aqua, R.drawable.icon_foreground_cherry, R.string.AppIconAqua),
         GREEN_CHERRY("CG_Icon_Green", R.drawable.icon_background_green, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Green),
-        SUNSET_CHERRY("CG_Icon_Sunset", R.drawable.icon_background_premium, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunset),
+        SUNSET_CHERRY("CG_Icon_Sunset", R.drawable.icon_background_sunset, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunset),
         TURBO_CHERRY("CG_Icon_Turbo", R.drawable.icon_background_turbo, R.drawable.icon_foreground_cherry, R.string.AppIconTurbo),
         NOX_CHERRY("CG_Icon_Night", R.drawable.icon_background_nox, R.drawable.icon_foreground_cherry, R.string.AppIconNox),
 
         OLD("Old_Icon", R.drawable.icon_background_default, R.mipmap.icon_foreground, R.string.AP_ChangeIcon_Default),
-        WHITE("White_Icon", R.drawable.icon_background_white, R.mipmap.ic_launcher_white_foreground, R.string.AP_ChangeIcon_White),
         MONET_SAMSUNG("Monet_Icon_Samsung", R.color.icon_background_samsung, R.drawable.icon_foreground_samsung, R.string.AP_ChangeIcon_Monet_Samsung),
         MONET_PIXEL("Monet_Icon_Pixel", R.color.icon_background_pixel, R.drawable.icon_foreground_pixel, R.string.AP_ChangeIcon_Monet_Pixel),
+        DARK("DarkIcon", R.drawable.icon_background_dark, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Dark),
+        WHITE("White_Icon", R.drawable.icon_background_white, R.mipmap.ic_launcher_white_foreground, R.string.AP_ChangeIcon_White),
         AQUA("AquaIcon", R.drawable.icon_background_aqua, R.mipmap.icon_foreground, R.string.AppIconAqua),
         GREEN("GreenIcon", R.drawable.icon_background_green, R.mipmap.icon_foreground, R.string.AP_ChangeIcon_Green),
-        SUNSET("SunsetIcon", R.drawable.icon_background_premium, R.mipmap.icon_foreground, R.string.AP_ChangeIcon_Sunset),
+        SUNSET("SunsetIcon", R.drawable.icon_background_sunset, R.mipmap.icon_foreground, R.string.AP_ChangeIcon_Sunset),
         PREMIUM("PremiumIcon", R.drawable.icon_background_premium, R.mipmap.icon_foreground_premium, R.string.AppIconPremium, true),
         TURBO("TurboIcon", R.drawable.icon_background_turbo, R.mipmap.icon_foreground_turbo, R.string.AppIconTurbo, true),
         NOX("NoxIcon", R.drawable.icon_background_nox, R.mipmap.icon_foreground, R.string.AppIconNox, true);

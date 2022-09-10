@@ -110,6 +110,11 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Rear camera by default for video messages,
 - Disable camera in attachments menu.
 
+*Cherrygram Experimental Preferences:*
+- Download speed boost - Thanks to Nekogram for the idea :),
+- Upload speed boost - Thanks to Nekogram for the idea :),
+- Slow network mode - Thanks to Telegraher for the idea :),
+
 *Cherrygram Security Preferences:*
 - "Kaboom" (Erase all Cherrygram data in 1 click) - Thanks to Telegraher :),
 - Delete old cache folder (/sdcard/Telegram),

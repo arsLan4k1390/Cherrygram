@@ -77,19 +77,6 @@
     <!--Telegram screens-->
 
     <!--Cherrygram screens-->
-    <!--Cherrygram Premium Preferences-->
-    <string name="CP_Header_Premium" translatable="false">Cherrygram Premium</string>
-    <string name="CP_ReadState">Don\'t Send Read State</string>
-    <string name="CP_ReadState_Desc">Read messages without sending read state for your contacts (✔✔)</string>
-    <string name="CP_TypingStatus">Hide your typing state</string>
-    <string name="CP_TypingStatus_Desc">When you type something, typing state will not shown for your contact</string>
-    <string name="CP_DoNotDeleteMessages">Do not delete messages</string>
-    <string name="CP_DoNotDeleteMessages_Desc">Do not delete messages in chats and channels if messages were deleted by other side</string>
-    <string name="CP_DoNotDeleteSecretChats">Do not delete secret chats</string>
-    <string name="CP_DoNotDeleteSecretChats_Desc">Secret chats will not be deleted</string>
-    <string name="CP_SecureFlag" translatable="false">Flag Secure</string>
-    <string name="CP_SecureFlag_Desc">Disable this if you want to take screenshots of secret media and secret chats.</string>
-    <!--Cherrygram Premium Preferences-->
 
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Cherrygram Preferences</string>
@@ -115,6 +102,7 @@
     <string name="AP_ChangeIcon_Default">Default</string>
     <string name="AP_ChangeIcon_Monet_Samsung" translatable="false">Monet (OneUI &amp; MIUI)</string>
     <string name="AP_ChangeIcon_Monet_Pixel" translatable="false">Monet (Pixel)</string>
+    <string name="AP_ChangeIcon_Dark">Dark</string>
     <string name="AP_ChangeIcon_White">White</string>
     <string name="AP_ChangeIcon_Green">Green</string>
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
@@ -230,6 +218,7 @@
     <string name="EP_DownloadSpeedBoostAverage">On</string>
     <string name="EP_DownloadSpeedBoostExtreme">Extreme</string>
     <string name="EP_UploadloadSpeedBoost">Upload speed boost</string>
+    <string name="EP_SlowNetworkMode">Slow network mode</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->
@@ -246,7 +235,6 @@
 
     <!--Donations-->
     <string name="DP_Donate">Donate</string>
-    <string name="DP_DonateInfo">Cherrygram Premium costs from 5 USD. Do not forget to send the screenshot of the transaction to @arsLan if you want to get Cherry\'s premium features. This payment is a one-time payment.</string>
     <string name="DP_Donate_Method">Choose method</string>
     <!--Donations-->
     <!--Cherrygram screens-->

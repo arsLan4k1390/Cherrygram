@@ -41,6 +41,7 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
     private int experimentalHeaderRow;
     private int downloadSpeedBoostRow;
     private int uploadSpeedBoostRow;
+    private int slowNetworkMode;
 
     protected Theme.ResourcesProvider resourcesProvider;
     private UndoView restartTooltip;
@@ -99,6 +100,12 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUploadSpeedBoost());
                 }
                 restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+            } if (position == slowNetworkMode) {
+                CherrygramConfig.INSTANCE.toggleSlowNetworkMode();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getSlowNetworkMode());
+                }
+                restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
             } else if (position == downloadSpeedBoostRow) {
                 ArrayList<String> arrayList = new ArrayList<>();
                 ArrayList<Integer> types = new ArrayList<>();
@@ -129,6 +136,7 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
         experimentalHeaderRow = rowCount++;
         downloadSpeedBoostRow = rowCount++;
         uploadSpeedBoostRow = rowCount++;
+        slowNetworkMode = rowCount++;
 
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
@@ -194,6 +202,8 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                     textCell.setEnabled(true, null);
                     if (position == uploadSpeedBoostRow) {
                         textCell.setTextAndCheck(LocaleController.getString("EP_UploadloadSpeedBoost", R.string.EP_UploadloadSpeedBoost), CherrygramConfig.INSTANCE.getUploadSpeedBoost(), true);
+                    } else if (position == slowNetworkMode) {
+                        textCell.setTextAndCheck(LocaleController.getString("EP_SlowNetworkMode", R.string.EP_SlowNetworkMode), CherrygramConfig.INSTANCE.getSlowNetworkMode(), true);
                     }
                     break;
                 }

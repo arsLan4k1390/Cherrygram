@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -132,4 +133,12 @@ public class CGFeatureJavaHooks {
             this.onClick = onClick;
         }
     }
+
+    public static int getDefaultVKUI() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            return 0;
+        }
+        return 1;
+    }
+
 }

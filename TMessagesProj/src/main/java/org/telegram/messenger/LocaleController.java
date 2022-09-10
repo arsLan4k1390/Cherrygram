@@ -116,6 +116,9 @@ public class LocaleController {
         public boolean builtIn;
         public int serverIndex;
 
+        public TLRPC.TL_langPackLanguage pack;
+        public boolean toInstall;
+
         public String getSaveString() {
             String langCode = baseLangCode == null ? "" : baseLangCode;
             String pluralCode = TextUtils.isEmpty(pluralLangCode) ? shortName : pluralLangCode;
@@ -332,6 +335,35 @@ public class LocaleController {
         localeInfo.builtIn = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
+
+        localeInfo = new LocaleInfo();
+        localeInfo.name = "简体中文";
+        localeInfo.nameEnglish = "Simplified Chinese";
+        localeInfo.shortName = "moecn";
+        localeInfo.baseLangCode = "zh_hans_raw";
+        localeInfo.isRtl = false;
+        localeInfo.pathToFile = "unofficial";
+        localeInfo.pluralLangCode = "zh_cn";
+        localeInfo.builtIn = true;
+        languages.add(localeInfo);
+        languagesDict.put(localeInfo.getKey(), localeInfo);
+        languagesDict.put("zh_cn", localeInfo);
+        languagesDict.put("zh_sg", localeInfo);
+
+        localeInfo = new LocaleInfo();
+        localeInfo.name = "正體中文";
+        localeInfo.nameEnglish = "Chinese (Traditional)";
+        localeInfo.shortName = "taiwan";
+        localeInfo.baseLangCode = "zh_hant_raw";
+        localeInfo.isRtl = false;
+        localeInfo.pathToFile = "unofficial";
+        localeInfo.pluralLangCode = "zh_tw";
+        localeInfo.builtIn = true;
+        languages.add(localeInfo);
+        languagesDict.put(localeInfo.getKey(), localeInfo);
+        languagesDict.put("zh_tw", localeInfo);
+        languagesDict.put("zh_hk", localeInfo);
+        languagesDict.put("zh_mo", localeInfo);
 
         loadOtherLanguages();
         if (remoteLanguages.isEmpty()) {
@@ -1913,40 +1945,15 @@ public class LocaleController {
     }
 
     public static String formatShortNumber(int number, int[] rounded) {
-        if (CherrygramConfig.INSTANCE.getNoRounding()) return String.valueOf(number);
+        if (CherrygramConfig.INSTANCE.getNoRounding()) {
+            if (rounded != null) {
+                rounded[0] = number;
+            }
+            return String.valueOf(number);
+        }
         StringBuilder K = new StringBuilder();
         int lastDec = 0;
         int KCount = 0;
-        while (number / 1000 > 0) {
-            K.append("K");
-            lastDec = (number % 1000) / 100;
-            number /= 1000;
-        }
-        if (rounded != null) {
-            double value = number + lastDec / 10.0;
-            for (int a = 0; a < K.length(); a++) {
-                value *= 1000;
-            }
-            rounded[0] = (int) value;
-        }
-        if (lastDec != 0 && K.length() > 0) {
-            if (K.length() == 2) {
-                return String.format(Locale.US, "%d.%dM", number, lastDec);
-            } else {
-                return String.format(Locale.US, "%d.%d%s", number, lastDec, K.toString());
-            }
-        }
-        if (K.length() == 2) {
-            return String.format(Locale.US, "%dM", number);
-        } else {
-            return String.format(Locale.US, "%d%s", number, K.toString());
-        }
-    }
-
-    public static String formatShortNumber(long number, int[] rounded) {
-        if (CherrygramConfig.INSTANCE.getNoRounding()) return String.valueOf(number);
-        StringBuilder K = new StringBuilder();
-        long lastDec = 0;
         while (number / 1000 > 0) {
             K.append("K");
             lastDec = (number % 1000) / 100;

@@ -50,7 +50,6 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -181,7 +180,6 @@ import org.telegram.ui.Components.AnimatedFileDrawable;
 import org.telegram.ui.Components.AnimationProperties;
 import org.telegram.ui.Components.AttachBotIntroTopView;
 import org.telegram.ui.Components.AutoDeletePopupWrapper;
-import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackButtonMenu;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.BlurBehindDrawable;
@@ -292,7 +290,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import kotlin.Pair;
 import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
@@ -25749,7 +25746,6 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             if (photoWidth > 512 || photoHeight > 512) {
                                 openPhotoViewerForMessage(cell, message);
                             }
-                            return;
                         } else if (message.isVideo() || message.type == 1 || message.type == 0 && !message.isWebpageDocument() || message.isGif()) {
                             openPhotoViewerForMessage(cell, message);
                         } else if (message.type == 3) {

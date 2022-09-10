@@ -115,7 +115,7 @@ public class FileUploadOperation {
         state = 1;
         Utilities.stageQueue.postRunnable(() -> {
             preferences = ApplicationLoader.applicationContext.getSharedPreferences("uploadinfo", Activity.MODE_PRIVATE);
-            slowNetwork = ApplicationLoader.isConnectionSlow();
+            slowNetwork = CherrygramConfig.INSTANCE.getSlowNetworkMode();
             if (BuildVars.LOGS_ENABLED) {
                 FileLog.d("start upload on slow network = " + slowNetwork);
             }

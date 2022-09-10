@@ -202,7 +202,6 @@ import java.util.zip.ZipOutputStream;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.CherrygramPreferencesNavigator;
-import uz.unnarsx.cherrygram.preferences.CGPremiumPreferencesEntry;
 import uz.unnarsx.extras.CherrygramExtras;
 
 public class ProfileActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, SharedMediaLayout.SharedMediaPreloaderDelegate, ImageUpdater.ImageUpdaterDelegate, SharedMediaLayout.Delegate {
@@ -459,7 +458,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int reportRow;
     private int addToGroupButtonRow;
     private int addToGroupInfoRow;
-    private int cherrygramPremiumRow;
     private int premiumRow;
     private int premiumSectionsRow;
 
@@ -2941,8 +2939,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 presentFragment(new ActionIntroActivity(ActionIntroActivity.ACTION_TYPE_CHANGE_PHONE_NUMBER));
             } else if (position == setAvatarRow) {
                 onWriteButtonClick();
-            } else if (position == cherrygramPremiumRow) {
-                presentFragment(new CGPremiumPreferencesEntry());
             } else if (position == premiumRow) {
                 presentFragment(new PremiumPreviewFragment("settings"));
             } else {
@@ -5968,7 +5964,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         cherrygramRow = -1;
         notificationRow = -1;
         languageRow = -1;
-        cherrygramPremiumRow = -1;
         premiumRow = -1;
         premiumSectionsRow = -1;
         privacyRow = -1;
@@ -6082,7 +6077,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 devicesRow = rowCount++;
                 languageRow = rowCount++;
                 devicesSectionRow = rowCount++;
-                /*cherrygramPremiumRow = rowCount++;*/
                 if (!getMessagesController().premiumLocked) {
                     premiumRow = rowCount++;
                     premiumSectionsRow = rowCount++;
@@ -7919,8 +7913,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } else if (position == addToGroupButtonRow) {
                         textCell.setTextAndIcon(LocaleController.getString("AddToGroupOrChannel", R.string.AddToGroupOrChannel), R.drawable.msg_groups_create, false);
                         textCell.setColors(Theme.key_windowBackgroundWhiteBlueIcon, Theme.key_windowBackgroundWhiteBlueButton);
-                    } else if (position == cherrygramPremiumRow) {
-                        textCell.setTextAndIcon(LocaleController.getString("CP_Header_Premium", R.string.CP_Header_Premium), R.drawable.msg_fave, true);
                     } else if (position == premiumRow) {
                         textCell.setTextAndIcon(LocaleController.getString("TelegramPremium", R.string.TelegramPremium), PremiumGradient.getInstance().premiumStarMenuDrawable, false);
                         textCell.setImageLeft(23);
@@ -8067,7 +8059,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         position == languageRow || position == setUsernameRow || position == bioRow ||
                         position == versionRow || position == dataRow || position == chatRow ||
                         position == questionRow || position == devicesRow || position == filtersRow || position == stickersRow ||
-                        position == faqRow || position == policyRow || position == sendLogsRow || position == cherrygramRow || position == cherrygramPremiumRow ||
+                        position == faqRow || position == policyRow || position == sendLogsRow || position == cherrygramRow ||
                         position == clearLogsRow ||  position == sendLastLogsRow || position == setAvatarRow || position == addToGroupButtonRow;
             }
             if (holder.itemView instanceof UserCell) {
@@ -8104,7 +8096,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else if (position == settingsTimerRow || position == settingsKeyRow || position == reportRow ||
                     position == subscribersRow || position == subscribersRequestsRow || position == administratorsRow || position == blockedUsersRow ||
                     position == addMemberRow || position == joinRow || position == unblockRow ||
-                    position == sendMessageRow || position == notificationRow || position == cherrygramPremiumRow || position == cherrygramRow || position == privacyRow ||
+                    position == sendMessageRow || position == notificationRow || position == cherrygramRow || position == privacyRow ||
                     position == languageRow || position == dataRow || position == chatRow ||
                     position == questionRow || position == devicesRow || position == filtersRow || position == stickersRow ||
                     position == faqRow || position == policyRow || position == sendLogsRow || position == sendLastLogsRow ||
