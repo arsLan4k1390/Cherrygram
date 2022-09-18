@@ -7,9 +7,8 @@ object CherrygramPreferencesNavigator {
     @JvmStatic
     fun createMainMenu() = TGKitSettingsFragment(MainPreferencesEntry())
 
-    fun createChats() = TGKitSettingsFragment(ChatsPreferencesEntry())
     fun createAppearance() = TGKitSettingsFragment(AppearancePreferencesEntry())
+    fun createChats() = TGKitSettingsFragment(ChatsPreferencesEntry())
     fun createSecurity() = TGKitSettingsFragment(SecurityPreferencesEntry())
-//    fun createDB() = TGKitSettingsFragment(DoubleBottomPreferencesEntry())
     fun createDonate() = TGKitSettingsFragment(DonatePreferenceEntry())
 }

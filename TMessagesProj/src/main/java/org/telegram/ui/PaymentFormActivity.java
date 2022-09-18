@@ -27,7 +27,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Vibrator;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -240,7 +239,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
 
     private boolean isAcceptTermsChecked;
 
-    private TLRPC.TL_account_password currentPassword;
+    private TLRPC.account_Password currentPassword;
     private boolean waitingForEmail;
     private int emailCodeLength = 6;
     private Runnable shortPollRunnable;
@@ -335,7 +334,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
 
         }
 
-        default void currentPasswordUpdated(TLRPC.TL_account_password password) {
+        default void currentPasswordUpdated(TLRPC.account_Password password) {
 
         }
     }
@@ -433,7 +432,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
         paymentFormCallback = callback;
     }
 
-    private void setCurrentPassword(TLRPC.TL_account_password password) {
+    private void setCurrentPassword(TLRPC.account_Password password) {
         if (password.has_password) {
             if (getParentActivity() == null) {
                 return;
@@ -2887,7 +2886,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
             loadingPasswordInfo = false;
             if (error == null) {
-                currentPassword = (TLRPC.TL_account_password) response;
+                currentPassword = (TLRPC.account_Password) response;
                 if (!TwoStepVerificationActivity.canHandleCurrentPassword(currentPassword, false)) {
                     AlertsCreator.showUpdateAppAlert(getParentActivity(), LocaleController.getString("UpdateAppAlert", R.string.UpdateAppAlert), true);
                     return;
@@ -3292,7 +3291,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                         }
 
                         @Override
-                        public void currentPasswordUpdated(TLRPC.TL_account_password password) {
+                        public void currentPasswordUpdated(TLRPC.account_Password password) {
                             currentPassword = password;
                         }
                     });
@@ -3547,7 +3546,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                         TLRPC.TL_account_getPassword getPasswordReq = new TLRPC.TL_account_getPassword();
                         ConnectionsManager.getInstance(currentAccount).sendRequest(getPasswordReq, (response2, error2) -> AndroidUtilities.runOnUIThread(() -> {
                             if (error2 == null) {
-                                currentPassword = (TLRPC.TL_account_password) response2;
+                                currentPassword = (TLRPC.account_Password) response2;
                                 TwoStepVerificationActivity.initPasswordNewAlgo(currentPassword);
                                 sendSavePassword(clear);
                             }
@@ -4063,10 +4062,9 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
     }
 
     private void shakeView(View view) {
-        Vibrator v = (Vibrator) getParentActivity().getSystemService(Context.VIBRATOR_SERVICE);
-        if (v != null) {
-            v.vibrate(200);
-        }
+        try {
+            view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+        } catch (Exception ignored) {}
         AndroidUtilities.shakeView(view, 2, 0);
     }
 
@@ -4098,10 +4096,9 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
             return;
         }
         if (inputFields[FIELD_SAVEDPASSWORD].length() == 0) {
-            Vibrator v = (Vibrator) ApplicationLoader.applicationContext.getSystemService(Context.VIBRATOR_SERVICE);
-            if (v != null) {
-                v.vibrate(200);
-            }
+            try {
+                inputFields[FIELD_SAVEDPASSWORD].performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+            } catch (Exception ignored) {}
             AndroidUtilities.shakeView(inputFields[FIELD_SAVEDPASSWORD], 2, 0);
             return;
         }
@@ -4111,7 +4108,7 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
         final TLRPC.TL_account_getPassword req = new TLRPC.TL_account_getPassword();
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
             if (error == null) {
-                TLRPC.TL_account_password currentPassword = (TLRPC.TL_account_password) response;
+                TLRPC.account_Password currentPassword = (TLRPC.account_Password) response;
                 if (!TwoStepVerificationActivity.canHandleCurrentPassword(currentPassword, false)) {
                     AlertsCreator.showUpdateAppAlert(getParentActivity(), LocaleController.getString("UpdateAppAlert", R.string.UpdateAppAlert), true);
                     return;
@@ -4144,10 +4141,9 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                                 goToNextStep();
                             } else {
                                 if (error1.text.equals("PASSWORD_HASH_INVALID")) {
-                                    Vibrator v = (Vibrator) ApplicationLoader.applicationContext.getSystemService(Context.VIBRATOR_SERVICE);
-                                    if (v != null) {
-                                        v.vibrate(200);
-                                    }
+                                    try {
+                                        inputFields[FIELD_SAVEDPASSWORD].performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                                    } catch (Exception ignored) {}
                                     AndroidUtilities.shakeView(inputFields[FIELD_SAVEDPASSWORD], 2, 0);
                                     inputFields[FIELD_SAVEDPASSWORD].setText("");
                                 } else {

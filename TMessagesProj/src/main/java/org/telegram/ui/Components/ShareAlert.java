@@ -34,11 +34,13 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
@@ -80,6 +82,8 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.NativeByteBuffer;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
+import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.AdjustPanLayoutHelper;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BottomSheet;
@@ -97,6 +101,7 @@ import org.telegram.ui.MessageStatisticActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.CGFeatureHooks;
@@ -1340,7 +1345,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                 for (int a = 0; a < selectedDialogs.size(); a++) {
                     long key = selectedDialogs.keyAt(a);
                     if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(commentTextView.getText().toString(), key, null, null, null, true, null, null, null, true, 0, null);
+                        SendMessagesHelper.getInstance(currentAccount).sendMessage(commentTextView.getText().toString(), key, null, null, null, true, null, null, null, true, 0, null, false);
                     }
                     if (CherrygramConfig.INSTANCE.getForwardNoAuthorship() || CherrygramConfig.INSTANCE.getForwardWithoutCaptions()) {
                         SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, true,CherrygramConfig.INSTANCE.getForwardWithoutCaptions(), CherrygramConfig.INSTANCE.getForwardNotify(), 0);
@@ -1360,9 +1365,9 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                     for (int a = 0; a < selectedDialogs.size(); a++) {
                         long key = selectedDialogs.keyAt(a);
                         if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                            SendMessagesHelper.getInstance(currentAccount).sendMessage(commentTextView.getText().toString(), key, null, null, null, true, null, null, null, true, 0, null);
+                            SendMessagesHelper.getInstance(currentAccount).sendMessage(commentTextView.getText().toString(), key, null, null, null, true, null, null, null, true, 0, null, false);
                         }
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingText[num], key, null, null, null, true, null, null, null, true, 0, null);
+                        SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingText[num], key, null, null, null, true, null, null, null, true, 0, null, false);
                     }
                 }
                 onSend(selectedDialogs, 1);
@@ -1371,6 +1376,9 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                 delegate.didShare();
             }
             dismiss();
+        /*writeButton.setOnClickListener(v -> sendInternal(true));
+        writeButton.setOnLongClickListener(v -> {
+            return onSendLongClick(writeButton);*/
         });
 
         textPaint.setTextSize(AndroidUtilities.dp(12));
@@ -1672,7 +1680,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             for (int a = 0; a < selectedDialogs.size(); a++) {
                 long key = selectedDialogs.keyAt(a);
                 if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                    SendMessagesHelper.getInstance(currentAccount).sendMessage(text[0] == null ? null : text[0].toString(), key, null, null, null, true, entities, null, null, withSound, 0, null);
+                    SendMessagesHelper.getInstance(currentAccount).sendMessage(text[0] == null ? null : text[0].toString(), key, null, null, null, true, entities, null, null, withSound, 0, null, false);
                 }
                 int result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, !showSendersName,false, withSound, 0);
                 if (result != 0) {
@@ -1703,9 +1711,9 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                 for (int a = 0; a < selectedDialogs.size(); a++) {
                     long key = selectedDialogs.keyAt(a);
                     if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(text[0] == null ? null : text[0].toString(), key, null, null, null, true, entities, null, null, withSound, 0, null);
+                        SendMessagesHelper.getInstance(currentAccount).sendMessage(text[0] == null ? null : text[0].toString(), key, null, null, null, true, entities, null, null, withSound, 0, null, false);
                     }
-                    SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingText[num], key, null, null, null, true, null, null, null, withSound, 0, null);
+                    SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingText[num], key, null, null, null, true, null, null, null, withSound, 0, null, false);
                 }
             }
             onSend(selectedDialogs, 1);

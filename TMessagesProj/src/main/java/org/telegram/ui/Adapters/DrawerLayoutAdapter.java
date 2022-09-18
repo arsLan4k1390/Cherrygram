@@ -21,6 +21,7 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
+import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.DividerCell;
@@ -44,7 +45,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
     private ArrayList<Item> items = new ArrayList<>(11);
     private ArrayList<Integer> accountNumbers = new ArrayList<>();
     private boolean accountsShown;
-    private DrawerProfileCell profileCell;
+    public DrawerProfileCell profileCell;
     private SideMenultItemAnimator itemAnimator;
     private boolean hasGps;
 
@@ -104,6 +105,11 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         return accountsShown;
     }
 
+    private View.OnClickListener onPremiumDrawableClick;
+    public void setOnPremiumDrawableClick(View.OnClickListener listener) {
+        onPremiumDrawableClick = listener;
+    }
+
     @Override
     public void notifyDataSetChanged() {
         resetItems();
@@ -121,7 +127,14 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         View view;
         switch (viewType) {
             case 0:
-                view = profileCell = new DrawerProfileCell(mContext, mDrawerLayoutContainer);
+                view = profileCell = new DrawerProfileCell(mContext, mDrawerLayoutContainer) {
+                    @Override
+                    protected void onPremiumClick() {
+                        if (onPremiumDrawableClick != null) {
+                            onPremiumDrawableClick.onClick(this);
+                        }
+                    }
+                };
                 break;
             case 2:
                 view = new DividerCell(mContext);
@@ -314,6 +327,16 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             helpIcon = R.drawable.msg_help;*/
             peopleNearbyIcon = R.drawable.msg_nearby;
         }
+        UserConfig me = UserConfig.getInstance(UserConfig.selectedAccount);
+        if (me != null && me.isPremium()) {
+            if (me.getEmojiStatus() != null) {
+                items.add(new Item(15, LocaleController.getString("ChangeEmojiStatus", R.string.ChangeEmojiStatus), 0, R.raw.emoji_status_change_to_set));
+            } else {
+                items.add(new Item(15, LocaleController.getString("SetEmojiStatus", R.string.SetEmojiStatus), 0, R.raw.emoji_status_set_to_change));
+            }
+            items.add(null); // divider
+        }
+
         if (CherrygramConfig.INSTANCE.getCreateGroupDrawerButton())
             items.add(new Item(2, LocaleController.getString("NewGroup", R.string.NewGroup), newGroupIcon));
         if (CherrygramConfig.INSTANCE.getSecretChatDrawerButton())
@@ -333,7 +356,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
                 items.add(new Item(12, LocaleController.getString("PeopleNearby", R.string.PeopleNearby), peopleNearbyIcon));
             }
         if (CherrygramConfig.INSTANCE.getScanQRDrawerButton())
-            items.add(new Item(15, LocaleController.getString("AuthAnotherClient", R.string.AuthAnotherClient), scanQrIcon));
+            items.add(new Item(1000, LocaleController.getString("AuthAnotherClient", R.string.AuthAnotherClient), scanQrIcon));
         items.add(new Item(8, LocaleController.getString("Settings", R.string.Settings), settingsIcon));
         /*items.add(null); // divider
         if (CherrygramConfig.INSTANCE.getInviteFriendsDrawerButton())
@@ -370,6 +393,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
 
     private static class Item {
         public int icon;
+        public int lottieIcon;
         public String text;
         public int id;
 
@@ -379,8 +403,15 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             this.text = text;
         }
 
+        public Item(int id, String text, int icon, int lottieIcon) {
+            this.icon = icon;
+            this.lottieIcon = lottieIcon;
+            this.id = id;
+            this.text = text;
+        }
+
         public void bind(DrawerActionCell actionCell) {
-            actionCell.setTextAndIcon(id, text, icon);
+            actionCell.setTextAndIcon(id, text, icon, lottieIcon);
         }
     }
 }
