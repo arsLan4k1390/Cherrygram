@@ -514,35 +514,37 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             }
             nameTextView.setText(name);
         }
-        if (currentUser != null && MessagesController.getInstance(currentAccount).isPremiumUser(currentUser)) {
-            if (currentUser.emoji_status instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) currentUser.emoji_status).until > (int) (System.currentTimeMillis() / 1000)) {
-                emojiStatus.set(((TLRPC.TL_emojiStatusUntil) currentUser.emoji_status).document_id, false);
-                emojiStatus.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-                nameTextView.setRightDrawable(emojiStatus);
-            } else if (currentUser.emoji_status instanceof TLRPC.TL_emojiStatus) {
-                emojiStatus.set(((TLRPC.TL_emojiStatus) currentUser.emoji_status).document_id, false);
-                emojiStatus.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-                nameTextView.setRightDrawable(emojiStatus);
-            } else {
-                if (premiumDrawable == null) {
-                    premiumDrawable = getContext().getResources().getDrawable(R.drawable.msg_premium_liststar).mutate();
-                    premiumDrawable = new AnimatedEmojiDrawable.WrapSizeDrawable(premiumDrawable, AndroidUtilities.dp(14), AndroidUtilities.dp(14)) {
-                        @Override
-                        public void draw(@NonNull Canvas canvas) {
-                            canvas.save();
-                            canvas.translate(0, AndroidUtilities.dp(1));
-                            super.draw(canvas);
-                            canvas.restore();
-                        }
-                    };
-                    premiumDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+        if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+            if (currentUser != null && MessagesController.getInstance(currentAccount).isPremiumUser(currentUser)) {
+                if (currentUser.emoji_status instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) currentUser.emoji_status).until > (int) (System.currentTimeMillis() / 1000)) {
+                    emojiStatus.set(((TLRPC.TL_emojiStatusUntil) currentUser.emoji_status).document_id, false);
+                    emojiStatus.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+                    nameTextView.setRightDrawable(emojiStatus);
+                } else if (currentUser.emoji_status instanceof TLRPC.TL_emojiStatus) {
+                    emojiStatus.set(((TLRPC.TL_emojiStatus) currentUser.emoji_status).document_id, false);
+                    emojiStatus.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+                    nameTextView.setRightDrawable(emojiStatus);
+                } else {
+                    if (premiumDrawable == null) {
+                        premiumDrawable = getContext().getResources().getDrawable(R.drawable.msg_premium_liststar).mutate();
+                        premiumDrawable = new AnimatedEmojiDrawable.WrapSizeDrawable(premiumDrawable, AndroidUtilities.dp(14), AndroidUtilities.dp(14)) {
+                            @Override
+                            public void draw(@NonNull Canvas canvas) {
+                                canvas.save();
+                                canvas.translate(0, AndroidUtilities.dp(1));
+                                super.draw(canvas);
+                                canvas.restore();
+                            }
+                        };
+                        premiumDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+                    }
+                    nameTextView.setRightDrawable(premiumDrawable);
                 }
-                nameTextView.setRightDrawable(premiumDrawable);
+                nameTextView.setRightDrawableTopPadding(-AndroidUtilities.dp(0.5f));
+            } else {
+                nameTextView.setRightDrawable(null);
+                nameTextView.setRightDrawableTopPadding(0);
             }
-            nameTextView.setRightDrawableTopPadding(-AndroidUtilities.dp(0.5f));
-        } else {
-            nameTextView.setRightDrawable(null);
-            nameTextView.setRightDrawableTopPadding(0);
         }
         if (currentStatus != null) {
             statusTextView.setTextColor(statusColor);

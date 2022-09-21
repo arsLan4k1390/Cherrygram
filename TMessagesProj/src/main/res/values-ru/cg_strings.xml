@@ -107,6 +107,17 @@
     <string name="AP_SystemFonts">Использовать системный шрифт</string>
     <string name="AP_SystemFonts_Desc">Отключите это (требуется перезапуск приложения), если ваш шрифт не поддерживает форматирование (Жирный, Курсив, Моноширинный)</string>
 
+    <string name="CP_PremAndAnim_Header">Анимации и премиум функции (требуется перезапуск приложения)</string>
+    <string name="CP_DisableAnimAvatars">Отключить анимированные аватарки</string>
+    <string name="CP_DisableReactionAnim">Отключить анимацию реакций</string>
+    <string name="CP_DisableReactionAnim_Desc">(во время реакции на сообщение)</string>
+    <string name="CP_DisablePremiumStatuses">Отключить премиум статусы</string>
+    <string name="CP_DisablePremiumStatuses_Desc">Это отключит премиум статусы везде, кроме бокового меню</string>
+    <string name="CP_DisablePremStickAnim">Отключить нажатия на премиум стикеры</string>
+    <string name="CP_DisablePremStickAnim_Desc">Ничего не будет происходить если вы будете нажимать на премиум стикер</string>
+    <string name="CP_DisablePremStickAutoPlay">Отключить авто-воспроизведение премиум стикеров</string>
+    <string name="CP_DisablePremStickAutoPlay_Desc">Премиум анимация стикеров не будет воспроизведена автоматически (функция не работает если вы включили нажатия на премиум стикеры)</string>
+
     <string name="CP_Filters_Header">Папки (требуется перезапуск приложения)</string>
     <string name="AP_FolderNameInHeader">Название папки вместо \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Это изменит \"Cherrygram\" в заголовке сверху на название вашей папки (удобно при отображении иконок вместо названий папок)</string>
@@ -149,11 +160,7 @@
     <string name="CP_ForwardMsgDate">Показывать дату пересланного сообщения</string>
     <string name="CP_ShowSeconds">Показывать секунды в метках времени</string>
     <string name="CP_ShowSeconds_Desc">Показывает секунды у времени отправленных сообщений (требуется перезапуск приложения)</string>
-    <string name="CP_DisableAnimAvatars">Отключить анимированные аватарки</string>
     <string name="CP_DoubleTapReact">Отключить быстрые реакции</string>
-    <string name="CP_DisableReactionAnim">Отключить анимацию реакций</string>
-    <string name="CP_DisableReactionAnim_Desc">(во время реакции на сообщение)</string>
-    <string name="CP_DisablePremStickAnim">Отключить анимацию премиум стикеров</string>
     <string name="CP_DisableSwipeToNext">Отключить переход на следующий канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Отключить переключение на следующий канал при прокрутке любого канала</string>
     <string name="CP_HideKbdOnScroll">Скрыть клавиатуру при прокрутке</string>

@@ -152,7 +152,6 @@
     <string name="CP_DoubleTapReact">Вимкнути швидкі реакції</string>
     <string name="CP_DisableReactionAnim">Вимкнути анімацію реакцій</string>
     <string name="CP_DisableReactionAnim_Desc">(під час реакції на повідомлення)</string>
-    <string name="CP_DisablePremStickAnim">Вимкнути анімацію преміум стікерів</string>
     <string name="CP_DisableSwipeToNext">Вимкнути перехід на наступний канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Вимкнути перехід на наступний канал при прокрутці будь якого каналу</string>
     <string name="CP_HideKbdOnScroll">Приховати клавіатуру під час прокрутки</string>

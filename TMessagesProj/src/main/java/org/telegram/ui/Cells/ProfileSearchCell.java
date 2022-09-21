@@ -509,18 +509,20 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
         if (verified) {
             statusDrawable.set(new CombinedDrawable(Theme.dialogs_verifiedDrawable, Theme.dialogs_verifiedCheckDrawable, 0, 0), animated);
             statusDrawable.setColor(null);
-        } else if (user != null && !user.self && user.emoji_status instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) user.emoji_status).until > (int) (System.currentTimeMillis() / 1000)) {
+        } else if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+            if (user != null && !user.self && user.emoji_status instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) user.emoji_status).until > (int) (System.currentTimeMillis() / 1000)) {
             statusDrawable.set(((TLRPC.TL_emojiStatusUntil) user.emoji_status).document_id, animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-        } else if (user != null && !user.self && user.emoji_status instanceof TLRPC.TL_emojiStatus) {
-            statusDrawable.set(((TLRPC.TL_emojiStatus) user.emoji_status).document_id, animated);
-            statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-        } else if (user != null && !user.self && MessagesController.getInstance(currentAccount).isPremiumUser(user)) {
-            statusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, animated);
-            statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-        } else {
-            statusDrawable.set((Drawable) null, animated);
-            statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+            } else if (user != null && !user.self && user.emoji_status instanceof TLRPC.TL_emojiStatus) {
+                statusDrawable.set(((TLRPC.TL_emojiStatus) user.emoji_status).document_id, animated);
+                statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+            } else if (user != null && !user.self && MessagesController.getInstance(currentAccount).isPremiumUser(user)) {
+                statusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, animated);
+                statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+            } else {
+                statusDrawable.set((Drawable) null, animated);
+                statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+            }
         }
     }
 
@@ -659,7 +661,9 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
                 x = (int) (nameLeft + nameLayout.getLineRight(0) + AndroidUtilities.dp(6));
             }
             setDrawableBounds(statusDrawable, x, nameTop + (nameLayout.getHeight() - statusDrawable.getIntrinsicHeight()) / 2f);
-            statusDrawable.draw(canvas);
+            if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+                statusDrawable.draw(canvas);
+            }
         }
 
         if (statusLayout != null) {

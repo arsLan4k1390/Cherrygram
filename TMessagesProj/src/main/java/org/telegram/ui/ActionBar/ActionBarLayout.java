@@ -257,9 +257,13 @@ public class ActionBarLayout extends FrameLayout {
                                     if (shouldBeEnabled != enabled) {
                                         ripple.setState(shouldBeEnabled ? new int[]{android.R.attr.state_pressed, android.R.attr.state_enabled} : new int[]{});
                                         if (shouldBeEnabled) {
-                                            try {
-                                                button.performHapticFeedback(HapticFeedbackConstants.TEXT_HANDLE_MOVE, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-                                            } catch (Exception ignore) {}
+                                            if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                                                try {
+                                                    button.performHapticFeedback(HapticFeedbackConstants.TEXT_HANDLE_MOVE, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+                                                } catch (Exception ignore) {
+
+                                                }
+                                            }
                                         }
                                     }
                                 } else if (event.getAction() == MotionEvent.ACTION_UP) {

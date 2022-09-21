@@ -51,6 +51,8 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.ProfileActivity;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ChatAvatarContainer extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     private BackupImageView avatarImageView;
@@ -181,7 +183,7 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
         subtitleTextView.setTag(Theme.key_actionBarDefaultSubtitle);
         subtitleTextView.setTextSize(14);
         subtitleTextView.setGravity(Gravity.LEFT);
-        subtitleTextView.setPadding(0, 0, AndroidUtilities.dp(12), 0);
+        subtitleTextView.setPadding(0, 0, AndroidUtilities.dp(10), 0);
         addView(subtitleTextView);
 
         if (parentFragment != null) {
@@ -231,7 +233,7 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
     }
 
     public void setTitleExpand(boolean titleExpand) {
-        int newRightPadding = titleExpand ? AndroidUtilities.dp(16) : 0;
+        int newRightPadding = titleExpand ? AndroidUtilities.dp(10) : 0;
         if (titleTextView.getPaddingRight() != newRightPadding) {
             titleTextView.setPadding(0, AndroidUtilities.dp(6), newRightPadding, AndroidUtilities.dp(12));
             requestLayout();
@@ -401,6 +403,7 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
         titleTextLargerCopyView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         titleTextLargerCopyView.setLeftDrawableTopPadding(-AndroidUtilities.dp(1.3f));
         titleTextLargerCopyView.setRightDrawable(titleTextView.getRightDrawable());
+        titleTextLargerCopyView.setRightDrawableOutside(titleTextView.getRightDrawableOutside());
         titleTextLargerCopyView.setLeftDrawable(titleTextView.getLeftDrawable());
         titleTextLargerCopyView.setText(titleTextView.getText());
         titleTextLargerCopyView.animate().alpha(0).setDuration(350).setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT).withEndAction(() -> {
@@ -557,34 +560,36 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
 //            titleTextView.setRightPadding(titleTextView.getPaddingRight());
             rightDrawableIsScamOrVerified = true;
             rightDrawableContentDescription = LocaleController.getString("AccDescrVerified", R.string.AccDescrVerified);
-        } else if (premium) {
-            boolean isStatus = emojiStatus instanceof TLRPC.TL_emojiStatus || emojiStatus instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) emojiStatus).until > (int) (System.currentTimeMillis() / 1000);
-//            if (premiumIconHiddable) {
-//                titleTextView.setCanHideRightDrawable(!isStatus);
-//            }
-            if (titleTextView.getRightDrawable() instanceof AnimatedEmojiDrawable.WrapSizeDrawable &&
-                ((AnimatedEmojiDrawable.WrapSizeDrawable) titleTextView.getRightDrawable()).getDrawable() instanceof AnimatedEmojiDrawable) {
-                ((AnimatedEmojiDrawable) ((AnimatedEmojiDrawable.WrapSizeDrawable) titleTextView.getRightDrawable()).getDrawable()).removeView(titleTextView);
+        } else if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+            if (premium) {
+                boolean isStatus = emojiStatus instanceof TLRPC.TL_emojiStatus || emojiStatus instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) emojiStatus).until > (int) (System.currentTimeMillis() / 1000);
+    //            if (premiumIconHiddable) {
+    //                titleTextView.setCanHideRightDrawable(!isStatus);
+    //            }
+                if (titleTextView.getRightDrawable() instanceof AnimatedEmojiDrawable.WrapSizeDrawable &&
+                        ((AnimatedEmojiDrawable.WrapSizeDrawable) titleTextView.getRightDrawable()).getDrawable() instanceof AnimatedEmojiDrawable) {
+                    ((AnimatedEmojiDrawable) ((AnimatedEmojiDrawable.WrapSizeDrawable) titleTextView.getRightDrawable()).getDrawable()).removeView(titleTextView);
+                }
+                if (emojiStatus instanceof TLRPC.TL_emojiStatus) {
+                    emojiStatusDrawable.set(((TLRPC.TL_emojiStatus) emojiStatus).document_id, animated);
+                } else if (emojiStatus instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) emojiStatus).until > (int) (System.currentTimeMillis() / 1000)) {
+                    emojiStatusDrawable.set(((TLRPC.TL_emojiStatusUntil) emojiStatus).document_id, animated);
+                } else {
+                    Drawable drawable = ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_liststar).mutate();
+                    drawable.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_profile_verifiedBackground), PorterDuff.Mode.MULTIPLY));
+                    emojiStatusDrawable.set(drawable, animated);
+                }
+                emojiStatusDrawable.setColor(getThemedColor(Theme.key_profile_verifiedBackground));
+                titleTextView.setRightDrawable(emojiStatusDrawable);
+    //            titleTextView.setRightPadding(titleTextView.getPaddingRight());
+                rightDrawableIsScamOrVerified = true;
+                rightDrawableContentDescription = LocaleController.getString("AccDescrPremium", R.string.AccDescrPremium);
+            } else if (titleTextView.getRightDrawable() instanceof ScamDrawable) {
+                titleTextView.setRightDrawable(null);
+    //            titleTextView.setRightPadding(0);
+                rightDrawableIsScamOrVerified = false;
+                rightDrawableContentDescription = null;
             }
-            if (emojiStatus instanceof TLRPC.TL_emojiStatus) {
-                emojiStatusDrawable.set(((TLRPC.TL_emojiStatus) emojiStatus).document_id, animated);
-            } else if (emojiStatus instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) emojiStatus).until > (int) (System.currentTimeMillis() / 1000)) {
-                emojiStatusDrawable.set(((TLRPC.TL_emojiStatusUntil) emojiStatus).document_id, animated);
-            } else {
-                Drawable drawable = ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_liststar).mutate();
-                drawable.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_profile_verifiedBackground), PorterDuff.Mode.MULTIPLY));
-                emojiStatusDrawable.set(drawable, animated);
-            }
-            emojiStatusDrawable.setColor(getThemedColor(Theme.key_profile_verifiedBackground));
-            titleTextView.setRightDrawable(emojiStatusDrawable);
-//            titleTextView.setRightPadding(titleTextView.getPaddingRight());
-            rightDrawableIsScamOrVerified = true;
-            rightDrawableContentDescription = LocaleController.getString("AccDescrPremium", R.string.AccDescrPremium);
-        } else if (titleTextView.getRightDrawable() instanceof ScamDrawable) {
-            titleTextView.setRightDrawable(null);
-//            titleTextView.setRightPadding(0);
-            rightDrawableIsScamOrVerified = false;
-            rightDrawableContentDescription = null;
         }
     }
 

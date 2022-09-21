@@ -79,6 +79,59 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             }
         }
 
+        category(LocaleController.getString("CP_PremAndAnim_Header", R.string.CP_PremAndAnim_Header)) {
+            switch {
+                title = LocaleController.getString("CP_DisableAnimAvatars", R.string.CP_DisableAnimAvatars)
+
+                contract({
+                    return@contract CherrygramConfig.disableAnimatedAvatars
+                }) {
+                    CherrygramConfig.disableAnimatedAvatars = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_DisableReactionAnim", R.string.CP_DisableReactionAnim)
+                summary = LocaleController.getString("CP_DisableReactionAnim_Desc", R.string.CP_DisableReactionAnim_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.disableReactionAnim
+                }) {
+                    CherrygramConfig.disableReactionAnim = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_DisablePremiumStatuses", R.string.CP_DisablePremiumStatuses)
+                summary = LocaleController.getString("CP_DisablePremiumStatuses_Desc", R.string.CP_DisablePremiumStatuses_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.disablePremiumStatuses
+                }) {
+                    CherrygramConfig.disablePremiumStatuses = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_DisablePremStickAnim", R.string.CP_DisablePremStickAnim)
+                summary = LocaleController.getString("CP_DisablePremStickAnim_Desc", R.string.CP_DisablePremStickAnim_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.disablePremStickAnim
+                }) {
+                    CherrygramConfig.disablePremStickAnim = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_DisablePremStickAutoPlay", R.string.CP_DisablePremStickAutoPlay)
+                summary = LocaleController.getString("CP_DisablePremStickAutoPlay_Desc", R.string.CP_DisablePremStickAutoPlay_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.disablePremStickAutoPlay
+                }) {
+                    CherrygramConfig.disablePremStickAutoPlay = it
+                }
+            }
+
+        }
+
         category(LocaleController.getString("AS_Filters_Header", R.string.CP_Filters_Header)) {
             switch {
                 title = LocaleController.getString("AP_FolderNameInHeader", R.string.AP_FolderNameInHeader)

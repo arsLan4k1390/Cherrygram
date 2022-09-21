@@ -927,6 +927,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         childTop = lp.topMargin;
                 }
 
+
                 if (commentView != null && commentView.isPopupView(child)) {
                     if (AndroidUtilities.isInMultiwindow) {
                         childTop = commentView.getTop() - child.getMeasuredHeight() + AndroidUtilities.dp(1);
@@ -950,6 +951,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     childTop += topPadding;
                 } else if (child instanceof FragmentContextView) {
                     childTop += actionBar.getMeasuredHeight();
+                } else if (child == floatingButtonContainer && selectAnimatedEmojiDialog != null) {
+                    childTop += keyboardSize;
                 }
                 child.layout(childLeft, childTop, childLeft + width, childTop + height);
             }
@@ -2016,45 +2019,47 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
     private Drawable premiumStar;
     public void updateStatus(TLRPC.User user, boolean animated) {
-        if (statusDrawable == null || actionBar == null) {
-            return;
-        }
-        if (user != null && user.emoji_status instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) user.emoji_status).until > (int) (System.currentTimeMillis() / 1000)) {
-            statusDrawable.set(((TLRPC.TL_emojiStatusUntil) user.emoji_status).document_id, animated);
-            actionBar.setRightDrawableOnClick(e -> showSelectStatusDialog());
-            SelectAnimatedEmojiDialog.preload(currentAccount);
-        } else if (user != null && user.emoji_status instanceof TLRPC.TL_emojiStatus) {
-            statusDrawable.set(((TLRPC.TL_emojiStatus) user.emoji_status).document_id, animated);
-            actionBar.setRightDrawableOnClick(e -> showSelectStatusDialog());
-            SelectAnimatedEmojiDialog.preload(currentAccount);
-        } else if (user != null && MessagesController.getInstance(currentAccount).isPremiumUser(user)) {
-            if (premiumStar == null) {
-                premiumStar = getContext().getResources().getDrawable(R.drawable.msg_premium_liststar).mutate();
-                premiumStar = new AnimatedEmojiDrawable.WrapSizeDrawable(premiumStar, AndroidUtilities.dp(18), AndroidUtilities.dp(18)) {
-                    @Override
-                    public void draw(@NonNull Canvas canvas) {
-                        canvas.save();
-                        canvas.translate(AndroidUtilities.dp(-2), AndroidUtilities.dp(1));
-                        super.draw(canvas);
-                        canvas.restore();
-                    }
-                };
+        if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+            if (statusDrawable == null || actionBar == null) {
+                return;
             }
-            premiumStar.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_profile_verifiedBackground), PorterDuff.Mode.MULTIPLY));
-            statusDrawable.set(premiumStar, animated);
-            actionBar.setRightDrawableOnClick(e -> showSelectStatusDialog());
-            SelectAnimatedEmojiDialog.preload(currentAccount);
-        } else {
-            statusDrawable.set((Drawable) null, animated);
-            actionBar.setRightDrawableOnClick(null);
-        }
-        statusDrawable.setColor(Theme.getColor(Theme.key_profile_verifiedBackground));
-        if (animatedStatusView != null) {
-            animatedStatusView.setColor(Theme.getColor(Theme.key_profile_verifiedBackground));
-        }
-        if (selectAnimatedEmojiDialog != null && selectAnimatedEmojiDialog.getContentView() instanceof SelectAnimatedEmojiDialog) {
-            SimpleTextView textView = actionBar.getTitleTextView();
-            ((SelectAnimatedEmojiDialog) selectAnimatedEmojiDialog.getContentView()).setScrimDrawable(textView != null && textView.getRightDrawable() == statusDrawable ? statusDrawable : null, textView);
+            if (user != null && user.emoji_status instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) user.emoji_status).until > (int) (System.currentTimeMillis() / 1000)) {
+                statusDrawable.set(((TLRPC.TL_emojiStatusUntil) user.emoji_status).document_id, animated);
+                actionBar.setRightDrawableOnClick(e -> showSelectStatusDialog());
+                SelectAnimatedEmojiDialog.preload(currentAccount);
+            } else if (user != null && user.emoji_status instanceof TLRPC.TL_emojiStatus) {
+                statusDrawable.set(((TLRPC.TL_emojiStatus) user.emoji_status).document_id, animated);
+                actionBar.setRightDrawableOnClick(e -> showSelectStatusDialog());
+                SelectAnimatedEmojiDialog.preload(currentAccount);
+            } else if (user != null && MessagesController.getInstance(currentAccount).isPremiumUser(user)) {
+                if (premiumStar == null) {
+                    premiumStar = getContext().getResources().getDrawable(R.drawable.msg_premium_liststar).mutate();
+                    premiumStar = new AnimatedEmojiDrawable.WrapSizeDrawable(premiumStar, AndroidUtilities.dp(18), AndroidUtilities.dp(18)) {
+                        @Override
+                        public void draw(@NonNull Canvas canvas) {
+                            canvas.save();
+                            canvas.translate(AndroidUtilities.dp(-2), AndroidUtilities.dp(1));
+                            super.draw(canvas);
+                            canvas.restore();
+                        }
+                    };
+                }
+                premiumStar.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_profile_verifiedBackground), PorterDuff.Mode.MULTIPLY));
+                statusDrawable.set(premiumStar, animated);
+                actionBar.setRightDrawableOnClick(e -> showSelectStatusDialog());
+                SelectAnimatedEmojiDialog.preload(currentAccount);
+            } else {
+                statusDrawable.set((Drawable) null, animated);
+                actionBar.setRightDrawableOnClick(null);
+            }
+            statusDrawable.setColor(Theme.getColor(Theme.key_profile_verifiedBackground));
+            if (animatedStatusView != null) {
+                animatedStatusView.setColor(Theme.getColor(Theme.key_profile_verifiedBackground));
+            }
+            if (selectAnimatedEmojiDialog != null && selectAnimatedEmojiDialog.getContentView() instanceof SelectAnimatedEmojiDialog) {
+                SimpleTextView textView = actionBar.getTitleTextView();
+                ((SelectAnimatedEmojiDialog) selectAnimatedEmojiDialog.getContentView()).setScrimDrawable(textView != null && textView.getRightDrawable() == statusDrawable ? statusDrawable : null, textView);
+            }
         }
     }
 
@@ -2142,10 +2147,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
             @Override
             public void setTitleOverlayText(String title, int titleId, Runnable action) {
-                super.setTitleOverlayText(title, titleId, action);
-                if (selectAnimatedEmojiDialog != null && selectAnimatedEmojiDialog.getContentView() instanceof SelectAnimatedEmojiDialog) {
-                    SimpleTextView textView = getTitleTextView();
-                    ((SelectAnimatedEmojiDialog) selectAnimatedEmojiDialog.getContentView()).setScrimDrawable(textView != null && textView.getRightDrawable() == statusDrawable ? statusDrawable : null, textView);
+                if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+                    super.setTitleOverlayText(title, titleId, action);
+                    if (selectAnimatedEmojiDialog != null && selectAnimatedEmojiDialog.getContentView() instanceof SelectAnimatedEmojiDialog) {
+                        SimpleTextView textView = getTitleTextView();
+                        ((SelectAnimatedEmojiDialog) selectAnimatedEmojiDialog.getContentView()).setScrimDrawable(textView != null && textView.getRightDrawable() == statusDrawable ? statusDrawable : null, textView);
+                    }
                 }
             }
         };
@@ -4025,74 +4032,76 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     public void showSelectStatusDialog() {
-        if (selectAnimatedEmojiDialog != null) {
-            return;
-        }
-        final SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow[] popup = new SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow[1];
-        TLRPC.User user = UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser();
-        int xoff = 0, yoff = 0;
-        boolean hasEmoji = false;
-        SimpleTextView actionBarTitle = actionBar.getTitleTextView();
-        if (actionBarTitle != null && actionBarTitle.getRightDrawable() != null) {
-            statusDrawable.play();
-            hasEmoji = statusDrawable.getDrawable() instanceof AnimatedEmojiDrawable;
-            AndroidUtilities.rectTmp2.set(actionBarTitle.getRightDrawable().getBounds());
-            AndroidUtilities.rectTmp2.offset((int) actionBarTitle.getX(), (int) actionBarTitle.getY());
-            yoff = -(actionBar.getHeight() - AndroidUtilities.rectTmp2.centerY()) - AndroidUtilities.dp(16);
-            xoff = AndroidUtilities.rectTmp2.centerX() - AndroidUtilities.dp(16);
-            if (animatedStatusView != null) {
-                animatedStatusView.translate(AndroidUtilities.rectTmp2.centerX(), AndroidUtilities.rectTmp2.centerY());
+        if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+            if (selectAnimatedEmojiDialog != null || SharedConfig.appLocked) {
+                return;
             }
-        }
-        SelectAnimatedEmojiDialog popupLayout = new SelectAnimatedEmojiDialog(this, getContext(), true, xoff, SelectAnimatedEmojiDialog.TYPE_EMOJI_STATUS, getResourceProvider()) {
-            @Override
-            protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, Integer until) {
-                TLRPC.TL_account_updateEmojiStatus req = new TLRPC.TL_account_updateEmojiStatus();
-                if (documentId == null) {
-                    req.emoji_status = new TLRPC.TL_emojiStatusEmpty();
-                } else if (until != null) {
-                    req.emoji_status = new TLRPC.TL_emojiStatusUntil();
-                    ((TLRPC.TL_emojiStatusUntil) req.emoji_status).document_id = documentId;
-                    ((TLRPC.TL_emojiStatusUntil) req.emoji_status).until = until;
-                } else {
-                    req.emoji_status = new TLRPC.TL_emojiStatus();
-                    ((TLRPC.TL_emojiStatus) req.emoji_status).document_id = documentId;
+            final SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow[] popup = new SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow[1];
+            TLRPC.User user = UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser();
+            int xoff = 0, yoff = 0;
+            boolean hasEmoji = false;
+            SimpleTextView actionBarTitle = actionBar.getTitleTextView();
+            if (actionBarTitle != null && actionBarTitle.getRightDrawable() != null) {
+                statusDrawable.play();
+                hasEmoji = statusDrawable.getDrawable() instanceof AnimatedEmojiDrawable;
+                AndroidUtilities.rectTmp2.set(actionBarTitle.getRightDrawable().getBounds());
+                AndroidUtilities.rectTmp2.offset((int) actionBarTitle.getX(), (int) actionBarTitle.getY());
+                yoff = -(actionBar.getHeight() - AndroidUtilities.rectTmp2.centerY()) - AndroidUtilities.dp(16);
+                xoff = AndroidUtilities.rectTmp2.centerX() - AndroidUtilities.dp(16);
+                if (animatedStatusView != null) {
+                    animatedStatusView.translate(AndroidUtilities.rectTmp2.centerX(), AndroidUtilities.rectTmp2.centerY());
                 }
-                TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(UserConfig.getInstance(currentAccount).getClientUserId());
-                if (user != null) {
-                    user.emoji_status = req.emoji_status;
-                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.userEmojiStatusUpdated, user);
-                    getMessagesController().updateEmojiStatusUntilUpdate(user.id, user.emoji_status);
-                }
-                if (documentId != null) {
-                    animatedStatusView.animateChange(ReactionsLayoutInBubble.VisibleReaction.fromCustomEmoji(documentId));
-                }
-                ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> {
-                    if (!(res instanceof TLRPC.TL_boolTrue)) {
-                        // TODO: reject
+            }
+            SelectAnimatedEmojiDialog popupLayout = new SelectAnimatedEmojiDialog(this, getContext(), true, xoff, SelectAnimatedEmojiDialog.TYPE_EMOJI_STATUS, getResourceProvider()) {
+                @Override
+                protected void onEmojiSelected(View emojiView, Long documentId, TLRPC.Document document, Integer until) {
+                    TLRPC.TL_account_updateEmojiStatus req = new TLRPC.TL_account_updateEmojiStatus();
+                    if (documentId == null) {
+                        req.emoji_status = new TLRPC.TL_emojiStatusEmpty();
+                    } else if (until != null) {
+                        req.emoji_status = new TLRPC.TL_emojiStatusUntil();
+                        ((TLRPC.TL_emojiStatusUntil) req.emoji_status).document_id = documentId;
+                        ((TLRPC.TL_emojiStatusUntil) req.emoji_status).until = until;
+                    } else {
+                        req.emoji_status = new TLRPC.TL_emojiStatus();
+                        ((TLRPC.TL_emojiStatus) req.emoji_status).document_id = documentId;
                     }
-                });
-                if (popup[0] != null) {
-                    selectAnimatedEmojiDialog = null;
-                    popup[0].dismiss();
+                    TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(UserConfig.getInstance(currentAccount).getClientUserId());
+                    if (user != null) {
+                        user.emoji_status = req.emoji_status;
+                        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.userEmojiStatusUpdated, user);
+                        getMessagesController().updateEmojiStatusUntilUpdate(user.id, user.emoji_status);
+                    }
+                    if (documentId != null) {
+                        animatedStatusView.animateChange(ReactionsLayoutInBubble.VisibleReaction.fromCustomEmoji(documentId));
+                    }
+                    ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> {
+                        if (!(res instanceof TLRPC.TL_boolTrue)) {
+                            // TODO: reject
+                        }
+                    });
+                    if (popup[0] != null) {
+                        selectAnimatedEmojiDialog = null;
+                        popup[0].dismiss();
+                    }
                 }
+            };
+            if (user != null && user.emoji_status instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) user.emoji_status).until > (int) (System.currentTimeMillis() / 1000)) {
+                popupLayout.setExpireDateHint(((TLRPC.TL_emojiStatusUntil) user.emoji_status).until);
             }
-        };
-        if (user != null && user.emoji_status instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) user.emoji_status).until > (int) (System.currentTimeMillis() / 1000)) {
-            popupLayout.setExpireDateHint(((TLRPC.TL_emojiStatusUntil) user.emoji_status).until);
+            popupLayout.setSelected(statusDrawable.getDrawable() instanceof AnimatedEmojiDrawable ? ((AnimatedEmojiDrawable) statusDrawable.getDrawable()).getDocumentId() : null);
+            popupLayout.setSaveState(1);
+            popupLayout.setScrimDrawable(statusDrawable, actionBarTitle);
+            popup[0] = selectAnimatedEmojiDialog = new SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow(popupLayout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT) {
+                @Override
+                public void dismiss() {
+                    super.dismiss();
+                    selectAnimatedEmojiDialog = null;
+                }
+            };
+            popup[0].showAsDropDown(actionBar, AndroidUtilities.dp(16), yoff, Gravity.TOP);
+            popup[0].dimBehind();
         }
-        popupLayout.setSelected(statusDrawable.getDrawable() instanceof AnimatedEmojiDrawable ? ((AnimatedEmojiDrawable) statusDrawable.getDrawable()).getDocumentId() : null);
-        popupLayout.setSaveState(1);
-        popupLayout.setScrimDrawable(statusDrawable, actionBarTitle);
-        popup[0] = selectAnimatedEmojiDialog = new SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow(popupLayout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT) {
-            @Override
-            public void dismiss() {
-                super.dismiss();
-                selectAnimatedEmojiDialog = null;
-            }
-        };
-        popup[0].showAsDropDown(actionBar, AndroidUtilities.dp(16), yoff, Gravity.TOP);
-        popup[0].dimBehind();
     }
 
     private int commentViewPreviousTop = -1;
@@ -8447,8 +8456,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 actionBar.setPopupItemsColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItemIcon), true, true);
                 actionBar.setPopupItemsSelectorColor(Theme.getColor(Theme.key_dialogButtonSelector), true);
             }
-            if (statusDrawable != null) {
-                updateStatus(UserConfig.getInstance(currentAccount).getCurrentUser(), false);
+            if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+                if (statusDrawable != null) {
+                    updateStatus(UserConfig.getInstance(currentAccount).getCurrentUser(), false);
+                }
             }
 
             if (scrimPopupWindowItems != null) {

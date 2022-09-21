@@ -196,9 +196,9 @@ public abstract class BaseFragment {
     public void setParentFragment(BaseFragment fragment) {
         setParentLayout(fragment.parentLayout);
         fragmentView = createView(parentLayout.getContext());
-        if (CherrygramConfig.INSTANCE.getDisableVibration()) {
+        /*if (CherrygramConfig.INSTANCE.getDisableVibration()) {
             VibrateUtil.disableHapticFeedback(fragmentView);
-        }
+        }*/
     }
 
     protected void setParentLayout(ActionBarLayout layout) {

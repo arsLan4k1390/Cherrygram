@@ -115,6 +115,17 @@
     <string name="AP_SystemFonts">Use system fonts</string>
     <string name="AP_SystemFonts_Desc">Disable this (restart app to apply) if your font does not support formatting (Bold, Italic, Monospace)</string>
 
+    <string name="CP_PremAndAnim_Header">Animations and Premium Features (restart app to apply)</string>
+    <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
+    <string name="CP_DisableReactionAnim">Disable reaction animation</string>
+    <string name="CP_DisableReactionAnim_Desc">(when reacting to a message)</string>
+    <string name="CP_DisablePremiumStatuses">Disable premium statuses</string>
+    <string name="CP_DisablePremiumStatuses_Desc">This will disable premium statuses everywhere, except drawer</string>
+    <string name="CP_DisablePremStickAnim">Disable taps on premium stickers</string>
+    <string name="CP_DisablePremStickAnim_Desc">Nothing will happen if you tap on premium sticker</string>
+    <string name="CP_DisablePremStickAutoPlay">Disable premium stickers auto-play</string>
+    <string name="CP_DisablePremStickAutoPlay_Desc">Premium stickers animation will not be played automatically (feature will not fork of you disabled taps on premium stickers)</string>
+
     <string name="CP_Filters_Header">Folders (restart app to apply)</string>
     <string name="AP_FolderNameInHeader">Folder name instead of \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">This will change \"Cherrygram\" in action bar to your folder\'s name (useful if you have only icons instead of folders names)</string>
@@ -158,11 +169,7 @@
     <string name="CP_ForwardMsgDate">Show forwarded message date</string>
     <string name="CP_ShowSeconds">Show seconds in timestamps</string>
     <string name="CP_ShowSeconds_Desc">Shows the seconds of the time of sent messages (restart app to apply)</string>
-    <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
     <string name="CP_DoubleTapReact">Disable quick reactions</string>
-    <string name="CP_DisableReactionAnim">Disable reaction animation</string>
-    <string name="CP_DisableReactionAnim_Desc">(when reacting to a message)</string>
-    <string name="CP_DisablePremStickAnim">Disable premium stickers animation</string>
     <string name="CP_DisableSwipeToNext">Disable transition to the next channel</string>
     <string name="CP_DisableSwipeToNext_Desc">Disable switching to the next channel when scrolling through any channel</string>
     <string name="CP_HideKbdOnScroll">Hide keyboard on scroll</string>

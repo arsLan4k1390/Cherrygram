@@ -134,7 +134,6 @@
     <string name="CP_DoubleTapReact">تعطيل ردود الفعل السريعة</string>
     <string name="CP_DisableReactionAnim">تعطيل ردود فعل الرسوم المتحركة</string>
     <string name="CP_DisableReactionAnim_Desc">(عند الرد على رسالة)</string>
-    <string name="CP_DisablePremStickAnim">تعطيل ملصقات الرسوم المتحركة المدفوعة</string>
     <string name="CP_DisableSwipeToNext">تعطيل الانتقال إلى القناة التالية</string>
     <string name="CP_DisableSwipeToNext_Desc">تعطيل التبديل إلى القناة التالية عند التمرير عبر أي قناة</string>
     <string name="CP_HideKbdOnScroll">إخفاء لوحة المفاتيح على التمرير</string>

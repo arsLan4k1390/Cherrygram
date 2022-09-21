@@ -58,6 +58,12 @@ object CherrygramConfig {
         editor.putBoolean("AP_Filter_Launcher_Icon", filterLauncherIcon)
         editor.apply()
     }
+    //Animations and Premium Features
+    var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
+    var disableReactionAnim by sharedPreferences.boolean("CP_DisableReactionAnim", false)
+    var disablePremiumStatuses by sharedPreferences.boolean("CP_DisablePremiumStatuses", false)
+    var disablePremStickAnim by sharedPreferences.boolean("CP_DisablePremStickAnim", false)
+    var disablePremStickAutoPlay by sharedPreferences.boolean("CP_DisablePremStickAutoPlay", false)
     //Folders
     var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
     var newTabs_hideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
@@ -312,10 +318,7 @@ object CherrygramConfig {
     var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
     var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", false)
     var showSeconds by sharedPreferences.boolean("CP_ShowSeconds", false)
-    var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
     var disableDoubleTabReact by sharedPreferences.boolean("CP_DoubleTapReact", false)
-    var disableReactionAnim by sharedPreferences.boolean("CP_DisableReactionAnim", false)
-    var disablePremStickAnim by sharedPreferences.boolean("CP_DisablePremStickAnim", false)
     var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
     var hideKeyboardOnScroll by sharedPreferences.boolean("CP_HideKbdOnScroll", false)
     var hideSendAsChannel by sharedPreferences.boolean("CP_HideSendAsChannel", false)

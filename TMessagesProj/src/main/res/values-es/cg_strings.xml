@@ -152,7 +152,6 @@
     <string name="CP_DoubleTapReact">Desactivar reacciones rápidas</string>
     <string name="CP_DisableReactionAnim">Desactivar animación de reacción</string>
     <string name="CP_DisableReactionAnim_Desc">(al reaccionar a un mensaje)</string>
-    <string name="CP_DisablePremStickAnim">Desactivar animación de stickers premium</string>
     <string name="CP_DisableSwipeToNext">Desactivar la transición al siguiente canal</string>
     <string name="CP_DisableSwipeToNext_Desc">Desactivar el cambio al siguiente canal al desplazarse por cualquier canal</string>
     <string name="CP_HideKbdOnScroll">Ocultar teclado al desplazar</string>

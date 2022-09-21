@@ -16,6 +16,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -157,6 +158,14 @@ import java.util.Scanner;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class PaymentFormActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
+    private final static List<String> WEBVIEW_PROTOCOLS = Arrays.asList(
+            "http",
+            "https"
+    );
+    private final static List<String> BLACKLISTED_PROTOCOLS = Collections.singletonList(
+            "tg"
+    );
+
     private final static int STEP_SHIPPING_INFORMATION = 0,
         STEP_SHIPPING_METHODS = 1,
         STEP_PAYMENT_INFO = 2,
@@ -2353,6 +2362,24 @@ public class PaymentFormActivity extends BaseFragment implements NotificationCen
                             Uri uri = Uri.parse(url);
                             if ("t.me".equals(uri.getHost())) {
                                 goToNextStep();
+                                return true;
+                            }
+
+                            if (BLACKLISTED_PROTOCOLS.contains(uri.getScheme())) {
+                                return true;
+                            }
+                            if (!WEBVIEW_PROTOCOLS.contains(uri.getScheme())) {
+                                try {
+                                    if (getContext() instanceof Activity) {
+                                        ((Activity) getContext()).startActivityForResult(new Intent(Intent.ACTION_VIEW, uri), BasePermissionsActivity.REQUEST_CODE_PAYMENT_FORM);
+                                    }
+                                } catch (ActivityNotFoundException e) {
+                                    new AlertDialog.Builder(context)
+                                            .setTitle(currentBotName)
+                                            .setMessage(LocaleController.getString(R.string.PaymentAppNotFoundForDeeplink))
+                                            .setPositiveButton(LocaleController.getString(R.string.OK), null)
+                                            .show();
+                                }
                                 return true;
                             }
                         } catch (Exception ignore) {

@@ -11245,15 +11245,17 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             } catch (Exception e) {
                 FileLog.e(e);
             }
-            if (currentNameStatusDrawable == null) {
-                currentNameStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(getParent() instanceof View ? (View) getParent() : null, AndroidUtilities.dp(20));
-            }
-            if (currentNameStatus == null) {
-                currentNameStatusDrawable.set((Drawable) null, false);
-            } else if (currentNameStatus instanceof Long) {
-                currentNameStatusDrawable.set((long) currentNameStatus, false);
-            } else if (currentNameStatus instanceof Drawable) {
-                currentNameStatusDrawable.set((Drawable) currentNameStatus, false);
+            if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+                if (currentNameStatusDrawable == null) {
+                    currentNameStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(getParent() instanceof View ? (View) getParent() : null, AndroidUtilities.dp(20));
+                }
+                if (currentNameStatus == null) {
+                    currentNameStatusDrawable.set((Drawable) null, false);
+                } else if (currentNameStatus instanceof Long) {
+                    currentNameStatusDrawable.set((long) currentNameStatus, false);
+                } else if (currentNameStatus instanceof Drawable) {
+                    currentNameStatusDrawable.set((Drawable) currentNameStatus, false);
+                }
             }
             if (currentNameString.length() == 0) {
                 currentNameString = null;

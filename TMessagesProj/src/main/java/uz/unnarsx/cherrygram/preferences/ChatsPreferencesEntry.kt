@@ -91,40 +91,12 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = LocaleController.getString("CP_DisableAnimAvatars", R.string.CP_DisableAnimAvatars)
-
-                contract({
-                    return@contract CherrygramConfig.disableAnimatedAvatars
-                }) {
-                    CherrygramConfig.disableAnimatedAvatars = it
-                }
-            }
-            switch {
                 title = LocaleController.getString("CP_DoubleTapReact", R.string.CP_DoubleTapReact)
 
                 contract({
                     return@contract CherrygramConfig.disableDoubleTabReact
                 }) {
                     CherrygramConfig.disableDoubleTabReact = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DisableReactionAnim", R.string.CP_DisableReactionAnim)
-                summary = LocaleController.getString("CP_DisableReactionAnim_Desc", R.string.CP_DisableReactionAnim_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.disableReactionAnim
-                }) {
-                    CherrygramConfig.disableReactionAnim = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DisablePremStickAnim", R.string.CP_DisablePremStickAnim)
-
-                contract({
-                    return@contract CherrygramConfig.disablePremStickAnim
-                }) {
-                    CherrygramConfig.disablePremStickAnim = it
                 }
             }
             switch {

@@ -92,6 +92,16 @@
     <string name="AP_FlatNB_Desc">导航栏将跟随聊天页面颜色变化</string>
     <string name="AP_SystemFonts">使用系统字体</string>
     <string name="AP_SystemFonts_Desc">如果你的字体不支持下述格式（粗体，斜体，等宽），请禁用本功能（重启应用生效）</string>
+    <string name="CP_PremAndAnim_Header">动画和 Premium 功能（重启应用生效）</string>
+    <string name="CP_DisableAnimAvatars">禁用动态头像</string>
+    <string name="CP_DisableReactionAnim">禁用表态动画</string>
+    <string name="CP_DisableReactionAnim_Desc">对消息表态时禁用其动画</string>
+    <string name="CP_DisablePremiumStatuses">禁用 Premium 状态显示</string>
+    <string name="CP_DisablePremiumStatuses_Desc">此功能将禁用除侧边栏外其他所有地方的 Premium 状态显示</string>
+    <string name="CP_DisablePremStickAnim">禁止点击 Premium 贴纸</string>
+    <string name="CP_DisablePremStickAnim_Desc">点击 Premium 贴纸时不会做出响应</string>
+    <string name="CP_DisablePremStickAutoPlay">禁止自动播放 Premium 贴纸动画</string>
+    <string name="CP_DisablePremStickAutoPlay_Desc">Premium 贴纸动画不会自动播放（开启禁止点击 Premium 功能时此功能无效）</string>
     <string name="CP_Filters_Header">文件夹 (重启应用生效）</string>
     <string name="AP_FolderNameInHeader">使用文件夹名称而非 \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">这会将操作栏中的“Cherrygram”更改为文件夹名称 (开启仅显示图标时效果最佳)</string>
@@ -130,11 +140,7 @@
     <string name="CP_ForwardMsgDate">显示转发日期时间</string>
     <string name="CP_ShowSeconds">在时间戳中显示秒数</string>
     <string name="CP_ShowSeconds_Desc">显示发送消息时间的秒数（重启应用生效）</string>
-    <string name="CP_DisableAnimAvatars">禁用动态头像</string>
     <string name="CP_DoubleTapReact">禁用快捷表态</string>
-    <string name="CP_DisableReactionAnim">禁用表态动画</string>
-    <string name="CP_DisableReactionAnim_Desc">对消息表态时禁用其动画</string>
-    <string name="CP_DisablePremStickAnim">禁用 Premium 贴纸动画</string>
     <string name="CP_DisableSwipeToNext">禁用频道切换</string>
     <string name="CP_DisableSwipeToNext_Desc">浏览频道消息时禁止切换到下一个频道</string>
     <string name="CP_HideKbdOnScroll">滚动浏览时收起键盘</string>
@@ -184,7 +190,7 @@
     <string name="EP_DownloadSpeedBoostAverage">开启</string>
     <string name="EP_DownloadSpeedBoostExtreme">最快</string>
     <string name="EP_UploadloadSpeedBoost">上传加速</string>
-    <string name="EP_SlowNetworkMode">Slow network mode</string>
+    <string name="EP_SlowNetworkMode">优化网络连接</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
     <string name="SP_Category_Security">安全</string>

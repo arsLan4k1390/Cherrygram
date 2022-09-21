@@ -76,6 +76,7 @@ import org.telegram.ui.Components.ForegroundColorSpanThemable;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 import org.telegram.ui.Components.PullForegroundDrawable;
 import org.telegram.ui.Components.RLottieDrawable;
+import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
 import org.telegram.ui.Components.StaticLayoutEx;
 import org.telegram.ui.Components.StatusDrawable;
 import org.telegram.ui.Components.SwipeGestureSettingsView;
@@ -992,7 +993,30 @@ public class DialogCell extends BaseCell {
                             fromChat = MessagesController.getInstance(currentAccount).getChat(-fromId);
                         }
                         drawCount2 = true;
-                        if (dialogsType == 2) {
+                        boolean lastMessageIsReaction = false;
+                        if (currentDialogId > 0 && message.isOutOwner() && message.messageOwner.reactions != null && message.messageOwner.reactions.recent_reactions != null && !message.messageOwner.reactions.recent_reactions.isEmpty()) {
+                            TLRPC.MessagePeerReaction lastReaction = message.messageOwner.reactions.recent_reactions.get(0);
+                            if (lastReaction.peer_id.user_id != 0 &&lastReaction.peer_id.user_id != UserConfig.getInstance(currentAccount).clientUserId) {
+                                lastMessageIsReaction = true;
+                                ReactionsLayoutInBubble.VisibleReaction visibleReaction = ReactionsLayoutInBubble.VisibleReaction.fromTLReaction(lastReaction.reaction);
+                                currentMessagePaint = Theme.dialogs_messagePrintingPaint[paintIndex];
+                                if (visibleReaction.emojicon != null) {
+                                    messageString = LocaleController.formatString("ReactionInDialog", R.string.ReactionInDialog, visibleReaction.emojicon);
+                                } else {
+                                    String string = LocaleController.formatString("ReactionInDialog", R.string.ReactionInDialog, "**reaction**");
+                                    int i = string.indexOf("**reaction**");
+                                    string = string.replace("**reaction**", "d");
+
+                                    SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(string);
+                                    spannableStringBuilder.setSpan(new AnimatedEmojiSpan(visibleReaction.documentId, currentMessagePaint == null ? null : currentMessagePaint.getFontMetricsInt()), i, i + 1, 0);
+
+                                    messageString = spannableStringBuilder;
+                                }
+                            }
+                        }
+                        if (lastMessageIsReaction) {
+
+                        } else if (dialogsType == 2) {
                             if (chat != null) {
                                 if (ChatObject.isChannel(chat) && !chat.megagroup) {
                                     if (chat.participants_count != 0) {
@@ -2924,22 +2948,25 @@ public class DialogCell extends BaseCell {
             setDrawableBounds(Theme.dialogs_verifiedCheckDrawable, nameMuteLeft - AndroidUtilities.dp(1), AndroidUtilities.dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 13.5f : 16.5f));
             Theme.dialogs_verifiedDrawable.draw(canvas);
             Theme.dialogs_verifiedCheckDrawable.draw(canvas);
-        } else if (drawPremium) {
-            if (emojiStatus != null) {
-                emojiStatus.setBounds(
-                    nameMuteLeft - AndroidUtilities.dp(2),
-                    AndroidUtilities.dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 12.5f : 15.5f) - AndroidUtilities.dp(4),
-                    nameMuteLeft + AndroidUtilities.dp(20),
-                    AndroidUtilities.dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 12.5f : 15.5f) - AndroidUtilities.dp(4) + AndroidUtilities.dp(22)
-                );
-                emojiStatus.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-                emojiStatus.draw(canvas);
-            } else {
-                Drawable premiumDrawable = PremiumGradient.getInstance().premiumStarDrawableMini;
-                setDrawableBounds(premiumDrawable, nameMuteLeft - AndroidUtilities.dp(1), AndroidUtilities.dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 12.5f : 15.5f));
-                premiumDrawable.draw(canvas);
+        } else if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+            if (drawPremium) {
+                if (emojiStatus != null) {
+                    emojiStatus.setBounds(
+                            nameMuteLeft - AndroidUtilities.dp(2),
+                            AndroidUtilities.dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 12.5f : 15.5f) - AndroidUtilities.dp(4),
+                            nameMuteLeft + AndroidUtilities.dp(20),
+                            AndroidUtilities.dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 12.5f : 15.5f) - AndroidUtilities.dp(4) + AndroidUtilities.dp(22)
+                    );
+                    emojiStatus.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+                    emojiStatus.draw(canvas);
+                } else {
+                    Drawable premiumDrawable = PremiumGradient.getInstance().premiumStarDrawableMini;
+                    setDrawableBounds(premiumDrawable, nameMuteLeft - AndroidUtilities.dp(1), AndroidUtilities.dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 12.5f : 15.5f));
+                    premiumDrawable.draw(canvas);
+                }
             }
-        } else if (drawScam != 0) {
+        }
+        else if (drawScam != 0) {
             setDrawableBounds((drawScam == 1 ? Theme.dialogs_scamDrawable : Theme.dialogs_fakeDrawable), nameMuteLeft, AndroidUtilities.dp(useForceThreeLines || SharedConfig.useThreeLinesLayout ? 12 : 15));
             (drawScam == 1 ? Theme.dialogs_scamDrawable : Theme.dialogs_fakeDrawable).draw(canvas);
         }

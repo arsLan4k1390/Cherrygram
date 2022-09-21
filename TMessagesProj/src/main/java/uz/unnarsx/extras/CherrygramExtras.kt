@@ -5,7 +5,7 @@ import org.telegram.messenger.SharedConfig
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.2.3"
+    var CG_VERSION = "7.2.4"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getDCGeo(dcId: Int): String? {
