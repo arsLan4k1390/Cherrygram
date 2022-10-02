@@ -20,32 +20,42 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 
+import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import uz.unnarsx.cherrygram.CGFeatureHooks;
 
 public class NotificationsService extends Service {
 
+    @RequiresApi(api = Build.VERSION_CODES.S)
     @Override
     public void onCreate() {
         super.onCreate();
         ApplicationLoader.postInitApplication();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String CHANNEL_ID = "push_service_channel";
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, LocaleController.getString("CG_PushService", R.string.CG_PushService), NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannelCompat channel = new NotificationChannelCompat.Builder("cherrygram", NotificationManagerCompat.IMPORTANCE_DEFAULT)
+                    .setName(LocaleController.getString("CG_PushService", R.string.CG_PushService))
+                    .setLightsEnabled(false)
+                    .setVibrationEnabled(false)
+                    .setSound(null, null)
+                    .build();
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
             notificationManager.createNotificationChannel(channel);
             Intent explainIntent = new Intent("android.intent.action.VIEW");
             explainIntent.setData(Uri.parse("tg://settings/notifications"));
-            PendingIntent explainPendingIntent = PendingIntent.getActivity(this, 0, explainIntent, 0);
-            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentIntent(explainPendingIntent)
-                    .setShowWhen(false)
-                    .setOngoing(true)
-                    .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
-                    .setContentText(LocaleController.getString("CG_PushService", R.string.CG_PushService))
-                    .build();
-            startForeground(9999, notification);
+            PendingIntent explainPendingIntent = PendingIntent.getActivity(this, 0, explainIntent, PendingIntent.FLAG_MUTABLE);
+            startForeground(1390,
+                    new NotificationCompat.Builder(this, "cherrygram")
+                            .setContentIntent(explainPendingIntent)
+                            .setShowWhen(false)
+                            .setOngoing(true)
+                            .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
+                            .setContentText(LocaleController.getString("CG_PushService", R.string.CG_PushService))
+                            .setCategory(NotificationCompat.CATEGORY_STATUS)
+                            .build());
         }
     }
 

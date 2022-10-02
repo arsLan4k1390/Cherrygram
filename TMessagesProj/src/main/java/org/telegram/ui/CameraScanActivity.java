@@ -92,6 +92,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.helpers.PermissionHelper;
 
 @TargetApi(18)
 public class CameraScanActivity extends BaseFragment {
@@ -621,8 +622,8 @@ public class CameraScanActivity extends BaseFragment {
                         return;
                     }
                     if (Build.VERSION.SDK_INT >= 23) {
-                        if (getParentActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                            getParentActivity().requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
+                        if (!PermissionHelper.isImagesAndVideoPermissionGranted()) {
+                            PermissionHelper.requestImagesAndVideoPermission(getParentActivity());
                             return;
                         }
                     }

@@ -1,6 +1,9 @@
 package uz.unnarsx.cherrygram.preferences
 
+import android.app.Activity
+import android.content.SharedPreferences
 import androidx.core.util.Pair
+import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
@@ -9,7 +12,9 @@ import uz.unnarsx.cherrygram.preferences.ktx.*
 import uz.unnarsx.tgkit.preference.types.TGKitSliderPreference.TGSLContract
 
 class ChatsPreferencesEntry : BasePreferencesEntry {
+    val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {
+        sharedPreferences.registerOnSharedPreferenceChangeListener(CherrygramConfig.listener)
         category(LocaleController.getString("CP_Slider_StickerAmplifier", R.string.CP_Slider_StickerAmplifier)) {
             slider {
                 contract = object : TGSLContract {
@@ -174,6 +179,16 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
         }
 
         category(LocaleController.getString("AS_Header_Record", R.string.CP_Header_Record)) {
+            switch {
+                title = LocaleController.getString("CP_VoiceEnhancements", R.string.CP_VoiceEnhancements)
+                summary = LocaleController.getString("CP_VoiceEnhancements_Desc", R.string.CP_VoiceEnhancements_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.voicesAgc
+                }) {
+                    CherrygramConfig.voicesAgc = it
+                }
+            }
             switch {
                 title = LocaleController.getString("CP_PlayVideo", R.string.CP_PlayVideo)
                 summary = LocaleController.getString("CP_PlayVideo_Desc", R.string.CP_PlayVideo_Desc)

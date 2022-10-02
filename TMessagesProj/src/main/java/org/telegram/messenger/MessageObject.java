@@ -73,6 +73,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class MessageObject {
 
     public static final int MESSAGE_SEND_STATE_SENT = 0;
@@ -287,11 +289,11 @@ public class MessageObject {
 
     public boolean shouldDrawReactionsInLayout() {
         if (getDialogId() < 0 || UserConfig.getInstance(currentAccount).isPremium()) {
-            return true;
+            return !CherrygramConfig.INSTANCE.getDrawSmallReactions();
         }
         TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(getDialogId());
         if (user != null && user.premium) {
-            return true;
+            return !CherrygramConfig.INSTANCE.getDrawSmallReactions();
         }
         return false;//getDialogId() < 0 || UserConfig.getInstance(currentAccount).isPremium();
     }

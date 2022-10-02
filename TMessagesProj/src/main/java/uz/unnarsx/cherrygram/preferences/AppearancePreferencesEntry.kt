@@ -1,7 +1,10 @@
 package uz.unnarsx.cherrygram.preferences
 
+import android.app.Activity
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
+import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.messenger.SharedConfig
@@ -14,7 +17,9 @@ import uz.unnarsx.extras.CherrygramExtras
 import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
+    val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)) {
+        sharedPreferences.registerOnSharedPreferenceChangeListener(CherrygramConfig.listener)
         category(LocaleController.getString("AP_RedesignCategory", R.string.AP_RedesignCategory)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 list {
@@ -90,6 +95,26 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("CP_DisableReactionsOverlay", R.string.CP_DisableReactionsOverlay)
+                summary = LocaleController.getString("CP_DisableReactionsOverlay_Desc", R.string.CP_DisableReactionsOverlay_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.disableReactionsOverlay
+                }) {
+                    CherrygramConfig.disableReactionsOverlay = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_DrawSmallReactions", R.string.CP_DrawSmallReactions)
+                summary = LocaleController.getString("CP_DrawSmallReactions_Desc", R.string.CP_DrawSmallReactions_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.drawSmallReactions
+                }) {
+                    CherrygramConfig.drawSmallReactions = it
+                }
+            }
+            switch {
                 title = LocaleController.getString("CP_DisableReactionAnim", R.string.CP_DisableReactionAnim)
                 summary = LocaleController.getString("CP_DisableReactionAnim_Desc", R.string.CP_DisableReactionAnim_Desc)
 
@@ -141,16 +166,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.folderNameInHeader
                 }) {
                     CherrygramConfig.folderNameInHeader = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_NewTabs_RemoveAllChats", R.string.CP_NewTabs_RemoveAllChats)
-                /*summary = LocaleController.getString("CP_NewTabs_RemoveAllChats_Desc", R.string.CP_NewTabs_RemoveAllChats_Desc)*/
-
-                contract({
-                    return@contract CherrygramConfig.newTabs_hideAllChats
-                }) {
-                    CherrygramConfig.newTabs_hideAllChats = it
                 }
             }
             switch {

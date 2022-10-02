@@ -25,7 +25,6 @@
     <string name="CG_ChooseFolderIcon">Elige un icono</string>
     <string name="CP_NewTabs_NoCounter">Ocultar contador en pestañas</string>
     <string name="CP_NewTabs_NoCounter_Desc">Esto ocultará el contador de mensajes no leídos</string>
-    <string name="AP_FilledIcons">Usar iconos de pestañas rellenos</string>
     <!--Telegram Folders Settings-->
 
     <!--Chats screen-->
@@ -40,7 +39,6 @@
     <string name="CG_ViewUserHistory">Historial de mensajes</string>
     <string name="CG_ToSaved">Guardar mensaje</string>
 
-    <string name="CG_AllowStorage">Debido a los cambios introducidos por Google en Android 11+, Cherrygram necesita tu permiso para ver archivos que no sean multimedia.</string>
     <string name="CG_CreateMention">Crear mención</string>
 
     <string name="CG_FwdMenu_EnableNoForward">Desactivar autor del reenvío</string>
@@ -109,7 +107,6 @@
     <string name="CP_Filters_Header">Carpetas (reiniciar app para aplicar)</string>
     <string name="AP_FolderNameInHeader">Nombre de la carpeta en lugar de \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Esto cambiará \"Cherrygram\" en la barra de acción al nombre de tu carpeta (útil si solo tienes iconos en lugar de nombres de carpetas)</string>
-    <string name="CP_NewTabs_RemoveAllChats">Ocultar carpeta \"Todos\"</string>
     <string name="CP_ShowTabsOnForward">Mostrar carpetas en la pantalla de reenvío</string>
 
     <string name="AP_DrawerCategory">Cajón</string>
@@ -192,8 +189,6 @@
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Accede directamente a la cámara del sistema (no aplica para videomensajes).</string>
 
-    <string name="CP_RoundCamera16to9">Usar cámara 16:9</string>
-    <string name="CP_RoundCamera16to9_Desc">Activar si te enfrentas a problemas de calidad en videomensajes</string>
     <string name="CP_RearCam">Usar cámara trasera</string>
     <string name="CP_RearCam_Desc">En lugar de cámara frontal para videomensajes</string>
     <string name="CP_DisableCam">Desactivar la cámara en el menú de adjuntar medios</string>

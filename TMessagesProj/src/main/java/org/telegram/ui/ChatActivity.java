@@ -297,6 +297,7 @@ import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.helpers.PermissionHelper;
 
 @SuppressWarnings("unchecked")
 public class ChatActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, LocationActivity.LocationActivityDelegate, ChatAttachAlertDocumentLayout.DocumentSelectActivityDelegate {
@@ -10948,12 +10949,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 FileLog.e(e);
             }
         } else if (which == attach_gallery) {
-            if (Build.VERSION.SDK_INT >= 23 && getParentActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                try {
-                    getParentActivity().requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
-                } catch (Throwable ignore) {
-
-                }
+            if (!PermissionHelper.isImagesAndVideoPermissionGranted()) {
+                PermissionHelper.requestImagesAndVideoPermission(getParentActivity());
                 return;
             }
             boolean allowGifs;
@@ -21987,17 +21984,17 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             Rect rect = new Rect();
 
             List<TLRPC.TL_availableReaction> availableReacts = getMediaDataController().getEnabledReactionsList();
-            boolean isReactionsViewAvailable = !isSecretChat() && !isInScheduleMode() && currentUser == null && message.hasReactions() && (!ChatObject.isChannel(currentChat) || currentChat.megagroup) && !availableReacts.isEmpty() && message.messageOwner.reactions.can_see_list && !message.isSecretMedia();
+            boolean isReactionsViewAvailable = !isSecretChat() && !isInScheduleMode() && currentUser == null && message.hasReactions() && (!ChatObject.isChannel(currentChat) || currentChat.megagroup) && !availableReacts.isEmpty() && message.messageOwner.reactions.can_see_list && !message.isSecretMedia() && !CherrygramConfig.INSTANCE.getDisableReactionsOverlay();
             boolean isReactionsAvailable;
             if (message.isForwardedChannelPost()) {
                 TLRPC.ChatFull chatInfo = getMessagesController().getChatFull(-message.getFromChatId());
-                if (chatInfo == null) {
+                if (chatInfo == null && !CherrygramConfig.INSTANCE.getDisableReactionsOverlay()) {
                     isReactionsAvailable = true;
                 } else {
-                    isReactionsAvailable = !isSecretChat() && !isInScheduleMode() && message.isReactionsAvailable() && (chatInfo != null && !(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone)) && !availableReacts.isEmpty();
+                    isReactionsAvailable = !isSecretChat() && !isInScheduleMode() && message.isReactionsAvailable() && (chatInfo != null && !(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone)) && !availableReacts.isEmpty() && !CherrygramConfig.INSTANCE.getDisableReactionsOverlay();
                 }
             } else {
-                isReactionsAvailable = !message.isSecretMedia() && !isSecretChat() && !isInScheduleMode() && message.isReactionsAvailable() && (chatInfo != null && !(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone) || (chatInfo == null && !ChatObject.isChannel(currentChat)) || currentUser != null) && !availableReacts.isEmpty();
+                isReactionsAvailable = !message.isSecretMedia() && !isSecretChat() && !isInScheduleMode() && message.isReactionsAvailable() && (chatInfo != null && !(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone) || (chatInfo == null && !ChatObject.isChannel(currentChat)) || currentUser != null) && !availableReacts.isEmpty() && !CherrygramConfig.INSTANCE.getDisableReactionsOverlay();
             }
             boolean showMessageSeen = !isReactionsViewAvailable && !isInScheduleMode() && currentChat != null && message.isOutOwner() && message.isSent() && !message.isEditing() && !message.isSending() && !message.isSendError() && !message.isContentUnread() && !message.isUnread() && (ConnectionsManager.getInstance(currentAccount).getCurrentTime() - message.messageOwner.date < getMessagesController().chatReadMarkExpirePeriod)  && (ChatObject.isMegagroup(currentChat) || !ChatObject.isChannel(currentChat)) && chatInfo != null && chatInfo.participants_count <= getMessagesController().chatReadMarkSizeThreshold && !(message.messageOwner.action instanceof TLRPC.TL_messageActionChatJoinedByRequest) && (v instanceof ChatMessageCell);
 

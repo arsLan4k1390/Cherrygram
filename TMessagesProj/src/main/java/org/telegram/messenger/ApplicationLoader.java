@@ -10,6 +10,7 @@ package org.telegram.messenger;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlarmManager;
 import android.app.Application;
 import android.app.PendingIntent;
@@ -44,11 +45,12 @@ import org.telegram.ui.Components.ForegroundDetector;
 import org.telegram.ui.LauncherIconController;
 
 import java.io.File;
+import java.util.HashMap;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
 
 public class ApplicationLoader extends Application {
-    private static PendingIntent pendingIntent;
 
     private static ApplicationLoader applicationLoaderInstance;
 
@@ -80,6 +82,21 @@ public class ApplicationLoader extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        AnalyticsHelper.start(this);
+        AnalyticsHelper.trackEvent("App start");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            var am = getSystemService(ActivityManager.class);
+            var reasons = am.getHistoricalProcessExitReasons(null, 0, 1);
+            if (reasons.size() == 1) {
+                var map = new HashMap<String, String>(5);
+                map.put("description", reasons.get(0).getDescription());
+                map.put("importance", String.valueOf(reasons.get(0).getImportance()));
+                map.put("process", reasons.get(0).getProcessName());
+                map.put("reason", String.valueOf(reasons.get(0).getReason()));
+                map.put("status", String.valueOf(reasons.get(0).getStatus()));
+                AnalyticsHelper.trackEvent("Last exit reasons", map);
+            }
+        }
         MultiDex.install(this);
     }
 
@@ -281,60 +298,39 @@ public class ApplicationLoader extends Application {
 
         AndroidUtilities.runOnUIThread(ApplicationLoader::startPushService);
 
-        startPushService();
+        //startPushService();
         LauncherIconController.tryFixLauncherIconIfNeeded();
     }
 
     public static void startPushService() {
-        Utilities.stageQueue.postRunnable(ApplicationLoader::startPushServiceInternal);
-    }
-
-    private static void startPushServiceInternal() {
         SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
         boolean enabled;
         if (preferences.contains("pushService")) {
             enabled = preferences.getBoolean("pushService", false);
         } else {
             enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", false);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putBoolean("pushService", enabled);
-            editor.putBoolean("pushConnection", enabled);
-            editor.apply();
-            ConnectionsManager.getInstance(UserConfig.selectedAccount).setPushConnectionEnabled(enabled);
         }
         if (enabled) {
-            AndroidUtilities.runOnUIThread(() -> {
-                try {
-                    Log.d("TFOSS", "Trying to start push service every 10 minutes");
-                    // Telegram-FOSS: unconditionally enable push service
-                    AlarmManager am = (AlarmManager) applicationContext.getSystemService(Context.ALARM_SERVICE);
-                    Intent i = new Intent(applicationContext, NotificationsService.class);
-                    pendingIntent = PendingIntent.getBroadcast(applicationContext, 0, i, 0);
+            try {
+                Log.d("TFOSS", "Trying to start push service every 10 minutes");
 
-                    am.cancel(pendingIntent);
-                    am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 10 * 60 * 1000, pendingIntent);
-
-                    Log.d("TFOSS", "Starting push service...");
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        applicationContext.startForegroundService(new Intent(applicationContext, NotificationsService.class));
-                    } else {
-                        applicationContext.startService(new Intent(applicationContext, NotificationsService.class));
-                    }
-                } catch (Throwable e) {
-                    Log.d("TFOSS", "Failed to start push service");
+                Log.d("TFOSS", "Starting push service...");
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    applicationContext.startForegroundService(new Intent(applicationContext, NotificationsService.class));
+                } else {
+                    applicationContext.startService(new Intent(applicationContext, NotificationsService.class));
                 }
-            });
-
-        } else AndroidUtilities.runOnUIThread(() -> {
+            } catch (Throwable ignore) {
+                Log.d("TFOSS", "Failed to start push service");
+            }
+        } else {
             applicationContext.stopService(new Intent(applicationContext, NotificationsService.class));
 
-            PendingIntent pintent = PendingIntent.getService(applicationContext, 0, new Intent(applicationContext, NotificationsService.class), 0);
-            AlarmManager alarm = (AlarmManager) applicationContext.getSystemService(Context.ALARM_SERVICE);
+            /*PendingIntent pintent = PendingIntent.getService(applicationContext, 0, new Intent(applicationContext, NotificationsService.class), PendingIntent.FLAG_MUTABLE);
+            AlarmManager alarm = (AlarmManager)applicationContext.getSystemService(Context.ALARM_SERVICE);
             alarm.cancel(pintent);
-            if (pendingIntent != null) {
-                alarm.cancel(pendingIntent);
-            }
-        });
+            TODO: find out wtf is this? */
+        }
     }
 
     @Override
@@ -557,29 +553,4 @@ public class ApplicationLoader extends Application {
         }
         return result;
     }
-
-    public static void startAppCenter(Activity context) {
-        applicationLoaderInstance.startAppCenterInternal(context);
-    }
-
-    public static void checkForUpdates() {
-        applicationLoaderInstance.checkForUpdatesInternal();
-    }
-
-    public static void appCenterLog(Throwable e) {
-        applicationLoaderInstance.appCenterLogInternal(e);
-    }
-
-    protected void appCenterLogInternal(Throwable e) {
-
-    }
-
-    protected void checkForUpdatesInternal() {
-
-    }
-
-    protected void startAppCenterInternal(Activity context) {
-
-    }
-
 }

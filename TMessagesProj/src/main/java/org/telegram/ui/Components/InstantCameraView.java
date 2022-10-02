@@ -169,7 +169,6 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     private CameraGLThread cameraThread;
     private Size previewSize;
     private Size pictureSize;
-    private Size aspectRatio = CherrygramConfig.INSTANCE.getRoundCamera16to9() ? new Size(16, 9) : new Size(1, 1);
     private TextureView textureView;
     private BackupImageView textureOverlayView;
     private CameraSession cameraSession;
@@ -982,8 +981,18 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
 
         ArrayList<Size> previewSizes = selectedCamera.getPreviewSizes();
         ArrayList<Size> pictureSizes = selectedCamera.getPictureSizes();
-        previewSize = CameraController.chooseOptimalSize(previewSizes, 960, 540, aspectRatio);
-        pictureSize = CameraController.chooseOptimalSize(pictureSizes, 960, 540, aspectRatio);
+
+        if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera1to1) {
+            previewSize = CameraController.chooseOptimalSize(previewSizes, 960, 540, new Size(1, 1));
+            pictureSize = CameraController.chooseOptimalSize(pictureSizes, 960, 540, new Size(1, 1));
+        } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera4to3) {
+            previewSize = CameraController.chooseOptimalSize(previewSizes, 960, 540, new Size(4, 3));
+            pictureSize = CameraController.chooseOptimalSize(pictureSizes, 960, 540, new Size(4, 3));
+        } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera16to9) {
+            previewSize = CameraController.chooseOptimalSize(previewSizes, 960, 540, new Size(16, 9));
+            pictureSize = CameraController.chooseOptimalSize(pictureSizes, 960, 540, new Size(16, 9));
+        }
+
         if (previewSize.mWidth != pictureSize.mWidth) {
             boolean found = false;
             for (int a = previewSizes.size() - 1; a >= 0; a--) {
@@ -1040,11 +1049,11 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             } else {
                 sizes = previewSizes;
             }
-            if (Build.MANUFACTURER.equalsIgnoreCase("Xiaomi")) {
-                return CameraController.chooseOptimalSize(sizes, 640, 480, aspectRatio);
+            /*if (Build.MANUFACTURER.equalsIgnoreCase("Xiaomi")) {
+                return CameraController.chooseOptimalSize(sizes, 640, 480, new Size(CherrygramConfig.INSTANCE.getCameraWidth(), CherrygramConfig.INSTANCE.getCameraHeight()));
             } else {
-                return CameraController.chooseOptimalSize(sizes, 480, 270, aspectRatio);
-            }
+                return CameraController.chooseOptimalSize(sizes, 480, 270, new Size(CherrygramConfig.INSTANCE.getCameraWidth(), CherrygramConfig.INSTANCE.getCameraHeight()));
+            }*/
         }
         Collections.sort(sortedSizes, (o1, o2) -> {
             float a1 = Math.abs(1f - Math.min(o1.mHeight, o1.mWidth) / (float) Math.max(o1.mHeight, o1.mWidth));
@@ -2252,8 +2261,8 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     videoEditedInfo.iv = iv;
                     videoEditedInfo.estimatedSize = Math.max(1, size);
                     videoEditedInfo.framerate = 25;
-                    videoEditedInfo.resultWidth = videoEditedInfo.originalWidth = 360;
-                    videoEditedInfo.resultHeight = videoEditedInfo.originalHeight = 360;
+                    videoEditedInfo.resultWidth = videoEditedInfo.originalWidth = 512;
+                    videoEditedInfo.resultHeight = videoEditedInfo.originalHeight = 512;
                     videoEditedInfo.originalPath = videoFile.getAbsolutePath();
                     if (send == 1) {
                         if (baseFragment.isInScheduleMode()) {

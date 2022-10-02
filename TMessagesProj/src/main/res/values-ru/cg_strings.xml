@@ -25,7 +25,6 @@
     <string name="CG_ChooseFolderIcon">Выберите иконку</string>
     <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
     <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
-    <string name="AP_FilledIcons">Использовать залитые иконки папок</string>
     <!--Telegram Folders Settings-->
 
     <!--Chats screen-->
@@ -40,7 +39,6 @@
     <string name="CG_ViewUserHistory">История сообщений</string>
     <string name="CG_ToSaved">Сохранить сообщение</string>
 
-    <string name="CG_AllowStorage">Из-за изменений, внесённых Google в Android 11+, Cherrygram требует Ваше разрешение для просмотра не медийных файлов.</string>
     <string name="CG_CreateMention">Упомянуть</string>
 
     <string name="CG_FwdMenu_EnableNoForward">Удалять автора сообщений</string>
@@ -109,6 +107,10 @@
 
     <string name="CP_PremAndAnim_Header">Анимации и премиум функции (требуется перезапуск приложения)</string>
     <string name="CP_DisableAnimAvatars">Отключить анимированные аватарки</string>
+    <string name="CP_DisableReactionsOverlay">Отключить реакции</string>
+    <string name="CP_DisableReactionsOverlay_Desc">Это отключит всплывающий список доступных реакций</string>
+    <string name="CP_DrawSmallReactions">Рисовать маленькие реакции</string>
+    <string name="CP_DrawSmallReactions_Desc">Включить маленькие реакции (старого стиля) вместо больших</string>
     <string name="CP_DisableReactionAnim">Отключить анимацию реакций</string>
     <string name="CP_DisableReactionAnim_Desc">(во время реакции на сообщение)</string>
     <string name="CP_DisablePremiumStatuses">Отключить премиум статусы</string>
@@ -116,12 +118,11 @@
     <string name="CP_DisablePremStickAnim">Отключить нажатия на премиум стикеры</string>
     <string name="CP_DisablePremStickAnim_Desc">Ничего не будет происходить если вы будете нажимать на премиум стикер</string>
     <string name="CP_DisablePremStickAutoPlay">Отключить авто-воспроизведение премиум стикеров</string>
-    <string name="CP_DisablePremStickAutoPlay_Desc">Премиум анимация стикеров не будет воспроизведена автоматически (функция не работает если вы включили нажатия на премиум стикеры)</string>
+    <string name="CP_DisablePremStickAutoPlay_Desc">Премиум анимация стикеров не будет воспроизведена автоматически (функция не будет работать если вы выключили нажатия на премиум стикеры)</string>
 
     <string name="CP_Filters_Header">Папки (требуется перезапуск приложения)</string>
     <string name="AP_FolderNameInHeader">Название папки вместо \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Это изменит \"Cherrygram\" в заголовке сверху на название вашей папки (удобно при отображении иконок вместо названий папок)</string>
-    <string name="CP_NewTabs_RemoveAllChats">Скрыть вкладку \"Все чаты\"</string>
     <string name="CP_ShowTabsOnForward">Показывать папки при пересылке</string>
 
     <string name="AP_DrawerCategory">Боковое меню</string>
@@ -170,6 +171,8 @@
     <string name="CP_Slider_RecentStickersAmplifier">Счетчик недавних стикеров (требуется перезапуск приложения)</string>
 
     <string name="CP_Header_Record">Медиа</string>
+    <string name="CP_VoiceEnhancements">Улучшения звука</string>
+    <string name="CP_VoiceEnhancements_Desc">Включает шумоподавление и нормализацию голоса</string>
     <string name="CP_PlayVideo">Воспроизводить видео по нажатию на кнопку громкости</string>
     <string name="CP_PlayVideo_Desc">При нажатии на кнопку громкости будет включено видео на экране в диалоге</string>
     <string name="CP_AutoPauseVideo">Останавливать видео</string>
@@ -201,8 +204,8 @@
     <string name="CP_CameraTypeSystem">Системная</string>
     <string name="CP_SystemCameraDesc">Позволяет получить доступ напрямую к системной камере (не применимо к видеосообщениям).</string>
 
-    <string name="CP_RoundCamera16to9">Использовать камеру 16:9</string>
-    <string name="CP_RoundCamera16to9_Desc">Включите это если вы сталкиваетесь с проблемой качества видеосообщений</string>
+    <string name="CP_CameraAspectRatio">Соотношение сторон камеры</string>
+    <string name="CP_CameraAspectRatio_Desc">Выбор соотношения сторон камеры необходим для того, чтобы записывать видеосообщения в хорошем качестве. В большинстве телефонов, обычно, используется соотношение 16:9, а во флагманских устройствах 4:3 либо 1:1. Тестируйте каждое, сравнивайте качество записи и используйте наилучшее соотношение.</string>
     <string name="CP_RearCam">Использовать заднюю камеру</string>
     <string name="CP_RearCam_Desc">Вместо фронтальной камеры при записи видеосообщений</string>
     <string name="CP_DisableCam">Отключить камеру в меню выбора фото</string>

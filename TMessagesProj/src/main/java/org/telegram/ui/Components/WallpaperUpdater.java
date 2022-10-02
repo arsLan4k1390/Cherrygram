@@ -38,6 +38,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.helpers.PermissionHelper;
+
 public class WallpaperUpdater {
 
     private String currentPicturePath;
@@ -111,8 +113,8 @@ public class WallpaperUpdater {
     public void openGallery() {
         if (parentFragment != null) {
             if (Build.VERSION.SDK_INT >= 23 && parentFragment.getParentActivity() != null) {
-                if (parentFragment.getParentActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    parentFragment.getParentActivity().requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
+                if (!PermissionHelper.isImagesPermissionGranted()) {
+                    PermissionHelper.requestImagesPermission(parentFragment.getParentActivity());
                     return;
                 }
             }

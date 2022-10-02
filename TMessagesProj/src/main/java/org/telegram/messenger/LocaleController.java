@@ -32,6 +32,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -338,7 +339,7 @@ public class LocaleController {
 
         localeInfo = new LocaleInfo();
         localeInfo.name = "简体中文";
-        localeInfo.nameEnglish = "Simplified Chinese";
+        localeInfo.nameEnglish = "Chinese (Simplified)";
         localeInfo.shortName = "fengcs";
         localeInfo.baseLangCode = "zh_hans_raw";
         localeInfo.isRtl = false;
@@ -1069,6 +1070,7 @@ public class LocaleController {
     }
 
     public static String getString(String key, int res) {
+        if (key.equals("AppName")) return ApplicationLoader.applicationContext.getString(res);
         return getInstance().getStringInternal(key, res);
     }
 
@@ -1972,7 +1974,9 @@ public class LocaleController {
             if (rounded != null) {
                 rounded[0] = number;
             }
-            return String.valueOf(number);
+            DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+            formatter.applyPattern("#,###");
+            return formatter.format(number);
         }
         StringBuilder K = new StringBuilder();
         int lastDec = 0;

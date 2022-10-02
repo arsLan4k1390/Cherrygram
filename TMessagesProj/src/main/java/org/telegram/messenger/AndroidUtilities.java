@@ -2588,12 +2588,22 @@ public class AndroidUtilities {
         }
     }*/
 
+    public static void startAppCenter(Activity context) {
+
+    }
+
+    private static long lastUpdateCheckTime;
+
+    public static void checkForUpdates() {
+
+    }
+
     public static void appCenterLog(Throwable e) {
-        ApplicationLoader.appCenterLog(e);
+
     }
 
     public static boolean shouldShowClipboardToast() {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !OneUIUtilities.hasBuiltInClipboardToasts();
+        return (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !OneUIUtilities.hasBuiltInClipboardToasts()) && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
     }
 
     public static boolean addToClipboard(CharSequence str) {

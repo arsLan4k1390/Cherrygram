@@ -168,18 +168,17 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             addView(adminTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.TOP, LocaleController.isRTL ? 23 : 0, 10, LocaleController.isRTL ? 0 : 23, 0));
         }
 
-        if (CherrygramConfig.INSTANCE.getShowMutualContacts())
-            if (needMutualIcon) {
-                mutualView = new ImageView(context);
-                mutualView.setImageResource(R.drawable.ic_round_swap_horiz_24);
-                mutualView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_player_actionBarSelector)));
-                mutualView.setScaleType(ImageView.ScaleType.CENTER);
-                mutualView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.MULTIPLY));
-                mutualView.setVisibility(GONE);
-                mutualView.setOnClickListener(v -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_ERROR, LocaleController.getString("AP_MutualContactsDescription", R.string.AP_MutualContacts_Description)));
-                mutualView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-                addView(mutualView, LayoutHelper.createFrame(40, 40, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 8 : 0, 0, LocaleController.isRTL ? 0 : 8, 0));
-            }
+        if (needMutualIcon) {
+            mutualView = new ImageView(context);
+            mutualView.setImageResource(R.drawable.ic_round_swap_horiz_24);
+            mutualView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_player_actionBarSelector)));
+            mutualView.setScaleType(ImageView.ScaleType.CENTER);
+            mutualView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.MULTIPLY));
+            mutualView.setVisibility(GONE);
+            mutualView.setOnClickListener(v -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_ERROR, LocaleController.getString("AP_MutualContactsDescription", R.string.AP_MutualContacts_Description)));
+            mutualView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+            addView(mutualView, LayoutHelper.createFrame(40, 40, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 8 : 0, 0, LocaleController.isRTL ? 0 : 8, 0));
+        }
 
         if (needRightCheck) {
             checkImageView = new ImageView(context);
@@ -587,13 +586,12 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             adminTextView.setTextColor(Theme.getColor(Theme.key_profile_creatorIcon, resourcesProvider));
         }
 
-        if (CherrygramConfig.INSTANCE.getShowMutualContacts())
-            if (mutualView != null) {
-                mutualView.setVisibility(currentUser != null && currentUser.mutual_contact ? VISIBLE : GONE);
-                if (currentUser != null && currentUser.mutual_contact) {
-                    nameTextView.setContentDescription(nameTextView.getText() + " (" + LocaleController.getString("AP_MutualContacts_Description", R.string.AP_MutualContacts_Description) + ")");
-                }
+        if (mutualView != null) {
+            mutualView.setVisibility(currentUser != null && currentUser.mutual_contact ? VISIBLE : GONE);
+            if (currentUser != null && currentUser.mutual_contact) {
+                nameTextView.setContentDescription(nameTextView.getText() + " (" + LocaleController.getString("AP_MutualContacts_Description", R.string.AP_MutualContacts_Description) + ")");
             }
+        }
     }
 
     public void setSelfAsSavedMessages(boolean value) {

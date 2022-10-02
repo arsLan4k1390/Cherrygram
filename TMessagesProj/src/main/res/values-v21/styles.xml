@@ -112,10 +112,6 @@
 
     <!--BORDERLESS BUTTON-->
 
-    <style name="Theme.TMessages.BorderLessButton" parent="android:Widget.Material.Light.ButtonBar.AlertDialog">
-        <item name="android:textColor">#4991cc</item>
-    </style>
-
     <!--DATEPICKER VIEW-->
 
     <style name="Theme.TMessages.DayOfWeek" parent="@android:style/TextAppearance.Material.Caption">

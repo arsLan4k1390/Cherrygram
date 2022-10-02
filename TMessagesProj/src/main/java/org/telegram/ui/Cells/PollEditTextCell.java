@@ -186,35 +186,22 @@ public class PollEditTextCell extends FrameLayout {
                 onCheckBoxClick(PollEditTextCell.this, !checkBox.isChecked());
             });
         } else if (onChangeIcon != null) {
-            addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 19 : 58, 0, !LocaleController.isRTL ? 19 : 58, 0));
-            moveImageView = new ImageView(context) {
-                @Override
-                protected void onDraw(Canvas canvas) {
-                    super.onDraw(canvas);
-                }
-            };
-            moveImageView.setFocusable(false);
+            addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 19 : 66, 0, !LocaleController.isRTL ? 19 : 66, 0));
+            moveImageView = new ImageView(context);
+            moveImageView.setFocusable(true);
             moveImageView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_stickers_menuSelector)));
             moveImageView.setScaleType(ImageView.ScaleType.CENTER);
             moveImageView.setOnClickListener(onChangeIcon);
             moveImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.MULTIPLY));
-            addView(moveImageView, LayoutHelper.createFrame(48, 50, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 6, 2, 6, 0));
+            moveImageView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+            addView(moveImageView, LayoutHelper.createFrame(48, 48, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 8, 2, 8, 0));
         } else {
             addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL, 19, 0, 19, 0));
         }
     }
 
     public void setIcon(int icon) {
-        @SuppressLint("DrawAllocation")
-        PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.SRC_ATOP);
-        @SuppressLint("DrawAllocation")
-        Rect boundRect = new Rect(0, 0,getMeasuredWidth(),getMeasuredHeight());
-        Drawable ic = getResources().getDrawable(icon);
-        ic.setBounds(boundRect);
-        ic.setAlpha(255);
-        ic.setColorFilter(colorFilter);
         moveImageView.setImageResource(icon);
-        moveImageView.invalidate();
     }
 
     public void createErrorTextView() {

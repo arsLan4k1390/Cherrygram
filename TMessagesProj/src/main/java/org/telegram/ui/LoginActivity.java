@@ -127,6 +127,7 @@ import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
+import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.CombinedDrawable;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.CustomPhoneKeyboardView;
@@ -262,7 +263,7 @@ public class LoginActivity extends BaseFragment {
     private boolean checkPermissions = true;
     private boolean checkShowPermissions = true;
     private boolean newAccount;
-    private boolean syncContacts = true;
+    private boolean syncContacts = false;
     private boolean testBackend = false;
 
     @ActivityMode
@@ -2023,25 +2024,29 @@ public class LoginActivity extends BaseFragment {
                 return false;
             });
 
-            int bottomMargin = 72;
+            TextView proxySettings = new TextView(context);
+            proxySettings.setPadding(AndroidUtilities.dp(34), 0, AndroidUtilities.dp(34), 0);
+            proxySettings.setGravity(Gravity.CENTER);
+            proxySettings.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            proxySettings.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+            spannableStringBuilder.append(".  ").append(LocaleController.getString("CG_ProxySettings", R.string.CG_ProxySettings));
+            spannableStringBuilder.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.proxy_off)), 0, 1, 0);
+            proxySettings.setText(spannableStringBuilder);
+            proxySettings.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
+            proxySettings.setBackgroundDrawable(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(6), Theme.getColor(Theme.key_featuredStickers_addButton), Theme.getColor(Theme.key_featuredStickers_addButtonPressed)));
+            addView(proxySettings, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM, 16, 24, 16, 14));
+            proxySettings.setOnClickListener(view -> presentFragment(new ProxyListActivity()));
+
             TextView textViewProxy = new TextView(context);
             textViewProxy.setText(LocaleController.getString("CG_ProxyInfo", R.string.CG_ProxyInfo));
             textViewProxy.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
             textViewProxy.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            textViewProxy.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
+            textViewProxy.setGravity(Gravity.CENTER);
             textViewProxy.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            addView(textViewProxy, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 0, 28, 0, 10));
-            TextView addProxyButton = new TextView(context);
-            addProxyButton.setText(LocaleController.getString("CG_ProxySettings", R.string.CG_ProxySettings));
-            addProxyButton.setGravity(Gravity.CENTER);
-            addProxyButton.setTextColor(0xffffffff);
-            addProxyButton.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
-            addProxyButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            addProxyButton.setBackgroundDrawable(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(4), 0xff50a8eb, 0xff439bde));
-            addProxyButton.setPadding(AndroidUtilities.dp(34), 0, AndroidUtilities.dp(34), 0);
-            addView(addProxyButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 42, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 10, 0, 10, 10));
-            addProxyButton.setOnClickListener(view -> presentFragment(new ProxyListActivity()));
+            addView(textViewProxy, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 16, 1, 16, 14));
 
+            int bottomMargin = 72;
             //if (newAccount && activityMode == MODE_LOGIN) {
             syncContactsBox = new CheckBoxCell(context, 2);
             syncContactsBox.setText(LocaleController.getString("SyncContacts", R.string.SyncContacts), "", syncContacts, false);

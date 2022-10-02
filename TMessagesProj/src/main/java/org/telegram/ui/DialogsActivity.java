@@ -190,6 +190,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.preferences.ExperimentalPrefenrecesEntry;
 
 public class DialogsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     public final static int DIALOGS_TYPE_START_ATTACH_BOT = 14;
@@ -2326,13 +2327,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 actionBar.setTitle(LocaleController.getString("SelectChat", R.string.SelectChat));
             }
             actionBar.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefault));
-            /*actionBar.setOnLongClickListener(v -> {
-                if (CherrygramConfig.INSTANCE.getNewTabs_hideAllChats() && filterTabsView != null && filterTabsView.getDefaultTabId() != filterTabsView.getCurrentTabId()) {
-                    filterTabsView.toggleAllTabs(true);
-                    filterTabsView.selectDefaultTab();
-                }
-                return false;
-            });*/
+            //searchItem.setOnLongClickListener(v -> presentFragment(new ExperimentalPrefenrecesEntry()));
+            //actionBar.setOnLongClickListener(v -> presentFragment(new ExperimentalPrefenrecesEntry()));
         } else {
             if (searchString != null || folderId != 0) {
                 actionBar.setBackButtonDrawable(backDrawable = new BackDrawable(false));
@@ -2348,13 +2344,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, AndroidUtilities.dp(26));
                 statusDrawable.center = true;
                 actionBar.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName), statusDrawable);
-                /*actionBar.setOnLongClickListener(v -> {
-                    if (CherrygramConfig.INSTANCE.getNewTabs_hideAllChats() && filterTabsView != null && filterTabsView.getCurrentTabId() != initialDialogsType) {
-                        filterTabsView.toggleAllTabs(true);
-                        filterTabsView.selectDefaultTab();
-                    }
-                    return false;
-                });*/
+                //searchItem.setOnLongClickListener(v -> presentFragment(new ExperimentalPrefenrecesEntry()));
+                //actionBar.setOnLongClickListener(v -> presentFragment(new ExperimentalPrefenrecesEntry()));
                 updateStatus(UserConfig.getInstance(currentAccount).getCurrentUser(), false);
             }
             if (folderId == 0) {
@@ -4524,6 +4515,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     animatedUpdateItems = false;
                 }
                 canShowFilterTabsView = true;
+                boolean updateCurrentTab = filterTabsView.isEmpty();
                 updateFilterTabsVisibility(animated);
                 int id = filterTabsView.getCurrentTabId();
                 int stableId = filterTabsView.getCurrentTabStableId();
@@ -4534,15 +4526,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
                 filterTabsView.removeTabs();
                 for (int a = 0, N = filters.size(); a < N; a++) {
-                    MessagesController.DialogFilter dialogFilter = filters.get(a);
                     if (filters.get(a).isDefault()) {
-                        if (filterTabsView.showAllChatsTab)
-                            filterTabsView.addTab(a, 0, LocaleController.getString("FilterAllChats", R.string.FilterAllChats), true,  filters.get(a).locked, dialogFilter.emoticon);
+                        filterTabsView.addTab(a, 0, LocaleController.getString("FilterAllChats", R.string.FilterAllChats), true,  filters.get(a).locked, filters.get(a).emoticon);
                     } else {
                         filterTabsView.addTab(a, filters.get(a).localId, filters.get(a).name, false,  filters.get(a).locked, filters.get(a).emoticon);
                     }
                 }
-                boolean updateCurrentTab = CherrygramConfig.INSTANCE.getNewTabs_hideAllChats();
                 if (stableId >= 0) {
                     if (filterTabsView.getStableId(viewPages[0].selectedType) != stableId) {
                         updateCurrentTab = true;
@@ -4681,9 +4670,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 checkPermission = false;
                 boolean hasNotContactsPermission = activity.checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED;
                 boolean hasNotStoragePermission = (Build.VERSION.SDK_INT <= 28 || BuildVars.NO_SCOPED_STORAGE) && activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
+                boolean hasNotNotificationPermission = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && activity.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED;
                 AndroidUtilities.runOnUIThread(() -> {
                     afterSignup = false;
-                    if (hasNotContactsPermission || hasNotStoragePermission) {
+                    if (hasNotContactsPermission || hasNotStoragePermission || hasNotNotificationPermission) {
                         askingForPermissions = true;
                         if (hasNotContactsPermission && askAboutContacts && getUserConfig().syncContacts && activity.shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
                             AlertDialog.Builder builder = AlertsCreator.createContactsPermissionDialog(activity, param -> {
@@ -7318,6 +7308,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if ((Build.VERSION.SDK_INT <= 28 || BuildVars.NO_SCOPED_STORAGE) && activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             permissons.add(Manifest.permission.READ_EXTERNAL_STORAGE);
             permissons.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && activity.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            permissons.add(Manifest.permission.POST_NOTIFICATIONS);
         }
         if (permissons.isEmpty()) {
             if (askingForPermissions) {

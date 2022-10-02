@@ -21,7 +21,6 @@
     <string name="CG_ChooseFolderIcon">اختر أيقونة</string>
     <string name="CP_NewTabs_NoCounter">إخفاء العداد في التبويب</string>
     <string name="CP_NewTabs_NoCounter_Desc">سيؤدي هذا إلى إخفاء عداد الرسائل غير المقروءة</string>
-    <string name="AP_FilledIcons">استخدم أيقونات التبويب المملوءة</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">إلى البداية</string>
@@ -33,7 +32,6 @@
     <string name="CG_ClearedFromCache">تم مسح من ذاكرة التخزين المؤقت</string>
     <string name="CG_ViewUserHistory">سجل الرسائل</string>
     <string name="CG_ToSaved">حفظ الرسالة</string>
-    <string name="CG_AllowStorage">بسبب التغييرات التي أدخلتها جوجل في الروبوت 11 + ، **Cherrygram** يحتاج إلى إذن منك لرؤية الملفات غير الوسائط.</string>
     <string name="CG_CreateMention">إنشاء إشارة </string>
     <string name="CG_FwdMenu_EnableNoForward">تعطيل إظهار إسم المرسل</string>
     <string name="CG_FwdMenu_DisableNoForward">تمكين إظهار إسم المرسل</string>
@@ -95,7 +93,6 @@
     <string name="CP_Filters_Header">المجلدات (إعد تشغيل التطبيق)</string>
     <string name="AP_FolderNameInHeader">اسم المجلد بدلا من \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">سيؤدي هذا إلى تغيير \" Cherrygram\ \" في شريط الإجراءات إلى اسم المجلد الخاص بك (مفيد إذا كان لديك أيقونات فقط بدلا من أسماء المجلدات)</string>
-    <string name="CP_NewTabs_RemoveAllChats">إخفاء تبويب \"الكل\"</string>
     <string name="CP_ShowTabsOnForward">إظهار التبويب عند التوجيه</string>
     <string name="AP_DrawerCategory">الشريط الجانبي</string>
     <string name="AP_DrawerPreferences">أيقونات الشريط الجانبي</string>
@@ -169,8 +166,6 @@
     <string name="CP_MotionSmoothness">سلاسة الحركة</string>
     <string name="CP_CameraTypeSystem">النظام</string>
     <string name="CP_SystemCameraDesc">الوصول مباشرة إلى كاميرا النظام (لا تنطبق على رسائل الفيديو).</string>
-    <string name="CP_RoundCamera16to9">استخدام 16:9 كاميرا</string>
-    <string name="CP_RoundCamera16to9_Desc">قم بتشغيل هذا إذا واجهتك مشاكل جودة في مقاطع الفيديو</string>
     <string name="CP_RearCam">استخدام الكاميرا الخلفية</string>
     <string name="CP_RearCam_Desc">بدلاً من الكاميرا الأمامية لرسائل الفيديو</string>
     <string name="CP_DisableCam">تعطيل الكاميرا في قائمة إرفاق الوسائط</string>

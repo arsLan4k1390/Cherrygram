@@ -38,6 +38,8 @@ import org.telegram.ui.DialogsActivity;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.tabs.FolderIconHelper;
+
 public class FiltersListBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
     private RecyclerListView listView;
@@ -391,8 +393,8 @@ public class FiltersListBottomSheet extends BottomSheet implements NotificationC
                 cell.getImageView().setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogIcon), PorterDuff.Mode.MULTIPLY));
                 MessagesController.DialogFilter filter = dialogFilters.get(position);
                 cell.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-                int icon;
-                if ((filter.flags & MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) == (MessagesController.DIALOG_FILTER_FLAG_CONTACTS | MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS)) {
+                int icon = FolderIconHelper.getTabIcon(filter.emoticon);
+                /*if ((filter.flags & MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) == (MessagesController.DIALOG_FILTER_FLAG_CONTACTS | MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS)) {
                     icon = R.drawable.msg_openprofile;
                 } else if ((filter.flags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_READ) != 0 && (filter.flags & MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) == MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) {
                     icon = R.drawable.msg_markunread;
@@ -406,7 +408,7 @@ public class FiltersListBottomSheet extends BottomSheet implements NotificationC
                     icon = R.drawable.msg_bots;
                 } else {
                     icon = R.drawable.msg_folders;
-                }
+                }*/
                 cell.setTextAndIcon(filter.name, icon);
             } else {
                 cell.getImageView().setColorFilter(null);

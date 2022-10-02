@@ -14,7 +14,6 @@
     <string name="CG_ProxyInfo">You may need to set up a proxy before you login, in case your Country/Region or ISP blocks Telegram.</string>
     <string name="CG_ProxySettings">Proxy Settings</string>
 
-    <string name="CG_TestBackend" translatable="false">Test Backend</string>
     <string name="CG_TestBackendNumber">Test Number</string>
     <string name="CG_TestBackendOn">This account will connect to the test backend.</string>
     <string name="CG_TestBackendOff">This account will connect to the production backend.</string>
@@ -28,7 +27,6 @@
     <string name="CG_ChooseFolderIcon">Choose an Icon</string>
     <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
     <string name="CP_NewTabs_NoCounter_Desc">This will hide unread messages counter</string>
-    <string name="AP_FilledIcons">Use filled tab icons</string>
     <!--Telegram Folders Settings-->
 
     <!--Chats screen-->
@@ -43,7 +41,6 @@
     <string name="CG_ViewUserHistory">Messages history</string>
     <string name="CG_ToSaved">Save message</string>
 
-    <string name="CG_AllowStorage">Due to changes introduced by Google in Android 11+, Cherrygram needs your permission to see non-media files.</string>
     <string name="CG_CreateMention">Create Mention</string>
 
     <string name="CG_FwdMenu_EnableNoForward">Disable forward authorship</string>
@@ -117,6 +114,10 @@
 
     <string name="CP_PremAndAnim_Header">Animations and Premium Features (restart app to apply)</string>
     <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
+    <string name="CP_DisableReactionsOverlay">Disable reactions overlay</string>
+    <string name="CP_DisableReactionsOverlay_Desc">This will disable popup overlay with available reactions</string>
+    <string name="CP_DrawSmallReactions">Draw small reactions</string>
+    <string name="CP_DrawSmallReactions_Desc">Draw small (old-styled) reactions instead of big</string>
     <string name="CP_DisableReactionAnim">Disable reaction animation</string>
     <string name="CP_DisableReactionAnim_Desc">(when reacting to a message)</string>
     <string name="CP_DisablePremiumStatuses">Disable premium statuses</string>
@@ -124,12 +125,11 @@
     <string name="CP_DisablePremStickAnim">Disable taps on premium stickers</string>
     <string name="CP_DisablePremStickAnim_Desc">Nothing will happen if you tap on premium sticker</string>
     <string name="CP_DisablePremStickAutoPlay">Disable premium stickers auto-play</string>
-    <string name="CP_DisablePremStickAutoPlay_Desc">Premium stickers animation will not be played automatically (feature will not fork of you disabled taps on premium stickers)</string>
+    <string name="CP_DisablePremStickAutoPlay_Desc">Premium stickers animation will not be played automatically (feature will not work if you disabled taps on premium stickers)</string>
 
     <string name="CP_Filters_Header">Folders (restart app to apply)</string>
     <string name="AP_FolderNameInHeader">Folder name instead of \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">This will change \"Cherrygram\" in action bar to your folder\'s name (useful if you have only icons instead of folders names)</string>
-    <string name="CP_NewTabs_RemoveAllChats">Hide \"All chats\" tab</string>
     <string name="CP_ShowTabsOnForward">Show tabs on forward screen</string>
 
     <string name="AP_DrawerCategory">Drawer</string>
@@ -179,6 +179,8 @@
     <string name="CP_Slider_RecentStickersAmplifier">Recent stickers counter (restart app to apply)</string>
 
     <string name="CP_Header_Record">Media</string>
+    <string name="CP_VoiceEnhancements">Voice Enhancements</string>
+    <string name="CP_VoiceEnhancements_Desc">Noise Suppression and Voice Normalization</string>
     <string name="CP_PlayVideo">Play video on volume button click</string>
     <string name="CP_PlayVideo_Desc">When you press the volume button, any video on the screen in chat will be played</string>
     <string name="CP_AutoPauseVideo">Auto pause video</string>
@@ -210,8 +212,8 @@
     <string name="CP_CameraTypeSystem">System</string>
     <string name="CP_SystemCameraDesc">Access directly the system camera (not applicable for video messages).</string>
 
-    <string name="CP_RoundCamera16to9">Use 16:9 camera</string>
-    <string name="CP_RoundCamera16to9_Desc">Turn this on if you face quality issues in videomessages</string>
+    <string name="CP_CameraAspectRatio">Camera aspect ratio</string>
+    <string name="CP_CameraAspectRatio_Desc">Selecting the aspect ratio of the camera is necessary in order to record video messages in good quality. Most phones usually use 16:9 aspect ratio, while flagship devices use 4:3 or 1:1. Test each one, compare recording quality and use the best ratio.</string>
     <string name="CP_RearCam">Use rear camera</string>
     <string name="CP_RearCam_Desc">Instead of front camera for video messages</string>
     <string name="CP_DisableCam">Disable cam in media attach menu</string>

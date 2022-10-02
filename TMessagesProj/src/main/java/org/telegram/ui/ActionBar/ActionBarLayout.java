@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
 import uz.unnarsx.cherrygram.utils.VibrateUtil;
 
 public class ActionBarLayout extends FrameLayout {
@@ -1499,6 +1500,7 @@ public class ActionBarLayout extends FrameLayout {
             fragment.onTransitionAnimationEnd(true, false);
             fragment.onBecomeFullyVisible();
         }
+        AnalyticsHelper.trackEvent("Present fragment");
         return true;
     }
 

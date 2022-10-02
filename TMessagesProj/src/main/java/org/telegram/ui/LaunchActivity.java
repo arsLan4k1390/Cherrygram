@@ -904,7 +904,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
             FileLog.e(e);
         }
         MediaController.getInstance().setBaseActivity(this, true);
-        ApplicationLoader.startAppCenter(this);
+        AndroidUtilities.startAppCenter(this);
         updateAppUpdateViews(false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

@@ -35,25 +35,9 @@ def getProps(String propName) {
 }
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion '32.1.0-rc1'
-
     defaultConfig.applicationId = APP_PACKAGE
 
     sourceSets.main.jniLibs.srcDirs = ['../TMessagesProj/jni/']
-
-    lintOptions {
-        disable 'MissingTranslation'
-        disable 'ExtraTranslation'
-        disable 'BlockedPrivateApi'
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
-
-        coreLibraryDesugaringEnabled true
-    }
 
     signingConfigs {
         debug {
@@ -71,16 +55,12 @@ android {
         }
     }
 
-    packagingOptions {
-        exclude "DebugProbesKt.bin"
-    }
-
     buildTypes {
         debug {
             debuggable true
             jniDebuggable true
             signingConfig signingConfigs.release
-//            applicationIdSuffix ".beta"
+            //applicationIdSuffix ".beta"
             minifyEnabled false
             shrinkResources false
             multiDexEnabled true
@@ -162,23 +142,6 @@ android {
         }
     }
 
-    defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 30
-        versionName APP_VERSION_NAME
-        ndkVersion "21.4.7075529"
-
-        multiDexEnabled true
-
-        vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
-
-        externalNativeBuild {
-            cmake {
-                version '3.10.2'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
-            }
-        }
-    }
     buildFeatures {
         buildConfig = true
     }

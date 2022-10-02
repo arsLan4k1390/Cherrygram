@@ -101,6 +101,8 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.helpers.AudioEnhance;
+import uz.unnarsx.cherrygram.helpers.PermissionHelper;
 
 public class MediaController implements AudioManager.OnAudioFocusChangeListener, NotificationCenter.NotificationCenterDelegate, SensorEventListener {
 
@@ -782,7 +784,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
             int count = 0;
             Cursor cursor = null;
             try {
-                if (ApplicationLoader.applicationContext.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if (PermissionHelper.isImagesPermissionGranted()) {
                     cursor = MediaStore.Images.Media.query(ApplicationLoader.applicationContext.getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new String[]{"COUNT(_id)"}, null, null, null);
                     if (cursor != null) {
                         if (cursor.moveToNext()) {
@@ -798,7 +800,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 }
             }
             try {
-                if (ApplicationLoader.applicationContext.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if (PermissionHelper.isVideoPermissionGranted()) {
                     cursor = MediaStore.Images.Media.query(ApplicationLoader.applicationContext.getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI, new String[]{"COUNT(_id)"}, null, null, null);
                     if (cursor != null) {
                         if (cursor.moveToNext()) {
@@ -3551,6 +3553,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 recordReplyingMsg = replyToMsg;
                 recordReplyingTopMsg = replyToTopMsg;
                 fileBuffer.rewind();
+                AudioEnhance.initVoiceEnhancements(audioRecorder);
 
                 audioRecorder.startRecording();
             } catch (Exception e) {
@@ -3560,6 +3563,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 recordingAudioFile.delete();
                 recordingAudioFile = null;
                 try {
+                    AudioEnhance.releaseVoiceEnhancements();
                     audioRecorder.release();
                     audioRecorder = null;
                 } catch (Exception e2) {
@@ -3653,6 +3657,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
             requestAudioFocus(false);
         }
         try {
+            AudioEnhance.releaseVoiceEnhancements();
             if (audioRecorder != null) {
                 audioRecorder.release();
                 audioRecorder = null;
@@ -4451,7 +4456,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
 
             Cursor cursor = null;
             try {
-                if (Build.VERSION.SDK_INT < 23 || ApplicationLoader.applicationContext.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT < 23 || PermissionHelper.isImagesPermissionGranted()) {
                     cursor = MediaStore.Images.Media.query(ApplicationLoader.applicationContext.getContentResolver(), MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projectionPhotos, null, null, (Build.VERSION.SDK_INT > 28 ? MediaStore.Images.Media.DATE_MODIFIED : MediaStore.Images.Media.DATE_TAKEN) + " DESC");
                     if (cursor != null) {
                         int imageIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID);
@@ -4533,7 +4538,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
             }
 
             try {
-                if (Build.VERSION.SDK_INT < 23 || ApplicationLoader.applicationContext.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT < 23 || PermissionHelper.isVideoPermissionGranted()) {
                     cursor = MediaStore.Images.Media.query(ApplicationLoader.applicationContext.getContentResolver(), MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projectionVideo, null, null, (Build.VERSION.SDK_INT > 28 ? MediaStore.Video.Media.DATE_MODIFIED : MediaStore.Video.Media.DATE_TAKEN) + " DESC");
                     if (cursor != null) {
                         int imageIdColumn = cursor.getColumnIndex(MediaStore.Video.Media._ID);
@@ -4998,11 +5003,10 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         try {
             retriever.setDataSource(path);
             bitrate = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
+            retriever.release();
         } catch (Exception e) {
             FileLog.e(e);
         }
-
-        retriever.release();
         return bitrate;
     }
 

@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -43,7 +44,6 @@ public class IconSelectorAlert extends BottomSheet {
     private final int[] location = new int[2];
     private final View shadow;
     private AnimatorSet shadowAnimation;
-    private int itemSize;
 
     @SuppressLint("NotifyDataSetChanged")
     public IconSelectorAlert(Context context) {
@@ -164,12 +164,11 @@ public class IconSelectorAlert extends BottomSheet {
                 22, 22,22, 0
         ));
 
-        GridAdapter gridAdapter = new GridAdapter(context);
+        GridAdapter gridAdapter = new GridAdapter();
         RecyclerListView recyclerListView = new RecyclerListView(context) {
             @Override
             protected void onMeasure(int widthSpec, int heightSpec) {
                 super.onMeasure(widthSpec, heightSpec);
-                itemSize = (MeasureSpec.getSize(widthSpec) - AndroidUtilities.dp(20)) / 6;
                 gridAdapter.notifyDataSetChanged();
             }
         };
@@ -181,7 +180,7 @@ public class IconSelectorAlert extends BottomSheet {
         recyclerListView.setSelectorType(3);
         recyclerListView.setSelectorDrawableColor(Theme.getColor(Theme.key_listSelector));
         recyclerListView.setOnItemClickListener((view, position) -> {
-            this.onItemClick(position);
+            this.onItemClick((String) view.getTag());
             dismiss();
         });
         header.addView(recyclerListView);
@@ -195,39 +194,36 @@ public class IconSelectorAlert extends BottomSheet {
         container.addView(shadow, frameLayoutParams);
     }
 
-    protected void onItemClick(int pos) {}
+    protected void onItemClick(String emoticon) {}
 
-    private class GridAdapter extends RecyclerListView.SelectionAdapter {
-        private final Context context;
-
-        public GridAdapter(Context context) {
-            this.context = context;
-        }
+    private static class GridAdapter extends RecyclerListView.SelectionAdapter {
+        private final String[] icons = FolderIconHelper.folderIcons.keySet().toArray(new String[0]);
 
         @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new RecyclerListView.Holder(new FolderIconView(context) {
+            ImageView view = new ImageView(parent.getContext()) {
                 @Override
                 protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                    int iconSize = View.MeasureSpec.makeMeasureSpec(itemSize, View.MeasureSpec.EXACTLY);
+                    int iconSize = MeasureSpec.makeMeasureSpec(parent.getMeasuredWidth() / 6, MeasureSpec.EXACTLY);
                     super.onMeasure(iconSize, iconSize);
                 }
-            });
+            };
+            view.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.MULTIPLY));
+            view.setPadding(AndroidUtilities.dp(10), AndroidUtilities.dp(10), AndroidUtilities.dp(10), AndroidUtilities.dp(10));
+            return new RecyclerListView.Holder(view);
         }
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            FolderIconView folderIconView = (FolderIconView) holder.itemView;
-            folderIconView.setIcon(FolderIconHelper.icons[position]);
-            if (CherrygramConfig.INSTANCE.getFilledIcons()){
-                folderIconView.setIcon(FolderIconHelper.icons_filled[position]);
-            }
+            ImageView imageView = (ImageView) holder.itemView;
+            imageView.setTag(icons[position]);
+            imageView.setImageResource(FolderIconHelper.getTabIcon(icons[position]));
         }
 
         @Override
         public int getItemCount() {
-            return FolderIconHelper.icons.length;
+            return icons.length;
         }
 
         @Override

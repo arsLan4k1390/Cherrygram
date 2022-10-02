@@ -53,9 +53,10 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
     private int cameraAdviseRow;
 
     private int audioVideoHeaderRow;
-    private int roundCamera16to9Row;
-    private int rearCamRow;
     private int disableAttachCameraRow;
+    private int rearCamRow;
+    private int cameraAspectRatioRow;
+    private int cameraAspectRatioAdviseRow;
 
     private UndoView restartTooltip;
 
@@ -116,30 +117,39 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
             } else if (position == cameraXFpsRow) {
                 ArrayList<String> arrayList = new ArrayList<>();
                 ArrayList<Integer> types = new ArrayList<>();
-                arrayList.add("60 Fps");
-                types.add(60);
-                arrayList.add("30 Fps");
-                types.add(30);
+                arrayList.add("30");
+                types.add(CherrygramConfig.CameraX30);
+                arrayList.add("60");
+                types.add(CherrygramConfig.CameraX60);
                 PopupHelper.show(arrayList, LocaleController.getString("CP_MotionSmoothness", R.string.CP_MotionSmoothness), types.indexOf(CherrygramConfig.INSTANCE.getCameraXFps()), context, i -> {
                     CherrygramConfig.INSTANCE.saveCameraXFps(types.get(i));
                     listAdapter.notifyItemChanged(cameraXFpsRow);
                     restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
                 });
-            } else if (position == roundCamera16to9Row) {
-                CherrygramConfig.INSTANCE.toggleRoundCamera16to9();
+            } else if (position == disableAttachCameraRow) {
+                CherrygramConfig.INSTANCE.toggleDisableAttachCamera();
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getRoundCamera16to9());
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDisableAttachCamera());
                 }
             } else if (position == rearCamRow) {
                 CherrygramConfig.INSTANCE.toggleRearCam();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getRearCam());
                 }
-            } else if (position == disableAttachCameraRow) {
-                CherrygramConfig.INSTANCE.toggleDisableAttachCamera();
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDisableAttachCamera());
-                }
+            } else if (position == cameraAspectRatioRow) {
+                ArrayList<String> arrayList = new ArrayList<>();
+                ArrayList<Integer> types = new ArrayList<>();
+                arrayList.add("1:1");
+                types.add(CherrygramConfig.Camera1to1);
+                arrayList.add("4:3");
+                types.add(CherrygramConfig.Camera4to3);
+                arrayList.add("16:9");
+                types.add(CherrygramConfig.Camera16to9);
+                PopupHelper.show(arrayList, (LocaleController.getString("CP_CameraAspectRatio", R.string.CP_CameraAspectRatio)), types.indexOf(CherrygramConfig.INSTANCE.getCameraAspectRatio()), context, i -> {
+                    CherrygramConfig.INSTANCE.setCameraAspectRatio(types.get(i));
+                    listAdapter.notifyItemChanged(cameraAspectRatioRow);
+                    //restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+                });
             }
         });
 
@@ -169,9 +179,10 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
         }
 
         audioVideoHeaderRow = rowCount++;
-        roundCamera16to9Row = rowCount++;
-        rearCamRow = rowCount++;
         disableAttachCameraRow = rowCount++;
+        rearCamRow = rowCount++;
+        cameraAspectRatioRow = rowCount++;
+        cameraAspectRatioAdviseRow = rowCount++;
 
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
@@ -218,12 +229,10 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                     textCheckCell.setEnabled(true, null);
                     if (position == cameraXOptimizeRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_PerformanceMode", R.string.CP_PerformanceMode), LocaleController.getString("CP_PerformanceModeDesc", R.string.CP_PerformanceModeDesc), CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode(), true, true);
-                    } else if (position == roundCamera16to9Row) {
-                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_RoundCamera16to9", R.string.CP_RoundCamera16to9), LocaleController.getString("CP_RoundCamera16to9_Desc", R.string.CP_RoundCamera16to9_Desc), CherrygramConfig.INSTANCE.getRoundCamera16to9(), true, true);
-                    } else if (position == rearCamRow) {
-                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_RearCam", R.string.CP_RearCam), LocaleController.getString("CP_RearCam_Desc", R.string.CP_RearCam_Desc), CherrygramConfig.INSTANCE.getRearCam(), true, true);
                     } else if (position == disableAttachCameraRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_DisableCam", R.string.CP_DisableCam), LocaleController.getString("CP_DisableCam_Desc", R.string.CP_DisableCam_Desc), CherrygramConfig.INSTANCE.getDisableAttachCamera(), true, true);
+                    } else if (position == rearCamRow) {
+                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_RearCam", R.string.CP_RearCam), LocaleController.getString("CP_RearCam_Desc", R.string.CP_RearCam_Desc), CherrygramConfig.INSTANCE.getRearCam(), true, true);
                     }
                     break;
                 case 6:
@@ -249,13 +258,33 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                             htmlParsed = new SpannableString(Html.fromHtml(advise));
                         }
                         textInfoPrivacyCell.setText(EntitiesHelper.getUrlNoUnderlineText(htmlParsed));
+                    } else if (position == cameraAspectRatioAdviseRow) {
+                        TextInfoPrivacyCell textCell = (TextInfoPrivacyCell) holder.itemView;
+                        textCell.setText(LocaleController.getString("CP_CameraAspectRatio_Desc", R.string.CP_CameraAspectRatio_Desc));
                     }
                     break;
                 case 7:
                     TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
                     textSettingsCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+                    TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
+                    textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                     if (position == cameraXFpsRow) {
-                        textSettingsCell.setTextAndValue(LocaleController.getString("CP_MotionSmoothness", R.string.CP_MotionSmoothness), CherrygramConfig.INSTANCE.getCameraXFps() + " Fps", false);
+                        textSettingsCell.setTextAndValue(LocaleController.getString("CP_MotionSmoothness", R.string.CP_MotionSmoothness), CherrygramConfig.INSTANCE.getCameraXFps() + " FPS", false);
+                    } else if (position == cameraAspectRatioRow) {
+                        String value;
+                        switch (CherrygramConfig.INSTANCE.getCameraAspectRatio()) {
+                            case CherrygramConfig.Camera1to1:
+                                value = "1:1";
+                                break;
+                            case CherrygramConfig.Camera4to3:
+                                value = "4:3";
+                                break;
+                            default:
+                            case CherrygramConfig.Camera16to9:
+                                value = "16:9";
+                                break;
+                        }
+                        textCell.setTextAndValue(LocaleController.getString("CP_CameraAspectRatio", R.string.CP_CameraAspectRatio), value, true);
                     }
                     break;
             }
@@ -325,13 +354,13 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
         public int getItemViewType(int position) {
             if (position == audioVideoHeaderRow || position == cameraTypeHeaderRow) {
                 return 2;
-            } else if (position == cameraXOptimizeRow || position == roundCamera16to9Row || position == rearCamRow || position == disableAttachCameraRow) {
+            } else if (position == cameraXOptimizeRow || position == disableAttachCameraRow || position == rearCamRow) {
                 return 3;
             } else if (position == cameraTypeSelectorRow) {
                 return 5;
-            } else if (position == cameraAdviseRow) {
+            } else if (position == cameraAdviseRow || position == cameraAspectRatioAdviseRow) {
                 return 6;
-            } else if (position == cameraXFpsRow) {
+            } else if (position == cameraXFpsRow || position == cameraAspectRatioRow) {
                 return 7;
             }
             return 1;

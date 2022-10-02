@@ -56,6 +56,7 @@ import org.telegram.ui.Components.RecyclerListView;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.tabs.FolderIconHelper;
 
 public class FiltersSetupActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -70,7 +71,6 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
     private int folderStyleHeaderRow;
     private int folderStyleTitlesRow;
     private int folderStyleEmojiTitlesRow;
-    private int folderStyleFilledEmojiTitlesRow;
     private int folderStyleNoUnread;
     private int folderStyleEmojiRow;
     private int folderStyleSectionRow;
@@ -449,7 +449,6 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
         folderStyleTitlesRow = rowCount++;
         folderStyleEmojiRow = rowCount++;
         folderStyleEmojiTitlesRow = rowCount++;
-        folderStyleFilledEmojiTitlesRow = rowCount++;
         folderStyleNoUnread = rowCount++;
         folderStyleSectionRow = rowCount++;
         int count = getMessagesController().dialogFilters.size();
@@ -512,7 +511,6 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("Filters", R.string.Filters));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
@@ -561,11 +559,6 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 oldRadioCell.setChecked(false, true);
                 currRadioCell.setChecked(true, true);
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
-            } else if (position == folderStyleFilledEmojiTitlesRow) {
-                CherrygramConfig.INSTANCE.toogleFilledIcons();
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getFilledIcons());
-                }
             } else if (position == folderStyleNoUnread) {
                 CherrygramConfig.INSTANCE.toogleNewTabs_noUnread();
                 if (view instanceof TextCheckCell) {
@@ -832,6 +825,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                         if (suggested.filter.exclude_muted) {
                             filter.flags |= MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED;
                         }
+                        filter.emoticon = FolderIconHelper.getEmoticonData(filter.flags)[1];
                         ignoreUpdates = true;
                         FilterCreateActivity.saveFilterToServer(filter, filter.flags, filter.emoticon, filter.name, filter.alwaysShow, filter.neverShow, filter.pinnedDialogs, true, true, true, true, false, FiltersSetupActivity.this, () -> {
                             getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
@@ -945,9 +939,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 }
                 case 7: {
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
-                    if (position == folderStyleFilledEmojiTitlesRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString("AP_FilledIcons", R.string.AP_FilledIcons), CherrygramConfig.INSTANCE.getFilledIcons(), true);
-                    } else if (position == folderStyleNoUnread) {
+                    if (position == folderStyleNoUnread) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_NewTabs_NoCounter", R.string.CP_NewTabs_NoCounter), LocaleController.getString("CP_NewTabs_NoCounter_Desc", R.string.CP_NewTabs_NoCounter_Desc), CherrygramConfig.INSTANCE.getNewTabs_noUnread(), true, true);
                     }
                     break;
@@ -969,7 +961,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 return 4;
             } else if (position == folderStyleTitlesRow || position == folderStyleEmojiTitlesRow || position == folderStyleEmojiRow) {
                 return 6;
-            } else if (position == folderStyleFilledEmojiTitlesRow || position == folderStyleNoUnread) {
+            } else if (position == folderStyleNoUnread) {
                 return 7;
             } else {
                 return 5;
