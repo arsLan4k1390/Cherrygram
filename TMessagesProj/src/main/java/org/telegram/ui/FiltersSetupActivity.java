@@ -560,7 +560,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 currRadioCell.setChecked(true, true);
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
             } else if (position == folderStyleNoUnread) {
-                CherrygramConfig.INSTANCE.toogleNewTabs_noUnread();
+                CherrygramConfig.INSTANCE.toggleNewTabs_noUnread();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getNewTabs_noUnread());
                 }

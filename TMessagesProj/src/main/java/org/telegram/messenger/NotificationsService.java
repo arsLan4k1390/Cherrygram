@@ -8,17 +8,14 @@
 
 package org.telegram.messenger;
 
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationChannelCompat;
@@ -26,6 +23,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import uz.unnarsx.cherrygram.CGFeatureHooks;
+import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class NotificationsService extends Service {
 
@@ -35,27 +33,25 @@ public class NotificationsService extends Service {
         super.onCreate();
         ApplicationLoader.postInitApplication();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannelCompat channel = new NotificationChannelCompat.Builder("cherrygram", NotificationManagerCompat.IMPORTANCE_DEFAULT)
+        if (CherrygramConfig.INSTANCE.getResidentNotification()) {
+            NotificationChannelCompat channel = new NotificationChannelCompat.Builder("cherrygramPush", NotificationManagerCompat.IMPORTANCE_DEFAULT)
                     .setName(LocaleController.getString("CG_PushService", R.string.CG_PushService))
                     .setLightsEnabled(false)
                     .setVibrationEnabled(false)
                     .setSound(null, null)
                     .build();
+            //Log.d("cherryPush1", "Starting resident notification...");
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
             notificationManager.createNotificationChannel(channel);
-            Intent explainIntent = new Intent("android.intent.action.VIEW");
-            explainIntent.setData(Uri.parse("tg://settings/notifications"));
-            PendingIntent explainPendingIntent = PendingIntent.getActivity(this, 0, explainIntent, PendingIntent.FLAG_MUTABLE);
-            startForeground(1390,
-                    new NotificationCompat.Builder(this, "cherrygram")
-                            .setContentIntent(explainPendingIntent)
+            startForeground(7777,
+                    new NotificationCompat.Builder(this, "cherrygramPush")
+                            .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
                             .setShowWhen(false)
                             .setOngoing(true)
-                            .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
                             .setContentText(LocaleController.getString("CG_PushService", R.string.CG_PushService))
                             .setCategory(NotificationCompat.CATEGORY_STATUS)
                             .build());
+            //Log.d("cherryPush2", "Started foreground");
         }
     }
 

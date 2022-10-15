@@ -138,9 +138,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                     listAdapter.notifyItemRangeRemoved(showGradientRow, 4 + (CherrygramConfig.INSTANCE.getDrawerBlur() ? 3:0));
                     updateRowsId(false);
                 }
-            } /*else if (position == menuItemsRow) {
-                presentFragment(new DrawerOrderSettings());
-            }*/ else if (position == menuItemsRow) {
+            } else if (position == menuItemsRow) {
                 presentFragment(new DrawerIconsPreferencesEntry());
             }
         });

@@ -52,7 +52,7 @@
     <string name="CG_SwitchBackend">即将切换到测试服务器。如果您不知道自己在做什么，请立即退出。您可以再次长按调试菜单中的切换后端来切换到普通服务器</string>
     <string name="CG_Restart">重启应用</string>
     <string name="CG_RestartToApply">重启应用生效</string>
-    <string name="CG_PushService">Cherrygram 推送服务，您可以在通知与声音设置中禁用本功能</string>
+    <string name="CG_PushService">Cherrygram 推送服务</string>
     <string name="CG_ForceClean">强行清除 Telegram 缓存</string>
     <string name="CG_ForceCleanInfo">当您尝试清除缓存时，长时间卡在“正在计算…”，可以使用本功能。本功能会清除您所有的数据，谨慎使用！</string>
     <string name="CG_ForceCleanInfo1">是否删除所有 Telegram 数据？</string>
@@ -94,8 +94,8 @@
     <string name="CP_DisableAnimAvatars">禁用动态头像</string>
     <string name="CP_DisableReactionsOverlay">禁用表态弹窗</string>
     <string name="CP_DisableReactionsOverlay_Desc">禁用可使用表态的弹出窗口</string>
-    <string name="CP_DrawSmallReactions">Draw small reactions</string>
-    <string name="CP_DrawSmallReactions_Desc">Draw small (old-styled) reactions instead of big</string>
+    <string name="CP_DrawSmallReactions">缩小表态图标</string>
+    <string name="CP_DrawSmallReactions_Desc">使用小号表态（旧版样式）替换大号表态</string>
     <string name="CP_DisableReactionAnim">禁用表态动画</string>
     <string name="CP_DisableReactionAnim_Desc">对消息表态时禁用其动画</string>
     <string name="CP_DisablePremiumStatuses">禁用 Premium 状态显示</string>
@@ -107,7 +107,6 @@
     <string name="CP_Filters_Header">文件夹 (重启应用生效）</string>
     <string name="AP_FolderNameInHeader">使用文件夹名称而非 \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">这会将操作栏中的“Cherrygram”更改为文件夹名称 (开启仅显示图标时效果最佳)</string>
-    <string name="CP_ShowTabsOnForward">转发页显示顶部 Tab</string>
     <string name="AP_DrawerCategory">侧边栏</string>
     <string name="AP_DrawerPreferences">侧边栏自定义</string>
     <string name="AP_DrawerAvatar">侧边栏背景使用个人资料图片</string>
@@ -134,10 +133,6 @@
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已打开的聊天中显示未读消息数</string>
     <string name="CP_NoRounding">禁用数字舍入</string>
     <string name="CP_ConfirmCalls">通话前提醒</string>
-    <string name="CP_ConfirmCalling_Header">确认</string>
-    <string name="CP_ConfirmCalling_Question">是否向 %s 拨号?</string>
-    <string name="CP_ConfirmCalling_Action">确认本次更改</string>
-    <string name="CP_ConfirmCalling_Action_Cancel">取消</string>
     <string name="CP_ForwardMsgDate">显示转发日期时间</string>
     <string name="CP_ShowSeconds">在时间戳中显示秒数</string>
     <string name="CP_ShowSeconds_Desc">显示发送消息时间的秒数（重启应用生效）</string>
@@ -149,8 +144,8 @@
     <string name="CP_Slider_RecentEmojisAmplifier">最近使用的 Emojis 数量（重启应用生效）</string>
     <string name="CP_Slider_RecentStickersAmplifier">最近使用的贴纸数量（重启应用生效）</string>
     <string name="CP_Header_Record">媒体</string>
-    <string name="CP_VoiceEnhancements">Voice Enhancements</string>
-    <string name="CP_VoiceEnhancements_Desc">Noise Suppression and Voice Normalization</string>
+    <string name="CP_VoiceEnhancements">语音增强</string>
+    <string name="CP_VoiceEnhancements_Desc">降噪与人声增强</string>
     <string name="CP_PlayVideo">按下音量键播放视频</string>
     <string name="CP_PlayVideo_Desc">按下音量键时，播放当前界面任意视频</string>
     <string name="CP_AutoPauseVideo">自动暂停视频</string>
@@ -194,6 +189,7 @@
     <string name="EP_DownloadSpeedBoostExtreme">最快</string>
     <string name="EP_UploadloadSpeedBoost">上传加速</string>
     <string name="EP_SlowNetworkMode">优化网络连接</string>
+    <string name="CG_ResidentNotification">显示常驻通知</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
     <string name="SP_Category_Security">安全</string>
@@ -204,6 +200,22 @@
     <string name="SP_Category_Account">帐号</string>
     <string name="SP_DeleteAccount">删除 Telegram 账号</string>
     <!--Security Preferences-->
+    <!--Updates Preferences-->
+    <string name="UP_Category_Updates">更新</string>
+    <string name="UP_LastCheck">最近检查</string>
+    <string name="UP_CurrentVersion">当前版本</string>
+    <string name="UP_Auto_OTA">启动时检查更新</string>
+    <string name="UP_ClearUpdatesCache">清除更新缓存</string>
+    <string name="UP_ClearedUpdatesCache">已清除 %1$s 缓存</string>
+    <string name="UP_NothingToClear">暂无可清理内容</string>
+    <string name="UP_CheckForUpdates">检查更新</string>
+    <string name="UP_Not_Found">Cherrygram 已是最新</string>
+    <string name="UP_UpdateAvailable">有可用更新！</string>
+    <string name="UP_Version">版本</string>
+    <string name="UP_UpdateSize">文件大小</string>
+    <string name="UP_Changelog">更新日志</string>
+    <string name="UP_Download">下载</string>
+    <!--Updates Preferences-->
     <!--Donations-->
     <string name="DP_Donate">捐赠</string>
     <string name="DP_Donate_Method">选择付款方法</string>

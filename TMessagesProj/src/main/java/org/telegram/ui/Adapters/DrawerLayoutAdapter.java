@@ -321,7 +321,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             contactsIcon = R.drawable.msg_contacts;
             callsIcon = R.drawable.msg_calls;
             savedIcon = R.drawable.msg_saved;
-            settingsIcon = R.drawable.msg_settings_old;
+            settingsIcon = R.drawable.msg_settings;
             scanQrIcon = R.drawable.msg_qrcode;
             /*inviteIcon = R.drawable.msg_invite;
             helpIcon = R.drawable.msg_help;*/
@@ -357,6 +357,8 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             }
         if (CherrygramConfig.INSTANCE.getScanQRDrawerButton())
             items.add(new Item(1000, LocaleController.getString("AuthAnotherClient", R.string.AuthAnotherClient), scanQrIcon));
+        if (CherrygramConfig.INSTANCE.getCGPreferencesDrawerButton())
+            items.add(new Item(1004, LocaleController.getString("CGP_AdvancedSettings", R.string.CGP_AdvancedSettings), settingsIcon));
         items.add(new Item(8, LocaleController.getString("Settings", R.string.Settings), settingsIcon));
         /*items.add(null); // divider
         if (CherrygramConfig.INSTANCE.getInviteFriendsDrawerButton())

@@ -1,6 +1,5 @@
 package uz.unnarsx.cherrygram.helpers;
 
-
 import android.content.Context;
 import android.widget.LinearLayout;
 

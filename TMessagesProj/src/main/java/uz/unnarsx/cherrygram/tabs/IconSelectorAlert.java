@@ -34,8 +34,6 @@ import org.telegram.ui.Components.ExtendedGridLayoutManager;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class IconSelectorAlert extends BottomSheet {
 
     private final LinearLayout linearLayout;

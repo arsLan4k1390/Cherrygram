@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
@@ -13,6 +15,15 @@ configurations {
 configurations.all {
     exclude group: 'com.google.firebase', module: 'firebase-core'
     exclude group: 'androidx.recyclerview', module: 'recyclerview'
+}
+
+def getGitHash = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', '--short', 'HEAD'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim().substring(0, 8)
 }
 
 dependencies {
@@ -132,8 +143,11 @@ android {
             buildConfigField("String","VERSION_NAME_CHERRY","\"${APP_VERSION_CHERRY}\"")
         }
     }
-}
 
+    defaultConfig {
+        buildConfigField "String", "GIT_COMMIT_HASH", "\"${getGitHash()}\""
+    }
+}
 
 def getProps(String propName) {
     def propsFile = rootProject.file('local.properties')
@@ -145,5 +159,6 @@ def getProps(String propName) {
         return "";
     }
 }
+
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'

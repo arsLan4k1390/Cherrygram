@@ -43,6 +43,7 @@ public class DrawerIconsPreferencesEntry extends BaseFragment {
     private int archivedChatsRow;
     private int peopleNearbyRow;
     private int scanQrRow;
+    private int cgPreferencesRow;
 
     private int newGroupIcon;
     private int newSecretIcon;
@@ -154,6 +155,12 @@ public class DrawerIconsPreferencesEntry extends BaseFragment {
                     ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getScanQRDrawerButton());
                 }
                 parentLayout.rebuildAllFragmentViews(false, false);
+            } else if (position == cgPreferencesRow) {
+                CherrygramConfig.INSTANCE.toggleCGPreferencesDrawerButton();
+                if (view instanceof TextCheckWithIconCell) {
+                    ((TextCheckWithIconCell) view).setChecked(CherrygramConfig.INSTANCE.getCGPreferencesDrawerButton());
+                }
+                parentLayout.rebuildAllFragmentViews(false, false);
             }
         });
         restartTooltip = new UndoView(context);
@@ -176,6 +183,7 @@ public class DrawerIconsPreferencesEntry extends BaseFragment {
         archivedChatsRow = rowCount++;
         peopleNearbyRow = rowCount++;
         scanQrRow = rowCount++;
+        cgPreferencesRow = rowCount++;
 
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
@@ -288,6 +296,8 @@ public class DrawerIconsPreferencesEntry extends BaseFragment {
                         textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("PeopleNearby", R.string.PeopleNearby), peopleNearbyIcon, CherrygramConfig.INSTANCE.getPeopleNearbyDrawerButton(), true);
                     } else if (position == scanQrRow) {
                         textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("AuthAnotherClient", R.string.AuthAnotherClient), R.drawable.msg_qrcode, CherrygramConfig.INSTANCE.getScanQRDrawerButton(), true);
+                    } else if (position == cgPreferencesRow) {
+                        textCheckWithIconCell.setTextAndCheckAndIcon(LocaleController.getString("CGP_AdvancedSettings", R.string.CGP_AdvancedSettings), R.drawable.msg_settings, CherrygramConfig.INSTANCE.getCGPreferencesDrawerButton(), true);
                     }
                     break;
             }
@@ -330,7 +340,7 @@ public class DrawerIconsPreferencesEntry extends BaseFragment {
                 return 2;
             } else if (position == newGroupRow || position == newSecretChatRow || position == newChannelRow ||
                        position == contactsRow || position == callsRow || position == savedMessagesRow ||
-                       position == archivedChatsRow || position == peopleNearbyRow || position == scanQrRow) {
+                       position == archivedChatsRow || position == peopleNearbyRow || position == scanQrRow || position == cgPreferencesRow) {
                 return 3;
             }
             return 1;

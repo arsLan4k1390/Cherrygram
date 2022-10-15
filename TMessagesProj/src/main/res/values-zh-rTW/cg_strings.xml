@@ -52,7 +52,7 @@
     <string name="CG_SwitchBackend">即將切換到測試伺服器。如果您不知道自己在做什麼，請立即退出。您可以再次長按調試選單中的切換後端來切換到普通伺服器</string>
     <string name="CG_Restart">重新啟動應用程式</string>
     <string name="CG_RestartToApply">重啟應用程式以套用變更</string>
-    <string name="CG_PushService">Cherrygram 推播服務，您可以在通知與聲效設定中停用本功能</string>
+    <string name="CG_PushService">Cherrygram Push Service.</string>
     <string name="CG_ForceClean">強制清除 Telegram 快取</string>
     <string name="CG_ForceCleanInfo">當您嘗試清除快取時，長時間停留在「正在計算…」，則可以使用本功能。\n本功能會清除您所有的資料，請謹慎使用！</string>
     <string name="CG_ForceCleanInfo1">是否刪除所有 Telegram 資料？</string>
@@ -107,7 +107,6 @@
     <string name="CP_Filters_Header">資料夾 (重啟應用程式後生效)</string>
     <string name="AP_FolderNameInHeader">使用資料夾名稱而非「Cherrygram」</string>
     <string name="AP_FolderNameInHeader_Desc">這會將操作列中的「Cherrygram」變更為資料夾名稱 (開啟僅顯示圖示時效果為最佳)</string>
-    <string name="CP_ShowTabsOnForward">轉寄頁顯示頂部 Tab</string>
     <string name="AP_DrawerCategory">側邊欄</string>
     <string name="AP_DrawerPreferences">側邊欄偏好設定</string>
     <string name="AP_DrawerAvatar">側邊欄背景使用大頭貼圖片</string>
@@ -134,10 +133,6 @@
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已開啟的對話中顯示未讀訊息數量</string>
     <string name="CP_NoRounding">停用數字四捨五入</string>
     <string name="CP_ConfirmCalls">撥打前先詢問我</string>
-    <string name="CP_ConfirmCalling_Header">確認</string>
-    <string name="CP_ConfirmCalling_Question">是否撥打至 %s?</string>
-    <string name="CP_ConfirmCalling_Action">確認本次變更</string>
-    <string name="CP_ConfirmCalling_Action_Cancel">取消</string>
     <string name="CP_ForwardMsgDate">顯示轉寄日期時間</string>
     <string name="CP_ShowSeconds">在時戳中顯示秒數</string>
     <string name="CP_ShowSeconds_Desc">顯示傳送訊息時間的秒數 (重啟應用程式後生效)</string>

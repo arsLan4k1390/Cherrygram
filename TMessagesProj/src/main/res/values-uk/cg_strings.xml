@@ -63,7 +63,7 @@
     <string name="CG_SwitchBackend">Ви переходите на тестовий сервер. Будь ласка, не нажимайте ОК, якщо ви не знаєте, що робите. Ви можете повернутись на звичайний сервер, натиснувши на \"Переключити сервер\" в меню налагодження.</string>
     <string name="CG_Restart">Перезапустити додаток</string>
     <string name="CG_RestartToApply">Перезапустіть додаток.</string>
-    <string name="CG_PushService">Сервіс повідомлень Cherrygram. Ви можете вимкнути це в налаштуваннях сповіщень та звуків Telegram.</string>
+    <string name="CG_PushService">Сервіс повідомлень Cherrygram.</string>
     <string name="CG_ForceClean">Примусове очищення кешу Telegram</string>
     <string name="CG_ForceCleanInfo">Використайте це, якщо ви довго бачите \"Підрахунок…\" При спробі очистки кешу.\nЦе видалить ВСЕ із вашого кешу - будьте обережні!</string>
     <string name="CG_ForceCleanInfo1">Ви дійсно хочете видалити ВСЕ з вашого кешу Telegram?</string>
@@ -107,7 +107,6 @@
     <string name="CP_Filters_Header">Папки (потрібен перезапуск додатку)</string>
     <string name="AP_FolderNameInHeader">Назва папки замість \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Змінює надпис \"Cherrygram\" в заголовку зверху на назву вашої папки (зручно при відображенні іконок замість названих папок)</string>
-    <string name="CP_ShowTabsOnForward">Показувати папки при пересиланні</string>
 
     <string name="AP_DrawerCategory">Бічне меню</string>
     <string name="AP_DrawerPreferences">Налаштування бічного меню</string>
@@ -138,10 +137,6 @@
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включити лічильник непрочитаних чатів на кнопці «Назад» в відкритому чаті</string>
     <string name="CP_NoRounding">Вимкнути округлення чисел</string>
     <string name="CP_ConfirmCalls">Запит перед звінком</string>
-    <string name="CP_ConfirmCalling_Header">Підтвердити звінок</string>
-    <string name="CP_ConfirmCalling_Question">Зателефонувати %s?</string>
-    <string name="CP_ConfirmCalling_Action">Підтвердити</string>
-    <string name="CP_ConfirmCalling_Action_Cancel">Скасувати</string>
     <string name="CP_ForwardMsgDate">Показувати дату пересланого повідомлення</string>
     <string name="CP_ShowSeconds">Показувати секунди в мітках часу</string>
     <string name="CP_ShowSeconds_Desc">Показувати секунди в часі відправлених повідомлень (потрібен перезапуск додатку)</string>

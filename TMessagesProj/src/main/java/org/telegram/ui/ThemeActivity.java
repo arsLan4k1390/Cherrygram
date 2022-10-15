@@ -1010,12 +1010,12 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     ((TextCheckCell) view).setChecked(!animations);
                 }
             } else if (position == oldNotificationIconRow) {
-                CherrygramConfig.INSTANCE.toogleOldNotificationIcon();
+                CherrygramConfig.INSTANCE.toggleOldNotificationIcon();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getOldNotificationIcon());
                 }
             } else if (position == appIconFilterRow) {
-                CherrygramConfig.INSTANCE.toogleAppIconFilter();
+                CherrygramConfig.INSTANCE.toggleAppIconFilter();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getFilterLauncherIcon());
                 }

@@ -6,12 +6,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Browser
-import org.telegram.messenger.BuildVars
-import org.telegram.messenger.LocaleController
-import org.telegram.messenger.R
+import org.telegram.messenger.*
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramPreferencesNavigator
+import uz.unnarsx.cherrygram.ota.UpdaterBottomSheet
 import uz.unnarsx.cherrygram.preferences.ktx.category
 import uz.unnarsx.cherrygram.preferences.ktx.textDetail
 import uz.unnarsx.cherrygram.preferences.ktx.textIcon
@@ -88,9 +87,10 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     }
                 }
                 textIcon {
+                    val commitInfo = java.lang.String.format("%s commit", BuildConfig.GIT_COMMIT_HASH)
                     title = LocaleController.getString("CGP_Source", R.string.CGP_Source)
                     icon = R.mipmap.outline_source_white_28
-                    value = "Github"
+                    value = commitInfo
                     listener = TGKitTextIconRow.TGTIListener {
                         goToGithub(it)
                     }
@@ -101,6 +101,13 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     value = "Crowdin"
                     listener = TGKitTextIconRow.TGTIListener {
                         goToCrowdin(it)
+                    }
+                }
+                textIcon {
+                    title = LocaleController.getString("UP_Category_Updates", R.string.UP_Category_Updates)
+                    icon = R.drawable.sync_outline_28
+                    listener = TGKitTextIconRow.TGTIListener {
+                        UpdaterBottomSheet(bf.parentActivity, false).show()
                     }
                 }
             }

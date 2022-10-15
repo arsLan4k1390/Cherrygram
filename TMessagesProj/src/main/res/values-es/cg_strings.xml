@@ -63,7 +63,7 @@
     <string name="CG_SwitchBackend">Vas a cambiar al servidor de pruebas. Por favor, no presiones OK si no sabes lo que estás haciendo. Puede cambiar al servidor normal pulsando \"Switch backend\" en el menú de depuración de nuevo.</string>
     <string name="CG_Restart">Reiniciar app</string>
     <string name="CG_RestartToApply">Reiniciar la app para aplicar los cambios.</string>
-    <string name="CG_PushService">Servicio Push de Cherrygram. Puedes desactivarlo en las notificaciones de Telegram y ajustes de sonidos.</string>
+    <string name="CG_PushService">Servicio Push de Cherrygram.</string>
     <string name="CG_ForceClean">Forzar Borrar caché de Telegram</string>
     <string name="CG_ForceCleanInfo">Usa esto si te encuentras con un largo \"Calculando…\" al intentar limpiar la caché.\nEsto borrará TODO de tu caché - ¡Ten cuidado!</string>
     <string name="CG_ForceCleanInfo1">¿Realmente quieres eliminar TODO de tu caché de Telegram?</string>
@@ -107,7 +107,6 @@
     <string name="CP_Filters_Header">Carpetas (reiniciar app para aplicar)</string>
     <string name="AP_FolderNameInHeader">Nombre de la carpeta en lugar de \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Esto cambiará \"Cherrygram\" en la barra de acción al nombre de tu carpeta (útil si solo tienes iconos en lugar de nombres de carpetas)</string>
-    <string name="CP_ShowTabsOnForward">Mostrar carpetas en la pantalla de reenvío</string>
 
     <string name="AP_DrawerCategory">Cajón</string>
     <string name="AP_DrawerPreferences">Preferencias del cajón</string>
@@ -138,10 +137,6 @@
     <string name="CP_UnreadBadgeOnBackButton_Desc">Activar contador de chats no leídos en el botón atrás en el chat abierto</string>
     <string name="CP_NoRounding">Desactivar redondeo numérico</string>
     <string name="CP_ConfirmCalls">Preguntar antes de llamar</string>
-    <string name="CP_ConfirmCalling_Header">Confirmar llamada</string>
-    <string name="CP_ConfirmCalling_Question">¿Llamar a %s?</string>
-    <string name="CP_ConfirmCalling_Action">Confirmar</string>
-    <string name="CP_ConfirmCalling_Action_Cancel">Cancelar</string>
     <string name="CP_ForwardMsgDate">Mostrar fecha del mensaje reenviado</string>
     <string name="CP_ShowSeconds">Mostrar segundos en marcas de tiempo</string>
     <string name="CP_ShowSeconds_Desc">Muestra los segundos del tiempo de los mensajes enviados (reinicie la app para aplicar)</string>

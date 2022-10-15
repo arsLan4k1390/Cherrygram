@@ -52,7 +52,7 @@
     <string name="CG_SwitchBackend">أنت ذاهب للتبديل إلى خادم الاختبار. من فضلك لا تضغط على موافق إذا كنت لا تعرف ما تفعله. يمكنك التبديل إلى الخادم العادي عن طريق الضغط على \"تبديل الخلفية\" في قائمة التصحيح مرة أخرى.</string>
     <string name="CG_Restart">إعادة تشغيل التطبيق</string>
     <string name="CG_RestartToApply">إعد تشغيل التطبيق لتطبيق التغييرات.</string>
-    <string name="CG_PushService">Cherrygram Push Service. يمكنك تعطيله في إشعارات التيليجرام وإعدادات الصوت.</string>
+    <string name="CG_PushService">Cherrygram Push Service</string>
     <string name="CG_ForceClean">إجبار مسح ذاكرة التخزين المؤقت</string>
     <string name="CG_ForceCleanInfo">استخدم هذا إذا واجهت عبارة \"جارِ التنظيف\" لوقت طويل عند محاولة تنظيف ذاكرة التخزين المؤقت. سيؤدي هذا إلى حذف كل شيء من ذاكرة التخزين المؤقت - كن حذرًا!</string>
     <string name="CG_ForceCleanInfo1">هل تريد حقا حذف كل شيء من ذاكرة التخزين المؤقت من تيليجرام ؟</string>
@@ -93,7 +93,6 @@
     <string name="CP_Filters_Header">المجلدات (إعد تشغيل التطبيق)</string>
     <string name="AP_FolderNameInHeader">اسم المجلد بدلا من \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">سيؤدي هذا إلى تغيير \" Cherrygram\ \" في شريط الإجراءات إلى اسم المجلد الخاص بك (مفيد إذا كان لديك أيقونات فقط بدلا من أسماء المجلدات)</string>
-    <string name="CP_ShowTabsOnForward">إظهار التبويب عند التوجيه</string>
     <string name="AP_DrawerCategory">الشريط الجانبي</string>
     <string name="AP_DrawerPreferences">أيقونات الشريط الجانبي</string>
     <string name="AP_DrawerAvatar">صورة الملف الشخصي كخلفية شريط الجاني</string>
@@ -120,10 +119,6 @@
     <string name="CP_UnreadBadgeOnBackButton_Desc">تمكين عداد المحادثات غير المقروءة على زر الرجوع في المحادثات المفتوحة</string>
     <string name="CP_NoRounding">تعطيل تقريب الأرقام</string>
     <string name="CP_ConfirmCalls">اسأل قبل الاتصال</string>
-    <string name="CP_ConfirmCalling_Header">تأكيد المكالمة</string>
-    <string name="CP_ConfirmCalling_Question">اتصل على %s?</string>
-    <string name="CP_ConfirmCalling_Action">تأكيد</string>
-    <string name="CP_ConfirmCalling_Action_Cancel">إلغاء</string>
     <string name="CP_ForwardMsgDate">إظهار تاريخ الرسالة المعاد توجيهها</string>
     <string name="CP_ShowSeconds">إظهار الثواني في الطوابع الزمنية</string>
     <string name="CP_ShowSeconds_Desc">يظهر الثواني من الوقت من الرسائل المرسلة (إعد تشغيل التطبيق)</string>

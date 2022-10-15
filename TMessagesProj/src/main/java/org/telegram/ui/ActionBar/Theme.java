@@ -6119,7 +6119,8 @@ public class Theme {
                 maskType == RIPPLE_MASK_CIRCLE_TO_BOUND_CORNER ||
                 maskType == RIPPLE_MASK_CIRCLE_AUTO ||
                 maskType == 6 ||
-                maskType == RIPPLE_MASK_ROUNDRECT_6DP
+                maskType == RIPPLE_MASK_ROUNDRECT_6DP ||
+                maskType == 100
             ) {
                 maskPaint.setColor(0xffffffff);
                 maskDrawable = new Drawable() {
@@ -6129,7 +6130,13 @@ public class Theme {
                     @Override
                     public void draw(Canvas canvas) {
                         android.graphics.Rect bounds = getBounds();
-                        if (maskType == RIPPLE_MASK_ROUNDRECT_6DP) {
+                        if (maskType == 100) {
+                            if (rect == null) {
+                                rect = new RectF();
+                            }
+                            rect.set(bounds);
+                            canvas.drawRoundRect(rect, radius, radius, maskPaint);
+                        } else if (maskType == RIPPLE_MASK_ROUNDRECT_6DP) {
                             if (rect == null) {
                                 rect = new RectF();
                             }
@@ -7727,7 +7734,7 @@ public class Theme {
                 switchingNightTheme = false;
             }
         } else {
-            if (currentTheme != currentDayTheme && (currentTheme == null || currentNightTheme != null &&  currentTheme.isDark() != currentNightTheme.isDark())) {
+            if (currentTheme != currentDayTheme && (currentTheme == null || currentDayTheme != null &&  currentTheme.isLight() != currentDayTheme.isLight())) {
                 isInNigthMode = false;
                 lastThemeSwitchTime = SystemClock.elapsedRealtime();
                 switchingNightTheme = true;

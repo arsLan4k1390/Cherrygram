@@ -1,16 +1,10 @@
 package uz.unnarsx.cherrygram
 
-import android.os.CountDownTimer
-import android.view.View
 import android.widget.FrameLayout
 import android.widget.RemoteViews
 import org.telegram.messenger.*
-import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.ActionBarPopupWindow
 import org.telegram.ui.ActionBar.Theme
-import org.telegram.ui.AvatarPreviewer
-import org.telegram.ui.ChatActivity
-import org.telegram.ui.ChatRightsEditActivity
 import org.telegram.ui.Components.ShareAlert
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)

@@ -2,6 +2,8 @@ package uz.unnarsx.cherrygram.preferences;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.NotificationCenter;
+import org.telegram.messenger.NotificationsService;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -42,6 +45,7 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
     private int downloadSpeedBoostRow;
     private int uploadSpeedBoostRow;
     private int slowNetworkMode;
+    private int residentNotificationRow;
 
     protected Theme.ResourcesProvider resourcesProvider;
     private UndoView restartTooltip;
@@ -106,6 +110,12 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getSlowNetworkMode());
                 }
                 restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+            } if (position == residentNotificationRow) {
+                CherrygramConfig.INSTANCE.toggleResidentNotification();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getResidentNotification());
+                }
+                restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
             } else if (position == downloadSpeedBoostRow) {
                 ArrayList<String> arrayList = new ArrayList<>();
                 ArrayList<Integer> types = new ArrayList<>();
@@ -137,6 +147,9 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
         downloadSpeedBoostRow = rowCount++;
         uploadSpeedBoostRow = rowCount++;
         slowNetworkMode = rowCount++;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            residentNotificationRow = rowCount++;
+        }
 
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
@@ -204,6 +217,8 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                         textCell.setTextAndCheck(LocaleController.getString("EP_UploadloadSpeedBoost", R.string.EP_UploadloadSpeedBoost), CherrygramConfig.INSTANCE.getUploadSpeedBoost(), true);
                     } else if (position == slowNetworkMode) {
                         textCell.setTextAndCheck(LocaleController.getString("EP_SlowNetworkMode", R.string.EP_SlowNetworkMode), CherrygramConfig.INSTANCE.getSlowNetworkMode(), true);
+                    } else if (position == residentNotificationRow) {
+                        textCell.setTextAndCheck(LocaleController.getString("CG_ResidentNotification", R.string.CG_ResidentNotification), CherrygramConfig.INSTANCE.getResidentNotification(), true);
                     }
                     break;
                 }

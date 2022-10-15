@@ -88,7 +88,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                     Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
             }
-            textIcon {
+            /*textIcon {
                 title = "YooMoney Wallet"
                 divider = true
 
@@ -97,7 +97,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                     openURL.data = Uri.parse("https://yoomoney.ru/to/4100116983696293")
                     bf.parentActivity.startActivity(openURL)
                 }
-            }
+            }*/
             /*textIcon {
                 title = "TON Coin"
                 divider = true

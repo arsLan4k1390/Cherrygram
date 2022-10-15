@@ -796,7 +796,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             viewPages[a].setTranslationY(0);
                         }
                     }
-                    if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) || !onlySelect) {
+                    if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) || !onlySelect) {
                         actionBar.setTranslationY(0);
                     }
                     searchViewPager.setTranslationY(0);
@@ -819,7 +819,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     if (filterTabsView != null && filterTabsView.getVisibility() == VISIBLE) {
                         h = heightSize - inputFieldHeight + AndroidUtilities.dp(2) - AndroidUtilities.dp(44) - topPadding;
                     } else {
-                        h = heightSize - inputFieldHeight + AndroidUtilities.dp(2) - ((onlySelect && !(initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward())) ? 0 : actionBar.getMeasuredHeight()) - topPadding;
+                        h = heightSize - inputFieldHeight + AndroidUtilities.dp(2) - ((onlySelect && !(initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward())) ? 0 : actionBar.getMeasuredHeight()) - topPadding;
                     }
 
                     if (filtersTabAnimator != null && filterTabsView != null && filterTabsView.getVisibility() == VISIBLE) {
@@ -836,7 +836,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     searchViewPager.setTranslationY(0);
                     int contentWidthSpec = View.MeasureSpec.makeMeasureSpec(widthSize, View.MeasureSpec.EXACTLY);
                     int h = View.MeasureSpec.getSize(heightMeasureSpec) + keyboardSize;
-                    int contentHeightSpec = View.MeasureSpec.makeMeasureSpec(Math.max(AndroidUtilities.dp(10), h - inputFieldHeight + AndroidUtilities.dp(2) - (onlySelect && !(initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) ? 0 : actionBar.getMeasuredHeight()) - topPadding) - (searchTabsView == null ? 0 : AndroidUtilities.dp(44)), View.MeasureSpec.EXACTLY);
+                    int contentHeightSpec = View.MeasureSpec.makeMeasureSpec(Math.max(AndroidUtilities.dp(10), h - inputFieldHeight + AndroidUtilities.dp(2) - (onlySelect && !(initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) ? 0 : actionBar.getMeasuredHeight()) - topPadding) - (searchTabsView == null ? 0 : AndroidUtilities.dp(44)), View.MeasureSpec.EXACTLY);
                     child.measure(contentWidthSpec, contentHeightSpec);
                     child.setPivotX(child.getMeasuredWidth() / 2);
                 } else if (commentView != null && commentView.isPopupView(child)) {
@@ -938,11 +938,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 } else if (child == filterTabsView || child == searchTabsView || child == filtersView) {
                     childTop = actionBar.getMeasuredHeight();
                 } else if (child == searchViewPager) {
-                    childTop = (onlySelect && !(initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) ? 0 : actionBar.getMeasuredHeight()) + topPadding + (searchTabsView == null ? 0 : AndroidUtilities.dp(44));
+                    childTop = (onlySelect && !(initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) ? 0 : actionBar.getMeasuredHeight()) + topPadding + (searchTabsView == null ? 0 : AndroidUtilities.dp(44));
                 } else if (child instanceof DatabaseMigrationHint) {
                     childTop = actionBar.getMeasuredHeight();
                 } else if (child instanceof ViewPage) {
-                    if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) || !onlySelect) {
+                    if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) || !onlySelect) {
                         if (filterTabsView != null && filterTabsView.getVisibility() == VISIBLE) {
                             childTop = AndroidUtilities.dp(44);
                         } else {
@@ -1390,7 +1390,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         @Override
         protected void onMeasure(int widthSpec, int heightSpec) {
             int t = 0;
-            if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) || !onlySelect) {
+            if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) || !onlySelect) {
                 if (filterTabsView != null && filterTabsView.getVisibility() == VISIBLE) {
                     t = AndroidUtilities.dp(44);
                 } else {
@@ -1409,7 +1409,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     ignoreLayout = false;
                 }
             }
-            if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) || !onlySelect) {
+            if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) || !onlySelect) {
                 ignoreLayout = true;
                 if (filterTabsView != null && filterTabsView.getVisibility() == VISIBLE) {
                     t = ActionBar.getCurrentActionBarHeight() + (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0);
@@ -1433,7 +1433,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             }
             checkIfAdapterValid();
             super.onMeasure(widthSpec, heightSpec);
-            if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) || !onlySelect) {
+            if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) || !onlySelect) {
                 if (appliedPaddingTop != t && viewPages != null && viewPages.length > 1) {
                     viewPages[1].setTranslationX(viewPages[0].getMeasuredWidth());
                 }
@@ -1947,7 +1947,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
             getNotificationCenter().addObserver(this, NotificationCenter.dialogsNeedReload);
             NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
-            if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) || !onlySelect) {
+            if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) || !onlySelect) {
                 NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.closeSearchByActiveAction);
                 NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.proxySettingsChanged);
                 getNotificationCenter().addObserver(this, NotificationCenter.filterSettingsUpdated);
@@ -2070,7 +2070,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (searchString == null) {
             getNotificationCenter().removeObserver(this, NotificationCenter.dialogsNeedReload);
             NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
-            if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) || !onlySelect) {
+            if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) || !onlySelect) {
                 NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.closeSearchByActiveAction);
                 NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.proxySettingsChanged);
                 getNotificationCenter().removeObserver(this, NotificationCenter.filterSettingsUpdated);
@@ -2352,7 +2352,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 actionBar.setSupportsHolidayImage(true);
             }
         }
-        if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) || !onlySelect) {
+        if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) || !onlySelect) {
             actionBar.setAddToContainer(false);
             actionBar.setCastShadows(false);
             actionBar.setClipContent(true);
@@ -2364,7 +2364,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             scrollToTop();
         });
 
-        if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) || initialDialogsType == 0 && folderId == 0 && !onlySelect && TextUtils.isEmpty(searchString)) {
+        if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) || initialDialogsType == 0 && folderId == 0 && !onlySelect && TextUtils.isEmpty(searchString)) {
             scrimPaint = new Paint() {
                 @Override
                 public void setAlpha(int a) {
@@ -2786,7 +2786,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         ContentView contentView = new ContentView(context);
         fragmentView = contentView;
 
-        int pagesCount = (initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) || (folderId == 0 && initialDialogsType == 0 && !onlySelect) ? 2 : 1;
+        int pagesCount = (initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) || (folderId == 0 && initialDialogsType == 0 && !onlySelect) ? 2 : 1;
         viewPages = new ViewPage[pagesCount];
         for (int a = 0; a < pagesCount; a++) {
             final ViewPage viewPage = new ViewPage(context) {
@@ -3798,7 +3798,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (filterTabsView != null) {
             contentView.addView(filterTabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 44));
         }
-        if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) || !onlySelect) {
+        if ((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) || !onlySelect) {
             final FrameLayout.LayoutParams layoutParams = LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT);
             if (inPreviewMode && Build.VERSION.SDK_INT >= 21) {
                 layoutParams.topMargin = AndroidUtilities.statusBarHeight;
@@ -4213,7 +4213,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void updateFiltersView(boolean showMediaFilters, ArrayList<Object> users, ArrayList<FiltersView.DateData> dates, boolean archive, boolean animated) {
-        if (!searchIsShowed || onlySelect && !(initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward())) {
+        if (!searchIsShowed || onlySelect && !(initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward())) {
             return;
         }
         boolean hasMediaFilter = false;
@@ -9076,7 +9076,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
     @Override
     public boolean isSwipeBackEnabled(MotionEvent event) {
-        return !((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getShowTabsOnForward()) && viewPages[0].selectedType != filterTabsView.getFirstTabId());
+        return !((initialDialogsType == 3 && CherrygramConfig.INSTANCE.getTabsOnForward()) && viewPages[0].selectedType != filterTabsView.getFirstTabId());
     }
 
     @Override

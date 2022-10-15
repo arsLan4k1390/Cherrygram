@@ -98,8 +98,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.NotificationCenterDelegate, DownloadController.FileDownloadProgressListener {
 
     private ActionBar actionBar;
@@ -436,7 +434,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
         };
         actionBar.setBackgroundColor(getThemedColor(Theme.key_player_actionBar));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
+        
         actionBar.setItemsColor(getThemedColor(Theme.key_player_actionBarTitle), false);
         actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_player_actionBarSelector), false);
         actionBar.setTitleColor(getThemedColor(Theme.key_player_actionBarTitle));
@@ -524,7 +522,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
 
         playerShadow = new View(context);
         playerShadow.setBackgroundColor(getThemedColor(Theme.key_dialogShadowLine));
-
+        
         playerLayout = new FrameLayout(context) {
             @Override
             protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -1474,7 +1472,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
             if (UserConfig.selectedAccount != currentAccount) {
                 parentActivity.switchToAccount(currentAccount, true);
             }
-
+            
             Bundle args = new Bundle();
             long did = messageObject.getDialogId();
             if (DialogObject.isEncryptedDialog(did)) {

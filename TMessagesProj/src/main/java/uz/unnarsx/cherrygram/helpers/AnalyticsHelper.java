@@ -12,7 +12,6 @@ import com.microsoft.appcenter.channel.Channel;
 import com.microsoft.appcenter.crashes.Crashes;
 import com.microsoft.appcenter.ingestion.models.Log;
 
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.FileLog;
 

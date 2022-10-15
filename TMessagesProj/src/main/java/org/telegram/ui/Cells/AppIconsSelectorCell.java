@@ -81,10 +81,15 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                 IconHolderView holderView = (IconHolderView) holder.itemView;
                 LauncherIconController.LauncherIcon icon = availableIcons.get(position);
-                if (icon == LauncherIconController.LauncherIcon.MONET_SAMSUNG && Build.VERSION.SDK_INT < 31) return;
-                if (icon == LauncherIconController.LauncherIcon.MONET_PIXEL && Build.VERSION.SDK_INT < 31) return;
-                if (icon == LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG && Build.VERSION.SDK_INT < 31) return;
-                if (icon == LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL && Build.VERSION.SDK_INT < 31) return;
+                if (icon == LauncherIconController.LauncherIcon.MONET_SAMSUNG && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.MONET_PIXEL && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
+                    return;
+                }
                 holderView.bind(icon);
                 holderView.iconView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(ICONS_ROUND_RADIUS), Color.TRANSPARENT, Theme.getColor(Theme.key_listSelector), Color.BLACK));
                 holderView.iconView.setForeground(icon.foreground);
@@ -159,10 +164,12 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
     private void updateIconsVisibility() {
         availableIcons.clear();
         availableIcons.addAll(Arrays.asList(LauncherIconController.LauncherIcon.values()));
-        if (Build.VERSION.SDK_INT < 31) availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_SAMSUNG));
-        if (Build.VERSION.SDK_INT < 31) availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_PIXEL));
-        if (Build.VERSION.SDK_INT < 31) availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG));
-        if (Build.VERSION.SDK_INT < 31) availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
+        if (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32) {
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_SAMSUNG));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_PIXEL));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
+        }
         if (MessagesController.getInstance(currentAccount).premiumLocked) {
             for (int i = 0; i < availableIcons.size(); i++) {
                 if (availableIcons.get(i).premium) {
@@ -263,6 +270,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             titleView = new TextView(context);
             titleView.setSingleLine();
             titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+            titleView.setTypeface(AndroidUtilities.getTypeface("fonts/rregular.ttf"));
             titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             addView(titleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 4, 0, 0));
 

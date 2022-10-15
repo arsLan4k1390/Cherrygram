@@ -968,7 +968,7 @@ public class MessagesController extends BaseController implements NotificationCe
             emojiPreferences = ApplicationLoader.applicationContext.getSharedPreferences("emoji" + currentAccount, Activity.MODE_PRIVATE);
         }
 
-        enableJoined = notificationsPreferences.getBoolean("EnableContactJoined", false);
+        enableJoined = notificationsPreferences.getBoolean("EnableContactJoined", true);
         remoteConfigLoaded = mainPreferences.getBoolean("remoteConfigLoaded", false);
         secretWebpagePreview = mainPreferences.getInt("secretWebpage2", 2);
         maxGroupCount = mainPreferences.getInt("maxGroupCount", 200);
@@ -997,8 +997,8 @@ public class MessagesController extends BaseController implements NotificationCe
         canRevokePmInbox = mainPreferences.getBoolean("canRevokePmInbox", canRevokePmInbox);
         preloadFeaturedStickers = mainPreferences.getBoolean("preloadFeaturedStickers", false);
         youtubePipType = mainPreferences.getString("youtubePipType", "disabled");
-        keepAliveService = mainPreferences.getBoolean("keepAliveService", false);
-        backgroundConnection = mainPreferences.getBoolean("keepAliveService", false);
+        keepAliveService = mainPreferences.getBoolean("keepAliveService", true);
+        backgroundConnection = mainPreferences.getBoolean("keepAliveService", true);
         promoDialogId = mainPreferences.getLong("proxy_dialog", 0);
         nextPromoInfoCheckTime = mainPreferences.getInt("nextPromoInfoCheckTime", 0);
         promoDialogType = mainPreferences.getInt("promo_dialog_type", 0);
@@ -14484,7 +14484,8 @@ public class MessagesController extends BaseController implements NotificationCe
                                 }
                             }
                             TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
-                            if (svc != null || VoIPService.callIShouldHavePutIntoIntent != null || tm.getCallState() != TelephonyManager.CALL_STATE_IDLE) {
+                            boolean onGoingCall = (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || ApplicationLoader.applicationContext.checkSelfPermission(android.Manifest.permission.READ_PHONE_STATE) == android.content.pm.PackageManager.PERMISSION_GRANTED) && tm.getCallState() != TelephonyManager.CALL_STATE_IDLE;
+                            if (svc != null || VoIPService.callIShouldHavePutIntoIntent != null || onGoingCall) {
                                 if (BuildVars.LOGS_ENABLED) {
                                     FileLog.d("Auto-declining call " + call.id + " because there's already active one");
                                 }

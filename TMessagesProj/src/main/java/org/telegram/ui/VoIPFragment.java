@@ -97,8 +97,6 @@ import org.webrtc.TextureViewRenderer;
 
 import java.io.ByteArrayOutputStream;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class VoIPFragment implements VoIPService.StateListener, NotificationCenter.NotificationCenterDelegate {
 
     private final static int STATE_GONE = 0;

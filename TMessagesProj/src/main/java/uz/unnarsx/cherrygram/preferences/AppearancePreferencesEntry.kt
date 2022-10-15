@@ -168,15 +168,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     CherrygramConfig.folderNameInHeader = it
                 }
             }
-            switch {
-                title = LocaleController.getString("CP_ShowTabsOnForward", R.string.CP_ShowTabsOnForward)
-
-                contract({
-                    return@contract CherrygramConfig.showTabsOnForward
-                }) {
-                    CherrygramConfig.showTabsOnForward = it
-                }
-            }
 
         }
 

@@ -1599,23 +1599,23 @@ public class ActionBarLayout extends FrameLayout {
 
         presentFragmentInternalRemoveOld(false, prevFragment);
 
-            AnimatorSet animatorSet = new AnimatorSet();
-            animatorSet.playTogether(
-                    ObjectAnimator.ofFloat(fragment.fragmentView, View.SCALE_X, 1.0f, 1.05f, 1.0f),
-                    ObjectAnimator.ofFloat(fragment.fragmentView, View.SCALE_Y, 1.0f, 1.05f, 1.0f));
-            animatorSet.setDuration(200);
-            animatorSet.setInterpolator(new CubicBezierInterpolator(0.42, 0.0, 0.58, 1.0));
-            animatorSet.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    previewOpenAnimationInProgress = false;
-                    fragment.onPreviewOpenAnimationEnd();
-                }
-            });
-            animatorSet.start();
-            if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
-                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(
+                ObjectAnimator.ofFloat(fragment.fragmentView, View.SCALE_X, 1.0f, 1.05f, 1.0f),
+                ObjectAnimator.ofFloat(fragment.fragmentView, View.SCALE_Y, 1.0f, 1.05f, 1.0f));
+        animatorSet.setDuration(200);
+        animatorSet.setInterpolator(new CubicBezierInterpolator(0.42, 0.0, 0.58, 1.0));
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                previewOpenAnimationInProgress = false;
+                fragment.onPreviewOpenAnimationEnd();
             }
+        });
+        animatorSet.start();
+        if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+        }
 
         fragment.setInPreviewMode(false);
         fragment.setInMenuMode(false);

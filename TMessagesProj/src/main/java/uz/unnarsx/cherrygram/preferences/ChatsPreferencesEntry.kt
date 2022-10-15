@@ -2,7 +2,6 @@ package uz.unnarsx.cherrygram.preferences
 
 import android.app.Activity
 import android.content.SharedPreferences
-import androidx.core.util.Pair
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R

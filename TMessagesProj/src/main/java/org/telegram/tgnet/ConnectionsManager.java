@@ -230,11 +230,14 @@ public class ConnectionsManager extends BaseController {
 
     private String getRegId() {
         String pushString = SharedConfig.pushString;
+        if (!TextUtils.isEmpty(pushString) && SharedConfig.pushType == PushListenerController.PUSH_TYPE_HUAWEI) {
+            pushString = "huawei://" + pushString;
+        }
         if (TextUtils.isEmpty(pushString) && !TextUtils.isEmpty(SharedConfig.pushStringStatus)) {
             pushString = SharedConfig.pushStringStatus;
         }
         if (TextUtils.isEmpty(pushString)) {
-            String tag = "FIREBASE";
+            String tag = SharedConfig.pushType == PushListenerController.PUSH_TYPE_FIREBASE ? "FIREBASE" : "HUAWEI";
             pushString = SharedConfig.pushStringStatus = "__" + tag + "_GENERATING_SINCE_" + getCurrentTime() + "__";
         }
         return pushString;
@@ -441,11 +444,14 @@ public class ConnectionsManager extends BaseController {
 
     public static void setRegId(String regId, @PushListenerController.PushType int type, String status) {
         String pushString = regId;
+        if (!TextUtils.isEmpty(pushString) && type == PushListenerController.PUSH_TYPE_HUAWEI) {
+            pushString = "huawei://" + pushString;
+        }
         if (TextUtils.isEmpty(pushString) && !TextUtils.isEmpty(status)) {
             pushString = status;
         }
         if (TextUtils.isEmpty(pushString)) {
-            String tag = "FIREBASE";
+            String tag = type == PushListenerController.PUSH_TYPE_FIREBASE ? "FIREBASE" : "HUAWEI";
             pushString = SharedConfig.pushStringStatus = "__" + tag + "_GENERATING_SINCE_" + getInstance(0).getCurrentTime() + "__";
         }
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {

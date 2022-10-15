@@ -65,7 +65,7 @@
     <string name="CG_SwitchBackend">You\'re going to switch to the test server. Please don\'t press OK if you don\'t know what you\'re doing. You can switch to normal server by pressing "Switch backend" in debug menu again.</string>
     <string name="CG_Restart">Restart app</string>
     <string name="CG_RestartToApply">Restart app to apply changes.</string>
-    <string name="CG_PushService">Cherrygram Push Service. You can disable it in Telegram Notifications and Sounds Settings.</string>
+    <string name="CG_PushService">Cherrygram Push Service.</string>
     <string name="CG_ForceClean">Force Clear Telegram Cache</string>
     <string name="CG_ForceCleanInfo">Use this if you face long \"Calculating…\" when trying to clean cache.\nThis will delete EVERYTHING from your cache - be careful!</string>
     <string name="CG_ForceCleanInfo1">Do you really want to delete EVERYTHING from your Telegram cache?</string>
@@ -130,7 +130,6 @@
     <string name="CP_Filters_Header">Folders (restart app to apply)</string>
     <string name="AP_FolderNameInHeader">Folder name instead of \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">This will change \"Cherrygram\" in action bar to your folder\'s name (useful if you have only icons instead of folders names)</string>
-    <string name="CP_ShowTabsOnForward">Show tabs on forward screen</string>
 
     <string name="AP_DrawerCategory">Drawer</string>
     <string name="AP_DrawerPreferences">Drawer preferences</string>
@@ -162,10 +161,6 @@
     <string name="CP_NoRounding">Disable number rounding</string>
     <string name="CP_NoRoundingSummary" translatable="false">1.2K -> 1234</string>
     <string name="CP_ConfirmCalls">Ask before calling</string>
-    <string name="CP_ConfirmCalling_Header">Confirm call</string>
-    <string name="CP_ConfirmCalling_Question">Call to %s?</string>
-    <string name="CP_ConfirmCalling_Action">Confirm</string>
-    <string name="CP_ConfirmCalling_Action_Cancel">Cancel</string>
     <string name="CP_ForwardMsgDate">Show forwarded message date</string>
     <string name="CP_ShowSeconds">Show seconds in timestamps</string>
     <string name="CP_ShowSeconds_Desc">Shows the seconds of the time of sent messages (restart app to apply)</string>
@@ -228,6 +223,7 @@
     <string name="EP_DownloadSpeedBoostExtreme">Extreme</string>
     <string name="EP_UploadloadSpeedBoost">Upload speed boost</string>
     <string name="EP_SlowNetworkMode">Slow network mode</string>
+    <string name="CG_ResidentNotification">Show a resident notification</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->
@@ -241,6 +237,23 @@
     <string name="SP_Category_Account">Account</string>
     <string name="SP_DeleteAccount">Delete Telegram account</string>
     <!--Security Preferences-->
+
+    <!--Updates Preferences-->
+    <string name="UP_Category_Updates">Updates</string>
+    <string name="UP_LastCheck">Last check</string>
+    <string name="UP_CurrentVersion">Current version</string>
+    <string name="UP_Auto_OTA">Check on launch</string>
+    <string name="UP_ClearUpdatesCache">Clear updates cache</string>
+    <string name="UP_ClearedUpdatesCache">Cleared %1$s of cache.</string>
+    <string name="UP_NothingToClear">Nothing to clear.</string>
+    <string name="UP_CheckForUpdates">Check for updates</string>
+    <string name="UP_Not_Found">Cherrygram is up to date.</string>
+    <string name="UP_UpdateAvailable">Update available!</string>
+    <string name="UP_Version">Version</string>
+    <string name="UP_UpdateSize">Update size</string>
+    <string name="UP_Changelog">Changelog:</string>
+    <string name="UP_Download">Download</string>
+    <!--Updates Preferences-->
 
     <!--Donations-->
     <string name="DP_Donate">Donate</string>

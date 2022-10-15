@@ -45,6 +45,7 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_contacts to R.drawable.user_outline_28,
             R.drawable.msg_calls to R.drawable.phone_outline_28,
             R.drawable.ic_call to R.drawable.phone_outline_24,
+            R.drawable.msg_callback to R.drawable.phone_outline_28,
             R.drawable.profile_video to R.drawable.videocam_outline_28,
             R.drawable.msg_videocall to R.drawable.videocam_outline_28,
             R.drawable.msg_add to R.drawable.user_add_outline_24,

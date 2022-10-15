@@ -183,7 +183,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.CherrygramPreferencesNavigator;
 import uz.unnarsx.cherrygram.helpers.MonetHelper;
+import uz.unnarsx.cherrygram.ota.UpdaterUtils;
 import uz.unnarsx.cherrygram.preferences.CameraPrefenrecesEntry;
 import uz.unnarsx.cherrygram.preferences.ExperimentalPrefenrecesEntry;
 import uz.unnarsx.cherrygram.vkui.CGUIResources;
@@ -365,6 +367,8 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         }
 
         super.onCreate(savedInstanceState);
+
+
         if (Build.VERSION.SDK_INT >= 24) {
             AndroidUtilities.isInMultiwindow = isInMultiWindowMode();
         }
@@ -638,6 +642,10 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (id == 1003) {
                     presentFragment(new ExperimentalPrefenrecesEntry());
+                    drawerLayoutContainer.closeDrawer(false);
+                } else if (id == 1004) {
+                    //presentFragment(new ExperimentalPrefenrecesEntry());
+                    presentFragment(CherrygramPreferencesNavigator.createMainMenu());
                     drawerLayoutContainer.closeDrawer(false);
                 }
             }
@@ -923,6 +931,11 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
             MonetHelper.registerReceiver(this);
             LauncherIconController.updateMonetIcon();
         }
+
+        if (CherrygramConfig.INSTANCE.getAutoOTA()) {
+            UpdaterUtils.checkUpdates(this, false);
+        }
+
     }
 
     private void setupActionBarLayout() {
@@ -1605,6 +1618,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         int open_widget_edit_type = -1;
         int open_new_dialog = 0;
         long dialogId = 0;
+        boolean checkUpdates = false;
         boolean showDialogsList = false;
         boolean showPlayer = false;
         boolean showLocations = false;
@@ -2480,6 +2494,8 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                                         newContactName = data.getQueryParameter("name");
                                         newContactPhone = data.getQueryParameter("phone");
                                         newContact = true;
+                                    } else if ((url.startsWith("tg:update") || url.startsWith("tg://update"))) {
+                                        checkUpdates = true;
                                     } else {
                                         unsupportedUrl = url.replace("tg://", "").replace("tg:", "");
                                         int index;
@@ -2839,6 +2855,12 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                     drawerLayoutContainer.setAllowOpenDrawer(true, false);
                 }
                 pushOpened = true;
+            } else if (checkUpdates) {
+                BaseFragment currentFragment = !mainFragmentsStack.isEmpty() ? mainFragmentsStack.get(mainFragmentsStack.size() - 1) : null;
+                if (currentFragment != null && (currentFragment.isRemovingFromStack() || currentFragment.isInPreviewMode())) {
+                    currentFragment = mainFragmentsStack.size() > 1 ? mainFragmentsStack.get(mainFragmentsStack.size() - 2) : null;
+                }
+                UpdaterUtils.checkUpdates(currentFragment.getParentActivity(), true, () -> showBulletin(factory -> factory.createErrorBulletin(LocaleController.getString("UP_Not_Found", R.string.UP_Not_Found))), null);
             } else if (newContact) {
                 final NewContactActivity fragment = new NewContactActivity();
                 if (newContactName != null) {
@@ -4386,9 +4408,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         updateLayout.setWillNotDraw(false);
         updateLayout.setVisibility(View.INVISIBLE);
         updateLayout.setTranslationY(AndroidUtilities.dp(44));
-        if (Build.VERSION.SDK_INT >= 21) {
-            updateLayout.setBackground(Theme.getSelectorDrawable(0x40ffffff, false));
-        }
+        updateLayout.setBackground(Theme.getSelectorDrawable(0x40ffffff, false));
         sideMenuContainer.addView(updateLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 44, Gravity.LEFT | Gravity.BOTTOM));
         updateLayout.setOnClickListener(v -> {
             if (!SharedConfig.isAppUpdateAvailable()) {
@@ -4519,12 +4539,11 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         }
     }
 
-    /*public void checkAppUpdate(boolean force) {
-        if (true) return;
+    public void checkAppUpdate(boolean force) {
         if (!force && BuildVars.DEBUG_VERSION || !force && !BuildVars.CHECK_UPDATES) {
             return;
         }
-        if (!force && Math.abs(System.currentTimeMillis() - SharedConfig.lastUpdateCheckTime) < MessagesController.getInstance(0).updateCheckDelay * 1000) {
+        if (!force && Math.abs(System.currentTimeMillis() - SharedConfig.lastUpdateCheckTime) < MessagesController.getInstance(0).updateCheckDelay * 1000L) {
             return;
         }
         TLRPC.TL_help_getAppUpdate req = new TLRPC.TL_help_getAppUpdate();
@@ -4557,12 +4576,12 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
                                 FileLog.e(e);
                             }
                         }
-                        NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
+                        //NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
                     }
                 });
             }
         });
-    }*/
+    }
 
     public AlertDialog showAlertDialog(AlertDialog.Builder builder) {
         try {
@@ -5159,7 +5178,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         } else if (SharedConfig.pendingAppUpdate != null && SharedConfig.pendingAppUpdate.can_not_skip) {
             showUpdateActivity(UserConfig.selectedAccount, SharedConfig.pendingAppUpdate, true);
         }
-        /*checkAppUpdate(false);*/
+        checkAppUpdate(false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ApplicationLoader.canDrawOverlays = Settings.canDrawOverlays(this);
