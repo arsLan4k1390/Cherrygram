@@ -89,6 +89,34 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
                     return;
                 } else if (icon == LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
                     return;
+                } else if (icon == LauncherIconController.LauncherIcon.DARK && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.WHITE && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.AQUA && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.GREEN && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.SUNSET && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.SUNRISE && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.DARK_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.WHITE_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.AQUA_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.GREEN_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.SUNSET_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.SUNRISE_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.TURBO_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
+                } else if (icon == LauncherIconController.LauncherIcon.NOX_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
+                    return;
                 }
                 holderView.bind(icon);
                 holderView.iconView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(ICONS_ROUND_RADIUS), Color.TRANSPARENT, Theme.getColor(Theme.key_listSelector), Color.BLACK));
@@ -170,6 +198,22 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
         }
+        if (!(Build.VERSION.SDK_INT >= 26)) {
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.WHITE));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.AQUA));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.GREEN));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNSET));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNRISE));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.WHITE_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.AQUA_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.GREEN_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNSET_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNRISE_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX_CHERRY));
+        }
         if (MessagesController.getInstance(currentAccount).premiumLocked) {
             for (int i = 0; i < availableIcons.size(); i++) {
                 if (availableIcons.get(i).premium) {
@@ -187,6 +231,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.AQUA));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.GREEN));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNSET));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNRISE));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.PREMIUM));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX));
@@ -200,6 +245,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.AQUA_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.GREEN_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNSET_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNRISE_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX_CHERRY));
         }

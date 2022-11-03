@@ -2588,19 +2588,9 @@ public class AndroidUtilities {
         }
     }*/
 
-    public static void startAppCenter(Activity context) {
-
-    }
-
-    private static long lastUpdateCheckTime;
-
-    public static void checkForUpdates() {
-
-    }
-
-    public static void appCenterLog(Throwable e) {
-
-    }
+    /*public static void appCenterLog(Throwable e) {
+        ApplicationLoader.appCenterLog(e);
+    }*/
 
     public static boolean shouldShowClipboardToast() {
         return (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !OneUIUtilities.hasBuiltInClipboardToasts()) && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
@@ -4471,6 +4461,14 @@ public class AndroidUtilities {
             FileLog.e(e);
         }
         return null;
+    }
+
+    public static String capitalize(String name){
+        String capitalizeString = "";
+        if(!name.trim().equals("")){
+            capitalizeString = name.substring(0,1).toUpperCase() + name.substring(1);
+        }
+        return capitalizeString;
     }
 
     public static int getTransparentColor(int color, float opacity){

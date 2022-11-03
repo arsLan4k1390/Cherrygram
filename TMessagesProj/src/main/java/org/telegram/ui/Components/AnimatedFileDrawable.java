@@ -455,11 +455,10 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable, 
             useSharedQueue = true;
             if (MessageObject.getStickerSetId(document) == 683462835916767409L) {
                 path = null;
-                return;
-            }
-            if (MessageObject.getStickerSetId(document) == 1510769529645432834L) {
+            } else if (MessageObject.getStickerSetId(document) == 1510769529645432834L) {
                 path = null;
-                return;
+            } else if (MessageObject.getStickerSetId(document) == 8106175868352593928L) {
+                path = null;
             }
         }
     }

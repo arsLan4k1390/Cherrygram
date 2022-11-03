@@ -2,12 +2,17 @@ package uz.unnarsx.cherrygram.preferences
 
 import android.app.Activity
 import android.content.SharedPreferences
+import androidx.core.util.Pair
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.UndoView
 import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.CherrygramConfig.downloadSpeedBoost
+import uz.unnarsx.cherrygram.helpers.PopupHelper
 import uz.unnarsx.cherrygram.preferences.ktx.*
+import uz.unnarsx.tgkit.preference.types.TGKitListPreference
 import uz.unnarsx.tgkit.preference.types.TGKitSliderPreference.TGSLContract
 
 class ChatsPreferencesEntry : BasePreferencesEntry {
@@ -94,13 +99,27 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     CherrygramConfig.showSeconds = it
                 }
             }
-            switch {
-                title = LocaleController.getString("CP_DoubleTapReact", R.string.CP_DoubleTapReact)
+            list {
+                title = LocaleController.getString("CP_DoubleTapAction", R.string.CP_DoubleTapAction)
 
                 contract({
-                    return@contract CherrygramConfig.disableDoubleTabReact
+                    return@contract listOf(
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_NONE, LocaleController.getString("Disable", R.string.Disable)),
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_REACTION, LocaleController.getString("Reactions", R.string.Reactions)),
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_REPLY, LocaleController.getString("Reply", R.string.Reply)),
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_SAVE, LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)),
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_EDIT, LocaleController.getString("Edit", R.string.Edit))
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.doubleTapAction) {
+                        CherrygramConfig.DOUBLE_TAP_ACTION_REACTION -> LocaleController.getString("Reactions", R.string.Reactions)
+                        CherrygramConfig.DOUBLE_TAP_ACTION_REPLY -> LocaleController.getString("Reply", R.string.Reply)
+                        CherrygramConfig.DOUBLE_TAP_ACTION_SAVE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
+                        CherrygramConfig.DOUBLE_TAP_ACTION_EDIT -> LocaleController.getString("Edit", R.string.Edit)
+                        else -> LocaleController.getString("Disable", R.string.Disable)
+                    }
                 }) {
-                    CherrygramConfig.disableDoubleTabReact = it
+                    CherrygramConfig.doubleTapAction = it
                 }
             }
             switch {

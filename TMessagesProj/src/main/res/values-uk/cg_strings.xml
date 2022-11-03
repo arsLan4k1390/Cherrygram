@@ -121,8 +121,7 @@
 
     <string name="AP_ProfileCategory">Профіль і контакти</string>
     <string name="AP_HideUserPhone">Приховати ваш номер телефону</string>
-    <string name="AP_HideUserPhoneSummary">В меню (потрібен перезапуск додатку) та налаштуваннях</string>
-    <string name="AP_Hidden">Приховано</string>
+    <string name="AP_HideUserPhoneSummary">В меню та налаштуваннях</string>
     <string name="AP_MutualContacts_Description">Цей контакт є є взаємним</string>
     <string name="AP_ShowID">Показувати ID в профілі</string>
     <string name="AP_ShowDC">Показувати DC в профілі</string>
@@ -140,8 +139,8 @@
     <string name="CP_ForwardMsgDate">Показувати дату пересланого повідомлення</string>
     <string name="CP_ShowSeconds">Показувати секунди в мітках часу</string>
     <string name="CP_ShowSeconds_Desc">Показувати секунди в часі відправлених повідомлень (потрібен перезапуск додатку)</string>
+    <string name="CP_DoubleTapAction">Дія при подвійному дотику</string>
     <string name="CP_DisableAnimAvatars">Вимкнути анімовані аватарки</string>
-    <string name="CP_DoubleTapReact">Вимкнути швидкі реакції</string>
     <string name="CP_DisableReactionAnim">Вимкнути анімацію реакцій</string>
     <string name="CP_DisableReactionAnim_Desc">(під час реакції на повідомлення)</string>
     <string name="CP_DisableSwipeToNext">Вимкнути перехід на наступний канал</string>

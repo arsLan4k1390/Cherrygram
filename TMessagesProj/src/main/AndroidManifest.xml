@@ -220,6 +220,20 @@
 
         <activity-alias
             android:enabled="false"
+            android:name="uz.unnarsx.cherrygram.CG_Icon_Sunrise"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher_cherry_sunrise"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
             android:name="uz.unnarsx.cherrygram.CG_Icon_Turbo"
             android:targetActivity="org.telegram.ui.LaunchActivity"
             android:icon="@mipmap/icon_launcher_cherry_turbo"
@@ -350,6 +364,20 @@
             android:name="uz.unnarsx.cherrygram.SunsetIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
             android:icon="@mipmap/icon_launcher_sunset"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="uz.unnarsx.cherrygram.SunriseIcon"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher_sunrise"
             android:exported="true">
 
             <intent-filter>
@@ -823,6 +851,8 @@
         <meta-data android:name="android.max_aspect" android:value="2.5" />
 
         <meta-data android:name="com.google.android.actions" android:resource="@xml/actions" />
+
+        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/cg_notification" />
 
     </application>
 

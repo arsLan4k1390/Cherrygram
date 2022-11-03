@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -764,10 +765,12 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         }
         animatedStatus.setColor(Theme.getColor(Theme.isCurrentThemeDark() ? Theme.key_chats_verifiedBackground : Theme.key_chats_menuPhoneCats));
         status.setColor(Theme.getColor(Theme.isCurrentThemeDark() ? Theme.key_chats_verifiedBackground : Theme.key_chats_menuPhoneCats));
-        if (CherrygramConfig.INSTANCE.getHidePhoneNumber()) {
-            phoneTextView.setText(user.username != null ? "@" + user.username : String.valueOf(AccountInstance.getInstance(UserConfig.selectedAccount).getUserConfig().clientUserId));
-        } else {
+        if (!CherrygramConfig.INSTANCE.getHidePhoneNumber()) {
             phoneTextView.setText(PhoneFormat.getInstance().format("+" + user.phone));
+        } else if (!TextUtils.isEmpty(user.username)) {
+            phoneTextView.setText("@" + user.username);
+        } else {
+            phoneTextView.setText(LocaleController.getString("MobileHidden",R.string.MobileHidden));
         }
         AvatarDrawable avatarDrawable = new AvatarDrawable(user);
         avatarDrawable.setColor(Theme.getColor(Theme.key_avatar_backgroundInProfileBlue));

@@ -1201,7 +1201,7 @@
     <string name="URL">URL</string>
     <string name="MapPreviewProvider">Map Preview Provider</string>
     <string name="MapPreviewProviderTitle">Map preview provider</string>
-    <string name="MapPreviewProviderTelegram">Cherrygram</string>
+    <string name="MapPreviewProviderTelegram">Telegram</string>
     <string name="MapPreviewProviderGoogle">Google</string>
     <string name="MapPreviewProviderYandex">Yandex</string>
     <string name="MapPreviewProviderNobody">No previews</string>
@@ -1390,8 +1390,8 @@
     <string name="NotificationGroupFew">%1$s sent %3$s to the group %2$s</string>
     <string name="NotificationGroupAlbum">%1$s sent an album to the group %2$s</string>
     <string name="NotificationGroupForwardedFew">%1$s forwarded %3$s to the group %2$s</string>
-    <string name="NotificationHiddenName">Cherrygram</string>
-    <string name="NotificationHiddenChatName">Cherrygram</string>
+    <string name="NotificationHiddenName">Telegram</string>
+    <string name="NotificationHiddenChatName">Telegram</string>
     <string name="NotificationHiddenChatUserName">User</string>
     <string name="NotificationHiddenMessage">New message</string>
     <string name="Reply">Reply</string>
@@ -1456,7 +1456,7 @@
     <string name="NotificationActionPinnedGeoLiveUser">%1$s pinned a live location</string>
     <string name="NotificationActionPinnedGifUser">%1$s pinned a GIF</string>
     <string name="NotificationActionPinnedMusicUser">%1$s pinned an audio file</string>
-    <string name="SecretChatName">Cherrygram</string>
+    <string name="SecretChatName">Telegram</string>
     <!--contacts view-->
     <string name="SelectContact">Select Contact</string>
     <string name="SelectContacts">Select Contacts</string>
@@ -3677,7 +3677,7 @@
     <string name="ViewMessageStatistic">Message Statistic</string>
     <string name="ViewMessage">Open Message</string>
     <!--Intro view-->
-    <string name="Page1Title">Cherrygram</string>
+    <string name="Page1Title">Telegram</string>
     <string name="Page2Title">Fast</string>
     <string name="Page3Title">Free</string>
     <string name="Page4Title">Secure</string>

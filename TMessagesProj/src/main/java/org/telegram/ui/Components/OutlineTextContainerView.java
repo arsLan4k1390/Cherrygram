@@ -59,6 +59,7 @@ public class OutlineTextContainerView extends FrameLayout {
         super(context);
         setWillNotDraw(false);
         textPaint.setTextSize(AndroidUtilities.dp(16));
+        textPaint.setTypeface(AndroidUtilities.getTypeface("fonts/rregular.ttf"));
         outlinePaint.setStyle(Paint.Style.STROKE);
         outlinePaint.setStrokeCap(Paint.Cap.ROUND);
         outlinePaint.setStrokeWidth(strokeWidthRegular);
@@ -83,6 +84,12 @@ public class OutlineTextContainerView extends FrameLayout {
 
     public void setText(@NonNull String text) {
         this.mText = text;
+        invalidate();
+    }
+
+    public void setText(@NonNull String text, int number) {
+        this.mText = text;
+        setText(mText + " (" + String.valueOf(number) + ")");
         invalidate();
     }
 

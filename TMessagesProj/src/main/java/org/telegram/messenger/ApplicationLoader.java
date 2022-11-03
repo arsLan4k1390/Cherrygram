@@ -11,9 +11,7 @@ package org.telegram.messenger;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlarmManager;
 import android.app.Application;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -33,10 +31,11 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+
 import androidx.multidex.MultiDex;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.telegram.messenger.voip.VideoCapturerDevice;
 import org.telegram.tgnet.ConnectionsManager;
@@ -74,6 +73,7 @@ public class ApplicationLoader extends Application {
     public static volatile boolean mainInterfacePausedStageQueue = true;
     public static boolean canDrawOverlays;
     public static volatile long mainInterfacePausedStageQueueTime;
+    public static boolean hasPlayServices;
 
     private static PushListenerController.IPushListenerServiceProvider pushProvider;
     private static IMapsProvider mapsProvider;
@@ -222,7 +222,7 @@ public class ApplicationLoader extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        hasPlayServices = checkPlayServices();
         SharedConfig.loadConfig();
         SharedPrefsHelper.init(applicationContext);
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) { //TODO improve account
@@ -298,7 +298,6 @@ public class ApplicationLoader extends Application {
 
         AndroidUtilities.runOnUIThread(ApplicationLoader::startPushService);
 
-        //startPushService();
         LauncherIconController.tryFixLauncherIconIfNeeded();
     }
 
@@ -308,7 +307,7 @@ public class ApplicationLoader extends Application {
         if (preferences.contains("pushService")) {
             enabled = preferences.getBoolean("pushService", true);
         } else {
-            enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", true);
+            enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", false);
         }
         if (enabled) {
             try {
@@ -360,9 +359,9 @@ public class ApplicationLoader extends Application {
         }, 1000);
     }
 
-    private boolean checkPlayServices() {
+    private static boolean checkPlayServices() {
         try {
-            int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+            int resultCode = -GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ApplicationLoader.applicationContext);
             return resultCode == ConnectionResult.SUCCESS;
         } catch (Exception e) {
             FileLog.e(e);
@@ -553,4 +552,29 @@ public class ApplicationLoader extends Application {
         }
         return result;
     }
+
+    /*public static void startAppCenter(Activity context) {
+        applicationLoaderInstance.startAppCenterInternal(context);
+    }
+
+    public static void checkForUpdates() {
+        applicationLoaderInstance.checkForUpdatesInternal();
+    }
+
+    public static void appCenterLog(Throwable e) {
+        applicationLoaderInstance.appCenterLogInternal(e);
+    }
+
+    protected void appCenterLogInternal(Throwable e) {
+
+    }
+
+    protected void checkForUpdatesInternal() {
+
+    }
+
+    protected void startAppCenterInternal(Activity context) {
+
+    }*/
+
 }

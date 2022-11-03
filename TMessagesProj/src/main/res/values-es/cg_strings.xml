@@ -121,8 +121,7 @@
 
     <string name="AP_ProfileCategory">Perfil y Contactos</string>
     <string name="AP_HideUserPhone">Oculta tu número de teléfono</string>
-    <string name="AP_HideUserPhoneSummary">en cajón (reiniciar app para aplicar) y ajustes</string>
-    <string name="AP_Hidden">Oculto</string>
+    <string name="AP_HideUserPhoneSummary">en cajón y ajustes</string>
     <string name="AP_MutualContacts_Description">Este es un contacto mutuo.</string>
     <string name="AP_ShowID">Mostrar ID en el perfil</string>
     <string name="AP_ShowDC">Mostrar DC en el perfil</string>
@@ -140,8 +139,8 @@
     <string name="CP_ForwardMsgDate">Mostrar fecha del mensaje reenviado</string>
     <string name="CP_ShowSeconds">Mostrar segundos en marcas de tiempo</string>
     <string name="CP_ShowSeconds_Desc">Muestra los segundos del tiempo de los mensajes enviados (reinicie la app para aplicar)</string>
+    <string name="CP_DoubleTapAction">Acción de doble toque</string>
     <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
-    <string name="CP_DoubleTapReact">Desactivar reacciones rápidas</string>
     <string name="CP_DisableReactionAnim">Desactivar animación de reacción</string>
     <string name="CP_DisableReactionAnim_Desc">(al reaccionar a un mensaje)</string>
     <string name="CP_DisableSwipeToNext">Desactivar la transición al siguiente canal</string>

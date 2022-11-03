@@ -68,6 +68,10 @@
     <string name="CG_ForceCleanInfo">Используйте это, если Вы долго видите \"Подсчёт…\" при попытке очистки кэша.\nЭто удалит ВСЁ из вашего кэша - будьте осторожны!</string>
     <string name="CG_ForceCleanInfo1">Вы действительно хотите удалить ВСЁ из вашего кэша Telegram?</string>
     <string name="CG_Kaboom">Доступ к этой функции можно получить без пароля Cherrygram, через системные настройки. Эта функция полностью удаляет все данные приложения. Ее можно использовать в аварийных ситуациях.</string>
+    <string name="CG_AppCrashed">Что-то пошло не так</string>
+    <string name="CG_AppCrashedDesc">Cherrygram перестал работать. Пожалуйста, отправьте логи разработчикам, чтобы они как можно скорее исправили эту ошибку.</string>
+    <string name="CG_CopyReportDetails">Скопировать детали отчёта</string>
+    <string name="CG_ReportDetailsCopied">Детали отчёта скопированы в буфер обмена.</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -96,6 +100,7 @@
     <string name="AP_ChangeIcon_White">Белая</string>
     <string name="AP_ChangeIcon_Green">Зеленая</string>
     <string name="AP_ChangeIcon_Sunset">Закат</string>
+    <string name="AP_ChangeIcon_Sunrise">Восход</string>
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
     <string name="AP_ToolBarShadow">Отключить тень у тулбара</string>
@@ -137,8 +142,7 @@
 
     <string name="AP_ProfileCategory">Профиль и контакты</string>
     <string name="AP_HideUserPhone">Скрыть ваш номер телефона</string>
-    <string name="AP_HideUserPhoneSummary">В меню (требуется перезапуск приложения) и настройках</string>
-    <string name="AP_Hidden">Скрыто</string>
+    <string name="AP_HideUserPhoneSummary">В боковом меню и настройках</string>
     <string name="AP_MutualContacts_Description">Этот контакт является взаимным.</string>
     <string name="AP_ShowID">Показывать ID в профиле</string>
     <string name="AP_ShowDC">Показывать DC в профиле</string>
@@ -156,7 +160,7 @@
     <string name="CP_ForwardMsgDate">Показывать дату пересланного сообщения</string>
     <string name="CP_ShowSeconds">Показывать секунды в метках времени</string>
     <string name="CP_ShowSeconds_Desc">Показывает секунды у времени отправленных сообщений (требуется перезапуск приложения)</string>
-    <string name="CP_DoubleTapReact">Отключить быстрые реакции</string>
+    <string name="CP_DoubleTapAction">Действие при двойном нажатии</string>
     <string name="CP_DisableSwipeToNext">Отключить переход на следующий канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Отключить переключение на следующий канал при прокрутке любого канала</string>
     <string name="CP_HideKbdOnScroll">Скрыть клавиатуру при прокрутке</string>
@@ -216,6 +220,7 @@
     <string name="EP_UploadloadSpeedBoost">Увеличение скорости отдачи</string>
     <string name="EP_SlowNetworkMode">Режим медленной сети</string>
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
+    <string name="EP_ShowRPCError">Всплывающие уведомления обо всех ошибках RPC</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->

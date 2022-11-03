@@ -8131,7 +8131,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         String value;
                         if (user != null && user.phone != null && user.phone.length() != 0) {
                             if  (uz.unnarsx.cherrygram.CherrygramConfig.INSTANCE.getHidePhoneNumber()) {
-                                value = LocaleController.getString("AS_Hidden", R.string.AP_Hidden);
+                                value = LocaleController.getString("MobileHidden", R.string.MobileHidden);
                         } else {
                                 value = PhoneFormat.getInstance().format("+" + user.phone);
                             }

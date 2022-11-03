@@ -6,8 +6,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Browser
+import android.widget.FrameLayout
 import org.telegram.messenger.*
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.BulletinFactory
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.ota.UpdaterBottomSheet
@@ -16,6 +18,7 @@ import uz.unnarsx.cherrygram.preferences.ktx.textDetail
 import uz.unnarsx.cherrygram.preferences.ktx.textIcon
 import uz.unnarsx.cherrygram.preferences.ktx.tgKitScreen
 import uz.unnarsx.extras.CherrygramExtras
+import uz.unnarsx.extras.Crashlytics
 import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
 
 
@@ -108,6 +111,16 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     icon = R.drawable.sync_outline_28
                     listener = TGKitTextIconRow.TGTIListener {
                         UpdaterBottomSheet(bf.parentActivity, false).show()
+                    }
+                }
+                textIcon {
+                    title = LocaleController.getString("CG_CopyReportDetails", R.string.CG_CopyReportDetails)
+                    icon = R.drawable.bug_outline_28
+                    listener = TGKitTextIconRow.TGTIListener {
+                        AndroidUtilities.addToClipboard(Crashlytics.getReportMessage().toString() + "\n\n#bug")
+                        BulletinFactory.of(bf).createErrorBulletin(
+                            LocaleController.getString("CG_ReportDetailsCopied", R.string.CG_ReportDetailsCopied)
+                        ).show()
                     }
                 }
             }

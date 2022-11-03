@@ -25,6 +25,7 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         activeReplacement = CherrygramConfig.getIconReplacement()
     }
 
+    @Deprecated("Deprecated in Java")
     @SuppressLint("UseCompatLoadingForDrawables")
     @Throws(NotFoundException::class)
     override fun getDrawable(id: Int): Drawable? {
@@ -38,6 +39,7 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         return wrapped.getDrawable(activeReplacement.wrap(id), theme)
     }
 
+    @Deprecated("Deprecated in Java")
     @Throws(NotFoundException::class)
     override fun getDrawableForDensity(id: Int, density: Int): Drawable? {
         return wrapped.getDrawableForDensity(activeReplacement.wrap(id), density)
@@ -133,11 +135,13 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         return wrapped.getFraction(id, base, pbase)
     }
 
+    @Deprecated("Deprecated in Java")
     @Throws(NotFoundException::class)
     override fun getMovie(id: Int): Movie? {
         return wrapped.getMovie(id)
     }
 
+    @Deprecated("Deprecated in Java")
     @Throws(NotFoundException::class)
     override fun getColor(id: Int): Int {
         return wrapped.getColor(id)
@@ -149,6 +153,7 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         return wrapped.getColor(id, theme)
     }
 
+    @Deprecated("Deprecated in Java")
     @Throws(NotFoundException::class)
     override fun getColorStateList(id: Int): ColorStateList {
         return wrapped.getColorStateList(id)

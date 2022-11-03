@@ -70,6 +70,10 @@
     <string name="CG_ForceCleanInfo">Use this if you face long \"Calculating…\" when trying to clean cache.\nThis will delete EVERYTHING from your cache - be careful!</string>
     <string name="CG_ForceCleanInfo1">Do you really want to delete EVERYTHING from your Telegram cache?</string>
     <string name="CG_Kaboom">This feature can be accessed without the Cherrygram password, through the system settings. This feature completely erases all your local (Cherrygram\'s) data. It can be used in emergency situations.</string>
+    <string name="CG_AppCrashed">Something went wrong</string>
+    <string name="CG_AppCrashedDesc">Cherrygram has stopped working. Please, send logs to the developers so that they can fix this bug as soon as possible.</string>
+    <string name="CG_CopyReportDetails">Copy Report Details</string>
+    <string name="CG_ReportDetailsCopied">Report details copied to clipboard.</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -103,6 +107,7 @@
     <string name="AP_ChangeIcon_White">White</string>
     <string name="AP_ChangeIcon_Green">Green</string>
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
+    <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Default">Default</string>
     <string name="AP_ToolBarShadow">Disable toolbar shadow</string>
@@ -144,8 +149,7 @@
 
     <string name="AP_ProfileCategory">Profile and Contacts</string>
     <string name="AP_HideUserPhone">Hide your phone number</string>
-    <string name="AP_HideUserPhoneSummary">in drawer (restart app to apply) and settings</string>
-    <string name="AP_Hidden">Hidden</string>
+    <string name="AP_HideUserPhoneSummary">in drawer and settings</string>
     <string name="AP_MutualContacts_Description">This is a mutual contact.</string>
     <string name="AP_ShowID">Show ID in profile</string>
     <string name="AP_ShowDC">Show DC in profile</string>
@@ -164,7 +168,7 @@
     <string name="CP_ForwardMsgDate">Show forwarded message date</string>
     <string name="CP_ShowSeconds">Show seconds in timestamps</string>
     <string name="CP_ShowSeconds_Desc">Shows the seconds of the time of sent messages (restart app to apply)</string>
-    <string name="CP_DoubleTapReact">Disable quick reactions</string>
+    <string name="CP_DoubleTapAction">Double tap action</string>
     <string name="CP_DisableSwipeToNext">Disable transition to the next channel</string>
     <string name="CP_DisableSwipeToNext_Desc">Disable switching to the next channel when scrolling through any channel</string>
     <string name="CP_HideKbdOnScroll">Hide keyboard on scroll</string>
@@ -224,6 +228,7 @@
     <string name="EP_UploadloadSpeedBoost">Upload speed boost</string>
     <string name="EP_SlowNetworkMode">Slow network mode</string>
     <string name="CG_ResidentNotification">Show a resident notification</string>
+    <string name="EP_ShowRPCError">Toast all RPC errors</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->

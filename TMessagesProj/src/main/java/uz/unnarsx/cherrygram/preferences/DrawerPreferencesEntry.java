@@ -297,7 +297,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                         @Override
                         protected void onSelectedEvent(int eventSelected) {
                             super.onSelectedEvent(eventSelected);
-                            CherrygramConfig.INSTANCE.setEventType(eventSelected);
+                            CherrygramConfig.INSTANCE.saveEventType(eventSelected);
                             listAdapter.notifyItemChanged(drawerRow, new Object());
                             Theme.lastHolidayCheckTime = 0;
                             Theme.dialogs_holidayDrawable = null;

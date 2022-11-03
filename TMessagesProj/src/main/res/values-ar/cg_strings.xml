@@ -105,8 +105,7 @@
     <string name="AP_DrawerButtonsCategory">أزرار الشريط الجانبي</string>
     <string name="AP_ProfileCategory">الملف الشخصي وجهات الاتصال</string>
     <string name="AP_HideUserPhone">إخفاء رقم هاتفي</string>
-    <string name="AP_HideUserPhoneSummary">في الشريط الجانبي والإعدادات (إعد تشغيل التطبيق)</string>
-    <string name="AP_Hidden">مخفي</string>
+    <string name="AP_HideUserPhoneSummary">في الشريط الجانبي والإعدادات</string>
     <string name="AP_MutualContacts_Description">هذا هو جهات الاتصال المتبادلة.</string>
     <string name="AP_ShowID">إظهار ID في الملف الشخصي</string>
     <string name="AP_ShowDC">عرض DC في الملف الشخصي</string>
@@ -122,8 +121,8 @@
     <string name="CP_ForwardMsgDate">إظهار تاريخ الرسالة المعاد توجيهها</string>
     <string name="CP_ShowSeconds">إظهار الثواني في الطوابع الزمنية</string>
     <string name="CP_ShowSeconds_Desc">يظهر الثواني من الوقت من الرسائل المرسلة (إعد تشغيل التطبيق)</string>
+    <string name="CP_DoubleTapAction">انقر نقرًا مزدوجًا</string>
     <string name="CP_DisableAnimAvatars">تعطيل الصور الرمزية المتحركة</string>
-    <string name="CP_DoubleTapReact">تعطيل ردود الفعل السريعة</string>
     <string name="CP_DisableReactionAnim">تعطيل ردود فعل الرسوم المتحركة</string>
     <string name="CP_DisableReactionAnim_Desc">(عند الرد على رسالة)</string>
     <string name="CP_DisableSwipeToNext">تعطيل الانتقال إلى القناة التالية</string>

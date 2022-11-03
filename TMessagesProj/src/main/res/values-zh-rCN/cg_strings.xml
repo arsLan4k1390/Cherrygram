@@ -57,6 +57,10 @@
     <string name="CG_ForceCleanInfo">当您尝试清除缓存时，长时间卡在“正在计算…”，可以使用本功能。本功能会清除您所有的数据，谨慎使用！</string>
     <string name="CG_ForceCleanInfo1">是否删除所有 Telegram 数据？</string>
     <string name="CG_Kaboom">无需 Cherrygram 密码即可通过系统设置访问此功能。此功能会完全擦除您所有的本地（Cherrygram）数据。</string>
+    <string name="CG_AppCrashed">出错了</string>
+    <string name="CG_AppCrashedDesc">Cherrygram 已停止运行。请将日志发送给开发者，以帮助修复这个问题</string>
+    <string name="CG_CopyReportDetails">复制崩溃信息</string>
+    <string name="CG_ReportDetailsCopied">崩溃信息已复制到剪切板</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -82,6 +86,7 @@
     <string name="AP_ChangeIcon_White">白色</string>
     <string name="AP_ChangeIcon_Green">绿色</string>
     <string name="AP_ChangeIcon_Sunset">日落</string>
+    <string name="AP_ChangeIcon_Sunrise">日出</string>
     <string name="AP_IconReplacement_VKUI">VKUI 图标</string>
     <string name="AP_IconReplacement_Default">默认</string>
     <string name="AP_ToolBarShadow">禁用工具栏阴影</string>
@@ -119,8 +124,7 @@
     <string name="AP_DrawerButtonsCategory">侧边栏按钮</string>
     <string name="AP_ProfileCategory">个人资料和联系人</string>
     <string name="AP_HideUserPhone">隐藏手机号码</string>
-    <string name="AP_HideUserPhoneSummary">在侧边栏（重启应用生效）和设置中隐藏手机号</string>
-    <string name="AP_Hidden">隐藏</string>
+    <string name="AP_HideUserPhoneSummary">在侧边栏 和设置中隐藏手机号</string>
     <string name="AP_MutualContacts_Description">该帐号为双向联系人</string>
     <string name="AP_ShowID">在个人资料页显示 ID</string>
     <string name="AP_ShowDC">在个人资料页显示 DC</string>
@@ -136,7 +140,7 @@
     <string name="CP_ForwardMsgDate">显示转发日期时间</string>
     <string name="CP_ShowSeconds">在时间戳中显示秒数</string>
     <string name="CP_ShowSeconds_Desc">显示发送消息时间的秒数（重启应用生效）</string>
-    <string name="CP_DoubleTapReact">禁用快捷表态</string>
+    <string name="CP_DoubleTapAction">双击操作</string>
     <string name="CP_DisableSwipeToNext">禁用频道切换</string>
     <string name="CP_DisableSwipeToNext_Desc">浏览频道消息时禁止切换到下一个频道</string>
     <string name="CP_HideKbdOnScroll">滚动浏览时收起键盘</string>

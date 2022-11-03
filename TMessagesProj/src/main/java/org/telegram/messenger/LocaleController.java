@@ -1070,7 +1070,6 @@ public class LocaleController {
     }
 
     public static String getString(String key, int res) {
-        if (key.equals("AppName")) return ApplicationLoader.applicationContext.getString(res);
         return getInstance().getStringInternal(key, res);
     }
 
@@ -1510,7 +1509,7 @@ public class LocaleController {
         if (languageOverride != null) {
             LocaleInfo toSet = currentLocaleInfo;
             currentLocaleInfo = null;
-            applyLanguage(toSet, false, false, UserConfig.selectedAccount);
+            applyLanguage(toSet, false, true, UserConfig.selectedAccount);
         } else {
             Locale newLocale = newConfig.locale;
             if (newLocale != null) {

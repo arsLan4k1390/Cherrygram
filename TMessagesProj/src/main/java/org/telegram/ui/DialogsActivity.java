@@ -191,6 +191,8 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.preferences.ExperimentalPrefenrecesEntry;
+import uz.unnarsx.extras.CrashReportBottomSheet;
+import uz.unnarsx.extras.Crashlytics;
 
 public class DialogsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     public final static int DIALOGS_TYPE_START_ATTACH_BOT = 14;
@@ -4016,6 +4018,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             FilesMigrationService.checkBottomSheet(this);
+        }
+        boolean foundCrashReport = Crashlytics.isCrashed();
+        if (foundCrashReport) {
+            CrashReportBottomSheet.checkBottomSheet(this);
         }
         updateMenuButton(false);
         actionBar.setDrawBlurBackground(contentView);

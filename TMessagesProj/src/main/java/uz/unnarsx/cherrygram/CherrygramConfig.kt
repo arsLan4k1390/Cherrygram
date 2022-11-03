@@ -3,11 +3,11 @@ package uz.unnarsx.cherrygram
 import android.app.Activity
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import android.content.ComponentName
 import android.content.pm.PackageManager
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.BuildConfig
 import org.telegram.messenger.SharedConfig
-import org.telegram.tgnet.RequestDelegateTimestamp
 import org.telegram.tgnet.TLRPC
 import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
@@ -190,9 +190,8 @@ object CherrygramConfig {
     }
 
     var eventType by sharedPreferences.int("AP_DrawerEventType", 0)
-    @JvmName("eventType")
-    fun setEventType(event: Int) {
-        eventType = event
+    fun saveEventType(type: Int) {
+        eventType = type
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
             "mainconfig",
             Activity.MODE_PRIVATE
@@ -348,7 +347,14 @@ object CherrygramConfig {
     var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
     var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", false)
     var showSeconds by sharedPreferences.boolean("CP_ShowSeconds", false)
-    var disableDoubleTabReact by sharedPreferences.boolean("CP_DoubleTapReact", false)
+
+    const val DOUBLE_TAP_ACTION_NONE = 0
+    const val DOUBLE_TAP_ACTION_REACTION = 1
+    const val DOUBLE_TAP_ACTION_REPLY = 2
+    const val DOUBLE_TAP_ACTION_SAVE = 3
+    const val DOUBLE_TAP_ACTION_EDIT = 4
+    var doubleTapAction by sharedPreferences.int("CP_DoubleTapAction", DOUBLE_TAP_ACTION_REACTION)
+
     var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
     var hideKeyboardOnScroll by sharedPreferences.boolean("CP_HideKbdOnScroll", false)
     var hideSendAsChannel by sharedPreferences.boolean("CP_HideSendAsChannel", false)

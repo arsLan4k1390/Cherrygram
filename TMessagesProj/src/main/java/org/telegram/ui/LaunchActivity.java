@@ -189,6 +189,7 @@ import uz.unnarsx.cherrygram.ota.UpdaterUtils;
 import uz.unnarsx.cherrygram.preferences.CameraPrefenrecesEntry;
 import uz.unnarsx.cherrygram.preferences.ExperimentalPrefenrecesEntry;
 import uz.unnarsx.cherrygram.vkui.CGUIResources;
+import uz.unnarsx.extras.Crashlytics;
 import uz.unnarsx.redesign.BottomSlideFragment;
 
 public class LaunchActivity extends BasePermissionsActivity implements  BottomSlideFragment.BottomSlideActivityInterface, ActionBarLayout.ActionBarLayoutDelegate, NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate {
@@ -912,7 +913,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
             FileLog.e(e);
         }
         MediaController.getInstance().setBaseActivity(this, true);
-        AndroidUtilities.startAppCenter(this);
+        //ApplicationLoader.startAppCenter(this);
         updateAppUpdateViews(false);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -5118,6 +5119,9 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
     @Override
     protected void onResume() {
         super.onResume();
+        if(!(Thread.getDefaultUncaughtExceptionHandler() instanceof Crashlytics)) {
+            Thread.setDefaultUncaughtExceptionHandler(new Crashlytics());
+        }
         isResumed = true;
         if (onResumeStaticCallback != null) {
             onResumeStaticCallback.run();

@@ -61,20 +61,22 @@ public class LauncherIconController {
         AQUA_CHERRY("CG_Icon_Aqua", R.drawable.icon_background_aqua, R.drawable.icon_foreground_cherry, R.string.AppIconAqua),
         GREEN_CHERRY("CG_Icon_Green", R.drawable.icon_background_green, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Green),
         SUNSET_CHERRY("CG_Icon_Sunset", R.drawable.icon_background_sunset, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunset),
+        SUNRISE_CHERRY("CG_Icon_Sunrise", R.drawable.icon_background_sunrise, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunrise),
         TURBO_CHERRY("CG_Icon_Turbo", R.drawable.icon_background_turbo, R.drawable.icon_foreground_cherry, R.string.AppIconTurbo),
         NOX_CHERRY("CG_Icon_Night", R.drawable.icon_background_nox, R.drawable.icon_foreground_cherry, R.string.AppIconNox),
 
-        OLD("Old_Icon", R.drawable.icon_background_default, R.mipmap.icon_foreground, R.string.AP_ChangeIcon_Default),
+        OLD("Old_Icon", R.drawable.icon_background_default, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Default),
         MONET_SAMSUNG("Monet_Icon_Samsung", R.color.icon_background_samsung, R.drawable.icon_foreground_samsung, R.string.AP_ChangeIcon_Monet_Samsung),
         MONET_PIXEL("Monet_Icon_Pixel", R.color.icon_background_pixel, R.drawable.icon_foreground_pixel, R.string.AP_ChangeIcon_Monet_Pixel),
         DARK("DarkIcon", R.drawable.icon_background_dark, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Dark),
-        WHITE("White_Icon", R.drawable.icon_background_white, R.mipmap.ic_launcher_white_foreground, R.string.AP_ChangeIcon_White),
-        AQUA("AquaIcon", R.drawable.icon_background_aqua, R.mipmap.icon_foreground, R.string.AppIconAqua),
-        GREEN("GreenIcon", R.drawable.icon_background_green, R.mipmap.icon_foreground, R.string.AP_ChangeIcon_Green),
-        SUNSET("SunsetIcon", R.drawable.icon_background_sunset, R.mipmap.icon_foreground, R.string.AP_ChangeIcon_Sunset),
+        WHITE("White_Icon", R.drawable.icon_background_white, R.drawable.icon_foreground_white, R.string.AP_ChangeIcon_White),
+        AQUA("AquaIcon", R.drawable.icon_background_aqua, R.drawable.icon_foreground, R.string.AppIconAqua),
+        GREEN("GreenIcon", R.drawable.icon_background_green, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Green),
+        SUNSET("SunsetIcon", R.drawable.icon_background_sunset, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Sunset),
+        SUNRISE("SunriseIcon", R.drawable.icon_background_sunrise, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Sunrise),
         PREMIUM("PremiumIcon", R.drawable.icon_background_premium, R.mipmap.icon_foreground_premium, R.string.AppIconPremium, true),
         TURBO("TurboIcon", R.drawable.icon_background_turbo, R.mipmap.icon_foreground_turbo, R.string.AppIconTurbo, true),
-        NOX("NoxIcon", R.drawable.icon_background_nox, R.mipmap.icon_foreground, R.string.AppIconNox, true);
+        NOX("NoxIcon", R.drawable.icon_background_nox, R.drawable.icon_foreground, R.string.AppIconNox, true);
 
         public final String key;
         public final int background;

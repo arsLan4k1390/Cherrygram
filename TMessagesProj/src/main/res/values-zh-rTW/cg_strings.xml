@@ -52,11 +52,15 @@
     <string name="CG_SwitchBackend">即將切換到測試伺服器。如果您不知道自己在做什麼，請立即退出。您可以再次長按調試選單中的切換後端來切換到普通伺服器</string>
     <string name="CG_Restart">重新啟動應用程式</string>
     <string name="CG_RestartToApply">重啟應用程式以套用變更</string>
-    <string name="CG_PushService">Cherrygram Push Service.</string>
+    <string name="CG_PushService">Cherrygram 推播服務</string>
     <string name="CG_ForceClean">強制清除 Telegram 快取</string>
     <string name="CG_ForceCleanInfo">當您嘗試清除快取時，長時間停留在「正在計算…」，則可以使用本功能。\n本功能會清除您所有的資料，請謹慎使用！</string>
     <string name="CG_ForceCleanInfo1">是否刪除所有 Telegram 資料？</string>
     <string name="CG_Kaboom">無需 Cherrygram 密碼即可透過系統設定取用此功能。此功能會完全清除您所有的本地 (Cherrygram) 資料，您可以在緊急情況下使用此功能。</string>
+    <string name="CG_AppCrashed">出現錯誤</string>
+    <string name="CG_AppCrashedDesc">Cherrygram 已停止執行。請將日誌傳送至開發者，以協助修復這個問題</string>
+    <string name="CG_CopyReportDetails">複製崩潰錯誤訊息</string>
+    <string name="CG_ReportDetailsCopied">崩潰錯誤訊息已複製至剪貼簿</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -82,6 +86,7 @@
     <string name="AP_ChangeIcon_White">白色</string>
     <string name="AP_ChangeIcon_Green">綠色</string>
     <string name="AP_ChangeIcon_Sunset">日落</string>
+    <string name="AP_ChangeIcon_Sunrise">日出</string>
     <string name="AP_IconReplacement_VKUI">VKUI 圖示</string>
     <string name="AP_IconReplacement_Default">預設</string>
     <string name="AP_ToolBarShadow">停用工具列陰影</string>
@@ -119,8 +124,7 @@
     <string name="AP_DrawerButtonsCategory">側邊欄按鈕</string>
     <string name="AP_ProfileCategory">個人檔案和聯絡人</string>
     <string name="AP_HideUserPhone">隱藏電話號碼</string>
-    <string name="AP_HideUserPhoneSummary">在側邊欄 (重啟應用程式後生效) 和設定中隱藏電話號碼</string>
-    <string name="AP_Hidden">隱藏</string>
+    <string name="AP_HideUserPhoneSummary">在側邊欄 和設定中隱藏電話號碼</string>
     <string name="AP_MutualContacts_Description">該帳戶為相互聯絡人，對方同時也新增您為聯絡人</string>
     <string name="AP_ShowID">在個人檔案頁面顯示 ID</string>
     <string name="AP_ShowDC">在個人檔案頁面顯示 DC</string>
@@ -136,7 +140,7 @@
     <string name="CP_ForwardMsgDate">顯示轉寄日期時間</string>
     <string name="CP_ShowSeconds">在時戳中顯示秒數</string>
     <string name="CP_ShowSeconds_Desc">顯示傳送訊息時間的秒數 (重啟應用程式後生效)</string>
-    <string name="CP_DoubleTapReact">停用快捷回應</string>
+    <string name="CP_DoubleTapAction">雙擊操作</string>
     <string name="CP_DisableSwipeToNext">停用頻道切換</string>
     <string name="CP_DisableSwipeToNext_Desc">瀏覽頻道訊息時禁止切換至下一個頻道</string>
     <string name="CP_HideKbdOnScroll">捲動時隱藏鍵盤</string>
@@ -189,6 +193,7 @@
     <string name="EP_DownloadSpeedBoostExtreme">最快</string>
     <string name="EP_UploadloadSpeedBoost">上載加速</string>
     <string name="EP_SlowNetworkMode">緩慢網路模式</string>
+    <string name="CG_ResidentNotification">顯示永久通知</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
     <string name="SP_Category_Security">安全</string>
@@ -199,6 +204,22 @@
     <string name="SP_Category_Account">帳戶</string>
     <string name="SP_DeleteAccount">刪除 Telegram 帳戶</string>
     <!--Security Preferences-->
+    <!--Updates Preferences-->
+    <string name="UP_Category_Updates">更新</string>
+    <string name="UP_LastCheck">上次檢查</string>
+    <string name="UP_CurrentVersion">目前版本</string>
+    <string name="UP_Auto_OTA">啟動時檢查更新</string>
+    <string name="UP_ClearUpdatesCache">清除更新快取</string>
+    <string name="UP_ClearedUpdatesCache">已清除 %1$s 快取</string>
+    <string name="UP_NothingToClear">暫無可清理內容</string>
+    <string name="UP_CheckForUpdates">檢查更新</string>
+    <string name="UP_Not_Found">Cherrygram 已經是最新版本</string>
+    <string name="UP_UpdateAvailable">有可用更新！</string>
+    <string name="UP_Version">版本</string>
+    <string name="UP_UpdateSize">更新檔大小</string>
+    <string name="UP_Changelog">更新日誌：</string>
+    <string name="UP_Download">下載</string>
+    <!--Updates Preferences-->
     <!--Donations-->
     <string name="DP_Donate">捐贈</string>
     <string name="DP_Donate_Method">選擇付款方式</string>

@@ -255,6 +255,9 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             return;
         }
         int eventType = Theme.getEventType();
+        if (CherrygramConfig.INSTANCE.getEventType() > 0) {
+            eventType = CherrygramConfig.INSTANCE.getEventType() - 1;
+        }
         int newGroupIcon;
         int newSecretIcon;
         int newChannelIcon;

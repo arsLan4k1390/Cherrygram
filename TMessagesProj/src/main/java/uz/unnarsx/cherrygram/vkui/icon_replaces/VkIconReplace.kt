@@ -24,6 +24,7 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_log to R.drawable.grid_square_outline_28,
             R.drawable.round_attach_money_24 to R.drawable.payment_card_outline_28,
             R.drawable.msg_send to R.mipmap.outline_send,
+            R.drawable.msg_list to R.drawable.list_outline_28,
             // Messages
             R.drawable.input_bot2 to R.drawable.keyboard_bots_outline_28,
             R.drawable.input_notify_off to R.drawable.notification_disable_outline_28,
@@ -91,6 +92,10 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.ic_upward to R.drawable.arrow_up_outline_28,
             R.drawable.msg_discussion to R.drawable.messages_outline_28,
             R.drawable.msg_leave to R.drawable.door_arrow_right_outline_28,
+            R.drawable.msg_addphoto to R.drawable.story_add_outline_28,
+            R.drawable.msg_unmute to R.drawable.volume_outline_28,
+            R.drawable.msg_mute to R.drawable.mute_outline_28,
+            R.drawable.msg_customize to R.drawable.sliders_outline_28,
             // Admin panel
             R.drawable.msg_permissions to R.drawable.key_outline_28,
             R.drawable.msg_reactions to R.drawable.like_outline_28,

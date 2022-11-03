@@ -3306,7 +3306,7 @@ public class NotificationsController extends BaseController {
             } else {
                 channelId = currentAccount + "channel_" + dialogId + "_" + Utilities.random.nextLong();
             }
-            NotificationChannel notificationChannel = new NotificationChannel(channelId, secretChat ? LocaleController.getString("SecretChatName", R.string.SecretChatName) : name, importance);
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, secretChat ? LocaleController.getString("CG_AppName", R.string.CG_AppName) : name, importance);
             notificationChannel.setGroup(groupId);
             if (ledColor != 0) {
                 notificationChannel.enableLights(true);
@@ -3410,9 +3410,9 @@ public class NotificationsController extends BaseController {
             if (DialogObject.isEncryptedDialog(dialog_id) || pushDialogs.size() > 1 || passcode) {
                 if (passcode) {
                     if (chatId != 0) {
-                        name = LocaleController.getString("NotificationHiddenChatName", R.string.NotificationHiddenChatName);
+                        name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                     } else {
-                        name = LocaleController.getString("NotificationHiddenName", R.string.NotificationHiddenName);
+                        name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                     }
                 } else {
                     name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
@@ -4104,15 +4104,15 @@ public class NotificationsController extends BaseController {
                         continue;
                     }
                 }
-                name = LocaleController.getString("SecretChatName", R.string.SecretChatName);
+                name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                 photoPath = null;
             }
 
             if (waitingForPasscode) {
                 if (DialogObject.isChatDialog(dialogId)) {
-                    name = LocaleController.getString("NotificationHiddenChatName", R.string.NotificationHiddenChatName);
+                    name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                 } else {
-                    name = LocaleController.getString("NotificationHiddenName", R.string.NotificationHiddenName);
+                    name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                 }
                 photoPath = null;
                 canReply = false;
@@ -4263,13 +4263,13 @@ public class NotificationsController extends BaseController {
                         if (DialogObject.isChatDialog(dialogId)) {
                             if (isChannel) {
                                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) {
-                                    personName = LocaleController.getString("NotificationHiddenChatName", R.string.NotificationHiddenChatName);
+                                    personName = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                                 }
                             } else {
-                                personName = LocaleController.getString("NotificationHiddenChatUserName", R.string.NotificationHiddenChatUserName);
+                                personName = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                             }
                         } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) {
-                            personName = LocaleController.getString("NotificationHiddenName", R.string.NotificationHiddenName);
+                            personName = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                         }
                     }
                 } else {
