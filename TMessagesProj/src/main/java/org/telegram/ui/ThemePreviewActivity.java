@@ -119,6 +119,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ThemePreviewActivity extends BaseFragment implements DownloadController.FileDownloadProgressListener, NotificationCenter.NotificationCenterDelegate {
 
     public static final int SCREEN_TYPE_PREVIEW = 0;
@@ -426,8 +428,10 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             @Override
             protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
                 boolean result = super.drawChild(canvas, child, drawingTime);
-                if (child == actionBar && parentLayout != null) {
-                    parentLayout.drawHeaderShadow(canvas, actionBar.getVisibility() == VISIBLE ? actionBar.getMeasuredHeight() : 0);
+                if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
+                    if (child == actionBar && parentLayout != null) {
+                        parentLayout.drawHeaderShadow(canvas, actionBar.getVisibility() == VISIBLE ? actionBar.getMeasuredHeight() : 0);
+                    }
                 }
                 return result;
             }
@@ -531,8 +535,10 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             @Override
             protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
                 boolean result = super.drawChild(canvas, child, drawingTime);
-                if (child == actionBar2 && parentLayout != null) {
-                    parentLayout.drawHeaderShadow(canvas, actionBar2.getVisibility() == VISIBLE ? (int) (actionBar2.getMeasuredHeight() + actionBar2.getTranslationY()) : 0);
+                if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
+                    if (child == actionBar2 && parentLayout != null) {
+                        parentLayout.drawHeaderShadow(canvas, actionBar2.getVisibility() == VISIBLE ? (int) (actionBar2.getMeasuredHeight() + actionBar2.getTranslationY()) : 0);
+                    }
                 }
                 return result;
             }
@@ -640,7 +646,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                     }
                     showDialog(new ShareAlert(getParentActivity(), null, link, false, link, false) {
                         @Override
-                        protected void onSend(LongSparseArray<TLRPC.Dialog> dids, int count) {
+                        protected void onSend(LongSparseArray<TLRPC.Dialog> dids, int count, TLRPC.TL_forumTopic topic) {
                             if (dids.size() == 1) {
                                 undoView.showWithAction(dids.valueAt(0).id, UndoView.ACTION_SHARE_BACKGROUND, count);
                             } else {
@@ -2560,7 +2566,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
     }
 
     @Override
-    protected void onTransitionAnimationStart(boolean isOpen, boolean backward) {
+    public void onTransitionAnimationStart(boolean isOpen, boolean backward) {
         super.onTransitionAnimationStart(isOpen, backward);
         if (!isOpen) {
             if (screenType == SCREEN_TYPE_CHANGE_BACKGROUND) {
@@ -3846,7 +3852,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             customDialog.date = date;
             customDialog.verified = false;
             customDialog.isMedia = false;
-            customDialog.sent = true;
+            customDialog.sent = DialogCell.SENT_STATE_READ;
             dialogs.add(customDialog);
 
             customDialog = new DialogCell.CustomDialog();
@@ -3860,7 +3866,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             customDialog.date = date - 60 * 60;
             customDialog.verified = false;
             customDialog.isMedia = false;
-            customDialog.sent = false;
+            customDialog.sent = DialogCell.SENT_STATE_NOTHING;
             dialogs.add(customDialog);
 
             customDialog = new DialogCell.CustomDialog();
@@ -3874,7 +3880,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             customDialog.date = date - 60 * 60 * 2;
             customDialog.verified = false;
             customDialog.isMedia = true;
-            customDialog.sent = false;
+            customDialog.sent = DialogCell.SENT_STATE_NOTHING;
             dialogs.add(customDialog);
 
             customDialog = new DialogCell.CustomDialog();
@@ -3888,7 +3894,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             customDialog.date = date - 60 * 60 * 3;
             customDialog.verified = false;
             customDialog.isMedia = false;
-            customDialog.sent = false;
+            customDialog.sent = DialogCell.SENT_STATE_NOTHING;
             dialogs.add(customDialog);
 
             customDialog = new DialogCell.CustomDialog();
@@ -3902,7 +3908,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             customDialog.date = date - 60 * 60 * 4;
             customDialog.verified = false;
             customDialog.isMedia = false;
-            customDialog.sent = true;
+            customDialog.sent = DialogCell.SENT_STATE_READ;
             dialogs.add(customDialog);
 
             customDialog = new DialogCell.CustomDialog();
@@ -3916,7 +3922,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             customDialog.date = date - 60 * 60 * 5;
             customDialog.verified = false;
             customDialog.isMedia = false;
-            customDialog.sent = false;
+            customDialog.sent = DialogCell.SENT_STATE_NOTHING;
             dialogs.add(customDialog);
 
             customDialog = new DialogCell.CustomDialog();
@@ -3930,7 +3936,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             customDialog.date = date - 60 * 60 * 6;
             customDialog.verified = true;
             customDialog.isMedia = false;
-            customDialog.sent = false;
+            customDialog.sent = DialogCell.SENT_STATE_NOTHING;
             dialogs.add(customDialog);
 
             customDialog = new DialogCell.CustomDialog();
@@ -3944,7 +3950,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             customDialog.date = date - 60 * 60 * 7;
             customDialog.verified = true;
             customDialog.isMedia = false;
-            customDialog.sent = false;
+            customDialog.sent = DialogCell.SENT_STATE_NOTHING;
             dialogs.add(customDialog);
         }
 

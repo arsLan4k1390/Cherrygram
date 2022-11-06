@@ -199,7 +199,7 @@ public class BiometricPromptHelper {
         if (v != null) {
             v.vibrate(100);
         }
-        AndroidUtilities.shakeView(errorTextView, 2, 0);
+        AndroidUtilities.shakeView(errorTextView);
         AndroidUtilities.runOnUIThread(resetRunnable, 2000);
     }
 

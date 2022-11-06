@@ -107,6 +107,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
     private int secretDetailRow;
     private int rowCount;
 
+    private boolean deleteAccountUpdate;
+    private boolean secretMapUpdate;
     private boolean currentSync;
     private boolean newSync;
     private boolean currentSuggest;
@@ -214,6 +216,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         });
         listView.setVerticalScrollBarEnabled(false);
         listView.setLayoutAnimation(null);
+        listView.setItemAnimator(null);
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setAdapter(listAdapter);
         listView.setOnItemClickListener((view, position) -> {
@@ -288,6 +291,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                                 FileLog.e(e);
                             }
                             if (response instanceof TLRPC.TL_boolTrue) {
+                                deleteAccountUpdate = true;
                                 getContactsController().setDeleteAccountTTL(req.ttl.days);
                                 listAdapter.notifyDataSetChanged();
                             }
@@ -448,7 +452,10 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                     ((TextCheckCell) view).setChecked(newSync);
                 }
             } else if (position == secretMapRow) {
-                AlertsCreator.showSecretLocationAlert(getParentActivity(), currentAccount, () -> listAdapter.notifyDataSetChanged(), false, null);
+                AlertsCreator.showSecretLocationAlert(getParentActivity(), currentAccount, () -> {
+                    listAdapter.notifyDataSetChanged();
+                    secretMapUpdate = true;
+                }, false, null);
             } else if (position == paymentsClearRow) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                 builder.setTitle(LocaleController.getString("PrivacyPaymentsClearAlertTitle", R.string.PrivacyPaymentsClearAlertTitle));
@@ -979,7 +986,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                                 value = LocaleController.formatPluralString("Days", ttl);
                             }
                         }
-                        textCell.setTextAndValue(LocaleController.getString("DeleteAccountIfAwayFor3", R.string.DeleteAccountIfAwayFor3), value, false);
+                        textCell.setTextAndValue(LocaleController.getString("DeleteAccountIfAwayFor3", R.string.DeleteAccountIfAwayFor3), value, deleteAccountUpdate, false);
+                        deleteAccountUpdate = false;
                     } else if (position == paymentsClearRow) {
                         textCell.setText(LocaleController.getString("PrivacyPaymentsClear", R.string.PrivacyPaymentsClear), true);
                     } else if (position == secretMapRow) {
@@ -998,7 +1006,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                                 value = LocaleController.getString("MapPreviewProviderYandex", R.string.MapPreviewProviderYandex);
                                 break;
                         }
-                        textCell.setTextAndValue(LocaleController.getString("MapPreviewProvider", R.string.MapPreviewProvider), value, true);
+                        textCell.setTextAndValue(LocaleController.getString("MapPreviewProvider", R.string.MapPreviewProvider), value, secretMapUpdate, true);
+                        secretMapUpdate = false;
                     } else if (position == contactsDeleteRow) {
                         textCell.setText(LocaleController.getString("SyncContactsDelete", R.string.SyncContactsDelete), true);
                     }

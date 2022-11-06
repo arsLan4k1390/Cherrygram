@@ -445,7 +445,9 @@ public class PeopleNearbyActivity extends BaseFragment implements NotificationCe
                 paint.setColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                 int h = getMeasuredHeight() - AndroidUtilities.dp(3);
                 canvas.drawRect(0, 0, getMeasuredWidth(), h, paint);
-                parentLayout.drawHeaderShadow(canvas, h);
+                if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
+                    parentLayout.drawHeaderShadow(canvas, h);
+                }
             }
         };
         actionBarBackground.setAlpha(0.0f);
@@ -709,7 +711,7 @@ public class PeopleNearbyActivity extends BaseFragment implements NotificationCe
     }
 
     @Override
-    protected void onBecomeFullyHidden() {
+    public void onBecomeFullyHidden() {
         super.onBecomeFullyHidden();
         if (undoView != null) {
             undoView.hide(true, 0);
@@ -736,7 +738,7 @@ public class PeopleNearbyActivity extends BaseFragment implements NotificationCe
     }
 
     @Override
-    protected void onBecomeFullyVisible() {
+    public void onBecomeFullyVisible() {
         super.onBecomeFullyVisible();
         groupCreateActivity = null;
     }

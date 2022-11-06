@@ -652,8 +652,10 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             @Override
             protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
                 boolean result = super.drawChild(canvas, child, drawingTime);
-                if (child == actionBar && parentLayout != null) {
-                    parentLayout.drawHeaderShadow(canvas, actionBar.getMeasuredHeight());
+                if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
+                    if (child == actionBar && parentLayout != null) {
+                        parentLayout.drawHeaderShadow(canvas, actionBar.getMeasuredHeight());
+                    }
                 }
                 return result;
             }
@@ -2569,7 +2571,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
     }
 
     @Override
-    protected void onBecomeFullyHidden() {
+    public void onBecomeFullyHidden() {
         if (undoView[0] != null) {
             undoView[0].hide(true, 0);
         }

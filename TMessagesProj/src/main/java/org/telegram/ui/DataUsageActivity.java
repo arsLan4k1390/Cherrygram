@@ -220,8 +220,10 @@ public class DataUsageActivity extends BaseFragment {
             @Override
             protected void dispatchDraw(Canvas canvas) {
                 super.dispatchDraw(canvas);
-                if (parentLayout != null) {
-                    parentLayout.drawHeaderShadow(canvas, actionBar.getMeasuredHeight() + (int) actionBar.getTranslationY());
+                if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
+                    if (parentLayout != null) {
+                        parentLayout.drawHeaderShadow(canvas, actionBar.getMeasuredHeight() + (int) actionBar.getTranslationY());
+                    }
                 }
             }
 

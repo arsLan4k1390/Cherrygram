@@ -56,7 +56,7 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_nearby to R.drawable.users_3_outline_28,
             // Context menu
             R.drawable.msg_reply to R.drawable.reply_outline_28,
-            R.drawable.msg_link to R.drawable.link_circle_outline_28,
+            R.drawable.msg_link to R.drawable.chain_outline_28,
             R.drawable.msg_viewreplies to R.drawable.message_reply_outline_28,
             R.drawable.msg_recent to R.drawable.recent_outline_28,
             R.drawable.msg_pin to R.drawable.pin_outline_28,
@@ -96,6 +96,10 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_unmute to R.drawable.volume_outline_28,
             R.drawable.msg_mute to R.drawable.mute_outline_28,
             R.drawable.msg_customize to R.drawable.sliders_outline_28,
+            R.drawable.msg_topics to R.drawable.list_outline_28,
+            R.drawable.msg_addcontact to R.drawable.user_add_outline_28,
+            R.drawable.msg_topic_create to R.drawable.message_add_badge_outline_28,
+            R.drawable.msg_topic_close to R.drawable.remove_circle_outline_28,
             // Admin panel
             R.drawable.msg_permissions to R.drawable.key_outline_28,
             R.drawable.msg_reactions to R.drawable.like_outline_28,
@@ -104,6 +108,7 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_link2 to R.drawable.chain_outline_28,
             R.drawable.msg_admins to R.drawable.user_star_badge_outline_28,
             R.drawable.msg_admin_add to R.drawable.user_star_badge_outline_28,
+            R.drawable.msg_discuss to R.drawable.chats_outline_28,
             //R.drawable.ic_ab_search to R.drawable.search_outline_28,
             R.drawable.msg_contact_add to R.drawable.user_add_outline_28,
             R.drawable.msg_clearcache to R.drawable.delete_outline_28,

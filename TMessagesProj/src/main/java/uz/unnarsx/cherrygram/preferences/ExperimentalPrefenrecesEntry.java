@@ -3,6 +3,7 @@ package uz.unnarsx.cherrygram.preferences;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.NotificationsService;
 import org.telegram.messenger.R;
@@ -29,9 +31,11 @@ import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.UndoView;
+import org.telegram.ui.DialogsActivity;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.PopupHelper;
 
@@ -46,6 +50,7 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
     private int uploadSpeedBoostRow;
     private int slowNetworkMode;
     private int residentNotificationRow;
+    //private int customTitleRow; //TODO broken feature
 
     protected Theme.ResourcesProvider resourcesProvider;
     private UndoView restartTooltip;
@@ -130,7 +135,33 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                     listAdapter.notifyItemChanged(downloadSpeedBoostRow);
                     restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
                 });
-            }
+            } /*else if (position == customTitleRow) {
+                final String defaultValue = LocaleController.getString("CG_AppName", R.string.CG_AppName);
+                CGFeatureHooks.createFieldAlert(
+                    context,
+                    LocaleController.getString("EP_CustomAppTitle", R.string.EP_CustomAppTitle),
+                    MessagesController.getGlobalMainSettings().getString("CG_AppName", defaultValue),
+                    (result) -> {
+                        if (result.isEmpty()) {
+                            result = defaultValue;
+                        }
+                        SharedPreferences.Editor editor = MessagesController.getGlobalMainSettings().edit();
+                        editor.putString("CG_AppName", result);
+                        editor.apply();
+                        restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+                        if (view instanceof TextSettingsCell) {
+                            ((TextSettingsCell) view).getValueTextView().setText(result);
+                        }
+                        BaseFragment previousFragment = parentLayout.fragmentsStack.size() > 2
+                                ? parentLayout.fragmentsStack.get(parentLayout.fragmentsStack.size() - 3)
+                                : null;
+                        if (previousFragment instanceof DialogsActivity) {
+                            previousFragment.getActionBar().setTitle(result);
+                        }
+                        return null;
+                    }
+                );
+            }*/
         });
 
         restartTooltip = new UndoView(context);
@@ -150,6 +181,7 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             residentNotificationRow = rowCount++;
         }
+        //customTitleRow = rowCount++;
 
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
@@ -207,7 +239,11 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                                 break;
                         }
                         textCell.setTextAndValue(LocaleController.getString("EP_DownloadSpeedBoost", R.string.EP_DownloadSpeedBoost), value, true);
-                    }
+                    } /*else if (position == customTitleRow) {
+                        String t = LocaleController.getString("EditAdminRank", R.string.EditAdminRank);
+                        final String v = MessagesController.getGlobalMainSettings().getString("CG_AppName", LocaleController.getString("CG_AppName", R.string.CG_AppName));
+                        textCell.setTextAndValue(t, v, false);
+                    }*/
                     break;
                 }
                 case 4: {
@@ -260,7 +296,7 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
         public int getItemViewType(int position) {
             if (position == experimentalHeaderRow) {
                 return 2;
-            } else if (position == downloadSpeedBoostRow) {
+            } else if (position == downloadSpeedBoostRow/* || position == customTitleRow*/) {
                 return 3;
             } else if (position > downloadSpeedBoostRow) {
                 return 4;

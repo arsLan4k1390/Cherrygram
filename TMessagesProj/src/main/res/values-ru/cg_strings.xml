@@ -220,7 +220,7 @@
     <string name="EP_UploadloadSpeedBoost">Увеличение скорости отдачи</string>
     <string name="EP_SlowNetworkMode">Режим медленной сети</string>
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
-    <string name="EP_ShowRPCError">Всплывающие уведомления обо всех ошибках RPC</string>
+    <string name="EP_CustomAppTitle">Название приложения</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->

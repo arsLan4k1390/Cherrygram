@@ -261,7 +261,7 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
-                    if (otherwiseReloginDays >= 0 && parentLayout.fragmentsStack.size() == 1) {
+                    if (otherwiseReloginDays >= 0 && parentLayout.getFragmentStack().size() == 1) {
                         showSetForcePasswordAlert();
                     } else {
                         finishFragment();
@@ -948,7 +948,9 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
                         paint.setColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                         int h = getMeasuredHeight() - AndroidUtilities.dp(3);
                         canvas.drawRect(0, 0, getMeasuredWidth(), h, paint);
-                        parentLayout.drawHeaderShadow(canvas, h);
+                        if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
+                            parentLayout.drawHeaderShadow(canvas, h);
+                        }
                     }
                 };
                 actionBarBackground.setAlpha(0.0f);
@@ -2140,7 +2142,7 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
 
     @Override
     public boolean isSwipeBackEnabled(MotionEvent event) {
-        if (otherwiseReloginDays >= 0 && parentLayout.fragmentsStack.size() == 1) {
+        if (otherwiseReloginDays >= 0 && parentLayout.getFragmentStack().size() == 1) {
             return false;
         }
         return super.isSwipeBackEnabled(event);
@@ -2148,7 +2150,7 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
 
     @Override
     public boolean onBackPressed() {
-        if (otherwiseReloginDays >= 0 && parentLayout.fragmentsStack.size() == 1) {
+        if (otherwiseReloginDays >= 0 && parentLayout.getFragmentStack().size() == 1) {
             showSetForcePasswordAlert();
             return false;
         }
@@ -2158,7 +2160,7 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
 
     @Override
     public void finishFragment(boolean animated) {
-        for (BaseFragment fragment : getParentLayout().fragmentsStack) {
+        for (BaseFragment fragment : getParentLayout().getFragmentStack()) {
             if (fragment != this && fragment instanceof TwoStepVerificationSetupActivity) {
                 ((TwoStepVerificationSetupActivity) fragment).floatingAutoAnimator.ignoreNextLayout();
             }
@@ -2184,7 +2186,7 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
 
     @Override
     public void finishFragment() {
-        if (otherwiseReloginDays >= 0 && parentLayout.fragmentsStack.size() == 1) {
+        if (otherwiseReloginDays >= 0 && parentLayout.getFragmentStack().size() == 1) {
                 final Bundle args = new Bundle();
                 args.putBoolean("afterSignup", true);
                 presentFragment(new DialogsActivity(args), true);

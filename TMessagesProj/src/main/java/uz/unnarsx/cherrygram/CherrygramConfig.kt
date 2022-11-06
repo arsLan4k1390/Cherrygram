@@ -40,7 +40,7 @@ object CherrygramConfig {
         }
     }
 
-    var flatActionbar by sharedPreferences.boolean("AP_ToolBarShadow", false)
+    var disableToolBarShadow by sharedPreferences.boolean("AP_ToolBarShadow", false)
     var flatNavbar by sharedPreferences.boolean("AP_FlatNB", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
 

@@ -136,7 +136,7 @@ public class ChangeBioActivity extends BaseFragment {
                     if (v != null) {
                         v.vibrate(200);
                     }
-                    AndroidUtilities.shakeView(firstNameFieldContainer, 2, 0);
+                    AndroidUtilities.shakeView(firstNameFieldContainer);
                 }
                 return result;
             }

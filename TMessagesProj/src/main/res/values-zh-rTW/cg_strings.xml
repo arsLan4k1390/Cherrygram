@@ -194,6 +194,7 @@
     <string name="EP_UploadloadSpeedBoost">上載加速</string>
     <string name="EP_SlowNetworkMode">緩慢網路模式</string>
     <string name="CG_ResidentNotification">顯示永久通知</string>
+    <string name="EP_CustomAppTitle">應用程式標題</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
     <string name="SP_Category_Security">安全</string>

@@ -70,7 +70,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import com.google.android.exoplayer2.ExoPlayer;
-import com.google.android.exoplayer2.util.Log;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -1084,10 +1083,16 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 cameraThread.setCurrentSession(cameraSession);
                 CameraController.getInstance().openRound(cameraSession, surfaceTexture, () -> {
                     if (cameraSession != null) {
+                        boolean updateScale = false;
                         if (BuildVars.LOGS_ENABLED) {
                             FileLog.d("camera initied");
                         }
                         cameraSession.setInitied();
+                        if (updateScale) {
+                            if (cameraThread != null) {
+                                cameraThread.reinitForNewCamera();
+                            }
+                        }
                     }
                 }, () -> cameraThread.setCurrentSession(cameraSession));
             } else {

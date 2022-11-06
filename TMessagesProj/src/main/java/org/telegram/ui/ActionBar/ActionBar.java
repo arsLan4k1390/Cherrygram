@@ -118,7 +118,7 @@ public class ActionBar extends FrameLayout {
     private Runnable lastRunnable;
     private boolean titleOverlayShown;
     private Runnable titleActionRunnable;
-    private boolean castShadows = !CherrygramConfig.INSTANCE.getFlatActionbar();
+    private boolean castShadows = !CherrygramConfig.INSTANCE.getDisableToolBarShadow();
 
     protected boolean isSearchFieldVisible;
     protected int itemsBackgroundColor;
@@ -1452,12 +1452,12 @@ public class ActionBar extends FrameLayout {
     }
 
     public void setCastShadows(boolean value) {
-        if (CherrygramConfig.INSTANCE.getFlatActionbar()) return;
+        if (CherrygramConfig.INSTANCE.getDisableToolBarShadow()) return;
         castShadows = value;
     }
 
     public boolean getCastShadows() {
-        return !CherrygramConfig.INSTANCE.getFlatActionbar();
+        return !CherrygramConfig.INSTANCE.getDisableToolBarShadow();
     }
 
     @Override

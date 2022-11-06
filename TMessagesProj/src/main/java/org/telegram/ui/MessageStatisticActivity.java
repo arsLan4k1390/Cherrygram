@@ -442,8 +442,8 @@ public class MessageStatisticActivity extends BaseFragment implements Notificati
         actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
 
         avatarContainer.setOnClickListener(view -> {
-            if (getParentLayout().fragmentsStack.size() > 1) {
-                BaseFragment previousFragemnt = getParentLayout().fragmentsStack.get(getParentLayout().fragmentsStack.size() - 2);
+            if (getParentLayout().getFragmentStack().size() > 1) {
+                BaseFragment previousFragemnt = getParentLayout().getFragmentStack().get(getParentLayout().getFragmentStack().size() - 2);
                 if (previousFragemnt instanceof ChatActivity &&  ((ChatActivity) previousFragemnt).getCurrentChat().id  == chatId) {
                     finishFragment();
                     return;

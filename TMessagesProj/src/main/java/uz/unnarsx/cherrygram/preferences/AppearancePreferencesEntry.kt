@@ -45,9 +45,9 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 title = LocaleController.getString("AP_ToolBarShadow", R.string.AP_ToolBarShadow)
 
                 contract({
-                    return@contract CherrygramConfig.flatActionbar
+                    return@contract CherrygramConfig.disableToolBarShadow
                 }) {
-                    CherrygramConfig.flatActionbar = it
+                    CherrygramConfig.disableToolBarShadow = it
                 }
             }
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
@@ -174,7 +174,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
         category(LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)) {
             textIcon {
                 title = LocaleController.getString("AP_DrawerPreferences", R.string.AP_DrawerPreferences)
-                icon = R.drawable.msg_list
+                icon = R.drawable.list_outline_28
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(DrawerPreferencesEntry())
                 }

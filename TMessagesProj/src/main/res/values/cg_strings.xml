@@ -228,7 +228,7 @@
     <string name="EP_UploadloadSpeedBoost">Upload speed boost</string>
     <string name="EP_SlowNetworkMode">Slow network mode</string>
     <string name="CG_ResidentNotification">Show a resident notification</string>
-    <string name="EP_ShowRPCError">Toast all RPC errors</string>
+    <string name="EP_CustomAppTitle">App Title</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->
