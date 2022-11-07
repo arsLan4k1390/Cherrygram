@@ -59,8 +59,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Timer;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class LanguageSelectActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private ListAdapter listAdapter;
@@ -96,7 +94,6 @@ public class LanguageSelectActivity extends BaseFragment implements Notification
         searchWas = false;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("Language", R.string.Language));
 
@@ -482,7 +479,7 @@ public class LanguageSelectActivity extends BaseFragment implements Notification
         }
 
         private boolean getValue() {
-            return preferences.getBoolean("translate_button", false);
+            return preferences.getBoolean("translate_button", true);
         }
         private ArrayList<String> getRestrictedLanguages() {
             String currentLang = LocaleController.getInstance().getCurrentLocaleInfo().pluralLangCode;

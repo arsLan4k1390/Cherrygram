@@ -10,20 +10,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Consumer;
 
-import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.internal.ApiKey;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
-import com.google.android.gms.tasks.Task;
 
 @SuppressLint("MissingPermission")
 public class GoogleLocationProvider implements ILocationServiceProvider {
@@ -33,19 +29,7 @@ public class GoogleLocationProvider implements ILocationServiceProvider {
     @Override
     public void init(Context context) {
         locationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        settingsClient = new SettingsClient() {
-            @NonNull
-            @Override
-            public Task<LocationSettingsResponse> checkLocationSettings(@NonNull LocationSettingsRequest locationSettingsRequest) {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public ApiKey<Api.ApiOptions.NoOptions> getApiKey() {
-                return null;
-            }
-        };
+        settingsClient = LocationServices.getSettingsClient(context);
     }
 
     @Override

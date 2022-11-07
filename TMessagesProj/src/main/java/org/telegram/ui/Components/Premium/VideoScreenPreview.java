@@ -25,6 +25,7 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLoader;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.MediaDataController;
@@ -55,17 +56,27 @@ public class VideoScreenPreview extends FrameLayout implements PagerHeaderView, 
     String attachFileName;
     ImageReceiver imageReceiver = new ImageReceiver(this);
 
+    Runnable nextCheck;
+
     private void checkVideo() {
         if (file != null && file.exists() || SharedConfig.streamMedia) {
             if (file != null && file.exists()) {
+                if ((NotificationCenter.getGlobalInstance().getCurrentHeavyOperationFlags() & 512) != 0) {
+                    if (nextCheck != null) {
+                        AndroidUtilities.cancelRunOnUIThread(nextCheck);
+                    }
+                    AndroidUtilities.runOnUIThread(nextCheck = this::checkVideo, 300);
+                    return;
+                }
+
                 MediaMetadataRetriever retriever = new MediaMetadataRetriever();
                 retriever.setDataSource(ApplicationLoader.applicationContext, Uri.fromFile(file));
                 int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
                 int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
                 try {
                     retriever.release();
-                } catch (RuntimeException | IOException ex) {
-                    // Ignore failures while cleaning up.
+                } catch (IOException e) {
+                    FileLog.e(e);
                 }
                 aspectRatio = width / (float) height;
             } else {
@@ -76,6 +87,7 @@ public class VideoScreenPreview extends FrameLayout implements PagerHeaderView, 
                 runVideoPlayer();
             }
         }
+        nextCheck = null;
     }
 
     int currentAccount;

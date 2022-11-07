@@ -25,6 +25,7 @@ class SecurityPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.hideProxySponsor
                 }) {
                     CherrygramConfig.hideProxySponsor = it
+                    bf.parentActivity.recreate()
                 }
             }
 

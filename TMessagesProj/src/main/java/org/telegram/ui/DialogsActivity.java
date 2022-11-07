@@ -2386,7 +2386,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, AndroidUtilities.dp(26));
                 statusDrawable.center = true;
-                //actionBar.setTitle(MessagesController.getGlobalMainSettings().getString("CG_AppName", LocaleController.getString("CG_AppName", R.string.CG_AppName)), statusDrawable);
                 actionBar.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName), statusDrawable);
                 //searchItem.setOnLongClickListener(v -> presentFragment(new ExperimentalPrefenrecesEntry()));
                 //actionBar.setOnLongClickListener(v -> presentFragment(new ExperimentalPrefenrecesEntry()));

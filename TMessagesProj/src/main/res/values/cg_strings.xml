@@ -221,14 +221,14 @@
 
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
+    <string name="CG_ResidentNotification">Show a resident notification</string>
+    <string name="EP_Network">Network</string>
     <string name="EP_DownloadSpeedBoost">Download speed boost</string>
     <string name="EP_DownloadSpeedBoostNone">Off</string>
     <string name="EP_DownloadSpeedBoostAverage">On</string>
     <string name="EP_DownloadSpeedBoostExtreme">Extreme</string>
     <string name="EP_UploadloadSpeedBoost">Upload speed boost</string>
     <string name="EP_SlowNetworkMode">Slow network mode</string>
-    <string name="CG_ResidentNotification">Show a resident notification</string>
-    <string name="EP_CustomAppTitle">App Title</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->

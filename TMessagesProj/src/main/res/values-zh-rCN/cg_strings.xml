@@ -187,13 +187,14 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">实验</string>
+    <string name="CG_ResidentNotification">显示常驻通知</string>
+    <string name="EP_Network">Network</string>
     <string name="EP_DownloadSpeedBoost">下载加速</string>
     <string name="EP_DownloadSpeedBoostNone">关闭</string>
     <string name="EP_DownloadSpeedBoostAverage">开启</string>
     <string name="EP_DownloadSpeedBoostExtreme">最快</string>
     <string name="EP_UploadloadSpeedBoost">上传加速</string>
     <string name="EP_SlowNetworkMode">优化网络连接</string>
-    <string name="CG_ResidentNotification">显示常驻通知</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
     <string name="SP_Category_Security">安全</string>

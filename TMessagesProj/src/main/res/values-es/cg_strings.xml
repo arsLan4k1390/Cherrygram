@@ -187,14 +187,14 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
+    <string name="CG_ResidentNotification">Mostrar una notificación permanente</string>
+    <string name="EP_Network">Network</string>
     <string name="EP_DownloadSpeedBoost">Aumento de velocidad de descarga</string>
     <string name="EP_DownloadSpeedBoostNone">Desactivado</string>
     <string name="EP_DownloadSpeedBoostAverage">Activado</string>
     <string name="EP_DownloadSpeedBoostExtreme">Extrema</string>
     <string name="EP_UploadloadSpeedBoost">Aumento de velocidad de subida</string>
     <string name="EP_SlowNetworkMode">Modo de red lenta</string>
-    <string name="CG_ResidentNotification">Mostrar una notificación permanente</string>
-    <string name="EP_CustomAppTitle">App Title</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
     <string name="SP_Category_Security">Seguridad</string>

@@ -2,9 +2,11 @@ package uz.unnarsx.cherrygram.preferences;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +21,16 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
-import org.telegram.messenger.NotificationsService;
 import org.telegram.messenger.R;
+import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCheckCell;
+import org.telegram.ui.Cells.TextCheckbox2Cell;
+import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
@@ -37,6 +41,9 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.camera.CameraTypeSelector;
+import uz.unnarsx.cherrygram.camera.CameraXUtilities;
+import uz.unnarsx.cherrygram.helpers.EntitiesHelper;
 import uz.unnarsx.cherrygram.helpers.PopupHelper;
 
 public class ExperimentalPrefenrecesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
@@ -46,11 +53,14 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
     private RecyclerListView listView;
 
     private int experimentalHeaderRow;
+    private int altNavigationRow;
+    private int residentNotificationRow;
+    private int experimentalSettingsDivisor;
+
+    private int networkHeaderRow;
     private int downloadSpeedBoostRow;
     private int uploadSpeedBoostRow;
     private int slowNetworkMode;
-    private int residentNotificationRow;
-    //private int customTitleRow; //TODO broken feature
 
     protected Theme.ResourcesProvider resourcesProvider;
     private UndoView restartTooltip;
@@ -72,7 +82,7 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
+
         actionBar.setTitle(LocaleController.getString("EP_Category_Experimental", R.string.EP_Category_Experimental));
         actionBar.setAllowOverlayTitle(false);
 
@@ -103,19 +113,13 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
         }
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
-            if (position == uploadSpeedBoostRow) {
-                CherrygramConfig.INSTANCE.toggleUploadSpeedBoost();
+            if (position == altNavigationRow) {
+                SharedConfig.toggleUseLNavigation();
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUploadSpeedBoost());
+                    ((TextCheckCell) view).setChecked(SharedConfig.useLNavigation);
                 }
                 restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
-            } if (position == slowNetworkMode) {
-                CherrygramConfig.INSTANCE.toggleSlowNetworkMode();
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getSlowNetworkMode());
-                }
-                restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
-            } if (position == residentNotificationRow) {
+            } else if (position == residentNotificationRow) {
                 CherrygramConfig.INSTANCE.toggleResidentNotification();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getResidentNotification());
@@ -135,33 +139,19 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                     listAdapter.notifyItemChanged(downloadSpeedBoostRow);
                     restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
                 });
-            } /*else if (position == customTitleRow) {
-                final String defaultValue = LocaleController.getString("CG_AppName", R.string.CG_AppName);
-                CGFeatureHooks.createFieldAlert(
-                    context,
-                    LocaleController.getString("EP_CustomAppTitle", R.string.EP_CustomAppTitle),
-                    MessagesController.getGlobalMainSettings().getString("CG_AppName", defaultValue),
-                    (result) -> {
-                        if (result.isEmpty()) {
-                            result = defaultValue;
-                        }
-                        SharedPreferences.Editor editor = MessagesController.getGlobalMainSettings().edit();
-                        editor.putString("CG_AppName", result);
-                        editor.apply();
-                        restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
-                        if (view instanceof TextSettingsCell) {
-                            ((TextSettingsCell) view).getValueTextView().setText(result);
-                        }
-                        BaseFragment previousFragment = parentLayout.fragmentsStack.size() > 2
-                                ? parentLayout.fragmentsStack.get(parentLayout.fragmentsStack.size() - 3)
-                                : null;
-                        if (previousFragment instanceof DialogsActivity) {
-                            previousFragment.getActionBar().setTitle(result);
-                        }
-                        return null;
-                    }
-                );
-            }*/
+            } else if (position == uploadSpeedBoostRow) {
+                CherrygramConfig.INSTANCE.toggleUploadSpeedBoost();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUploadSpeedBoost());
+                }
+                restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+            } else if (position == slowNetworkMode) {
+                CherrygramConfig.INSTANCE.toggleSlowNetworkMode();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getSlowNetworkMode());
+                }
+                restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+            }
         });
 
         restartTooltip = new UndoView(context);
@@ -175,13 +165,14 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
         rowCount = 0;
 
         experimentalHeaderRow = rowCount++;
+        altNavigationRow = rowCount++;
+        residentNotificationRow = rowCount++;
+        experimentalSettingsDivisor = rowCount++;
+
+        networkHeaderRow = rowCount++;
         downloadSpeedBoostRow = rowCount++;
         uploadSpeedBoostRow = rowCount++;
         slowNetworkMode = rowCount++;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            residentNotificationRow = rowCount++;
-        }
-        //customTitleRow = rowCount++;
 
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
@@ -218,10 +209,25 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                 case 2:
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
                     if (position == experimentalHeaderRow) {
-                        headerCell.setText(LocaleController.getString("EP_Category_Experimental", R.string.EP_Category_Experimental));
+                        headerCell.setText(LocaleController.getString("General", R.string.General));
+                    } else if (position == networkHeaderRow) {
+                        headerCell.setText(LocaleController.getString("EP_Network", R.string.EP_Network));
                     }
                     break;
-                case 3: {
+                case 3:
+                    TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
+                    textCheckCell.setEnabled(true, null);
+                    if (position == altNavigationRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString(R.string.AltNavigationEnable), SharedConfig.useLNavigation, true);
+                    } else if (position == residentNotificationRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("CG_ResidentNotification", R.string.CG_ResidentNotification), CherrygramConfig.INSTANCE.getResidentNotification(), true);
+                    } else if (position == uploadSpeedBoostRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("EP_UploadloadSpeedBoost", R.string.EP_UploadloadSpeedBoost), CherrygramConfig.INSTANCE.getUploadSpeedBoost(), true);
+                    } else if (position == slowNetworkMode) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("EP_SlowNetworkMode", R.string.EP_SlowNetworkMode), CherrygramConfig.INSTANCE.getSlowNetworkMode(), true);
+                    }
+                    break;
+                case 4:
                     TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
                     textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                     if (position == downloadSpeedBoostRow) {
@@ -239,25 +245,8 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                                 break;
                         }
                         textCell.setTextAndValue(LocaleController.getString("EP_DownloadSpeedBoost", R.string.EP_DownloadSpeedBoost), value, true);
-                    } /*else if (position == customTitleRow) {
-                        String t = LocaleController.getString("EditAdminRank", R.string.EditAdminRank);
-                        final String v = MessagesController.getGlobalMainSettings().getString("CG_AppName", LocaleController.getString("CG_AppName", R.string.CG_AppName));
-                        textCell.setTextAndValue(t, v, false);
-                    }*/
-                    break;
-                }
-                case 4: {
-                    TextCheckCell textCell = (TextCheckCell) holder.itemView;
-                    textCell.setEnabled(true, null);
-                    if (position == uploadSpeedBoostRow) {
-                        textCell.setTextAndCheck(LocaleController.getString("EP_UploadloadSpeedBoost", R.string.EP_UploadloadSpeedBoost), CherrygramConfig.INSTANCE.getUploadSpeedBoost(), true);
-                    } else if (position == slowNetworkMode) {
-                        textCell.setTextAndCheck(LocaleController.getString("EP_SlowNetworkMode", R.string.EP_SlowNetworkMode), CherrygramConfig.INSTANCE.getSlowNetworkMode(), true);
-                    } else if (position == residentNotificationRow) {
-                        textCell.setTextAndCheck(LocaleController.getString("CG_ResidentNotification", R.string.CG_ResidentNotification), CherrygramConfig.INSTANCE.getResidentNotification(), true);
                     }
                     break;
-                }
             }
         }
 
@@ -277,12 +266,12 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 3:
-                    view = new TextSettingsCell(mContext, resourcesProvider);
-                    view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+                    view = new TextCheckCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 4:
-                    view = new TextCheckCell(mContext, resourcesProvider);
-                    view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+                    view = new TextSettingsCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 default:
                     view = new ShadowSectionCell(mContext);
@@ -294,11 +283,13 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
 
         @Override
         public int getItemViewType(int position) {
-            if (position == experimentalHeaderRow) {
+            if (position == experimentalSettingsDivisor) {
+                return 1;
+            } else if (position == experimentalHeaderRow || position == networkHeaderRow) {
                 return 2;
-            } else if (position == downloadSpeedBoostRow/* || position == customTitleRow*/) {
+            } else if (position == altNavigationRow || position == residentNotificationRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
                 return 3;
-            } else if (position > downloadSpeedBoostRow) {
+            } else if (position == downloadSpeedBoostRow) {
                 return 4;
             }
             return 1;

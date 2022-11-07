@@ -222,7 +222,9 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
 
     @Deprecated("Deprecated in Java")
     override fun updateConfiguration(config: Configuration?, metrics: DisplayMetrics?) {
-        wrapped.updateConfiguration(config, metrics)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            wrapped.updateConfiguration(config, metrics)
+        }
     }
 
     override fun getDisplayMetrics(): DisplayMetrics? {

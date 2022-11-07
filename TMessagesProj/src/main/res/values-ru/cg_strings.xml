@@ -213,14 +213,14 @@
 
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Экспериментальные</string>
+    <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
+    <string name="EP_Network">Сеть</string>
     <string name="EP_DownloadSpeedBoost">Увеличение скорости загрузки</string>
     <string name="EP_DownloadSpeedBoostNone">Выкл.</string>
     <string name="EP_DownloadSpeedBoostAverage">Вкл.</string>
     <string name="EP_DownloadSpeedBoostExtreme">Экстра</string>
     <string name="EP_UploadloadSpeedBoost">Увеличение скорости отдачи</string>
     <string name="EP_SlowNetworkMode">Режим медленной сети</string>
-    <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
-    <string name="EP_CustomAppTitle">Название приложения</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->

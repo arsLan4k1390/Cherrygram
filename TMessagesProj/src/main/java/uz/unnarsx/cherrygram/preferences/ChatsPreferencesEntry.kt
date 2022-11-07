@@ -97,6 +97,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.showSeconds
                 }) {
                     CherrygramConfig.showSeconds = it
+                    bf.parentActivity.recreate()
                 }
             }
             list {

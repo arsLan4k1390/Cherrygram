@@ -37,6 +37,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                         }
                     }) {
                         CherrygramConfig.iconReplacement = it
+                        bf.parentActivity.recreate()
                         (bf.parentActivity as? LaunchActivity)?.reloadResources()
                     }
                 }
@@ -48,6 +49,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disableToolBarShadow
                 }) {
                     CherrygramConfig.disableToolBarShadow = it
+                    bf.parentActivity.recreate()
                 }
             }
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
@@ -70,6 +72,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.flatNavbar
                 }) {
                     CherrygramConfig.flatNavbar = it
+                    bf.parentActivity.recreate()
                 }
             }
             switch {

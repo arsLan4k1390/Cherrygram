@@ -167,6 +167,8 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">تجريبي</string>
+    <string name="CG_ResidentNotification">Show a resident notification</string>
+    <string name="EP_Network">Network</string>
     <string name="EP_DownloadSpeedBoost">زيادة سرعة التنزيل</string>
     <string name="EP_DownloadSpeedBoostNone">إيقاف</string>
     <string name="EP_DownloadSpeedBoostAverage">تشغيل</string>
