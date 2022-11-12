@@ -118,13 +118,15 @@ public class CameraXController {
         public void start() {
             try {
                 lifecycleRegistry.setCurrentState(Lifecycle.State.RESUMED);
-            } catch (IllegalStateException ignored) {}
+            } catch (IllegalStateException ignored) {
+            }
         }
 
         public void stop() {
             try {
                 lifecycleRegistry.setCurrentState(Lifecycle.State.DESTROYED);
-            } catch (IllegalStateException ignored) {}
+            } catch (IllegalStateException ignored) {
+            }
         }
 
         @NonNull
@@ -301,14 +303,14 @@ public class CameraXController {
 
     @SuppressLint({"RestrictedApi", "UnsafeExperimentalUsageError", "UnsafeOptInUsageError"})
     public void bindUseCases() {
-        if(provider == null) return;
+        if (provider == null) return;
         android.util.Size targetSize = getVideoBestSize();
         Preview.Builder previewBuilder = new Preview.Builder();
         previewBuilder.setTargetResolution(targetSize);
         if (!isFrontface && selectedEffect == CAMERA_WIDE) {
             cameraSelector = CameraXUtilities.getDefaultWideAngleCamera(provider);
         } else {
-            cameraSelector = isFrontface ? CameraSelector.DEFAULT_FRONT_CAMERA:CameraSelector.DEFAULT_BACK_CAMERA;
+            cameraSelector = isFrontface ? CameraSelector.DEFAULT_FRONT_CAMERA : CameraSelector.DEFAULT_BACK_CAMERA;
         }
 
         if (!isFrontface) {
@@ -340,7 +342,7 @@ public class CameraXController {
 
 
         ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder()
-                .setCaptureMode(CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode() ? ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY:ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .setCaptureMode(CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode() ? ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY : ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
                 .setTargetAspectRatio(AspectRatio.RATIO_16_9);
 
         provider.unbindAll();
@@ -358,7 +360,8 @@ public class CameraXController {
                 noSupportedSurfaceCombinationWorkaround = true;
                 try {
                     camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, iCapture);
-                } catch (java.lang.IllegalArgumentException ignored) {}
+                } catch (java.lang.IllegalArgumentException ignored) {
+                }
             }
         }
         if (camera != null) {
@@ -451,7 +454,7 @@ public class CameraXController {
             @Override
             public void onVideoSaved(@NonNull VideoCapture.OutputFileResults outputFileResults) {
                 if (noSupportedSurfaceCombinationWorkaround) {
-                    AndroidUtilities.runOnUIThread(()->{
+                    AndroidUtilities.runOnUIThread(() -> {
                         provider.unbindAll();
                         provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, iCapture);
                     });
@@ -470,7 +473,7 @@ public class CameraXController {
             @Override
             public void onError(int videoCaptureError, @NonNull String message, @Nullable Throwable cause) {
                 if (noSupportedSurfaceCombinationWorkaround) {
-                    AndroidUtilities.runOnUIThread(()-> {
+                    AndroidUtilities.runOnUIThread(() -> {
                         provider.unbindAll();
                         provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, iCapture);
                     });
@@ -694,5 +697,6 @@ public class CameraXController {
     @IntDef({CAMERA_NONE, CAMERA_AUTO, CAMERA_HDR, CAMERA_NIGHT})
     @Retention(RetentionPolicy.SOURCE)
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-    public @interface EffectFacing {}
+    public @interface EffectFacing {
+    }
 }

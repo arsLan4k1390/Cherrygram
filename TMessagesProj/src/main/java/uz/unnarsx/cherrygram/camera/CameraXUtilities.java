@@ -31,7 +31,7 @@ public class CameraXUtilities {
     }
 
     public static int getDefault() {
-        return (isCameraXSupported() && SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH) ? 1:0;
+        return (isCameraXSupported() && SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH) ? 1 : 0;
     }
 
     public static boolean isWideAngleAvailable(ProcessCameraProvider provider) {
@@ -44,7 +44,7 @@ public class CameraXUtilities {
         if (wideCamera != null) {
             return new CameraSelector.Builder().addCameraFilter(cameraInfo -> {
                 List<CameraInfo> cameraFiltered = new ArrayList<>();
-                for (int i= 0; i < cameraInfo.size(); i++) {
+                for (int i = 0; i < cameraInfo.size(); i++) {
                     CameraInfo c = cameraInfo.get(i);
                     String id = Camera2CameraInfo.from(c).getCameraId();
                     if (id.equals(wideCamera)) {
@@ -87,6 +87,6 @@ public class CameraXUtilities {
                 }
             }
         }
-        return availableBackCamera >= 2 && !foundWideAngleOnPrimaryCamera ? cameraId:null;
+        return availableBackCamera >= 2 && !foundWideAngleOnPrimaryCamera ? cameraId : null;
     }
 }

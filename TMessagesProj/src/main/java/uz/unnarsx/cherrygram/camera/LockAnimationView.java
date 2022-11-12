@@ -86,7 +86,7 @@ public class LockAnimationView extends LinearLayout {
                         heightWithLock + sizeLockPart
                 );
                 canvas.save();
-                canvas.saveLayerAlpha(0, 0, getWidth(), getHeight(), isLocked ? Math.round(255 * yAdd):255, Canvas.ALL_SAVE_FLAG);
+                canvas.saveLayerAlpha(0, 0, getWidth(), getHeight(), isLocked ? Math.round(255 * yAdd) : 255, Canvas.ALL_SAVE_FLAG);
                 canvas.translate(0, -(AndroidUtilities.dpf2(50) / 2f - idleProgress * AndroidUtilities.dpf2(3f)));
                 canvas.save();
                 int startCy = Math.round(rectF.bottom);

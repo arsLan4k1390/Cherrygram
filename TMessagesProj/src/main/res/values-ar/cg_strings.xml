@@ -64,9 +64,9 @@
     <string name="CGP_AdvancedSettings">Cherrygram إعدادات</string>
     <string name="CGP_About_Desc">تعديل تطبيق تيليجرام التجريبي.</string>
     <string name="CGP_Header_About">حول Cherrygram</string>
-    <string name="CGP_ToChannel">القناة الرسمية:</string>
-    <string name="CGP_ToChat">الدردشة الرسمية:</string>
-    <string name="CGP_Source">شفرة المصدر:</string>
+    <string name="CGP_ToChannel">القناة الرسمية</string>
+    <string name="CGP_ToChat">الدردشة الرسمية</string>
+    <string name="CGP_Source">شفرة المصدر</string>
     <string name="CGP_Crowdin">المساعدة في الترجمة</string>
     <string name="CGP_Header_Categories">Categories</string>
     <!--Cherrygram Preferences-->

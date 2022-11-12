@@ -57,23 +57,23 @@ public class ThemeDrawerCell extends FrameLayout {
             canvas.clipPath(clipPath);
             Paint level_paint1 = new Paint(Paint.ANTI_ALIAS_FLAG);
             level_paint1.setColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-            canvas.drawRect(new RectF(0,0, getWidth(), getHeight()), level_paint1);
+            canvas.drawRect(new RectF(0, 0, getWidth(), getHeight()), level_paint1);
             Paint level_paint2 = new Paint(Paint.ANTI_ALIAS_FLAG);
             level_paint2.setColor(Color.BLACK);
             level_paint2.setAlpha(Math.round(255 * 0.25f));
-            canvas.drawRect(new Rect(0,0, getWidth(), getHeight()), level_paint2);
+            canvas.drawRect(new Rect(0, 0, getWidth(), getHeight()), level_paint2);
             Paint level_paint3 = new Paint(Paint.ANTI_ALIAS_FLAG);
             level_paint3.setColor(Theme.getColor(Theme.key_chats_menuBackground));
             int nav_width = Math.round(getWidth() * 0.83f);
-            canvas.drawRect(new Rect(0,0, nav_width, getHeight()), level_paint3);
+            canvas.drawRect(new Rect(0, 0, nav_width, getHeight()), level_paint3);
             Paint level_paint4 = new Paint(Paint.ANTI_ALIAS_FLAG);
             level_paint4.setColor(Theme.getColor(Theme.key_chats_menuTopBackgroundCats));
             int avatarHeight = Math.round(nav_width * 0.59f);
-            canvas.drawRect(new Rect(0,0, nav_width, avatarHeight), level_paint4);
+            canvas.drawRect(new Rect(0, 0, nav_width, avatarHeight), level_paint4);
             PorterDuffColorFilter colorFilter = new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_menuItemIcon), PorterDuff.Mode.SRC_ATOP);
             Paint level_paint5 = new Paint(Paint.ANTI_ALIAS_FLAG);
             level_paint5.setColor(Theme.getColor(Theme.key_chats_menuItemIcon));
-            float[] text_widths = new float[] {
+            float[] text_widths = new float[]{
                     0.95f,
                     0.85f,
                     0.90f,
@@ -81,7 +81,7 @@ public class ThemeDrawerCell extends FrameLayout {
                     1.0f,
             };
             if (icons != null) {
-                for (int i = 0;i < icons.length;i++) {
+                for (int i = 0; i < icons.length; i++) {
                     Drawable icon = getResources().getDrawable(icons[i]);
                     int iconSize = Math.round(nav_width * 0.19f);
                     int textSize = Math.round(iconSize * 0.6f);
@@ -94,16 +94,16 @@ public class ThemeDrawerCell extends FrameLayout {
                     icon.setBounds(rectParams);
                     icon.setColorFilter(colorFilter);
                     icon.draw(canvas);
-                    RectF roundRectParams = new RectF((xOffset * 2) + iconSize, yOffset + yOffsetText, Math.round((nav_width - xEndOffset) * text_widths[i]),yOffsetText + yOffset + textSize);
+                    RectF roundRectParams = new RectF((xOffset * 2) + iconSize, yOffset + yOffsetText, Math.round((nav_width - xEndOffset) * text_widths[i]), yOffsetText + yOffset + textSize);
                     canvas.drawRoundRect(roundRectParams, radius, radius, level_paint5);
                 }
             }
             int height = Math.round((getHeight() * 30) / 100f);
             int colorBackground = Theme.getColor(Theme.key_chats_menuBackground);
-            Rect rectParamGradient = new Rect(0, getHeight() - height, getWidth(),getHeight());
+            Rect rectParamGradient = new Rect(0, getHeight() - height, getWidth(), getHeight());
             GradientDrawable gd = new GradientDrawable(
                     GradientDrawable.Orientation.BOTTOM_TOP,
-                    new int[] {colorBackground, AndroidUtilities.getTransparentColor(colorBackground, 0)});
+                    new int[]{colorBackground, AndroidUtilities.getTransparentColor(colorBackground, 0)});
             gd.setCornerRadius(0f);
             gd.setBounds(rectParamGradient);
             gd.draw(canvas);
@@ -141,10 +141,10 @@ public class ThemeDrawerCell extends FrameLayout {
     }
 
     public void setEvent(int eventId, int icon, int[] icons) {
-        if(lottieImageView.getAnimatedDrawable() == null) {
+        if (lottieImageView.getAnimatedDrawable() == null) {
             this.icons = icons;
             this.eventId = eventId;
-            lottieImageView.setAnimation(icon, 32,32);
+            lottieImageView.setAnimation(icon, 32, 32);
         }
     }
 

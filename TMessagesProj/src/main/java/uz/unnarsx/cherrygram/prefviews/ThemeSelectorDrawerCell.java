@@ -147,7 +147,7 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
                 drawerCell2.setEvent(
                         5,
                         R.raw.cross,
-                        new int[] {
+                        new int[]{
                                 R.drawable.msg_block,
                                 R.drawable.msg_block,
                                 R.drawable.msg_block,
@@ -159,7 +159,7 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
                 drawerCell2.setEvent(
                         0,
                         R.raw.automatic,
-                        new int[] {
+                        new int[]{
                                 R.drawable.msg_groups,
                                 R.drawable.msg_contacts,
                                 R.drawable.msg_calls,
@@ -171,7 +171,7 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
                 drawerCell2.setEvent(
                         2,
                         R.raw.valentine,
-                        new int[] {
+                        new int[]{
                                 R.drawable.msg_groups_14,
                                 R.drawable.msg_contacts_14,
                                 R.drawable.msg_calls_14,
@@ -183,7 +183,7 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
                 drawerCell2.setEvent(
                         3,
                         R.raw.halloween,
-                        new int[] {
+                        new int[]{
                                 R.drawable.msg_groups_hw,
                                 R.drawable.msg_contacts_hw,
                                 R.drawable.msg_calls_hw,
@@ -195,7 +195,7 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
                 drawerCell2.setEvent(
                         1,
                         R.raw.christmas,
-                        new int[] {
+                        new int[]{
                                 R.drawable.msg_groups_ny,
                                 R.drawable.msg_contacts_ny,
                                 R.drawable.msg_calls_ny,
@@ -207,7 +207,7 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
                 drawerCell2.setEvent(
                         4,
                         R.raw.lunar_new_year,
-                        new int[] {
+                        new int[]{
                                 R.drawable.menu_groups_cn,
                                 R.drawable.menu_contacts_cn,
                                 R.drawable.menu_calls_cn,
@@ -244,7 +244,8 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
         }
     }
 
-    protected void onSelectedEvent(int eventSelected) {}
+    protected void onSelectedEvent(int eventSelected) {
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {

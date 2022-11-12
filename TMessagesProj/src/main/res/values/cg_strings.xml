@@ -27,6 +27,8 @@
     <string name="CG_ChooseFolderIcon">Choose an Icon</string>
     <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
     <string name="CP_NewTabs_NoCounter_Desc">This will hide unread messages counter</string>
+    <string name="CP_VKUIFoldersStyle">VKUI folders style</string>
+    <string name="CP_VKUIFoldersStyle_Desc">This will turn on the style of folders from VK</string>
     <!--Telegram Folders Settings-->
 
     <!--Chats screen-->
@@ -83,11 +85,11 @@
     <string name="CGP_AdvancedSettings">Cherrygram Preferences</string>
     <string name="CGP_About_Desc">An experimental Telegram app modification.</string>
     <string name="CGP_Header_About">About Cherrygram</string>
-    <string name="CGP_ToChannel">Official channel:</string>
+    <string name="CGP_ToChannel">Official channel</string>
     <string name="CGP_ToChannelLink" translatable="false">Cherry_gram</string>
-    <string name="CGP_ToChat">Official chat:</string>
+    <string name="CGP_ToChat">Official chat</string>
     <string name="CGP_ToChatLink" translatable="false">CherrygramSupport</string>
-    <string name="CGP_Source">Source code:</string>
+    <string name="CGP_Source">Source code</string>
     <string name="CGP_Crowdin">Help with translation</string>
     <string name="CGP_Header_Categories">Categories</string>
     <!--Cherrygram Preferences-->
@@ -109,6 +111,7 @@
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
+    <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
     <string name="AP_IconReplacement_Default">Default</string>
     <string name="AP_ToolBarShadow">Disable toolbar shadow</string>
     <string name="AP_TransparentSB">Transparent statusbar</string>
@@ -245,6 +248,7 @@
 
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">Updates</string>
+    <string name="UP_TapToCheckUpdates">Tap here to get info about updates</string>
     <string name="UP_LastCheck">Last check</string>
     <string name="UP_CurrentVersion">Current version</string>
     <string name="UP_Auto_OTA">Check on launch</string>

@@ -83,7 +83,7 @@ public class ActionBar extends FrameLayout {
     private int actionModeColor;
     private int actionBarColor;
     private boolean isMenuOffsetSuppressed;
-    private ActionBarMenu menu;
+    public ActionBarMenu menu;
     private ActionBarMenu actionMode;
     private String actionModeTag;
     private boolean ignoreLayoutRequest;

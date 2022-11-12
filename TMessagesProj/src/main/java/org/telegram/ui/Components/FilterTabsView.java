@@ -38,7 +38,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -49,6 +48,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.Emoji;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
@@ -123,6 +123,12 @@ public class FilterTabsView extends FrameLayout {
         public int getWidth(boolean store) {
             iconWidth = FolderIconHelper.getTotalIconWidth();
             int width = titleWidth = (int) Math.ceil(textPaint.measureText(title));
+            /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+                width = titleWidth = (int) Math.ceil(textPaint.measureText(title) + 20);
+                if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_ICON) {
+                    width = titleWidth = (int) Math.ceil(textPaint.measureText(title));
+                }
+            }*/
             width += iconWidth;
             int c;
             if (store) {
@@ -363,6 +369,12 @@ public class FilterTabsView extends FrameLayout {
 
             if (!TextUtils.equals(currentTab.title, currentText)) {
                 currentText = currentTab.title;
+                /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+                    currentText = " " + currentTab.title;
+                    if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_MIX) {
+                        currentText = currentTab.title;
+                    }
+                }*/
                 CharSequence text = Emoji.replaceEmoji(currentText, textPaint.getFontMetricsInt(), AndroidUtilities.dp(15), false);
                 textLayout = new StaticLayout(text, textPaint, AndroidUtilities.dp(400), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
                 textHeight = textLayout.getHeight();
@@ -477,6 +489,9 @@ public class FilterTabsView extends FrameLayout {
                     titleWidth = animateFromTitleWidth * (1f - changeProgress) + currentTab.titleWidth * changeProgress;
                 }
                 int textSpace = CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON ? AndroidUtilities.dp(6) : 0;
+                /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+                    textSpace = CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON ? AndroidUtilities.dp(3) : 0;
+                }*/
                 if (animateTextChange && titleAnimateOutLayout == null) {
                     x = textX - titleXOffset + titleOffsetX + titleWidth + textSpace;
                 } else {
@@ -939,6 +954,10 @@ public class FilterTabsView extends FrameLayout {
         selectorDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, null);
         float rad = AndroidUtilities.dpf2(3);
         selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
+        /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+            rad = AndroidUtilities.dpf2(10);
+            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
+        }*/
         selectorDrawable.setColor(Theme.getColor(tabLineColorKey));
 
         setHorizontalScrollBarEnabled(false);
@@ -1325,8 +1344,12 @@ public class FilterTabsView extends FrameLayout {
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         boolean result = super.drawChild(canvas, child, drawingTime);
         if (child == listView) {
-            final int height = getMeasuredHeight();
+            int height = getMeasuredHeight();
             selectorDrawable.setAlpha((int) (255 * listView.getAlpha()));
+            /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+                height = getMeasuredHeight() - CherrygramConfig.INSTANCE.getFrameCorrection();
+                selectorDrawable.setAlpha((int) (90 * listView.getAlpha()));
+            }*/
             float indicatorX = 0;
             float indicatorWidth = 0;
             if (animatingIndicator || manualScrollingToPosition != -1) {
@@ -1370,6 +1393,9 @@ public class FilterTabsView extends FrameLayout {
                 canvas.translate(listView.getTranslationX(), 0);
                 canvas.scale(listView.getScaleX(), 1f, listView.getPivotX() + listView.getX(), listView.getPivotY());
                 selectorDrawable.setBounds((int) indicatorX, height - AndroidUtilities.dpr(4), (int) (indicatorX + indicatorWidth), height);
+                /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+                    selectorDrawable.setBounds((int) indicatorX, height - AndroidUtilities.dpr(30), (int) (indicatorX + indicatorWidth), height);
+                }*/
                 selectorDrawable.draw(canvas);
                 canvas.restore();
             }

@@ -1,6 +1,7 @@
 package uz.unnarsx.tgkit;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
@@ -114,6 +115,9 @@ public class TGKitSettingsFragment extends BaseFragment {
                 }
             } else if (pref instanceof TGKitTextIconRow) {
                 TGKitTextIconRow preference = ((TGKitTextIconRow) pref);
+                if (preference.listener != null) preference.listener.onClick(this);
+            } else if (pref instanceof TGKitTextDetailRow) {
+                TGKitTextDetailRow preference = ((TGKitTextDetailRow) pref);
                 if (preference.listener != null) preference.listener.onClick(this);
             } else if (pref instanceof TGKitSettingsCellRow) {
                 TGKitSettingsCellRow preference = ((TGKitSettingsCellRow) pref);

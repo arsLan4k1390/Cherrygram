@@ -13,18 +13,22 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_secret to R.drawable.lock_outline_28,
             R.drawable.msg_data to R.drawable.services_outline_28,
             R.drawable.msg_msgbubble3 to R.drawable.messages_outline_28,
+            R.drawable.msg_folder to R.drawable.cube_box_outline_28,
             R.drawable.msg_folders to R.drawable.cube_box_outline_28,
             R.drawable.msg_help to R.drawable.help_outline_28,
             R.drawable.msg_policy to R.drawable.check_shield_outline_28,
             R.drawable.msg_notifications to R.drawable.notifications_28,
+            R.drawable.msg_devices to R.drawable.laptop_outline_28,
             R.drawable.menu_devices to R.drawable.laptop_outline_28,
             R.drawable.msg_ask_question to R.drawable.messages_outline_28,
             // Settings - CG
+            R.drawable.camera to R.drawable.camera_outline_28,
             R.drawable.msg_theme to R.drawable.palette_outline_28,
             R.drawable.msg_log to R.drawable.grid_square_outline_28,
-            R.drawable.round_attach_money_24 to R.drawable.payment_card_outline_28,
             R.drawable.msg_send to R.mipmap.outline_send,
             R.drawable.msg_list to R.drawable.list_outline_28,
+            R.drawable.bug to R.drawable.bug_outline_28,
+            R.drawable.card_send to R.drawable.money_send_outline_28,
             // Messages
             R.drawable.input_bot2 to R.drawable.keyboard_bots_outline_28,
             R.drawable.input_notify_off to R.drawable.notification_disable_outline_28,
@@ -114,6 +118,8 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_clearcache to R.drawable.delete_outline_28,
             R.drawable.msg_newphone to R.drawable.cards_2_outline_28,
             R.drawable.msg_message to R.drawable.view_outline_28,
+            R.drawable.list_check_minimalistic to R.drawable.list_check_outline_28,
+            R.drawable.msg_viewchats to R.drawable.chats_outline_28,
 
     )
 }

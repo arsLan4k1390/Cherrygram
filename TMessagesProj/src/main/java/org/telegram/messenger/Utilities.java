@@ -113,7 +113,7 @@ public class Utilities {
         if (value == null) {
             return 0;
         }
-        if (BuildConfig.BUILD_HOST_IS_WINDOWS) {
+        if (false) {
             Matcher matcher = pattern.matcher(value);
             if (matcher.find()) {
                 return Integer.valueOf(matcher.group());

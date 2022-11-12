@@ -85,18 +85,18 @@ public class SlideControlView extends View {
         super(context);
         this.mode = mode;
 
-        if(mode == SLIDER_MODE_ZOOM){
+        if (mode == SLIDER_MODE_ZOOM) {
             minusDrawable = context.getResources().getDrawable(R.drawable.zoom_minus);
             plusDrawable = context.getResources().getDrawable(R.drawable.zoom_plus);
-        } else if(mode == SLIDER_MODE_EV) {
+        } else if (mode == SLIDER_MODE_EV) {
             minusDrawable = context.getResources().getDrawable(R.drawable.ev_minus);
             plusDrawable = context.getResources().getDrawable(R.drawable.ev_plus);
         }
 
         progressDrawable = context.getResources().getDrawable(R.drawable.zoom_slide);
-        if(mode == SLIDER_MODE_ZOOM){
+        if (mode == SLIDER_MODE_ZOOM) {
             filledProgressDrawable = context.getResources().getDrawable(R.drawable.zoom_slide_a);
-        } else if(mode == SLIDER_MODE_EV) {
+        } else if (mode == SLIDER_MODE_EV) {
             filledProgressDrawable = context.getResources().getDrawable(R.drawable.zoom_slide);
         }
         knobDrawable = context.getResources().getDrawable(R.drawable.zoom_round);
@@ -270,21 +270,18 @@ public class SlideControlView extends View {
             progressEndY = plusCy - AndroidUtilities.dp(18);
         }
 
-        if(mode == SLIDER_MODE_ZOOM){
+        if (mode == SLIDER_MODE_ZOOM) {
             minusDrawable.setBounds(minusCx - AndroidUtilities.dp(7), minusCy - AndroidUtilities.dp(7), minusCx + AndroidUtilities.dp(7), minusCy + AndroidUtilities.dp(7));
             minusDrawable.draw(canvas);
             plusDrawable.setBounds(plusCx - AndroidUtilities.dp(7), plusCy - AndroidUtilities.dp(7), plusCx + AndroidUtilities.dp(7), plusCy + AndroidUtilities.dp(7));
             plusDrawable.draw(canvas);
-        } else if(mode == SLIDER_MODE_EV){
+        } else if (mode == SLIDER_MODE_EV) {
             //minusDrawable;
             minusDrawable.setBounds(minusCx - AndroidUtilities.dp(7), minusCy - AndroidUtilities.dp(7), minusCx + AndroidUtilities.dp(7), minusCy + AndroidUtilities.dp(7));
             minusDrawable.draw(canvas);
             plusDrawable.setBounds(plusCx - AndroidUtilities.dp(8), plusCy - AndroidUtilities.dp(8), plusCx + AndroidUtilities.dp(8), plusCy + AndroidUtilities.dp(8));
             plusDrawable.draw(canvas);
         }
-
-
-
 
 
         int totalX = progressEndX - progressStartX;

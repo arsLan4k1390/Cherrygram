@@ -68,9 +68,9 @@
     <string name="CGP_AdvancedSettings">Preferencias de Cherrygram</string>
     <string name="CGP_About_Desc">Una modificación experimental de la app de Telegram.</string>
     <string name="CGP_Header_About">Acerca de Cherrygram</string>
-    <string name="CGP_ToChannel">Canal oficial:</string>
-    <string name="CGP_ToChat">Chat oficial:</string>
-    <string name="CGP_Source">Código fuente:</string>
+    <string name="CGP_ToChannel">Canal oficial</string>
+    <string name="CGP_ToChat">Chat oficial</string>
+    <string name="CGP_Source">Código fuente</string>
     <string name="CGP_Crowdin">Ayuda con la traducción</string>
     <string name="CGP_Header_Categories">Categorías</string>
     <!--Cherrygram Preferences-->

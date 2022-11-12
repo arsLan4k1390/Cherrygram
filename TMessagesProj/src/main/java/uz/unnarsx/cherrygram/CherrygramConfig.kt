@@ -16,6 +16,7 @@ import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.vkui.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.vkui.icon_replaces.NoIconReplace
+import uz.unnarsx.cherrygram.vkui.icon_replaces.SolarIconReplace
 import uz.unnarsx.cherrygram.vkui.icon_replaces.VkIconReplace
 import uz.unnarsx.extras.LocalVerifications
 import kotlin.system.exitProcess
@@ -35,8 +36,9 @@ object CherrygramConfig {
     var iconReplacement by sharedPreferences.int("AP_IconReplacements", CGFeatureJavaHooks.getDefaultVKUI())
     fun getIconReplacement(): BaseIconReplace {
         return when (iconReplacement) {
-            1 -> NoIconReplace()
-            else -> VkIconReplace()
+            0 -> VkIconReplace()
+            1 -> SolarIconReplace()
+            else -> NoIconReplace()
         }
     }
 
@@ -80,6 +82,21 @@ object CherrygramConfig {
     //Folders
     var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
     var tabsOnForward by sharedPreferences.boolean("CP_TabsOnForward", true)
+
+    /*var vkuiFoldersStyle by sharedPreferences.boolean("CP_VKUIFoldersStyle", false)
+    fun toggleVKUIFoldersStyle() { // Telegram folders settings
+        vkuiFoldersStyle = !vkuiFoldersStyle
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("CP_VKUIFoldersStyle", vkuiFoldersStyle)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    var frameCorrection by sharedPreferences.int("frameCorrection", 20)*/
 
     var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
     fun toggleNewTabs_noUnread() { // Telegram folders settings

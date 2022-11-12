@@ -68,10 +68,10 @@
     <string name="CGP_AdvancedSettings">自定义偏好</string>
     <string name="CGP_About_Desc">一个实验性的 Telegram 第三方客户端</string>
     <string name="CGP_Header_About">关于 Cherrygram</string>
-    <string name="CGP_ToChannel">官方频道：</string>
-    <string name="CGP_ToChat">官方群组：</string>
-    <string name="CGP_Source">开源代码：</string>
-    <string name="CGP_Crowdin">帮助翻译：</string>
+    <string name="CGP_ToChannel">官方频道</string>
+    <string name="CGP_ToChat">官方群组</string>
+    <string name="CGP_Source">开源代码</string>
+    <string name="CGP_Crowdin">帮助翻译</string>
     <string name="CGP_Header_Categories">自定义偏好</string>
     <!--Cherrygram Preferences-->
     <!--Appearance Preferences-->

@@ -77,9 +77,9 @@
     <string name="CGP_AdvancedSettings">Налаштування Cherrygram</string>
     <string name="CGP_About_Desc">Експериметальна модифікація офіційного додатку Telegram.</string>
     <string name="CGP_Header_About">О Cherrygram</string>
-    <string name="CGP_ToChannel">Офіційний канал:</string>
-    <string name="CGP_ToChat">Офіційний чат:</string>
-    <string name="CGP_Source">Вихідний код:</string>
+    <string name="CGP_ToChannel">Офіційний канал</string>
+    <string name="CGP_ToChat">Офіційний чат</string>
+    <string name="CGP_Source">Вихідний код</string>
     <string name="CGP_Crowdin">Допомогти з перекладом</string>
     <string name="CGP_Header_Categories">Категорії</string>
     <!--Cherrygram Preferences-->

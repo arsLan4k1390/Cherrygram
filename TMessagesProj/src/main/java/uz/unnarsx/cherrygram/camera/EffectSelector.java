@@ -35,7 +35,7 @@ public class EffectSelector extends LinearLayout {
         int colorBackground = Color.BLACK;
         GradientDrawable gd = new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[] {
+                new int[]{
                         AndroidUtilities.getTransparentColor(colorBackground, 0.4f),
                         AndroidUtilities.getTransparentColor(colorBackground, 0)
                 });
@@ -56,17 +56,17 @@ public class EffectSelector extends LinearLayout {
     public void loadEffects(CameraXView cameraXView) {
         if (getChildCount() == 0) {
             ArrayList<Integer> list_effect = new ArrayList<>();
-            if(cameraXView.isNightModeSupported()) {
+            if (cameraXView.isNightModeSupported()) {
                 list_effect.add(CameraXController.CAMERA_NIGHT);
             }
-            if(cameraXView.isAutoModeSupported()) {
+            if (cameraXView.isAutoModeSupported()) {
                 list_effect.add(CameraXController.CAMERA_AUTO);
             }
             list_effect.add(CameraXController.CAMERA_NONE);
-            if(cameraXView.isWideModeSupported()) {
+            if (cameraXView.isWideModeSupported()) {
                 list_effect.add(CameraXController.CAMERA_WIDE);
             }
-            if(cameraXView.isHdrModeSupported()) {
+            if (cameraXView.isHdrModeSupported()) {
                 list_effect.add(CameraXController.CAMERA_HDR);
             }
             if (list_effect.size() == 1) {
@@ -101,7 +101,8 @@ public class EffectSelector extends LinearLayout {
         }
     }
 
-    protected void onEffectSelected(int cameraEffect) {}
+    protected void onEffectSelected(int cameraEffect) {
+    }
 
     public void setEnabledButtons(boolean clickable) {
         isEnabledButtons = clickable;
@@ -109,8 +110,8 @@ public class EffectSelector extends LinearLayout {
 
     public void setScreenOrientation(int screenOrientation) {
         setOrientation(screenOrientation);
-        int orientation = screenOrientation == VERTICAL ? -180:0;
-        for(int i = 0; i < getChildCount(); i++) {
+        int orientation = screenOrientation == VERTICAL ? -180 : 0;
+        for (int i = 0; i < getChildCount(); i++) {
             ((LinearLayout) getChildAt(i)).getChildAt(0).setRotationX(orientation);
         }
         int colorBackground = Color.BLACK;
@@ -118,7 +119,7 @@ public class EffectSelector extends LinearLayout {
             setPadding(0, getSpaceNotch(), 0, 0);
             GradientDrawable gd = new GradientDrawable(
                     GradientDrawable.Orientation.TOP_BOTTOM,
-                    new int[] {
+                    new int[]{
                             AndroidUtilities.getTransparentColor(colorBackground, 0.4f),
                             AndroidUtilities.getTransparentColor(colorBackground, 0)
                     });
@@ -127,7 +128,7 @@ public class EffectSelector extends LinearLayout {
             setPadding(getSpaceNotch(), 0, 0, 0);
             GradientDrawable gd = new GradientDrawable(
                     GradientDrawable.Orientation.LEFT_RIGHT,
-                    new int[] {
+                    new int[]{
                             AndroidUtilities.getTransparentColor(colorBackground, 0.4f),
                             AndroidUtilities.getTransparentColor(colorBackground, 0)
                     });
@@ -148,7 +149,7 @@ public class EffectSelector extends LinearLayout {
                             notchSize = boundRect.get(0).bottom;
                         } else {
                             notchSize = boundRect.get(0).right;
-                            notchSize = notchSize > 500 ? 0:notchSize;
+                            notchSize = notchSize > 500 ? 0 : notchSize;
                         }
                     }
                 }

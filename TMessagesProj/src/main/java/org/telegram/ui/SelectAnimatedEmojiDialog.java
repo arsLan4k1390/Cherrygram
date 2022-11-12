@@ -2269,7 +2269,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         public int position;
         public TLRPC.Document document;
         public AnimatedEmojiSpan span;
-        public ImageReceiver.BackgroundThreadDrawHolder backgroundThreadDrawHolder;
+        public ImageReceiver.BackgroundThreadDrawHolder[] backgroundThreadDrawHolder = new ImageReceiver.BackgroundThreadDrawHolder[DrawingInBackgroundThreadDrawable.THREAD_COUNT];
         public ImageReceiver imageReceiver;
         public ImageReceiver imageReceiverToDraw;
         public boolean isDefaultReaction;
@@ -3297,8 +3297,8 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                         } else {
                             imageReceiver.setRoundRadius(0);
                         }
-                        imageView.backgroundThreadDrawHolder = imageReceiver.setDrawInBackgroundThread(imageView.backgroundThreadDrawHolder);
-                        imageView.backgroundThreadDrawHolder.time = time;
+                        imageView.backgroundThreadDrawHolder[threadIndex] = imageReceiver.setDrawInBackgroundThread(imageView.backgroundThreadDrawHolder[threadIndex], threadIndex);
+                        imageView.backgroundThreadDrawHolder[threadIndex].time = time;
                         imageView.imageReceiverToDraw = imageReceiver;
 
                         imageView.update(time);
@@ -3316,7 +3316,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                             );
                         }
                         AndroidUtilities.rectTmp2.offset(imageView.getLeft() + (int) imageView.getTranslationX() - startOffset, topOffset);
-                        imageView.backgroundThreadDrawHolder.setBounds(AndroidUtilities.rectTmp2);
+                        imageView.backgroundThreadDrawHolder[threadIndex].setBounds(AndroidUtilities.rectTmp2);
 
                         imageView.skewAlpha = 1f;
                         imageView.skewIndex = i;
@@ -3340,7 +3340,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                             }
                         } else if (imageView.imageReceiverToDraw != null) {
 //                            imageView.drawable.setColorFilter(premiumStarColorFilter);
-                            imageView.imageReceiverToDraw.draw(canvas, imageView.backgroundThreadDrawHolder);
+                            imageView.imageReceiverToDraw.draw(canvas, imageView.backgroundThreadDrawHolder[threadIndex]);
                         }
                     }
                 }
@@ -3459,8 +3459,8 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                 super.onFrameReady();
                 for (int i = 0; i < drawInBackgroundViews.size(); i++) {
                     ImageViewEmoji imageView = drawInBackgroundViews.get(i);
-                    if (imageView.backgroundThreadDrawHolder != null) {
-                        imageView.backgroundThreadDrawHolder.release();
+                    if (imageView.backgroundThreadDrawHolder[threadIndex] != null) {
+                        imageView.backgroundThreadDrawHolder[threadIndex].release();
                     }
                 }
                 emojiGridView.invalidate();

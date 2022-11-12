@@ -10,6 +10,7 @@ import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.preferences.ktx.*
+import uz.unnarsx.tgkit.preference.types.TGKitSliderPreference
 import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
 import java.io.File
 
@@ -43,11 +44,33 @@ class SecurityPreferencesEntry : BasePreferencesEntry {
         category(LocaleController.getString("SP_Category_Account", R.string.SP_Category_Account)) {
             textIcon {
                 title = LocaleController.getString("SP_DeleteAccount", R.string.SP_DeleteAccount)
-                icon = R.drawable.delete_outline_android_28
+                icon = R.drawable.msg_delete
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(AccountSettingsActivity())
                 }
             }
         }
+
+        /*category("Frame correction") {
+            slider {
+                contract = object : TGKitSliderPreference.TGSLContract {
+                    override fun setValue(value: Int) {
+                        CherrygramConfig.frameCorrection = value
+                    }
+
+                    override fun getPreferenceValue(): Int {
+                        return CherrygramConfig.frameCorrection
+                    }
+
+                    override fun getMin(): Int {
+                        return 15
+                    }
+
+                    override fun getMax(): Int {
+                        return 40
+                    }
+                }
+            }
+        }*/
     }
 }

@@ -76,7 +76,8 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
     private int folderStyleHeaderRow;
     private int folderStyleTitlesRow;
     private int folderStyleEmojiTitlesRow;
-    private int folderStyleNoUnread;
+    private int folderStyleNoUnreadRow;
+    //private int vkuiFoldersStyleRow;
     private int folderStyleEmojiRow;
     private int folderStyleSectionRow;
     private int recommendedHeaderRow;
@@ -454,7 +455,8 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
         folderStyleTitlesRow = rowCount++;
         folderStyleEmojiRow = rowCount++;
         folderStyleEmojiTitlesRow = rowCount++;
-        folderStyleNoUnread = rowCount++;
+        folderStyleNoUnreadRow = rowCount++;
+        //vkuiFoldersStyleRow = rowCount++;
         folderStyleSectionRow = rowCount++;
         int count = getMessagesController().dialogFilters.size();
         showAllChats = true;
@@ -559,12 +561,20 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 oldRadioCell.setChecked(false, true);
                 currRadioCell.setChecked(true, true);
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
-            } else if (position == folderStyleNoUnread) {
+                getParentActivity().recreate();
+            } else if (position == folderStyleNoUnreadRow) {
                 CherrygramConfig.INSTANCE.toggleNewTabs_noUnread();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getNewTabs_noUnread());
                 }
-            } else if (position >= filtersStartRow && position < filtersEndRow) {
+                getParentActivity().recreate();
+            } /*else if (position == vkuiFoldersStyleRow) {
+                CherrygramConfig.INSTANCE.toggleVKUIFoldersStyle();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getVkuiFoldersStyle());
+                }
+                getParentActivity().recreate();
+            }*/ else if (position >= filtersStartRow && position < filtersEndRow) {
                 int filterPosition = position - filtersStartRow;
                 if (!showAllChats) {
                     filterPosition++;
@@ -939,9 +949,12 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 }
                 case 7: {
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
-                    if (position == folderStyleNoUnread) {
+                    textCheckCell.setEnabled(true, null);
+                    if (position == folderStyleNoUnreadRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_NewTabs_NoCounter", R.string.CP_NewTabs_NoCounter), LocaleController.getString("CP_NewTabs_NoCounter_Desc", R.string.CP_NewTabs_NoCounter_Desc), CherrygramConfig.INSTANCE.getNewTabs_noUnread(), true, true);
-                    }
+                    } /*else if (position == vkuiFoldersStyleRow) {
+                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_VKUIFoldersStyle", R.string.CP_VKUIFoldersStyle), LocaleController.getString("CP_VKUIFoldersStyle_Desc", R.string.CP_VKUIFoldersStyle_Desc), CherrygramConfig.INSTANCE.getVkuiFoldersStyle(), true, true);
+                    }*/
                     break;
                 }
             }
@@ -961,7 +974,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 return 4;
             } else if (position == folderStyleTitlesRow || position == folderStyleEmojiTitlesRow || position == folderStyleEmojiRow) {
                 return 6;
-            } else if (position == folderStyleNoUnread) {
+            } else if (position == folderStyleNoUnreadRow/* || position == vkuiFoldersStyleRow*/) {
                 return 7;
             } else {
                 return 5;

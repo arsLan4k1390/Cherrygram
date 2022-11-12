@@ -25,6 +25,8 @@
     <string name="CG_ChooseFolderIcon">Выберите иконку</string>
     <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
     <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
+    <string name="CP_VKUIFoldersStyle">Папки в стиле VKUI</string>
+    <string name="CP_VKUIFoldersStyle_Desc">Это включит стиль папок из VK</string>
     <!--Telegram Folders Settings-->
 
     <!--Chats screen-->
@@ -81,9 +83,9 @@
     <string name="CGP_AdvancedSettings">Настройки Cherrygram</string>
     <string name="CGP_About_Desc">Экспериментальная модификация официального приложения Telegram.</string>
     <string name="CGP_Header_About">О Cherrygram</string>
-    <string name="CGP_ToChannel">Официальный канал:</string>
-    <string name="CGP_ToChat">Официальный чат:</string>
-    <string name="CGP_Source">Исходный код:</string>
+    <string name="CGP_ToChannel">Официальный канал</string>
+    <string name="CGP_ToChat">Официальный чат</string>
+    <string name="CGP_Source">Исходный код</string>
     <string name="CGP_Crowdin">Помогите нам с переводом</string>
     <string name="CGP_Header_Categories">Категории</string>
     <!--Cherrygram Preferences-->
@@ -102,6 +104,7 @@
     <string name="AP_ChangeIcon_Sunset">Закат</string>
     <string name="AP_ChangeIcon_Sunrise">Восход</string>
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
+    <string name="AP_IconReplacement_Solar">Иконки Solar от @Design480</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
     <string name="AP_ToolBarShadow">Отключить тень у тулбара</string>
     <string name="AP_TransparentSB">Прозрачный статус бар</string>
@@ -237,6 +240,7 @@
 
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">Обновления</string>
+    <string name="UP_TapToCheckUpdates">Нажмите здесь, чтобы получить информацию об обновлениях</string>
     <string name="UP_LastCheck">Последняя проверка</string>
     <string name="UP_CurrentVersion">Текущая версия</string>
     <string name="UP_Auto_OTA">Проверять при запуске</string>

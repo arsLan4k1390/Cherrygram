@@ -89,5 +89,6 @@ public class BlurIntensityCell extends FrameLayout {
         return super.performAccessibilityAction(action, arguments) || sizeBar.getSeekBarAccessibilityDelegate().performAccessibilityActionInternal(this, action, arguments);
     }
 
-    protected void onBlurIntensityChange(int percentage, boolean layout) {}
+    protected void onBlurIntensityChange(int percentage, boolean layout) {
+    }
 }

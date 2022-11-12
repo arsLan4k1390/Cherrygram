@@ -28,12 +28,14 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     contractIcons({
                         return@contractIcons listOf(
                             Triple(0, LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI), R.drawable.settings_outline_28),
-                            Triple(1, LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default), R.drawable.msg_settings)
+                            Triple(1, LocaleController.getString("AP_IconReplacement_Solar", R.string.AP_IconReplacement_Solar), R.drawable.settings),
+                            Triple(2, LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default), R.drawable.msg_settings)
                         )
                     }, {
                         return@contractIcons when (CherrygramConfig.iconReplacement) {
-                            1 -> LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default)
-                            else -> LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI)
+                            0 -> LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI)
+                            1 -> LocaleController.getString("AP_IconReplacement_Solar", R.string.AP_IconReplacement_Solar)
+                            else -> LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default)
                         }
                     }) {
                         CherrygramConfig.iconReplacement = it
@@ -177,7 +179,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
         category(LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)) {
             textIcon {
                 title = LocaleController.getString("AP_DrawerPreferences", R.string.AP_DrawerPreferences)
-                icon = R.drawable.list_outline_28
+                icon = R.drawable.msg_list
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(DrawerPreferencesEntry())
                 }

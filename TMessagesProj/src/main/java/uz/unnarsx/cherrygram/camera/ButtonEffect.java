@@ -75,7 +75,7 @@ public class ButtonEffect extends RelativeLayout {
             int s2 = ((w * 80) / 100) >> 1;
             int x2 = (w >> 1);
             int y2 = (w >> 1);
-            canvas.drawCircle(x2,y2, s2, level_paint);
+            canvas.drawCircle(x2, y2, s2, level_paint);
         }
         return bmp;
     }
@@ -101,7 +101,7 @@ public class ButtonEffect extends RelativeLayout {
         if (!animated) {
             imageView.setImageBitmap(getIcon());
         } else {
-            currAn = toggleAnimation != null ? 2f - currAn:0;
+            currAn = toggleAnimation != null ? 2f - currAn : 0;
             reachedHalf = false;
             if (toggleAnimation != null) {
                 toggleAnimation.cancel();
@@ -140,5 +140,6 @@ public class ButtonEffect extends RelativeLayout {
         }
     }
 
-    protected void onItemClick(ButtonEffect buttonEffect, int camera_type) {}
+    protected void onItemClick(ButtonEffect buttonEffect, int camera_type) {
+    }
 }

@@ -39,7 +39,7 @@ public class CameraTypeSelector extends LinearLayout {
         pickerDividersPaint.setStrokeCap(Paint.Cap.ROUND);
         pickerDividersPaint.setStrokeWidth(AndroidUtilities.dp(2));
         int colorIcon = Theme.getColor(Theme.key_switchTrack);
-        int color = AndroidUtilities.getTransparentColor(colorIcon,0.5f);
+        int color = AndroidUtilities.getTransparentColor(colorIcon, 0.5f);
         ImageView imageView = new ImageView(context) {
             @Override
             @SuppressLint("DrawAllocation")
@@ -156,7 +156,8 @@ public class CameraTypeSelector extends LinearLayout {
         addView(picker1, LayoutHelper.createFrame(132, LayoutHelper.MATCH_PARENT, Gravity.RIGHT, 0, 0, 21, 0));
     }
 
-    protected void onSelectedCamera(int cameraSelected) {}
+    protected void onSelectedCamera(int cameraSelected) {
+    }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

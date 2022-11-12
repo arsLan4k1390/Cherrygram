@@ -59,7 +59,6 @@ dependencies {
     implementation 'com.stripe:stripe-android:2.0.2'
     implementation 'com.google.mlkit:language-id:17.0.4'
     implementation "com.android.billingclient:billing:5.0.0"
-    implementation 'com.google.code.gson:gson:2.10'
 
     //Cherrygram
     implementation 'androidx.appcompat:appcompat:1.5.1'
@@ -122,6 +121,7 @@ android {
         res.srcDirs = [
                 'src/main/res',
                 'src/main/res-vkui',
+                'src/main/res-solar',
                 'src/main/res-tabs'
         ]
     }
@@ -134,7 +134,6 @@ android {
             buildConfigField("long", "VERSION_CODE", "${APP_VERSION_CODE}")
             buildConfigField("String","VERSION_NAME","\"${APP_VERSION_NAME}\"")
             buildConfigField("String","VERSION_NAME_CHERRY","\"${APP_VERSION_CHERRY}\"")
-            buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
         }
 
         release {
@@ -143,7 +142,6 @@ android {
             buildConfigField("long", "VERSION_CODE", "${APP_VERSION_CODE}")
             buildConfigField("String","VERSION_NAME","\"${APP_VERSION_NAME}\"")
             buildConfigField("String","VERSION_NAME_CHERRY","\"${APP_VERSION_CHERRY}\"")
-            buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
         }
     }
 

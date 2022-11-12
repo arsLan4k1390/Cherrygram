@@ -7,7 +7,6 @@
  */
 package uz.unnarsx.cherrygram.camera;
 
-import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
@@ -17,15 +16,16 @@ import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.util.Log;
 import android.util.Size;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.ImageProxy;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
 
-@TargetApi(21)
 public final class JpegImageUtils {
     private static final String TAG = "JpegImageUtils";
     static final int FLIP_NORMAL = 0;
@@ -110,14 +110,14 @@ public final class JpegImageUtils {
     public static byte[] flipByteArray(@NonNull byte[] data, int flipState)
             throws CodecFailedException {
 
-        if(flipState == FLIP_NORMAL) return data;
+        if (flipState == FLIP_NORMAL) return data;
 
-        Bitmap source =  BitmapFactory.decodeByteArray(data, 0, data.length);
+        Bitmap source = BitmapFactory.decodeByteArray(data, 0, data.length);
         Matrix matrix = new Matrix();
-        if(flipState == FLIP_Y){
-            matrix.postScale( 1 ,  -1, source.getWidth() / 2f, source.getHeight() / 2f);
-        } else if(flipState == FLIP_X){
-            matrix.postScale( -1 ,  1, source.getWidth() / 2f, source.getHeight() / 2f);
+        if (flipState == FLIP_Y) {
+            matrix.postScale(1, -1, source.getWidth() / 2f, source.getHeight() / 2f);
+        } else if (flipState == FLIP_X) {
+            matrix.postScale(-1, 1, source.getWidth() / 2f, source.getHeight() / 2f);
         }
 
         Bitmap flipped = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
@@ -132,7 +132,9 @@ public final class JpegImageUtils {
         return out.toByteArray();
     }
 
-    /** Crops byte array with given {@link android.graphics.Rect}. */
+    /**
+     * Crops byte array with given {@link android.graphics.Rect}.
+     */
     @NonNull
     public static byte[] cropByteArray(@NonNull byte[] data, @Nullable Rect cropRect)
             throws CodecFailedException {
@@ -182,7 +184,7 @@ public final class JpegImageUtils {
                     CodecFailedException.FailureType.ENCODE_FAILED);
         }
         byte[] data = out.toByteArray();
-        if(flipState != FLIP_NORMAL){
+        if (flipState != FLIP_NORMAL) {
             data = flipByteArray(data, flipState);
         }
         return data;
@@ -204,7 +206,7 @@ public final class JpegImageUtils {
         if (shouldCropImage(image)) {
             data = cropByteArray(data, image.getCropRect());
         }
-        if(flipState != FLIP_NORMAL){
+        if (flipState != FLIP_NORMAL) {
             data = flipByteArray(data, flipState);
         }
         return data;
@@ -219,7 +221,9 @@ public final class JpegImageUtils {
                 shouldCropImage(image) ? image.getCropRect() : null, flipState);
     }
 
-    /** Exception for error during transcoding image. */
+    /**
+     * Exception for error during transcoding image.
+     */
     public static final class CodecFailedException extends Exception {
         public enum FailureType {
             ENCODE_FAILED,

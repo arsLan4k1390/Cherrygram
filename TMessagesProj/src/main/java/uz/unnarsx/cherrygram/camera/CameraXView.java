@@ -157,10 +157,10 @@ public class CameraXView extends BaseCameraView {
     }
 
     //ugly api behaviour after permission check
-    public void rebind(){
-        if(isStreaming){
+    public void rebind() {
+        if (isStreaming) {
             Bitmap previewBitmap = previewView.getBitmap();
-            if(previewBitmap != null){
+            if (previewBitmap != null) {
                 placeholderView.setImageBitmap(previewBitmap);
                 placeholderView.setVisibility(View.VISIBLE);
             }
@@ -198,9 +198,9 @@ public class CameraXView extends BaseCameraView {
     }
 
     public void switchCamera() {
-        if(isStreaming){
+        if (isStreaming) {
             Bitmap previewBitmap = previewView.getBitmap();
-            if(previewBitmap != null){
+            if (previewBitmap != null) {
                 placeholderView.setImageBitmap(previewBitmap);
                 placeholderView.setVisibility(View.VISIBLE);
             }
@@ -209,9 +209,9 @@ public class CameraXView extends BaseCameraView {
     }
 
     public void changeEffect(@CameraXController.EffectFacing int effect) {
-        if(isStreaming){
+        if (isStreaming) {
             Bitmap previewBitmap = previewView.getBitmap();
-            if(previewBitmap != null){
+            if (previewBitmap != null) {
                 placeholderView.setImageBitmap(previewBitmap);
                 placeholderView.setVisibility(View.VISIBLE);
             }
@@ -314,10 +314,12 @@ public class CameraXView extends BaseCameraView {
     public boolean hasFrontFaceCamera() {
         return controller.hasFrontFaceCamera();
     }
+
     @SuppressLint("RestrictedApi")
     public static boolean hasGoodCamera(Context context) {
         return CameraXController.hasGoodCamera(context);
     }
+
     @Override
     public TextureView getTextureView() {
         return (TextureView) (previewView.getChildAt(0));
@@ -388,7 +390,7 @@ public class CameraXView extends BaseCameraView {
         return controller.isAvailableAutoMode();
     }
 
-    public boolean isExposureCompensationSupported(){
+    public boolean isExposureCompensationSupported() {
         return controller.isExposureCompensationSupported();
     }
 
@@ -412,7 +414,7 @@ public class CameraXView extends BaseCameraView {
     }
 
     public float getTextureHeight(float width, float height) {
-        if (controller ==  null) {
+        if (controller == null) {
             return height;
         }
         Size previewSize = getPreviewSize();
@@ -424,7 +426,7 @@ public class CameraXView extends BaseCameraView {
             frameWidth = previewSize.getHeight();
             frameHeight = previewSize.getWidth();
         }
-        float s = Math.max(width / (float) frameWidth , height / (float) frameHeight);
+        float s = Math.max(width / (float) frameWidth, height / (float) frameHeight);
         return (int) (s * frameHeight);
     }
 
@@ -489,7 +491,7 @@ public class CameraXView extends BaseCameraView {
         runHaptic();
     }
 
-    public boolean isSameTakePictureOrientation(){
+    public boolean isSameTakePictureOrientation() {
         return displayOrientation == worldOrientation;
     }
 
@@ -519,7 +521,7 @@ public class CameraXView extends BaseCameraView {
                 frameWidth = previewSize.getHeight();
                 frameHeight = previewSize.getWidth();
             }
-            float s = Math.max(MeasureSpec.getSize(widthMeasureSpec) / (float) frameWidth , MeasureSpec.getSize(heightMeasureSpec) / (float) frameHeight);
+            float s = Math.max(MeasureSpec.getSize(widthMeasureSpec) / (float) frameWidth, MeasureSpec.getSize(heightMeasureSpec) / (float) frameHeight);
             blurredStubView.getLayoutParams().width = (int) (s * frameWidth);
             blurredStubView.getLayoutParams().height = (int) (s * frameHeight);
         }
@@ -527,8 +529,10 @@ public class CameraXView extends BaseCameraView {
     }
 
     @Override
-    public void setRecordFile(File generateVideoPath) {}
+    public void setRecordFile(File generateVideoPath) {
+    }
 
     @Override
-    public void setFpsLimit(int fpsLimit) {}
+    public void setFpsLimit(int fpsLimit) {
+    }
 }
