@@ -62,7 +62,7 @@ import java.util.Collections;
 import java.util.List;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-//import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
+import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
 import uz.unnarsx.cherrygram.utils.VibrateUtil;
 
 
@@ -1486,7 +1486,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             fragment.onTransitionAnimationEnd(true, false);
             fragment.onBecomeFullyVisible();
         }
-        //AnalyticsHelper.trackEvent("Present fragment");
+        AnalyticsHelper.trackEvent("Present fragment");
         return true;
     }
 

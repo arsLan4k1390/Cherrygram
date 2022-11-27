@@ -48,7 +48,7 @@ import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-//import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
+import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
 
 public class ApplicationLoader extends Application {
 
@@ -84,7 +84,7 @@ public class ApplicationLoader extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        /*AnalyticsHelper.start(this);
+        AnalyticsHelper.start(this);
         AnalyticsHelper.trackEvent("App start");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             var am = getSystemService(ActivityManager.class);
@@ -98,7 +98,7 @@ public class ApplicationLoader extends Application {
                 map.put("status", String.valueOf(reasons.get(0).getStatus()));
                 AnalyticsHelper.trackEvent("Last exit reasons", map);
             }
-        }*/
+        }
         MultiDex.install(this);
     }
 

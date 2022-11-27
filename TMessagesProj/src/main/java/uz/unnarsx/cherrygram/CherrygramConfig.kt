@@ -10,7 +10,7 @@ import org.telegram.messenger.BuildConfig
 import org.telegram.messenger.BuildVars
 import org.telegram.messenger.SharedConfig
 import org.telegram.tgnet.TLRPC
-//import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
+import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
@@ -29,7 +29,7 @@ object CherrygramConfig {
     val listener = OnSharedPreferenceChangeListener { preferences: SharedPreferences?, key: String ->
             val map = HashMap<String, String>(1)
             map["key"] = key
-            //AnalyticsHelper.trackEvent("Cherry config changed", map)
+            AnalyticsHelper.trackEvent("Cherry config changed", map)
         }
 
     // Appearance Settings
