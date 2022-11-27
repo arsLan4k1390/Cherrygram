@@ -21,6 +21,8 @@
     <string name="CG_ChooseFolderIcon">اختر أيقونة</string>
     <string name="CP_NewTabs_NoCounter">إخفاء العداد في التبويب</string>
     <string name="CP_NewTabs_NoCounter_Desc">سيؤدي هذا إلى إخفاء عداد الرسائل غير المقروءة</string>
+    <string name="CP_VKUIFoldersStyle">VKUI folders style</string>
+    <string name="CP_VKUIFoldersStyle_Desc">This will turn on the style of folders from VK</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">إلى البداية</string>
@@ -57,6 +59,10 @@
     <string name="CG_ForceCleanInfo">استخدم هذا إذا واجهت عبارة \"جارِ التنظيف\" لوقت طويل عند محاولة تنظيف ذاكرة التخزين المؤقت. سيؤدي هذا إلى حذف كل شيء من ذاكرة التخزين المؤقت - كن حذرًا!</string>
     <string name="CG_ForceCleanInfo1">هل تريد حقا حذف كل شيء من ذاكرة التخزين المؤقت من تيليجرام ؟</string>
     <string name="CG_Kaboom">يمكن الوصول إلى هذه الميزة بدون كلمة مرور Cherrygram ،من خلال إعدادات النظام. هذه الميزة تمحو تماما كل ما تبذلونه من البيانات المحلية (Cherrygram). يمكن استخدامه في حالات الطوارئ.</string>
+    <string name="CG_AppCrashed">حدث خطأ ما</string>
+    <string name="CG_AppCrashedDesc">توقف Cherrygram عن العمل. يرجى إرسال السجلات إلى المطورين حتى يتمكنوا من إصلاح هذا الخطأ في أقرب وقت ممكن.</string>
+    <string name="CG_CopyReportDetails">نسخ تفاصيل التقرير</string>
+    <string name="CG_ReportDetailsCopied">تم نسخ تفاصيل التقرير إلى الحافظة.</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -68,7 +74,7 @@
     <string name="CGP_ToChat">الدردشة الرسمية</string>
     <string name="CGP_Source">شفرة المصدر</string>
     <string name="CGP_Crowdin">المساعدة في الترجمة</string>
-    <string name="CGP_Header_Categories">Categories</string>
+    <string name="CGP_Header_Categories">الفئات</string>
     <!--Cherrygram Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">المظهر</string>
@@ -82,6 +88,7 @@
     <string name="AP_ChangeIcon_White">أبيض</string>
     <string name="AP_ChangeIcon_Green">الأخضر</string>
     <string name="AP_ChangeIcon_Sunset">الغروب</string>
+    <string name="AP_ChangeIcon_Sunrise">الشروق</string>
     <string name="AP_IconReplacement_VKUI">أيقونات VKUI</string>
     <string name="AP_IconReplacement_Default">افتراضي</string>
     <string name="AP_ToolBarShadow">تعطيل ضل شريط الأدوات</string>
@@ -90,9 +97,24 @@
     <string name="AP_FlatNB_Desc">سيحصل شريط التنقل على لون لوحة الرسائل</string>
     <string name="AP_SystemFonts">أستخدم خطوط النظام</string>
     <string name="AP_SystemFonts_Desc">قم بتعطيل هذا (أعد تشغيل التطبيق) إذا كان الخط الخاص بك لا يدعم التنسيق (غامق ، مائل ، أحادي المسافة)</string>
+    <string name="CP_PremAndAnim_Header">الرسوم المتحركة والميزات المدفوعة (إعد تشغيل التطبيق للتطبيق)</string>
+    <string name="CP_DisableAnimAvatars">تعطيل الصور الرمزية المتحركة</string>
+    <string name="CP_DisableReactionsOverlay">تعطيل تراكب ردود الأفعال</string>
+    <string name="CP_DisableReactionsOverlay_Desc">سيؤدي هذا إلى تعطيل التراكب المنبثق مع التفاعلات المتاحة</string>
+    <string name="CP_DrawSmallReactions">ارسم ردود فعل صغيرة</string>
+    <string name="CP_DrawSmallReactions_Desc">ارسم تفاعلات صغيرة (على الطراز القديم) بدلاً من فعل كبير</string>
+    <string name="CP_DisableReactionAnim">تعطيل ردود فعل الرسوم المتحركة</string>
+    <string name="CP_DisableReactionAnim_Desc">(عند الرد على رسالة)</string>
+    <string name="CP_DisablePremiumStatuses">تعطيل الحالات المميزة</string>
+    <string name="CP_DisablePremiumStatuses_Desc">سيؤدي هذا إلى تعطيل الحالات المميزه في كل مكان، باستثناء القائمة الجانبية (الدرج)</string>
+    <string name="CP_DisablePremStickAnim">تعطيل النقر على الملصقات المميزة</string>
+    <string name="CP_DisablePremStickAnim_Desc">لن يحدث شيء إذا قمت بالنقر على ملصق بريميوم</string>
+    <string name="CP_DisablePremStickAutoPlay">تعطيل التشغيل التلقائي للملصقات المميزه</string>
+    <string name="CP_DisablePremStickAutoPlay_Desc">لن يتم تشغيل الرسوم المتحركة للملصقات المميزة تلقائيًا (لن تعمل الميزة إذا قمت بتعطيل النقرات على الملصقات المميزة)</string>
     <string name="CP_Filters_Header">المجلدات (إعد تشغيل التطبيق)</string>
     <string name="AP_FolderNameInHeader">اسم المجلد بدلا من \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">سيؤدي هذا إلى تغيير \" Cherrygram\ \" في شريط الإجراءات إلى اسم المجلد الخاص بك (مفيد إذا كان لديك أيقونات فقط بدلا من أسماء المجلدات)</string>
+    <string name="CP_NewTabs_RemoveAllChats">إخفاء تبويب \"الكل\"</string>
     <string name="AP_DrawerCategory">الشريط الجانبي</string>
     <string name="AP_DrawerPreferences">أيقونات الشريط الجانبي</string>
     <string name="AP_DrawerAvatar">صورة الملف الشخصي كخلفية شريط الجاني</string>
@@ -122,9 +144,6 @@
     <string name="CP_ShowSeconds">إظهار الثواني في الطوابع الزمنية</string>
     <string name="CP_ShowSeconds_Desc">يظهر الثواني من الوقت من الرسائل المرسلة (إعد تشغيل التطبيق)</string>
     <string name="CP_DoubleTapAction">انقر نقرًا مزدوجًا</string>
-    <string name="CP_DisableAnimAvatars">تعطيل الصور الرمزية المتحركة</string>
-    <string name="CP_DisableReactionAnim">تعطيل ردود فعل الرسوم المتحركة</string>
-    <string name="CP_DisableReactionAnim_Desc">(عند الرد على رسالة)</string>
     <string name="CP_DisableSwipeToNext">تعطيل الانتقال إلى القناة التالية</string>
     <string name="CP_DisableSwipeToNext_Desc">تعطيل التبديل إلى القناة التالية عند التمرير عبر أي قناة</string>
     <string name="CP_HideKbdOnScroll">إخفاء لوحة المفاتيح على التمرير</string>
@@ -132,6 +151,8 @@
     <string name="CP_Slider_RecentEmojisAmplifier">الرموز التعبيرية الأخيرة (إعد تشغيل التطبيق)</string>
     <string name="CP_Slider_RecentStickersAmplifier">ملصقات الأخيرة (إعد تشغيل التطبيق)</string>
     <string name="CP_Header_Record">الوسائط</string>
+    <string name="CP_VoiceEnhancements">تحسين الصوت</string>
+    <string name="CP_VoiceEnhancements_Desc">التقليل من الضوضاء و جعل الصوت طبيعي</string>
     <string name="CP_PlayVideo">تشغيل الفيديو عند النقر على زر التحكم في الصوت</string>
     <string name="CP_PlayVideo_Desc">عند الضغط على زر التحكم في الصوت ، سيتم تشغيل أي فيديو على الشاشة في الدردشة</string>
     <string name="CP_AutoPauseVideo">إيقاف تشغيل الفيديو</string>
@@ -160,6 +181,8 @@
     <string name="CP_MotionSmoothness">سلاسة الحركة</string>
     <string name="CP_CameraTypeSystem">النظام</string>
     <string name="CP_SystemCameraDesc">الوصول مباشرة إلى كاميرا النظام (لا تنطبق على رسائل الفيديو).</string>
+    <string name="CP_CameraAspectRatio">نسبة عرض الكاميرا</string>
+    <string name="CP_CameraAspectRatio_Desc">إن اختيار نسبة العرض للكاميرا ضروري لتسجيل رسائل الفيديو بجودة جيدة. تستخدم معظم الهواتف عادة نسبة جانب 16:9 بينما تستخدم الأجهزة الرئيسية 4:3 أو 1:1. اختبار كل منها، مقارنة جودة التسجيل واستخدام أفضل النسبة.</string>
     <string name="CP_RearCam">استخدام الكاميرا الخلفية</string>
     <string name="CP_RearCam_Desc">بدلاً من الكاميرا الأمامية لرسائل الفيديو</string>
     <string name="CP_DisableCam">تعطيل الكاميرا في قائمة إرفاق الوسائط</string>
@@ -167,7 +190,8 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">تجريبي</string>
-    <string name="CG_ResidentNotification">Show a resident notification</string>
+    <string name="CG_ResidentNotification">إظهار إشعار دائم</string>
+    <string name="EP_ShowRPCError">عرض جميع أخطاء RPC</string>
     <string name="EP_Network">Network</string>
     <string name="EP_DownloadSpeedBoost">زيادة سرعة التنزيل</string>
     <string name="EP_DownloadSpeedBoostNone">إيقاف</string>
@@ -185,6 +209,22 @@
     <string name="SP_Category_Account">الحساب</string>
     <string name="SP_DeleteAccount">حذف حساب تيليجرام</string>
     <!--Security Preferences-->
+    <!--Updates Preferences-->
+    <string name="UP_Category_Updates">التحديثات</string>
+    <string name="UP_LastCheck">آخر تحقق</string>
+    <string name="UP_CurrentVersion">الاصدار الحالي</string>
+    <string name="UP_Auto_OTA">التحقق عند التشغيل</string>
+    <string name="UP_ClearUpdatesCache">مسح التخزين المؤقت للتحديثات</string>
+    <string name="UP_ClearedUpdatesCache">تم مسح %1$s من ذاكرة التخزين المؤقت.</string>
+    <string name="UP_NothingToClear">لا شيء لمسحته.</string>
+    <string name="UP_CheckForUpdates">التحقق من وجود تحديثات</string>
+    <string name="UP_Not_Found">Cherrygram محدّث.</string>
+    <string name="UP_UpdateAvailable">تحديث متاح!</string>
+    <string name="UP_Version">الإصدار</string>
+    <string name="UP_UpdateSize">حجم التحديث</string>
+    <string name="UP_Changelog">سجل التغييرات:</string>
+    <string name="UP_Download">تحميل</string>
+    <!--Updates Preferences-->
     <!--Donations-->
     <string name="DP_Donate">تبرع</string>
     <string name="DP_Donate_Method">اختر الطريقة</string>

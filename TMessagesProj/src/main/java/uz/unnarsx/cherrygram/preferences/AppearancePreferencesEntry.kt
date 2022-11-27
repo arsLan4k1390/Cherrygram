@@ -14,6 +14,7 @@ import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.preferences.ktx.*
 import uz.unnarsx.extras.CherrygramExtras
+import uz.unnarsx.tgkit.preference.types.TGKitSliderPreference
 import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
@@ -173,7 +174,47 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     CherrygramConfig.folderNameInHeader = it
                 }
             }
+            switch {
+                title = LocaleController.getString("CP_NewTabs_RemoveAllChats", R.string.CP_NewTabs_RemoveAllChats)
 
+                contract({
+                    return@contract CherrygramConfig.newTabs_hideAllChats
+                }) {
+                    CherrygramConfig.newTabs_hideAllChats = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_VKUIFoldersStyle", R.string.CP_VKUIFoldersStyle)
+                summary = LocaleController.getString("CP_VKUIFoldersStyle_Desc", R.string.CP_VKUIFoldersStyle_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.vkuiFoldersStyle
+                }) {
+                    CherrygramConfig.vkuiFoldersStyle = it
+                }
+            }
+        }
+
+        category("VKUI frame correction") {
+            slider {
+                contract = object : TGKitSliderPreference.TGSLContract {
+                    override fun setValue(value: Int) {
+                        CherrygramConfig.frameCorrection = value
+                    }
+
+                    override fun getPreferenceValue(): Int {
+                        return CherrygramConfig.frameCorrection
+                    }
+
+                    override fun getMin(): Int {
+                        return 15
+                    }
+
+                    override fun getMax(): Int {
+                        return 40
+                    }
+                }
+            }
         }
 
         category(LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)) {

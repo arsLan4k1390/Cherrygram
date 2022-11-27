@@ -1323,7 +1323,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
     public EmojiView(BaseFragment fragment, boolean needAnimatedEmoji, boolean needStickers, boolean needGif, final Context context, boolean needSearch, final TLRPC.ChatFull chatFull, ViewGroup parentView, Theme.ResourcesProvider resourcesProvider) {
         super(context);
         this.fragment = fragment;
-        this.allowAnimatedEmoji = needAnimatedEmoji;
+        this.allowAnimatedEmoji = needAnimatedEmoji && UserConfig.getInstance(currentAccount).isPremium();
         this.resourcesProvider = resourcesProvider;
 
         int color = getThemedColor(Theme.key_chat_emojiBottomPanelIcon);
@@ -1386,7 +1386,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         emojiTab.view = emojiContainer;
         allTabs.add(emojiTab);
 
-        if (needAnimatedEmoji) {
+        if (allowAnimatedEmoji) {
             MediaDataController.getInstance(currentAccount).checkStickers(MediaDataController.TYPE_EMOJIPACKS);
             MediaDataController.getInstance(currentAccount).checkFeaturedEmoji();
         }
@@ -1596,7 +1596,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
             }
         });
 
-        emojiTabs = new EmojiTabsStrip(context, resourcesProvider, true, needAnimatedEmoji, 0, fragment != null ? () -> {
+        emojiTabs = new EmojiTabsStrip(context, resourcesProvider, true, allowAnimatedEmoji, 0, fragment != null ? () -> {
             if (delegate != null) {
                 delegate.onEmojiSettingsClick(emojiAdapter.frozenEmojiPacks);
             }
@@ -6775,7 +6775,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         public void notifyDataSetChanged(boolean updateEmojipack) {
             ArrayList<Integer> prevRowHashCodes = new ArrayList<>(rowHashCodes);
 
-            final MediaDataController mediaDataController = MediaDataController.getInstance(currentAccount);
+            /*final MediaDataController mediaDataController = MediaDataController.getInstance(currentAccount);
             ArrayList<TLRPC.StickerSetCovered> featured = mediaDataController.getFeaturedEmojiSets();
             featuredEmojiSets.clear();
             for (int a = 0, N = featured.size(); a < N; a++) {
@@ -6783,7 +6783,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                 if (!mediaDataController.isStickerPackInstalled(set.set.id) || installedEmojiSets.contains(set.set.id)) {
                     featuredEmojiSets.add(set);
                 }
-            }
+            }*/
 
             processEmoji(updateEmojipack);
             updateRows();

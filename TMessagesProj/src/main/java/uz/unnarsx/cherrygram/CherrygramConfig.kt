@@ -7,9 +7,10 @@ import android.content.ComponentName
 import android.content.pm.PackageManager
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.BuildConfig
+import org.telegram.messenger.BuildVars
 import org.telegram.messenger.SharedConfig
 import org.telegram.tgnet.TLRPC
-import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
+//import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
@@ -28,12 +29,12 @@ object CherrygramConfig {
     val listener = OnSharedPreferenceChangeListener { preferences: SharedPreferences?, key: String ->
             val map = HashMap<String, String>(1)
             map["key"] = key
-            AnalyticsHelper.trackEvent("Cherry config changed", map)
+            //AnalyticsHelper.trackEvent("Cherry config changed", map)
         }
 
     // Appearance Settings
     //Redesign
-    var iconReplacement by sharedPreferences.int("AP_IconReplacements", CGFeatureJavaHooks.getDefaultVKUI())
+    var iconReplacement by sharedPreferences.int("AP_Icon_Replacements", CGFeatureJavaHooks.getDefaultVKUI())
     fun getIconReplacement(): BaseIconReplace {
         return when (iconReplacement) {
             0 -> VkIconReplace()
@@ -55,6 +56,19 @@ object CherrygramConfig {
         )
         val editor = preferences.edit()
         editor.putBoolean("AP_Old_Notification_Icon", oldNotificationIcon)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    var defaultNotificationName by sharedPreferences.boolean("AP_Default_Notification_Name", false)
+    fun toggleDefaultNotificationName() { // Telegram chats settings
+        defaultNotificationName = !defaultNotificationName
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("AP_Default_Notification_Name", defaultNotificationName)
         editor.apply()
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
@@ -81,9 +95,21 @@ object CherrygramConfig {
     var disablePremStickAutoPlay by sharedPreferences.boolean("CP_DisablePremStickAutoPlay", false)
     //Folders
     var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
+    var newTabs_hideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
+    fun toggleNewTabs_hideAllChats() { // Telegram folders settings
+        newTabs_hideAllChats = !newTabs_hideAllChats
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("CP_NewTabs_RemoveAllChats", newTabs_hideAllChats)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
     var tabsOnForward by sharedPreferences.boolean("CP_TabsOnForward", true)
 
-    /*var vkuiFoldersStyle by sharedPreferences.boolean("CP_VKUIFoldersStyle", false)
+    var vkuiFoldersStyle by sharedPreferences.boolean("CP_VKUIFoldersStyle", false)
     fun toggleVKUIFoldersStyle() { // Telegram folders settings
         vkuiFoldersStyle = !vkuiFoldersStyle
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
@@ -96,7 +122,7 @@ object CherrygramConfig {
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
-    var frameCorrection by sharedPreferences.int("frameCorrection", 20)*/
+    var frameCorrection by sharedPreferences.int("frameCorrection", 20)
 
     var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
     fun toggleNewTabs_noUnread() { // Telegram folders settings
@@ -516,7 +542,33 @@ object CherrygramConfig {
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
+    var showRPCError by sharedPreferences.boolean("EP_ShowRPCError", false)
+    fun toggleShowRPCError() {
+        showRPCError = !showRPCError
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("EP_ShowRPCError", showRPCError)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
     // OTA
+    var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", BuildVars.isBetaApp())
+    fun toggleInstallBetas() {
+        installBetas = !installBetas
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putBoolean("CG_Install_Beta_Ver", installBetas)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
     var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", true)
     fun toggleAutoOTA() {
         autoOTA = !autoOTA
@@ -543,6 +595,7 @@ object CherrygramConfig {
         editor.apply()
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
+
     var updateScheduleTimestamp by sharedPreferences.long("CG_UpdateScheduleTimestamp", 0)
     @JvmName("updateScheduleTimestamp1")
     fun setUpdateScheduleTimestamp(timestamp: Long) {

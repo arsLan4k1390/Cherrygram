@@ -1,22 +1,15 @@
 package uz.unnarsx.cherrygram.preferences
 
-import android.app.assist.AssistContent
-import android.content.ComponentName
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.provider.Browser
 import org.telegram.messenger.*
+import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.BulletinFactory
-import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.ota.UpdaterBottomSheet
 import uz.unnarsx.cherrygram.preferences.ktx.category
 import uz.unnarsx.cherrygram.preferences.ktx.textDetail
 import uz.unnarsx.cherrygram.preferences.ktx.textIcon
 import uz.unnarsx.cherrygram.preferences.ktx.tgKitScreen
-import uz.unnarsx.extras.CherrygramExtras
 import uz.unnarsx.extras.Crashlytics
 import uz.unnarsx.tgkit.preference.types.TGKitTextDetailRow
 import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
@@ -82,7 +75,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     icon = R.drawable.msg_channel
                     value = "@Cherry_gram"
                     listener = TGKitTextIconRow.TGTIListener {
-                        goToChannel(it)
+                        Browser.openUrl(bf.parentActivity, "https://t.me/Cherry_gram")
                     }
                 }
                 textIcon {
@@ -90,7 +83,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     icon = R.drawable.msg_discuss
                     value = "@CherrygramSupport"
                     listener = TGKitTextIconRow.TGTIListener {
-                        goToChat(it)
+                        Browser.openUrl(bf.parentActivity, "https://t.me/CherrygramSupport")
                     }
                 }
                 textIcon {
@@ -99,7 +92,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     icon = R.mipmap.outline_source_white_28
                     value = commitInfo
                     listener = TGKitTextIconRow.TGTIListener {
-                        goToGithub(it)
+                        Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram")
                     }
                 }
                 textIcon {
@@ -107,7 +100,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     icon = R.drawable.msg_translate
                     value = "Crowdin"
                     listener = TGKitTextIconRow.TGTIListener {
-                        goToCrowdin(it)
+                        Browser.openUrl(bf.parentActivity, "https://crowdin.com/project/cherrygram")
                     }
                 }
                 /*textIcon {
@@ -131,46 +124,4 @@ class MainPreferencesEntry : BasePreferencesEntry {
         }
     }
 
-    companion object {
-        private fun goToChannel(bf: BaseFragment) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/Cherry_gram"))
-            val componentName = ComponentName(bf.parentActivity.packageName, LaunchActivity::class.java.name)
-            intent.component = componentName
-            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true)
-            intent.putExtra(Browser.EXTRA_APPLICATION_ID, bf.parentActivity.packageName)
-            bf.parentActivity.startActivity(intent)
-        }
-
-        private fun goToChat(bf: BaseFragment) {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/CherrygramSupport"))
-            val componentName = ComponentName(bf.parentActivity.packageName, LaunchActivity::class.java.name)
-            intent.component = componentName
-            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true)
-            intent.putExtra(Browser.EXTRA_APPLICATION_ID, bf.parentActivity.packageName)
-            bf.parentActivity.startActivity(intent)
-        }
-
-        private fun goToGithub(bf: BaseFragment) {
-            val openURL = Intent(android.content.Intent.ACTION_VIEW)
-            openURL.data = Uri.parse("https://github.com/arsLan4k1390/Cherrygram")
-            bf.parentActivity.startActivity(openURL)
-        }
-
-        private fun goToCrowdin(bf: BaseFragment) {
-            val openURL = Intent(android.content.Intent.ACTION_VIEW)
-            openURL.data = Uri.parse("https://crowdin.com/project/cherrygram")
-            bf.parentActivity.startActivity(openURL)
-        }
-
-        fun onProvideAssistContent(outContent: AssistContent) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                outContent.webUri = Uri.parse(
-                    String.format(
-                        "https://t.me/Cherry_gram"
-                    )
-                )
-            }
-        }
-
-    }
 }

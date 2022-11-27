@@ -117,9 +117,6 @@ public class LocaleController {
         public boolean builtIn;
         public int serverIndex;
 
-        public TLRPC.TL_langPackLanguage pack;
-        public boolean toInstall;
-
         public String getSaveString() {
             String langCode = baseLangCode == null ? "" : baseLangCode;
             String pluralCode = TextUtils.isEmpty(pluralLangCode) ? shortName : pluralLangCode;
@@ -1696,7 +1693,6 @@ public class LocaleController {
             Calendar rightNow = Calendar.getInstance();
             int day = rightNow.get(Calendar.DAY_OF_YEAR);
             int year = rightNow.get(Calendar.YEAR);
-            int hour = rightNow.get(Calendar.HOUR_OF_DAY);
             rightNow.setTimeInMillis(date);
             int dateDay = rightNow.get(Calendar.DAY_OF_YEAR);
             int dateYear = rightNow.get(Calendar.YEAR);

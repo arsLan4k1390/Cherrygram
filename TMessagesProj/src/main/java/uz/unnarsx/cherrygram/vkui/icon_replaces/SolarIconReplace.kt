@@ -155,6 +155,9 @@ class SolarIconReplace : BaseIconReplace() {
             R.drawable.msg_contacts_name to R.drawable.sort_by_alphabet, // contacts activity
             R.drawable.burn to R.drawable.fire, // secret photos
             R.drawable.msg_viewchats to R.drawable.dialog, // maybe topics
+            R.drawable.msg_sendfile to R.drawable.file, // updater bottom sheet
+            R.drawable.msg_mini_qr to R.drawable.qr_code, // active sessions QR
+            R.drawable.msg_qr_mini to R.drawable.qr_code, // ProfileActivity QR
             /*R.drawable.msg_gif to R.drawable.airplay_video_outline_28,
             R.drawable.msg_search to R.drawable.magnifer,
             R.drawable.ic_ab_search to R.drawable.magnifer,*/

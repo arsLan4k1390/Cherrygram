@@ -2047,23 +2047,23 @@ public class LoginActivity extends BaseFragment {
 
             int bottomMargin = 72;
             //if (newAccount && activityMode == MODE_LOGIN) {
-            syncContactsBox = new CheckBoxCell(context, 2);
-            syncContactsBox.setText(LocaleController.getString("SyncContacts", R.string.SyncContacts), "", syncContacts, false);
-            addView(syncContactsBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
-            bottomMargin -= 24;
-            syncContactsBox.setOnClickListener(v -> {
-                if (getParentActivity() == null) {
-                    return;
-                }
-                CheckBoxCell cell = (CheckBoxCell) v;
-                syncContacts = !syncContacts;
-                cell.setChecked(syncContacts, true);
-                if (syncContacts) {
-                    BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_on, LocaleController.getString("SyncContactsOn", R.string.SyncContactsOn)).show();
-                } else {
-                    BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_off, LocaleController.getString("SyncContactsOff", R.string.SyncContactsOff)).show();
-                }
-            });
+                syncContactsBox = new CheckBoxCell(context, 2);
+                syncContactsBox.setText(LocaleController.getString("SyncContacts", R.string.SyncContacts), "", syncContacts, false);
+                addView(syncContactsBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
+                bottomMargin -= 24;
+                syncContactsBox.setOnClickListener(v -> {
+                    if (getParentActivity() == null) {
+                        return;
+                    }
+                    CheckBoxCell cell = (CheckBoxCell) v;
+                    syncContacts = !syncContacts;
+                    cell.setChecked(syncContacts, true);
+                    if (syncContacts) {
+                        BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_on, LocaleController.getString("SyncContactsOn", R.string.SyncContactsOn)).show();
+                    } else {
+                        BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_off, LocaleController.getString("SyncContactsOff", R.string.SyncContactsOff)).show();
+                    }
+                });
             //}
 
             testBackendCheckBox = new CheckBoxCell(context, 2);
@@ -2551,33 +2551,35 @@ public class LoginActivity extends BaseFragment {
             }
             String phone = PhoneFormat.stripExceptNumbers("" + codeField.getText() + phoneField.getText());
             //if (activityMode == MODE_LOGIN) {
-            boolean testBackend = /*BuildVars.DEBUG_PRIVATE_VERSION &&*/ getConnectionsManager().isTestBackend();
-            if (testBackend != LoginActivity.this.testBackend) {
-                getConnectionsManager().switchBackend(false);
-                testBackend = LoginActivity.this.testBackend;
-            }
-            if (getParentActivity() instanceof LaunchActivity) {
-                for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
-                    UserConfig userConfig = UserConfig.getInstance(a);
-                    if (!userConfig.isClientActivated()) {
-                        continue;
-                    }
-                    String userPhone = userConfig.getCurrentUser().phone;
-                    if (PhoneNumberUtils.compare(phone, userPhone) && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
-                        final int num = a;
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                        builder.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
-                        builder.setMessage(LocaleController.getString("AccountAlreadyLoggedIn", R.string.AccountAlreadyLoggedIn));
-                        builder.setPositiveButton(LocaleController.getString("AccountSwitch", R.string.AccountSwitch), (dialog, which) -> {
-                            if (UserConfig.selectedAccount != num) {
-                                ((LaunchActivity) getParentActivity()).switchToAccount(num, false);
-                            }
-                            finishFragment();
-                        });
-                        builder.setNegativeButton(LocaleController.getString("OK", R.string.OK), null);
-                        showDialog(builder.create());
-                        needHideProgress(false);
-                        return;
+                boolean testBackend = /*BuildVars.DEBUG_PRIVATE_VERSION &&*/ getConnectionsManager().isTestBackend();
+                if (testBackend != LoginActivity.this.testBackend) {
+                    getConnectionsManager().switchBackend(false);
+                    testBackend = LoginActivity.this.testBackend;
+                }
+
+                if (getParentActivity() instanceof LaunchActivity) {
+                    for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+                        UserConfig userConfig = UserConfig.getInstance(a);
+                        if (!userConfig.isClientActivated()) {
+                            continue;
+                        }
+                        String userPhone = userConfig.getCurrentUser().phone;
+                        if (PhoneNumberUtils.compare(phone, userPhone) && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
+                            final int num = a;
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                            builder.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
+                            builder.setMessage(LocaleController.getString("AccountAlreadyLoggedIn", R.string.AccountAlreadyLoggedIn));
+                            builder.setPositiveButton(LocaleController.getString("AccountSwitch", R.string.AccountSwitch), (dialog, which) -> {
+                                if (UserConfig.selectedAccount != num) {
+                                    ((LaunchActivity) getParentActivity()).switchToAccount(num, false);
+                                }
+                                finishFragment();
+                            });
+                            builder.setNegativeButton(LocaleController.getString("OK", R.string.OK), null);
+                            showDialog(builder.create());
+                            needHideProgress(false);
+                            return;
+                        //}
                     }
                 }
             }

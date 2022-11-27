@@ -948,9 +948,7 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
                         paint.setColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                         int h = getMeasuredHeight() - AndroidUtilities.dp(3);
                         canvas.drawRect(0, 0, getMeasuredWidth(), h, paint);
-                        if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
-                            parentLayout.drawHeaderShadow(canvas, h);
-                        }
+                        parentLayout.drawHeaderShadow(canvas, h);
                     }
                 };
                 actionBarBackground.setAlpha(0.0f);

@@ -123,12 +123,12 @@ public class FilterTabsView extends FrameLayout {
         public int getWidth(boolean store) {
             iconWidth = FolderIconHelper.getTotalIconWidth();
             int width = titleWidth = (int) Math.ceil(textPaint.measureText(title));
-            /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+            if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
                 width = titleWidth = (int) Math.ceil(textPaint.measureText(title) + 20);
                 if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_ICON) {
                     width = titleWidth = (int) Math.ceil(textPaint.measureText(title));
                 }
-            }*/
+            }
             width += iconWidth;
             int c;
             if (store) {
@@ -270,7 +270,7 @@ public class FilterTabsView extends FrameLayout {
             } else {
                 setContentDescription(currentTab.title);
             }
-            boolean reorderEnabled = true;
+            boolean reorderEnabled = (!currentTab.isDefault || UserConfig.getInstance(UserConfig.selectedAccount).isPremium());
             boolean showRemove = !currentTab.isDefault && reorderEnabled;
             if (reorderEnabled && editingAnimationProgress != 0) {
                 canvas.save();
@@ -369,12 +369,12 @@ public class FilterTabsView extends FrameLayout {
 
             if (!TextUtils.equals(currentTab.title, currentText)) {
                 currentText = currentTab.title;
-                /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+                if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
                     currentText = " " + currentTab.title;
                     if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_MIX) {
                         currentText = currentTab.title;
                     }
-                }*/
+                }
                 CharSequence text = Emoji.replaceEmoji(currentText, textPaint.getFontMetricsInt(), AndroidUtilities.dp(15), false);
                 textLayout = new StaticLayout(text, textPaint, AndroidUtilities.dp(400), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
                 textHeight = textLayout.getHeight();
@@ -489,9 +489,9 @@ public class FilterTabsView extends FrameLayout {
                     titleWidth = animateFromTitleWidth * (1f - changeProgress) + currentTab.titleWidth * changeProgress;
                 }
                 int textSpace = CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON ? AndroidUtilities.dp(6) : 0;
-                /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+                if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
                     textSpace = CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON ? AndroidUtilities.dp(3) : 0;
-                }*/
+                }
                 if (animateTextChange && titleAnimateOutLayout == null) {
                     x = textX - titleXOffset + titleOffsetX + titleWidth + textSpace;
                 } else {
@@ -954,10 +954,10 @@ public class FilterTabsView extends FrameLayout {
         selectorDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, null);
         float rad = AndroidUtilities.dpf2(3);
         selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
-        /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+        if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
             rad = AndroidUtilities.dpf2(10);
             selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
-        }*/
+        }
         selectorDrawable.setColor(Theme.getColor(tabLineColorKey));
 
         setHorizontalScrollBarEnabled(false);
@@ -1147,7 +1147,7 @@ public class FilterTabsView extends FrameLayout {
             }
             TabView tabView = (TabView) view;
             if (isEditing) {
-                if (position != 0) {
+                if (position != 0 || CherrygramConfig.INSTANCE.getNewTabs_hideAllChats()) {
                     int side = AndroidUtilities.dp(6);
                     if (tabView.rect.left - side < x && tabView.rect.right + side > x) {
                         delegate.onDeletePressed(tabView.currentTab.id);
@@ -1346,10 +1346,10 @@ public class FilterTabsView extends FrameLayout {
         if (child == listView) {
             int height = getMeasuredHeight();
             selectorDrawable.setAlpha((int) (255 * listView.getAlpha()));
-            /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+            if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
                 height = getMeasuredHeight() - CherrygramConfig.INSTANCE.getFrameCorrection();
                 selectorDrawable.setAlpha((int) (90 * listView.getAlpha()));
-            }*/
+            }
             float indicatorX = 0;
             float indicatorWidth = 0;
             if (animatingIndicator || manualScrollingToPosition != -1) {
@@ -1393,9 +1393,9 @@ public class FilterTabsView extends FrameLayout {
                 canvas.translate(listView.getTranslationX(), 0);
                 canvas.scale(listView.getScaleX(), 1f, listView.getPivotX() + listView.getX(), listView.getPivotY());
                 selectorDrawable.setBounds((int) indicatorX, height - AndroidUtilities.dpr(4), (int) (indicatorX + indicatorWidth), height);
-                /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+                if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
                     selectorDrawable.setBounds((int) indicatorX, height - AndroidUtilities.dpr(30), (int) (indicatorX + indicatorWidth), height);
-                }*/
+                }
                 selectorDrawable.draw(canvas);
                 canvas.restore();
             }
@@ -1456,10 +1456,11 @@ public class FilterTabsView extends FrameLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (!tabs.isEmpty()) {
             int width = MeasureSpec.getSize(widthMeasureSpec) - AndroidUtilities.dp(7) - AndroidUtilities.dp(7);
-            Tab firstTab = findDefaultTab();
-            firstTab.setTitle(LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
+            Tab firstTab = CherrygramConfig.INSTANCE.getNewTabs_hideAllChats() ? tabs.get(0) : findDefaultTab();
+            if (firstTab == null) return;
+            if (!CherrygramConfig.INSTANCE.getNewTabs_hideAllChats()) firstTab.setTitle(LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
             int tabWith = firstTab.getWidth(false);
-            firstTab.setTitle(allTabsWidth > width ? LocaleController.getString("FilterAllChatsShort", R.string.FilterAllChatsShort) : LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
+            if (!CherrygramConfig.INSTANCE.getNewTabs_hideAllChats()) firstTab.setTitle(allTabsWidth > width ? LocaleController.getString("FilterAllChatsShort", R.string.FilterAllChatsShort) : LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
             int trueTabsWidth = allTabsWidth - tabWith;
             trueTabsWidth += firstTab.getWidth(false);
             int prevWidth = additionalTabWidth;
@@ -1623,7 +1624,7 @@ public class FilterTabsView extends FrameLayout {
                 invalidated = true;
                 requestLayout();
                 allTabsWidth = 0;
-                findDefaultTab().setTitle(LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
+                if (!CherrygramConfig.INSTANCE.getNewTabs_hideAllChats()) findDefaultTab().setTitle(LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
                 for (int b = 0; b < N; b++) {
                     allTabsWidth += tabs.get(b).getWidth(true) + FolderIconHelper.getPaddingTab();
                 }
@@ -1654,7 +1655,7 @@ public class FilterTabsView extends FrameLayout {
             listView.setItemAnimator(itemAnimator);
             adapter.notifyDataSetChanged();
             allTabsWidth = 0;
-            findDefaultTab().setTitle(LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
+            if (!CherrygramConfig.INSTANCE.getNewTabs_hideAllChats()) findDefaultTab().setTitle(LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
             for (int b = 0, N = tabs.size(); b < N; b++) {
                 allTabsWidth += tabs.get(b).getWidth(true) + FolderIconHelper.getPaddingTab();
             }
@@ -1810,7 +1811,7 @@ public class FilterTabsView extends FrameLayout {
 
         @Override
         public int getMovementFlags(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            if (MessagesController.getInstance(UserConfig.selectedAccount).premiumLocked && (!isEditing || (viewHolder.getAdapterPosition() == 0 && tabs.get(0).isDefault && !UserConfig.getInstance(UserConfig.selectedAccount).isPremium()))) {
+            if (/*MessagesController.getInstance(UserConfig.selectedAccount).premiumLocked && */(!isEditing || (viewHolder.getAdapterPosition() == 0 && tabs.get(0).isDefault && !UserConfig.getInstance(UserConfig.selectedAccount).isPremium()))) {
                 return makeMovementFlags(0, 0);
             }
             return makeMovementFlags(ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, 0);
@@ -1818,7 +1819,7 @@ public class FilterTabsView extends FrameLayout {
 
         @Override
         public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder source, RecyclerView.ViewHolder target) {
-            if (MessagesController.getInstance(UserConfig.selectedAccount).premiumLocked && ((source.getAdapterPosition() == 0 || target.getAdapterPosition() == 0) && !UserConfig.getInstance(UserConfig.selectedAccount).isPremium())) {
+            if (/*MessagesController.getInstance(UserConfig.selectedAccount).premiumLocked && */((source.getAdapterPosition() == 0 || target.getAdapterPosition() == 0) && !UserConfig.getInstance(UserConfig.selectedAccount).isPremium())) {
                 return false;
             }
             adapter.swapElements(source.getAdapterPosition(), target.getAdapterPosition());

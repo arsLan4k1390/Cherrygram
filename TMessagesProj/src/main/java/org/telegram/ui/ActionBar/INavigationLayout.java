@@ -53,6 +53,7 @@ public interface INavigationLayout {
     void drawCurrentPreviewFragment(Canvas canvas, Drawable foregroundDrawable);
 
     void drawHeaderShadow(Canvas canvas, int alpha, int y);
+    void setHeaderShadow(Drawable drawable);
 
     boolean isSwipeInProgress();
 
@@ -76,6 +77,10 @@ public interface INavigationLayout {
 
     static INavigationLayout newLayout(Context context) {
         return SharedConfig.useLNavigation ? new LNavigation(context) : new ActionBarLayout(context);
+    }
+
+    default boolean isActionBarInCrossfade() {
+        return false;
     }
 
     default boolean hasIntegratedBlurInPreview() {
@@ -375,5 +380,10 @@ public interface INavigationLayout {
                 colors.put(key, fragmentResourceProvider.getCurrentColor(key));
             }
         }
+    }
+
+    enum BackButtonState {
+        BACK,
+        MENU
     }
 }

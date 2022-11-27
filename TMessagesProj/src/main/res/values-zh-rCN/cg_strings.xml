@@ -21,6 +21,8 @@
     <string name="CG_ChooseFolderIcon">选择图标</string>
     <string name="CP_NewTabs_NoCounter">隐藏Tab栏数字</string>
     <string name="CP_NewTabs_NoCounter_Desc">隐藏未读消息数量</string>
+    <string name="CP_VKUIFoldersStyle">VKUI 文件夹</string>
+    <string name="CP_VKUIFoldersStyle_Desc">开启由 VK 提供的文件夹样式</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">首条消息</string>
@@ -79,6 +81,7 @@
     <string name="AP_RedesignCategory">应用界面</string>
     <string name="AP_IconReplacements">替换图标</string>
     <string name="AP_Old_Notification_Icon">默认通知图标 (Telegram)</string>
+    <string name="AP_Default_Notification_Name">默认通知名称 (Telegram)</string>
     <string name="AP_ChangeIconFilter">使用 Telegram 原始图标</string>
     <string name="AP_ChangeIconFilter_Desc">您必须重新进入此部分才可以看到新图标</string>
     <string name="AP_ChangeIcon_Default">默认</string>
@@ -88,6 +91,7 @@
     <string name="AP_ChangeIcon_Sunset">日落</string>
     <string name="AP_ChangeIcon_Sunrise">日出</string>
     <string name="AP_IconReplacement_VKUI">VKUI 图标</string>
+    <string name="AP_IconReplacement_Solar">Solar 图标</string>
     <string name="AP_IconReplacement_Default">默认</string>
     <string name="AP_ToolBarShadow">禁用工具栏阴影</string>
     <string name="AP_TransparentSB">透明状态栏</string>
@@ -112,6 +116,7 @@
     <string name="CP_Filters_Header">文件夹 (重启应用生效）</string>
     <string name="AP_FolderNameInHeader">使用文件夹名称而非 \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">这会将操作栏中的“Cherrygram”更改为文件夹名称 (开启仅显示图标时效果最佳)</string>
+    <string name="CP_NewTabs_RemoveAllChats">隐藏所有聊天Tab</string>
     <string name="AP_DrawerCategory">侧边栏</string>
     <string name="AP_DrawerPreferences">侧边栏自定义</string>
     <string name="AP_DrawerAvatar">侧边栏背景使用个人资料图片</string>
@@ -188,7 +193,8 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">实验</string>
     <string name="CG_ResidentNotification">显示常驻通知</string>
-    <string name="EP_Network">Network</string>
+    <string name="EP_ShowRPCError">通过 Toast 提示全部 RPC 错误</string>
+    <string name="EP_Network">网络</string>
     <string name="EP_DownloadSpeedBoost">下载加速</string>
     <string name="EP_DownloadSpeedBoostNone">关闭</string>
     <string name="EP_DownloadSpeedBoostAverage">开启</string>
@@ -207,8 +213,13 @@
     <!--Security Preferences-->
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">更新</string>
+    <string name="UP_TapToCheckUpdates">点此查看更新信息</string>
     <string name="UP_LastCheck">最近检查</string>
     <string name="UP_CurrentVersion">当前版本</string>
+    <string name="UP_BuildType">构建类型</string>
+    <string name="UP_BTRelease">稳定版</string>
+    <string name="UP_BTBeta">测试版</string>
+    <string name="UP_InstallBetas">安装测试版本</string>
     <string name="UP_Auto_OTA">启动时检查更新</string>
     <string name="UP_ClearUpdatesCache">清除更新缓存</string>
     <string name="UP_ClearedUpdatesCache">已清除 %1$s 缓存</string>

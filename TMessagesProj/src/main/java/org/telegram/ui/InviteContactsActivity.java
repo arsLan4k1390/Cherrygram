@@ -372,10 +372,8 @@ public class InviteContactsActivity extends BaseFragment implements Notification
             @Override
             protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
                 boolean result = super.drawChild(canvas, child, drawingTime);
-                if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
-                    if (child == listView || child == emptyView) {
-                        parentLayout.drawHeaderShadow(canvas, scrollView.getMeasuredHeight());
-                    }
+                if (child == listView || child == emptyView) {
+                    parentLayout.drawHeaderShadow(canvas, scrollView.getMeasuredHeight());
                 }
                 return result;
             }

@@ -8,7 +8,6 @@
 
 package org.telegram.messenger;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -22,7 +21,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
@@ -52,7 +50,6 @@ import android.provider.OpenableColumns;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.HapticFeedbackConstants;
 import android.view.TextureView;
@@ -5045,9 +5042,14 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         try {
             retriever.setDataSource(path);
             bitrate = Integer.parseInt(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
-            retriever.release();
         } catch (Exception e) {
             FileLog.e(e);
+        }
+
+        try {
+            retriever.release();
+        } catch (Throwable throwable) {
+            FileLog.e(throwable);
         }
         return bitrate;
     }

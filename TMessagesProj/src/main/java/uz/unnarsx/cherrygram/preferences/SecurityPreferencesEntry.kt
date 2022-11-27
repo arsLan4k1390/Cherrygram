@@ -50,27 +50,5 @@ class SecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
         }
-
-        /*category("Frame correction") {
-            slider {
-                contract = object : TGKitSliderPreference.TGSLContract {
-                    override fun setValue(value: Int) {
-                        CherrygramConfig.frameCorrection = value
-                    }
-
-                    override fun getPreferenceValue(): Int {
-                        return CherrygramConfig.frameCorrection
-                    }
-
-                    override fun getMin(): Int {
-                        return 15
-                    }
-
-                    override fun getMax(): Int {
-                        return 40
-                    }
-                }
-            }
-        }*/
     }
 }

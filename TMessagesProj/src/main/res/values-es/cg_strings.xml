@@ -21,6 +21,8 @@
     <string name="CG_ChooseFolderIcon">Elige un icono</string>
     <string name="CP_NewTabs_NoCounter">Ocultar contador en pestañas</string>
     <string name="CP_NewTabs_NoCounter_Desc">Esto ocultará el contador de mensajes no leídos</string>
+    <string name="CP_VKUIFoldersStyle">Estilo de carpetas VKUI</string>
+    <string name="CP_VKUIFoldersStyle_Desc">Esto activará el estilo de las carpetas de VK</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">Al inicio</string>
@@ -88,6 +90,7 @@
     <string name="AP_ChangeIcon_Sunset">Atardecer</string>
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
     <string name="AP_IconReplacement_VKUI">Iconos VKUI</string>
+    <string name="AP_IconReplacement_Solar">Iconos solares por @Design480</string>
     <string name="AP_IconReplacement_Default">Por defecto</string>
     <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
     <string name="AP_TransparentSB">Barra de estado transparente</string>
@@ -112,6 +115,7 @@
     <string name="CP_Filters_Header">Carpetas (reiniciar app para aplicar)</string>
     <string name="AP_FolderNameInHeader">Nombre de la carpeta en lugar de \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Esto cambiará \"Cherrygram\" en la barra de acción al nombre de tu carpeta (útil si solo tienes iconos en lugar de nombres de carpetas)</string>
+    <string name="CP_NewTabs_RemoveAllChats">Ocultar carpeta \"Todos\"</string>
     <string name="AP_DrawerCategory">Cajón</string>
     <string name="AP_DrawerPreferences">Preferencias del cajón</string>
     <string name="AP_DrawerAvatar">Foto de perfil como fondo del cajón</string>
@@ -188,7 +192,8 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
     <string name="CG_ResidentNotification">Mostrar una notificación permanente</string>
-    <string name="EP_Network">Network</string>
+    <string name="EP_ShowRPCError">Enviar todos los errores RPC</string>
+    <string name="EP_Network">Red</string>
     <string name="EP_DownloadSpeedBoost">Aumento de velocidad de descarga</string>
     <string name="EP_DownloadSpeedBoostNone">Desactivado</string>
     <string name="EP_DownloadSpeedBoostAverage">Activado</string>
@@ -207,6 +212,7 @@
     <!--Security Preferences-->
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">Actualizaciones</string>
+    <string name="UP_TapToCheckUpdates">Pulsa aquí para obtener información sobre actualizaciones</string>
     <string name="UP_LastCheck">Última comprobación</string>
     <string name="UP_CurrentVersion">Versión actual</string>
     <string name="UP_Auto_OTA">Comprobar al iniciar</string>

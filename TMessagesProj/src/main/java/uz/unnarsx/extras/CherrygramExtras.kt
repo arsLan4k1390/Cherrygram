@@ -2,14 +2,13 @@ package uz.unnarsx.extras
 
 import android.os.Build
 import androidx.annotation.ColorInt
-import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.BuildConfig
-import org.telegram.messenger.SharedConfig
+import org.telegram.messenger.*
 import uz.unnarsx.cherrygram.CherrygramConfig
+import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.3.4"
+    var CG_VERSION = "7.3.5"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getDCGeo(dcId: Int): String? {
@@ -46,6 +45,21 @@ object CherrygramExtras {
             0, 9 -> abi = (if (!CherrygramConfig.isDirectApp()) BuildConfig.BUILD_TYPE else "universal") + " " + Build.SUPPORTED_ABIS[0]
         }
         return abi
+    }
+
+    fun createForwardDateAndTime(date: Long): String {
+        var dateAndTime = date
+        try {
+            dateAndTime *= 1000
+            val rightNow = Calendar.getInstance()
+            rightNow.timeInMillis = dateAndTime
+            return String.format("%1\$s | %2\$s", LocaleController.getInstance().formatterYear.format(Date(dateAndTime)),
+                LocaleController.getInstance().formatterDay.format(Date(dateAndTime))
+            )
+        } catch (e: Exception) {
+            FileLog.e(e)
+        }
+        return "LOC_ERR"
     }
 
     @JvmStatic

@@ -51,9 +51,9 @@ public class FolderIconHelper {
 
     public static int getPadding() {
         if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_MIX) {
-            /*if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
+            if (CherrygramConfig.INSTANCE.getVkuiFoldersStyle()) {
                 return AndroidUtilities.dp(3);
-            }*/
+            }
             return AndroidUtilities.dp(6);
         }
         return 0;

@@ -74,6 +74,7 @@ public class ActionBar extends FrameLayout {
         }
     }
 
+    private INavigationLayout.BackButtonState backButtonState;
     public UnreadImageView backButtonImageView;
     private Drawable backButtonDrawable;
     private SimpleTextView[] titleTextView = new SimpleTextView[2];
@@ -162,6 +163,10 @@ public class ActionBar extends FrameLayout {
         });
     }
 
+    public INavigationLayout.BackButtonState getBackButtonState() {
+        return backButtonState;
+    }
+
     public void createBackButtonImage() {
         if (backButtonImageView != null) {
             return;
@@ -200,7 +205,6 @@ public class ActionBar extends FrameLayout {
         }
         backButtonImageView.setVisibility(drawable == null ? GONE : VISIBLE);
         backButtonImageView.setImageDrawable(backButtonDrawable = drawable);
-
         if (drawable instanceof BackDrawable) {
             BackDrawable backDrawable = (BackDrawable) drawable;
             backDrawable.setRotation(isActionModeShowed() ? 1 : 0, false);
@@ -256,6 +260,10 @@ public class ActionBar extends FrameLayout {
 
     @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+        if (parentFragment != null && parentFragment.getParentLayout().isActionBarInCrossfade()) {
+            return false;
+        }
+
         boolean clip = shouldClipChild(child);
         if (clip) {
             canvas.save();
@@ -319,7 +327,9 @@ public class ActionBar extends FrameLayout {
         backButtonImageView.setVisibility(resource == 0 ? GONE : VISIBLE);
 //        backButtonImageView.setImageResource(resource);
         backButtonImageView.setImageResource(R.drawable.ic_ab_back);
-
+        if (resource == R.drawable.ic_ab_back) {
+            backButtonState = INavigationLayout.BackButtonState.BACK;
+        }
     }
 
     private void createSubtitleTextView() {
@@ -601,6 +611,45 @@ public class ActionBar extends FrameLayout {
 //        }
 
         return actionMode;
+    }
+
+    public void onDrawCrossfadeBackground(Canvas canvas) {
+        if (blurredBackground && actionBarColor != Color.TRANSPARENT) {
+            rectTmp.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+            blurScrimPaint.setColor(actionBarColor);
+            contentView.drawBlurRect(canvas, getY(), rectTmp, blurScrimPaint, true);
+        } else {
+            Drawable drawable = getBackground();
+            if (drawable != null) {
+                drawable.setBounds(0, 0, getWidth(), getHeight());
+                drawable.draw(canvas);
+            }
+        }
+    }
+
+    public void onDrawCrossfadeContent(Canvas canvas, boolean front, boolean hideBackDrawable, float progress) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View ch = getChildAt(i);
+            if ((!hideBackDrawable || ch != backButtonImageView) && ch.getVisibility() == View.VISIBLE && ch instanceof ActionBarMenu) {
+                canvas.save();
+                canvas.translate(ch.getX(), ch.getY());
+                ch.draw(canvas);
+                canvas.restore();
+            }
+        }
+
+        canvas.save();
+        canvas.translate(front ? getWidth() * progress * 0.5f : -getWidth() * 0.4f * (1f - progress), 0);
+        for (int i = 0; i < getChildCount(); i++) {
+            View ch = getChildAt(i);
+            if ((!hideBackDrawable || ch != backButtonImageView) && ch.getVisibility() == View.VISIBLE && !(ch instanceof ActionBarMenu)) {
+                canvas.save();
+                canvas.translate(ch.getX(), ch.getY());
+                ch.draw(canvas);
+                canvas.restore();
+            }
+        }
+        canvas.restore();
     }
 
     public void showActionMode() {

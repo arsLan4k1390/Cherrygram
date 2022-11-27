@@ -54,6 +54,7 @@ import uz.unnarsx.extras.CherrygramExtras;
 public class UpdaterUtils {
 
     private static String uri = "https://api.github.com/repos/arsLan4k1390/Cherrygram/releases/latest";
+    private static String betauri = "https://api.github.com/repos/arsLan4k1390/CherrygramBeta-APKs/releases/latest";
     private static String downloadURL = null;
     public static String version, changelog, size, uploadDate;
     public static File otaPath, versionPath, apkFile;
@@ -80,15 +81,15 @@ public class UpdaterUtils {
     }
 
     public static void checkDirs() {
-        File externalDir = ApplicationLoader.applicationContext.getExternalFilesDir(null);
-        otaPath = new File(externalDir, "ota");
-        versionPath = new File(otaPath, version);
-        apkFile = new File(versionPath, "update.apk");
-
-        if (!versionPath.exists()) {
-            versionPath.mkdirs();
+        otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
+        if (version != null) {
+            versionPath = new File(otaPath, version);
+            apkFile = new File(versionPath, "update.apk");
+            if (!versionPath.exists()) {
+                versionPath.mkdirs();
+            }
+            updateDownloaded = apkFile.exists();
         }
-        updateDownloaded = apkFile.exists();
     }
 
     public static void checkUpdates(Context context, boolean manual) {
@@ -112,6 +113,9 @@ public class UpdaterUtils {
 
             try {
                 HttpURLConnection connection = (HttpURLConnection) new URI(uri).toURL().openConnection();
+                if (CherrygramConfig.INSTANCE.getInstallBetas()) {
+                    connection = (HttpURLConnection) new URI(betauri).toURL().openConnection();
+                }
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("User-Agent", getRandomUserAgent());
                 connection.setRequestProperty("Content-Type", "application/json");
@@ -272,13 +276,13 @@ public class UpdaterUtils {
     }
 
     public static void cleanFolder(File file) {
-        File[] files = file.listFiles();
-        if (files != null) {
-            for (File f: files) {
-                if (f.isDirectory()) {
-                    cleanFolder(f);
+        File[] listFiles = file.listFiles();
+        if (listFiles != null) {
+            for (File file2 : listFiles) {
+                if (file2.isDirectory()) {
+                    cleanFolder(file2);
                 }
-                f.delete();
+                file2.delete();
             }
         }
     }

@@ -45,9 +45,10 @@ import org.telegram.ui.LauncherIconController;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
+//import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
 
 public class ApplicationLoader extends Application {
 
@@ -57,6 +58,7 @@ public class ApplicationLoader extends Application {
     public static volatile Context applicationContext;
     public static volatile NetworkInfo currentNetworkInfo;
     public static volatile Handler applicationHandler;
+    public static final CountDownLatch countDownLatch = new CountDownLatch(1);
 
     private static ConnectivityManager connectivityManager;
     private static volatile boolean applicationInited = false;
@@ -82,7 +84,7 @@ public class ApplicationLoader extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        AnalyticsHelper.start(this);
+        /*AnalyticsHelper.start(this);
         AnalyticsHelper.trackEvent("App start");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             var am = getSystemService(ActivityManager.class);
@@ -96,7 +98,7 @@ public class ApplicationLoader extends Application {
                 map.put("status", String.valueOf(reasons.get(0).getStatus()));
                 AnalyticsHelper.trackEvent("Last exit reasons", map);
             }
-        }
+        }*/
         MultiDex.install(this);
     }
 
@@ -297,6 +299,7 @@ public class ApplicationLoader extends Application {
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
         AndroidUtilities.runOnUIThread(ApplicationLoader::startPushService);
+        countDownLatch.countDown();
 
         LauncherIconController.tryFixLauncherIconIfNeeded();
     }
@@ -307,7 +310,7 @@ public class ApplicationLoader extends Application {
         if (preferences.contains("pushService")) {
             enabled = preferences.getBoolean("pushService", true);
         } else {
-            enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", false);
+            enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", true);
         }
         if (enabled) {
             try {
@@ -361,7 +364,7 @@ public class ApplicationLoader extends Application {
 
     private static boolean checkPlayServices() {
         try {
-            int resultCode = -GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ApplicationLoader.applicationContext);
+            int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ApplicationLoader.applicationContext);
             return resultCode == ConnectionResult.SUCCESS;
         } catch (Exception e) {
             FileLog.e(e);

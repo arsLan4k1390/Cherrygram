@@ -505,9 +505,7 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
             @Override
             protected void dispatchDraw(Canvas canvas) {
                 super.dispatchDraw(canvas);
-                if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
-                    parentLayout.drawHeaderShadow(canvas, Math.min(maxSize, measuredContainerHeight + containerHeight - measuredContainerHeight));
-                }
+                parentLayout.drawHeaderShadow(canvas, Math.min(maxSize, measuredContainerHeight + containerHeight - measuredContainerHeight));
             }
 
             @Override

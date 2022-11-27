@@ -586,10 +586,8 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             @Override
             protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
                 boolean result = super.drawChild(canvas, child, drawingTime);
-                if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
-                    if (child == actionBar && parentLayout != null) {
-                        parentLayout.drawHeaderShadow(canvas, actionBar.getVisibility() == VISIBLE ? actionBar.getMeasuredHeight() : 0);
-                    }
+                if (child == actionBar && parentLayout != null) {
+                    parentLayout.drawHeaderShadow(canvas, actionBar.getVisibility() == VISIBLE ? actionBar.getMeasuredHeight() : 0);
                 }
                 return result;
             }

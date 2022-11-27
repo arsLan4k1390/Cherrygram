@@ -13,8 +13,8 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_secret to R.drawable.lock_outline_28,
             R.drawable.msg_data to R.drawable.services_outline_28,
             R.drawable.msg_msgbubble3 to R.drawable.messages_outline_28,
-            R.drawable.msg_folder to R.drawable.cube_box_outline_28,
-            R.drawable.msg_folders to R.drawable.cube_box_outline_28,
+            R.drawable.msg_folder to R.drawable.folder_outline_28,
+            R.drawable.msg_folders to R.drawable.folder_outline_28,
             R.drawable.msg_help to R.drawable.help_outline_28,
             R.drawable.msg_policy to R.drawable.check_shield_outline_28,
             R.drawable.msg_notifications to R.drawable.notifications_28,
@@ -120,6 +120,9 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_message to R.drawable.view_outline_28,
             R.drawable.list_check_minimalistic to R.drawable.list_check_outline_28,
             R.drawable.msg_viewchats to R.drawable.chats_outline_28,
+            R.drawable.msg_sendfile to R.drawable.document_outline_28,
+            R.drawable.msg_mini_qr to R.drawable.qr_code_outline_28, // active sessions QR
+            R.drawable.msg_qr_mini to R.drawable.qr_code_outline_28, // ProfileActivity QR
 
     )
 }

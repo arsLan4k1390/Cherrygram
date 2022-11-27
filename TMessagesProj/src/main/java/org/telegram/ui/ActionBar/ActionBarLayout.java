@@ -62,7 +62,7 @@ import java.util.Collections;
 import java.util.List;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
+//import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
 import uz.unnarsx.cherrygram.utils.VibrateUtil;
 
 
@@ -304,7 +304,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         }
     }
 
-    public static Drawable headerShadowDrawable;
+    private static Drawable headerShadowDrawable;
     private static Drawable layerShadowDrawable;
     private static Paint scrimPaint;
 
@@ -480,6 +480,11 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         }
     }
 
+    @Override
+    public void setHeaderShadow(Drawable drawable) {
+        headerShadowDrawable = drawable;
+    }
+
     @Keep
     public void setInnerTranslationX(float value) {
         innerTranslationX = value;
@@ -615,7 +620,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 layerShadowDrawable.draw(canvas);
             } else if (child == containerViewBack) {
                 float opacity = MathUtils.clamp(widthOffset / (float) width, 0, 0.8f);
-                scrimPaint.setColor(Color.argb((int)(0x99 * opacity), 0x00, 0x00, 0x00));
+                scrimPaint.setColor(Color.argb((int) (0x99 * opacity), 0x00, 0x00, 0x00));
                 if (overrideWidthOffset != -1) {
                     canvas.drawRect(0, 0, getWidth(), getHeight(), scrimPaint);
                 } else {
@@ -1481,7 +1486,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             fragment.onTransitionAnimationEnd(true, false);
             fragment.onBecomeFullyVisible();
         }
-        AnalyticsHelper.trackEvent("Present fragment");
+        //AnalyticsHelper.trackEvent("Present fragment");
         return true;
     }
 
@@ -2200,7 +2205,9 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
     private void onCloseAnimationEnd() {
         if (transitionAnimationInProgress && onCloseAnimationEndRunnable != null) {
             if (currentAnimation != null) {
-                currentAnimation.cancel();
+                AnimatorSet animatorSet = currentAnimation;
+                currentAnimation = null;
+                animatorSet.cancel();
             }
             transitionAnimationInProgress = false;
             layoutToIgnore = null;

@@ -26,8 +26,8 @@ public class BuildVars {
     public static boolean USE_CLOUD_STRINGS = true;
     public static boolean CHECK_UPDATES = false;
     public static boolean NO_SCOPED_STORAGE = Build.VERSION.SDK_INT <= 29;
-    public static int BUILD_VERSION = 2917;
-    public static String BUILD_VERSION_STRING = "9.1.3";
+    public static int BUILD_VERSION = 2929;
+    public static String BUILD_VERSION_STRING = "9.1.6";
     public static int APP_ID = 4;
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
 
@@ -35,7 +35,7 @@ public class BuildVars {
     public static String PLAYSTORE_APP_URL = "https://telegram.me/Cherry_gram";
     public static String GOOGLE_AUTH_CLIENT_ID = "760348033671-81kmi3pi84p11ub8hp9a1funsv0rn2p9.apps.googleusercontent.com";
 
-    public static String HUAWEI_APP_ID = "101184875";
+    public static String HUAWEI_APP_ID = "106911607";
 
     // You can use this flag to disable Google Play Billing (If you're making fork and want it to be in Google Play)
     public static boolean IS_BILLING_UNAVAILABLE = false;
@@ -55,7 +55,6 @@ public class BuildVars {
         return DEBUG_VERSION || isStandaloneApp() || isBetaApp() || isHuaweiStoreApp();
     }
 
-    private static Boolean standaloneApp;
     public static boolean isStandaloneApp() {
         return true;
     }

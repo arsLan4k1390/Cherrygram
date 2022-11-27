@@ -3613,7 +3613,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         newMsg.via_bot_name = "";
                     }
                 } else {
-                    newMsg.via_bot_id = Utilities.parseInt(params.get("bot"));
+                    newMsg.via_bot_id = Utilities.parseLong(params.get("bot"));
                 }
                 newMsg.flags |= TLRPC.MESSAGE_FLAG_HAS_BOT_ID;
             }
@@ -8038,7 +8038,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             } finally {
                 try {
                     retriever.release();
-                } catch (RuntimeException | IOException ex) {
+                } catch (Throwable ex) {
                     // Ignore failures while cleaning up.
                 }
             }

@@ -193,6 +193,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
 
     private int appIconHeaderRow;
     private int oldNotificationIconRow;
+    private int defaultNotificationNameRow;
     private int appIconFilterRow;
     private int appIconSelectorRow;
     private int appIconShadowRow;
@@ -545,6 +546,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
 
         appIconHeaderRow = -1;
         oldNotificationIconRow = -1;
+        defaultNotificationNameRow = -1;
         appIconFilterRow = -1;
         appIconSelectorRow = -1;
         appIconShadowRow = -1;
@@ -625,8 +627,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             appIconHeaderRow = rowCount++;
             //if (!ApplicationLoader.isHuaweiStoreBuild()) {
                 oldNotificationIconRow = rowCount++;
-            //}
-            //if (!ApplicationLoader.isHuaweiStoreBuild()) {
+                defaultNotificationNameRow = rowCount++;
                 appIconFilterRow = rowCount++;
             //}
             appIconSelectorRow = rowCount++;
@@ -868,7 +869,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         if (currentType == THEME_TYPE_THEMES_BROWSER) {
             actionBar.setTitle(LocaleController.getString("BrowseThemes", R.string.BrowseThemes));
             ActionBarMenu menu = actionBar.createMenu();
-            sunDrawable = new RLottieDrawable(R.raw.sun, "" + R.raw.sun, AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
+            sunDrawable = new RLottieDrawable(R.raw.sun_outline, "" + R.raw.sun_outline, AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
             if (lastIsDarkTheme) {
                 sunDrawable.setCurrentFrame(sunDrawable.getFramesCount() - 1);
             } else {
@@ -920,7 +921,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                         if (setFontSize(AndroidUtilities.isTablet() ? 18 : 16)) {
                             changed = true;
                         }
-                        if (setBubbleRadius(10, true)) {
+                        if (setBubbleRadius(17, true)) {
                             changed = true;
                         }
                         if (changed) {
@@ -1023,6 +1024,11 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 CherrygramConfig.INSTANCE.toggleOldNotificationIcon();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getOldNotificationIcon());
+                }
+            } else if (position == defaultNotificationNameRow) {
+                CherrygramConfig.INSTANCE.toggleDefaultNotificationName();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDefaultNotificationName());
                 }
             } else if (position == appIconFilterRow) {
                 CherrygramConfig.INSTANCE.toggleAppIconFilter();
@@ -1331,7 +1337,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         }
         int fontSize = AndroidUtilities.isTablet() ? 18 : 16;
         Theme.ThemeInfo currentTheme = Theme.getCurrentTheme();
-        if (SharedConfig.fontSize != fontSize || SharedConfig.bubbleRadius != 10 || !currentTheme.firstAccentIsDefault || currentTheme.currentAccentId != Theme.DEFALT_THEME_ACCENT_ID || accent != null && accent.overrideWallpaper != null && !Theme.DEFAULT_BACKGROUND_SLUG.equals(accent.overrideWallpaper.slug)) {
+        if (SharedConfig.fontSize != fontSize || SharedConfig.bubbleRadius != 17/* || !currentTheme.firstAccentIsDefault || currentTheme.currentAccentId != Theme.DEFALT_THEME_ACCENT_ID || accent != null && accent.overrideWallpaper != null && !Theme.DEFAULT_BACKGROUND_SLUG.equals(accent.overrideWallpaper.slug)*/) {
             menuItem.showSubItem(reset_settings);
         } else {
             menuItem.hideSubItem(reset_settings);
@@ -2285,6 +2291,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                         textCheckCell.setTextAndCheck(LocaleController.getString("RaiseToSpeak", R.string.RaiseToSpeak), SharedConfig.raiseToSpeak, true);
                     } else if (position == oldNotificationIconRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("AP_Old_Notification_Icon", R.string.AP_Old_Notification_Icon), CherrygramConfig.INSTANCE.getOldNotificationIcon(), true);
+                    } else if (position == defaultNotificationNameRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("AP_Default_Notification_Name", R.string.AP_Default_Notification_Name), CherrygramConfig.INSTANCE.getDefaultNotificationName(), true);
                     } else if (position == appIconFilterRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("AP_ChangeIconFilter", R.string.AP_ChangeIconFilter), LocaleController.getString("AP_ChangeIconFilter_Desc", R.string.AP_ChangeIconFilter_Desc), CherrygramConfig.INSTANCE.getFilterLauncherIcon(), true, true);
                     } else if (position == customTabsRow) {
@@ -2399,7 +2407,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 return TYPE_HEADER;
             } else if (position == automaticBrightnessRow) {
                 return TYPE_BRIGHTNESS;
-            } else if (position == scheduleLocationRow || position == enableAnimationsRow || position == sendByEnterRow || position == oldNotificationIconRow || position == appIconFilterRow ||
+            } else if (position == scheduleLocationRow || position == enableAnimationsRow || position == sendByEnterRow || position == oldNotificationIconRow || position == defaultNotificationNameRow || position == appIconFilterRow ||
                     position == raiseToSpeakRow || position == customTabsRow ||
                     position == directShareRow || position == chatBlurRow) {
                 return TYPE_TEXT_CHECK;

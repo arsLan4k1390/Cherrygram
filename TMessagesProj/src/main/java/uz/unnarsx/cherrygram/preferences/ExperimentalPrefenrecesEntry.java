@@ -55,6 +55,7 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
     private int experimentalHeaderRow;
     private int altNavigationRow;
     private int residentNotificationRow;
+    private int showRPCErrorRow;
     private int experimentalSettingsDivisor;
 
     private int networkHeaderRow;
@@ -125,6 +126,12 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getResidentNotification());
                 }
                 restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+            } else if (position == showRPCErrorRow) {
+                CherrygramConfig.INSTANCE.toggleShowRPCError();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getShowRPCError());
+                }
+                restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
             } else if (position == downloadSpeedBoostRow) {
                 ArrayList<String> arrayList = new ArrayList<>();
                 ArrayList<Integer> types = new ArrayList<>();
@@ -167,6 +174,7 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
         experimentalHeaderRow = rowCount++;
         altNavigationRow = rowCount++;
         residentNotificationRow = rowCount++;
+        showRPCErrorRow = rowCount++;
         experimentalSettingsDivisor = rowCount++;
 
         networkHeaderRow = rowCount++;
@@ -221,6 +229,8 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                         textCheckCell.setTextAndCheck(LocaleController.getString(R.string.AltNavigationEnable), SharedConfig.useLNavigation, true);
                     } else if (position == residentNotificationRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("CG_ResidentNotification", R.string.CG_ResidentNotification), CherrygramConfig.INSTANCE.getResidentNotification(), true);
+                    } else if (position == showRPCErrorRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("EP_ShowRPCError", R.string.EP_ShowRPCError), CherrygramConfig.INSTANCE.getShowRPCError(), true);
                     } else if (position == uploadSpeedBoostRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("EP_UploadloadSpeedBoost", R.string.EP_UploadloadSpeedBoost), CherrygramConfig.INSTANCE.getUploadSpeedBoost(), true);
                     } else if (position == slowNetworkMode) {
@@ -287,7 +297,7 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                 return 1;
             } else if (position == experimentalHeaderRow || position == networkHeaderRow) {
                 return 2;
-            } else if (position == altNavigationRow || position == residentNotificationRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
+            } else if (position == altNavigationRow || position == residentNotificationRow || position == showRPCErrorRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
                 return 3;
             } else if (position == downloadSpeedBoostRow) {
                 return 4;

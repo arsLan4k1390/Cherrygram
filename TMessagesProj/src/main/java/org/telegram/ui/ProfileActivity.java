@@ -787,10 +787,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 contentView.drawBlurRect(canvas, getY(), AndroidUtilities.rectTmp2, paint, true);
             }
 
-            if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
-                if (parentLayout != null) {
-                    parentLayout.drawHeaderShadow(canvas, (int) (headerShadowAlpha * 255), (int) v);
-                }
+            if (parentLayout != null) {
+                parentLayout.drawHeaderShadow(canvas, (int) (headerShadowAlpha * 255), (int) v);
             }
         }
     }
@@ -1605,6 +1603,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
             });
         }
+    }
+
+    @Override
+    public boolean isActionBarCrossfadeEnabled() {
+        return false;
     }
 
     @Override
@@ -3251,7 +3254,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ? LocaleController.getString(SharedConfig.debugWebView ? R.string.DebugMenuDisableWebViewDebug : R.string.DebugMenuEnableWebViewDebug) : null,
                                 (AndroidUtilities.isTabletInternal() && BuildVars.DEBUG_PRIVATE_VERSION) ? (SharedConfig.forceDisableTabletMode ? "Enable tablet mode" : "Disable tablet mode") : null,
                                 LocaleController.getString(SharedConfig.useLNavigation ? R.string.AltNavigationDisable : R.string.AltNavigationEnable),
-                                BuildVars.DEBUG_PRIVATE_VERSION ? LocaleController.getString(SharedConfig.isFloatingDebugActive ? R.string.FloatingDebugDisable : R.string.FloatingDebugEnable) : null,
+                                /*BuildVars.DEBUG_PRIVATE_VERSION ?*/ LocaleController.getString(SharedConfig.isFloatingDebugActive ? R.string.FloatingDebugDisable : R.string.FloatingDebugEnable)/* : null*/,
                         };
 
                         builder.setItems(items, (dialog, which) -> {

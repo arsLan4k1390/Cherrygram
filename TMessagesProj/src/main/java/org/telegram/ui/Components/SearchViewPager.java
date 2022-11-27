@@ -430,11 +430,11 @@ public class SearchViewPager extends ViewPagerFixed implements FilteredSearchVie
     }
 
     private boolean isSpeedItemVisible() {
-        if (UserConfig.getInstance(currentAccount).isPremium() || MessagesController.getInstance(currentAccount).premiumLocked) {
+        if (true || UserConfig.getInstance(currentAccount).isPremium() || MessagesController.getInstance(currentAccount).premiumLocked) {
             return false;
         }
         for (MessageObject obj : selectedFiles.values()) {
-            if (obj.getDocument() != null && obj.getDocument().size >= 300 * 1024 * 1024) {
+            if (obj.getDocument() != null && obj.getDocument().size >= 150 * 1024 * 1024) {
                 return true;
             }
         }

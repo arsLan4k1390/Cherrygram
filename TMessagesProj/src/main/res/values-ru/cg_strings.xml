@@ -95,6 +95,7 @@
     <string name="AP_RedesignCategory">Редизайн</string>
     <string name="AP_IconReplacements">Замена иконок</string>
     <string name="AP_Old_Notification_Icon">Стандартная иконка уведомлений (Telegram)</string>
+    <string name="AP_Default_Notification_Name">Стандартное название уведомлений (Telegram)</string>
     <string name="AP_ChangeIconFilter">Использовать иконки Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Вам нужно перезайти в этот раздел, чтобы увидеть новые иконки</string>
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
@@ -131,6 +132,7 @@
     <string name="CP_Filters_Header">Папки (требуется перезапуск приложения)</string>
     <string name="AP_FolderNameInHeader">Название папки вместо \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Это изменит \"Cherrygram\" в заголовке сверху на название вашей папки (удобно при отображении иконок вместо названий папок)</string>
+    <string name="CP_NewTabs_RemoveAllChats">Скрыть вкладку \"Все чаты\"</string>
 
     <string name="AP_DrawerCategory">Боковое меню</string>
     <string name="AP_DrawerPreferences">Настройки бокового меню</string>
@@ -217,6 +219,7 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Экспериментальные</string>
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
+    <string name="EP_ShowRPCError">Всплывающие уведомления обо всех ошибках RPC</string>
     <string name="EP_Network">Сеть</string>
     <string name="EP_DownloadSpeedBoost">Увеличение скорости загрузки</string>
     <string name="EP_DownloadSpeedBoostNone">Выкл.</string>
@@ -243,6 +246,10 @@
     <string name="UP_TapToCheckUpdates">Нажмите здесь, чтобы получить информацию об обновлениях</string>
     <string name="UP_LastCheck">Последняя проверка</string>
     <string name="UP_CurrentVersion">Текущая версия</string>
+    <string name="UP_BuildType">Тип сборки</string>
+    <string name="UP_BTRelease">Стабильная</string>
+    <string name="UP_BTBeta">Бета</string>
+    <string name="UP_InstallBetas">Устанавливать бета-версии</string>
     <string name="UP_Auto_OTA">Проверять при запуске</string>
     <string name="UP_ClearUpdatesCache">Очистить кэш обновлений</string>
     <string name="UP_ClearedUpdatesCache">Очищено %1$s кэша.</string>

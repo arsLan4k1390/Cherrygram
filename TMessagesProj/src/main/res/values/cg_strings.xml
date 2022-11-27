@@ -99,6 +99,7 @@
     <string name="AP_RedesignCategory">Redesign</string>
     <string name="AP_IconReplacements">Icon replacements</string>
     <string name="AP_Old_Notification_Icon">Default notification icon (Telegram)</string>
+    <string name="AP_Default_Notification_Name">Default notification name (Telegram)</string>
     <string name="AP_ChangeIconFilter">Use Telegram icons</string>
     <string name="AP_ChangeIconFilter_Desc">You have to re-enter this section to see the new icons</string>
     <string name="AP_ChangeIcon_Cherry" translatable="false">Cherry</string>
@@ -138,6 +139,7 @@
     <string name="CP_Filters_Header">Folders (restart app to apply)</string>
     <string name="AP_FolderNameInHeader">Folder name instead of \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">This will change \"Cherrygram\" in action bar to your folder\'s name (useful if you have only icons instead of folders names)</string>
+    <string name="CP_NewTabs_RemoveAllChats">Hide \"All chats\" tab</string>
 
     <string name="AP_DrawerCategory">Drawer</string>
     <string name="AP_DrawerPreferences">Drawer preferences</string>
@@ -225,6 +227,7 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
     <string name="CG_ResidentNotification">Show a resident notification</string>
+    <string name="EP_ShowRPCError">Toast all RPC errors</string>
     <string name="EP_Network">Network</string>
     <string name="EP_DownloadSpeedBoost">Download speed boost</string>
     <string name="EP_DownloadSpeedBoostNone">Off</string>
@@ -251,6 +254,10 @@
     <string name="UP_TapToCheckUpdates">Tap here to get info about updates</string>
     <string name="UP_LastCheck">Last check</string>
     <string name="UP_CurrentVersion">Current version</string>
+    <string name="UP_BuildType">Build type</string>
+    <string name="UP_BTRelease">Stable</string>
+    <string name="UP_BTBeta">Beta</string>
+    <string name="UP_InstallBetas">Install Beta Versions</string>
     <string name="UP_Auto_OTA">Check on launch</string>
     <string name="UP_ClearUpdatesCache">Clear updates cache</string>
     <string name="UP_ClearedUpdatesCache">Cleared %1$s of cache.</string>

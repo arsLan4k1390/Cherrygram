@@ -99,10 +99,11 @@
         android:icon="@mipmap/icon_launcher_cherry"
         android:roundIcon="@mipmap/icon_launcher_cherry"
         android:largeHeap="true"
-        android:manageSpaceActivity="org.telegram.ui.ExternalActionActivity"
-        android:requestLegacyExternalStorage="true"
-        android:supportsRtl="false"
         android:theme="@style/Theme.TMessages.Start"
+        android:manageSpaceActivity="org.telegram.ui.ExternalActionActivity"
+        android:supportsRtl="false"
+        android:requestLegacyExternalStorage="true"
+        android:preserveLegacyExternalStorage="true"
         android:allowAudioPlaybackCapture="true"
         tools:replace="android:supportsRtl">
 
@@ -161,7 +162,7 @@
                 <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
             </intent-filter>
         </activity-alias>
-        
+
         <activity-alias
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.CG_Icon_White_Cherry"
@@ -521,8 +522,8 @@
         <activity-alias
             android:name="org.telegram.ui.CallsActivity"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:exported="true"
-            android:permission="android.permission.CALL_PHONE">
+            android:permission="android.permission.CALL_PHONE"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -545,16 +546,14 @@
             android:windowSoftInputMode="adjustPan"
             android:excludeFromRecents="true"
             android:stateNotNeeded="true"
-            android:exported="true"
-            android:theme="@style/Theme.TMessages.Transparent">
+            android:theme="@style/Theme.TMessages.Transparent"
+            android:exported="true">
             <intent-filter
                 android:icon="@mipmap/icon_launcher_cherry"
                 android:priority="1">
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:scheme="tgb" />
             </intent-filter>
         </activity>
@@ -562,8 +561,8 @@
             android:name="org.telegram.ui.ExternalActionActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:hardwareAccelerated="@bool/useHardwareAcceleration"
-            android:exported="true"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:exported="true">
             <intent-filter android:icon="@mipmap/icon_launcher_cherry">
                 <action android:name="org.telegram.passport.AUTHORIZE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -573,20 +572,20 @@
             android:name="org.telegram.ui.ChatsWidgetConfigActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:hardwareAccelerated="@bool/useHardwareAcceleration"
-            android:exported="true"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:exported="true">
             <intent-filter android:icon="@mipmap/icon_launcher_cherry">
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
         </activity>
         <activity
             android:name="org.telegram.ui.ContactsWidgetConfigActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:hardwareAccelerated="@bool/useHardwareAcceleration"
-            android:exported="true"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustPan"
+            android:exported="true">
             <intent-filter android:icon="@mipmap/icon_launcher_cherry">
-                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
         </activity>
 <!--        <activity-->
@@ -660,56 +659,47 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".CallReceiver" android:exported="true">
+        <receiver android:name=".CallReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE"/>
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".AuthenticatorService"
-            android:exported="true">
+        <service android:name=".AuthenticatorService" android:exported="true">
             <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
+                <action android:name="android.accounts.AccountAuthenticator"/>
             </intent-filter>
-
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/auth" />
+            <meta-data android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/auth"/>
         </service>
-        <service
-            android:name=".ContactsSyncAdapterService"
-            android:exported="true">
+
+        <service android:name=".ContactsSyncAdapterService" android:exported="true">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
-
-            <meta-data
-                android:name="android.content.SyncAdapter"
+            <meta-data android:name="android.content.SyncAdapter"
                 android:resource="@xml/sync_contacts" />
-            <meta-data
-                android:name="android.provider.CONTACTS_STRUCTURE"
+            <meta-data android:name="android.provider.CONTACTS_STRUCTURE"
                 android:resource="@xml/contacts" />
         </service>
 
         <service android:name=".KeepAliveJob"
                  android:exported="false"
                  android:permission="android.permission.BIND_JOB_SERVICE"/>
-        <service android:name=".BringAppForegroundService" android:enabled="true" android:exported="false"/>
-        <service android:name=".NotificationsService" android:enabled="true" android:exported="false"/>
+        <service android:name=".BringAppForegroundService" android:enabled="true"  android:exported="true"/>
+        <service android:name=".NotificationsService" android:enabled="true"  android:exported="true"/>
         <service android:name=".NotificationRepeat" android:exported="false"/>
-        <service android:name=".VideoEncodingService" android:enabled="true" android:exported="false"/>
-        <service android:name=".ImportingService" android:enabled="true" android:exported="false"/>
+        <service android:name=".VideoEncodingService" android:enabled="true" android:exported="true"/>
+        <service android:name=".ImportingService" android:enabled="true" android:exported="true"/>
         <service android:name=".LocationSharingService"
             android:foregroundServiceType="location"
-            android:exported="false"
-            android:enabled="true"/>
+            android:enabled="true"
+            android:exported="true"/>
         <service android:name=".voip.VoIPService" android:enabled="true" android:foregroundServiceType="mediaProjection|camera|microphone|mediaPlayback" android:exported="false"/>
-        <service android:name=".MusicPlayerService" android:exported="false" android:foregroundServiceType="mediaPlayback"/>
+        <service android:name=".MusicPlayerService" android:exported="true" android:enabled="true" android:foregroundServiceType="mediaPlayback"/>
         <service android:name=".MusicBrowserService" android:exported="true">
-
             <intent-filter>
-                <action android:name="android.media.browse.MediaBrowserService" />
+                <action android:name="android.media.browse.MediaBrowserService"/>
             </intent-filter>
         </service>
         <service android:name=".voip.TelegramConnectionService" android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE" android:exported="true">
@@ -729,24 +719,20 @@
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".voip.VoIPMediaButtonReceiver"
-            android:exported="false">
+        <receiver android:name=".voip.VoIPMediaButtonReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".AppStartReceiver" android:enabled="true" android:exported="true">
+        <receiver android:name=".AppStartReceiver" android:enabled="true" android:exported="false">
             <intent-filter>
                 <action android:name="org.telegram.start" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".RefererReceiver"
-            android:exported="true"
-            android:permission="android.permission.INSTALL_PACKAGES">
+
+        <receiver android:name=".RefererReceiver" android:exported="true" android:permission="android.permission.INSTALL_PACKAGES">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
@@ -775,13 +761,15 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
+                android:resource="@xml/provider_paths"/>
         </provider>
+
         <provider
-            android:name=".NotificationImageProvider"
             android:authorities="${applicationId}.notification_image_provider"
+            android:name=".NotificationImageProvider"
             android:exported="false"
-            android:grantUriPermissions="true" />
+            android:grantUriPermissions="true"/>
+
         <provider
             android:authorities="${applicationId}.call_sound_provider"
             android:name=".voip.CallNotificationSoundProvider"
@@ -790,21 +778,18 @@
         <receiver android:name=".ChatsWidgetProvider" android:exported="false">
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/chats_widget_info" />
-
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".ChatsWidgetService"
-            android:exported="false"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
+        <service android:name=".ChatsWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" />
 
         <receiver android:name=".ContactsWidgetProvider" android:exported="false">
             <meta-data android:name="android.appwidget.provider"
                 android:resource="@xml/contacts_widget_info" />
-
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -826,13 +811,6 @@
 <!--            android:permission="android.permission.BIND_REMOTEVIEWS"-->
 <!--            android:exported="false" />-->
         <service android:name=".FilesMigrationService" android:exported="false"/>
-
-        <service
-            android:name=".GcmPushListenerService" android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
 
         <uses-library android:name="com.sec.android.app.multiwindow" android:required="false" />
         <meta-data android:name="com.sec.android.support.multiwindow" android:value="true" />

@@ -428,10 +428,8 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             @Override
             protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
                 boolean result = super.drawChild(canvas, child, drawingTime);
-                if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
-                    if (child == actionBar && parentLayout != null) {
-                        parentLayout.drawHeaderShadow(canvas, actionBar.getVisibility() == VISIBLE ? actionBar.getMeasuredHeight() : 0);
-                    }
+                if (child == actionBar && parentLayout != null) {
+                    parentLayout.drawHeaderShadow(canvas, actionBar.getVisibility() == VISIBLE ? actionBar.getMeasuredHeight() : 0);
                 }
                 return result;
             }
@@ -535,10 +533,8 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             @Override
             protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
                 boolean result = super.drawChild(canvas, child, drawingTime);
-                if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
-                    if (child == actionBar2 && parentLayout != null) {
-                        parentLayout.drawHeaderShadow(canvas, actionBar2.getVisibility() == VISIBLE ? (int) (actionBar2.getMeasuredHeight() + actionBar2.getTranslationY()) : 0);
-                    }
+                if (child == actionBar2 && parentLayout != null) {
+                    parentLayout.drawHeaderShadow(canvas, actionBar2.getVisibility() == VISIBLE ? (int) (actionBar2.getMeasuredHeight() + actionBar2.getTranslationY()) : 0);
                 }
                 return result;
             }

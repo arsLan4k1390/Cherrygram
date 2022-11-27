@@ -580,7 +580,7 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     }
                 }
             } else if (position == notificationsServiceRow) {
-                SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
+                SharedPreferences preferences = MessagesController.getNotificationsSettings(currentAccount);
                 enabled = preferences.getBoolean("pushService", getMessagesController().keepAliveService);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean("pushService", !enabled);
@@ -834,7 +834,7 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     } else if (position == androidAutoAlertRow) {
                         checkCell.setTextAndCheck("Android Auto", preferences.getBoolean("EnableAutoNotifications", false), true);
                     } else if (position == notificationsServiceRow) {
-                        checkCell.setTextAndValueAndCheck(LocaleController.getString("NotificationsService", R.string.NotificationsService), LocaleController.getString("NotificationsServiceInfo", R.string.NotificationsServiceInfo), MessagesController.getGlobalNotificationsSettings().getBoolean("pushService", getMessagesController().keepAliveService), true, true);
+                        checkCell.setTextAndValueAndCheck(LocaleController.getString("NotificationsService", R.string.NotificationsService), LocaleController.getString("NotificationsServiceInfo", R.string.NotificationsServiceInfo), preferences.getBoolean("pushService", getMessagesController().keepAliveService), true, true);
                     } else if (position == notificationsServiceConnectionRow) {
                         checkCell.setTextAndValueAndCheck(LocaleController.getString("NotificationsServiceConnection", R.string.NotificationsServiceConnection), LocaleController.getString("NotificationsServiceConnectionInfo", R.string.NotificationsServiceConnectionInfo), preferences.getBoolean("pushConnection", getMessagesController().backgroundConnection), true, true);
                     } else if (position == badgeNumberShowRow) {

@@ -122,6 +122,7 @@ public class MessagesController extends BaseController implements NotificationCe
     public LongSparseArray<SparseArray<Integer>> printingStringsTypes = new LongSparseArray<>();
     public LongSparseArray<SparseArray<Boolean>>[] sendingTypings = new LongSparseArray[12];
     public ConcurrentHashMap<Long, Integer> onlinePrivacy = new ConcurrentHashMap<>(20, 1.0f, 2);
+    private LongSparseIntArray pendingUnreadCounter = new LongSparseIntArray();
     private int lastPrintingStringCount;
 
     private boolean dialogsInTransaction;
@@ -1053,8 +1054,8 @@ public class MessagesController extends BaseController implements NotificationCe
         canRevokePmInbox = mainPreferences.getBoolean("canRevokePmInbox", canRevokePmInbox);
         preloadFeaturedStickers = mainPreferences.getBoolean("preloadFeaturedStickers", false);
         youtubePipType = mainPreferences.getString("youtubePipType", "disabled");
-        keepAliveService = mainPreferences.getBoolean("keepAliveService", false);
-        backgroundConnection = mainPreferences.getBoolean("keepAliveService", false);
+        keepAliveService = mainPreferences.getBoolean("keepAliveService", true);
+        backgroundConnection = mainPreferences.getBoolean("keepAliveService", true);
         promoDialogId = mainPreferences.getLong("proxy_dialog", 0);
         nextPromoInfoCheckTime = mainPreferences.getInt("nextPromoInfoCheckTime", 0);
         promoDialogType = mainPreferences.getInt("promo_dialog_type", 0);
@@ -1334,6 +1335,7 @@ public class MessagesController extends BaseController implements NotificationCe
                 sendLoadPeersRequest(req3, requests, pinnedDialogs, pinnedRemoteDialogs, users, chats, filtersToSave, filtersToDelete, filtersOrder, filterDialogRemovals, filterUserRemovals, filtersUnreadCounterReset);
             }
 
+            //no
             TLRPC.TL_messages_getPeerDialogs req4 = null;
             for (HashMap.Entry<Long, TLRPC.InputPeer> entry : dialogsToLoadMap.entrySet()) {
                 if (req4 == null) {
@@ -4131,6 +4133,7 @@ public class MessagesController extends BaseController implements NotificationCe
         if (did == 0 && (dialogs == null || dialogs.isEmpty())) {
             return;
         }
+        //probably
         TLRPC.TL_messages_getPeerDialogs req = new TLRPC.TL_messages_getPeerDialogs();
         if (dialogs != null) {
             for (int a = 0; a < dialogs.size(); a++) {
@@ -6761,6 +6764,7 @@ public class MessagesController extends BaseController implements NotificationCe
                                 chatsDict.put(c.id, c);
                             }
 
+                            //no
                             TLRPC.TL_messages_getPeerDialogs req1 = new TLRPC.TL_messages_getPeerDialogs();
                             TLRPC.TL_inputDialogPeer peer = new TLRPC.TL_inputDialogPeer();
                             if (res.peer.user_id != 0) {
@@ -7358,6 +7362,7 @@ public class MessagesController extends BaseController implements NotificationCe
                 getConnectionsManager().bindRequestToGuid(reqId, classGuid);
             } else {
                 if (loadDialog && (load_type == 3 || load_type == 2) && last_message_id == 0) {
+                    //probably--
                     TLRPC.TL_messages_getPeerDialogs req = new TLRPC.TL_messages_getPeerDialogs();
                     TLRPC.InputPeer inputPeer = getInputPeer(dialogId);
                     TLRPC.TL_inputDialogPeer inputDialogPeer = new TLRPC.TL_inputDialogPeer();
@@ -8124,6 +8129,7 @@ public class MessagesController extends BaseController implements NotificationCe
             FileLog.d("load unknown dialog " + dialogId);
         }
 
+        //probably--
         TLRPC.TL_messages_getPeerDialogs req = new TLRPC.TL_messages_getPeerDialogs();
         TLRPC.TL_inputDialogPeer inputDialogPeer = new TLRPC.TL_inputDialogPeer();
         inputDialogPeer.peer = peer;
@@ -9216,6 +9222,7 @@ public class MessagesController extends BaseController implements NotificationCe
                         if (BuildVars.DEBUG_PRIVATE_VERSION) {
                             FileLog.d("can't update dialog " + dialogId + " with new unread " + dialogsToUpdate.valueAt(a));
                         }
+                        pendingUnreadCounter.put(dialogId, dialogsToUpdate.valueAt(a));
                     }
                     if (currentDialog != null) {
                         int prevCount = currentDialog.unread_count;
@@ -11268,6 +11275,7 @@ public class MessagesController extends BaseController implements NotificationCe
 
         gettingUnknownChannels.put(channel.id, true);
 
+        //no
         TLRPC.TL_messages_getPeerDialogs req = new TLRPC.TL_messages_getPeerDialogs();
         TLRPC.TL_inputDialogPeer inputDialogPeer = new TLRPC.TL_inputDialogPeer();
         inputDialogPeer.peer = inputPeer;
@@ -13211,8 +13219,8 @@ public class MessagesController extends BaseController implements NotificationCe
 
         for (int c = 0, size3 = updates.size(); c < size3; c++) {
             TLRPC.Update baseUpdate = updates.get(c);
-            if (BuildVars.LOGS_ENABLED) {
-                FileLog.d("process update " + baseUpdate);
+            if (BuildVars.LOGS_ENABLED && baseUpdate != null) {
+                FileLog.d("process update " + baseUpdate.getClass().getSimpleName());
             }
             if (baseUpdate instanceof TLRPC.TL_updateNewMessage || baseUpdate instanceof TLRPC.TL_updateNewChannelMessage || baseUpdate instanceof TLRPC.TL_updateNewScheduledMessage) {
                 TLRPC.Message message;
@@ -15569,6 +15577,7 @@ public class MessagesController extends BaseController implements NotificationCe
             }
             if (needReload) {
                 if (topicId == 0) {
+                    //no
                     TLRPC.TL_messages_getPeerDialogs req = new TLRPC.TL_messages_getPeerDialogs();
                     TLRPC.TL_inputDialogPeer inputDialogPeer = new TLRPC.TL_inputDialogPeer();
                     inputDialogPeer.peer = getInputPeer(dialogId);
@@ -16025,11 +16034,27 @@ public class MessagesController extends BaseController implements NotificationCe
             if (BuildVars.LOGS_ENABLED) {
                 FileLog.d("not found dialog with id " + dialogId + " dictCount = " + dialogs_dict.size() + " allCount = " + allDialogs.size());
             }
+            boolean filterDialogsChanged = false;
             dialog = new TLRPC.TL_dialog();
             dialog.id = dialogId;
             int mid = dialog.top_message = lastMessage.getId();
             dialog.last_message_date = lastMessage.messageOwner.date;
             dialog.flags = ChatObject.isChannel(chat) ? 1 : 0;
+            if (pendingUnreadCounter.get(dialogId, 0) > 0) {
+                dialog.unread_count = pendingUnreadCounter.get(dialogId);
+                pendingUnreadCounter.delete(dialogId);
+                if (!isDialogMuted(dialogId, 0)) {
+                    unreadUnmutedDialogs++;
+                }
+
+                for (int b = 0; b < selectedDialogFilter.length; b++) {
+                    if (selectedDialogFilter[b] != null && (selectedDialogFilter[b].flags & DIALOG_FILTER_FLAG_EXCLUDE_READ) != 0) {
+                        filterDialogsChanged = true;
+                        break;
+                    }
+                }
+
+            }
             dialogs_dict.put(dialogId, dialog);
             allDialogs.add(dialog);
             ArrayList<MessageObject> arrayList = new ArrayList<MessageObject>();
@@ -16048,6 +16073,10 @@ public class MessagesController extends BaseController implements NotificationCe
             dialogMessage.put(dialogId, arrayList);
             changed = true;
 
+            if (filterDialogsChanged) {
+                sortDialogs(null);
+                getNotificationCenter().postNotificationName(NotificationCenter.dialogsNeedReload);
+            }
             TLRPC.Dialog dialogFinal = dialog;
             getMessagesStorage().getDialogFolderId(dialogId, param -> {
                 if (param != -1) {
@@ -16362,7 +16391,7 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public static String getRestrictionReason(ArrayList<TLRPC.TL_restrictionReason> reasons) {
-        if (reasons.isEmpty()) {
+        /*if (reasons.isEmpty()) {
             return null;
         }
         for (int a = 0, N = reasons.size(); a < N; a++) {
@@ -16370,7 +16399,7 @@ public class MessagesController extends BaseController implements NotificationCe
             if ("all".equals(reason.platform) || !BuildVars.isStandaloneApp() && !BuildVars.isBetaApp() && "android".equals(reason.platform)) {
                 return reason.text;
             }
-        }
+        }*/
         return null;
     }
 

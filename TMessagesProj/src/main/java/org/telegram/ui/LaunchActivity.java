@@ -1623,11 +1623,6 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
     @SuppressLint("Range")
     private boolean handleIntent(Intent intent, boolean isNew, boolean restore, boolean fromPassword) {
         if (AndroidUtilities.handleProxyIntent(this, intent)) {
-            actionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST);
-            if (AndroidUtilities.isTablet()) {
-                layersActionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST);
-                rightActionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST);
-            }
             return true;
         }
         if (PhotoViewer.hasInstance() && PhotoViewer.getInstance().isVisible()) {
@@ -5337,7 +5332,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         }
         PipRoundVideoView pipRoundVideoView = PipRoundVideoView.getInstance();
         MediaController.getInstance().setBaseActivity(this, false);
-        MediaController.getInstance().setFeedbackView(actionBarLayout.getView(), false);
+        MediaController.getInstance().setFeedbackView(feedbackView, false);
         if (pipRoundVideoView != null) {
             pipRoundVideoView.close(false);
         }
@@ -5379,6 +5374,8 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         actionBarLayout.onUserLeaveHint();
     }
 
+    View feedbackView;
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -5396,7 +5393,7 @@ public class LaunchActivity extends BasePermissionsActivity implements  BottomSl
         checkWasMutedByAdmin(true);
         //FileLog.d("UI resume time = " + (SystemClock.elapsedRealtime() - ApplicationLoader.startTime));
         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.startAllHeavyOperations, 4096);
-        MediaController.getInstance().setFeedbackView(actionBarLayout.getView(), true);
+        MediaController.getInstance().setFeedbackView(feedbackView = actionBarLayout.getView(), true);
         ApplicationLoader.mainInterfacePaused = false;
         showLanguageAlert(false);
         Utilities.stageQueue.postRunnable(() -> {

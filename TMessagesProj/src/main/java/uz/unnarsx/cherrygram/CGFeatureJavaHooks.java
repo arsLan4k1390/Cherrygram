@@ -138,7 +138,7 @@ public class CGFeatureJavaHooks {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return 0;
         }
-        return 1;
+        return 2;
     }
 
 }

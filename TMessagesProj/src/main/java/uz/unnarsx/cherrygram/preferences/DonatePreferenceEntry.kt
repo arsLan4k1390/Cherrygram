@@ -1,11 +1,10 @@
 package uz.unnarsx.cherrygram.preferences
 
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
+import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.preferences.ktx.*
 import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
@@ -54,9 +53,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    val openURL = Intent(android.content.Intent.ACTION_VIEW)
-                    openURL.data = Uri.parse("https://donate.apelsin.uz/pay/arsLan4k1390")
-                    bf.parentActivity.startActivity(openURL)
+                    Browser.openUrl(bf.parentActivity, "https://donate.apelsin.uz/pay/arsLan4k1390")
                 }
             }
             textIcon {
@@ -64,9 +61,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    val openURL = Intent(android.content.Intent.ACTION_VIEW)
-                    openURL.data = Uri.parse("https://payme.uz/@arslan4k1390")
-                    bf.parentActivity.startActivity(openURL)
+                    Browser.openUrl(bf.parentActivity, "https://payme.uz/@arslan4k1390")
                 }
             }
             textIcon {
@@ -74,9 +69,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    val openURL = Intent(Intent.ACTION_VIEW)
-                    openURL.data = Uri.parse("https://qiwi.com/n/ARSLAN4K1390/")
-                    bf.parentActivity.startActivity(openURL)
+                    Browser.openUrl(bf.parentActivity, "https://qiwi.com/n/ARSLAN4K1390/")
                 }
             }
             textIcon {

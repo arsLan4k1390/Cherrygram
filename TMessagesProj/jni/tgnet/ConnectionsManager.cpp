@@ -42,10 +42,6 @@ jclass jclass_ByteBuffer = nullptr;
 jmethodID jclass_ByteBuffer_allocateDirect = nullptr;
 #endif
 
-ConnectionsManager::ConnectionsManager() {
-    this->isEmpty = true;
-}
-
 static bool done = false;
 
 ConnectionsManager::ConnectionsManager(int32_t instance) {
@@ -128,7 +124,6 @@ ConnectionsManager::ConnectionsManager(int32_t instance) {
 }
 
 ConnectionsManager::~ConnectionsManager() {
-    if (this->isEmpty) return;
     if (epolFd != 0) {
         close(epolFd);
         epolFd = 0;
@@ -148,6 +143,9 @@ ConnectionsManager& ConnectionsManager::getInstance(int32_t instanceNum) {
         case 1:
             static ConnectionsManager instance1(1);
             return instance1;
+        case 2:
+            static ConnectionsManager instance2(2);
+            return instance2;
         case 3:
             static ConnectionsManager instance3(3);
             return instance3;
@@ -167,12 +165,9 @@ ConnectionsManager& ConnectionsManager::getInstance(int32_t instanceNum) {
             static ConnectionsManager instance8(8);
             return instance8;
         case 9:
+        default:
             static ConnectionsManager instance9(9);
             return instance9;
-        case 2:
-        default:
-            static ConnectionsManager instance2(2);
-            return instance2;
     }
 }
 

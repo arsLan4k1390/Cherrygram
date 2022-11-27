@@ -10921,6 +10921,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         actionBar.setSubtitle(null);
         setItemVisible(masksItem, false, true);
         shareItem.setVisibility(View.GONE);
+        shareButton.setVisibility(View.VISIBLE);
         muteVideo = false;
         muteItem.setImageResource(R.drawable.video_send_unmute);
         editorDoneLayout.setVisibility(View.GONE);
