@@ -25,6 +25,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 ## Changes:
 
 *General:*
+- OTA updates - thanks to exteraGram :),
 - Material You (Monet) themes and app icon,
 - No content restrictions,
 - Support of up to 10 accounts,
@@ -60,12 +61,21 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
 *Cherrygram Appearance Preferences:*
 - VKUI icons in app,
+- Solar icons in app,
 - Enable/Disable toolbar shadow,
 - Flat statusbar,
 - Transparent navigation bar,
-- Enable/Disable System fonts,
+- Enable/Disable system fonts,
+- Enable/Disable animated avatars,
+- Enable/Disable reactions overlay,
+- Draw small reactions,
+- Enable/Disable reactions animation,
+- Enable/Disable premium statuses in profile,
+- Enable/Disable taps on premium stickers,
+- Enable/Disable premium stickers auto-play,
 - Show folder name instead of app name,
 - Hide "All chats" tab,
+- VKUI tabs style,
 - Show tabs on forward screen,
 - Hiding your phone number from settings and menu,
 - Showing ID in profile,
@@ -86,14 +96,13 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Ask before a call,
 - Show forwarded message date,
 - Show seconds in timestamps,
-- Enable/Disable quick reactions,
-- Enable/Disable quick reactions animation,
-- Enable/Disable premium stickers animation,
+- Double tap action,
 - Enable/Disable transition to the next channel,
 - Hide keyboard while scrolling a chat,
 - Enable/Disable "Send as channel" button,
 - Recent emojis counter (amplifier),
 - Recent stickers counter (amplifier),
+- Voice enhancements,
 - Enable/Disable playing video on volume button click,
 - Auto pause video while switching to the background
 - Pause music while playing voice and video messages,
@@ -106,11 +115,14 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 *Cherrygram Camera Preferences:*
 - Camera Type (Default, CameraX or System camera),
 - Motion smoothness,
-- Enable/Disable 16:9 resolution for videomessages,
-- Rear camera by default for video messages,
-- Disable camera in attachments menu.
+- Disable camera in attachments menu,
+- Default camera for video messages,
+- Custom camera aspect for videomessages,
 
 *Cherrygram Experimental Preferences:*
+- Enable/Disable alternative navigation,
+- Show a resident notification,
+- Toast all RPC errors,
 - Download speed boost - Thanks to Nekogram for the idea :),
 - Upload speed boost - Thanks to Nekogram for the idea :),
 - Slow network mode - Thanks to Telegraher for the idea :),
