@@ -5,6 +5,7 @@ import android.text.SpannableString;
 import android.text.style.URLSpan;
 import android.view.View;
 
+import org.telegram.messenger.Emoji;
 import org.telegram.ui.Components.URLSpanNoUnderline;
 
 public class EntitiesHelper {
@@ -26,6 +27,10 @@ public class EntitiesHelper {
             spannable.setSpan(span, start, end, 0);
         }
         return spannable;
+    }
+
+    public static boolean isEmoji(String message) {
+        return Emoji.fullyConsistsOfEmojis(message);
     }
 
 }

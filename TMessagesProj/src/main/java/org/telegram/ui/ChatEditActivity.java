@@ -832,7 +832,9 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
             settingsSectionCell.setBackground(combinedDrawable);
             linearLayout1.addView(settingsSectionCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
             if (forumsCell != null) {
-                settingsSectionCell.setText(LocaleController.getString(R.string.ForumToggleDescription));
+                settingsSectionCell.setText(LocaleController.getString("ForumToggleDescription", R.string.ForumToggleDescription));
+            } else {
+                settingsSectionCell.setText(LocaleController.getString("ChannelSignMessagesInfo", R.string.ChannelSignMessagesInfo));
             }
         }
 

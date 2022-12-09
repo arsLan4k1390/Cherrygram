@@ -15,6 +15,7 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
+import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
@@ -35,7 +36,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
 
-public class MessageHelper extends BaseController {
+public class    MessageHelper extends BaseController {
 
     private static final MessageHelper[] Instance = new MessageHelper[UserConfig.MAX_ACCOUNT_COUNT];
 
@@ -164,6 +165,30 @@ public class MessageHelper extends BaseController {
         }
     }
 
+    public MessageObject resetMessageContent(long dialogId, MessageObject messageObject, boolean translated) {
+        return resetMessageContent(dialogId, messageObject, translated, false);
+    }
+
+    public MessageObject resetMessageContent(long dialogId, MessageObject messageObject, boolean translated, boolean canceled) {
+        TLRPC.Message message = messageObject.messageOwner;
+        MessageObject obj = new MessageObject(currentAccount, message, true, true);
+        obj.originalMessage = messageObject.originalMessage;
+        obj.originalEntities = messageObject.originalEntities;
+        obj.originalReplyMarkupRows = messageObject.originalReplyMarkupRows;
+        obj.translating = false;
+        obj.translated = translated;
+        obj.translatedLanguage = messageObject.translatedLanguage;
+        obj.canceledTranslation = canceled;
+        if (messageObject.isSponsored()) {
+            obj.sponsoredId = messageObject.sponsoredId;
+            obj.botStartParam = messageObject.botStartParam;
+        }
+        ArrayList<MessageObject> arrayList = new ArrayList<>();
+        arrayList.add(obj);
+        getNotificationCenter().postNotificationName(NotificationCenter.replaceMessagesObjects, dialogId, arrayList, false);
+        return obj;
+    }
+
     public static void showDeleteHistoryBulletin(BaseFragment fragment, int count, boolean search, Runnable delayedAction, Theme.ResourcesProvider resourcesProvider) {
         if (fragment.getParentActivity() == null) {
             if (delayedAction != null) {
@@ -186,6 +211,37 @@ public class MessageHelper extends BaseController {
         }
         buttonLayout.setButton(new Bulletin.UndoButton(fragment.getParentActivity(), true, resourcesProvider).setDelayedAction(delayedAction));
         Bulletin.make(fragment, buttonLayout, 5000).show();
+    }
+
+    public static class ReplyMarkupButtonsTexts {
+        private final ArrayList<ArrayList<String>> texts = new ArrayList<>();
+
+        public ReplyMarkupButtonsTexts(ArrayList<TLRPC.TL_keyboardButtonRow> source) {
+            for (int a = 0; a < source.size(); a++) {
+                ArrayList<TLRPC.KeyboardButton> buttonRow = source.get(a).buttons;
+                ArrayList<String> row = new ArrayList<>();
+                for (int b = 0; b < buttonRow.size(); b++) {
+                    TLRPC.KeyboardButton button2 = buttonRow.get(b);
+                    row.add(button2.text);
+                }
+                texts.add(row);
+            }
+        }
+
+        public ArrayList<ArrayList<String>> getTexts() {
+            return texts;
+        }
+
+        public void applyTextToKeyboard(ArrayList<TLRPC.TL_keyboardButtonRow> rows) {
+            for (int a = 0; a < rows.size(); a++) {
+                ArrayList<TLRPC.KeyboardButton> buttonRow = rows.get(a).buttons;
+                ArrayList<String> row = texts.get(a);
+                for (int b = 0; b < buttonRow.size(); b++) {
+                    TLRPC.KeyboardButton button2 = buttonRow.get(b);
+                    button2.text = row.get(b);
+                }
+            }
+        }
     }
 
     public void deleteUserHistoryWithSearch(BaseFragment fragment, final long dialogId, final long mergeDialogId, SearchMessagesResultCallback callback) {

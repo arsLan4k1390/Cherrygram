@@ -178,7 +178,6 @@
     <string name="CP_CameraXDesc">CameraX مدعوم فقط على <![CDATA[<a href="https://developer.android.com/training/camerax/devices">الأجهزة المحددة</a>]]>، يعتمد دعم المؤثرات وعدسات على الشركة المصنعة الخاصة بك.</string>
     <string name="CP_PerformanceMode">وضع الأداء</string>
     <string name="CP_PerformanceModeDesc">سيتم خفض جودة CameraX لصالح الأداء</string>
-    <string name="CP_MotionSmoothness">سلاسة الحركة</string>
     <string name="CP_CameraTypeSystem">النظام</string>
     <string name="CP_SystemCameraDesc">الوصول مباشرة إلى كاميرا النظام (لا تنطبق على رسائل الفيديو).</string>
     <string name="CP_CameraAspectRatio">نسبة عرض الكاميرا</string>

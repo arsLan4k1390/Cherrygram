@@ -43,7 +43,6 @@ import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.CheckBox;
 import org.telegram.ui.Components.CheckBoxSquare;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.Premium.PremiumGradient;
 import org.telegram.ui.NotificationsSettingsActivity;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
@@ -580,6 +579,8 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         } else {
             avatarImageView.setImageDrawable(avatarDrawable);
         }
+
+        avatarImageView.setRoundRadius(currentChat != null && currentChat.forum ? AndroidUtilities.dp(14) : AndroidUtilities.dp(24));
 
         nameTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         if (adminTextView != null) {

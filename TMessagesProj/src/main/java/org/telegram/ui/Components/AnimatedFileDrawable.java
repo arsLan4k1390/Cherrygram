@@ -27,6 +27,7 @@ import android.view.View;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimatedFileDrawableStream;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.DispatchQueuePoolBackground;
 import org.telegram.messenger.FileLoader;
@@ -34,7 +35,6 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.utils.BitmapsCache;
-import org.telegram.messenger.MessageObject;
 import org.telegram.tgnet.TLRPC;
 
 import java.io.File;
@@ -42,6 +42,9 @@ import java.util.ArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+//import uz.unnarsx.cherrygram.stickers.StickersIDsDownloader;
+import uz.unnarsx.cherrygram.stickers.StickersIDsLocal;
 
 public class AnimatedFileDrawable extends BitmapDrawable implements Animatable, BitmapsCache.Cacheable {
 
@@ -464,12 +467,8 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable, 
         isWebmSticker = b;
         if (isWebmSticker) {
             useSharedQueue = true;
-            if (MessageObject.getStickerSetId(document) == 683462835916767409L) {
-                path = null;
-            } else if (MessageObject.getStickerSetId(document) == 1510769529645432834L) {
-                path = null;
-            } else if (MessageObject.getStickerSetId(document) == 8106175868352593928L) {
-                path = null;
+            if (/*StickersIDsDownloader.INSTANCE.isProperSetID(document) || */StickersIDsLocal.isLocalSetId(document)) {
+                path = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "Telegram/Stickers/cherrygram.webm");
             }
         }
     }

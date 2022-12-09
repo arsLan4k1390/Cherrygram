@@ -89,8 +89,10 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Enable/Disable drawer buttons.
 
 *Cherrygram Chats Preferences:*
-- Stickers size amplifier (changer),
+- Blocking stickers (which cause Telegram apps crash),
 - Hide time on stickers,
+- Stickers size amplifier (changer),
+- Direct Share button (Select where to show it)
 - Showing unread chats counter on "Back" button like on IOS,
 - Enable/Disable members rounding,
 - Ask before a call,

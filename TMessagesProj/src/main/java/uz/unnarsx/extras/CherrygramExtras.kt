@@ -1,14 +1,18 @@
 package uz.unnarsx.extras
 
+import android.app.DownloadManager
+import android.content.Context
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.ColorInt
 import org.telegram.messenger.*
 import uz.unnarsx.cherrygram.CherrygramConfig
+import java.io.File
 import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.3.5"
+    var CG_VERSION = "7.4.0"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getDCGeo(dcId: Int): String? {
@@ -60,6 +64,23 @@ object CherrygramExtras {
             FileLog.e(e)
         }
         return "LOC_ERR"
+    }
+
+    private val cherrygramLogo = File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "Telegram/Stickers/cherrygram.webm")
+    fun downloadCherrygramLogo(context: Context) {
+        if (!cherrygramLogo.exists() && CherrygramConfig.blockStickers) {
+            try {
+                val request = DownloadManager.Request(Uri.parse("https://github.com/arsLan4k1390/Cherrygram/raw/main/cherrygram.webm"))
+                request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
+                request.setTitle("Cherrygram Logo")
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                request.setDestinationInExternalFilesDir(context, "Telegram/Stickers/", "cherrygram.webm")
+                val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                manager.enqueue(request)
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     @JvmStatic

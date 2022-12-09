@@ -19,6 +19,27 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
     val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {
         sharedPreferences.registerOnSharedPreferenceChangeListener(CherrygramConfig.listener)
+        category(LocaleController.getString("AccDescrStickers", R.string.AccDescrStickers)) {
+            switch {
+                title = LocaleController.getString("CP_BlockSomeSets", R.string.CP_BlockSomeSets)
+                summary = LocaleController.getString("CP_BlockSomeSets_Desc", R.string.CP_BlockSomeSets_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.blockStickers
+                }) {
+                    CherrygramConfig.blockStickers = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_TimeOnStick", R.string.CP_TimeOnStick)
+
+                contract({
+                    return@contract CherrygramConfig.hideStickerTime
+                }) {
+                    CherrygramConfig.hideStickerTime = it
+                }
+            }
+        }
         category(LocaleController.getString("CP_Slider_StickerAmplifier", R.string.CP_Slider_StickerAmplifier)) {
             slider {
                 contract = object : TGSLContract {
@@ -39,13 +60,68 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     }
                 }
             }
+
+        }
+
+        category(LocaleController.getString("DirectShare", R.string.DirectShare)) {
             switch {
-                title = LocaleController.getString("CP_TimeOnStick", R.string.CP_TimeOnStick)
+                title = LocaleController.getString("FilterChats", R.string.FilterChats)
 
                 contract({
-                    return@contract CherrygramConfig.hideStickerTime
+                    return@contract CherrygramConfig.usersDrawShareButton
                 }) {
-                    CherrygramConfig.hideStickerTime = it
+                    CherrygramConfig.usersDrawShareButton = it
+                    bf.parentActivity.recreate()
+                }
+            }
+            /*switch {
+                title = "Groups"
+
+                contract({
+                    return@contract CherrygramConfig.groupsDrawShareButton
+                }) {
+                    CherrygramConfig.groupsDrawShareButton = it
+                    bf.parentActivity.recreate()
+                }
+            }*/
+            switch {
+                title = LocaleController.getString("FilterGroups", R.string.FilterGroups)
+
+                contract({
+                    return@contract CherrygramConfig.supergroupsDrawShareButton
+                }) {
+                    CherrygramConfig.supergroupsDrawShareButton = it
+                    bf.parentActivity.recreate()
+                }
+            }
+            switch {
+                title = LocaleController.getString("FilterChannels", R.string.FilterChannels)
+
+                contract({
+                    return@contract CherrygramConfig.channelsDrawShareButton
+                }) {
+                    CherrygramConfig.channelsDrawShareButton = it
+                    bf.parentActivity.recreate()
+                }
+            }
+            switch {
+                title = LocaleController.getString("FilterBots", R.string.FilterBots)
+
+                contract({
+                    return@contract CherrygramConfig.botsDrawShareButton
+                }) {
+                    CherrygramConfig.botsDrawShareButton = it
+                    bf.parentActivity.recreate()
+                }
+            }
+            switch {
+                title = LocaleController.getString("StickersName", R.string.StickersName)
+
+                contract({
+                    return@contract CherrygramConfig.stickersDrawShareButton
+                }) {
+                    CherrygramConfig.stickersDrawShareButton = it
+                    bf.parentActivity.recreate()
                 }
             }
         }

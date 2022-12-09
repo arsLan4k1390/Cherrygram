@@ -11,7 +11,9 @@ package org.telegram.messenger;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -45,9 +47,9 @@ import org.telegram.ui.LauncherIconController;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.concurrent.CountDownLatch;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.camera.CameraXUtilities;
 import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
 
 public class ApplicationLoader extends Application {
@@ -58,7 +60,6 @@ public class ApplicationLoader extends Application {
     public static volatile Context applicationContext;
     public static volatile NetworkInfo currentNetworkInfo;
     public static volatile Handler applicationHandler;
-    public static final CountDownLatch countDownLatch = new CountDownLatch(1);
 
     private static ConnectivityManager connectivityManager;
     private static volatile boolean applicationInited = false;
@@ -226,6 +227,7 @@ public class ApplicationLoader extends Application {
         }
         hasPlayServices = checkPlayServices();
         SharedConfig.loadConfig();
+        CameraXUtilities.loadCameraXSizes();
         SharedPrefsHelper.init(applicationContext);
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) { //TODO improve account
             UserConfig.getInstance(a).loadConfig();
@@ -299,7 +301,6 @@ public class ApplicationLoader extends Application {
         applicationHandler = new Handler(applicationContext.getMainLooper());
 
         AndroidUtilities.runOnUIThread(ApplicationLoader::startPushService);
-        countDownLatch.countDown();
 
         LauncherIconController.tryFixLauncherIconIfNeeded();
     }
@@ -310,28 +311,28 @@ public class ApplicationLoader extends Application {
         if (preferences.contains("pushService")) {
             enabled = preferences.getBoolean("pushService", true);
         } else {
-            enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", true);
+            enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", false);
         }
         if (enabled) {
             try {
-                Log.d("TFOSS", "Trying to start push service every 10 minutes");
-
-                Log.d("TFOSS", "Starting push service...");
+                if (BuildVars.LOGS_ENABLED) {
+                    Log.d("TFOSS", "Trying to start push service every 10 minutes");
+                    Log.d("TFOSS", "Starting push service...");
+                }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && CherrygramConfig.INSTANCE.getResidentNotification()) {
                     applicationContext.startForegroundService(new Intent(applicationContext, NotificationsService.class));
                 } else {
                     applicationContext.startService(new Intent(applicationContext, NotificationsService.class));
                 }
             } catch (Throwable ignore) {
-                Log.d("TFOSS", "Failed to start push service");
+
             }
         } else {
             applicationContext.stopService(new Intent(applicationContext, NotificationsService.class));
 
-            /*PendingIntent pintent = PendingIntent.getService(applicationContext, 0, new Intent(applicationContext, NotificationsService.class), PendingIntent.FLAG_MUTABLE);
+            PendingIntent pintent = PendingIntent.getService(applicationContext, 0, new Intent(applicationContext, NotificationsService.class), PendingIntent.FLAG_MUTABLE);
             AlarmManager alarm = (AlarmManager)applicationContext.getSystemService(Context.ALARM_SERVICE);
             alarm.cancel(pintent);
-            TODO: find out wtf is this? */
         }
     }
 
@@ -362,7 +363,7 @@ public class ApplicationLoader extends Application {
         }, 1000);
     }
 
-    private static boolean checkPlayServices() {
+    public static boolean checkPlayServices() {
         try {
             int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ApplicationLoader.applicationContext);
             return resultCode == ConnectionResult.SUCCESS;

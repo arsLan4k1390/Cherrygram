@@ -38,6 +38,9 @@ class SolarIconReplace : BaseIconReplace() {
             R.drawable.msg_language to R.drawable.global,
             R.drawable.msg_ask_question to R.drawable.chat_round_dots,
             R.drawable.msg_policy to R.drawable.shield_check,
+            R.drawable.msg_email to R.drawable.letter,
+            R.drawable.msg_storage_usage to R.drawable.database,
+            R.drawable.msg_data_usage to R.drawable.sort_vertical,
             // Logout activity
             R.drawable.msg_contact_add to R.drawable.user_plus,
             R.drawable.msg_clearcache to R.drawable.trash_bin_2,
@@ -64,6 +67,7 @@ class SolarIconReplace : BaseIconReplace() {
             //Profile
             R.drawable.profile_video to R.drawable.videocamera,
             R.drawable.ic_call to R.drawable.phone_rounded,
+            R.drawable.msg_calls_regular to R.drawable.phone_calling_rounded,
             R.drawable.msg_info to R.drawable.info_circle,
             R.drawable.msg_share to R.drawable.forward,
             R.drawable.msg_block to R.drawable.forbidden_circle,
@@ -119,6 +123,7 @@ class SolarIconReplace : BaseIconReplace() {
             R.drawable.msg_admins to R.drawable.medal_ribbon_star,
             R.drawable.msg_admin_add to R.drawable.medal_ribbon_star,
             R.drawable.msg_log to R.drawable.clipboard,
+            R.drawable.msg_notspam to R.drawable.shield_warning,
 
             // Message panel
             R.drawable.msg_panel_reply to R.drawable.forward,

@@ -76,6 +76,7 @@
     <string name="CG_AppCrashedDesc">Cherrygram has stopped working. Please, send logs to the developers so that they can fix this bug as soon as possible.</string>
     <string name="CG_CopyReportDetails">Copy Report Details</string>
     <string name="CG_ReportDetailsCopied">Report details copied to clipboard.</string>
+    <string name="CG_TranslationLanguage">Translation Language</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -114,6 +115,7 @@
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
     <string name="AP_IconReplacement_Default">Default</string>
+    <string name="AP_CenterTitle">Center title in action bar</string>
     <string name="AP_ToolBarShadow">Disable toolbar shadow</string>
     <string name="AP_TransparentSB">Transparent statusbar</string>
     <string name="AP_FlatNB">Transparent navbar</string>
@@ -163,6 +165,8 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
     <string name="CP_Slider_StickerAmplifier">Sticker size amplifier</string>
+    <string name="CP_BlockSomeSets">Block some stickers</string>
+    <string name="CP_BlockSomeSets_Desc">Some stickers which forces the app crash will be replaced by Cherrygram\'s logo. \n\"Cherrygram Logo\" file will be downloaded after you enable the feature and restart the app.</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
 
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
@@ -212,7 +216,7 @@
     <string name="CP_CameraXDesc">CameraX is only supported on <![CDATA[<a href="https://developer.android.com/training/camerax/devices">selected devices</a>]]>, effects and lenses support depends on your manufacturer.</string>
     <string name="CP_PerformanceMode">Performance Mode</string>
     <string name="CP_PerformanceModeDesc">CameraX\'s quality will be reduced in favor of performance</string>
-    <string name="CP_MotionSmoothness">Motion Smoothness</string>
+    <string name="CP_CameraQuality">Camera Quality</string>
     <string name="CP_CameraTypeSystem">System</string>
     <string name="CP_SystemCameraDesc">Access directly the system camera (not applicable for video messages).</string>
 

@@ -105,6 +105,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.math.MathUtils;
+import androidx.core.text.HtmlCompat;
 import androidx.dynamicanimation.animation.DynamicAnimation;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
@@ -478,7 +479,7 @@ public class AndroidUtilities {
         return spannableStringBuilder;
     }
 
-    public static void recycleBitmaps(ArrayList<Bitmap> bitmapToRecycle) {
+    public static void recycleBitmaps(List<Bitmap> bitmapToRecycle) {
         if (bitmapToRecycle != null && !bitmapToRecycle.isEmpty()) {
             AndroidUtilities.runOnUIThread(() -> Utilities.globalQueue.postRunnable(() -> {
                 for (int i = 0; i < bitmapToRecycle.size(); i++) {
@@ -527,6 +528,10 @@ public class AndroidUtilities {
                 FileLog.e(e);
             }
         });
+    }
+
+    public static void recycleBitmap(Bitmap image) {
+        recycleBitmaps(Collections.singletonList(image));
     }
 
     private static class LinkSpec {
@@ -2660,7 +2665,7 @@ public class AndroidUtilities {
     }*/
 
     public static boolean shouldShowClipboardToast() {
-        return (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !OneUIUtilities.hasBuiltInClipboardToasts()) && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
+        return (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !OneUIUtilities.hasBuiltInClipboardToasts()) && Build.VERSION.SDK_INT < 32 /* TODO: Update to TIRAMISU when compileSdkVersion would be 32 */;
     }
 
     public static boolean addToClipboard(CharSequence str) {
@@ -4598,6 +4603,22 @@ public class AndroidUtilities {
         return Color.argb(alpha, red, green, blue);
     }
 
+    public static void selectionSort(ArrayList<CharSequence> x, ArrayList<String> y) {
+        for (int i = 0; i < x.size() - 1; i++) {
+            for (int j = i + 1; j < x.size(); j++) {
+                if (x.get(i).toString().compareTo(x.get(j).toString()) > 0) {
+                    CharSequence temp = x.get(i);
+                    x.set(i, x.get(j));
+                    x.set(j, temp);
+
+                    String tempStr = y.get(i);
+                    y.set(i, y.get(j));
+                    y.set(j, tempStr);
+                }
+            }
+        }
+    }
+
     public static boolean isLight(int color) {
         int red = Color.red(color);
         int green = Color.green(color);
@@ -4668,5 +4689,9 @@ public class AndroidUtilities {
             spannableStringBuilder.replace(index, index + what.length(), obj);
         }
         return spannableStringBuilder;
+    }
+
+    public static Spanned fromHtml(@NonNull String source) {
+        return HtmlCompat.fromHtml(source, HtmlCompat.FROM_HTML_MODE_LEGACY);
     }
 }

@@ -8,14 +8,13 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"
-        classpath 'com.google.gms:google-services:4.3.14'
+        classpath 'com.google.gms:google-services:4.3.10'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.2'
         classpath 'com.huawei.agconnect:agcp:1.6.0.300'
     }
 }
 repositories {
     google()
-    mavenCentral()
 }
 
 subprojects {
@@ -23,44 +22,13 @@ subprojects {
         if (plugins.hasPlugin("com.android.library") ||
                 plugins.hasPlugin("com.android.application")) {
             android {
-                compileSdkVersion 33
-                buildToolsVersion "33.0.0"
-                ndkVersion "21.4.7075529"
 
                 buildFeatures {
                     viewBinding true
                 }
 
-                lint {
-                    disable 'MissingTranslation', 'ExtraTranslation', 'BlockedPrivateApi'
-                }
-
-                compileOptions {
-                    sourceCompatibility JavaVersion.VERSION_11
-                    targetCompatibility JavaVersion.VERSION_11
-
-                    coreLibraryDesugaringEnabled true
-                }
-
                 packagingOptions {
                     exclude "DebugProbesKt.bin"
-                }
-
-                defaultConfig {
-                    minSdkVersion 21
-                    targetSdkVersion 33
-                    versionName APP_VERSION_NAME
-
-                    vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
-
-                    multiDexEnabled true
-
-                    externalNativeBuild {
-                        cmake {
-                            version '3.10.2'
-                            arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
-                        }
-                    }
                 }
             }
         }

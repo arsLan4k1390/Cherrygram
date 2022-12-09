@@ -46,6 +46,15 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("AP_CenterTitle", R.string.AP_CenterTitle)
+                contract({
+                    return@contract CherrygramConfig.centerTitle
+                }) {
+                    CherrygramConfig.centerTitle = it
+                    bf.parentActivity.recreate()
+                }
+            }
+            switch {
                 title = LocaleController.getString("AP_ToolBarShadow", R.string.AP_ToolBarShadow)
 
                 contract({

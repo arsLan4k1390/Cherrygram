@@ -109,11 +109,12 @@
 -keep class org.apache.commons.text.** { *; }
 
 # Keep all class member names of CameraX
--keep class androidx.camera.extensions.impl.* { *; }
--keep class androidx.camera.camera2.internal.* { *; }
--keep class androidx.camera.camera2.interop.* { *; }
--keep class androidx.camera.core.* { *; }
--keep class androidx.camera.core.impl.* { *; }
+-keep class androidx.camera.extensions.** { *; }
+-keep class androidx.camera.camera2.internal.** { *; }
+-keep class androidx.camera.camera2.interop.** { *; }
+-keep class androidx.camera.core.** { *; }
+-keep class androidx.camera.core.impl.** { *; }
+-keep class androidx.camera.video.** { *; }
 
 -keepclassmembernames class androidx.core.widget.NestedScrollView {
     private android.widget.OverScroller mScroller;
@@ -134,45 +135,8 @@
 
 -dontwarn org.jetbrains.annotations.NotNull
 -dontwarn org.jetbrains.annotations.Nullable
--dontwarn androidx.camera.extensions.impl.AutoImageCaptureExtenderImpl
--dontwarn androidx.camera.extensions.impl.AutoPreviewExtenderImpl
--dontwarn androidx.camera.extensions.impl.BeautyImageCaptureExtenderImpl
--dontwarn androidx.camera.extensions.impl.BeautyPreviewExtenderImpl
--dontwarn androidx.camera.extensions.impl.BokehImageCaptureExtenderImpl
--dontwarn androidx.camera.extensions.impl.BokehPreviewExtenderImpl
--dontwarn androidx.camera.extensions.impl.CaptureProcessorImpl
--dontwarn androidx.camera.extensions.impl.CaptureStageImpl
--dontwarn androidx.camera.extensions.impl.ExtensionVersionImpl
--dontwarn androidx.camera.extensions.impl.HdrImageCaptureExtenderImpl
--dontwarn androidx.camera.extensions.impl.HdrPreviewExtenderImpl
--dontwarn androidx.camera.extensions.impl.ImageCaptureExtenderImpl
--dontwarn androidx.camera.extensions.impl.InitializerImpl$OnExtensionsDeinitializedCallback
--dontwarn androidx.camera.extensions.impl.InitializerImpl$OnExtensionsInitializedCallback
--dontwarn androidx.camera.extensions.impl.InitializerImpl
--dontwarn androidx.camera.extensions.impl.NightImageCaptureExtenderImpl
--dontwarn androidx.camera.extensions.impl.NightPreviewExtenderImpl
--dontwarn androidx.camera.extensions.impl.PreviewExtenderImpl$ProcessorType
--dontwarn androidx.camera.extensions.impl.PreviewExtenderImpl
--dontwarn androidx.camera.extensions.impl.PreviewImageProcessorImpl
--dontwarn androidx.camera.extensions.impl.ProcessorImpl
--dontwarn androidx.camera.extensions.impl.RequestUpdateProcessorImpl
--dontwarn androidx.camera.extensions.impl.advanced.AdvancedExtenderImpl
--dontwarn androidx.camera.extensions.impl.advanced.AutoAdvancedExtenderImpl
--dontwarn androidx.camera.extensions.impl.advanced.BeautyAdvancedExtenderImpl
--dontwarn androidx.camera.extensions.impl.advanced.BokehAdvancedExtenderImpl
--dontwarn androidx.camera.extensions.impl.advanced.Camera2OutputConfigImpl
--dontwarn androidx.camera.extensions.impl.advanced.Camera2SessionConfigImpl
--dontwarn androidx.camera.extensions.impl.advanced.HdrAdvancedExtenderImpl
--dontwarn androidx.camera.extensions.impl.advanced.ImageReaderOutputConfigImpl
--dontwarn androidx.camera.extensions.impl.advanced.MultiResolutionImageReaderOutputConfigImpl
--dontwarn androidx.camera.extensions.impl.advanced.NightAdvancedExtenderImpl
--dontwarn androidx.camera.extensions.impl.advanced.OutputSurfaceImpl
--dontwarn androidx.camera.extensions.impl.advanced.RequestProcessorImpl
--dontwarn androidx.camera.extensions.impl.advanced.SessionProcessorImpl$CaptureCallback
--dontwarn androidx.camera.extensions.impl.advanced.SessionProcessorImpl
--dontwarn androidx.camera.extensions.impl.advanced.SurfaceOutputConfigImpl
--dontwarn javax.script.ScriptEngine
--dontwarn javax.script.ScriptEngineManager
+-dontwarn androidx.camera.extensions.**
+-dontwarn javax.script.**
 
 -repackageclasses
 -allowaccessmodification

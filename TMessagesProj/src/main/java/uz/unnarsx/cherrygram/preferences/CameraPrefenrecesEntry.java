@@ -7,11 +7,13 @@ import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.view.Gravity;
+import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.camera.video.Quality;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,6 +36,10 @@ import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.UndoView;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.camera.CameraTypeSelector;
@@ -49,7 +55,7 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
     private int cameraTypeHeaderRow;
     private int cameraTypeSelectorRow;
     private int cameraXOptimizeRow;
-    private int cameraXFpsRow;
+    private int cameraXQualityRow;
     private int cameraAdviseRow;
 
     private int audioVideoHeaderRow;
@@ -114,16 +120,14 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode());
                 }
                 restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
-            } else if (position == cameraXFpsRow) {
-                ArrayList<String> arrayList = new ArrayList<>();
-                ArrayList<Integer> types = new ArrayList<>();
-                arrayList.add("30");
-                types.add(CherrygramConfig.CameraX30);
-                arrayList.add("60");
-                types.add(CherrygramConfig.CameraX60);
-                PopupHelper.show(arrayList, LocaleController.getString("CP_MotionSmoothness", R.string.CP_MotionSmoothness), types.indexOf(CherrygramConfig.INSTANCE.getCameraXFps()), context, i -> {
-                    CherrygramConfig.INSTANCE.saveCameraXFps(types.get(i));
-                    listAdapter.notifyItemChanged(cameraXFpsRow);
+            } else if (position == cameraXQualityRow) {
+                Map<Quality, Size> availableSizes = CameraXUtilities.getAvailableVideoSizes();
+                Stream<Integer> tmp = availableSizes.values().stream().sorted(Comparator.comparingInt(Size::getWidth).reversed()).map(Size::getHeight);
+                ArrayList<Integer> types = tmp.collect(Collectors.toCollection(ArrayList::new));
+                ArrayList<String> arrayList = types.stream().map(p -> p + "p").collect(Collectors.toCollection(ArrayList::new));
+                PopupHelper.show(arrayList, LocaleController.getString("CP_CameraQuality", R.string.CP_CameraQuality), types.indexOf(CherrygramConfig.INSTANCE.getCameraResolution()), context, i -> {
+                    CherrygramConfig.INSTANCE.saveCameraResolution(types.get(i));
+                    listAdapter.notifyItemChanged(cameraXQualityRow);
                     restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
                 });
             } else if (position == disableAttachCameraRow) {
@@ -165,7 +169,7 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
         cameraTypeHeaderRow = -1;
         cameraTypeSelectorRow = -1;
         cameraXOptimizeRow = -1;
-        cameraXFpsRow = -1;
+        cameraXQualityRow = -1;
         cameraAdviseRow = -1;
 
         if (CameraXUtilities.isCameraXSupported()) {
@@ -173,7 +177,7 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
             cameraTypeSelectorRow = rowCount++;
             if (CherrygramConfig.INSTANCE.getCameraType() == 1) {
                 cameraXOptimizeRow = rowCount++;
-                cameraXFpsRow = rowCount++;
+                cameraXQualityRow = rowCount++;
             }
             cameraAdviseRow = rowCount++;
         }
@@ -268,8 +272,8 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                     textSettingsCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                     TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
                     textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                    if (position == cameraXFpsRow) {
-                        textSettingsCell.setTextAndValue(LocaleController.getString("CP_MotionSmoothness", R.string.CP_MotionSmoothness), CherrygramConfig.INSTANCE.getCameraXFps() + " FPS", false);
+                    if (position == cameraXQualityRow) {
+                        textSettingsCell.setTextAndValue(LocaleController.getString("CP_CameraQuality", R.string.CP_CameraQuality), CherrygramConfig.INSTANCE.getCameraResolution() + "p", false);
                     } else if (position == cameraAspectRatioRow) {
                         String value;
                         switch (CherrygramConfig.INSTANCE.getCameraAspectRatio()) {
@@ -317,11 +321,11 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                             if (cameraSelected == 1) {
                                 updateRowsId(false);
                                 listAdapter.notifyItemInserted(cameraXOptimizeRow);
-                                listAdapter.notifyItemInserted(cameraXFpsRow);
+                                listAdapter.notifyItemInserted(cameraXQualityRow);
                                 listAdapter.notifyItemChanged(cameraAdviseRow);
                             } else {
                                 listAdapter.notifyItemRemoved(cameraXOptimizeRow);
-                                listAdapter.notifyItemRemoved(cameraXFpsRow);
+                                listAdapter.notifyItemRemoved(cameraXQualityRow);
                                 listAdapter.notifyItemChanged(cameraAdviseRow - 1);
                                 updateRowsId(false);
                             }
@@ -360,7 +364,7 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                 return 5;
             } else if (position == cameraAdviseRow || position == cameraAspectRatioAdviseRow) {
                 return 6;
-            } else if (position == cameraXFpsRow || position == cameraAspectRatioRow) {
+            } else if (position == cameraXQualityRow || position == cameraAspectRatioRow) {
                 return 7;
             }
             return 1;

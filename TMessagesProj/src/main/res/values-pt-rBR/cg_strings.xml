@@ -184,7 +184,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_CameraXDesc">CameraX só é suportado em <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, efeitos e suporte de lentes depende do seu fabricante.</string>
     <string name="CP_PerformanceMode">Modo de desempenho</string>
     <string name="CP_PerformanceModeDesc">A qualidade da CameraX será reduzida em favor do desempenho</string>
-    <string name="CP_MotionSmoothness">Suavização de movimento</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Acessar diretamente a câmara do sistema (não aplicável às mensagens de vídeo).</string>
     <string name="CP_CameraAspectRatio">Razão de aspeto da câmara</string>

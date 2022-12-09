@@ -1281,6 +1281,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     private final static int gallery_menu_edit_avatar = 17;
     private final static int gallery_menu_share2 = 18;
     private final static int gallery_menu_speed = 19;
+    private final static int gallery_menu_pip2 = 20;
 
     private static DecelerateInterpolator decelerateInterpolator;
     private static Paint progressPaint;
@@ -4574,8 +4575,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         }
                     };
                     masksAlert.show();
-                } else if (id == gallery_menu_pip) {
-                    if (pipItem.getAlpha() != 1.0f) {
+                } else if (id == gallery_menu_pip || id == gallery_menu_pip2) {
+                    if (pipItem.getAlpha() != 1.0f && !CherrygramConfig.INSTANCE.getCenterTitle()) {
                         return;
                     }
                     if (isEmbedVideo) {
@@ -4747,10 +4748,10 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
         ActionBarMenu menu = actionBar.createMenu();
 
-        masksItem = menu.addItem(gallery_menu_masks, R.drawable.msg_mask);
-        masksItem.setContentDescription(LocaleController.getString("Masks", R.string.Masks));
         pipItem = menu.addItem(gallery_menu_pip, R.drawable.ic_goinline);
         pipItem.setContentDescription(LocaleController.getString("AccDescrPipMode", R.string.AccDescrPipMode));
+        masksItem = menu.addItem(gallery_menu_masks, R.drawable.msg_mask);
+        masksItem.setContentDescription(LocaleController.getString("Masks", R.string.Masks));
         sendItem = menu.addItem(gallery_menu_send, R.drawable.msg_forward);
         sendItem.setContentDescription(LocaleController.getString("Forward", R.string.Forward));
         shareItem = menu.addItem(gallery_menu_share2, R.drawable.share);
@@ -4796,6 +4797,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         menuItem.setContentDescription(LocaleController.getString("AccDescrMoreOptions", R.string.AccDescrMoreOptions));
         allMediaItem = menuItem.addSubItem(gallery_menu_showall, R.drawable.msg_media, LocaleController.getString("ShowAllMedia", R.string.ShowAllMedia));
         allMediaItem.setColors(0xfffafafa, 0xfffafafa);
+        if (CherrygramConfig.INSTANCE.getCenterTitle()) menuItem.addSubItem(gallery_menu_pip2, R.drawable.ic_goinline, LocaleController.getString("AccDescrPipMode", R.string.AccDescrPipMode)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_savegif, R.drawable.msg_gif, LocaleController.getString("SaveToGIFs", R.string.SaveToGIFs)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_showinchat, R.drawable.msg_message, LocaleController.getString("ShowInChat", R.string.ShowInChat)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_masks2, R.drawable.msg_sticker, LocaleController.getString("ShowStickers", R.string.ShowStickers)).setColors(0xfffafafa, 0xfffafafa);
@@ -5104,6 +5106,10 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             requestVideoPreview(2);
         });
         qualityPicker.doneButton.setOnClickListener(view -> {
+            Object object = imagesArrLocals.get(currentIndex);
+            if (object instanceof MediaController.MediaEditState) {
+                ((MediaController.MediaEditState) object).editedInfo = getCurrentVideoEditedInfo();
+            }
             showQualityView(false);
             requestVideoPreview(2);
         });
@@ -7508,6 +7514,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 videoEditedInfo.endTime *= 2;
             }
             videoEditedInfo.end = videoEditedInfo.endTime;
+            videoEditedInfo.compressQuality = selectedCompression;
             videoEditedInfo.rotationValue = 0;
             videoEditedInfo.originalPath = currentImagePath;
             videoEditedInfo.estimatedSize = (int) (videoEditedInfo.endTime / 1000.0f * 115200);
@@ -7564,6 +7571,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         videoEditedInfo.endTime = endTime;
         videoEditedInfo.start = videoCutStart;
         videoEditedInfo.end = videoCutEnd;
+        videoEditedInfo.compressQuality = selectedCompression;
         videoEditedInfo.rotationValue = rotationValue;
         videoEditedInfo.originalWidth = originalWidth;
         videoEditedInfo.originalHeight = originalHeight;
@@ -7973,10 +7981,10 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             if (aspectRatioFrameLayout != null && aspectRatioFrameLayout.getVisibility() != View.VISIBLE) {
                 aspectRatioFrameLayout.setVisibility(View.VISIBLE);
             }
-            if (!pipItem.isEnabled() && pipItem.getVisibility() == View.VISIBLE) {
+            if (!pipItem.isEnabled() && (pipItem.getVisibility() == View.VISIBLE || menuItem.isSubItemVisible(gallery_menu_pip2))) {
                 pipAvailable = true;
                 pipItem.setEnabled(true);
-                pipItem.animate().alpha(1.0f).setDuration(175).withEndAction(null).start();
+                if (!CherrygramConfig.INSTANCE.getCenterTitle()) pipItem.animate().alpha(1.0f).setDuration(175).withEndAction(null).start();
             }
             playerWasReady = true;
             if (currentMessageObject != null && currentMessageObject.isVideo()) {
@@ -8630,9 +8638,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         toggleMiniProgress(false, false);
         pipAvailable = false;
         playerInjected = false;
-        if (pipItem.isEnabled()) {
+        if (pipItem.isEnabled() || menuItem.isSubItemVisible(gallery_menu_pip2)) {
             pipItem.setEnabled(false);
-            pipItem.animate().alpha(0.5f).setDuration(175).withEndAction(null).start();
+            if (!CherrygramConfig.INSTANCE.getCenterTitle()) pipItem.animate().alpha(0.5f).setDuration(175).withEndAction(null).start();
         }
         if (keepScreenOnFlagSet) {
             try {
@@ -10635,7 +10643,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     }
                 }
             } else if (MessageObject.getMedia(message.messageOwner) instanceof TLRPC.TL_messageMediaInvoice) {
-                return ImageLocation.getForWebFile(WebFile.createWithWebDocument(((TLRPC.TL_messageMediaInvoice) MessageObject.getMedia(message.messageOwner)).photo));
+                return ImageLocation.getForWebFile(WebFile.createWithWebDocument(((TLRPC.TL_messageMediaInvoice) MessageObject.getMedia(message.messageOwner)).webPhoto));
             } else if (message.getDocument() != null) {
                 TLRPC.Document document = message.getDocument();
                 if (sharedMediaType == MediaDataController.MEDIA_GIF || MessageObject.isStickerDocument(document)) {
@@ -11281,7 +11289,12 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 menuItem.checkHideMenuItem();
                 if (isEmbedVideo) {
                     menuItem.showSubItem(gallery_menu_openin);
-                    setItemVisible(pipItem, true, false);
+                    if (CherrygramConfig.INSTANCE.getCenterTitle()) {
+                        menuItem.showSubItem(gallery_menu_pip2);
+                        setItemVisible(pipItem, false, false);
+                    } else {
+                        setItemVisible(pipItem, true, false);
+                    }
                 } else if (isVideo) {
                     if (!noforwards || (slideshowMessageId == 0 ? MessageObject.getMedia(newMessageObject.messageOwner).webpage != null && MessageObject.getMedia(newMessageObject.messageOwner).webpage.url != null :
                             MessageObject.getMedia(imagesArr.get(0).messageOwner).webpage != null && MessageObject.getMedia(imagesArr.get(0).messageOwner).webpage.url != null)) {
@@ -11295,9 +11308,19 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     }
                     if (!pipAvailable) {
                         pipItem.setEnabled(false);
-                        setItemVisible(pipItem, true, !masksItemVisible, 0.5f);
+                        if (CherrygramConfig.INSTANCE.getCenterTitle()) {
+                            menuItem.showSubItem(gallery_menu_pip2);
+                            setItemVisible(pipItem, false, false);
+                        } else {
+                            setItemVisible(pipItem, true, !masksItemVisible, 0.5f);
+                        }
                     } else {
-                        setItemVisible(pipItem, true, !masksItemVisible);
+                        if (CherrygramConfig.INSTANCE.getCenterTitle()) {
+                            menuItem.showSubItem(gallery_menu_pip2);
+                            setItemVisible(pipItem, false, !masksItemVisible);
+                        } else {
+                            setItemVisible(pipItem, true, !masksItemVisible);
+                        }
                     }
                     if (newMessageObject.hasAttachedStickers() && !DialogObject.isEncryptedDialog(newMessageObject.getDialogId())) {
                         menuItem.showSubItem(gallery_menu_masks2);
@@ -11310,12 +11333,14 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     speedGap.setVisibility(View.GONE);
                     menuItem.hideSubItem(gallery_menu_openin);
                     menuItem.checkHideMenuItem();
-                    final boolean pipItemVisible = pipItem.getVisibility() == View.VISIBLE;
+                    final boolean pipItemVisible = CherrygramConfig.INSTANCE.getCenterTitle() ? pipItem.getVisibility() == View.VISIBLE || menuItem.isSubItemVisible(gallery_menu_pip2) : pipItem.getVisibility() == View.VISIBLE;
                     final boolean shouldMasksItemBeVisible = newMessageObject.hasAttachedStickers() && !DialogObject.isEncryptedDialog(newMessageObject.getDialogId());
                     if (pipItemVisible) {
                         setItemVisible(pipItem, false, !shouldMasksItemBeVisible);
+                        if (CherrygramConfig.INSTANCE.getCenterTitle()) menuItem.hideSubItem(gallery_menu_pip2);
                     }
-                    setItemVisible(masksItem, shouldMasksItemBeVisible, !pipItemVisible);
+                    setItemVisible(masksItem, !CherrygramConfig.INSTANCE.getCenterTitle() ? shouldMasksItemBeVisible : false, !pipItemVisible);
+                    if (CherrygramConfig.INSTANCE.getCenterTitle()) menuItem.showSubItem(gallery_menu_masks2);
                 }
                 final boolean shouldAutoPlayed = shouldMessageObjectAutoPlayed(newMessageObject);
                 if (!shouldAutoPlayed && TextUtils.isEmpty(placeProvider.getTitleFor(switchingToIndex))) {
@@ -11377,8 +11402,12 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 allowShare = !noforwards;
                 bottomButtonsLayout.setVisibility(View.VISIBLE);
                 paintButton.setVisibility(View.GONE);
-                shareItem.setVisibility(allowShare ? View.VISIBLE : View.GONE);
-                shareButton.setVisibility(allowShare && shareItem.getVisibility() != View.VISIBLE ? View.VISIBLE : View.GONE);
+                if (!CherrygramConfig.INSTANCE.getCenterTitle()) {
+                    shareItem.setVisibility(allowShare ? View.VISIBLE : View.GONE);
+                } else {
+                    shareItem.setVisibility(View.GONE);
+                    shareButton.setVisibility(allowShare ? View.VISIBLE : View.GONE);
+                }
                 actionBar.setTitle(LocaleController.getString("AttachGif", R.string.AttachGif));
             } else {
                 if (totalImagesCount + totalImagesCountMerge != 0 && !needSearchImageInArr) {
@@ -11548,6 +11577,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 menuItem.showSubItem(gallery_menu_save);
             }
             allowShare = !noforwards;
+            if (CherrygramConfig.INSTANCE.getCenterTitle()) shareItem.setVisibility(View.GONE);
             shareButton.setVisibility(allowShare && shareItem.getVisibility() != View.VISIBLE ? View.VISIBLE : View.GONE);
 
             bottomButtonsLayout.setVisibility(!videoPlayerControlVisible ? View.VISIBLE : View.GONE);
@@ -11598,15 +11628,17 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     boolean isMuted = false;
                     float start = 0.0f;
                     float end = 1.0f;
+                    int compressQuality = -1;
                     if (object instanceof MediaController.PhotoEntry) {
                         MediaController.PhotoEntry photoEntry = ((MediaController.PhotoEntry) object);
                         if (photoEntry.editedInfo != null) {
                             isMuted = photoEntry.editedInfo.muted;
                             start = photoEntry.editedInfo.start;
                             end = photoEntry.editedInfo.end;
+                            compressQuality = photoEntry.editedInfo.compressQuality;
                         }
                     }
-                    processOpenVideo(currentPathObject, isMuted, start, end);
+                    processOpenVideo(currentPathObject, isMuted, start, end, compressQuality);
                     if (isDocumentsPicker || Build.VERSION.SDK_INT < 18) {
                         showVideoTimeline(false, animated);
                         videoAvatarTooltip.setVisibility(View.GONE);
@@ -11772,9 +11804,19 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
                 if (!pipAvailable) {
                     pipItem.setEnabled(false);
-                    setItemVisible(pipItem, true, true, 0.5f);
+                    if (CherrygramConfig.INSTANCE.getCenterTitle()) {
+                        setItemVisible(pipItem, false, false);
+                        menuItem.showSubItem(gallery_menu_pip2);
+                    } else {
+                        setItemVisible(pipItem, true, true, 0.5f);
+                    }
                 } else {
-                    setItemVisible(pipItem, true, true);
+                    if (CherrygramConfig.INSTANCE.getCenterTitle()) {
+                        setItemVisible(pipItem, false, false);
+                        menuItem.showSubItem(gallery_menu_pip2);
+                    } else {
+                        setItemVisible(pipItem, true, true);
+                    }
                 }
             } else {
                 menuItem.hideSubItem(gallery_menu_openin);
@@ -11785,7 +11827,12 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             }
             bottomLayout.setTag(null);
 
-            shareItem.setVisibility(allowShare ? View.VISIBLE : View.GONE);
+            if (!CherrygramConfig.INSTANCE.getCenterTitle()) {
+                shareItem.setVisibility(allowShare ? View.VISIBLE : View.GONE);
+            } else {
+                shareItem.setVisibility(View.GONE);
+                shareButton.setVisibility(allowShare ? View.VISIBLE : View.GONE);
+            }
 
             if (currentAnimation != null) {
                 menuItem.hideSubItem(gallery_menu_save);
@@ -11926,8 +11973,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             }
             if (isVideo || isEmbedVideo) {
                 speedItem.setVisibility(View.VISIBLE);
-                speedGap.setVisibility(View.VISIBLE);
                 menuItem.showSubItem(gallery_menu_speed);
+                speedGap.setVisibility(menuItem.getVisibleSubItemsCount() > 1 ? View.VISIBLE : View.GONE);
             } else {
                 speedItem.setVisibility(View.GONE);
                 speedGap.setVisibility(View.GONE);
@@ -16857,7 +16904,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         return new ByteArrayInputStream(output, 0, outPos);
     }
 
-    private void processOpenVideo(final String videoPath, boolean muted, float start, float end) {
+    private void processOpenVideo(final String videoPath, boolean muted, float start, float end, int compressQality) {
         if (currentLoadingVideoRunnable != null) {
             Utilities.globalQueue.cancelRunnable(currentLoadingVideoRunnable);
             currentLoadingVideoRunnable = null;
@@ -16910,7 +16957,11 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         resultHeight = originalHeight = params[AnimatedFileDrawable.PARAM_NUM_HEIGHT];
 
                         updateCompressionsCount(originalWidth, originalHeight);
-                        selectedCompression = selectCompression();
+                        if (compressQality == -1) {
+                            selectedCompression = selectCompression();
+                        } else {
+                            selectedCompression = compressQality;
+                        }
                         updateWidthHeightBitrateForCompression();
 
                         if (selectedCompression > compressionsCount - 1) {

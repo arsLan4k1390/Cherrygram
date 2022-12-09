@@ -1075,7 +1075,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     if (takingPhoto || cameraView == null || ((CameraXView) cameraView).isFlooding()) {
                         return;
                     }
-                    effectSelector.setEnabledButtons(true);
+                    effectSelector.setEnabledButtons(false);
                 }
                 if (shutterButton.getState() != ShutterButton.State.DEFAULT) {
                     resetRecordState();
@@ -1169,6 +1169,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                         MediaController.PhotoEntry photoEntry = new MediaController.PhotoEntry(0, lastImageId--, 0, cameraFile.getAbsolutePath(), orientation, false, width, height, 0);
                         photoEntry.canDeleteAfter = true;
                         openPhotoViewer(photoEntry, sameTakePictureOrientation, false);
+                        effectSelector.setEnabledButtons(true);
                     });
                 }
                 initialEVState = 0.5f;

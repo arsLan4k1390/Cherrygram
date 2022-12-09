@@ -123,6 +123,7 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.VideoEditedInfo;
+import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.camera.CameraController;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
@@ -156,6 +157,8 @@ import java.util.List;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.translator.BaseTranslator;
+import uz.unnarsx.cherrygram.translator.Translator;
 
 public class ChatActivityEnterView extends BlurredFrameLayout implements NotificationCenter.NotificationCenterDelegate, SizeNotifierFrameLayout.SizeNotifierFrameLayoutDelegate, StickersAlert.StickersAlertDelegate {
 
@@ -2028,13 +2031,13 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             public boolean onTextContextMenuItem(int id) {
                 if (id == android.R.id.paste) {
                     isPaste = true;
-                }
 
-                ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData = clipboard.getPrimaryClip();
-                if (clipData != null) {
-                    if (clipData.getItemCount() == 1 && clipData.getDescription().hasMimeType("image/*")) {
-                        editPhoto(clipData.getItemAt(0).getUri(), clipData.getDescription().getMimeType(0));
+                    ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clipData = clipboard.getPrimaryClip();
+                    if (clipData != null) {
+                        if (clipData.getItemCount() == 1 && clipData.getDescription().hasMimeType("image/*")) {
+                            editPhoto(clipData.getItemAt(0).getUri(), clipData.getDescription().getMimeType(0));
+                        }
                     }
                 }
                 return super.onTextContextMenuItem(id);
@@ -3750,6 +3753,32 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 });
                 sendPopupLayout.addView(sendWithoutSoundButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
             }
+
+            if (messageEditText.getText().length() > 0) {
+                ActionBarMenuSubItem preSentTranslateButton = new ActionBarMenuSubItem(getContext(), false, false, resourcesProvider);
+                String languageText = Translator.getCurrentTranslator().getCurrentTargetKeyboardLanguage().toUpperCase();
+                preSentTranslateButton.setTextAndIcon(LocaleController.getString("TranslateMessage", R.string.TranslateMessage) + " (" + languageText + ")", R.drawable.msg_translate);
+                preSentTranslateButton.setMinimumWidth(AndroidUtilities.dp(196));
+                preSentTranslateButton.setOnClickListener(v -> {
+                    if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
+                        sendPopupWindow.dismiss();
+                    }
+                    translatePreSend();
+                });
+                preSentTranslateButton.setOnLongClickListener(view1 -> {
+                    if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
+                        sendPopupWindow.dismiss();
+                    }
+                    Translator.showTranslationTargetSelector(getContext(), true, () -> {
+                        String language = Translator.getCurrentTranslator().getCurrentTargetKeyboardLanguage().toUpperCase();
+                        preSentTranslateButton.setTextAndIcon(LocaleController.getString("TranslateMessage", R.string.TranslateMessage) + " (" + language + ")", R.drawable.msg_translate);
+                        translatePreSend();
+                    }, resourcesProvider);
+                    return false;
+                });
+                sendPopupLayout.addView(preSentTranslateButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+            }
+
             sendPopupLayout.setupRadialSelectors(getThemedColor(Theme.key_dialogButtonSelector));
 
             sendPopupWindow = new ActionBarPopupWindow(sendPopupLayout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT) {
@@ -3792,6 +3821,20 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         }
 
         return false;
+    }
+
+    public void translatePreSend() {
+        Translator.translate(messageEditText.getText().toString(), true, new Translator.TranslateCallBack() {
+            @Override
+            public void onSuccess(BaseTranslator.Result result) {
+                messageEditText.setText((String) result.translation);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
     }
 
     public boolean isSendButtonVisible() {
@@ -4356,7 +4399,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         }
 
         int visibility = getVisibility();
-        if (showKeyboardOnResume && parentFragment.isLastFragment()) {
+        if (showKeyboardOnResume && parentFragment != null && parentFragment.isLastFragment()) {
             showKeyboardOnResume = false;
             if (searchingType == 0) {
                 messageEditText.requestFocus();
@@ -7164,7 +7207,11 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         if (button instanceof TLRPC.TL_keyboardButton) {
             SendMessagesHelper.getInstance(currentAccount).sendMessage(button.text, dialog_id, replyMessageObject, getThreadMessage(), null, false, null, null, null, true, 0, null, false);
         } else if (button instanceof TLRPC.TL_keyboardButtonUrl) {
-            AlertsCreator.showOpenUrlAlert(parentFragment, button.url, false, true, resourcesProvider);
+            if (Browser.urlMustNotHaveConfirmation(button.url)) {
+                Browser.openUrl(parentActivity, button.url);
+            } else {
+                AlertsCreator.showOpenUrlAlert(parentFragment, button.url, false, true, resourcesProvider);
+            }
         } else if (button instanceof TLRPC.TL_keyboardButtonRequestPhone) {
             parentFragment.shareMyContact(2, messageObject);
         } else if (button instanceof TLRPC.TL_keyboardButtonRequestPoll) {

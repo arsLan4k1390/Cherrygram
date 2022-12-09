@@ -180,7 +180,6 @@
     <string name="CP_CameraXDesc">CameraX підтримується тільки на <![CDATA[<a href="https://developer.android.com/training/camerax/devices">вибраних пристроях</a>]]>, ефекти та лінзи залежать від вашого виробника.</string>
     <string name="CP_PerformanceMode">Продуктивний режим</string>
     <string name="CP_PerformanceModeDesc">Якість CameraX буде знижена на користь продуктивності</string>
-    <string name="CP_MotionSmoothness">Згладжування руху</string>
     <string name="CP_CameraTypeSystem">Системна</string>
     <string name="CP_SystemCameraDesc">Дозволяє отримати прямий доступ до системної камери (не застосовується в відеоповідомленнях).</string>
 

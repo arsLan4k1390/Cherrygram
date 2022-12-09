@@ -3,23 +3,24 @@ package uz.unnarsx.cherrygram
 import android.app.Activity
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.content.ComponentName
 import android.content.pm.PackageManager
-import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.BuildConfig
-import org.telegram.messenger.BuildVars
-import org.telegram.messenger.SharedConfig
+import android.util.Log
+import org.telegram.messenger.*
 import org.telegram.tgnet.TLRPC
 import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
+import uz.unnarsx.cherrygram.preferences.string
+//import uz.unnarsx.cherrygram.stickers.StickersIDsDownloader
 import uz.unnarsx.cherrygram.vkui.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.vkui.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.vkui.icon_replaces.SolarIconReplace
 import uz.unnarsx.cherrygram.vkui.icon_replaces.VkIconReplace
+import uz.unnarsx.extras.*
 import uz.unnarsx.extras.LocalVerifications
+import java.net.URL
 import kotlin.system.exitProcess
 
 object CherrygramConfig {
@@ -43,6 +44,7 @@ object CherrygramConfig {
         }
     }
 
+    var centerTitle by sharedPreferences.boolean("AP_CenterTitle", true)
     var disableToolBarShadow by sharedPreferences.boolean("AP_ToolBarShadow", false)
     var flatNavbar by sharedPreferences.boolean("AP_FlatNB", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
@@ -382,8 +384,16 @@ object CherrygramConfig {
 
     // Chats Settings
     //Stickers
+    var blockStickers by sharedPreferences.boolean("CP_BlockStickers", false)
     var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
+    //Direct Share
+    var usersDrawShareButton by sharedPreferences.boolean("CP_UsersDrawShareButton", false)
+//    var groupsDrawShareButton by sharedPreferences.boolean("CP_GroupsDrawShareButton", false)
+    var supergroupsDrawShareButton by sharedPreferences.boolean("CP_SupergroupsDrawShareButton", false)
+    var channelsDrawShareButton by sharedPreferences.boolean("CP_ChannelsDrawShareButton", true)
+    var botsDrawShareButton by sharedPreferences.boolean("CP_BotsDrawShareButton", true)
+    var stickersDrawShareButton by sharedPreferences.boolean("CP_StickersDrawShareButton", false)
     //Chats
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
     var noRounding by sharedPreferences.boolean("CP_NoRounding", false)
@@ -437,17 +447,13 @@ object CherrygramConfig {
         editor.apply()
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
-
-    const val CameraX30 = 30
-    const val CameraX60 = 60
-    var cameraXFps by sharedPreferences.int("CP_CameraXFps",
-        if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH) CameraX60 else CameraX30
-    )
-    fun saveCameraXFps(fps: Int) {
-        cameraXFps = fps
+    
+    var cameraResolution by sharedPreferences.int("CP_CameraResolution", -1)
+    fun saveCameraResolution(fps: Int) {
+        cameraResolution = fps
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
-        editor.putInt("CP_CameraXFps", cameraXFps)
+        editor.putInt("CP_CameraResolution", cameraResolution)
         editor.apply()
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
@@ -611,7 +617,7 @@ object CherrygramConfig {
     }
 
     // Misc
-    var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", false)
+    var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", !ApplicationLoader.checkPlayServices())
     fun toggleResidentNotification() {
         residentNotification = !residentNotification
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
@@ -628,9 +634,45 @@ object CherrygramConfig {
     var forwardNotify by sharedPreferences.boolean("CG_ForwardNotify", true)
     var noAuthorship by sharedPreferences.boolean("CG_NoAuthorship", false)
 
+    //Translator
+    var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")
+    fun setTranslationKeyboardTargetLang(target: String) {
+        translationKeyboardTarget = target
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putString("translationKeyboardTarget", translationKeyboardTarget)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    var translationTarget by sharedPreferences.string("translationTarget", "app")
+    fun setTranslationTargetLang(target: String) {
+        translationTarget = target
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
+            "mainconfig",
+            Activity.MODE_PRIVATE
+        )
+        val editor = preferences.edit()
+        editor.putString("translationTarget", translationTarget)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
     init {
         CherrygramToasts.init(sharedPreferences)
         fuckOff()
+        CherrygramExtras.downloadCherrygramLogo(ApplicationLoader.applicationContext)
+        if (blockStickers) {
+            CherrygramExtras.downloadCherrygramLogo(ApplicationLoader.applicationContext)
+        }
+        /*try {
+            StickersIDsDownloader.SET_IDS = URL("https://raw.githubusercontent.com/arsLan4k1390/Cherrygram/main/stickers.txt").readText().lines()
+//            Log.d("SetsDownloader", StickersIDsDownloader.SET_IDS.toString())
+        }
+        catch (e: Exception) { }*/
     }
 
     private fun fuckOff() {

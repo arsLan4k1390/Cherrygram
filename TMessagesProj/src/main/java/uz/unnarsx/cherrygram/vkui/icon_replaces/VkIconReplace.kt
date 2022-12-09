@@ -124,5 +124,10 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_mini_qr to R.drawable.qr_code_outline_28, // active sessions QR
             R.drawable.msg_qr_mini to R.drawable.qr_code_outline_28, // ProfileActivity QR
 
+            R.drawable.msg_email to R.drawable.mail_outline_28,
+            R.drawable.msg_storage_usage to R.drawable.coins_24_balance_filled_24,
+            R.drawable.msg_data_usage to R.drawable.sort_outline_28,
+            R.drawable.msg_calls_regular to R.drawable.phone_wave_outline_28,
+
     )
 }

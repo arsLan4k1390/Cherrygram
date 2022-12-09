@@ -180,7 +180,6 @@
     <string name="CP_CameraXDesc">CameraX 仅支持 <![CDATA[<a href="https://developer.android.com/training/camerax/devices">下述设备</a>]]>，效果和镜头支持取决于您的硬件</string>
     <string name="CP_PerformanceMode">高性能模式</string>
     <string name="CP_PerformanceModeDesc">CameraX的质量会有所降低，提高性能</string>
-    <string name="CP_MotionSmoothness">取景框帧率</string>
     <string name="CP_CameraTypeSystem">系统相机</string>
     <string name="CP_SystemCameraDesc">使用系统相机（视频消息不可用）</string>
     <string name="CP_CameraAspectRatio">相机宽高比</string>

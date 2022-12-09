@@ -179,7 +179,6 @@
     <string name="CP_CameraXDesc">CámaraX solo está soportado en <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, el soporte de efectos y lentes depende de su fabricante.</string>
     <string name="CP_PerformanceMode">Modo de rendimiento</string>
     <string name="CP_PerformanceModeDesc">La calidad de CameraX se reducirá en favor del rendimiento</string>
-    <string name="CP_MotionSmoothness">Suavizado de movimiento</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Accede directamente a la cámara del sistema (no aplica para videomensajes).</string>
     <string name="CP_CameraAspectRatio">Relación de aspecto de cámara</string>
