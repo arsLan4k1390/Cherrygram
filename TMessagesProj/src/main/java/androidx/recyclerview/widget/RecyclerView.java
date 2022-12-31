@@ -71,6 +71,7 @@ import androidx.annotation.Px;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.os.TraceCompat;
+import androidx.core.util.Consumer;
 import androidx.core.util.Preconditions;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.InputDeviceCompat;
@@ -97,7 +98,7 @@ import java.util.Collections;
 import java.util.List;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.utils.VibrateUtil;
+import uz.unnarsx.cherrygram.extras.VibrateUtil;
 
 /**
  * A flexible view for providing a limited window into a large data set.
@@ -631,6 +632,18 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
 
     public View getHiddenChildAt(int index) {
         return mChildHelper.getHiddenChildAt(index);
+    }
+
+    public void forAllChild(Consumer<View> callback) {
+        for (int i = 0; i < getChildCount(); i++) {
+            callback.accept(getChildAt(i));
+        }
+        for (int i = 0; i < getHiddenChildCount(); i++) {
+            callback.accept(getHiddenChildAt(i));
+        }
+        for (int i = 0; i < getAttachedScrapChildCount(); i++) {
+            callback.accept(getAttachedScrapChildAt(i));
+        }
     }
 
     void applyEdgeEffectColor(EdgeEffect edgeEffect) {

@@ -3838,21 +3838,21 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
 
             int date = (int) (System.currentTimeMillis() / 1000);
             DialogCell.CustomDialog customDialog = new DialogCell.CustomDialog();
-            customDialog.name = LocaleController.getString("ThemePreviewDialog1", R.string.ThemePreviewDialog1);
-            customDialog.message = LocaleController.getString("ThemePreviewDialogMessage1", R.string.ThemePreviewDialogMessage1);
+            customDialog.name = "unn::ars X";
+            customDialog.message = "\uD83C\uDF52";
             customDialog.id = 0;
             customDialog.unread_count = 0;
             customDialog.pinned = true;
             customDialog.muted = false;
             customDialog.type = 0;
             customDialog.date = date;
-            customDialog.verified = false;
+            customDialog.verified = true;
             customDialog.isMedia = false;
             customDialog.sent = DialogCell.SENT_STATE_READ;
             dialogs.add(customDialog);
 
             customDialog = new DialogCell.CustomDialog();
-            customDialog.name = LocaleController.getString("ThemePreviewDialog2", R.string.ThemePreviewDialog2);
+            customDialog.name = LocaleController.getString("CG_AppName", R.string.CG_AppName) + " \uD83C\uDF52";
             customDialog.message = LocaleController.getString("ThemePreviewDialogMessage2", R.string.ThemePreviewDialogMessage2);
             customDialog.id = 1;
             customDialog.unread_count = 2;

@@ -630,6 +630,12 @@
                   android:excludeFromRecents="true"
                   android:exported="true"
                 android:theme="@style/Theme.TMessages.TransparentWithAlerts"/>
+        <activity
+            android:name="uz.unnarsx.cherrygram.helpers.AppRestartHelper"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:process=":cherrygram"
+            android:exported="false"
+            />
 
         <receiver
             android:name=".AutoMessageHeardReceiver"

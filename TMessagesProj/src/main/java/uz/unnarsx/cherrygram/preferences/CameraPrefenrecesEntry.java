@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.camera.CameraTypeSelector;
-import uz.unnarsx.cherrygram.camera.CameraXUtilities;
+import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.helpers.EntitiesHelper;
 import uz.unnarsx.cherrygram.helpers.PopupHelper;
 
@@ -121,12 +121,12 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                 }
                 restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
             } else if (position == cameraXQualityRow) {
-                Map<Quality, Size> availableSizes = CameraXUtilities.getAvailableVideoSizes();
+                Map<Quality, Size> availableSizes = CameraXUtils.getAvailableVideoSizes();
                 Stream<Integer> tmp = availableSizes.values().stream().sorted(Comparator.comparingInt(Size::getWidth).reversed()).map(Size::getHeight);
                 ArrayList<Integer> types = tmp.collect(Collectors.toCollection(ArrayList::new));
                 ArrayList<String> arrayList = types.stream().map(p -> p + "p").collect(Collectors.toCollection(ArrayList::new));
                 PopupHelper.show(arrayList, LocaleController.getString("CP_CameraQuality", R.string.CP_CameraQuality), types.indexOf(CherrygramConfig.INSTANCE.getCameraResolution()), context, i -> {
-                    CherrygramConfig.INSTANCE.saveCameraResolution(types.get(i));
+                    CherrygramConfig.INSTANCE.setCameraResolution(types.get(i));
                     listAdapter.notifyItemChanged(cameraXQualityRow);
                     restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
                 });
@@ -172,7 +172,7 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
         cameraXQualityRow = -1;
         cameraAdviseRow = -1;
 
-        if (CameraXUtilities.isCameraXSupported()) {
+        if (CameraXUtils.isCameraXSupported()) {
             cameraTypeHeaderRow = rowCount++;
             cameraTypeSelectorRow = rowCount++;
             if (CherrygramConfig.INSTANCE.getCameraType() == 1) {
@@ -318,16 +318,20 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                         @Override
                         protected void onSelectedCamera(int cameraSelected) {
                             super.onSelectedCamera(cameraSelected);
+                            int oldValue = CherrygramConfig.INSTANCE.getCameraType();
+                            CherrygramConfig.INSTANCE.setCameraType(cameraSelected);
                             if (cameraSelected == 1) {
                                 updateRowsId(false);
                                 listAdapter.notifyItemInserted(cameraXOptimizeRow);
                                 listAdapter.notifyItemInserted(cameraXQualityRow);
                                 listAdapter.notifyItemChanged(cameraAdviseRow);
-                            } else {
+                            } else if (oldValue == 1){
                                 listAdapter.notifyItemRemoved(cameraXOptimizeRow);
                                 listAdapter.notifyItemRemoved(cameraXQualityRow);
                                 listAdapter.notifyItemChanged(cameraAdviseRow - 1);
                                 updateRowsId(false);
+                            } else {
+                                listAdapter.notifyItemChanged(cameraAdviseRow);
                             }
                         }
                     };

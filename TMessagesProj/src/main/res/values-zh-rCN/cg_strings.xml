@@ -63,6 +63,10 @@
     <string name="CG_AppCrashedDesc">Cherrygram 已停止运行。请将日志发送给开发者，以帮助修复这个问题</string>
     <string name="CG_CopyReportDetails">复制崩溃信息</string>
     <string name="CG_ReportDetailsCopied">崩溃信息已复制到剪切板</string>
+    <string name="CG_TranslationLanguage">目标语言</string>
+    <string name="CG_SaveSticker">保存贴纸</string>
+    <string name="CG_FailedToSaveSticker">保存贴纸失败，贴纸可能尚未加载完成</string>
+    <string name="CG_StickerSavedHint">贴纸已保存到下载文件夹</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -93,6 +97,7 @@
     <string name="AP_IconReplacement_VKUI">VKUI 图标</string>
     <string name="AP_IconReplacement_Solar">Solar 图标</string>
     <string name="AP_IconReplacement_Default">默认</string>
+    <string name="AP_CenterTitle">标题居中</string>
     <string name="AP_ToolBarShadow">禁用工具栏阴影</string>
     <string name="AP_TransparentSB">透明状态栏</string>
     <string name="AP_FlatNB">透明导航栏</string>
@@ -137,6 +142,8 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">聊天</string>
     <string name="CP_Slider_StickerAmplifier">调整贴纸大小</string>
+    <string name="CP_BlockSomeSets">屏蔽部分贴纸</string>
+    <string name="CP_BlockSomeSets_Desc">一些会导致应用崩溃的贴纸将被Cherrygram的Logo替代。 \n\"Cherrygram Logo\" 文件将在您启用该功能并重启应用后下载</string>
     <string name="CP_TimeOnStick">隐藏贴纸时间</string>
     <string name="CP_UnreadBadgeOnBackButton">显示未读聊天数量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已打开的聊天中显示未读消息数</string>
@@ -180,6 +187,7 @@
     <string name="CP_CameraXDesc">CameraX 仅支持 <![CDATA[<a href="https://developer.android.com/training/camerax/devices">下述设备</a>]]>，效果和镜头支持取决于您的硬件</string>
     <string name="CP_PerformanceMode">高性能模式</string>
     <string name="CP_PerformanceModeDesc">CameraX的质量会有所降低，提高性能</string>
+    <string name="CP_CameraQuality">相机质量</string>
     <string name="CP_CameraTypeSystem">系统相机</string>
     <string name="CP_SystemCameraDesc">使用系统相机（视频消息不可用）</string>
     <string name="CP_CameraAspectRatio">相机宽高比</string>

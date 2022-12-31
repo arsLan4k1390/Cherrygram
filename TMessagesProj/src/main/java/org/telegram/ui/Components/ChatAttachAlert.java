@@ -123,6 +123,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
     public boolean canOpenPreview = false;
     private boolean isSoundPicker = false;
+    private ImageUpdater.AvatarFor setAvatarFor;
 
     public void setCanOpenPreview(boolean canOpenPreview) {
         this.canOpenPreview = canOpenPreview;
@@ -312,6 +313,11 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     public void onSetBackButtonVisible(boolean visible) {
                         AndroidUtilities.updateImageViewImageAnimated(actionBar.getBackButton(), visible ? R.drawable.ic_ab_back : R.drawable.ic_close_white);
                     }
+
+                    @Override
+                    public boolean isClipboardAvailable() {
+                        return true;
+                    }
                 });
                 MessageObject replyingObject = ((ChatActivity) baseFragment).getChatActivityEnterView().getReplyingMessageObject();
                 botAttachLayouts.get(id).requestWebView(currentAccount, ((ChatActivity) baseFragment).getDialogId(), id, false, replyingObject != null ? replyingObject.messageOwner.id : 0, startCommand);
@@ -330,6 +336,14 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         } else {
             return false;
         }
+    }
+
+    public void avatarFor(ImageUpdater.AvatarFor avatarFor) {
+        setAvatarFor = avatarFor;
+    }
+
+    public ImageUpdater.AvatarFor getAvatarFor() {
+        return setAvatarFor;
     }
 
     public interface ChatAttachViewDelegate {
@@ -363,6 +377,9 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         @Override
         public void setValue(AttachAlertLayout object, float value) {
             translationProgress = value;
+            if (nextAttachLayout == null) {
+                return;
+            }
             if (nextAttachLayout instanceof ChatAttachAlertPhotoLayoutPreview || currentAttachLayout instanceof ChatAttachAlertPhotoLayoutPreview) {
                 int width = Math.max(nextAttachLayout.getWidth(), currentAttachLayout.getWidth());
                 if (nextAttachLayout instanceof ChatAttachAlertPhotoLayoutPreview) {
@@ -1859,6 +1876,8 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         selectedTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         selectedTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         selectedTextView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+        selectedTextView.setMaxLines(1);
+        selectedTextView.setEllipsize(TextUtils.TruncateAt.END);
         selectedView.addView(selectedTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL));
 
         selectedArrowImageView = new ImageView(context);
@@ -2794,6 +2813,14 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 viewChangeAnimator = springAnimation;
             });
         }
+    }
+
+    public AttachAlertLayout getCurrentAttachLayout() {
+        return currentAttachLayout;
+    }
+
+    public ChatAttachAlertPhotoLayoutPreview getPhotoPreviewLayout() {
+        return photoPreviewLayout;
     }
 
     public void updatePhotoPreview(boolean show) {
@@ -3779,6 +3806,10 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         } else {
             typeButtonsAvailable = true;
         }
+    }
+
+    public TextView getSelectedTextView() {
+        return selectedTextView;
     }
 
     public void setSoundPicker() {

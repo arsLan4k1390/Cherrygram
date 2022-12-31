@@ -1,0 +1,13 @@
+package uz.unnarsx.cherrygram
+
+object Extra {
+    // https://core.telegram.org/api/obtaining_api_id
+    const val APP_ID = 0123
+    const val APP_HASH = ""
+
+    // https://developers.google.com/identity/sms-retriever/verify#computing_your_apps_hash_string
+    const val SMS_HASH = ""
+
+    const val APPCENTER_SECRET = ""
+    const val PLAYSTORE_APP_URL = ""
+}

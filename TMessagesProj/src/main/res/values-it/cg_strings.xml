@@ -63,6 +63,10 @@
     <string name="CG_AppCrashedDesc">Cherrygram ha smesso di funzionare. Per favore, invia i log agli sviluppatori in modo che possano correggere questo bug il prima possibile.</string>
     <string name="CG_CopyReportDetails">Copia dettagli report</string>
     <string name="CG_ReportDetailsCopied">Dettagli report copiati negli appunti.</string>
+    <string name="CG_TranslationLanguage">Lingua di traduzione</string>
+    <string name="CG_SaveSticker">Salva sticker</string>
+    <string name="CG_FailedToSaveSticker">Impossibile salvare l\'adesivo. L\'adesivo potrebbe non essere stato ancora caricato.</string>
+    <string name="CG_StickerSavedHint">Sticker salvato nei download</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -93,6 +97,7 @@
     <string name="AP_IconReplacement_VKUI">Icone VKUI</string>
     <string name="AP_IconReplacement_Solar">Icone solari di @Design480</string>
     <string name="AP_IconReplacement_Default">Predefinito</string>
+    <string name="AP_CenterTitle">Centra titolo nella barra delle azioni</string>
     <string name="AP_ToolBarShadow">Disabilita ombra barra strumenti</string>
     <string name="AP_TransparentSB">Barra di stato trasparente</string>
     <string name="AP_FlatNB">Barra di navigazione trasparente</string>
@@ -137,6 +142,8 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chat</string>
     <string name="CP_Slider_StickerAmplifier">Aumento dimensioni sticker</string>
+    <string name="CP_BlockSomeSets">Blocca alcuni adesivi</string>
+    <string name="CP_BlockSomeSets_Desc">Alcuni adesivi che forzano il crash dell\'applicazione verranno sostituiti dal logo di Cherrygram. Il file \n\"Cherrygram Logo\" verrà scaricato dopo aver attivato la funzionalità e riavviato l\'app.</string>
     <string name="CP_TimeOnStick">Nascondi orario su sticker in chat</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostra contatore chat non lette</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Abilita il contatore delle chat non lette sul pulsante indietro nella chat aperta</string>
@@ -180,6 +187,7 @@
     <string name="CP_CameraXDesc">CameraX è supportata solo su <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivi selezionati</a>]]>, il supporto agli effetti e alle lenti dipende dal produttore.</string>
     <string name="CP_PerformanceMode">Modalità prestazioni</string>
     <string name="CP_PerformanceModeDesc">La qualità di CameraX sarà ridotta a favore delle prestazioni</string>
+    <string name="CP_CameraQuality">Qualità della fotocamera</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Accedi direttamente alla fotocamera di sistema (non applicabile per i videomessaggi).</string>
     <string name="CP_CameraAspectRatio">Rapporto proporzioni fotocamera</string>

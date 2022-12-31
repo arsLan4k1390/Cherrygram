@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
-import android.util.Log
 import org.telegram.messenger.*
 import org.telegram.tgnet.TLRPC
+import uz.unnarsx.cherrygram.extras.CherrygramExtras
 import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
@@ -14,12 +14,11 @@ import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
 //import uz.unnarsx.cherrygram.stickers.StickersIDsDownloader
-import uz.unnarsx.cherrygram.vkui.icon_replaces.BaseIconReplace
-import uz.unnarsx.cherrygram.vkui.icon_replaces.NoIconReplace
-import uz.unnarsx.cherrygram.vkui.icon_replaces.SolarIconReplace
-import uz.unnarsx.cherrygram.vkui.icon_replaces.VkIconReplace
-import uz.unnarsx.extras.*
-import uz.unnarsx.extras.LocalVerifications
+import uz.unnarsx.cherrygram.icons.icon_replaces.BaseIconReplace
+import uz.unnarsx.cherrygram.icons.icon_replaces.NoIconReplace
+import uz.unnarsx.cherrygram.icons.icon_replaces.SolarIconReplace
+import uz.unnarsx.cherrygram.icons.icon_replaces.VkIconReplace
+import uz.unnarsx.cherrygram.extras.LocalVerifications
 import java.net.URL
 import kotlin.system.exitProcess
 
@@ -49,13 +48,14 @@ object CherrygramConfig {
     var flatNavbar by sharedPreferences.boolean("AP_FlatNB", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
 
+    var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false)
+    var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", true)
+    var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", true)
+
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
     fun toggleOldNotificationIcon() { // Telegram chats settings
         oldNotificationIcon = !oldNotificationIcon
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("AP_Old_Notification_Icon", oldNotificationIcon)
         editor.apply()
@@ -65,10 +65,7 @@ object CherrygramConfig {
     var defaultNotificationName by sharedPreferences.boolean("AP_Default_Notification_Name", false)
     fun toggleDefaultNotificationName() { // Telegram chats settings
         defaultNotificationName = !defaultNotificationName
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("AP_Default_Notification_Name", defaultNotificationName)
         editor.apply()
@@ -78,10 +75,7 @@ object CherrygramConfig {
     var filterLauncherIcon by sharedPreferences.boolean("AP_Filter_Launcher_Icon", false)
     fun toggleAppIconFilter() { // Telegram chats settings
         filterLauncherIcon = !filterLauncherIcon
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("AP_Filter_Launcher_Icon", filterLauncherIcon)
         editor.apply()
@@ -100,10 +94,7 @@ object CherrygramConfig {
     var newTabs_hideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
     fun toggleNewTabs_hideAllChats() { // Telegram folders settings
         newTabs_hideAllChats = !newTabs_hideAllChats
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("CP_NewTabs_RemoveAllChats", newTabs_hideAllChats)
         editor.apply()
@@ -114,10 +105,7 @@ object CherrygramConfig {
     var vkuiFoldersStyle by sharedPreferences.boolean("CP_VKUIFoldersStyle", false)
     fun toggleVKUIFoldersStyle() { // Telegram folders settings
         vkuiFoldersStyle = !vkuiFoldersStyle
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("CP_VKUIFoldersStyle", vkuiFoldersStyle)
         editor.apply()
@@ -129,10 +117,7 @@ object CherrygramConfig {
     var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
     fun toggleNewTabs_noUnread() { // Telegram folders settings
         newTabs_noUnread = !newTabs_noUnread
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("CP_NewTabs_NoCounter", newTabs_noUnread)
         editor.apply()
@@ -143,26 +128,11 @@ object CherrygramConfig {
     const val TAB_TYPE_MIX = 1 // Telegram folders settings
     const val TAB_TYPE_ICON = 2 // Telegram folders settings
     var tabMode by sharedPreferences.int("CG_FoldersType", 0)
-    @JvmName("TabMode")
-    fun setTabMode(mode: Int) { // Telegram folders settings
-        tabMode = mode
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putInt("CG_FoldersType", tabMode)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
     //Drawer
     var drawerAvatar by sharedPreferences.boolean("AP_DrawerAvatar", true)
     fun toggleDrawerAvatar() {
         drawerAvatar = !drawerAvatar
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("AP_DrawerAvatar", drawerAvatar)
         editor.apply()
@@ -172,10 +142,7 @@ object CherrygramConfig {
     var drawerSmallAvatar by sharedPreferences.boolean("AP_DrawerSmallAvatar", true)
     fun toggleDrawerSmallAvatar() {
         drawerSmallAvatar = !drawerSmallAvatar
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("AP_DrawerSmallAvatar", drawerSmallAvatar)
         editor.apply()
@@ -185,10 +152,7 @@ object CherrygramConfig {
     var drawerDarken by sharedPreferences.boolean("AP_DrawerDarken", true)
     fun toggleDrawerDarken() {
         drawerDarken = !drawerDarken
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("AP_DrawerDarken", drawerDarken)
         editor.apply()
@@ -198,10 +162,7 @@ object CherrygramConfig {
     var drawerGradient by sharedPreferences.boolean("AP_DrawerGradient", true)
     fun toggleDrawerGradient() {
         drawerGradient = !drawerGradient
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("AP_DrawerGradient", drawerGradient)
         editor.apply()
@@ -211,172 +172,29 @@ object CherrygramConfig {
     var drawerBlur by sharedPreferences.boolean("AP_DrawerBlur", true)
     fun toggleDrawerBlur() {
         drawerBlur = !drawerBlur
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("AP_DrawerBlur", drawerBlur)
         editor.apply()
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
-    var drawerBlurIntensity by sharedPreferences.int("AP_DrawerBlurIntensity", 75)
-    fun saveDrawerBlurIntensity(intensity: Int) {
-        drawerBlurIntensity = intensity
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putInt("AP_DrawerBlurIntensity", drawerBlurIntensity)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
+    var drawerBlurIntensity by sharedPreferences.int("AP_DrawerBlur_Intensity", 40)
 
     var eventType by sharedPreferences.int("AP_DrawerEventType", 0)
-    fun saveEventType(type: Int) {
-        eventType = type
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putInt("AP_DrawerEventType", eventType)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
 
     //Drawer buttons
-    var CreateGroupDrawerButton by sharedPreferences.boolean("AP_CreateGroupDrawerButton", false)
-    fun toggleCreateGroupDrawerButton() {
-        CreateGroupDrawerButton = !CreateGroupDrawerButton
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putBoolean("AP_CreateGroupDrawerButton", CreateGroupDrawerButton)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
+    var createGroupDrawerButton by sharedPreferences.boolean("AP_CreateGroupDrawerButton", false)
+    var secretChatDrawerButton by sharedPreferences.boolean("AP_SecretChatDrawerButton", false)
+    var createChannelDrawerButton by sharedPreferences.boolean("AP_CreateChannelDrawerButton", false)
+    var contactsDrawerButton by sharedPreferences.boolean("AP_ContactsDrawerButton", false)
+    var callsDrawerButton by sharedPreferences.boolean("AP_CallsDrawerButton", true)
+    var savedMessagesDrawerButton by sharedPreferences.boolean("AP_SavedMessagesDrawerButton", true)
+    var archivedChatsDrawerButton by sharedPreferences.boolean("AP_ArchivedChatsDrawerButton", true)
+    var peopleNearbyDrawerButton by sharedPreferences.boolean("AP_PeopleNearbyDrawerButton", false)
+    var scanQRDrawerButton by sharedPreferences.boolean("AP_ScanQRDrawerButton", true)
+    var cGPreferencesDrawerButton by sharedPreferences.boolean("AP_CGPreferencesDrawerButton", true)
 
-    var SecretChatDrawerButton by sharedPreferences.boolean("AP_SecretChatDrawerButton", false)
-    fun toggleSecretChatDrawerButton() {
-        SecretChatDrawerButton = !SecretChatDrawerButton
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putBoolean("AP_SecretChatDrawerButton", SecretChatDrawerButton)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
-    var CreateChannelDrawerButton by sharedPreferences.boolean("AP_CreateChannelDrawerButton", false)
-    fun toggleCreateChannelDrawerButton() {
-        CreateChannelDrawerButton = !CreateChannelDrawerButton
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putBoolean("AP_CreateChannelDrawerButton", CreateChannelDrawerButton)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
-    var ContactsDrawerButton by sharedPreferences.boolean("AP_ContactsDrawerButton", false)
-    fun toggleContactsDrawerButton() {
-        ContactsDrawerButton = !ContactsDrawerButton
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putBoolean("AP_ContactsDrawerButton", ContactsDrawerButton)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
-    var CallsDrawerButton by sharedPreferences.boolean("AP_CallsDrawerButton", true)
-    fun toggleCallsDrawerButton() {
-        CallsDrawerButton = !CallsDrawerButton
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putBoolean("AP_CallsDrawerButton", CallsDrawerButton)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
-    var SavedMessagesDrawerButton by sharedPreferences.boolean("AP_SavedMessagesDrawerButton", true)
-    fun toggleSavedMessagesDrawerButton() {
-        SavedMessagesDrawerButton = !SavedMessagesDrawerButton
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putBoolean("AP_SavedMessagesDrawerButton", SavedMessagesDrawerButton)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
-    var ArchivedChatsDrawerButton by sharedPreferences.boolean("AP_ArchivedChatsDrawerButton", true)
-    fun toggleArchivedChatsDrawerButton() {
-        ArchivedChatsDrawerButton = !ArchivedChatsDrawerButton
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putBoolean("AP_ArchivedChatsDrawerButton", ArchivedChatsDrawerButton)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
-    var PeopleNearbyDrawerButton by sharedPreferences.boolean("AP_PeopleNearbyDrawerButton", false)
-    fun togglePeopleNearbyDrawerButton() {
-        PeopleNearbyDrawerButton = !PeopleNearbyDrawerButton
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putBoolean("AP_PeopleNearbyDrawerButton", PeopleNearbyDrawerButton)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
-    var ScanQRDrawerButton by sharedPreferences.boolean("AP_ScanQRDrawerButton", true)
-    fun toggleScanQRDrawerButton() {
-        ScanQRDrawerButton = !ScanQRDrawerButton
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putBoolean("AP_ScanQRDrawerButton", ScanQRDrawerButton)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
-    var CGPreferencesDrawerButton by sharedPreferences.boolean("AP_CGPreferencesDrawerButton", true)
-    fun toggleCGPreferencesDrawerButton() {
-        CGPreferencesDrawerButton = !CGPreferencesDrawerButton
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putBoolean("AP_CGPreferencesDrawerButton", CGPreferencesDrawerButton)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
     //Profile and Contacts
     var hidePhoneNumber by sharedPreferences.boolean("AP_HideUserPhone", false)
     var showId by sharedPreferences.boolean("AP_ShowID", false)
@@ -428,17 +246,9 @@ object CherrygramConfig {
 
     // Camera Settings
     //Camera type
-    var cameraType by sharedPreferences.int("CP_CameraType", 0) /*CameraXUtilities.getDefault());*/
-    fun saveCameraType(type: Int) {
-        cameraType = type
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-        val editor = preferences.edit()
-        editor.putInt("CP_CameraType", cameraType)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
+    var cameraType by sharedPreferences.int("CP_CameraType", 0)
 
-    var useCameraXOptimizedMode by sharedPreferences.boolean("CP_CameraXOptimizedMode", false)/*SharedConfig.getDevicePerformanceClass() != SharedConfig.PERFORMANCE_CLASS_HIGH)*/;
+    var useCameraXOptimizedMode by sharedPreferences.boolean("CP_CameraXOptimizedMode", false)
     fun toggleCameraXOptimizedMode() {
         useCameraXOptimizedMode = !useCameraXOptimizedMode
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
@@ -449,22 +259,11 @@ object CherrygramConfig {
     }
     
     var cameraResolution by sharedPreferences.int("CP_CameraResolution", -1)
-    fun saveCameraResolution(fps: Int) {
-        cameraResolution = fps
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-        val editor = preferences.edit()
-        editor.putInt("CP_CameraResolution", cameraResolution)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
     //Camera
     var disableAttachCamera by sharedPreferences.boolean("CP_DisableCam", false)
     fun toggleDisableAttachCamera() {
         disableAttachCamera = !disableAttachCamera
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("CP_DisableCam", disableAttachCamera)
         editor.apply()
@@ -474,10 +273,7 @@ object CherrygramConfig {
     var rearCam by sharedPreferences.boolean("CP_RearCam", false)
     fun toggleRearCam() {
         rearCam = !rearCam
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("CP_RearCam", rearCam)
         editor.apply()
@@ -488,18 +284,6 @@ object CherrygramConfig {
     const val Camera4to3 = 1
     const val Camera1to1 = 2
     var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", Camera16to9)
-    @JvmName("setCameraAspectRatio1")
-    fun setCameraAspectRatio(aspectRatio: Int) {
-        cameraAspectRatio = aspectRatio
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putInt("CP_CameraAspectRatio", aspectRatio)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
 
     // Privacy
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
@@ -509,26 +293,11 @@ object CherrygramConfig {
     const val BOOST_AVERAGE = 1
     const val BOOST_EXTREME = 2
     var downloadSpeedBoost by sharedPreferences.int("EP_DownloadSpeedBoost", BOOST_NONE)
-    @JvmName("setDownloadSpeedBoost1")
-    fun setDownloadSpeedBoost(boost: Int) {
-        downloadSpeedBoost = boost
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putInt("EP_DownloadSpeedBoost", boost)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
 
     var uploadSpeedBoost by sharedPreferences.boolean("EP_UploadSpeedBoost", false)
     fun toggleUploadSpeedBoost() {
         uploadSpeedBoost = !uploadSpeedBoost
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("EP_UploadSpeedBoost", uploadSpeedBoost)
         editor.apply()
@@ -538,10 +307,7 @@ object CherrygramConfig {
     var slowNetworkMode by sharedPreferences.boolean("EP_SlowNetworkMode", false)
     fun toggleSlowNetworkMode() {
         slowNetworkMode = !slowNetworkMode
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("EP_SlowNetworkMode", slowNetworkMode)
         editor.apply()
@@ -551,10 +317,7 @@ object CherrygramConfig {
     var showRPCError by sharedPreferences.boolean("EP_ShowRPCError", false)
     fun toggleShowRPCError() {
         showRPCError = !showRPCError
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("EP_ShowRPCError", showRPCError)
         editor.apply()
@@ -565,10 +328,7 @@ object CherrygramConfig {
     var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", BuildVars.isBetaApp())
     fun toggleInstallBetas() {
         installBetas = !installBetas
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("CG_Install_Beta_Ver", installBetas)
         editor.apply()
@@ -578,10 +338,7 @@ object CherrygramConfig {
     var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", true)
     fun toggleAutoOTA() {
         autoOTA = !autoOTA
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("CG_Auto_OTA", autoOTA)
         editor.apply()
@@ -589,41 +346,13 @@ object CherrygramConfig {
     }
 
     var lastUpdateCheckTime by sharedPreferences.long("CG_LastUpdateCheckTime", 0)
-    @JvmName("setLastUpdateCheckTime1")
-    fun setLastUpdateCheckTime(time: Long) {
-        lastUpdateCheckTime = time
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putLong("CG_LastUpdateCheckTime", lastUpdateCheckTime)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
     var updateScheduleTimestamp by sharedPreferences.long("CG_UpdateScheduleTimestamp", 0)
-    @JvmName("updateScheduleTimestamp1")
-    fun setUpdateScheduleTimestamp(timestamp: Long) {
-        updateScheduleTimestamp = timestamp
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putLong("CG_UpdateScheduleTimestamp", updateScheduleTimestamp)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
 
     // Misc
     var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", !ApplicationLoader.checkPlayServices())
     fun toggleResidentNotification() {
         residentNotification = !residentNotification
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("CG_ResidentNotification", residentNotification)
         editor.apply()
@@ -636,35 +365,11 @@ object CherrygramConfig {
 
     //Translator
     var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")
-    fun setTranslationKeyboardTargetLang(target: String) {
-        translationKeyboardTarget = target
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putString("translationKeyboardTarget", translationKeyboardTarget)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
     var translationTarget by sharedPreferences.string("translationTarget", "app")
-    fun setTranslationTargetLang(target: String) {
-        translationTarget = target
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences(
-            "mainconfig",
-            Activity.MODE_PRIVATE
-        )
-        val editor = preferences.edit()
-        editor.putString("translationTarget", translationTarget)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
 
     init {
         CherrygramToasts.init(sharedPreferences)
         fuckOff()
-        CherrygramExtras.downloadCherrygramLogo(ApplicationLoader.applicationContext)
         if (blockStickers) {
             CherrygramExtras.downloadCherrygramLogo(ApplicationLoader.applicationContext)
         }

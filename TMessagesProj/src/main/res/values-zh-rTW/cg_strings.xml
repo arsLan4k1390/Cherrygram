@@ -63,6 +63,10 @@
     <string name="CG_AppCrashedDesc">Cherrygram 已停止執行。請將日誌傳送至開發者，以協助修復這個問題</string>
     <string name="CG_CopyReportDetails">複製崩潰錯誤訊息</string>
     <string name="CG_ReportDetailsCopied">崩潰錯誤訊息已複製至剪貼簿</string>
+    <string name="CG_TranslationLanguage">翻譯語言</string>
+    <string name="CG_SaveSticker">儲存貼圖</string>
+    <string name="CG_FailedToSaveSticker">儲存貼圖失敗，貼圖可能尚未載入完成</string>
+    <string name="CG_StickerSavedHint">貼圖已儲存至下載資料夾</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -93,6 +97,7 @@
     <string name="AP_IconReplacement_VKUI">VKUI 圖示</string>
     <string name="AP_IconReplacement_Solar">由 @Design480 設計的 Solar 圖示</string>
     <string name="AP_IconReplacement_Default">預設</string>
+    <string name="AP_CenterTitle">在操作列中置中標題</string>
     <string name="AP_ToolBarShadow">停用工具列陰影</string>
     <string name="AP_TransparentSB">透明狀態列</string>
     <string name="AP_FlatNB">透明導覽列</string>
@@ -137,6 +142,8 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">對話</string>
     <string name="CP_Slider_StickerAmplifier">調整貼圖大小</string>
+    <string name="CP_BlockSomeSets">封鎖部分貼圖</string>
+    <string name="CP_BlockSomeSets_Desc">一些會導致應用程式崩潰的貼圖將被Cherrygram的Logo替代。 \n「Cherrygram Logo」檔案將在您啟用該功能並重新啟動後下載</string>
     <string name="CP_TimeOnStick">隱藏貼圖時間</string>
     <string name="CP_UnreadBadgeOnBackButton">顯示未讀對話數量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已開啟的對話中顯示未讀訊息數量</string>
@@ -180,6 +187,7 @@
     <string name="CP_CameraXDesc">CameraX 僅支援 <![CDATA[<a href="https://developer.android.com/training/camerax/devices">下列裝置</a>]]>，效果和鏡頭支援取決於您的硬體</string>
     <string name="CP_PerformanceMode">高效能模式</string>
     <string name="CP_PerformanceModeDesc">CameraX的品質會有所降低，以提高效能</string>
+    <string name="CP_CameraQuality">相機品質</string>
     <string name="CP_CameraTypeSystem">系統相機</string>
     <string name="CP_SystemCameraDesc">使用系統相機 (在視訊訊息中不可用)</string>
     <string name="CP_CameraAspectRatio">相機縱橫比</string>

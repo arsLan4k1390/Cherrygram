@@ -63,7 +63,7 @@ import java.util.List;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
-import uz.unnarsx.cherrygram.utils.VibrateUtil;
+import uz.unnarsx.cherrygram.extras.VibrateUtil;
 
 
 public class ActionBarLayout extends FrameLayout implements INavigationLayout, FloatingDebugProvider {

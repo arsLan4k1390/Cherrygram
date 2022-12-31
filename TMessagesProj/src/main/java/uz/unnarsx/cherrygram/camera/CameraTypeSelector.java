@@ -146,7 +146,6 @@ public class CameraTypeSelector extends LinearLayout {
         picker1.setFormatter(value -> strings[value]);
         picker1.setOnValueChangedListener((picker, oldVal, newVal) -> {
             imageView.invalidate();
-            CherrygramConfig.INSTANCE.saveCameraType(newVal);
             invalidate();
             onSelectedCamera(newVal);
             picker.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);

@@ -7,13 +7,9 @@ import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.Components.UndoView
 import uz.unnarsx.cherrygram.CherrygramConfig
-import uz.unnarsx.cherrygram.CherrygramConfig.downloadSpeedBoost
-import uz.unnarsx.cherrygram.helpers.PopupHelper
 import uz.unnarsx.cherrygram.preferences.ktx.*
-import uz.unnarsx.tgkit.preference.types.TGKitListPreference
-import uz.unnarsx.tgkit.preference.types.TGKitSliderPreference.TGSLContract
+import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSliderPreference.TGSLContract
 
 class ChatsPreferencesEntry : BasePreferencesEntry {
     val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)

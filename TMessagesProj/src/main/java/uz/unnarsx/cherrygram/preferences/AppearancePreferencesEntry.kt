@@ -13,16 +13,17 @@ import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.preferences.ktx.*
-import uz.unnarsx.extras.CherrygramExtras
-import uz.unnarsx.tgkit.preference.types.TGKitSliderPreference
-import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.extras.CherrygramExtras
+import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
+import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSliderPreference
+import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
     val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)) {
         sharedPreferences.registerOnSharedPreferenceChangeListener(CherrygramConfig.listener)
         category(LocaleController.getString("AP_RedesignCategory", R.string.AP_RedesignCategory)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 list {
                     title = LocaleController.getString("AP_IconReplacements", R.string.AP_IconReplacements)
 
@@ -44,7 +45,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                         (bf.parentActivity as? LaunchActivity)?.reloadResources()
                     }
                 }
-            }
+//            }
             switch {
                 title = LocaleController.getString("AP_CenterTitle", R.string.AP_CenterTitle)
                 contract({
@@ -95,6 +96,33 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.systemFonts
                 }) {
                     CherrygramConfig.systemFonts = it
+                }
+            }
+        }
+
+        category(LocaleController.getString("CP_Snowflakes_Header", R.string.CP_Snowflakes_Header)) {
+            switch {
+                title = LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)
+                contract({
+                    return@contract CherrygramConfig.drawSnowInDrawer
+                }) {
+                    CherrygramConfig.drawSnowInDrawer = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_Snowflakes_AH", R.string.CP_Snowflakes_AH)
+                contract({
+                    return@contract CherrygramConfig.drawSnowInActionBar
+                }) {
+                    CherrygramConfig.drawSnowInActionBar = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_Header_Chats", R.string.CP_Header_Chats)
+                contract({
+                    return@contract CherrygramConfig.drawSnowInChat
+                }) {
+                    CherrygramConfig.drawSnowInChat = it
                 }
             }
         }

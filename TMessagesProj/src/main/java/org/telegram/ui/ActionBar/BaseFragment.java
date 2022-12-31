@@ -57,7 +57,6 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.MessageHelper;
-import uz.unnarsx.cherrygram.utils.VibrateUtil;
 
 public abstract class BaseFragment {
 
@@ -303,6 +302,10 @@ public abstract class BaseFragment {
         } else {
             finishFragment(true);
         }
+    }
+
+    public void setFinishing(boolean finishing) {
+        this.finishing = finishing;
     }
 
     public void finishFragment(boolean animated) {
@@ -875,6 +878,15 @@ public abstract class BaseFragment {
     public void setPreviewDelegate(PreviewDelegate previewDelegate) {
         this.previewDelegate = previewDelegate;
     }
+
+    public void resetFragment() {
+        if (isFinished) {
+            clearViews();
+            isFinished = false;
+            finishing = false;
+        }
+    }
+
 
     public interface PreviewDelegate {
         void finishFragment();

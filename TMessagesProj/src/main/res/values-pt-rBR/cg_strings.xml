@@ -67,6 +67,10 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CG_AppCrashedDesc">O Cherrygram deixou de funcionar. Por favor, envie registos aos programadores para poderem corrigir este erro o mais rapidamente possível.</string>
     <string name="CG_CopyReportDetails">Copiar Detalhes do Relatório</string>
     <string name="CG_ReportDetailsCopied">Detalhes de falhas copiados para o Clipboard.</string>
+    <string name="CG_TranslationLanguage">Idioma de tradução</string>
+    <string name="CG_SaveSticker">Guardar autocolante</string>
+    <string name="CG_FailedToSaveSticker">Falha em guardar o autocolante. O autocolante pode ainda não ter sido carregado.</string>
+    <string name="CG_StickerSavedHint">Autocolante guardado em transferências</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -97,6 +101,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_IconReplacement_VKUI">Ícones VKUI</string>
     <string name="AP_IconReplacement_Solar">Ícones solares por @Design480</string>
     <string name="AP_IconReplacement_Default">Por defeito</string>
+    <string name="AP_CenterTitle">Centralizar título na barra de ação</string>
     <string name="AP_ToolBarShadow">Desativar a sombra da barra de ferramentas</string>
     <string name="AP_TransparentSB">Barra de estado transparente</string>
     <string name="AP_FlatNB">Barra de navegação transparente</string>
@@ -141,6 +146,8 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Conversas</string>
     <string name="CP_Slider_StickerAmplifier">Amplificador de tamanho de autocolante</string>
+    <string name="CP_BlockSomeSets">Bloquear alguns autocolantes</string>
+    <string name="CP_BlockSomeSets_Desc">Alguns autocolantes que forçam a colisão da aplicação serão substituídos pelo logótipo do Cherrygram. \n O ficheiro \"Logótipo do Cherrygram\" será descarregado após ativar a funcionalidade e reiniciar a aplicação.</string>
     <string name="CP_TimeOnStick">Ocultar o tempo em autocolantes no chat</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de conversas não lidas</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Ativar o contador de conversas não lidas no botão de trás no chat aberto</string>
@@ -184,6 +191,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_CameraXDesc">CameraX só é suportado em <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, efeitos e suporte de lentes depende do seu fabricante.</string>
     <string name="CP_PerformanceMode">Modo de desempenho</string>
     <string name="CP_PerformanceModeDesc">A qualidade da CameraX será reduzida em favor do desempenho</string>
+    <string name="CP_CameraQuality">Qualidade da Câmara</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Acessar diretamente a câmara do sistema (não aplicável às mensagens de vídeo).</string>
     <string name="CP_CameraAspectRatio">Razão de aspeto da câmara</string>

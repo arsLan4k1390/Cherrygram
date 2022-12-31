@@ -1,18 +1,21 @@
 package uz.unnarsx.cherrygram.preferences
 
+import android.content.Intent
 import org.telegram.messenger.*
 import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.BulletinFactory
-import uz.unnarsx.cherrygram.CherrygramPreferencesNavigator
-import uz.unnarsx.cherrygram.ota.UpdaterBottomSheet
+import org.telegram.ui.LaunchActivity
+import uz.unnarsx.cherrygram.tgkit.CherrygramPreferencesNavigator
+import uz.unnarsx.cherrygram.updater.UpdaterBottomSheet
 import uz.unnarsx.cherrygram.preferences.ktx.category
 import uz.unnarsx.cherrygram.preferences.ktx.textDetail
 import uz.unnarsx.cherrygram.preferences.ktx.textIcon
 import uz.unnarsx.cherrygram.preferences.ktx.tgKitScreen
-import uz.unnarsx.extras.Crashlytics
-import uz.unnarsx.tgkit.preference.types.TGKitTextDetailRow
-import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.crashlytics.Crashlytics
+import uz.unnarsx.cherrygram.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextDetailRow
+import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 
 
 class MainPreferencesEntry : BasePreferencesEntry {
@@ -118,6 +121,16 @@ class MainPreferencesEntry : BasePreferencesEntry {
                         BulletinFactory.of(bf).createErrorBulletin(
                             LocaleController.getString("CG_ReportDetailsCopied", R.string.CG_ReportDetailsCopied)
                         ).show()
+                    }
+                }
+                textIcon {
+                    title = LocaleController.getString("CG_Restart", R.string.CG_Restart)
+                    icon = R.drawable.msg_retry
+                    listener = TGKitTextIconRow.TGTIListener {
+                        AppRestartHelper.triggerRebirth(
+                            ApplicationLoader.applicationContext,
+                            Intent(ApplicationLoader.applicationContext, LaunchActivity::class.java)
+                        )
                     }
                 }
             }

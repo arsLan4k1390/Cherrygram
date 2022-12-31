@@ -326,7 +326,8 @@ public class ActionBar extends FrameLayout {
                     }
                 }
 
-                if (Theme.canStartHolidayAnimation()) {
+//                if (Theme.canStartHolidayAnimation()) {
+                if (CherrygramConfig.INSTANCE.getDrawSnowInActionBar()) {
                     if (snowflakesEffect == null) {
                         snowflakesEffect = new SnowflakesEffect(0);
                     }

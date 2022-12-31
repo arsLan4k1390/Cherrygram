@@ -36,8 +36,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Added native biometrics support,
 - "tg://user?id=int" Links support (e.g. "tg://user?id=282287840"),
 - Allow to set "Keep media" for one day,
-- "Kaboom" (Erase all Cherrygram data in 1 click) (Thanks to Telegraher),
-- Force clear Telegram cache.
+- "Kaboom" (Erase all Cherrygram's data in 1 click) (Thanks to Telegraher).
 
 *Chats:*
 - Scrollable chat preview,
@@ -47,6 +46,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Jump to the beginning of any chat,
 - Delete all OWN messages from groups,
 - "Remove file from cache" feature for files in chat,
+- Stickers downloader,
 - Messages history from any user and channel in any chat,
 - Select messages in chat between message A and message B,
 - View admins (Group info) for all members,
@@ -66,6 +66,9 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Flat statusbar,
 - Transparent navigation bar,
 - Enable/Disable system fonts,
+- Snow in Drawer,
+- Snow in App Header,
+- Snow in Chats
 - Enable/Disable animated avatars,
 - Enable/Disable reactions overlay,
 - Draw small reactions,

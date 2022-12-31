@@ -55,7 +55,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.extras.ErrorDatabase;
+import uz.unnarsx.cherrygram.helpers.ErrorDatabaseHelper;
 
 public class ConnectionsManager extends BaseController {
 
@@ -333,7 +333,7 @@ public class ConnectionsManager extends BaseController {
                                 FileLog.e(object + " got error " + error.code + " " + error.text);
                             }
                             if (CherrygramConfig.INSTANCE.getShowRPCError()) {
-                                ErrorDatabase.showErrorToast(object, errorText);
+                                ErrorDatabaseHelper.showErrorToast(object, errorText);
                             }
                         }
                         if (BuildVars.DEBUG_PRIVATE_VERSION && !getUserConfig().isClientActivated() && error != null && error.code == 400 && Objects.equals(error.text, "CONNECTION_NOT_INITED")) {

@@ -10,8 +10,7 @@ import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.preferences.ktx.*
-import uz.unnarsx.tgkit.preference.types.TGKitSliderPreference
-import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 import java.io.File
 
 class SecurityPreferencesEntry : BasePreferencesEntry {

@@ -3,10 +3,6 @@ package uz.unnarsx.cherrygram.preferences;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
-import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +25,6 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCheckCell;
-import org.telegram.ui.Cells.TextCheckbox2Cell;
-import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
@@ -41,9 +35,6 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.camera.CameraTypeSelector;
-import uz.unnarsx.cherrygram.camera.CameraXUtilities;
-import uz.unnarsx.cherrygram.helpers.EntitiesHelper;
 import uz.unnarsx.cherrygram.helpers.PopupHelper;
 
 public class ExperimentalPrefenrecesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {

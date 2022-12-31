@@ -11,7 +11,7 @@
 
     <!--THEMES-->
 
-    <style name="Theme.TMessages.Start" parent="Theme.AppCompat.NoActionBar">
+    <style name="Theme.TMessages.Start" parent="@android:style/Theme.Material">
         <item name="android:actionBarStyle">@style/ActionBar.Transparent.TMessages.Start</item>
         <item name="android:colorBackground">@android:color/white</item>
         <item name="android:windowBackground">@android:color/white</item>
@@ -23,7 +23,7 @@
         <item name="android:forceDarkAllowed">false</item>
     </style>
 
-    <style name="Theme.TMessages" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.TMessages" parent="@android:style/Theme.Material.Light">
         <item name="android:windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowActionBarOverlay">false</item>
@@ -111,6 +111,10 @@
     </style>
 
     <!--BORDERLESS BUTTON-->
+
+    <style name="Theme.TMessages.BorderLessButton" parent="android:Widget.Material.Light.ButtonBar.AlertDialog">
+        <item name="android:textColor">#4991cc</item>
+    </style>
 
     <!--DATEPICKER VIEW-->
 

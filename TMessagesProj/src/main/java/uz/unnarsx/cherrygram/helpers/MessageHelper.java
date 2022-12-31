@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
 
-public class    MessageHelper extends BaseController {
+public class MessageHelper extends BaseController {
 
     private static final MessageHelper[] Instance = new MessageHelper[UserConfig.MAX_ACCOUNT_COUNT];
 

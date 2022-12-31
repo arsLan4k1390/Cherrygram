@@ -63,6 +63,10 @@
     <string name="CG_AppCrashedDesc">Cherrygram ha dejado de funcionar. Por favor, envíe registros a los desarrolladores para que puedan arreglar este error tan pronto como sea posible.</string>
     <string name="CG_CopyReportDetails">Copiar detalles del informe</string>
     <string name="CG_ReportDetailsCopied">Detalles del informe copiados al portapapeles.</string>
+    <string name="CG_TranslationLanguage">Idioma de traducción</string>
+    <string name="CG_SaveSticker">Guardar pegatina</string>
+    <string name="CG_FailedToSaveSticker">No se ha podido guardar la pegatina. Es posible que la pegatina no se haya cargado todavía.</string>
+    <string name="CG_StickerSavedHint">Pegatina guardada en descargas</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -81,6 +85,7 @@
     <string name="AP_RedesignCategory">Rediseño</string>
     <string name="AP_IconReplacements">Reemplazo de icono</string>
     <string name="AP_Old_Notification_Icon">Icono de notificación por defecto (Telegram)</string>
+    <string name="AP_Default_Notification_Name">Nombre de notificación por defecto (Telegram)</string>
     <string name="AP_ChangeIconFilter">Usar iconos de Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Tienes que volver a entrar en esta sección para ver los nuevos iconos</string>
     <string name="AP_ChangeIcon_Default">Por defecto</string>
@@ -88,10 +93,11 @@
     <string name="AP_ChangeIcon_White">Blanco</string>
     <string name="AP_ChangeIcon_Green">Verde</string>
     <string name="AP_ChangeIcon_Sunset">Atardecer</string>
-    <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
+    <string name="AP_ChangeIcon_Sunrise">Amanecer</string>
     <string name="AP_IconReplacement_VKUI">Iconos VKUI</string>
     <string name="AP_IconReplacement_Solar">Iconos solares por @Design480</string>
     <string name="AP_IconReplacement_Default">Por defecto</string>
+    <string name="AP_CenterTitle">Centrar título en la barra de acción</string>
     <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
     <string name="AP_TransparentSB">Barra de estado transparente</string>
     <string name="AP_FlatNB">Barra de navegación transparente</string>
@@ -136,6 +142,8 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
     <string name="CP_Slider_StickerAmplifier">Aumentar tamaño de sticker</string>
+    <string name="CP_BlockSomeSets">Bloquear algunas pegatinas</string>
+    <string name="CP_BlockSomeSets_Desc">Algunas pegatinas que fuerzan el bloqueo de la aplicación serán reemplazadas por el logotipo de Cherrygram. \n El archivo \"Logotipo de cherrygram\" se descargará después de activar la función y reiniciar la aplicación.</string>
     <string name="CP_TimeOnStick">Ocultar tiempo en los stickers del chat</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de chats no leídos</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Activar contador de chats no leídos en el botón atrás en el chat abierto</string>
@@ -179,6 +187,7 @@
     <string name="CP_CameraXDesc">CámaraX solo está soportado en <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, el soporte de efectos y lentes depende de su fabricante.</string>
     <string name="CP_PerformanceMode">Modo de rendimiento</string>
     <string name="CP_PerformanceModeDesc">La calidad de CameraX se reducirá en favor del rendimiento</string>
+    <string name="CP_CameraQuality">Calidad de la cámara</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Accede directamente a la cámara del sistema (no aplica para videomensajes).</string>
     <string name="CP_CameraAspectRatio">Relación de aspecto de cámara</string>
@@ -214,6 +223,10 @@
     <string name="UP_TapToCheckUpdates">Pulsa aquí para obtener información sobre actualizaciones</string>
     <string name="UP_LastCheck">Última comprobación</string>
     <string name="UP_CurrentVersion">Versión actual</string>
+    <string name="UP_BuildType">Tipo de compilación</string>
+    <string name="UP_BTRelease">Estable</string>
+    <string name="UP_BTBeta">Beta</string>
+    <string name="UP_InstallBetas">Instalar versiones beta</string>
     <string name="UP_Auto_OTA">Comprobar al iniciar</string>
     <string name="UP_ClearUpdatesCache">Limpiar caché de actualizaciones</string>
     <string name="UP_ClearedUpdatesCache">Se ha limpiado %1$s de caché.</string>

@@ -29,8 +29,4 @@ public class EntitiesHelper {
         return spannable;
     }
 
-    public static boolean isEmoji(String message) {
-        return Emoji.fullyConsistsOfEmojis(message);
-    }
-
 }

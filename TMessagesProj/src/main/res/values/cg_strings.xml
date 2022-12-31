@@ -77,6 +77,9 @@
     <string name="CG_CopyReportDetails">Copy Report Details</string>
     <string name="CG_ReportDetailsCopied">Report details copied to clipboard.</string>
     <string name="CG_TranslationLanguage">Translation Language</string>
+    <string name="CG_SaveSticker">Save sticker</string>
+    <string name="CG_FailedToSaveSticker">Failed to save sticker. The sticker may have not loaded yet.</string>
+    <string name="CG_StickerSavedHint">Sticker saved to downloads</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -122,6 +125,9 @@
     <string name="AP_FlatNB_Desc">The navbar will get the color of the Messages Panel</string>
     <string name="AP_SystemFonts">Use system fonts</string>
     <string name="AP_SystemFonts_Desc">Disable this (restart app to apply) if your font does not support formatting (Bold, Italic, Monospace)</string>
+
+    <string name="CP_Snowflakes_Header">Snowflakes</string>
+    <string name="CP_Snowflakes_AH">App header</string>
 
     <string name="CP_PremAndAnim_Header">Animations and Premium Features (restart app to apply)</string>
     <string name="CP_DisableAnimAvatars">Disable animated avatars</string>

@@ -49,7 +49,7 @@ import java.io.File;
 import java.util.HashMap;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.camera.CameraXUtilities;
+import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
 
 public class ApplicationLoader extends Application {
@@ -227,7 +227,7 @@ public class ApplicationLoader extends Application {
         }
         hasPlayServices = checkPlayServices();
         SharedConfig.loadConfig();
-        CameraXUtilities.loadCameraXSizes();
+        CameraXUtils.loadCameraXSizes();
         SharedPrefsHelper.init(applicationContext);
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) { //TODO improve account
             UserConfig.getInstance(a).loadConfig();

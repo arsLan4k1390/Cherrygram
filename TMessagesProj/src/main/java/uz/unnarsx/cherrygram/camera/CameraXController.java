@@ -263,7 +263,7 @@ public class CameraXController {
 
     public boolean isAvailableWideMode() {
         if (provider != null) {
-            return CameraXUtilities.isWideAngleAvailable(provider);
+            return CameraXUtils.isWideAngleAvailable(provider);
         } else {
             return false;
         }
@@ -279,7 +279,7 @@ public class CameraXController {
 
     public android.util.Size getVideoBestSize() {
         int w, h;
-        android.util.Size size = CameraXUtilities.getPreviewBestSize();
+        android.util.Size size = CameraXUtils.getPreviewBestSize();
         w = size.getWidth();
         h = size.getHeight();
         if ((getDisplayOrientation() == 0 || getDisplayOrientation() == 180) && getDeviceDefaultOrientation() == Configuration.ORIENTATION_PORTRAIT) {
@@ -296,7 +296,7 @@ public class CameraXController {
         Preview.Builder previewBuilder = new Preview.Builder();
         previewBuilder.setTargetResolution(targetSize);
         if (!isFrontface && selectedEffect == CAMERA_WIDE) {
-            cameraSelector = CameraXUtilities.getDefaultWideAngleCamera(provider);
+            cameraSelector = CameraXUtils.getDefaultWideAngleCamera(provider);
         } else {
             cameraSelector = isFrontface ? CameraSelector.DEFAULT_FRONT_CAMERA : CameraSelector.DEFAULT_BACK_CAMERA;
         }
@@ -319,7 +319,7 @@ public class CameraXController {
             }
         }
 
-        Quality quality = CameraXUtilities.getVideoQuality();
+        Quality quality = CameraXUtils.getVideoQuality();
         QualitySelector selector = QualitySelector.from(quality, FallbackStrategy.higherQualityOrLowerThan(quality));
         Recorder recorder = new Recorder.Builder()
                 .setQualitySelector(selector)

@@ -7,10 +7,17 @@ import org.telegram.messenger.R
 import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.preferences.ktx.*
-import uz.unnarsx.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 
 class DonatePreferenceEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("DP_Donate", R.string.DP_Donate)) {
+        /*category("Information") {
+            textDetail {
+                title = "Information"
+                detail = "Information"
+            }
+        }*/
+
         category(LocaleController.getString("DP_Donate_Method", R.string.DP_Donate_Method)) {
             textIcon {
                 title = "VISA (Visa Direct)"

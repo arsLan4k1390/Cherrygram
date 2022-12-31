@@ -167,7 +167,7 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
 
         @Override
         public int getMovementFlags(@NonNull RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-            if (viewHolder.getItemViewType() != 0) {
+            if (viewHolder.getItemViewType() != ListAdapter.TYPE_STICKER_SET) {
                 return makeMovementFlags(0, 0);
             }
             return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
@@ -1200,7 +1200,7 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
                         break;
                     case TYPE_SWITCH:
                         if (payloads.contains(UPDATE_LOOP_STICKERS) && position == loopRow) {
-                            ((TextCheckCell) holder.itemView).setChecked(SharedConfig.loopStickers);
+                            ((TextCheckCell) holder.itemView).setChecked(SharedConfig.loopStickers());
                         }
                         break;
                     case TYPE_FEATURED_STICKER_SET:

@@ -37,9 +37,9 @@ public class Translator {
 
         PopupHelper.show(names, LocaleController.getString("CG_TranslationLanguage", R.string.CG_TranslationLanguage), targetLanguages.indexOf(isKeyboard ? CherrygramConfig.INSTANCE.getTranslationKeyboardTarget() : CherrygramConfig.INSTANCE.getTranslationTarget()), context, i -> {
             if (isKeyboard) {
-                CherrygramConfig.INSTANCE.setTranslationKeyboardTargetLang(targetLanguages.get(i));
+                CherrygramConfig.INSTANCE.setTranslationKeyboardTarget(targetLanguages.get(i));
             } else {
-                CherrygramConfig.INSTANCE.setTranslationTargetLang(targetLanguages.get(i));
+                CherrygramConfig.INSTANCE.setTranslationTarget(targetLanguages.get(i));
             }
             callback.run();
         }, resourcesProvider);

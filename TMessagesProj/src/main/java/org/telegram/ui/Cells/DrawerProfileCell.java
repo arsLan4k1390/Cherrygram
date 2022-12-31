@@ -36,7 +36,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.palette.graphics.Palette;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
@@ -74,6 +73,7 @@ import org.telegram.ui.Components.SnowflakesEffect;
 import org.telegram.ui.ThemeActivity;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.preferences.drawer.DrawerBitmapHelper;
 
 import java.util.ArrayList;
 
@@ -110,7 +110,6 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     PremiumGradient.GradientTools gradientTools;
 
     private final ImageReceiver imageReceiver;
-    private Bitmap lastBitmap;
     private boolean avatarAsDrawerBackground = false;
 
     public DrawerProfileCell(Context context, DrawerLayoutContainer drawerLayoutContainer) {
@@ -119,49 +118,6 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         imageReceiver = new ImageReceiver(this);
         imageReceiver.setCrossfadeWithOldImage(true);
         imageReceiver.setForceCrossfade(true);
-        imageReceiver.setDelegate((imageReceiver, set, thumb, memCache) -> {
-            if (CherrygramConfig.INSTANCE.getDrawerDarken() || CherrygramConfig.INSTANCE.getDrawerBlur()) {
-                if (thumb) {
-                    return;
-                }
-                ImageReceiver.BitmapHolder bmp = imageReceiver.getBitmapSafe();
-                if (bmp != null) {
-                    new Thread(() -> {
-                        int width_percentage = ((bmp.bitmap.getWidth()) * (100 - CherrygramConfig.INSTANCE.getDrawerBlurIntensity())) / 100;
-                        int height_percentage = ((bmp.bitmap.getHeight()) * (100 - CherrygramConfig.INSTANCE.getDrawerBlurIntensity())) / 100;
-                        int width = CherrygramConfig.INSTANCE.getDrawerBlur() ? width_percentage : bmp.bitmap.getWidth();
-                        int height = CherrygramConfig.INSTANCE.getDrawerBlur() ? height_percentage : bmp.bitmap.getHeight();
-                        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-                        Canvas canvas = new Canvas(bitmap);
-                        canvas.drawBitmap(bmp.bitmap, null, new Rect(0, 0, width, height), new Paint(Paint.FILTER_BITMAP_FLAG));
-                        if (CherrygramConfig.INSTANCE.getDrawerBlur()) {
-                            try {
-                                Utilities.stackBlurBitmap(bitmap, 3);
-                            } catch (Exception e) {
-                                FileLog.e(e);
-                            }
-                        }
-                        if (CherrygramConfig.INSTANCE.getDrawerDarken()) {
-                            final Palette palette = Palette.from(bmp.bitmap).generate();
-                            Paint paint = new Paint();
-                            paint.setColor((0) | 0x44000000);
-                            canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), paint);
-                        }
-                        AndroidUtilities.runOnUIThread(() -> {
-                            if (lastBitmap != null) {
-                                imageReceiver.setCrossfadeWithOldImage(false);
-                                imageReceiver.setImageBitmap(new BitmapDrawable(null, lastBitmap));
-                            }
-                            imageReceiver.setCrossfadeWithOldImage(true);
-                            imageReceiver.setImageBitmap(new BitmapDrawable(null, bitmap));
-                            lastBitmap = bitmap;
-                        });
-                    }).start();
-                }
-            } else {
-                lastBitmap = null;
-            }
-        });
 
         gradientBackground = new ImageView(context);
         addView(gradientBackground, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.BOTTOM));
@@ -310,7 +266,8 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         });
         addView(darkThemeView, LayoutHelper.createFrame(48, 48, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 6, 90));
 
-        if (Theme.getEventType() == 0) {
+//        if (Theme.getEventType() == 0) {
+        if (CherrygramConfig.INSTANCE.getDrawSnowInDrawer()) {
             snowflakesEffect = new SnowflakesEffect(0);
             snowflakesEffect.setColorKey(Theme.key_chats_menuName);
         }
@@ -547,7 +504,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             }
         }
     }
-    @SuppressLint("DrawAllocation")
+//    @SuppressLint("DrawAllocation")
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
@@ -587,7 +544,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             shadowView.getDrawable().setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
         }
         int colorBackground = Theme.getColor(Theme.key_chats_menuBackground);
-        GradientDrawable gd2 = new GradientDrawable(
+        @SuppressLint("DrawAllocation") GradientDrawable gd2 = new GradientDrawable(
                 GradientDrawable.Orientation.BOTTOM_TOP,
                 new int[] {colorBackground, AndroidUtilities.getTransparentColor(colorBackground, 0)});
         gradientBackground.setBackground(gd2);
@@ -601,13 +558,17 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             sunDrawable.setLayerColor("Path 5.**", currentMoonColor);
             sunDrawable.commitApplyLayerColors();
         }
-        if(AndroidUtilities.isLight(colorBackground) && CherrygramConfig.INSTANCE.getDrawerGradient() && CherrygramConfig.INSTANCE.getDrawerAvatar()) {
+        if (AndroidUtilities.isLight(colorBackground) && CherrygramConfig.INSTANCE.getDrawerGradient() && CherrygramConfig.INSTANCE.getDrawerAvatar()) {
             nameTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
         } else {
             nameTextView.setTextColor(Theme.getColor(Theme.key_chats_menuName));
         }
+        if (CherrygramConfig.INSTANCE.getDrawerAvatar() && DrawerBitmapHelper.currentAccountBitmap != null) {
+            backgroundDrawable = DrawerBitmapHelper.currentAccountBitmap;
+            useImageBackground = true;
+        }
         if (avatarAsDrawerBackground || useImageBackground) {
-            if(AndroidUtilities.isLight(colorBackground) && CherrygramConfig.INSTANCE.getDrawerGradient() && CherrygramConfig.INSTANCE.getDrawerAvatar()) {
+            if (AndroidUtilities.isLight(colorBackground) && CherrygramConfig.INSTANCE.getDrawerGradient() && CherrygramConfig.INSTANCE.getDrawerAvatar()) {
                 phoneTextView.getTextView().setTextColor(AndroidUtilities.getTransparentColor(Theme.getColor(Theme.key_dialogTextBlack), 0.4f));
             } else {
                 phoneTextView.getTextView().setTextColor(Theme.getColor(Theme.key_chats_menuPhone));
@@ -624,7 +585,10 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
                 backgroundDrawable.draw(canvas);
                 darkBackColor = Theme.getColor(Theme.key_listSelector);
             } else if (backgroundDrawable instanceof BitmapDrawable) {
-                Bitmap bitmap = ((BitmapDrawable) backgroundDrawable).getBitmap();
+                Bitmap bitmap = ((BitmapDrawable) backgroundDrawable).getBitmap().copy(Bitmap.Config.ARGB_8888, true);
+                if (CherrygramConfig.INSTANCE.getDrawerDarken()) {
+                    DrawerBitmapHelper.darkenBitmap(bitmap);
+                }
                 float scaleX = (float) getMeasuredWidth() / (float) bitmap.getWidth();
                 float scaleY = (float) getMeasuredHeight() / (float) bitmap.getHeight();
                 float scale = Math.max(scaleX, scaleY);
@@ -646,7 +610,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             if (shadowView.getVisibility() != visibility) {
                 shadowView.setVisibility(visibility);
             }
-            if(AndroidUtilities.isLight(colorBackground) && CherrygramConfig.INSTANCE.getDrawerGradient() && CherrygramConfig.INSTANCE.getDrawerAvatar()) {
+            if (AndroidUtilities.isLight(colorBackground) && CherrygramConfig.INSTANCE.getDrawerGradient() && CherrygramConfig.INSTANCE.getDrawerAvatar()) {
                 phoneTextView.getTextView().setTextColor(AndroidUtilities.getTransparentColor(Theme.getColor(Theme.key_dialogTextBlack), 0.4f));
             } else {
                 phoneTextView.getTextView().setTextColor(Theme.getColor(Theme.key_chats_menuPhoneCats));
@@ -781,15 +745,13 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         avatarDrawable.setColor(Theme.getColor(Theme.key_avatar_backgroundInProfileBlue));
         avatarImageView.setForUserOrChat(user, avatarDrawable);
         if (CherrygramConfig.INSTANCE.getDrawerAvatar()) {
-            ImageLocation imageLocation = ImageLocation.getForUser(user, ImageLocation.TYPE_BIG);
-            avatarAsDrawerBackground = imageLocation != null;
-            imageReceiver.setImage(imageLocation, "512_512", null, null, new ColorDrawable(0x00000000), 0, null, user, 1);
-            if(CherrygramConfig.INSTANCE.getDrawerGradient()) {
+            DrawerBitmapHelper.setAccountBitmap(user);
+            if (CherrygramConfig.INSTANCE.getDrawerGradient()) {
                 gradientBackground.setVisibility(VISIBLE);
             } else {
                 gradientBackground.setVisibility(INVISIBLE);
             }
-            if(CherrygramConfig.INSTANCE.getDrawerSmallAvatar()) {
+            if (CherrygramConfig.INSTANCE.getDrawerSmallAvatar()) {
                 avatarImageView.setVisibility(VISIBLE);
             } else {
                 avatarImageView.setVisibility(INVISIBLE);
