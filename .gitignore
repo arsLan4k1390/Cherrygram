@@ -5,6 +5,7 @@ afat/
 build/
 obj/
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
 *.iml
 local.properties
 Keytool.zip
