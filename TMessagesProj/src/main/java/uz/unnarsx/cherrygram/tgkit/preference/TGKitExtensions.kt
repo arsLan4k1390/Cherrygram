@@ -1,9 +1,6 @@
-package uz.unnarsx.cherrygram.preferences.ktx
+package uz.unnarsx.cherrygram.tgkit.preference
 
 import androidx.core.util.Pair
-import uz.unnarsx.cherrygram.tgkit.preference.TGKitCategory
-import uz.unnarsx.cherrygram.tgkit.preference.TGKitPreference
-import uz.unnarsx.cherrygram.tgkit.preference.TGKitSettings
 import uz.unnarsx.cherrygram.tgkit.preference.types.*
 
 fun tgKitScreen(name: String, block: TGKitScreen.() -> Unit) = TGKitSettings(name, mutableListOf<TGKitCategory>().apply(block))

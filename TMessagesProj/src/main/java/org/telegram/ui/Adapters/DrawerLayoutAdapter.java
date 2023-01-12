@@ -88,7 +88,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         if (profileCell != null) {
             profileCell.setAccountsShown(accountsShown, animated);
         }
-        MessagesController.getGlobalMainSettings().edit().putBoolean("accountsShown", accountsShown).commit();
+        MessagesController.getGlobalMainSettings().edit().putBoolean("accountsShown", accountsShown).apply();
         if (animated) {
             itemAnimator.setShouldClipChildren(false);
             if (accountsShown) {

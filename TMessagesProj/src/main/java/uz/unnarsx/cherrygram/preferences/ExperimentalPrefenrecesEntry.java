@@ -45,6 +45,8 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
 
     private int experimentalHeaderRow;
     private int altNavigationRow;
+    private int photoSizeRow;
+    private int openProfileRow;
     private int residentNotificationRow;
     private int showRPCErrorRow;
     private int experimentalSettingsDivisor;
@@ -111,6 +113,24 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                     ((TextCheckCell) view).setChecked(SharedConfig.useLNavigation);
                 }
                 restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+            } else if (position == photoSizeRow) {
+                ArrayList<String> arrayList = new ArrayList<>();
+                ArrayList<Integer> types = new ArrayList<>();
+                arrayList.add("1280");
+                types.add(CherrygramConfig.DEFAULT_SIZE);
+                arrayList.add("2560");
+                types.add(CherrygramConfig.HQ_SIZE);
+                PopupHelper.show(arrayList, LocaleController.getString("EP_PhotosSize", R.string.EP_PhotosSize), types.indexOf(CherrygramConfig.INSTANCE.getPhotoSize()), context, i -> {
+                    CherrygramConfig.INSTANCE.setPhotoSize(types.get(i));
+                    listAdapter.notifyItemChanged(photoSizeRow);
+                    restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+                });
+            } else if (position == openProfileRow) {
+                CherrygramConfig.INSTANCE.toggleOpenProfile();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getOpenProfile());
+                }
+                restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
             } else if (position == residentNotificationRow) {
                 CherrygramConfig.INSTANCE.toggleResidentNotification();
                 if (view instanceof TextCheckCell) {
@@ -164,6 +184,8 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
 
         experimentalHeaderRow = rowCount++;
         altNavigationRow = rowCount++;
+        photoSizeRow = rowCount++;
+        openProfileRow = rowCount++;
         residentNotificationRow = rowCount++;
         showRPCErrorRow = rowCount++;
         experimentalSettingsDivisor = rowCount++;
@@ -218,6 +240,8 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                     textCheckCell.setEnabled(true, null);
                     if (position == altNavigationRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString(R.string.AltNavigationEnable), SharedConfig.useLNavigation, true);
+                    } else if (position == openProfileRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("CG_OpenProfile", R.string.CG_OpenProfile), CherrygramConfig.INSTANCE.getOpenProfile(), true);
                     } else if (position == residentNotificationRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("CG_ResidentNotification", R.string.CG_ResidentNotification), CherrygramConfig.INSTANCE.getResidentNotification(), true);
                     } else if (position == showRPCErrorRow) {
@@ -231,7 +255,19 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                 case 4:
                     TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
                     textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                    if (position == downloadSpeedBoostRow) {
+                    if (position == photoSizeRow) {
+                        String value;
+                        switch (CherrygramConfig.INSTANCE.getPhotoSize()) {
+                            case CherrygramConfig.DEFAULT_SIZE:
+                                value = "1280";
+                                break;
+                            default:
+                            case CherrygramConfig.HQ_SIZE:
+                                value = "2560";
+                                break;
+                        }
+                        textCell.setTextAndValue(LocaleController.getString("EP_PhotosSize", R.string.EP_PhotosSize), value, true);
+                    } else if (position == downloadSpeedBoostRow) {
                         String value;
                         switch (CherrygramConfig.INSTANCE.getDownloadSpeedBoost()) {
                             case CherrygramConfig.BOOST_NONE:
@@ -288,9 +324,9 @@ public class ExperimentalPrefenrecesEntry extends BaseFragment implements Notifi
                 return 1;
             } else if (position == experimentalHeaderRow || position == networkHeaderRow) {
                 return 2;
-            } else if (position == altNavigationRow || position == residentNotificationRow || position == showRPCErrorRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
+            } else if (position == altNavigationRow || position == openProfileRow || position == residentNotificationRow || position == showRPCErrorRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
                 return 3;
-            } else if (position == downloadSpeedBoostRow) {
+            } else if (position == photoSizeRow || position == downloadSpeedBoostRow) {
                 return 4;
             }
             return 1;

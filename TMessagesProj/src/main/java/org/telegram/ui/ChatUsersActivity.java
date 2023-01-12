@@ -317,7 +317,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 }
             }
 
-            if (!ChatObject.isChannel(currentChat) && currentChat.creator || currentChat.megagroup && !currentChat.gigagroup) {
+            if (!ChatObject.isChannel(currentChat) && currentChat.creator || currentChat.megagroup && !currentChat.gigagroup && ChatObject.canBlockUsers(currentChat)) {
                 if (participantsDivider2Row == -1) {
                     participantsDivider2Row = rowCount++;
                 }
@@ -407,7 +407,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 loadingUserCellRow = rowCount++;
             }
         } else if (type == TYPE_USERS) {
-            if (!ChatObject.isChannelAndNotMegaGroup(currentChat) && !needOpenSearch) {
+            if (ChatObject.hasAdminRights(currentChat) && !ChatObject.isChannelAndNotMegaGroup(currentChat) && !needOpenSearch) {
                 hideMembersRow = rowCount++;
                 hideMembersInfoRow = rowCount++;
             }

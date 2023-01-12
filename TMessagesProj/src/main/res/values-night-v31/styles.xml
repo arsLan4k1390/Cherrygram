@@ -11,7 +11,7 @@
 
     <!--THEMES-->
 
-    <style name="Theme.TMessages.Start" parent="Theme.AppCompat">
+    <style name="Theme.TMessages.Start" parent="@android:style/Theme.Material">
         <item name="android:actionBarStyle">@style/ActionBar.Transparent.TMessages.Start</item>
         <item name="android:colorBackground">@color/cg_splash_background</item>
         <item name="android:windowBackground">@color/cg_splash_background</item>

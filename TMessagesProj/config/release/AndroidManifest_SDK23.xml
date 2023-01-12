@@ -31,7 +31,7 @@
         android:requestLegacyExternalStorage="true"
         tools:replace="android:supportsRtl">
 
-        <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyA06b15pZWJihqpoJUJgo618-QW6bEL_as" />
+        <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyBd1yu9V_Z-ktNND67u1gF0zH6AjMDRVoM" />
 
         <service
             android:name="org.telegram.messenger.GcmPushListenerService"
@@ -45,22 +45,6 @@
 
         <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
         <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
-
-        <receiver
-            tools:replace="android:enabled"
-            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
-            android:enabled="false"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.gms.measurement.UPLOAD" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            tools:replace="android:enabled"
-            android:name="com.google.android.gms.measurement.AppMeasurementService"
-            android:enabled="false"
-            android:exported="false" />
 
     </application>
 

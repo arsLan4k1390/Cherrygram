@@ -220,7 +220,7 @@ public class UserConfig extends BaseController {
                         editor.remove("user");
                     }
 
-                    editor.commit();
+                    editor.apply();
                 } catch (Exception e) {
                     FileLog.e(e);
                 }
@@ -467,7 +467,7 @@ public class UserConfig extends BaseController {
     }
 
     public void setPinnedDialogsLoaded(int folderId, boolean loaded) {
-        getPreferences().edit().putBoolean("2pinnedDialogsLoaded" + folderId, loaded).commit();
+        getPreferences().edit().putBoolean("2pinnedDialogsLoaded" + folderId, loaded).apply();
     }
 
     public static final int i_dialogsLoadOffsetId = 0;
@@ -482,7 +482,7 @@ public class UserConfig extends BaseController {
     }
 
     public void setTotalDialogsCount(int folderId, int totalDialogsLoadCount) {
-        getPreferences().edit().putInt("2totalDialogsLoadCount" + (folderId == 0 ? "" : folderId), totalDialogsLoadCount).commit();
+        getPreferences().edit().putInt("2totalDialogsLoadCount" + (folderId == 0 ? "" : folderId), totalDialogsLoadCount).apply();
     }
 
     public long[] getDialogLoadOffsets(int folderId) {
@@ -505,7 +505,7 @@ public class UserConfig extends BaseController {
         editor.putLong("2dialogsLoadOffsetChannelId" + (folderId == 0 ? "" : folderId), dialogsLoadOffsetChannelId);
         editor.putLong("2dialogsLoadOffsetAccess" + (folderId == 0 ? "" : folderId), dialogsLoadOffsetAccess);
         editor.putBoolean("hasValidDialogLoadIds", true);
-        editor.commit();
+        editor.apply();
     }
 
     public boolean isPremium() {

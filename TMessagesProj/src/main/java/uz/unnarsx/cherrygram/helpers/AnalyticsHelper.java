@@ -1,6 +1,5 @@
 package uz.unnarsx.cherrygram.helpers;
 
-import android.app.Application;
 import android.os.Handler;
 
 import androidx.annotation.NonNull;
@@ -12,6 +11,7 @@ import com.microsoft.appcenter.channel.Channel;
 import com.microsoft.appcenter.crashes.Crashes;
 import com.microsoft.appcenter.ingestion.models.Log;
 
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.FileLog;
 
@@ -53,8 +53,8 @@ public class AnalyticsHelper {
         }
     }
 
-    public static void start(Application application) {
-        AppCenter.start(application, Extra.APPCENTER_SECRET, Analytics.class, Crashes.class);
+    public static void start(ApplicationLoader applicationLoaderInstance) {
+        AppCenter.start(applicationLoaderInstance, Extra.APPCENTER_SECRET, Analytics.class, Crashes.class);
         patchDevice();
     }
 

@@ -36,7 +36,8 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Added native biometrics support,
 - "tg://user?id=int" Links support (e.g. "tg://user?id=282287840"),
 - Allow to set "Keep media" for one day,
-- "Kaboom" (Erase all Cherrygram's data in 1 click) (Thanks to Telegraher).
+- "Kaboom" (Erase all Cherrygram's data in 1 click) (Thanks to Telegraher),
+- "Kaboom" desktop widget.
 
 *Chats:*
 - Scrollable chat preview,
@@ -98,6 +99,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Direct Share button (Select where to show it)
 - Showing unread chats counter on "Back" button like on IOS,
 - Enable/Disable members rounding,
+- Use "Delete for all" by default,
 - Ask before a call,
 - Show forwarded message date,
 - Show seconds in timestamps,
@@ -126,6 +128,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
 *Cherrygram Experimental Preferences:*
 - Enable/Disable alternative navigation,
+- Choose different photos size,
 - Show a resident notification,
 - Toast all RPC errors,
 - Download speed boost - Thanks to Nekogram for the idea :),

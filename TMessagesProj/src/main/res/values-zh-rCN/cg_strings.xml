@@ -23,6 +23,7 @@
     <string name="CP_NewTabs_NoCounter_Desc">隐藏未读消息数量</string>
     <string name="CP_VKUIFoldersStyle">VKUI 文件夹</string>
     <string name="CP_VKUIFoldersStyle_Desc">开启由 VK 提供的文件夹样式</string>
+    <string name="CP_VKUIFoldersStyle_Frame">VKUI 框架大小校正</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">首条消息</string>
@@ -104,6 +105,8 @@
     <string name="AP_FlatNB_Desc">导航栏将跟随聊天页面颜色变化</string>
     <string name="AP_SystemFonts">使用系统字体</string>
     <string name="AP_SystemFonts_Desc">如果你的字体不支持下述格式（粗体，斜体，等宽），请禁用本功能（重启应用生效）</string>
+    <string name="CP_Snowflakes_Header">雪花特效显示(重启应用生效)</string>
+    <string name="CP_Snowflakes_AH">应用顶栏</string>
     <string name="CP_PremAndAnim_Header">动画和 Premium 功能（重启应用生效）</string>
     <string name="CP_DisableAnimAvatars">禁用动态头像</string>
     <string name="CP_DisableReactionsOverlay">禁用表态弹窗</string>
@@ -148,6 +151,8 @@
     <string name="CP_UnreadBadgeOnBackButton">显示未读聊天数量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已打开的聊天中显示未读消息数</string>
     <string name="CP_NoRounding">禁用数字舍入</string>
+    <string name="CP_DeleteForAll">默认勾选\"全部删除\"</string>
+    <string name="CP_DeleteForAll_Desc">删除消息时默认勾选全部删除</string>
     <string name="CP_ConfirmCalls">通话前提醒</string>
     <string name="CP_ForwardMsgDate">显示转发日期时间</string>
     <string name="CP_ShowSeconds">在时间戳中显示秒数</string>
@@ -200,6 +205,7 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">实验</string>
     <string name="CG_ResidentNotification">显示常驻通知</string>
+    <string name="EP_PhotosSize">图片大小</string>
     <string name="EP_ShowRPCError">通过 Toast 提示全部 RPC 错误</string>
     <string name="EP_Network">网络</string>
     <string name="EP_DownloadSpeedBoost">下载加速</string>
@@ -213,6 +219,7 @@
     <string name="SP_Category_Security">安全</string>
     <string name="SP_Header_Privacy">隐私</string>
     <string name="SP_NoProxyPromo">移除代理赞助商</string>
+    <string name="SP_AppCenterAnalytics_Desc">开启此功能后，所有的崩溃日志和统计数据都会上传至 Microsoft AppCenter，供给开发者分析和优化本应用</string>
     <string name="SP_CleanOld">删除旧缓存 (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">删除成功</string>
     <string name="SP_Category_Account">帐号</string>

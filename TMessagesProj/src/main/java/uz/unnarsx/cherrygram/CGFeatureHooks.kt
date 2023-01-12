@@ -1,30 +1,13 @@
 package uz.unnarsx.cherrygram
 
-import android.content.Context
-import android.content.DialogInterface
-import android.util.TypedValue
-import android.view.Gravity
-import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.RemoteViews
 import org.telegram.messenger.*
 import org.telegram.ui.ActionBar.ActionBarPopupWindow
-import org.telegram.ui.ActionBar.AlertDialog
-import org.telegram.ui.ActionBar.Theme
-import org.telegram.ui.Components.EditTextBoldCursor
-import org.telegram.ui.Components.LayoutHelper
 import org.telegram.ui.Components.ShareAlert
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
 // Because manual editing of drklo's sources harms your mental health.
 object CGFeatureHooks {
-    @JvmStatic
-    fun colorFeedWidgetItem(rv: RemoteViews) {
-        rv.setTextColor(R.id.feed_widget_item_text, Theme.getColor(Theme.key_windowBackgroundWhiteBlackText))
-    }
-
     @JvmStatic
     fun getProperNotificationIcon(): Int {
         return if (CherrygramConfig.oldNotificationIcon) R.drawable.notification else R.drawable.cg_notification

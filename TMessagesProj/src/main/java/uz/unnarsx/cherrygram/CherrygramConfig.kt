@@ -4,9 +4,11 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
+import android.os.Build
 import org.telegram.messenger.*
 import org.telegram.tgnet.TLRPC
 import uz.unnarsx.cherrygram.extras.CherrygramExtras
+import uz.unnarsx.cherrygram.extras.LocalVerifications
 import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
@@ -18,7 +20,6 @@ import uz.unnarsx.cherrygram.icons.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.icons.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.icons.icon_replaces.SolarIconReplace
 import uz.unnarsx.cherrygram.icons.icon_replaces.VkIconReplace
-import uz.unnarsx.cherrygram.extras.LocalVerifications
 import java.net.URL
 import kotlin.system.exitProcess
 
@@ -27,20 +28,27 @@ object CherrygramConfig {
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
     val listener = OnSharedPreferenceChangeListener { preferences: SharedPreferences?, key: String ->
-            val map = HashMap<String, String>(1)
-            map["key"] = key
+        val map = HashMap<String, String>(1)
+        map["key"] = key
+        if (appcenterAnalytics) {
             AnalyticsHelper.trackEvent("Cherry config changed", map)
         }
+    }
 
     // Appearance Settings
     //Redesign
-    var iconReplacement by sharedPreferences.int("AP_Icon_Replacements", CGFeatureJavaHooks.getDefaultVKUI())
+    var iconReplacement by sharedPreferences.int("AP_Icon_Replacements", getDefaultVKUI())
     fun getIconReplacement(): BaseIconReplace {
         return when (iconReplacement) {
             0 -> VkIconReplace()
             1 -> SolarIconReplace()
             else -> NoIconReplace()
         }
+    }
+    fun getDefaultVKUI(): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            0
+        } else 2
     }
 
     var centerTitle by sharedPreferences.boolean("AP_CenterTitle", true)
@@ -215,6 +223,7 @@ object CherrygramConfig {
     //Chats
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
     var noRounding by sharedPreferences.boolean("CP_NoRounding", false)
+    var deleteForAll by sharedPreferences.boolean("CP_DeleteForAll", false)
     var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
     var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", false)
     var showSeconds by sharedPreferences.boolean("CP_ShowSeconds", false)
@@ -257,7 +266,7 @@ object CherrygramConfig {
         editor.apply()
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
-    
+
     var cameraResolution by sharedPreferences.int("CP_CameraResolution", -1)
     //Camera
     var disableAttachCamera by sharedPreferences.boolean("CP_DisableCam", false)
@@ -287,12 +296,17 @@ object CherrygramConfig {
 
     // Privacy
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
+    var appcenterAnalytics by sharedPreferences.boolean("SP_AppCenterAnalytics", true)
 
     // Experimental
     const val BOOST_NONE = 0
     const val BOOST_AVERAGE = 1
     const val BOOST_EXTREME = 2
     var downloadSpeedBoost by sharedPreferences.int("EP_DownloadSpeedBoost", BOOST_NONE)
+
+    const val DEFAULT_SIZE = 0
+    const val HQ_SIZE = 1
+    var photoSize by sharedPreferences.int("CP_PhotoSize", HQ_SIZE)
 
     var uploadSpeedBoost by sharedPreferences.boolean("EP_UploadSpeedBoost", false)
     fun toggleUploadSpeedBoost() {
@@ -349,6 +363,16 @@ object CherrygramConfig {
     var updateScheduleTimestamp by sharedPreferences.long("CG_UpdateScheduleTimestamp", 0)
 
     // Misc
+    var openProfile by sharedPreferences.boolean("CG_OpenProfile", false)
+    fun toggleOpenProfile() {
+        openProfile = !openProfile
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
+        val editor = preferences.edit()
+        editor.putBoolean("CG_OpenProfile", openProfile)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
     var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", !ApplicationLoader.checkPlayServices())
     fun toggleResidentNotification() {
         residentNotification = !residentNotification

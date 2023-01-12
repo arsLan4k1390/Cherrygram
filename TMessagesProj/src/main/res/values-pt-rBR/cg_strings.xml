@@ -23,6 +23,7 @@
     <string name="CP_NewTabs_NoCounter_Desc">Isto irá esconder o contador de mensagens não lidas</string>
     <string name="CP_VKUIFoldersStyle">Estilo de pastas VKUI</string>
     <string name="CP_VKUIFoldersStyle_Desc">Isto irá ativar o estilo de pastas do VK</string>
+    <string name="CP_VKUIFoldersStyle_Frame">Correção do tamanho da moldura VKUI</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">Para o início</string>
@@ -108,6 +109,8 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_FlatNB_Desc">A barra de navegação terá a cor do Painel de Mensagens</string>
     <string name="AP_SystemFonts">Utilizar fontes do sistema</string>
     <string name="AP_SystemFonts_Desc">Desativar isto (reinicie a aplicação) se a sua fonte não suportar formatação (Negrito, itálico, Mono espacial)</string>
+    <string name="CP_Snowflakes_Header">Flocos de neve (reinicie o aplicativo para aplicar)</string>
+    <string name="CP_Snowflakes_AH">Cabeçalho da aplicação</string>
     <string name="CP_PremAndAnim_Header">Animações e Recursos Premium (reinicie o aplicativo para aplicar)</string>
     <string name="CP_DisableAnimAvatars">Desativar avatares animados</string>
     <string name="CP_DisableReactionsOverlay">Desativar sobreposição de reações</string>
@@ -152,6 +155,8 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de conversas não lidas</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Ativar o contador de conversas não lidas no botão de trás no chat aberto</string>
     <string name="CP_NoRounding">Desativar arredondamento numérico</string>
+    <string name="CP_DeleteForAll">Usar \"Eliminar para todos\" por defeito</string>
+    <string name="CP_DeleteForAll_Desc">Caixa de seleção será marcada automaticamente ao excluir mensagens.</string>
     <string name="CP_ConfirmCalls">Perguntar antes de ligar</string>
     <string name="CP_ForwardMsgDate">Mostrar data da mensagem encaminhada</string>
     <string name="CP_ShowSeconds">Mostrar segundos na data e hora</string>
@@ -207,6 +212,7 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
     <string name="CG_ResidentNotification">Mostrar uma notificação persistente</string>
+    <string name="EP_PhotosSize">Tamanho das fotos</string>
     <string name="EP_ShowRPCError">Torrar todos os erros RPC</string>
     <string name="EP_Network">Rede</string>
     <string name="EP_DownloadSpeedBoost">Otimizar velocidade de download</string>
@@ -220,6 +226,7 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <string name="SP_Category_Security">Segurança</string>
     <string name="SP_Header_Privacy">Privacidade</string>
     <string name="SP_NoProxyPromo">Não mostrar patrocinador proxy</string>
+    <string name="SP_AppCenterAnalytics_Desc">Ao habilitar isso, todas as falhas e estatísticas do aplicativo serão relatadas para \"appcenter.ms\" para análise posterior pelo desenvolvedor.</string>
     <string name="SP_CleanOld">Remover cache antiga (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Removido com sucesso</string>
     <string name="SP_Category_Account">Conta</string>

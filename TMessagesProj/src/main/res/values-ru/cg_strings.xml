@@ -27,6 +27,7 @@
     <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
     <string name="CP_VKUIFoldersStyle">Папки в стиле VKUI</string>
     <string name="CP_VKUIFoldersStyle_Desc">Это включит стиль папок из VK</string>
+    <string name="CP_VKUIFoldersStyle_Frame">Коррекция размера рамки VKUI</string>
     <!--Telegram Folders Settings-->
 
     <!--Chats screen-->
@@ -113,17 +114,17 @@
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
     <string name="AP_CenterTitle">Центрирование заголовка</string>
     <string name="AP_ToolBarShadow">Отключить тень у тулбара</string>
-    <string name="AP_TransparentSB">Прозрачный статус бар</string>
+    <string name="AP_TransparentSB">Прозрачная строка состояния</string>
     <string name="AP_FlatNB">Прозрачная навигационная панель</string>
     <string name="AP_FlatNB_Desc">Навигационная панель приобретет цвет панели отправки сообщений</string>
     <string name="AP_SystemFonts">Использовать системный шрифт</string>
     <string name="AP_SystemFonts_Desc">Отключите это (требуется перезапуск приложения), если Ваш шрифт не поддерживает форматирование (Жирный, Курсив, Моноширинный)</string>
 
-    <string name="CP_Snowflakes_Header">Снежинки</string>
+    <string name="CP_Snowflakes_Header">Снежинки (требуется перезапуск приложения)</string>
     <string name="CP_Snowflakes_AH">Заголовок приложения</string>
 
     <string name="CP_PremAndAnim_Header">Анимации и Premium функции (требуется перезапуск приложения)</string>
-    <string name="CP_DisableAnimAvatars">Отключить анимированные аватарки</string>
+    <string name="CP_DisableAnimAvatars">Отключить активные видеоаватары</string>
     <string name="CP_DisableReactionsOverlay">Отключить реакции</string>
     <string name="CP_DisableReactionsOverlay_Desc">Это отключит всплывающий список доступных реакций</string>
     <string name="CP_DrawSmallReactions">Рисовать маленькие реакции</string>
@@ -171,6 +172,8 @@
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включить счетчик непрочитанных чатов на кнопке «Назад» в открытом чате</string>
     <string name="CP_NoRounding">Отключить округление чисел</string>
+    <string name="CP_DeleteForAll">Использовать \"Удалить для всех\" по умолчанию</string>
+    <string name="CP_DeleteForAll_Desc">При удалении сообщений галочка будет ставиться автоматически.</string>
     <string name="CP_ConfirmCalls">Спрашивать перед звонком</string>
     <string name="CP_ForwardMsgDate">Показывать дату пересланного сообщения</string>
     <string name="CP_ShowSeconds">Показывать секунды в метках времени</string>
@@ -228,7 +231,9 @@
 
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Экспериментальные</string>
+    <string name="CG_OpenProfile">Открывать профиль вместо превью чатов</string>
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
+    <string name="EP_PhotosSize">Размер отправляемых фото</string>
     <string name="EP_ShowRPCError">Всплывающие уведомления обо всех ошибках RPC</string>
     <string name="EP_Network">Сеть</string>
     <string name="EP_DownloadSpeedBoost">Увеличение скорости загрузки</string>
@@ -243,6 +248,7 @@
     <string name="SP_Category_Security">Безопасность</string>
     <string name="SP_Header_Privacy">Приватность</string>
     <string name="SP_NoProxyPromo">Не показывать спонсора прокси</string>
+    <string name="SP_AppCenterAnalytics_Desc">Включив это, все сбои приложений (вылеты) и статистика будут отправлены в \"appcenter.ms\" для дальнейшего изучения разработчиком.</string>
 
     <string name="SP_CleanOld">Очистить старый кэш (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Успешно удалено</string>

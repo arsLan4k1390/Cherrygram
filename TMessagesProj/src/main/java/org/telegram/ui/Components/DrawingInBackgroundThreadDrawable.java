@@ -163,7 +163,11 @@ public class DrawingInBackgroundThreadDrawable implements NotificationCenter.Not
     }
 
     protected void drawBitmap(Canvas canvas, Bitmap bitmap, Paint paint) {
-        canvas.drawBitmap(bitmap, 0, 0, paint);
+        try {
+            canvas.drawBitmap(bitmap, 0, 0, paint);
+        } catch (Throwable error /*Exception e*/) {
+//            FileLog.e(e);
+        }
     }
 
     protected void drawInUiThread(Canvas nextRenderingCanvas, float alpha) {
@@ -183,6 +187,9 @@ public class DrawingInBackgroundThreadDrawable implements NotificationCenter.Not
     }
 
     public void onAttachToWindow() {
+        if (attachedToWindow) {
+            return;
+        }
         attachedToWindow = true;
         error = false;
         currentOpenedLayerFlags = NotificationCenter.getGlobalInstance().getCurrentHeavyOperationFlags();
@@ -199,6 +206,9 @@ public class DrawingInBackgroundThreadDrawable implements NotificationCenter.Not
     }
 
     public void onDetachFromWindow() {
+        if (!attachedToWindow) {
+            return;
+        }
         if (!bitmapUpdating) {
             recycleBitmaps();
         }

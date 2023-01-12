@@ -85,21 +85,6 @@ public class ApplicationLoader extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        AnalyticsHelper.start(this);
-        AnalyticsHelper.trackEvent("App start");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            var am = getSystemService(ActivityManager.class);
-            var reasons = am.getHistoricalProcessExitReasons(null, 0, 1);
-            if (reasons.size() == 1) {
-                var map = new HashMap<String, String>(5);
-                map.put("description", reasons.get(0).getDescription());
-                map.put("importance", String.valueOf(reasons.get(0).getImportance()));
-                map.put("process", reasons.get(0).getProcessName());
-                map.put("reason", String.valueOf(reasons.get(0).getReason()));
-                map.put("status", String.valueOf(reasons.get(0).getStatus()));
-                AnalyticsHelper.trackEvent("Last exit reasons", map);
-            }
-        }
         MultiDex.install(this);
     }
 
@@ -270,6 +255,24 @@ public class ApplicationLoader extends Application {
             applicationContext = getApplicationContext();
         } catch (Throwable ignore) {
 
+        }
+
+        if (CherrygramConfig.INSTANCE.getAppcenterAnalytics()) {
+            AnalyticsHelper.start(this);
+            AnalyticsHelper.trackEvent("App start");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                var am = getSystemService(ActivityManager.class);
+                var reasons = am.getHistoricalProcessExitReasons(null, 0, 1);
+                if (reasons.size() == 1) {
+                    var map = new HashMap<String, String>(5);
+                    map.put("description", reasons.get(0).getDescription());
+                    map.put("importance", String.valueOf(reasons.get(0).getImportance()));
+                    map.put("process", reasons.get(0).getProcessName());
+                    map.put("reason", String.valueOf(reasons.get(0).getReason()));
+                    map.put("status", String.valueOf(reasons.get(0).getStatus()));
+                    AnalyticsHelper.trackEvent("Last exit reasons", map);
+                }
+            }
         }
 
         super.onCreate();

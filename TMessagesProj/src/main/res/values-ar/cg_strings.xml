@@ -21,8 +21,9 @@
     <string name="CG_ChooseFolderIcon">اختر أيقونة</string>
     <string name="CP_NewTabs_NoCounter">إخفاء العداد في التبويب</string>
     <string name="CP_NewTabs_NoCounter_Desc">سيؤدي هذا إلى إخفاء عداد الرسائل غير المقروءة</string>
-    <string name="CP_VKUIFoldersStyle">VKUI folders style</string>
-    <string name="CP_VKUIFoldersStyle_Desc">This will turn on the style of folders from VK</string>
+    <string name="CP_VKUIFoldersStyle">نمط مجلدات VKUI</string>
+    <string name="CP_VKUIFoldersStyle_Desc">سيؤدي هذا إلى تشغيل نمط المجلدات من VK</string>
+    <string name="CP_VKUIFoldersStyle_Frame">تصحيح حجم إطار VKUI</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">إلى البداية</string>
@@ -63,6 +64,10 @@
     <string name="CG_AppCrashedDesc">توقف Cherrygram عن العمل. يرجى إرسال السجلات إلى المطورين حتى يتمكنوا من إصلاح هذا الخطأ في أقرب وقت ممكن.</string>
     <string name="CG_CopyReportDetails">نسخ تفاصيل التقرير</string>
     <string name="CG_ReportDetailsCopied">تم نسخ تفاصيل التقرير إلى الحافظة.</string>
+    <string name="CG_TranslationLanguage">لغة الترجمة</string>
+    <string name="CG_SaveSticker">حفظ الملصق</string>
+    <string name="CG_FailedToSaveSticker">خطأ في حفظ الملصف. ربما لم يتم تحميل الملصق بعد.</string>
+    <string name="CG_StickerSavedHint">تم حفظ الملصق في التنزيلات</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -81,6 +86,7 @@
     <string name="AP_RedesignCategory">إعادة التصميم</string>
     <string name="AP_IconReplacements">استبدال الأيقونات</string>
     <string name="AP_Old_Notification_Icon">رمز الاشعارات الافتراضي (تيليجرام)</string>
+    <string name="AP_Default_Notification_Name">اسم الإشعار الافتراضي (تلغرام)</string>
     <string name="AP_ChangeIconFilter">إستخدام أيقونة تيليجرام</string>
     <string name="AP_ChangeIconFilter_Desc">يجب عليك إعادة إدخال هذا القسم لرؤية الرموز الجديدة</string>
     <string name="AP_ChangeIcon_Default">افتراضي</string>
@@ -90,13 +96,17 @@
     <string name="AP_ChangeIcon_Sunset">الغروب</string>
     <string name="AP_ChangeIcon_Sunrise">الشروق</string>
     <string name="AP_IconReplacement_VKUI">أيقونات VKUI</string>
+    <string name="AP_IconReplacement_Solar">أيقونات شمسية من @Design480</string>
     <string name="AP_IconReplacement_Default">افتراضي</string>
+    <string name="AP_CenterTitle">عنوان المركز في شريط العمل</string>
     <string name="AP_ToolBarShadow">تعطيل ضل شريط الأدوات</string>
     <string name="AP_TransparentSB">شريط الحالة الشفاف</string>
     <string name="AP_FlatNB">شريط التنقل الشفاف</string>
     <string name="AP_FlatNB_Desc">سيحصل شريط التنقل على لون لوحة الرسائل</string>
     <string name="AP_SystemFonts">أستخدم خطوط النظام</string>
     <string name="AP_SystemFonts_Desc">قم بتعطيل هذا (أعد تشغيل التطبيق) إذا كان الخط الخاص بك لا يدعم التنسيق (غامق ، مائل ، أحادي المسافة)</string>
+    <string name="CP_Snowflakes_Header">الثلج (إعادة تشغيل التطبيق لتطبيق)</string>
+    <string name="CP_Snowflakes_AH">رأس التطبيق</string>
     <string name="CP_PremAndAnim_Header">الرسوم المتحركة والميزات المدفوعة (إعد تشغيل التطبيق للتطبيق)</string>
     <string name="CP_DisableAnimAvatars">تعطيل الصور الرمزية المتحركة</string>
     <string name="CP_DisableReactionsOverlay">تعطيل تراكب ردود الأفعال</string>
@@ -135,10 +145,14 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">المحادثات</string>
     <string name="CP_Slider_StickerAmplifier">حجم الملصق</string>
+    <string name="CP_BlockSomeSets">كتل بعض الملصقات</string>
+    <string name="CP_BlockSomeSets_Desc">سيتم استبدال بعض الملصقات التي تجبر تعطل التطبيق بشعار Cherrygram. \nملف \"Cherrygram Logo\" سيتم تنزيله بعد تمكين الميزة وإعادة تشغيل التطبيق.</string>
     <string name="CP_TimeOnStick">إخفاء الوقت على الملصقات في المحادثات</string>
     <string name="CP_UnreadBadgeOnBackButton">إظهار عداد المحادثات غير المقروءة</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">تمكين عداد المحادثات غير المقروءة على زر الرجوع في المحادثات المفتوحة</string>
     <string name="CP_NoRounding">تعطيل تقريب الأرقام</string>
+    <string name="CP_DeleteForAll">استخدم\" حذف للجميع \" افتراضيا</string>
+    <string name="CP_DeleteForAll_Desc">سيتم تحديد خانة الاختيار تلقائيا أثناء حذف الرسائل.</string>
     <string name="CP_ConfirmCalls">اسأل قبل الاتصال</string>
     <string name="CP_ForwardMsgDate">إظهار تاريخ الرسالة المعاد توجيهها</string>
     <string name="CP_ShowSeconds">إظهار الثواني في الطوابع الزمنية</string>
@@ -178,6 +192,7 @@
     <string name="CP_CameraXDesc">CameraX مدعوم فقط على <![CDATA[<a href="https://developer.android.com/training/camerax/devices">الأجهزة المحددة</a>]]>، يعتمد دعم المؤثرات وعدسات على الشركة المصنعة الخاصة بك.</string>
     <string name="CP_PerformanceMode">وضع الأداء</string>
     <string name="CP_PerformanceModeDesc">سيتم خفض جودة CameraX لصالح الأداء</string>
+    <string name="CP_CameraQuality">جودة الكاميرا</string>
     <string name="CP_CameraTypeSystem">النظام</string>
     <string name="CP_SystemCameraDesc">الوصول مباشرة إلى كاميرا النظام (لا تنطبق على رسائل الفيديو).</string>
     <string name="CP_CameraAspectRatio">نسبة عرض الكاميرا</string>
@@ -190,8 +205,9 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">تجريبي</string>
     <string name="CG_ResidentNotification">إظهار إشعار دائم</string>
+    <string name="EP_PhotosSize">حجم الصور</string>
     <string name="EP_ShowRPCError">عرض جميع أخطاء RPC</string>
-    <string name="EP_Network">Network</string>
+    <string name="EP_Network">الشبكة</string>
     <string name="EP_DownloadSpeedBoost">زيادة سرعة التنزيل</string>
     <string name="EP_DownloadSpeedBoostNone">إيقاف</string>
     <string name="EP_DownloadSpeedBoostAverage">تشغيل</string>
@@ -203,6 +219,7 @@
     <string name="SP_Category_Security">الأمان</string>
     <string name="SP_Header_Privacy">الخصوصية</string>
     <string name="SP_NoProxyPromo">لا تظهر راعي الوكيل (البروكسي)</string>
+    <string name="SP_AppCenterAnalytics_Desc">بتمكين هذا، سيتم إبلاغ جميع تعطل التطبيق والإحصاءات إلى \"appcenter.ms\" لمزيد من المراجعة من قبل المطور.</string>
     <string name="SP_CleanOld">إزالة ذاكرة التخزين المؤقت القديمة (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">تمت إزالته بنجاح</string>
     <string name="SP_Category_Account">الحساب</string>
@@ -210,8 +227,13 @@
     <!--Security Preferences-->
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">التحديثات</string>
+    <string name="UP_TapToCheckUpdates">اضغط هنا للحصول على معلومات حول التحديثات</string>
     <string name="UP_LastCheck">آخر تحقق</string>
     <string name="UP_CurrentVersion">الاصدار الحالي</string>
+    <string name="UP_BuildType">نوع الانشاء</string>
+    <string name="UP_BTRelease">اسطبل</string>
+    <string name="UP_BTBeta">بيتا</string>
+    <string name="UP_InstallBetas">تثبيت إصدارات بيتا</string>
     <string name="UP_Auto_OTA">التحقق عند التشغيل</string>
     <string name="UP_ClearUpdatesCache">مسح التخزين المؤقت للتحديثات</string>
     <string name="UP_ClearedUpdatesCache">تم مسح %1$s من ذاكرة التخزين المؤقت.</string>

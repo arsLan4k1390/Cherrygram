@@ -82,16 +82,6 @@
   <init>(com.google.android.exoplayer2.upstream.DataSource$Factory);
 }
 
--keep class org.telegram.messenger.voip.* { *; }
--keep class org.telegram.messenger.AnimatedFileDrawableStream { <methods>; }
--keep class org.telegram.SQLite.SQLiteException { <methods>; }
--keep class org.telegram.tgnet.ConnectionsManager { <methods>; }
--keep class org.telegram.tgnet.NativeByteBuffer { <methods>; }
--keepnames class org.telegram.tgnet.TLRPC$TL_* {}
--keepclassmembernames class org.telegram.ui.* { <fields>; }
--keepclassmembernames class org.telegram.ui.Cells.* { <fields>; }
--keepclassmembernames class org.telegram.ui.Components.* { <fields>; }
-
 # Huawei Services
 -keep class com.huawei.hianalytics.**{ *; }
 -keep class com.huawei.updatesdk.**{ *; }
@@ -102,11 +92,21 @@
     private android.os.Handler mHandler;
 }
 
+-keep class org.telegram.messenger.voip.* { *; }
+-keep class org.telegram.messenger.AnimatedFileDrawableStream { <methods>; }
+-keep class org.telegram.SQLite.SQLiteException { <methods>; }
+-keep class org.telegram.tgnet.ConnectionsManager { <methods>; }
+-keep class org.telegram.tgnet.NativeByteBuffer { <methods>; }
+-keepnames class org.telegram.tgnet.TLRPC$TL_* {}
+-keepclassmembernames class org.telegram.ui.* { <fields>; }
+-keepclassmembernames class org.telegram.ui.Cells.* { <fields>; }
+-keepclassmembernames class org.telegram.ui.Components.* { <fields>; }
+-keep,allowshrinking,allowobfuscation class org.telegram.ui.Components.GroupCreateSpan {
+    public void updateColors();
+ }
+
 # Keep Cherrygram fields name
 -keepnames class uz.unnarsx.cherrygram.CherrygramConfig { <fields>; }
-
-# Keep all classes of Apache Commons
--keep class org.apache.commons.text.** { *; }
 
 # Keep all class member names of CameraX
 -keep class androidx.camera.extensions.** { *; }
@@ -133,16 +133,11 @@
     public static *** d(...);
 }
 
--repackageclasses
--allowaccessmodification
--overloadaggressively
--keepattributes SourceFile,LineNumberTable
--renamesourcefileattribute SourceFile
-
 -dontwarn org.jetbrains.annotations.NotNull
 -dontwarn org.jetbrains.annotations.Nullable
 -dontwarn androidx.camera.extensions.**
 -dontwarn javax.script.**
+
 -dontwarn a.a.a.a.a.a
 -dontwarn android.telephony.HwTelephonyManager
 -dontwarn com.huawei.android.os.BuildEx$VERSION
@@ -183,3 +178,9 @@
 -dontwarn com.huawei.libcore.io.ExternalStorageFileInputStream
 -dontwarn com.huawei.libcore.io.ExternalStorageFileOutputStream
 -dontwarn com.huawei.libcore.io.ExternalStorageRandomAccessFile
+
+-repackageclasses
+-allowaccessmodification
+-overloadaggressively
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile

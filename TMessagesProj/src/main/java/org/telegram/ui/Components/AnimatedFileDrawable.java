@@ -44,6 +44,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 //import uz.unnarsx.cherrygram.stickers.StickersIDsDownloader;
+import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.stickers.StickersIDsLocal;
 
 public class AnimatedFileDrawable extends BitmapDrawable implements Animatable, BitmapsCache.Cacheable {
@@ -467,7 +468,7 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable, 
         isWebmSticker = b;
         if (isWebmSticker) {
             useSharedQueue = true;
-            if (/*StickersIDsDownloader.INSTANCE.isProperSetID(document) || */StickersIDsLocal.isLocalSetId(document)) {
+            if (/*StickersIDsDownloader.INSTANCE.isProperSetID(document) || */CherrygramConfig.INSTANCE.getBlockStickers() && StickersIDsLocal.isLocalSetId(document)) {
                 path = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "Telegram/Stickers/cherrygram.webm");
             }
         }

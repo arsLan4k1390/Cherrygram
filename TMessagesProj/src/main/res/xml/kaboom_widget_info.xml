@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:initialKeyguardLayout="@layout/kaboom_widget"
+    android:initialLayout="@layout/kaboom_widget"
+    android:minHeight="60dp"
+    android:minWidth="60dp"
+    android:previewImage="@drawable/kaboom"
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen"/>

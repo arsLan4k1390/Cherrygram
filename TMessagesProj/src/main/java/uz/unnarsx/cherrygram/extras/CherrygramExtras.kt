@@ -12,10 +12,10 @@ import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.4.1"
+    var CG_VERSION = "7.4.2"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
-    fun getDCGeo(dcId: Int): String? {
+    fun getDCGeo(dcId: Int): String {
         return when (dcId) {
             1, 3 -> "USA (Miami)"
             2, 4 -> "NLD (Amsterdam)"
@@ -24,7 +24,7 @@ object CherrygramExtras {
         }
     }
 
-    fun getDCName(dc: Int): String? {
+    fun getDCName(dc: Int): String {
         return when (dc) {
             1 -> "Pluto"
             2 -> "Venus"

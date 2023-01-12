@@ -12,9 +12,9 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
-import uz.unnarsx.cherrygram.preferences.ktx.*
 import uz.unnarsx.cherrygram.extras.CherrygramExtras
 import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
+import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSliderPreference
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 
@@ -30,7 +30,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     contractIcons({
                         return@contractIcons listOf(
                             Triple(0, LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI), R.drawable.settings_outline_28),
-                            Triple(1, LocaleController.getString("AP_IconReplacement_Solar", R.string.AP_IconReplacement_Solar), R.drawable.settings),
+                            Triple(1, LocaleController.getString("AP_IconReplacement_Solar", R.string.AP_IconReplacement_Solar), R.drawable.msg_settings_solar),
                             Triple(2, LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default), R.drawable.msg_settings)
                         )
                     }, {
@@ -232,7 +232,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             }
         }
 
-        category("VKUI frame correction") {
+        category(LocaleController.getString("CP_VKUIFoldersStyle_Frame", R.string.CP_VKUIFoldersStyle_Frame)) {
             slider {
                 contract = object : TGKitSliderPreference.TGSLContract {
                     override fun setValue(value: Int) {

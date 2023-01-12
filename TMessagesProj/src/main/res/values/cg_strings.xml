@@ -29,6 +29,7 @@
     <string name="CP_NewTabs_NoCounter_Desc">This will hide unread messages counter</string>
     <string name="CP_VKUIFoldersStyle">VKUI folders style</string>
     <string name="CP_VKUIFoldersStyle_Desc">This will turn on the style of folders from VK</string>
+    <string name="CP_VKUIFoldersStyle_Frame">VKUI frame size correction</string>
     <!--Telegram Folders Settings-->
 
     <!--Chats screen-->
@@ -126,7 +127,7 @@
     <string name="AP_SystemFonts">Use system fonts</string>
     <string name="AP_SystemFonts_Desc">Disable this (restart app to apply) if your font does not support formatting (Bold, Italic, Monospace)</string>
 
-    <string name="CP_Snowflakes_Header">Snowflakes</string>
+    <string name="CP_Snowflakes_Header">Snowflakes (restart app to apply)</string>
     <string name="CP_Snowflakes_AH">App header</string>
 
     <string name="CP_PremAndAnim_Header">Animations and Premium Features (restart app to apply)</string>
@@ -179,6 +180,8 @@
     <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
     <string name="CP_NoRounding">Disable number rounding</string>
     <string name="CP_NoRoundingSummary" translatable="false">1.2K -> 1234</string>
+    <string name="CP_DeleteForAll">Use \"Delete for all\" by default</string>
+    <string name="CP_DeleteForAll_Desc">Checkbox will be automatically checked while deleting messages.</string>
     <string name="CP_ConfirmCalls">Ask before calling</string>
     <string name="CP_ForwardMsgDate">Show forwarded message date</string>
     <string name="CP_ShowSeconds">Show seconds in timestamps</string>
@@ -236,7 +239,9 @@
 
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
+    <string name="CG_OpenProfile">Open profile instead of chat preview</string>
     <string name="CG_ResidentNotification">Show a resident notification</string>
+    <string name="EP_PhotosSize">Photos size</string>
     <string name="EP_ShowRPCError">Toast all RPC errors</string>
     <string name="EP_Network">Network</string>
     <string name="EP_DownloadSpeedBoost">Download speed boost</string>
@@ -251,6 +256,8 @@
     <string name="SP_Category_Security">Security</string>
     <string name="SP_Header_Privacy">Privacy</string>
     <string name="SP_NoProxyPromo">Don\'t show proxy sponsor</string>
+    <string name="SP_AppCenterAnalytics" translatable="false">Microsoft AppCenter</string>
+    <string name="SP_AppCenterAnalytics_Desc">By enabling this, all application crashes and statistics will be reported to \"appcenter.ms\" for further review by the developer.</string>
 
     <string name="SP_CleanOld">Remove old cache (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Removed successfully</string>

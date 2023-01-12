@@ -907,7 +907,7 @@ public class LoginActivity extends BaseFragment {
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("logininfo2", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
-        editor.commit();
+        editor.apply();
     }
 
     private void putBundleToEditor(Bundle bundle, SharedPreferences.Editor editor, String prefix) {
@@ -1515,7 +1515,7 @@ public class LoginActivity extends BaseFragment {
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear();
             putBundleToEditor(bundle, editor, null);
-            editor.commit();
+            editor.apply();
         } catch (Exception e) {
             FileLog.e(e);
         }
@@ -2141,7 +2141,7 @@ public class LoginActivity extends BaseFragment {
             addView(textViewProxy, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 16, 1, 16, 14));
 
             int bottomMargin = 72;
-            //if (newAccount && activityMode == MODE_LOGIN) {
+            if (/*newAccount && */activityMode == MODE_LOGIN) {
                 syncContactsBox = new CheckBoxCell(context, 2);
                 syncContactsBox.setText(LocaleController.getString("SyncContacts", R.string.SyncContacts), "", syncContacts, false);
                 addView(syncContactsBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
@@ -2159,9 +2159,8 @@ public class LoginActivity extends BaseFragment {
                         BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_off, LocaleController.getString("SyncContactsOff", R.string.SyncContactsOff)).show();
                     }
                 });
-            //}
-
-//            if (BuildVars.DEBUG_PRIVATE_VERSION && activityMode == MODE_LOGIN) {
+            }
+            if (activityMode == MODE_LOGIN) {
                 testBackendCheckBox = new CheckBoxCell(context, 2);
                 testBackendCheckBox.setText(LocaleController.getString(R.string.DebugTestBackend), "", testBackend, false);
                 addView(testBackendCheckBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
@@ -2173,14 +2172,31 @@ public class LoginActivity extends BaseFragment {
                     CheckBoxCell cell = (CheckBoxCell) v;
                     testBackend = !testBackend;
                     cell.setChecked(testBackend, true);
-
-//                    boolean testBackend = BuildVars.DEBUG_PRIVATE_VERSION && getConnectionsManager().isTestBackend();
-                    if (testBackend != LoginActivity.this.testBackend) {
-                        getConnectionsManager().switchBackend(false);
+                    CountrySelectActivity.Country countryWithCode = new CountrySelectActivity.Country();
+                    String test_code = "999";
+                    countryWithCode.name = LocaleController.getString("CG_TestBackendNumber", R.string.CG_TestBackendNumber);
+                    countryWithCode.code = test_code;
+                    countryWithCode.shortname = "";
+                    if (testBackend) {
+                        countriesArray.add(countryWithCode);
+                        List<CountrySelectActivity.Country> countryList = codesMap.get(test_code);
+                        if (countryList == null) {
+                            codesMap.put(test_code, countryList = new ArrayList<>());
+                        }
+                        countryList.add(countryWithCode);
+                        List<String> phoneFormats = new ArrayList<>();
+                        phoneFormats.add("XX X XXXX");
+                        phoneFormatMap.put(test_code, phoneFormats);
+                        BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.chats_infotip, LocaleController.getString("CG_TestBackendOn", R.string.CG_TestBackendOn)).show();
+                    } else {
+                        countriesArray.remove(countryWithCode);
+                        codesMap.remove(test_code);
+                        phoneFormatMap.remove(test_code);
+                        BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.chats_infotip, LocaleController.getString("CG_TestBackendOff", R.string.CG_TestBackendOff)).show();
                     }
-                    loadCountries();
+                    codeField.setText(codeField.getText());
                 });
-//            }
+            }
             if (bottomMargin > 0 && !AndroidUtilities.isSmallScreen()) {
                 Space bottomSpacer = new Space(context);
                 bottomSpacer.setMinimumHeight(AndroidUtilities.dp(bottomMargin));
@@ -2594,7 +2610,7 @@ public class LoginActivity extends BaseFragment {
                                 if (!permissionsItems.isEmpty()) {
                                     SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                                     if (preferences.getBoolean("firstlogin", true) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
-                                        preferences.edit().putBoolean("firstlogin", false).commit();
+                                        preferences.edit().putBoolean("firstlogin", false).apply();
                                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
 
                                         builder.setPositiveButton(LocaleController.getString("Continue", R.string.Continue), null);
@@ -2671,7 +2687,7 @@ public class LoginActivity extends BaseFragment {
                     if (!permissionsItems.isEmpty()) {
                         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                         if (preferences.getBoolean("firstlogin", true) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
-                            preferences.edit().putBoolean("firstlogin", false).commit();
+                            preferences.edit().putBoolean("firstlogin", false).apply();
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
 
                             builder.setPositiveButton(LocaleController.getString("Continue", R.string.Continue), null);
@@ -2907,7 +2923,7 @@ public class LoginActivity extends BaseFragment {
                                 Runnable r = () -> {
                                     SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                                     if (preferences.getBoolean("firstloginshow", true) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
-                                        preferences.edit().putBoolean("firstloginshow", false).commit();
+                                        preferences.edit().putBoolean("firstloginshow", false).apply();
                                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
 
                                         builder.setTopAnimation(R.raw.incoming_calls, 46, false, Theme.getColor(Theme.key_dialogTopBackground));

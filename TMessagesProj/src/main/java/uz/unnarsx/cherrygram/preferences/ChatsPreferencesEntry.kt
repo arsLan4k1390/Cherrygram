@@ -8,7 +8,7 @@ import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
-import uz.unnarsx.cherrygram.preferences.ktx.*
+import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSliderPreference.TGSLContract
 
 class ChatsPreferencesEntry : BasePreferencesEntry {
@@ -144,6 +144,16 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("CP_DeleteForAll", R.string.CP_DeleteForAll)
+                summary = LocaleController.getString("CP_DeleteForAll_Desc", R.string.CP_DeleteForAll_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.deleteForAll
+                }) {
+                    CherrygramConfig.deleteForAll = it
+                }
+            }
+            switch {
                 title = LocaleController.getString("CP_ConfirmCalls", R.string.CP_ConfirmCalls)
 
                 contract({
@@ -169,7 +179,6 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.showSeconds
                 }) {
                     CherrygramConfig.showSeconds = it
-                    bf.parentActivity.recreate()
                 }
             }
             list {

@@ -11,6 +11,8 @@
 
 package uz.unnarsx.cherrygram.updater;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
@@ -50,17 +52,12 @@ import uz.unnarsx.cherrygram.extras.CherrygramExtras;
 
 public class UpdaterBottomSheet extends BottomSheet {
 
-//    private RLottieImageView imageView;
+    AnimatorSet animatorSet;
     private TextView changelogTextView;
-
-    private boolean animationInProgress;
-
     private boolean isTranslated = false;
     private CharSequence translatedC;
 
-    @SuppressLint("AppCompatCustomView")
     public UpdaterBottomSheet(Context context, boolean available, String... args) {
-        // args = {version, changelog, size, downloadUrl, uploadDate}
         super(context, false);
         setOpenNoDelay(true);
         fixNavigationBar();
@@ -71,19 +68,6 @@ public class UpdaterBottomSheet extends BottomSheet {
         FrameLayout header = new FrameLayout(context);
         linearLayout.addView(header, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 21, 10, 0, 10));
 
-        /*if (available) {
-            imageView = new RLottieImageView(context);
-            imageView.setOnClickListener(v -> {
-                if (!imageView.isPlaying() && imageView.getAnimatedDrawable() != null) {
-                    imageView.getAnimatedDrawable().setCurrentFrame(0);
-                    imageView.playAnimation();
-                }
-            });
-            imageView.setAnimation(R.raw.wallet_congrats, 60, 60, new int[]{0x000000, 0x000000});
-            imageView.setScaleType(ImageView.ScaleType.CENTER);
-            header.addView(imageView, LayoutHelper.createFrame(60, 60, Gravity.LEFT | Gravity.CENTER_VERTICAL));
-        }*/
-
         ImageView imageView = new ImageView(context);
         imageView.setScaleType(ImageView.ScaleType.CENTER);
         imageView.setImageResource(R.drawable.about_cherry_icon);
@@ -93,7 +77,7 @@ public class UpdaterBottomSheet extends BottomSheet {
 
         SimpleTextView nameView = new SimpleTextView(context);
         nameView.setTextSize(20);
-        nameView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        nameView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
         nameView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         nameView.setGravity(Gravity.CENTER | Gravity.CENTER_VERTICAL);
         nameView.setText(LocaleController.getString("CG_AppName", R.string.CG_AppName));
@@ -102,7 +86,7 @@ public class UpdaterBottomSheet extends BottomSheet {
         SimpleTextView timeView = new SimpleTextView(context);
         timeView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
         timeView.setTextSize(13);
-        timeView.setTypeface(AndroidUtilities.getTypeface("fonts/rregular.ttf"));
+        timeView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
         timeView.setGravity(Gravity.CENTER | Gravity.CENTER_VERTICAL);
         timeView.setText(available ? args[4] : LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000));
         header.addView(timeView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER | Gravity.TOP, 0, 125, 10, 0));
@@ -147,7 +131,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             changelogTextView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             changelogTextView.setOnClickListener(v -> UpdaterUtils.translate(args[1], (String translated) -> {
                 translatedC = translated;
-                animateChangelog(UpdaterUtils.replaceTags(isTranslated ? args[1] : (String) translatedC));
+                animateText(changelogTextView, UpdaterUtils.replaceTags(isTranslated ? args[1] : (String) translatedC));
                 isTranslated ^= true;
             }, () -> {}));
             linearLayout.addView(changelogTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
@@ -159,7 +143,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             doneButton.setGravity(Gravity.CENTER);
             doneButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
             doneButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
-            doneButton.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            doneButton.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
             doneButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             doneButton.setText(LocaleController.getString("AppUpdateDownloadNow", R.string.AppUpdateDownloadNow));
             doneButton.setOnClickListener(v -> {
@@ -175,7 +159,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             scheduleButton.setGravity(Gravity.CENTER);
             scheduleButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_addButton));
             scheduleButton.setBackground(null);
-            scheduleButton.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            scheduleButton.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
             scheduleButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             scheduleButton.setText(LocaleController.getString("AppUpdateRemindMeLater", R.string.AppUpdateRemindMeLater));
             scheduleButton.setOnClickListener(v -> {
@@ -194,7 +178,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             TextCheckWithIconCell installBetas = new TextCheckWithIconCell(context);
             installBetas.setEnabled(true, null);
             installBetas.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
-            installBetas.setTextAndCheckAndIcon(LocaleController.getString("UP_InstallBetas", R.string.UP_InstallBetas), R.drawable.test_tube, CherrygramConfig.INSTANCE.getInstallBetas(), false);
+            installBetas.setTextAndCheckAndIcon(LocaleController.getString("UP_InstallBetas", R.string.UP_InstallBetas), R.drawable.test_tube_solar, CherrygramConfig.INSTANCE.getInstallBetas(), false);
             installBetas.setOnClickListener(v -> {
                 CherrygramConfig.INSTANCE.toggleInstallBetas();
                 installBetas.setChecked(!installBetas.isChecked());
@@ -230,24 +214,24 @@ public class UpdaterBottomSheet extends BottomSheet {
             });
             linearLayout.addView(clearUpdates);
 
+            FrameLayout frameLayout2 = new FrameLayout(context);
+            frameLayout2.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
+            linearLayout.addView(frameLayout2, LayoutHelper.createFrame(-1, 48, 0, 16, 15, 16, 16));
+
             TextView checkUpdatesButton = new TextView(context);
             checkUpdatesButton.setLines(1);
             checkUpdatesButton.setSingleLine(true);
             checkUpdatesButton.setEllipsize(TextUtils.TruncateAt.END);
             checkUpdatesButton.setGravity(Gravity.CENTER);
             checkUpdatesButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-            checkUpdatesButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
-            checkUpdatesButton.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            checkUpdatesButton.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
             checkUpdatesButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-            spannableStringBuilder.append(".  ").append(LocaleController.getString("UP_CheckForUpdates", R.string.UP_CheckForUpdates));
-            spannableStringBuilder.setSpan(new ColoredImageSpan(Objects.requireNonNull(ContextCompat.getDrawable(getContext(), R.drawable.sync_outline_28))), 0, 1, 0);
-            checkUpdatesButton.setText(spannableStringBuilder);
-            checkUpdatesButton.setOnClickListener(v -> UpdaterUtils.checkUpdates(context, true, () -> {
-                BulletinFactory.of(getContainer(), null).createErrorBulletin(LocaleController.getString("UP_Not_Found", R.string.UP_Not_Found)).show();
-                timeView.setText(LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000));
-            }, this::dismiss));
-            linearLayout.addView(checkUpdatesButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, 0, 16, 15, 16, 16));
+            checkUpdatesButton.setText(LocaleController.getString("UP_CheckForUpdates", R.string.UP_CheckForUpdates));
+            checkUpdatesButton.setOnClickListener(v -> {
+                animateView(checkUpdatesButton, context, timeView);
+            });
+
+            frameLayout2.addView(checkUpdatesButton, LayoutHelper.createFrame(-1, -1, 17));
         }
 
         ScrollView scrollView = new ScrollView(context);
@@ -255,28 +239,59 @@ public class UpdaterBottomSheet extends BottomSheet {
         setCustomView(scrollView);
     }
 
-    private void animateChangelog(CharSequence text) {
-        changelogTextView.setText(text);
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.setDuration(250);
+    private void animateText(View view, CharSequence charSequence) {
+        AnimatorSet animatorSet2 = animatorSet;
+        if (animatorSet2 != null) {
+            animatorSet2.cancel();
+        }
+        if (view instanceof TextView) {
+            ((TextView) view).setText(charSequence);
+        }
+        AnimatorSet animateButton = new AnimatorSet();
+        animatorSet = animateButton;
+        animateButton.setDuration(500);
         animatorSet.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
-        animatorSet.playTogether(
-                ObjectAnimator.ofFloat(changelogTextView, View.ALPHA, 0.0f, 1.0f),
-                ObjectAnimator.ofFloat(changelogTextView, View.TRANSLATION_Y, AndroidUtilities.dp(12), 0)
-        );
+        animatorSet.playTogether(ObjectAnimator.ofFloat(view, View.ALPHA, 0, 1), ObjectAnimator.ofFloat(view, View.TRANSLATION_Y, (float) AndroidUtilities.dp(12), 0));
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+                @SuppressLint("Recycle") AnimatorSet animatorSet = new AnimatorSet();
+                if (animatorSet.equals(animator)) {
+                    animatorSet = null;
+                }
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                @SuppressLint("Recycle") AnimatorSet animatorSet = new AnimatorSet();
+                if (animatorSet.equals(animator)) {
+                    animatorSet = null;
+                }
+            }
+
+        });
         animatorSet.start();
+    }
+
+    void animateView(TextView textView, Context context, SimpleTextView simpleTextView) {
+        animateText(textView,"");
+
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+        spannableStringBuilder.append(".  ");
+        spannableStringBuilder.setSpan(new ColoredImageSpan(Objects.requireNonNull(ContextCompat.getDrawable(getContext(), R.drawable.sync_outline_28))), 0, 1, 0);
+        textView.setText(spannableStringBuilder);
+
+        UpdaterUtils.checkUpdates(context, true, () -> {
+            BulletinFactory.of(getContainer(), null).createErrorBulletin(LocaleController.getString("UP_Not_Found", R.string.UP_Not_Found)).show();
+            simpleTextView.setText(LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000));
+            animateText(textView, LocaleController.getString("UP_CheckForUpdates", R.string.UP_CheckForUpdates));
+        }, this::dismiss);
     }
 
     private void copyText(CharSequence text) {
         AndroidUtilities.addToClipboard(text);
         BulletinFactory.of(getContainer(), null).createCopyBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
     }
-
-    /*@Override
-    public void show() {
-        super.show();
-        if (imageView != null) {
-            imageView.playAnimation();
-        }
-    }*/
+    
 }

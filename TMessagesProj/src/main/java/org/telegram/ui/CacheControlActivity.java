@@ -27,6 +27,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.StatFs;
 import android.text.SpannableString;
@@ -113,6 +114,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
 
 public class CacheControlActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
@@ -133,6 +135,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private static final int VIEW_TYPE_SECTION_LOADING = 12;
     private static final int VIEW_TYPE_CLEAR_CACHE_BUTTON = 13;
     private static final int VIEW_TYPE_MAX_CACHE_SIZE = 14;
+    private static final int VIEW_TYPE_KABOOM = 15;
 
     public static final int KEEP_MEDIA_TYPE_USER = 0;
     public static final int KEEP_MEDIA_TYPE_GROUP = 1;
@@ -173,6 +176,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private CacheChart cacheChart;
     private CacheChartHeader cacheChartHeader;
     private ClearCacheButtonInternal clearCacheButton;
+    private KaboomButtonInternal kaboomButton;
 
     private volatile boolean canceled = false;
 
@@ -652,8 +656,10 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         if (hasCache) {
             sectionsEndRow = itemInners.size();
             itemInners.add(new ItemInner(VIEW_TYPE_CLEAR_CACHE_BUTTON, null, null));
+            itemInners.add(new ItemInner(VIEW_TYPE_KABOOM, null, null));
             itemInners.add(ItemInner.asInfo(LocaleController.getString("StorageUsageInfo", R.string.StorageUsageInfo)));
         } else {
+            itemInners.add(new ItemInner(VIEW_TYPE_KABOOM, null, null));
             sectionsEndRow = -1;
         }
 
@@ -1327,11 +1333,25 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         });
         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
         AlertDialog alertDialog = builder.create();
-        showDialog(alertDialog);
-        TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-        if (button != null) {
+        alertDialog.setOnShowListener(dialog1 -> {
+            TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
             button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
-        }
+            button.setEnabled(false);
+            var buttonText = button.getText();
+            new CountDownTimer(10000, 100) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    button.setText(String.format(Locale.getDefault(), "%s (%d)", buttonText, millisUntilFinished / 1000 + 1));
+                }
+
+                @Override
+                public void onFinish() {
+                    button.setText(buttonText);
+                    button.setEnabled(true);
+                }
+            }.start();
+        });
+        showDialog(alertDialog);
     }
 
     private void clearDatabase() {
@@ -1753,6 +1773,86 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         }
     }
 
+    public static class KaboomButton extends FrameLayout {
+        FrameLayout button;
+        AnimatedTextView.AnimatedTextDrawable textView;
+        AnimatedTextView.AnimatedTextDrawable valueTextView;
+
+        public KaboomButton(Context context) {
+            super(context);
+
+            button = new FrameLayout(context) {
+                @Override
+                protected void dispatchDraw(Canvas canvas) {
+                    final int margin = AndroidUtilities.dp(8);
+                    int x = (getMeasuredWidth() - margin - valueTextView.getCurrentWidth() + textView.getCurrentWidth()) / 2;
+
+                    if (LocaleController.isRTL) {
+                        super.dispatchDraw(canvas);
+                    } else {
+                        textView.setBounds(0, 0, x, getHeight());
+                        textView.draw(canvas);
+
+                        valueTextView.setBounds(x + AndroidUtilities.dp(8), 0, getWidth(), getHeight());
+                        valueTextView.draw(canvas);
+                    }
+                }
+
+                @Override
+                protected boolean verifyDrawable(@NonNull Drawable who) {
+                    return who == valueTextView || who == textView || super.verifyDrawable(who);
+                }
+            };
+            button.setBackground(Theme.AdaptiveRipple.filledRect(Theme.key_dialogTextRed2, 8));
+
+            textView = new AnimatedTextView.AnimatedTextDrawable(true, true, true);
+            textView.setAnimationProperties(.25f, 0, 300, CubicBezierInterpolator.EASE_OUT_QUINT);
+            textView.setCallback(button);
+            textView.setTextSize(AndroidUtilities.dp(14));
+            textView.setText("Kaboom");
+            textView.setGravity(Gravity.RIGHT);
+            textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            textView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
+
+            valueTextView = new AnimatedTextView.AnimatedTextDrawable(true, true, true);
+            valueTextView.setAnimationProperties(.25f, 0, 300, CubicBezierInterpolator.EASE_OUT_QUINT);
+            valueTextView.setCallback(button);
+            valueTextView.setTextSize(AndroidUtilities.dp(14));
+            valueTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            valueTextView.setTextColor(Theme.adaptHSV(Theme.getColor(Theme.key_featuredStickers_addButton), -.46f, +.08f));
+            valueTextView.setText("");
+
+            setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            addView(button, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.FILL, 16, 16, 16, 16));
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(
+                    MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY),
+                    heightMeasureSpec
+            );
+        }
+
+        public void setDisabled(boolean disabled) {
+            button.animate().cancel();
+            button.animate().alpha(disabled ? .65f : 1f).start();
+            button.setClickable(!disabled);
+        }
+    }
+
+    private class KaboomButtonInternal extends KaboomButton {
+
+        public KaboomButtonInternal(Context context) {
+            super(context);
+            ((MarginLayoutParams) button.getLayoutParams()).topMargin = AndroidUtilities.dp(5);
+            button.setOnClickListener(e -> {
+                kaboomDurov(context);
+            });
+        }
+
+    }
+
     private boolean isOtherSelected() {
         boolean[] indexes = new boolean[CacheControlActivity.this.selected.length];
         for (int i = 0; i < itemInners.size(); ++i) {
@@ -2079,6 +2179,9 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     break;
                 case VIEW_TYPE_CLEAR_CACHE_BUTTON:
                     view = clearCacheButton = new ClearCacheButtonInternal(mContext);
+                    break;
+                case VIEW_TYPE_KABOOM:
+                    view = kaboomButton = new KaboomButtonInternal(mContext);
                     break;
                 case VIEW_TYPE_MAX_CACHE_SIZE:
                     SlideChooseView slideChooseView2 = new SlideChooseView(mContext);

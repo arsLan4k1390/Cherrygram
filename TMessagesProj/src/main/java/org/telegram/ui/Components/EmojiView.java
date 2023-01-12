@@ -4773,7 +4773,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         }
         if (currentPage != newPage) {
             currentPage = newPage;
-            MessagesController.getGlobalEmojiSettings().edit().putInt("selected_page", newPage).commit();
+            MessagesController.getGlobalEmojiSettings().edit().putInt("selected_page", newPage).apply();
         }
     }
 
@@ -5628,6 +5628,12 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         return stickersGridAdapter != null && stickersGridAdapter.getItemCount() > 0;
     }
 
+    private Runnable updateStickersLoadedDelayed = () -> {
+        if (emojiAdapter != null) {
+            emojiAdapter.notifyDataSetChanged(true);
+        }
+    };
+
     @SuppressWarnings("unchecked")
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
@@ -5676,9 +5682,8 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                     }
                 }
             }
-            if (emojiAdapter != null) {
-                emojiAdapter.notifyDataSetChanged(true);
-            }
+            AndroidUtilities.cancelRunOnUIThread(updateStickersLoadedDelayed);
+            AndroidUtilities.runOnUIThread(updateStickersLoadedDelayed, 100);
         } else if (id == NotificationCenter.emojiLoaded) {
             if (stickersGridView != null) {
                 int count = stickersGridView.getChildCount();
@@ -6021,7 +6026,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                         MediaDataController mediaDataController = MediaDataController.getInstance(currentAccount);
                         ArrayList<TLRPC.StickerSetCovered> featured = mediaDataController.getFeaturedStickerSets();
                         if (!featured.isEmpty()) {
-                            MessagesController.getEmojiSettings(currentAccount).edit().putLong("featured_hidden", featured.get(0).set.id).commit();
+                            MessagesController.getEmojiSettings(currentAccount).edit().putLong("featured_hidden", featured.get(0).set.id).apply();
                             if (stickersGridAdapter != null) {
                                 stickersGridAdapter.notifyItemRangeRemoved(1, 2);
                             }
@@ -6664,7 +6669,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                 if (set instanceof TLRPC.TL_stickerSetFullCovered) {
                     pack.documents = ((TLRPC.TL_stickerSetFullCovered) set).documents;
                 } else if (set instanceof TLRPC.TL_stickerSetNoCovered) {
-                    TLRPC.TL_messages_stickerSet stickerSet = mediaDataController.getStickerSet(MediaDataController.getInputStickerSet(set.set), false);
+                    TLRPC.TL_messages_stickerSet stickerSet = mediaDataController.getStickerSet(MediaDataController.getInputStickerSet(set.set), set.set.hash, false);
                     if (stickerSet != null) {
                         pack.documents = stickerSet.documents;
                     }

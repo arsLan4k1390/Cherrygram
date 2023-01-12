@@ -23,6 +23,7 @@
     <string name="CP_NewTabs_NoCounter_Desc">隱藏未讀訊息數量</string>
     <string name="CP_VKUIFoldersStyle">VKUI 資料夾樣式</string>
     <string name="CP_VKUIFoldersStyle_Desc">開啟由 VK 提供的資料夾樣式</string>
+    <string name="CP_VKUIFoldersStyle_Frame">VKUI 框架大小校正</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">回到頂端</string>
@@ -104,6 +105,8 @@
     <string name="AP_FlatNB_Desc">導覽列將跟隨對話頁面顏色變化</string>
     <string name="AP_SystemFonts">使用系統字型</string>
     <string name="AP_SystemFonts_Desc">如果你的字型不支持下列格式 (粗體，斜體，等寬)，請停用本功能 (重啟應用程式後生效)</string>
+    <string name="CP_Snowflakes_Header">雪花特效顯示 (重啟應用程式後生效)</string>
+    <string name="CP_Snowflakes_AH">程式頂部</string>
     <string name="CP_PremAndAnim_Header">動畫和 Premium 功能 (重啟應用程式後生效)</string>
     <string name="CP_DisableAnimAvatars">停用動畫大頭貼</string>
     <string name="CP_DisableReactionsOverlay">停用 Emoji 回應選項</string>
@@ -148,6 +151,8 @@
     <string name="CP_UnreadBadgeOnBackButton">顯示未讀對話數量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已開啟的對話中顯示未讀訊息數量</string>
     <string name="CP_NoRounding">停用數字四捨五入</string>
+    <string name="CP_DeleteForAll">預設選擇「全部刪除」</string>
+    <string name="CP_DeleteForAll_Desc">刪除訊息時預設選擇全部刪除</string>
     <string name="CP_ConfirmCalls">撥打前先詢問我</string>
     <string name="CP_ForwardMsgDate">顯示轉寄日期時間</string>
     <string name="CP_ShowSeconds">在時戳中顯示秒數</string>
@@ -200,6 +205,7 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">實驗功能</string>
     <string name="CG_ResidentNotification">顯示永久通知</string>
+    <string name="EP_PhotosSize">圖片大小</string>
     <string name="EP_ShowRPCError">透過 Toast 提示全部 RPC 錯誤</string>
     <string name="EP_Network">網路</string>
     <string name="EP_DownloadSpeedBoost">下載加速</string>
@@ -213,6 +219,7 @@
     <string name="SP_Category_Security">安全</string>
     <string name="SP_Header_Privacy">隱私權</string>
     <string name="SP_NoProxyPromo">移除代理伺服器廣告</string>
+    <string name="SP_AppCenterAnalytics_Desc">啟用此功能後，所有的當機日誌和統計資料都會上傳至 Microsoft AppCenter，以供開發人員分析和改善應用程式。</string>
     <string name="SP_CleanOld">刪除舊快取 (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">刪除成功</string>
     <string name="SP_Category_Account">帳戶</string>

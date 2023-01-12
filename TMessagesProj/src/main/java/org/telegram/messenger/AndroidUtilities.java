@@ -2174,7 +2174,11 @@ public class AndroidUtilities {
 
     public static int getPhotoSize() {
         if (photoSize == null) {
-            photoSize = 1280;
+            if ((CherrygramConfig.INSTANCE.getPhotoSize()) == CherrygramConfig.HQ_SIZE) {
+                photoSize = 2560;
+            } else {
+                photoSize = 1280;
+            }
         }
         return photoSize;
     }
@@ -3728,7 +3732,7 @@ public class AndroidUtilities {
                 editor.putString("proxy_secret", secret);
                 info = new SharedConfig.ProxyInfo(address, p, "", "", secret);
             }
-            editor.commit();
+            editor.apply();
 
             SharedConfig.currentProxy = SharedConfig.addProxy(info);
 

@@ -624,6 +624,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private float customAvatarProgress;
     private float customPhotoOffset;
     private boolean hasFallbackPhoto;
+    private boolean hasCustomPhoto;
     private ImageReceiver fallbackImage;
 
     public int getTopicId() {
@@ -2944,12 +2945,35 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (getParentActivity() == null) {
                 return;
             }
-            if (position == idRow && did != 0) {
+            if (position == idRow && (userInfo != null || chatInfo != null)){
+                final long id;
+                if (dialogId != 0) {
+                    id = dialogId;
+                } else if (userId != 0) {
+                    id = userId;
+                } else {
+                    if (ChatObject.isChannel(currentChat)) {
+                        id = -1000000000000L - chatId;
+                    } else {
+                        id = -chatId;
+                    }
+                }
                 try {
                     android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                    android.content.ClipData clip = android.content.ClipData.newPlainText("label", did + "");
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("label", id + "");
                     clipboard.setPrimaryClip(clip);
-                    Toast.makeText(getParentActivity(), LocaleController.getString("TextCopied", R.string.TextCopied), Toast.LENGTH_SHORT).show();
+                    BulletinFactory.of(this).createErrorBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
+                return;
+            }
+            if (position == dcRow && userDcLine != null) {
+                try {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("label", userDcLine);
+                    clipboard.setPrimaryClip(clip);
+                    BulletinFactory.of(this).createErrorBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
                 } catch (Exception e) {
                     FileLog.e(e);
                 }
@@ -3318,7 +3342,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             } else if (which == 4) {
                                 BuildVars.LOGS_ENABLED = !BuildVars.LOGS_ENABLED;
                                 SharedPreferences sharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("systemConfig", Context.MODE_PRIVATE);
-                                sharedPreferences.edit().putBoolean("logsEnabled", BuildVars.LOGS_ENABLED).commit();
+                                sharedPreferences.edit().putBoolean("logsEnabled", BuildVars.LOGS_ENABLED).apply();
                                 updateRowsIds();
                                 listAdapter.notifyDataSetChanged();
                             } else if (which == 5) {
@@ -3327,8 +3351,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 getMessagesStorage().clearSentMedia();
                                 SharedConfig.setNoSoundHintShowed(false);
                                 SharedPreferences.Editor editor = MessagesController.getGlobalMainSettings().edit();
-                                editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("gifhint").remove("reminderhint").remove("soundHint").remove("themehint").remove("bganimationhint").remove("filterhint").commit();
-                                MessagesController.getEmojiSettings(currentAccount).edit().remove("featured_hidden").commit();
+                                editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("gifhint").remove("reminderhint").remove("soundHint").remove("themehint").remove("bganimationhint").remove("filterhint").apply();
+                                MessagesController.getEmojiSettings(currentAccount).edit().remove("featured_hidden").apply();
                                 SharedConfig.textSelectionHintShows = 0;
                                 SharedConfig.lockRecordAudioVideoHint = 0;
                                 SharedConfig.stickersReorderingHintUsed = false;
@@ -6567,14 +6591,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
                 boolean onlineTextCrosafade = false;
 
-                ChatAvatarContainer avatarContainer = ((ChatActivityInterface) previousTransitionFragment).getAvatarContainer();
-                if (avatarContainer.getSubtitleTextView().getLeftDrawable() != null || avatarContainer.statusMadeShorter[0]) {
-                    transitionOnlineText = avatarContainer.getSubtitleTextView();
-                    avatarContainer2.invalidate();
-                    onlineTextCrosafade = true;
-                    onlineTextView[0].setAlpha(0f);
-                    onlineTextView[1].setAlpha(0f);
-                    animators.add(ObjectAnimator.ofFloat(onlineTextView[1], View.ALPHA, 1.0f));
+                if (previousTransitionFragment != null) {
+                    ChatAvatarContainer avatarContainer = previousTransitionFragment.getAvatarContainer();
+                    if (avatarContainer != null && avatarContainer.getSubtitleTextView().getLeftDrawable() != null || avatarContainer.statusMadeShorter[0]) {
+                        transitionOnlineText = avatarContainer.getSubtitleTextView();
+                        avatarContainer2.invalidate();
+                        onlineTextCrosafade = true;
+                        onlineTextView[0].setAlpha(0f);
+                        onlineTextView[1].setAlpha(0f);
+                        animators.add(ObjectAnimator.ofFloat(onlineTextView[1], View.ALPHA, 1.0f));
+                    }
                 }
 
                 if (!onlineTextCrosafade) {
@@ -7284,6 +7310,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         boolean shortStatus;
 
         hasFallbackPhoto = false;
+        hasCustomPhoto = false;
         if (userId != 0) {
             TLRPC.User user = getMessagesController().getUser(userId);
             if (user == null) {
@@ -7349,6 +7376,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 }
             }
+            hasCustomPhoto = user.photo != null && user.photo.personal;
             try {
                 newString = Emoji.replaceEmoji(newString, nameTextView[1].getPaint().getFontMetricsInt(), AndroidUtilities.dp(24), false);
             } catch (Exception ignore) {
@@ -9923,12 +9951,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 toSave.add(o.toString());
             }
-            MessagesController.getGlobalMainSettings().edit().putStringSet("settingsSearchRecent2", toSave).commit();
+            MessagesController.getGlobalMainSettings().edit().putStringSet("settingsSearchRecent2", toSave).apply();
         }
 
         public void clearRecent() {
             recentSearches.clear();
-            MessagesController.getGlobalMainSettings().edit().remove("settingsSearchRecent2").commit();
+            MessagesController.getGlobalMainSettings().edit().remove("settingsSearchRecent2").apply();
             notifyDataSetChanged();
         }
 
@@ -10575,9 +10603,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
 
         } else {
-            if (onlineTextView[2] != null) {
-                onlineTextView[2].setAlpha(photoDescriptionProgress);
+            if (hasCustomPhoto) {
+                if (onlineTextView[2] != null) {
+                    onlineTextView[2].setAlpha(photoDescriptionProgress);
+                }
+            } else {
+                if (onlineTextView[2] != null) {
+                    onlineTextView[2].setAlpha(0);
+                }
             }
+
         }
 
     }

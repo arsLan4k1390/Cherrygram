@@ -1486,7 +1486,9 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             fragment.onTransitionAnimationEnd(true, false);
             fragment.onBecomeFullyVisible();
         }
-        AnalyticsHelper.trackEvent("Present fragment");
+        if (CherrygramConfig.INSTANCE.getAppcenterAnalytics()) {
+            AnalyticsHelper.trackEvent("Present fragment");
+        }
         return true;
     }
 

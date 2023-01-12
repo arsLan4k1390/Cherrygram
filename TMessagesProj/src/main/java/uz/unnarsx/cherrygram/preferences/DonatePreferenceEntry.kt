@@ -6,7 +6,7 @@ import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
-import uz.unnarsx.cherrygram.preferences.ktx.*
+import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 
 class DonatePreferenceEntry : BasePreferencesEntry {

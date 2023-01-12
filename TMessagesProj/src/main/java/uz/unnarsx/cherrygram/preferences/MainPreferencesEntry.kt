@@ -8,10 +8,10 @@ import org.telegram.ui.Components.BulletinFactory
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.tgkit.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.updater.UpdaterBottomSheet
-import uz.unnarsx.cherrygram.preferences.ktx.category
-import uz.unnarsx.cherrygram.preferences.ktx.textDetail
-import uz.unnarsx.cherrygram.preferences.ktx.textIcon
-import uz.unnarsx.cherrygram.preferences.ktx.tgKitScreen
+import uz.unnarsx.cherrygram.tgkit.preference.category
+import uz.unnarsx.cherrygram.tgkit.preference.textDetail
+import uz.unnarsx.cherrygram.tgkit.preference.textIcon
+import uz.unnarsx.cherrygram.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.crashlytics.Crashlytics
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextDetailRow
@@ -37,7 +37,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
             }
             textIcon {
                 title = LocaleController.getString("CP_Category_Camera", R.string.CP_Category_Camera)
-                icon = R.drawable.camera
+                icon = R.drawable.camera_solar
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CameraPrefenrecesEntry())
                 }
@@ -58,7 +58,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
             }
             textIcon {
                 title = LocaleController.getString("DP_Donate", R.string.DP_Donate)
-                icon = R.drawable.card_send
+                icon = R.drawable.card_send_solar
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CherrygramPreferencesNavigator.createDonate())
                 }
@@ -115,7 +115,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 }*/
                 textIcon {
                     title = LocaleController.getString("CG_CopyReportDetails", R.string.CG_CopyReportDetails)
-                    icon = R.drawable.bug
+                    icon = R.drawable.bug_solar
                     listener = TGKitTextIconRow.TGTIListener {
                         AndroidUtilities.addToClipboard(Crashlytics.getReportMessage().toString() + "\n\n#bug")
                         BulletinFactory.of(bf).createErrorBulletin(

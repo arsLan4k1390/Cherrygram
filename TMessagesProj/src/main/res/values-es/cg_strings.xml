@@ -23,6 +23,7 @@
     <string name="CP_NewTabs_NoCounter_Desc">Esto ocultará el contador de mensajes no leídos</string>
     <string name="CP_VKUIFoldersStyle">Estilo de carpetas VKUI</string>
     <string name="CP_VKUIFoldersStyle_Desc">Esto activará el estilo de las carpetas de VK</string>
+    <string name="CP_VKUIFoldersStyle_Frame">Corrección de Tamaño de marco VKUI</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">Al inicio</string>
@@ -104,6 +105,8 @@
     <string name="AP_FlatNB_Desc">La barra de navegación obtendrá el color del panel de mensajes</string>
     <string name="AP_SystemFonts">Usar fuentes del sistema</string>
     <string name="AP_SystemFonts_Desc">Deshabilite esto (reinicie la app para aplicar) si su fuente no soporta formato (negrita, cursiva, monoespaciado)</string>
+    <string name="CP_Snowflakes_Header">Copos de Nieve (reinicie la aplicación para aplicar)</string>
+    <string name="CP_Snowflakes_AH">Encabezado de aplicaciones</string>
     <string name="CP_PremAndAnim_Header">Animaciones y características Premium (reinicie la aplicación para aplicar)</string>
     <string name="CP_DisableAnimAvatars">Deshabilitar avatares animados</string>
     <string name="CP_DisableReactionsOverlay">Desactivar la capa de reacciones</string>
@@ -148,6 +151,8 @@
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de chats no leídos</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Activar contador de chats no leídos en el botón atrás en el chat abierto</string>
     <string name="CP_NoRounding">Desactivar redondeo numérico</string>
+    <string name="CP_DeleteForAll">Usar \"Eliminar para todos\" por defecto</string>
+    <string name="CP_DeleteForAll_Desc">La casilla de verificación se marcará automáticamente al eliminar mensajes.</string>
     <string name="CP_ConfirmCalls">Preguntar antes de llamar</string>
     <string name="CP_ForwardMsgDate">Mostrar fecha del mensaje reenviado</string>
     <string name="CP_ShowSeconds">Mostrar segundos en marcas de tiempo</string>
@@ -200,6 +205,7 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
     <string name="CG_ResidentNotification">Mostrar una notificación permanente</string>
+    <string name="EP_PhotosSize">Tamaño fotos</string>
     <string name="EP_ShowRPCError">Enviar todos los errores RPC</string>
     <string name="EP_Network">Red</string>
     <string name="EP_DownloadSpeedBoost">Aumento de velocidad de descarga</string>
@@ -213,6 +219,7 @@
     <string name="SP_Category_Security">Seguridad</string>
     <string name="SP_Header_Privacy">Privacidad</string>
     <string name="SP_NoProxyPromo">No mostrar patrocinador del proxy</string>
+    <string name="SP_AppCenterAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"appcenter.ms\" para que el desarrollador las revise.</string>
     <string name="SP_CleanOld">Eliminar caché antigua (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Eliminado con éxito</string>
     <string name="SP_Category_Account">Cuenta</string>

@@ -938,7 +938,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                             lastSaveTime = SystemClock.elapsedRealtime();
                             Utilities.globalQueue.postRunnable(() -> {
                                 SharedPreferences.Editor editor = ApplicationLoader.applicationContext.getSharedPreferences("media_saved_pos", Activity.MODE_PRIVATE).edit();
-                                editor.putFloat(shouldSavePositionForCurrentVideo, value).commit();
+                                editor.putFloat(shouldSavePositionForCurrentVideo, value).apply();
                             });
                         }
                     }
@@ -4443,7 +4443,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         }
                     }
 
-                    final boolean[] deleteForAll = new boolean[1];
+//                    final boolean[] deleteForAll = new boolean[1];
+                    final boolean[] deleteForAll = {CherrygramConfig.INSTANCE.getDeleteForAll()};
                     if (currentMessageObject != null && !currentMessageObject.scheduled) {
                         long dialogId = currentMessageObject.getDialogId();
                         if (!DialogObject.isEncryptedDialog(dialogId)) {
@@ -4474,9 +4475,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                                         CheckBoxCell cell = new CheckBoxCell(parentActivity, 1, resourcesProvider);
                                         cell.setBackgroundDrawable(Theme.getSelectorDrawable(false));
                                         if (currentChat != null) {
-                                            cell.setText(LocaleController.getString("DeleteForAll", R.string.DeleteForAll), "", false, false);
+                                            cell.setText(LocaleController.getString("DeleteForAll", R.string.DeleteForAll), "", CherrygramConfig.INSTANCE.getDeleteForAll(), false);
                                         } else {
-                                            cell.setText(LocaleController.formatString("DeleteForUser", R.string.DeleteForUser, UserObject.getFirstName(currentUser)), "", false, false);
+                                            cell.setText(LocaleController.formatString("DeleteForUser", R.string.DeleteForUser, UserObject.getFirstName(currentUser)), "", CherrygramConfig.INSTANCE.getDeleteForAll(), false);
                                         }
                                         cell.setPadding(LocaleController.isRTL ? AndroidUtilities.dp(16) : AndroidUtilities.dp(8), 0, LocaleController.isRTL ? AndroidUtilities.dp(8) : AndroidUtilities.dp(16), 0);
                                         frameLayout.addView(cell, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.TOP | Gravity.LEFT, 0, 0, 0, 0));
@@ -4836,9 +4837,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     if (currentMessageObject != null) {
                         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("playback_speed", Activity.MODE_PRIVATE);
                         if (Math.abs(currentVideoSpeed - 1.0f) < 0.001f) {
-                            preferences.edit().remove("speed" + currentMessageObject.getDialogId() + "_" + currentMessageObject.getId()).commit();
+                            preferences.edit().remove("speed" + currentMessageObject.getDialogId() + "_" + currentMessageObject.getId()).apply();
                         } else {
-                            preferences.edit().putFloat("speed" + currentMessageObject.getDialogId() + "_" + currentMessageObject.getId(), currentVideoSpeed).commit();
+                            preferences.edit().putFloat("speed" + currentMessageObject.getDialogId() + "_" + currentMessageObject.getId(), currentVideoSpeed).apply();
                         }
                     }
                     if (videoPlayer != null) {
@@ -5990,7 +5991,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 SharedPreferences preferences1 = MessagesController.getGlobalMainSettings();
                 SharedPreferences.Editor editor = preferences1.edit();
                 editor.putInt("self_destruct", value);
-                editor.commit();
+                editor.apply();
                 bottomSheet.dismiss();
                 int seconds;
                 if (value >= 0 && value < 21) {
@@ -6735,7 +6736,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 TLRPC.Chat chat = parentChatActivity.getCurrentChat();
                 TLRPC.User user = parentChatActivity.getCurrentUser();
                 if (user != null || ChatObject.isChannel(chat) && chat.megagroup || !ChatObject.isChannel(chat)) {
-                    MessagesController.getNotificationsSettings(currentAccount).edit().putBoolean("silent_" + parentChatActivity.getDialogId(), !notify).commit();
+                    MessagesController.getNotificationsSettings(currentAccount).edit().putBoolean("silent_" + parentChatActivity.getDialogId(), !notify).apply();
                 }
             }
             VideoEditedInfo videoEditedInfo = getCurrentVideoEditedInfo();
@@ -11767,34 +11768,33 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             if (index < 0 || index >= imagesArrLocations.size()) {
                 return;
             }
-            nameTextView.setText("");
-            dateTextView.setText("");
-
-            // Show upload date and time of avatars.
-            boolean isIndexInvalid = (switchingToIndex < 0 || switchingToIndex >= avatarsArr.size());
-            if (!avatarsArr.isEmpty() && !isIndexInvalid) {
-                long date = (long) avatarsArr.get(switchingToIndex).date * 1000;
-                if (date > 10000) {
-                    String dateString = LocaleController.formatString(
-                        "formatDateAtTime",
-                        R.string.formatDateAtTime,
-                        LocaleController.getInstance().formatterYear.format(new Date(date)),
-                        LocaleController.getInstance().formatterDay.format(new Date(date)));
-                    dateTextView.setText(dateString);
-                }
-            }
+            //Show upload date and time of avatars.
             if (avatarsDialogId < 0) {
                 TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-avatarsDialogId);
                 if (chat != null) {
                     nameTextView.setText(chat.title);
+                } else {
+                    nameTextView.setText("");
                 }
             } else {
                 TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(avatarsDialogId);
                 if (user != null) {
                     nameTextView.setText(UserObject.getUserName(user));
+                } else {
+                    nameTextView.setText("");
                 }
             }
+            boolean isIndexInvalid = (switchingToIndex < 0 || switchingToIndex >= avatarsArr.size());
 
+            if (!avatarsArr.isEmpty() && !isIndexInvalid) {
+                long date = (long) avatarsArr.get(switchingToIndex).date * 1000;
+                if (date > 10000) {
+                    String dateString = LocaleController.formatString("formatDateAtTime", R.string.formatDateAtTime, LocaleController.getInstance().formatterYear.format(new Date(date)), LocaleController.getInstance().formatterDay.format(new Date(date)));dateTextView.setText(dateString);
+                } else {
+                    dateTextView.setText("");
+                }
+            }
+            //Show upload date and time of avatars.
             if (canEditAvatar && !avatarsArr.isEmpty()) {
                 menuItem.showSubItem(gallery_menu_edit_avatar);
                 boolean currentSet = isCurrentAvatarSet();
@@ -16924,7 +16924,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
         SharedPreferences.Editor editor = preferences.edit();
         editor.putInt(String.format("compress_video_%d", compressionsCount), selectedCompression);
-        editor.commit();
+        editor.apply();
         updateWidthHeightBitrateForCompression();
         updateVideoInfo();
         if (request) {

@@ -2013,7 +2013,7 @@ public class Theme {
                 jsonObject.put("wMotion", isMotion);
                 jsonObject.put("pIntensity", intensity);
                 editor.putString(key, jsonObject.toString());
-                editor.commit();
+                editor.apply();
             } catch (Throwable e) {
                 FileLog.e(e);
             }
@@ -2022,7 +2022,7 @@ public class Theme {
         private void delete() {
             String key = getKey();
             SharedPreferences themeConfig = ApplicationLoader.applicationContext.getSharedPreferences("themeconfig", Activity.MODE_PRIVATE);
-            themeConfig.edit().remove(key).commit();
+            themeConfig.edit().remove(key).apply();
             new File(ApplicationLoader.getFilesDirFixed(), fileName).delete();
             new File(ApplicationLoader.getFilesDirFixed(), originalFileName).delete();
         }
@@ -2484,12 +2484,12 @@ public class Theme {
                 }
 
                 //override default themes
-                if (isHome(themeAccent) && name.equals("Dark Blue") || name.equals("Night")) {
+                if (isHome(themeAccent) && name.equals("Dark Blue") || name.equals("Night") || name.equals("AMOLED")) {
                     themeAccent.myMessagesAccentColor = 0xff6573f8;
                     themeAccent.myMessagesGradientAccentColor1 = 0xff7644cb;
                     themeAccent.myMessagesGradientAccentColor2 = 0xff8849b4;
                     themeAccent.myMessagesGradientAccentColor3 = 0xffa751a8;
-                    if (name.equals("Night")) {
+                    if (name.equals("Night") || name.equals("AMOLED")) {
                         themeAccent.patternIntensity = -0.57f;
                         themeAccent.backgroundOverrideColor = 0xff6c7fa6;
                         themeAccent.backgroundGradientOverrideColor1 = 0xff2e344b;
@@ -5496,7 +5496,7 @@ public class Theme {
                     }
                 }
                 saveOtherThemes(true, true);
-                themeConfig.edit().remove("themes").commit();
+                themeConfig.edit().remove("themes").apply();
             }
         }
 
@@ -5519,7 +5519,7 @@ public class Theme {
                 if (applyingTheme != null && !themeConfig.contains("lastDayTheme")) {
                     SharedPreferences.Editor editor = themeConfig.edit();
                     editor.putString("lastDayTheme", applyingTheme.getKey());
-                    editor.commit();
+                    editor.apply();
                 }
             }
 
@@ -5540,7 +5540,7 @@ public class Theme {
             if (currentNightTheme != null && !themeConfig.contains("lastDarkTheme")) {
                 SharedPreferences.Editor editor = themeConfig.edit();
                 editor.putString("lastDarkTheme", currentNightTheme.getKey());
-                editor.commit();
+                editor.apply();
             }
 
             SharedPreferences.Editor oldEditor = null;
@@ -5692,8 +5692,8 @@ public class Theme {
                 }
             }
             if (oldEditor != null) {
-                oldEditor.commit();
-                oldEditorNew.commit();
+                oldEditor.apply();
+                oldEditorNew.apply();
             }
 
             selectedAutoNightType = preferences.getInt("selectedAutoNightType", AUTO_NIGHT_TYPE_NONE);
@@ -5754,7 +5754,7 @@ public class Theme {
                     currentNightTheme.setOverrideWallpaper(overrideWallpaper);
                 }
             }
-            preferences.edit().remove("overrideThemeWallpaper").remove("selectedBackground2").commit();
+            preferences.edit().remove("overrideThemeWallpaper").remove("selectedBackground2").apply();
         }
 
         int switchToTheme = needSwitchToTheme();
@@ -5823,7 +5823,7 @@ public class Theme {
         } else {
             editor.remove("nighttheme");
         }
-        editor.commit();
+        editor.apply();
     }
 
     @SuppressLint("PrivateApi")
@@ -5960,11 +5960,12 @@ public class Theme {
             /*if (monthOfYear == 0 && dayOfMonth == 1 && hour <= 23) {
                 canStartHolidayAnimation = true;
             } else {
-                canStartHolidayAnimation = BuildVars.DEBUG_VERSION;//false;
+                canStartHolidayAnimation = false;
             }*/
             canStartHolidayAnimation = CherrygramConfig.INSTANCE.getDrawSnowInChat();
             if (dialogs_holidayDrawable == null) {
-                if (monthOfYear == 11 && dayOfMonth >= (BuildVars.DEBUG_PRIVATE_VERSION ? 29 : 31) && dayOfMonth <= 31 || monthOfYear == 0 && dayOfMonth == 1) {
+//                if (monthOfYear == 11 && dayOfMonth >= (BuildVars.DEBUG_PRIVATE_VERSION ? 29 : 31) && dayOfMonth <= 31 || monthOfYear == 0 && dayOfMonth == 1) {
+                if (CherrygramConfig.INSTANCE.getDrawSnowInActionBar()) {
                     dialogs_holidayDrawable = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.newyear);
                     dialogs_holidayDrawableOffsetX = -AndroidUtilities.dp(3);
                     dialogs_holidayDrawableOffsetY = -AndroidUtilities.dp(-7);
@@ -7593,7 +7594,7 @@ public class Theme {
                 }
             }
             editor.putInt("accent_current_" + theme.assetName, theme.currentAccentId);
-            editor.commit();
+            editor.apply();
         } else {
             if (theme.prevAccentId != -1) {
                 if (remove) {
@@ -7642,7 +7643,7 @@ public class Theme {
         }
 
         editor.putInt("lastLoadingCurrentThemeTime", lastLoadingCurrentThemeTime);
-        editor.commit();
+        editor.apply();
 
         if (full) {
             for (int b = 0; b < 5; b++) {
@@ -8112,7 +8113,7 @@ public class Theme {
                 SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("theme", currentDayTheme.getKey());
-                editor.commit();
+                editor.apply();
             }
         } catch (Exception e) {
             FileLog.e(e);

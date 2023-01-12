@@ -10,10 +10,8 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.preferences.ktx.*
+import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.preferences.BasePreferencesEntry
-import uz.unnarsx.cherrygram.tgkit.CherrygramPreferencesNavigator
-import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextDetailRow
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 
 class DrawerIconsPreferencesEntry : BasePreferencesEntry {

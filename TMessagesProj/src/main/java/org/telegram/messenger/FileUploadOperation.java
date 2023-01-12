@@ -187,7 +187,7 @@ public class FileUploadOperation {
                 remove(fileKey + "_id").
                 remove(fileKey + "_iv").
                 remove(fileKey + "_key").
-                remove(fileKey + "_ivc").commit();
+                remove(fileKey + "_ivc").apply();
         try {
             if (stream != null) {
                 stream.close();
@@ -226,7 +226,7 @@ public class FileUploadOperation {
             editor.putString(fileKey + "_ivc", Utilities.bytesToHex(ivChange));
             editor.putString(fileKey + "_key", Utilities.bytesToHex(key));
         }
-        editor.commit();
+        editor.apply();
     }
 
     private void calcTotalPartsCount() {
@@ -617,7 +617,7 @@ public class FileUploadOperation {
                                 if (isEncrypted) {
                                     editor.putString(fileKey + "_ivc", Utilities.bytesToHex(ivToSave));
                                 }
-                                editor.commit();
+                                editor.apply();
                             }
                         } else {
                             UploadCachedResult result = new UploadCachedResult();

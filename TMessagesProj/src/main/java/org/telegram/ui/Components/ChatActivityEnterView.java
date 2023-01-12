@@ -2187,7 +2187,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     if (keyEvent.getAction() == 1) {
                         if (currentPopupContentType == POPUP_CONTENT_BOT_KEYBOARD && botButtonsMessageObject != null) {
                             SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
-                            preferences.edit().putInt("hidekeyboard_" + dialog_id, botButtonsMessageObject.getId()).commit();
+                            preferences.edit().putInt("hidekeyboard_" + dialog_id, botButtonsMessageObject.getId()).apply();
                         }
                         if (searchingType != 0) {
                             setSearchingTypeInternal(0, true);
@@ -2594,7 +2594,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     }
                     notifySilentDrawable.setCrossOut(silent, true);
                     notifyButton.setImageDrawable(notifySilentDrawable);
-                    MessagesController.getNotificationsSettings(currentAccount).edit().putBoolean("silent_" + dialog_id, silent).commit();
+                    MessagesController.getNotificationsSettings(currentAccount).edit().putBoolean("silent_" + dialog_id, silent).apply();
                     NotificationsController.getInstance(currentAccount).updateServerNotificationsSettings(dialog_id, fragment == null ? 0 :fragment.getTopicId());
                     try {
                         if (visibleToast != null) {
@@ -4774,7 +4774,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             TLRPC.Chat chat = parentFragment.getCurrentChat();
             TLRPC.User user = parentFragment.getCurrentUser();
             if (user != null || ChatObject.isChannel(chat) && chat.megagroup || !ChatObject.isChannel(chat)) {
-                MessagesController.getNotificationsSettings(currentAccount).edit().putBoolean("silent_" + dialog_id, !notify).commit();
+                MessagesController.getNotificationsSettings(currentAccount).edit().putBoolean("silent_" + dialog_id, !notify).apply();
             }
         }
         if (stickersExpanded) {
@@ -7171,7 +7171,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                         showPopup(0, 0);
                     }
                     SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
-                    preferences.edit().putInt("answered_" + dialog_id, botButtonsMessageObject.getId()).commit();
+                    preferences.edit().putInt("answered_" + dialog_id, botButtonsMessageObject.getId()).apply();
                 }
                 if (delegate != null) {
                     delegate.onMessageSend(null, true, 0);
@@ -8242,10 +8242,10 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         if (height > AndroidUtilities.dp(50) && keyboardVisible && !AndroidUtilities.isInMultiwindow) {
             if (isWidthGreater) {
                 keyboardHeightLand = height;
-                MessagesController.getGlobalEmojiSettings().edit().putInt("kbd_height_land3", keyboardHeightLand).commit();
+                MessagesController.getGlobalEmojiSettings().edit().putInt("kbd_height_land3", keyboardHeightLand).apply();
             } else {
                 keyboardHeight = height;
-                MessagesController.getGlobalEmojiSettings().edit().putInt("kbd_height", keyboardHeight).commit();
+                MessagesController.getGlobalEmojiSettings().edit().putInt("kbd_height", keyboardHeight).apply();
             }
         }
 

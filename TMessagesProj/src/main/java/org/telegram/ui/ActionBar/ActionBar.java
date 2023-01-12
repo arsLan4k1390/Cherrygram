@@ -310,7 +310,7 @@ public class ActionBar extends FrameLayout {
             Drawable drawable = Theme.getCurrentHolidayDrawable();
             if (drawable != null) {
 
-                SimpleTextView titleView = (SimpleTextView) child;
+                /*SimpleTextView titleView = (SimpleTextView) child;
                 if (titleView.getVisibility() == View.VISIBLE && titleView.getText() instanceof String) {
                     TextPaint textPaint = titleView.getTextPaint();
                     textPaint.getFontMetricsInt(fontMetricsInt);
@@ -324,7 +324,7 @@ public class ActionBar extends FrameLayout {
                         child.invalidate();
                         invalidate();
                     }
-                }
+                }*/
 
 //                if (Theme.canStartHolidayAnimation()) {
                 if (CherrygramConfig.INSTANCE.getDrawSnowInActionBar()) {

@@ -270,7 +270,7 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
     public AlertDialog(Context context, int progressStyle, Theme.ResourcesProvider resourcesProvider) {
         super(context, R.style.TransparentDialog);
         blurredNativeBackground = supportsNativeBlur() && progressViewStyle == ALERT_TYPE_MESSAGE;
-        blurredBackground = blurredNativeBackground || !supportsNativeBlur() && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH;
+        blurredBackground = blurredNativeBackground || !supportsNativeBlur()/* && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH*/;
         this.resourcesProvider = resourcesProvider;
 
         backgroundPaddings = new Rect();

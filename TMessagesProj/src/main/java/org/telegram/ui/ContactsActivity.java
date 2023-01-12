@@ -518,7 +518,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 presentFragment(new ChannelCreateActivity(args));
                             } else {
                                 presentFragment(new ActionIntroActivity(ActionIntroActivity.ACTION_TYPE_CHANNEL_CREATE));
-                                preferences.edit().putBoolean("channel_intro", true).commit();
+                                preferences.edit().putBoolean("channel_intro", true).apply();
                             }
                         }
                     }
@@ -881,7 +881,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                     if (grantResults[a] == PackageManager.PERMISSION_GRANTED) {
                         ContactsController.getInstance(currentAccount).forceImportContacts();
                     } else {
-                        MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askAboutContacts", askAboutContacts = false).commit();
+                        MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askAboutContacts", askAboutContacts = false).apply();
                         if (SystemClock.elapsedRealtime() - permissionRequestTime < 200) {
                             try {
                                 Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -1019,8 +1019,8 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         RLottieImageView previousFab = dialogsActivity.getFloatingButton();
         View previousFabContainer = previousFab.getParent() != null ? (View) previousFab.getParent() : null;
         if (floatingButtonContainer == null || previousFabContainer == null || previousFab.getVisibility() != View.VISIBLE || Math.abs(previousFabContainer.getTranslationY()) > AndroidUtilities.dp(4) || Math.abs(floatingButtonContainer.getTranslationY()) > AndroidUtilities.dp(4)) {
-            floatingButton.setAnimation(R.raw.write_contacts_fab_icon, 52, 52);
-            floatingButton.getAnimatedDrawable().setCurrentFrame(floatingButton.getAnimatedDrawable().getFramesCount() - 1);
+//            floatingButton.setAnimation(R.raw.write_contacts_fab_icon, 52, 52); //Fix secret chats crash from drawer
+//            floatingButton.getAnimatedDrawable().setCurrentFrame(floatingButton.getAnimatedDrawable().getFramesCount() - 1);
             return null;
         }
         previousFabContainer.setVisibility(View.GONE);

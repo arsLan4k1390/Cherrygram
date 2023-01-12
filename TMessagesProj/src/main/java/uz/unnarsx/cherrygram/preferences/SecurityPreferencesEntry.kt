@@ -9,7 +9,7 @@ import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
-import uz.unnarsx.cherrygram.preferences.ktx.*
+import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 import java.io.File
 
@@ -26,6 +26,16 @@ class SecurityPreferencesEntry : BasePreferencesEntry {
                 }) {
                     CherrygramConfig.hideProxySponsor = it
                     bf.parentActivity.recreate()
+                }
+            }
+            switch {
+                title = LocaleController.getString("SP_AppCenterAnalytics", R.string.SP_AppCenterAnalytics)
+                summary = LocaleController.getString("SP_AppCenterAnalytics_Desc", R.string.SP_AppCenterAnalytics_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.appcenterAnalytics
+                }) {
+                    CherrygramConfig.appcenterAnalytics = it
                 }
             }
 

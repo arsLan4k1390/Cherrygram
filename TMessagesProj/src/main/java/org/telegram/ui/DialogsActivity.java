@@ -210,8 +210,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     public final static int DIALOGS_TYPE_START_ATTACH_BOT = 14;
     public final static boolean DISPLAY_SPEEDOMETER_IN_DOWNLOADS_SEARCH = true;
 
-    private final boolean showFolderNameInHeader = CherrygramConfig.INSTANCE.getFolderNameInHeader();
-
     private boolean canShowFilterTabsView;
     private boolean filterTabsViewIsVisible;
     private int initialSearchType = -1;
@@ -1218,19 +1216,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 );
                             }
                         }
-
-                        int tabId = viewPages[1].selectedType;
-                        if (tabId == filterTabsView.getDefaultTabId()) {
-                            if (CherrygramConfig.INSTANCE.getFolderNameInHeader()) {
-                                actionBar.setTitleAnimatedX(actionBarDefaultTitle, statusDrawable, false, 200);
-                            } else {
-                                setActionBarTitle(null, true);
-                            }
-                        } else {
-                            setActionBarTitle(getMessagesController().dialogFilters.get(tabId), false);
-                        }
-
-
                         tabsAnimation.setInterpolator(interpolator);
 
                         int width = getMeasuredWidth();
@@ -2111,7 +2096,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                             boolean hintShowed = preferences.getBoolean("archivehint_l", false) || SharedConfig.archiveHidden;
                             if (!hintShowed) {
-                                preferences.edit().putBoolean("archivehint_l", true).commit();
+                                preferences.edit().putBoolean("archivehint_l", true).apply();
                             }
                             getUndoView().showWithAction(dialog.id, hintShowed ? UndoView.ACTION_ARCHIVE : UndoView.ACTION_ARCHIVE_HINT, null, () -> {
                                 dialogsListFrozen = true;
@@ -2834,17 +2819,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     showScrollbars(false);
                     switchToCurrentSelectedMode(true);
                     animatingForward = forward;
-
-                    int tabId = viewPages[1].selectedType;
-                    if (tabId == filterTabsView.getDefaultTabId()) {
-                        if (CherrygramConfig.INSTANCE.getFolderNameInHeader()) {
-                            actionBar.setTitleAnimatedX(actionBarDefaultTitle, statusDrawable, false, 200);
-                        } else {
-                            setActionBarTitle(null, true);
-                        }
-                    } else {
-                        setActionBarTitle(getMessagesController().dialogFilters.get(tabId), false);
-                    }
                 }
 
                 @Override
@@ -3113,6 +3087,19 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 public void onDeletePressed(int id) {
                     showDeleteAlert(getMessagesController().dialogFilters.get(id));
                 }
+
+                @Override
+                public void onTabSelected(FilterTabsView.Tab tab, boolean forward, boolean animated) {
+                    if (!selectedDialogs.isEmpty()) {
+                        return;
+                    }
+                    if (CherrygramConfig.INSTANCE.getFolderNameInHeader()) {
+                        actionBar.setTitleAnimatedX(tab.isDefault ? actionBarDefaultTitle : tab.realTitle, tab.isDefault ? statusDrawable : null, forward, 200);
+                    } else {
+                        actionBar.setTitle(actionBarDefaultTitle, statusDrawable);
+                    }
+                }
+
             });
         }
 
@@ -5285,6 +5272,15 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     viewPages[a].listView.requestLayout();
                     viewPages[a].requestLayout();
                 }
+
+                if (!actionBarDefaultTitle.equals(actionBar.getTitle())) {
+                    if (CherrygramConfig.INSTANCE.getFolderNameInHeader()) {
+                        actionBar.setTitleAnimatedX(actionBarDefaultTitle, statusDrawable, false, 200);
+                    } else {
+                        actionBar.setTitle(actionBarDefaultTitle, statusDrawable);
+                    }
+                }
+
             }
             updateDrawerSwipeEnabled();
         }
@@ -5422,7 +5418,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             }
                         }
                     })
-                    .setNegativeButton(LocaleController.getString("ContactsPermissionAlertNotNow", R.string.ContactsPermissionAlertNotNow), (dialog, which) -> MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askedAboutMiuiLockscreen", true).commit())
+                    .setNegativeButton(LocaleController.getString("ContactsPermissionAlertNotNow", R.string.ContactsPermissionAlertNotNow), (dialog, which) -> MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askedAboutMiuiLockscreen", true).apply())
                     .create());
         }
         showFiltersHint();
@@ -6519,6 +6515,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (!actionBar.isActionModeShowed() && !AndroidUtilities.isTablet() && !onlySelect && view instanceof DialogCell && !getMessagesController().isForum(((DialogCell)view).getDialogId())) {
             DialogCell cell = (DialogCell) view;
             if (cell.isPointInsideAvatar(x, y)) {
+                long dialogId = cell.getDialogId();
+                if (CherrygramConfig.INSTANCE.getOpenProfile() && !DialogObject.isChatDialog(dialogId)) {
+                    Bundle args = new Bundle();
+                    args.putLong("user_id", dialogId);
+                    args.putBoolean("expandPhoto", false);
+                    return presentFragment(new ProfileActivity(args));
+                }
                 return showChatPreview(cell);
             }
         }
@@ -6798,6 +6801,26 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 //                }
 //            });
 //        }
+
+        /*if (!DialogObject.isChatDialog(dialogId))  {
+            ActionBarMenuSubItem openProfileItem = new ActionBarMenuSubItem(getParentActivity(), false, false);
+            openProfileItem.setTextAndIcon(LocaleController.getString("OpenProfile", R.string.OpenProfile), R.drawable.msg_openprofile);
+            openProfileItem.setOnClickListener(v -> {
+                //long did = -1000000000000L + dialogId; //-100id
+                //long did = dialogId; //-id
+                //long did = -dialogId; //id
+                Bundle args1 = new Bundle();
+                args1.putLong("user_id", dialogId);
+                args1.putLong("chat_id", did);
+                args1.putBoolean("expandPhoto", false);
+                ProfileActivity fragment = new ProfileActivity(args1);
+                fragment.setPlayProfileAnimation(currentUser != null && currentUser.id == dialogId ? 1 : 0);
+                AndroidUtilities.setAdjustResizeToNothing(getParentActivity(), classGuid);
+                presentFragment(fragment);
+            });
+            finishPreviewFragment();
+            previewMenu[0].addView(openProfileItem);
+        }*/
 
         ActionBarMenuSubItem markAsUnreadItem = new ActionBarMenuSubItem(getParentActivity(), true, false);
         if (cell.getHasUnread()) {
@@ -7198,7 +7221,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                 boolean hintShowed = preferences.getBoolean("archivehint_l", false) || SharedConfig.archiveHidden;
                 if (!hintShowed) {
-                    preferences.edit().putBoolean("archivehint_l", true).commit();
+                    preferences.edit().putBoolean("archivehint_l", true).apply();
                 }
                 int undoAction;
                 if (hintShowed) {
@@ -8282,7 +8305,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (alert) {
                 AlertDialog.Builder builder = AlertsCreator.createContactsPermissionDialog(activity, param -> {
                     askAboutContacts = param != 0;
-                    MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askAboutContacts", askAboutContacts).commit();
+                    MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askAboutContacts", askAboutContacts).apply();
                     askForPermissons(false);
                 });
                 showDialog(permissionDialog = builder.create());
@@ -8355,7 +8378,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             AndroidUtilities.runOnUIThread(() -> getNotificationCenter().postNotificationName(NotificationCenter.forceImportContactsStart));
                             getContactsController().forceImportContacts();
                         } else {
-                            MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askAboutContacts", askAboutContacts = false).commit();
+                            MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askAboutContacts", askAboutContacts = false).apply();
                         }
                         break;
                     case Manifest.permission.WRITE_EXTERNAL_STORAGE:
@@ -8756,7 +8779,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (preferences.getBoolean("filterhint", false)) {
             return;
         }
-        preferences.edit().putBoolean("filterhint", true).commit();
+        preferences.edit().putBoolean("filterhint", true).apply();
         AndroidUtilities.runOnUIThread(() -> getUndoView().showWithAction(0, UndoView.ACTION_FILTERS_AVAILABLE, null, () -> presentFragment(new FiltersSetupActivity())), 1000);
     }
 
@@ -10171,19 +10194,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             color = Theme.getColor(Theme.key_actionBarActionModeDefault);
         }
         return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    private void setActionBarTitle(MessagesController.DialogFilter filter, boolean tabAll){
-        if (!showFolderNameInHeader || getMessagesController().dialogFilters.isEmpty() || !selectedDialogs.isEmpty()) return;
-        if (tabAll) {
-            if (CherrygramConfig.INSTANCE.getFolderNameInHeader()) {
-                actionBar.setTitleAnimatedX(actionBarDefaultTitle, statusDrawable, false, 200);
-            } else {
-                actionBar.setTitle(LocaleController.getString("FilterAllChats", R.string.FilterAllChats), statusDrawable);
-            }
-        } else if (filter != null && !TextUtils.isEmpty(filter.name)){
-            actionBar.setTitleAnimatedX(filter.name, null, false, 200);
-        }
     }
 
     @Override

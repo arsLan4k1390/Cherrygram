@@ -134,11 +134,4 @@ public class CGFeatureJavaHooks {
         }
     }
 
-    public static int getDefaultVKUI() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return 0;
-        }
-        return 2;
-    }
-
 }
