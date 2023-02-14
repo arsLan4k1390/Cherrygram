@@ -7986,7 +7986,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         }
                         messageEditTextAnimator = a;
                         a.setDuration(ChatListItemAnimator.DEFAULT_DURATION);
-                        // a.setStartDelay(chatActivityEnterViewAnimateBeforeSending ? 20 : 0);
+                        //a.setStartDelay(chatActivityEnterViewAnimateBeforeSending ? 20 : 0);
                         a.setInterpolator(ChatListItemAnimator.DEFAULT_INTERPOLATOR);
                         a.start();
                         shouldAnimateEditTextWithBounds = false;
@@ -8994,12 +8994,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             showBottomOverlayProgress(true, true);
                             MessagesController.getInstance(currentAccount).addUserToChat(
                                     currentChat.id,
-                                    UserConfig.getInstance(currentAccount).getCurrentUser(),
-                                    0,
-                                    null,
-                                    null,
-                                    true,
-                                    () -> {
+                                    UserConfig.getInstance(currentAccount).getCurrentUser(), 0, null, null, true, () -> {
                                         showBottomOverlayProgress(false, true);
                                     },
                                     err -> {
@@ -12972,7 +12967,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } else {
                     MediaController.getInstance().setCurrentVideoVisible(true);
                     if (messageObject.isRoundVideo() || scrollToVideo) {
-                        //   scrollToMessageId(messageObject.getId(), 0, false, 0, true, 0);
+                        //scrollToMessageId(messageObject.getId(), 0, false, 0, true, 0);
                     } else {
                         chatListView.invalidate();
                     }
@@ -25763,7 +25758,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         }
         if (lastVisibleItem != RecyclerView.NO_POSITION) {
-            //   chatLayoutManager.scrollToPositionWithOffset(lastVisibleItem, top);
+            //chatLayoutManager.scrollToPositionWithOffset(lastVisibleItem, top);
         }
     }
 
@@ -29294,7 +29289,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
             scrollTo = null;
             checkTextureViewPosition = true;
-            // chatListView.getOnScrollListener().onScrolled(chatListView, 0, chatScrollHelper.getScrollDirection() == RecyclerAnimationScrollHelper.SCROLL_DIRECTION_DOWN ? 1 : -1);
+            //chatListView.getOnScrollListener().onScrolled(chatListView, 0, chatScrollHelper.getScrollDirection() == RecyclerAnimationScrollHelper.SCROLL_DIRECTION_DOWN ? 1 : -1);
 
             updateVisibleRows();
 

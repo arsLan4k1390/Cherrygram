@@ -154,15 +154,6 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = LocaleController.getString("CP_HideMuteUnmuteButton", R.string.CP_HideMuteUnmuteButton)
-
-                contract({
-                    return@contract CherrygramConfig.hideMuteUnmuteButton
-                }) {
-                    CherrygramConfig.hideMuteUnmuteButton = it
-                }
-            }
-            switch {
                 title = LocaleController.getString("CP_ConfirmCalls", R.string.CP_ConfirmCalls)
 
                 contract({
@@ -221,6 +212,15 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disableSwipeToNext
                 }) {
                     CherrygramConfig.disableSwipeToNext = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_HideMuteUnmuteButton", R.string.CP_HideMuteUnmuteButton)
+
+                contract({
+                    return@contract CherrygramConfig.hideMuteUnmuteButton
+                }) {
+                    CherrygramConfig.hideMuteUnmuteButton = it
                 }
             }
             switch {

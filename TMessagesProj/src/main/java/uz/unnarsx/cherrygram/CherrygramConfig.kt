@@ -236,6 +236,7 @@ object CherrygramConfig {
     var doubleTapAction by sharedPreferences.int("CP_DoubleTapAction", DOUBLE_TAP_ACTION_REACTION)
 
     var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
+    var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
     var hideKeyboardOnScroll by sharedPreferences.boolean("CP_HideKbdOnScroll", false)
     var hideSendAsChannel by sharedPreferences.boolean("CP_HideSendAsChannel", false)
     var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
@@ -390,8 +391,6 @@ object CherrygramConfig {
     //Translator
     var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")
     var translationTarget by sharedPreferences.string("translationTarget", "app")
-
-    var hideMuteUnmuteButton by sharedPreferences.boolean("hideMuteUnmuteButton", false)
 
     init {
         CherrygramToasts.init(sharedPreferences)

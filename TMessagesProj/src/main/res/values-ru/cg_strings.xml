@@ -181,6 +181,7 @@
     <string name="CP_DoubleTapAction">Действие при двойном нажатии</string>
     <string name="CP_DisableSwipeToNext">Отключить переход на следующий канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Отключить переключение на следующий канал при прокрутке любого канала</string>
+    <string name="CP_HideMuteUnmuteButton">Скрыть нижнюю кнопку в каналах</string>
     <string name="CP_HideKbdOnScroll">Скрыть клавиатуру при прокрутке</string>
     <string name="CP_HideSendAsChannel">Скрыть \"Отправить как канал\"</string>
 
