@@ -215,7 +215,7 @@ object CherrygramConfig {
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
     //Direct Share
     var usersDrawShareButton by sharedPreferences.boolean("CP_UsersDrawShareButton", false)
-//    var groupsDrawShareButton by sharedPreferences.boolean("CP_GroupsDrawShareButton", false)
+    //    var groupsDrawShareButton by sharedPreferences.boolean("CP_GroupsDrawShareButton", false)
     var supergroupsDrawShareButton by sharedPreferences.boolean("CP_SupergroupsDrawShareButton", false)
     var channelsDrawShareButton by sharedPreferences.boolean("CP_ChannelsDrawShareButton", true)
     var botsDrawShareButton by sharedPreferences.boolean("CP_BotsDrawShareButton", true)
@@ -390,6 +390,8 @@ object CherrygramConfig {
     //Translator
     var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")
     var translationTarget by sharedPreferences.string("translationTarget", "app")
+
+    var hideMuteUnmuteButton by sharedPreferences.boolean("hideMuteUnmuteButton", false)
 
     init {
         CherrygramToasts.init(sharedPreferences)

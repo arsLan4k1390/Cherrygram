@@ -182,6 +182,7 @@
     <string name="CP_NoRoundingSummary" translatable="false">1.2K -> 1234</string>
     <string name="CP_DeleteForAll">Use \"Delete for all\" by default</string>
     <string name="CP_DeleteForAll_Desc">Checkbox will be automatically checked while deleting messages.</string>
+    <string name="CP_HideMuteUnmuteButton">Hide bottom button in channels</string>
     <string name="CP_ConfirmCalls">Ask before calling</string>
     <string name="CP_ForwardMsgDate">Show forwarded message date</string>
     <string name="CP_ShowSeconds">Show seconds in timestamps</string>
