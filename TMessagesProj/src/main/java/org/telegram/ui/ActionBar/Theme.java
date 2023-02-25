@@ -9,6 +9,7 @@
 package org.telegram.ui.ActionBar;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
+import static org.telegram.messenger.AndroidUtilities.dpf2;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -80,6 +81,7 @@ import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLocation;
+import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
 import org.telegram.messenger.MediaDataController;
@@ -146,6 +148,11 @@ public class Theme {
 
     public static final int MSG_OUT_COLOR_BLACK = 0xff212121;
     public static final int MSG_OUT_COLOR_WHITE = 0xffffffff;
+    public static final int default_shadow_color = ColorUtils.setAlphaComponent(Color.BLACK, 27);
+
+    public static void applyDefaultShadow(Paint paint) {
+        paint.setShadowLayer(dpf2(1), 0, dpf2(0.33f), default_shadow_color);
+    }
 
     public static class BackgroundDrawableSettings {
 
@@ -1388,7 +1395,6 @@ public class Theme {
                 }
                 myMessagesAccent = getAccentColor(hsvTemp1, color, firstColor);
             }
-
             boolean changeMyMessagesColors = (myMessagesAccent != 0 && (parentTheme.accentBaseColor != 0 && myMessagesAccent != parentTheme.accentBaseColor || accentColor != 0 && accentColor != myMessagesAccent));
             if (changeMyMessagesColors || accentColor2 != 0) {
                 if (accentColor2 != 0) {
@@ -4017,6 +4023,17 @@ public class Theme {
     public final static String key_statisticChartLine_cyan = "statisticChartLine_cyan";
     public final static String key_statisticChartLineEmpty = "statisticChartLineEmpty";
 
+    public final static String key_color_lightblue = "color_lightblue";
+    public final static String key_color_blue = "color_blue";
+    public final static String key_color_green = "color_green";
+    public final static String key_color_lightgreen = "color_lightgreen";
+    public final static String key_color_red = "color_red";
+    public final static String key_color_orange = "color_orange";
+    public final static String key_color_yellow = "color_yellow";
+    public final static String key_color_purple = "color_purple";
+    public final static String key_color_cyan = "color_cyan";
+    public final static String[] keys_colors = { key_color_lightblue, key_color_blue, key_color_green, key_color_lightgreen, key_color_red, key_color_orange, key_color_yellow, key_color_purple, key_color_cyan };
+
     public static final String key_chat_outReactionButtonBackground = "chat_outReactionButtonBackground";
     public static final String key_chat_inReactionButtonBackground = "chat_inReactionButtonBackground";
     public static final String key_chat_outReactionButtonText = "chat_outReactionButtonText";
@@ -4180,7 +4197,6 @@ public class Theme {
         defaultColors.put(key_dialogShadowLine, 0x12000000);
         defaultColors.put(key_dialogEmptyImage, 0xff9fa4a8);
         defaultColors.put(key_dialogEmptyText, 0xff8c9094);
-        defaultColors.put(key_dialogSwipeRemove, 0xffe56555);
         defaultColors.put(key_dialogSwipeRemove, 0xffe56555);
         defaultColors.put(key_dialogReactionMentionBackground, 0xffF05459);
 
@@ -4858,6 +4874,16 @@ public class Theme {
         defaultColors.put(key_statisticChartLineEmpty, 0xFFEEEEEE);
         defaultColors.put(key_actionBarTipBackground, 0xFF446F94);
 
+        defaultColors.put(key_color_blue, 0xff327FE5);
+        defaultColors.put(key_color_green, 0xff61C752);
+        defaultColors.put(key_color_red, 0xffE05356);
+        defaultColors.put(key_color_yellow, 0xffEBA52D);
+        defaultColors.put(key_color_lightblue, 0xff58A8ED);
+        defaultColors.put(key_color_lightgreen, 0xff8FCF39);
+        defaultColors.put(key_color_orange, 0xffF28C39);
+        defaultColors.put(key_color_purple, 0xff9F79E8);
+        defaultColors.put(key_color_cyan, 0xff40D0CA);
+
         defaultColors.put(key_voipgroup_checkMenu, 0xff6BB6F9);
         defaultColors.put(key_voipgroup_muteButton, 0xff77E55C);
         defaultColors.put(key_voipgroup_muteButton2, 0xff7DDCAA);
@@ -5111,9 +5137,19 @@ public class Theme {
         fallbackKeys.put(key_avatar_background2Blue, key_avatar_backgroundBlue);
         fallbackKeys.put(key_avatar_background2Pink, key_avatar_backgroundPink);
 
+        fallbackKeys.put(key_statisticChartLine_orange, key_color_orange);
+        fallbackKeys.put(key_statisticChartLine_blue, key_color_blue);
+        fallbackKeys.put(key_statisticChartLine_red, key_color_red);
+        fallbackKeys.put(key_statisticChartLine_lightblue, key_color_lightblue);
+        fallbackKeys.put(key_statisticChartLine_golden, key_color_yellow);
+        fallbackKeys.put(key_statisticChartLine_purple, key_color_purple);
+        fallbackKeys.put(key_statisticChartLine_indigo, key_color_purple);
+        fallbackKeys.put(key_statisticChartLine_cyan, key_color_cyan);
+
         themeAccentExclusionKeys.addAll(Arrays.asList(keys_avatar_background));
         themeAccentExclusionKeys.addAll(Arrays.asList(keys_avatar_background2));
         themeAccentExclusionKeys.addAll(Arrays.asList(keys_avatar_nameInMessage));
+        themeAccentExclusionKeys.addAll(Arrays.asList(keys_colors));
         themeAccentExclusionKeys.add(key_chat_attachFileBackground);
         themeAccentExclusionKeys.add(key_chat_attachGalleryBackground);
         themeAccentExclusionKeys.add(key_chat_attachFileText);
@@ -8933,38 +8969,38 @@ public class Theme {
 
             if (dialogs_archiveAvatarDrawable != null) {
                 dialogs_archiveAvatarDrawable.setCallback(null);
-                dialogs_archiveAvatarDrawable.recycle();
+                dialogs_archiveAvatarDrawable.recycle(false);
             }
             if (dialogs_archiveDrawable != null) {
-                dialogs_archiveDrawable.recycle();
+                dialogs_archiveDrawable.recycle(false);
             }
             if (dialogs_unarchiveDrawable != null) {
-                dialogs_unarchiveDrawable.recycle();
+                dialogs_unarchiveDrawable.recycle(false);
             }
             if (dialogs_pinArchiveDrawable != null) {
-                dialogs_pinArchiveDrawable.recycle();
+                dialogs_pinArchiveDrawable.recycle(false);
             }
             if (dialogs_unpinArchiveDrawable != null) {
-                dialogs_unpinArchiveDrawable.recycle();
+                dialogs_unpinArchiveDrawable.recycle(false);
             }
             if (dialogs_hidePsaDrawable != null) {
-                dialogs_hidePsaDrawable.recycle();
+                dialogs_hidePsaDrawable.recycle(false);
             }
             dialogs_archiveAvatarDrawable = new RLottieDrawable(R.raw.chats_archiveavatar, "chats_archiveavatar", AndroidUtilities.dp(36), AndroidUtilities.dp(36), false, null);
-            dialogs_archiveDrawable = new RLottieDrawable(R.raw.chats_archive, "chats_archive", AndroidUtilities.dp(36), AndroidUtilities.dp(36));
-            dialogs_unarchiveDrawable = new RLottieDrawable(R.raw.chats_unarchive, "chats_unarchive", AndroidUtilities.dp(AndroidUtilities.dp(36)), AndroidUtilities.dp(36));
-            dialogs_pinArchiveDrawable = new RLottieDrawable(R.raw.chats_hide, "chats_hide", AndroidUtilities.dp(36), AndroidUtilities.dp(36));
-            dialogs_unpinArchiveDrawable = new RLottieDrawable(R.raw.chats_unhide, "chats_unhide", AndroidUtilities.dp(36), AndroidUtilities.dp(36));
-            dialogs_hidePsaDrawable = new RLottieDrawable(R.raw.chat_audio_record_delete, "chats_psahide", AndroidUtilities.dp(30), AndroidUtilities.dp(30));
+            dialogs_archiveDrawable = new RLottieDrawable(R.raw.chats_archive, "chats_archive", AndroidUtilities.dp(36), AndroidUtilities.dp(36), false, null);
+            dialogs_unarchiveDrawable = new RLottieDrawable(R.raw.chats_unarchive, "chats_unarchive", AndroidUtilities.dp(AndroidUtilities.dp(36)), AndroidUtilities.dp(36), false, null);
+            dialogs_pinArchiveDrawable = new RLottieDrawable(R.raw.chats_hide, "chats_hide", AndroidUtilities.dp(36), AndroidUtilities.dp(36), false, null);
+            dialogs_unpinArchiveDrawable = new RLottieDrawable(R.raw.chats_unhide, "chats_unhide", AndroidUtilities.dp(36), AndroidUtilities.dp(36), false, null);
+            dialogs_hidePsaDrawable = new RLottieDrawable(R.raw.chat_audio_record_delete, "chats_psahide", AndroidUtilities.dp(30), AndroidUtilities.dp(30), false, null);
 
-            dialogs_swipeMuteDrawable = new RLottieDrawable(R.raw.swipe_mute, "swipe_mute", AndroidUtilities.dp(36), AndroidUtilities.dp(36));
-            dialogs_swipeUnmuteDrawable = new RLottieDrawable(R.raw.swipe_unmute, "swipe_unmute", AndroidUtilities.dp(36), AndroidUtilities.dp(36));
+            dialogs_swipeMuteDrawable = new RLottieDrawable(R.raw.swipe_mute, "swipe_mute", AndroidUtilities.dp(36), AndroidUtilities.dp(36), false, null);
+            dialogs_swipeUnmuteDrawable = new RLottieDrawable(R.raw.swipe_unmute, "swipe_unmute", AndroidUtilities.dp(36), AndroidUtilities.dp(36), false, null);
 
-            dialogs_swipeReadDrawable = new RLottieDrawable(R.raw.swipe_read, "swipe_read", AndroidUtilities.dp(36), AndroidUtilities.dp(36));
-            dialogs_swipeUnreadDrawable = new RLottieDrawable(R.raw.swipe_unread, "swipe_unread", AndroidUtilities.dp(36), AndroidUtilities.dp(36));
-            dialogs_swipeDeleteDrawable = new RLottieDrawable(R.raw.swipe_delete, "swipe_delete", AndroidUtilities.dp(36), AndroidUtilities.dp(36));
-            dialogs_swipeUnpinDrawable = new RLottieDrawable(R.raw.swipe_unpin, "swipe_unpin", AndroidUtilities.dp(36), AndroidUtilities.dp(36));
-            dialogs_swipePinDrawable = new RLottieDrawable(R.raw.swipe_pin, "swipe_pin", AndroidUtilities.dp(36), AndroidUtilities.dp(36));
+            dialogs_swipeReadDrawable = new RLottieDrawable(R.raw.swipe_read, "swipe_read", AndroidUtilities.dp(36), AndroidUtilities.dp(36), false, null);
+            dialogs_swipeUnreadDrawable = new RLottieDrawable(R.raw.swipe_unread, "swipe_unread", AndroidUtilities.dp(36), AndroidUtilities.dp(36), false, null);
+            dialogs_swipeDeleteDrawable = new RLottieDrawable(R.raw.swipe_delete, "swipe_delete", AndroidUtilities.dp(36), AndroidUtilities.dp(36), false, null);
+            dialogs_swipeUnpinDrawable = new RLottieDrawable(R.raw.swipe_unpin, "swipe_unpin", AndroidUtilities.dp(36), AndroidUtilities.dp(36), false, null);
+            dialogs_swipePinDrawable = new RLottieDrawable(R.raw.swipe_pin, "swipe_pin", AndroidUtilities.dp(36), AndroidUtilities.dp(36), false, null);
 
             applyCommonTheme();
         }
@@ -9947,7 +9983,7 @@ public class Theme {
         }
 
         Drawable drawable = wallpaperOverride != null ? wallpaperOverride : currentWallpaper;
-        boolean drawServiceGradient = drawable instanceof MotionBackgroundDrawable && SharedConfig.getDevicePerformanceClass() != SharedConfig.PERFORMANCE_CLASS_LOW && !SharedConfig.getLiteMode().enabled();
+        boolean drawServiceGradient = drawable instanceof MotionBackgroundDrawable && SharedConfig.getDevicePerformanceClass() != SharedConfig.PERFORMANCE_CLASS_LOW && LiteMode.isEnabled(LiteMode.FLAG_CHAT_BACKGROUND);
         if (drawServiceGradient) {
             Bitmap newBitmap = ((MotionBackgroundDrawable) drawable).getBitmap();
             if (serviceBitmap != newBitmap) {
@@ -10757,6 +10793,23 @@ public class Theme {
                 }
                 settings.wallpaper = new ColorDrawable(selectedColor);
             }
+        }
+
+        if (!LiteMode.isEnabled(LiteMode.FLAG_CHAT_BACKGROUND) && settings.wallpaper instanceof MotionBackgroundDrawable) {
+            MotionBackgroundDrawable motionBackgroundDrawable = (MotionBackgroundDrawable) settings.wallpaper;
+            int w, h;
+            if (motionBackgroundDrawable.getPatternBitmap() == null) {
+                w = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
+                h = Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
+            } else {
+                w = motionBackgroundDrawable.getPatternBitmap().getWidth();
+                h = motionBackgroundDrawable.getPatternBitmap().getHeight();
+            }
+            Bitmap bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            settings.wallpaper.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            settings.wallpaper.draw(canvas);
+            settings.wallpaper = new BitmapDrawable(bitmap);
         }
         return settings;
     }

@@ -59,7 +59,6 @@ public class DrawerPreferencesEntry extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setTitle(LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory));
         actionBar.setAllowOverlayTitle(false);
         if (AndroidUtilities.isTablet()) {

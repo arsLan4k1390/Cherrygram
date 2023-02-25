@@ -6,7 +6,6 @@ import android.os.Build;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.view.Gravity;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,9 +30,9 @@ import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextCheckbox2Cell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
+import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
-import org.telegram.ui.Components.UndoView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,6 +54,7 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
     private int cameraTypeHeaderRow;
     private int cameraTypeSelectorRow;
     private int cameraXOptimizeRow;
+    private int reduceCameraXLatency;
     private int cameraXQualityRow;
     private int cameraAdviseRow;
 
@@ -63,8 +63,6 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
     private int rearCamRow;
     private int cameraAspectRatioRow;
     private int cameraAspectRatioAdviseRow;
-
-    private UndoView restartTooltip;
 
     @Override
     public boolean onFragmentCreate() {
@@ -83,7 +81,6 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setTitle(LocaleController.getString("CP_Category_Camera", R.string.CP_Category_Camera));
         actionBar.setAllowOverlayTitle(false);
 
@@ -119,7 +116,23 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode());
                 }
-                restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+                BulletinFactory.of(this).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock),
+                        () -> {
+                }).show();
+            } else if (position == reduceCameraXLatency) {
+                CherrygramConfig.INSTANCE.toggleReduceCameraXLatency();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getReduceCameraXLatency());
+                }
+                BulletinFactory.of(this).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock),
+                        () -> {
+                        }).show();
             } else if (position == cameraXQualityRow) {
                 Map<Quality, Size> availableSizes = CameraXUtils.getAvailableVideoSizes();
                 Stream<Integer> tmp = availableSizes.values().stream().sorted(Comparator.comparingInt(Size::getWidth).reversed()).map(Size::getHeight);
@@ -128,7 +141,12 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                 PopupHelper.show(arrayList, LocaleController.getString("CP_CameraQuality", R.string.CP_CameraQuality), types.indexOf(CherrygramConfig.INSTANCE.getCameraResolution()), context, i -> {
                     CherrygramConfig.INSTANCE.setCameraResolution(types.get(i));
                     listAdapter.notifyItemChanged(cameraXQualityRow);
-                    restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+                    BulletinFactory.of(this).createRestartBulletin(
+                            R.raw.chats_infotip,
+                            LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                            LocaleController.getString("BotUnblock", R.string.BotUnblock),
+                            () -> {
+                    }).show();
                 });
             } else if (position == disableAttachCameraRow) {
                 CherrygramConfig.INSTANCE.toggleDisableAttachCamera();
@@ -152,13 +170,15 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                 PopupHelper.show(arrayList, (LocaleController.getString("CP_CameraAspectRatio", R.string.CP_CameraAspectRatio)), types.indexOf(CherrygramConfig.INSTANCE.getCameraAspectRatio()), context, i -> {
                     CherrygramConfig.INSTANCE.setCameraAspectRatio(types.get(i));
                     listAdapter.notifyItemChanged(cameraAspectRatioRow);
-                    //restartTooltip.showWithAction(0, UndoView.ACTION_NEED_RESTART, null, null);
+                    BulletinFactory.of(this).createRestartBulletin(
+                            R.raw.chats_infotip,
+                            LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                            LocaleController.getString("BotUnblock", R.string.BotUnblock),
+                            () -> {
+                    }).show();
                 });
             }
         });
-
-        restartTooltip = new UndoView(context);
-        frameLayout.addView(restartTooltip, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.LEFT, 8, 0, 8, 8));
 
         return fragmentView;
     }
@@ -169,6 +189,7 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
         cameraTypeHeaderRow = -1;
         cameraTypeSelectorRow = -1;
         cameraXOptimizeRow = -1;
+        reduceCameraXLatency = -1;
         cameraXQualityRow = -1;
         cameraAdviseRow = -1;
 
@@ -177,6 +198,7 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
             cameraTypeSelectorRow = rowCount++;
             if (CherrygramConfig.INSTANCE.getCameraType() == 1) {
                 cameraXOptimizeRow = rowCount++;
+                reduceCameraXLatency = rowCount++;
                 cameraXQualityRow = rowCount++;
             }
             cameraAdviseRow = rowCount++;
@@ -233,6 +255,8 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                     textCheckCell.setEnabled(true, null);
                     if (position == cameraXOptimizeRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_PerformanceMode", R.string.CP_PerformanceMode), LocaleController.getString("CP_PerformanceModeDesc", R.string.CP_PerformanceModeDesc), CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode(), true, true);
+                    } else if (position == reduceCameraXLatency) {
+                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_ZeroShutterLag", R.string.CP_ZeroShutterLag), LocaleController.getString("CP_ZeroShutterLagDesc", R.string.CP_ZeroShutterLagDesc), CherrygramConfig.INSTANCE.getReduceCameraXLatency(), true, true);
                     } else if (position == disableAttachCameraRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_DisableCam", R.string.CP_DisableCam), LocaleController.getString("CP_DisableCam_Desc", R.string.CP_DisableCam_Desc), CherrygramConfig.INSTANCE.getDisableAttachCamera(), true, true);
                     } else if (position == rearCamRow) {
@@ -323,10 +347,12 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                             if (cameraSelected == 1) {
                                 updateRowsId(false);
                                 listAdapter.notifyItemInserted(cameraXOptimizeRow);
+                                listAdapter.notifyItemInserted(reduceCameraXLatency);
                                 listAdapter.notifyItemInserted(cameraXQualityRow);
                                 listAdapter.notifyItemChanged(cameraAdviseRow);
                             } else if (oldValue == 1){
                                 listAdapter.notifyItemRemoved(cameraXOptimizeRow);
+                                listAdapter.notifyItemRemoved(reduceCameraXLatency);
                                 listAdapter.notifyItemRemoved(cameraXQualityRow);
                                 listAdapter.notifyItemChanged(cameraAdviseRow - 1);
                                 updateRowsId(false);
@@ -362,7 +388,7 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
         public int getItemViewType(int position) {
             if (position == audioVideoHeaderRow || position == cameraTypeHeaderRow) {
                 return 2;
-            } else if (position == cameraXOptimizeRow || position == disableAttachCameraRow || position == rearCamRow) {
+            } else if (position == cameraXOptimizeRow || position == reduceCameraXLatency || position == disableAttachCameraRow || position == rearCamRow) {
                 return 3;
             } else if (position == cameraTypeSelectorRow) {
                 return 5;

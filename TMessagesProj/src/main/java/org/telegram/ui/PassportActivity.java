@@ -141,8 +141,6 @@ import java.util.TimerTask;
 
 import javax.crypto.Cipher;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PassportActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     public final static int TYPE_REQUEST = 0;
@@ -971,7 +969,6 @@ public class PassportActivity extends BaseFragment implements NotificationCenter
     public View createView(Context context) {
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

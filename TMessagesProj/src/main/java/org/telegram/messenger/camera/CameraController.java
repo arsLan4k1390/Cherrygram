@@ -683,25 +683,16 @@ public class CameraController implements MediaRecorder.OnInfoListener {
     }
 
     private void finishRecordingVideo() {
-        MediaMetadataRetriever mediaMetadataRetriever = null;
         long duration = 0;
-        try {
-            mediaMetadataRetriever = new MediaMetadataRetriever();
+        try (MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever()) {
             mediaMetadataRetriever.setDataSource(recordedFile);
             String d = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             if (d != null) {
                 duration = (int) Math.ceil(Long.parseLong(d) / 1000.0f);
             }
+            mediaMetadataRetriever.release();
         } catch (Exception e) {
             FileLog.e(e);
-        } finally {
-            try {
-                if (mediaMetadataRetriever != null) {
-                    mediaMetadataRetriever.release();
-                }
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
         }
         Bitmap bitmap = SendMessagesHelper.createVideoThumbnail(recordedFile, MediaStore.Video.Thumbnails.MINI_KIND);
         if (mirrorRecorderVideo) {
@@ -714,8 +705,7 @@ public class CameraController implements MediaRecorder.OnInfoListener {
         }
         String fileName = Integer.MIN_VALUE + "_" + SharedConfig.getLastLocalId() + ".jpg";
         final File cacheFile = new File(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE), fileName);
-        try {
-            FileOutputStream stream = new FileOutputStream(cacheFile);
+        try (FileOutputStream stream = new FileOutputStream(cacheFile)) {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
         } catch (Throwable e) {
             FileLog.e(e);

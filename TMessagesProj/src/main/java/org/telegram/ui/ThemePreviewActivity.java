@@ -119,8 +119,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class ThemePreviewActivity extends BaseFragment implements DownloadController.FileDownloadProgressListener, NotificationCenter.NotificationCenterDelegate {
 
     public static final int SCREEN_TYPE_PREVIEW = 0;
@@ -1052,10 +1050,8 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                     File toFile = new File(ApplicationLoader.getFilesDirFixed(), originalFileName);
                     if (currentWallpaper instanceof TLRPC.TL_wallPaper) {
                         if (originalBitmap != null) {
-                            try {
-                                FileOutputStream stream = new FileOutputStream(toFile);
+                            try (FileOutputStream stream = new FileOutputStream(toFile)) {
                                 originalBitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
-                                stream.close();
                                 done = true;
                             } catch (Exception e) {
                                 done = false;
@@ -1065,10 +1061,8 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                             ImageReceiver imageReceiver = backgroundImage.getImageReceiver();
                             if (imageReceiver.hasNotThumb() || imageReceiver.hasStaticThumb()) {
                                 Bitmap bitmap = imageReceiver.getBitmap();
-                                try {
-                                    FileOutputStream stream = new FileOutputStream(toFile);
+                                try (FileOutputStream stream = new FileOutputStream(toFile)) {
                                     bitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
-                                    stream.close();
                                     done = true;
                                 } catch (Exception e) {
                                     done = false;
@@ -1111,13 +1105,13 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                                 paint.setAlpha((int) (255 * Math.abs(currentIntensity)));
                                 canvas.drawBitmap(bitmap, 0, 0, paint);
 
-                                FileOutputStream stream = new FileOutputStream(toFile);
-                                if (backgroundGradientColor2 != 0) {
-                                    dst.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                } else {
-                                    dst.compress(Bitmap.CompressFormat.JPEG, 87, stream);
+                                try (FileOutputStream stream = new FileOutputStream(toFile)) {
+                                    if (backgroundGradientColor2 != 0) {
+                                        dst.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                                    } else {
+                                        dst.compress(Bitmap.CompressFormat.JPEG, 87, stream);
+                                    }
                                 }
-                                stream.close();
                                 done = true;
                             } catch (Throwable e) {
                                 FileLog.e(e);
@@ -1164,9 +1158,9 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                     if (isBlurred) {
                         try {
                             File blurredFile = new File(ApplicationLoader.getFilesDirFixed(), fileName);
-                            FileOutputStream stream = new FileOutputStream(blurredFile);
-                            blurredBitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
-                            stream.close();
+                            try (FileOutputStream stream = new FileOutputStream(blurredFile)) {
+                                blurredBitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
+                            }
                             done = true;
                         } catch (Throwable e) {
                             FileLog.e(e);
@@ -2349,9 +2343,9 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             Drawable background = backgroundImage.getBackground();
             Bitmap bitmap = backgroundImage.getImageReceiver().getBitmap();
             if (background instanceof MotionBackgroundDrawable) {
-                FileOutputStream stream = new FileOutputStream(toFile);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 87, stream);
-                stream.close();
+                try (FileOutputStream stream = new FileOutputStream(toFile)) {
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 87, stream);
+                }
             } else {
                 Bitmap dst = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(dst);
@@ -2363,9 +2357,9 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 paint.setAlpha((int) (255 * currentIntensity));
                 canvas.drawBitmap(bitmap, 0, 0, paint);
 
-                FileOutputStream stream = new FileOutputStream(toFile);
-                dst.compress(Bitmap.CompressFormat.JPEG, 87, stream);
-                stream.close();
+                try (FileOutputStream stream = new FileOutputStream(toFile)) {
+                    dst.compress(Bitmap.CompressFormat.JPEG, 87, stream);
+                }
             }
 
         } catch (Throwable e) {

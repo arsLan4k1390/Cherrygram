@@ -487,7 +487,6 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
         actionBar.setItemsColor(Theme.getColor(textKey), false);
         actionBar.setItemsBackgroundColor(Theme.getColor(selectorKey), false);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         if (selectedAlbum != null) {
             actionBar.setTitle(selectedAlbum.bucketName);
         } else if (type == 0) {
@@ -1296,7 +1295,7 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
         if (id == NotificationCenter.closeChats) {
-            removeSelfFromStack();
+            removeSelfFromStack(true);
         }
     }
 

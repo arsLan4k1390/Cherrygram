@@ -58,8 +58,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PhonebookShareAlert extends BottomSheet {
 
     private ListAdapter listAdapter;
@@ -242,10 +240,18 @@ public class PhonebookShareAlert extends BottomSheet {
     }
 
     public PhonebookShareAlert(BaseFragment parent, ContactsController.Contact contact, TLRPC.User user, Uri uri, File file, String firstName, String lastName) {
-        this(parent, contact, user, uri, file, firstName, lastName, null);
+        this(parent, contact, user, uri, file, null, firstName, lastName);
+    }
+
+    public PhonebookShareAlert(BaseFragment parent, ContactsController.Contact contact, TLRPC.User user, Uri uri, File file, String phone, String firstName, String lastName) {
+        this(parent, contact, user, uri, file, phone, firstName, lastName, null);
     }
 
     public PhonebookShareAlert(BaseFragment parent, ContactsController.Contact contact, TLRPC.User user, Uri uri, File file, String firstName, String lastName, Theme.ResourcesProvider resourcesProvider) {
+        this(parent, contact, user, uri, file, null, firstName, lastName, resourcesProvider);
+    }
+
+    public PhonebookShareAlert(BaseFragment parent, ContactsController.Contact contact, TLRPC.User user, Uri uri, File file, String phone, String firstName, String lastName, Theme.ResourcesProvider resourcesProvider) {
         super(parent.getParentActivity(), false, resourcesProvider);
 
         String name = ContactsController.formatName(firstName, lastName);
@@ -257,6 +263,12 @@ public class PhonebookShareAlert extends BottomSheet {
         } else if (file != null) {
             result = AndroidUtilities.loadVCardFromStream(Uri.fromFile(file), currentAccount, false, items, name);
             file.delete();
+            isImport = true;
+        } else if (phone != null) {
+            AndroidUtilities.VcardItem item = new AndroidUtilities.VcardItem();
+            item.type = 0;
+            item.vcardData.add(item.fullData = "TEL;MOBILE:+" + phone);
+            phones.add(item);
             isImport = true;
         } else if (contact.key != null) {
             uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, contact.key);
@@ -585,7 +597,6 @@ public class PhonebookShareAlert extends BottomSheet {
         };
         actionBar.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setItemsColor(getThemedColor(Theme.key_dialogTextBlack), false);
         actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_dialogButtonSelector), false);
         actionBar.setTitleColor(getThemedColor(Theme.key_dialogTextBlack));

@@ -9,8 +9,8 @@
     <string name="CG_ChooseCountry">Выберите Страну/Регион</string>
     <string name="CG_WrongCountry">Некорректный код Страны/Региона</string>
 
-    <string name="CG_ProxyInfo">Вам может потребоваться настроить прокси перед входом в учетную запись, если Ваша Страна/Регион или интернет-провайдер блокирует Telegram.</string>
-    <string name="CG_ProxySettings">Настройки прокси</string>
+    <string name="CG_QRLoginTitle">Войти по QR-коду</string>
+    <string name="CG_QRLoginMessage">Отсканируйте QR-код с помощью другого устройства для входа в систему.</string>
 
     <string name="CG_TestBackendNumber">Тестовый номер</string>
     <string name="CG_TestBackendOn">Авторизация на тестовом сервере.</string>
@@ -25,9 +25,6 @@
     <string name="CG_ChooseFolderIcon">Выберите иконку</string>
     <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
     <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
-    <string name="CP_VKUIFoldersStyle">Папки в стиле VKUI</string>
-    <string name="CP_VKUIFoldersStyle_Desc">Это включит стиль папок из VK</string>
-    <string name="CP_VKUIFoldersStyle_Frame">Коррекция размера рамки VKUI</string>
     <!--Telegram Folders Settings-->
 
     <!--Chats screen-->
@@ -54,18 +51,11 @@
     <string name="CG_FwdMenu_DisableCaptions">Скрыть подписи</string>
     <!--Chats screen-->
 
-    <!--Group permissions-->
-    <string name="GP_UserRestrictionsSendStickers2">Отправка стикеров</string>
-    <string name="GP_UserRestrictionsSendGifs">Отправка GIF</string>
-    <string name="GP_UserRestrictionsSendGames">Отправка анимированных игр</string>
-    <string name="GP_UserRestrictionsUseInlineBot">Использование инлайн-ботов</string>
-    <!--Group permissions-->
-
     <!--Misc-->
     <string name="LS_EnterPasscode">Введите свой код-пароль от Cherrygram</string>
     <string name="CG_SwitchBackend">Вы переключитесь на тестовый сервер. Пожалуйста не нажимайте ОК, если Вы не знаете, что делаете. Вы можете снова переключиться на обычный сервер, нажав на \"Переключить сервер\" в меню отладки.</string>
     <string name="CG_Restart">Перезапустить приложение</string>
-    <string name="CG_RestartToApply">Перезапустите приложение.</string>
+    <string name="CG_RestartToApply">Перезапустите приложение</string>
     <string name="CG_PushService">Сервис уведомлений Cherrygram.</string>
     <string name="CG_ForceClean">Принудительно очистить кэш Telegram</string>
     <string name="CG_ForceCleanInfo">Используйте это, если Вы долго видите \"Подсчёт…\" при попытке очистки кэша.\nЭто удалит ВСЁ из Вашего кэша - будьте осторожны!</string>
@@ -95,6 +85,10 @@
     <string name="CGP_Header_Categories">Категории</string>
     <!--Cherrygram Preferences-->
 
+    <!--General Preferences-->
+    <string name="AP_Header_General">Основные</string>
+    <!--General Preferences-->
+
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Внешний вид</string>
     <string name="AP_RedesignCategory">Редизайн</string>
@@ -112,18 +106,19 @@
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
     <string name="AP_IconReplacement_Solar">Иконки Solar от @Design480</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
+    <string name="AP_SystemEmoji">Использовать системные эмодзи</string>
     <string name="AP_CenterTitle">Центрирование заголовка</string>
     <string name="AP_ToolBarShadow">Отключить тень у тулбара</string>
     <string name="AP_TransparentSB">Прозрачная строка состояния</string>
     <string name="AP_FlatNB">Прозрачная навигационная панель</string>
     <string name="AP_FlatNB_Desc">Навигационная панель приобретет цвет панели отправки сообщений</string>
     <string name="AP_SystemFonts">Использовать системный шрифт</string>
-    <string name="AP_SystemFonts_Desc">Отключите это (требуется перезапуск приложения), если Ваш шрифт не поддерживает форматирование (Жирный, Курсив, Моноширинный)</string>
+    <string name="AP_SystemFonts_Desc">Отключите это, если Ваш шрифт не поддерживает форматирование (Жирный, Курсив, Моноширинный)</string>
 
-    <string name="CP_Snowflakes_Header">Снежинки (требуется перезапуск приложения)</string>
+    <string name="CP_Snowflakes_Header">Снежинки</string>
     <string name="CP_Snowflakes_AH">Заголовок приложения</string>
 
-    <string name="CP_PremAndAnim_Header">Анимации и Premium функции (требуется перезапуск приложения)</string>
+    <string name="CP_PremAndAnim_Header">Анимации и Premium функции</string>
     <string name="CP_DisableAnimAvatars">Отключить активные видеоаватары</string>
     <string name="CP_DisableReactionsOverlay">Отключить реакции</string>
     <string name="CP_DisableReactionsOverlay_Desc">Это отключит всплывающий список доступных реакций</string>
@@ -138,10 +133,15 @@
     <string name="CP_DisablePremStickAutoPlay">Отключить автовоспроизведение Premium стикеров</string>
     <string name="CP_DisablePremStickAutoPlay_Desc">Premium анимация стикеров не будет воспроизведена автоматически (функция не будет работать если Вы выключили нажатия на Premium стикеры)</string>
 
-    <string name="CP_Filters_Header">Папки (требуется перезапуск приложения)</string>
+    <string name="CP_Filters_Header">Папки</string>
     <string name="AP_FolderNameInHeader">Название папки вместо \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Это изменит \"Cherrygram\" в заголовке сверху на название Вашей папки (удобно при отображении иконок вместо названий папок)</string>
     <string name="CP_NewTabs_RemoveAllChats">Скрыть вкладку \"Все чаты\"</string>
+    <string name="AP_Tab_Style">Стиль папок</string>
+    <string name="AP_Tab_Style_Default">По умолчанию</string>
+    <string name="AP_Tab_Style_Rounded">Овал</string>
+    <string name="AP_Tab_Style_Text">Текст</string>
+    <string name="AP_Tab_Style_Pills">Таблетки</string>
 
     <string name="AP_DrawerCategory">Боковое меню</string>
     <string name="AP_DrawerPreferences">Настройки бокового меню</string>
@@ -177,7 +177,7 @@
     <string name="CP_ConfirmCalls">Спрашивать перед звонком</string>
     <string name="CP_ForwardMsgDate">Показывать дату пересланного сообщения</string>
     <string name="CP_ShowSeconds">Показывать секунды в метках времени</string>
-    <string name="CP_ShowSeconds_Desc">Показывает секунды у времени отправленных сообщений (требуется перезапуск приложения)</string>
+    <string name="CP_ShowSeconds_Desc">Показывает секунды у времени отправленных сообщений</string>
     <string name="CP_DoubleTapAction">Действие при двойном нажатии</string>
     <string name="CP_DisableSwipeToNext">Отключить переход на следующий канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Отключить переключение на следующий канал при прокрутке любого канала</string>
@@ -201,11 +201,11 @@
     <string name="CP_DisablePhotoTapAction">Отключить \"Перелистывание фотографий\"</string>
     <string name="CP_DisablePhotoTapAction_Desc">Это отключает перелистывание фотографий при нажатии на края экрана</string>
     <string name="CP_Proximity">Включить датчик приближения</string>
-    <string name="CP_Proximity_Desc">При выключении Вы избавитесь от раздражающего черного экрана при прослушивании аудио/видеосообщения (требуется перезапуск приложения)</string>
+    <string name="CP_Proximity_Desc">При выключении Вы избавитесь от раздражающего черного экрана при прослушивании аудио/видеосообщения</string>
 
     <string name="CP_Header_Notification">Уведомления</string>
     <string name="CP_IOSSound">Звук из Telegram IOS</string>
-    <string name="CP_IOSSound_Desc">Это включит звук входящего сообщения из Telegram для IOS (требуется перезапуск приложения)</string>
+    <string name="CP_IOSSound_Desc">Это включит звук входящего сообщения из Telegram для IOS</string>
     <string name="CP_SilenceNonContacts">Заглушить не-контакты</string>
     <string name="CP_SilenceNonContacts_Desc">Если включено, то уведомления со звуком будут приходить только от контактов. Вы можете добавить человека в контакты без наличия его номера телефона (в профиле человека)</string>
     <!--Chats Preferences-->
@@ -218,6 +218,8 @@
     <string name="CP_CameraXDesc">CameraX поддерживается только на <![CDATA[<a href="https://developer.android.com/training/camerax/devices">выбранных устройствах</a>]]>, эффекты и линзы зависят от Вашего производителя.</string>
     <string name="CP_PerformanceMode">Производительный режим</string>
     <string name="CP_PerformanceModeDesc">Качество CameraX будет снижено в пользу производительности</string>
+    <string name="CP_ZeroShutterLag">Задержка с нулевым затвором</string>
+    <string name="CP_ZeroShutterLagDesc">Минимизируйте задержку при съемке фотографий, быстро снимая несколько кадров до и после нажатия кнопки затвора камеры.</string>
     <string name="CP_CameraQuality">Качество камеры</string>
     <string name="CP_CameraTypeSystem">Системная</string>
     <string name="CP_SystemCameraDesc">Позволяет получить доступ напрямую к системной камере (не применимо к видеосообщениям).</string>
@@ -234,7 +236,7 @@
     <string name="EP_Category_Experimental">Экспериментальные</string>
     <string name="CG_OpenProfile">Открывать профиль вместо превью чатов</string>
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
-    <string name="EP_PhotosSize">Размер отправляемых фото</string>
+    <string name="EP_PhotosSize">Отправлять большие фото (2560px)</string>
     <string name="EP_ShowRPCError">Всплывающие уведомления обо всех ошибках RPC</string>
     <string name="EP_Network">Сеть</string>
     <string name="EP_DownloadSpeedBoost">Увеличение скорости загрузки</string>

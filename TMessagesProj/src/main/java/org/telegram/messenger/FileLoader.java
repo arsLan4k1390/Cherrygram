@@ -45,7 +45,7 @@ public class FileLoader extends BaseController {
             String str = (String) parentObject;
             if (str.startsWith("sent_")) {
                 if (sentPattern == null) {
-                    sentPattern = Pattern.compile("sent_.*_([0-9]+)_([0-9]+)_([0-9]+)");
+                    sentPattern = Pattern.compile("sent_.*_([0-9]+)_([0-9]+)_([0-9]+)_([0-9]+)");
                 }
                 try {
                     Matcher matcher = sentPattern.matcher(str);
@@ -54,6 +54,7 @@ public class FileLoader extends BaseController {
                         fileMeta.messageId = Integer.parseInt(matcher.group(1));
                         fileMeta.dialogId = Long.parseLong(matcher.group(2));
                         fileMeta.messageType = Integer.parseInt(matcher.group(3));
+                        fileMeta.messageSize = Long.parseLong(matcher.group(4));
                         return fileMeta;
                     }
                 } catch (Exception e) {
@@ -66,7 +67,30 @@ public class FileLoader extends BaseController {
             fileMeta.messageId = messageObject.getId();
             fileMeta.dialogId = messageObject.getDialogId();
             fileMeta.messageType = messageObject.type;
+            fileMeta.messageSize = messageObject.getSize();
             return fileMeta;
+        }
+        return null;
+    }
+
+    public static TLRPC.VideoSize getVectorMarkupVideoSize(TLRPC.Photo photo) {
+        if (photo == null || photo.video_sizes == null) {
+            return null;
+        }
+        for (int i = 0; i < photo.video_sizes.size(); i++) {
+            TLRPC.VideoSize videoSize = photo.video_sizes.get(i);
+            if (videoSize instanceof TLRPC.TL_videoSizeEmojiMarkup || videoSize instanceof TLRPC.TL_videoSizeStickerMarkup) {
+                return videoSize;
+            }
+        }
+        return null;
+    }
+
+    public static TLRPC.VideoSize getEmojiMarkup(ArrayList<TLRPC.VideoSize> video_sizes) {
+        for (int i = 0; i < video_sizes.size(); i++) {
+            if (video_sizes.get(i) instanceof TLRPC.TL_videoSizeEmojiMarkup || video_sizes.get(i) instanceof TLRPC.TL_videoSizeStickerMarkup) {
+                return video_sizes.get(i);
+            }
         }
         return null;
     }
@@ -634,11 +658,9 @@ public class FileLoader extends BaseController {
         }
 
         FileLoadOperation operation = loadOperationPaths.get(fileName);
+
         if (BuildVars.LOGS_ENABLED) {
-            FileLog.d("checkFile operation fileName=" + fileName + " documentName=" + getDocumentFileName(document) + " operation=" + operation);
-        }
-        if (stream != null) {
-            priority = PRIORITY_STREAM;
+            FileLog.d("checkFile operation fileName=" + fileName + " documentName=" + getDocumentFileName(document) + " operation=" + operation + " priority=" + priority);
         }
         priority = getPriorityValue(priority);
 
@@ -731,7 +753,6 @@ public class FileLoader extends BaseController {
                     storeFileName = fileName;
                     storeDir = getDirectory(type);
                     boolean saveCustomPath = false;
-
 
                     if ((type == MEDIA_DIR_IMAGE || type == MEDIA_DIR_VIDEO) && canSaveToPublicStorage(parentObject)) {
                         File newDir;
@@ -856,15 +877,26 @@ public class FileLoader extends BaseController {
     }
 
     private boolean canSaveToPublicStorage(Object parentObject) {
-        if (SharedConfig.saveToGalleryFlags == 0 || BuildVars.NO_SCOPED_STORAGE) {
+        if (BuildVars.NO_SCOPED_STORAGE) {
             return false;
         }
-        if (parentObject instanceof MessageObject) {
-            MessageObject messageObject = (MessageObject) parentObject;
+        FilePathDatabase.FileMeta metadata = getFileMetadataFromParent(currentAccount, parentObject);
+        MessageObject messageObject = null;
+        if (metadata != null) {
             int flag;
-            long dialogId = messageObject.getDialogId();
-            if (messageObject.isRoundVideo() || messageObject.isVoice() || messageObject.isAnyKindOfSticker() || getMessagesController().isChatNoForwards(getMessagesController().getChat(-dialogId)) || messageObject.messageOwner.noforwards || DialogObject.isEncryptedDialog(dialogId)) {
+            long dialogId = metadata.dialogId;
+            if (getMessagesController().isChatNoForwards(getMessagesController().getChat(-dialogId)) || DialogObject.isEncryptedDialog(dialogId)) {
                 return false;
+            }
+            if (parentObject instanceof MessageObject) {
+                messageObject = (MessageObject) parentObject;
+                if (messageObject.isRoundVideo() || messageObject.isVoice() || messageObject.isAnyKindOfSticker() || messageObject.messageOwner.noforwards) {
+                    return false;
+                }
+            } else {
+                if (metadata.messageType == MessageObject.TYPE_ROUND_VIDEO || metadata.messageType == MessageObject.TYPE_STICKER || metadata.messageType == MessageObject.TYPE_VOICE) {
+                    return false;
+                }
             }
             if (dialogId >= 0) {
                 flag = SharedConfig.SAVE_TO_GALLERY_FLAG_PEER;
@@ -876,7 +908,7 @@ public class FileLoader extends BaseController {
                 }
             }
 
-            if ((SharedConfig.saveToGalleryFlags & flag) != 0) {
+            if (SaveToGallerySettingsHelper.needSave(flag, metadata, messageObject, currentAccount)) {
                 return true;
             }
         }
@@ -920,11 +952,11 @@ public class FileLoader extends BaseController {
         fileLoaderQueue.postRunnable(runnable);
     }
 
-    protected FileLoadOperation loadStreamFile(final FileLoadOperationStream stream, final TLRPC.Document document, final ImageLocation location, final Object parentObject, final long offset, final boolean priority) {
+    protected FileLoadOperation loadStreamFile(final FileLoadOperationStream stream, final TLRPC.Document document, final ImageLocation location, final Object parentObject, final long offset, final boolean priority, int loadingPriority) {
         final CountDownLatch semaphore = new CountDownLatch(1);
         final FileLoadOperation[] result = new FileLoadOperation[1];
         fileLoaderQueue.postRunnable(() -> {
-            result[0] = loadFileInternal(document, null, null, document == null && location != null ? location.location : null, location, parentObject, document == null && location != null ? "mp4" : null, document == null && location != null ? location.currentSize : 0, 1, stream, offset, priority, document == null ? 1 : 0);
+            result[0] = loadFileInternal(document, null, null, document == null && location != null ? location.location : null, location, parentObject, document == null && location != null ? "mp4" : null, document == null && location != null ? location.currentSize : 0, loadingPriority, stream, offset, priority, document == null ? 1 : 0);
             semaphore.countDown();
         });
         try {
@@ -1182,13 +1214,64 @@ public class FileLoader extends BaseController {
             }
             if (byMinSide) {
                 int currentSide = Math.min(obj.h, obj.w);
-                if (closestObject == null || side > 100 && closestObject.location != null && closestObject.location.dc_id == Integer.MIN_VALUE || obj instanceof TLRPC.TL_photoCachedSize || side > lastSide && lastSide < currentSide) {
+                if (
+                    closestObject == null ||
+                    side > 100 && closestObject.location != null && closestObject.location.dc_id == Integer.MIN_VALUE ||
+                    obj instanceof TLRPC.TL_photoCachedSize || side > lastSide && lastSide < currentSide
+                ) {
                     closestObject = obj;
                     lastSide = currentSide;
                 }
             } else {
                 int currentSide = Math.max(obj.w, obj.h);
-                if (closestObject == null || side > 100 && closestObject.location != null && closestObject.location.dc_id == Integer.MIN_VALUE || obj instanceof TLRPC.TL_photoCachedSize || currentSide <= side && lastSide < currentSide) {
+                if (
+                    closestObject == null ||
+                    side > 100 && closestObject.location != null && closestObject.location.dc_id == Integer.MIN_VALUE ||
+                    obj instanceof TLRPC.TL_photoCachedSize ||
+                    currentSide <= side && lastSide < currentSide
+                ) {
+                    closestObject = obj;
+                    lastSide = currentSide;
+                }
+            }
+        }
+        return closestObject;
+    }
+
+    public static TLRPC.VideoSize getClosestVideoSizeWithSize(ArrayList<TLRPC.VideoSize> sizes, int side) {
+        return getClosestVideoSizeWithSize(sizes, side, false);
+    }
+
+    public static TLRPC.VideoSize getClosestVideoSizeWithSize(ArrayList<TLRPC.VideoSize> sizes, int side, boolean byMinSide) {
+        return getClosestVideoSizeWithSize(sizes, side, byMinSide, false);
+    }
+
+    public static TLRPC.VideoSize getClosestVideoSizeWithSize(ArrayList<TLRPC.VideoSize> sizes, int side, boolean byMinSide, boolean ignoreStripped) {
+        if (sizes == null || sizes.isEmpty()) {
+            return null;
+        }
+        int lastSide = 0;
+        TLRPC.VideoSize closestObject = null;
+        for (int a = 0; a < sizes.size(); a++) {
+            TLRPC.VideoSize obj = sizes.get(a);
+            if (obj == null || obj instanceof TLRPC.TL_videoSizeEmojiMarkup || obj instanceof TLRPC.TL_videoSizeStickerMarkup) {
+                continue;
+            }
+            if (byMinSide) {
+                int currentSide = Math.min(obj.h, obj.w);
+                if (closestObject == null ||
+                                side > 100 && closestObject.location != null && closestObject.location.dc_id == Integer.MIN_VALUE ||
+                                side > lastSide && lastSide < currentSide) {
+                    closestObject = obj;
+                    lastSide = currentSide;
+                }
+            } else {
+                int currentSide = Math.max(obj.w, obj.h);
+                if (
+                        closestObject == null ||
+                                side > 100 && closestObject.location != null && closestObject.location.dc_id == Integer.MIN_VALUE ||
+                                currentSide <= side && lastSide < currentSide
+                ) {
                     closestObject = obj;
                     lastSide = currentSide;
                 }
@@ -1439,20 +1522,20 @@ public class FileLoader extends BaseController {
     }
 
     public static boolean copyFile(InputStream sourceFile, File destFile, int maxSize) throws IOException {
-        FileOutputStream out = new FileOutputStream(destFile);
-        byte[] buf = new byte[4096];
-        int len;
-        int totalLen = 0;
-        while ((len = sourceFile.read(buf)) > 0) {
-            Thread.yield();
-            out.write(buf, 0, len);
-            totalLen += len;
-            if (maxSize > 0 && totalLen >= maxSize) {
-                break;
+        try (FileOutputStream out = new FileOutputStream(destFile)) {
+            byte[] buf = new byte[4096];
+            int len;
+            int totalLen = 0;
+            while ((len = sourceFile.read(buf)) > 0) {
+                Thread.yield();
+                out.write(buf, 0, len);
+                totalLen += len;
+                if (maxSize > 0 && totalLen >= maxSize) {
+                    break;
+                }
             }
+            out.getFD().sync();
         }
-        out.getFD().sync();
-        out.close();
         return true;
     }
 

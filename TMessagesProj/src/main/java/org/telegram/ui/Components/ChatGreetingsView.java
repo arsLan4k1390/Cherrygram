@@ -85,11 +85,12 @@ public class ChatGreetingsView extends LinearLayout {
             TLRPC.PhotoSize thumb = FileLoader.getClosestPhotoSizeWithSize(sticker.thumbs, 90);
             stickerToSendView.setImage(ImageLocation.getForDocument(sticker), createFilter(sticker), ImageLocation.getForDocument(thumb, sticker), null, 0, sticker);
         }
-        /*stickerToSendView.setOnClickListener(v -> {
+        stickerToSendView.setOnLongClickListener(v -> {
             if (listener != null) {
                 listener.onGreetings(sticker);
             }
-        });*/
+            return false;
+        });
     }
 
     public static String createFilter(TLRPC.Document document) {

@@ -7,8 +7,6 @@
     <string name="CG_Country">Країна/Регіон</string>
     <string name="CG_ChooseCountry">Оберіть Країну/Регіон</string>
     <string name="CG_WrongCountry">Некоректний код Країни/Регіону</string>
-    <string name="CG_ProxyInfo">Вам може знадобитися налаштувати проксі перед входом в обліковий запис, якщо ваша країна або інтернет-провайдер блокує Telegram.</string>
-    <string name="CG_ProxySettings">Налаштування проксі</string>
     <string name="CG_TestBackendNumber">Тестовий номер</string>
     <string name="CG_TestBackendOn">Авторизація на тестовому сервері.</string>
     <string name="CG_TestBackendOff">Авторизація на основному сервері.</string>
@@ -21,9 +19,6 @@
     <string name="CG_ChooseFolderIcon">Виберіть іконку</string>
     <string name="CP_NewTabs_NoCounter">Приховати лічильник на вкладках</string>
     <string name="CP_NewTabs_NoCounter_Desc">Приховує лічильник кількості непрочитаних повідомлень</string>
-    <string name="CP_VKUIFoldersStyle">Стиль папок VKUI</string>
-    <string name="CP_VKUIFoldersStyle_Desc">Це увімкне стиль папок від ВК</string>
-    <string name="CP_VKUIFoldersStyle_Frame">Установка розміру VKUI кадрів</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">До початку</string>
@@ -44,12 +39,6 @@
     <string name="CG_FwdMenu_EnableCaptions">Включити підписи</string>
     <string name="CG_FwdMenu_DisableCaptions">Приховати подписи</string>
     <!--Chats screen-->
-    <!--Group permissions-->
-    <string name="GP_UserRestrictionsSendStickers2">Надсилати налiпки</string>
-    <string name="GP_UserRestrictionsSendGifs">Надсилати GIF</string>
-    <string name="GP_UserRestrictionsSendGames">Надсилати анiмованi iгри</string>
-    <string name="GP_UserRestrictionsUseInlineBot">Використовувати iнлайн-ботiв</string>
-    <!--Group permissions-->
     <!--Misc-->
     <string name="LS_EnterPasscode">Введіть свій код-пароль від Cherrygram</string>
     <string name="CG_SwitchBackend">Ви переходите на тестовий сервер. Будь ласка, не нажимайте ОК, якщо ви не знаєте, що робите. Ви можете повернутись на звичайний сервер, натиснувши на \"Переключити сервер\" в меню налагодження.</string>
@@ -81,6 +70,9 @@
     <string name="CGP_Crowdin">Допомогти з перекладом</string>
     <string name="CGP_Header_Categories">Категорії</string>
     <!--Cherrygram Preferences-->
+    <!--General Preferences-->
+    <string name="AP_Header_General">Основне</string>
+    <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Зовнішній вигляд</string>
     <string name="AP_RedesignCategory">Редизайн</string>
@@ -98,6 +90,7 @@
     <string name="AP_IconReplacement_VKUI">Іконки VKUI</string>
     <string name="AP_IconReplacement_Solar">Solar Icons від @Design480</string>
     <string name="AP_IconReplacement_Default">Стандартні іконки</string>
+    <string name="AP_SystemEmoji">Використовувати системні емодзі</string>
     <string name="AP_CenterTitle">Центрувати заголовок в панелі дій</string>
     <string name="AP_ToolBarShadow">Відключити тінь у тулбару</string>
     <string name="AP_TransparentSB">Прозорий статусбар</string>
@@ -125,6 +118,11 @@
     <string name="AP_FolderNameInHeader">Назва папки замість \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Змінює надпис \"Cherrygram\" в заголовку зверху на назву вашої папки (зручно при відображенні іконок замість названих папок)</string>
     <string name="CP_NewTabs_RemoveAllChats">Приховати вкладку \"Всі чати\"</string>
+    <string name="AP_Tab_Style">Стилі папок</string>
+    <string name="AP_Tab_Style_Default">По замовчуванню</string>
+    <string name="AP_Tab_Style_Rounded">Округлі</string>
+    <string name="AP_Tab_Style_Text">Текст</string>
+    <string name="AP_Tab_Style_Pills">Таблетки</string>
     <string name="AP_DrawerCategory">Бічне меню</string>
     <string name="AP_DrawerPreferences">Налаштування бічного меню</string>
     <string name="AP_DrawerAvatar">Аватар як фон меню</string>
@@ -204,8 +202,9 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Експериментальні</string>
+    <string name="CG_OpenProfile">Відкрити профіль замість попереднього перегляду чату</string>
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
-    <string name="EP_PhotosSize">Розмір фотографій</string>
+    <string name="EP_PhotosSize">Відправляти великі фотографії (2560px)</string>
     <string name="EP_ShowRPCError">Всплывающие уведомления обо всех ошибках RPC</string>
     <string name="EP_Network">Сеть</string>
     <string name="EP_DownloadSpeedBoost">Збільшення швидкості завантаження</string>

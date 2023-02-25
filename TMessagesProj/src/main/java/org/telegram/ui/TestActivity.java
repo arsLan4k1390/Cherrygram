@@ -21,8 +21,6 @@ import org.webrtc.Camera2Enumerator;
 import org.webrtc.CameraEnumerator;
 import org.webrtc.VideoCapturer;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 @TargetApi(18)
 public class TestActivity extends BaseFragment {
 
@@ -43,7 +41,6 @@ public class TestActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle("Test");
 

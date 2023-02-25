@@ -10,7 +10,6 @@ package org.telegram.messenger;
 
 import android.util.Log;
 
-import org.telegram.SQLite.SQLiteException;
 import org.telegram.messenger.time.FastDateFormat;
 import org.telegram.messenger.video.MediaCodecVideoConvertor;
 import org.telegram.tgnet.TLObject;
@@ -19,7 +18,9 @@ import org.telegram.ui.LaunchActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Locale;
 
@@ -105,7 +106,7 @@ public class FileLog {
                 }
             });
         } catch (Throwable e) {
-            FileLog.e(e);
+            FileLog.e(e, BuildVars.DEBUG_PRIVATE_VERSION);
         }
     }
 
@@ -137,7 +138,6 @@ public class FileLog {
                 }
             });
         } catch (Throwable e) {
-            FileLog.e(e);
         }
     }
 
@@ -151,6 +151,7 @@ public class FileLog {
             privateFields.add("bytes");
             privateFields.add("secret");
             privateFields.add("stripped_thumb");
+            privateFields.add("strippedBitmap");
 
             privateFields.add("networkType");
             privateFields.add("disableFree");
@@ -187,13 +188,10 @@ public class FileLog {
         dateFormat = FastDateFormat.getInstance("dd_MM_yyyy_HH_mm_ss", Locale.US);
         String date = dateFormat.format(System.currentTimeMillis());
         try {
-            File sdCard = ApplicationLoader.applicationContext.getExternalFilesDir(null);
-            if (sdCard == null) {
+            File dir = AndroidUtilities.getLogsDir();
+            if (dir == null) {
                 return;
             }
-            File dir = new File(sdCard.getAbsolutePath() + "/logs");
-            dir.mkdirs();
-
             currentFile = new File(dir, date + ".txt");
             tlRequestsFile = new File(dir, date + "_mtproto.txt");
         } catch (Exception e) {
@@ -226,12 +224,10 @@ public class FileLog {
             return "";
         }
         try {
-            File sdCard = ApplicationLoader.applicationContext.getExternalFilesDir(null);
-            if (sdCard == null) {
+            File dir = AndroidUtilities.getLogsDir();
+            if (dir == null) {
                 return "";
             }
-            File dir = new File(sdCard.getAbsolutePath() + "/logs");
-            dir.mkdirs();
             getInstance().networkFile = new File(dir, getInstance().dateFormat.format(System.currentTimeMillis()) + "_net.txt");
             return getInstance().networkFile.getAbsolutePath();
         } catch (Throwable e) {
@@ -245,12 +241,10 @@ public class FileLog {
             return "";
         }
         try {
-            File sdCard = ApplicationLoader.applicationContext.getExternalFilesDir(null);
-            if (sdCard == null) {
+            File dir = AndroidUtilities.getLogsDir();
+            if (dir == null) {
                 return "";
             }
-            File dir = new File(sdCard.getAbsolutePath() + "/logs");
-            dir.mkdirs();
             getInstance().tonlibFile = new File(dir, getInstance().dateFormat.format(System.currentTimeMillis()) + "_tonlib.txt");
             return getInstance().tonlibFile.getAbsolutePath();
         } catch (Throwable e) {
@@ -307,13 +301,26 @@ public class FileLog {
         /*if (BuildVars.DEBUG_VERSION && needSent(e) && logToAppCenter) {
             AndroidUtilities.appCenterLog(e);
         }*/
-        if (BuildVars.DEBUG_VERSION && e instanceof SQLiteException && e.getMessage() != null && e.getMessage().contains("disk image is malformed")) {
+        if (BuildVars.DEBUG_VERSION && e.getMessage() != null && e.getMessage().contains("disk image is malformed") && !databaseIsMalformed) {
+            FileLog.d("copy malformed files");
             databaseIsMalformed = true;
+            File filesDir = ApplicationLoader.getFilesDirFixed();
+            filesDir = new File(filesDir, "malformed_database/");
+            filesDir.mkdirs();
+            ArrayList<File> malformedFiles = MessagesStorage.getInstance(UserConfig.selectedAccount).getDatabaseFiles();
+            for (int i = 0; i < malformedFiles.size(); i++) {
+                try {
+                    AndroidUtilities.copyFile(malformedFiles.get(i), new File(filesDir, malformedFiles.get(i).getName()));
+                } catch (IOException ex) {
+                    FileLog.e(ex);
+                }
+            }
         }
         ensureInitied();
         e.printStackTrace();
         if (getInstance().streamWriter != null) {
             getInstance().logQueue.postRunnable(() -> {
+
                 try {
                     getInstance().streamWriter.write(getInstance().dateFormat.format(System.currentTimeMillis()) + " E/tmessages: " + e + "\n");
                     StackTraceElement[] stack = e.getStackTrace();
@@ -416,11 +423,10 @@ public class FileLog {
 
     public static void cleanupLogs() {
         ensureInitied();
-        File sdCard = ApplicationLoader.applicationContext.getExternalFilesDir(null);
-        if (sdCard == null) {
+        File dir = AndroidUtilities.getLogsDir();
+        if (dir == null) {
             return;
         }
-        File dir = new File (sdCard.getAbsolutePath() + "/logs");
         File[] files = dir.listFiles();
         if (files != null) {
             for (int a = 0; a < files.length; a++) {

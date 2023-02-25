@@ -40,10 +40,12 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -89,10 +91,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.safetynet.SafetyNet;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.AuthTokensHelper;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.Emoji;
@@ -135,6 +141,8 @@ import org.telegram.ui.Components.Easings;
 import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.ImageUpdater;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.LinkPath;
+import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.LoginOrView;
 import org.telegram.ui.Components.OutlineTextContainerView;
 import org.telegram.ui.Components.RLottieDrawable;
@@ -154,6 +162,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -166,6 +175,8 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
+
+import uz.unnarsx.cherrygram.helpers.QrHelper;
 
 @SuppressLint("HardwareIds")
 public class LoginActivity extends BaseFragment {
@@ -293,7 +304,7 @@ public class LoginActivity extends BaseFragment {
     private SizeNotifierFrameLayout sizeNotifierFrameLayout;
     private Runnable keyboardHideCallback;
 
-    private ImageView backButtonView;
+    private ImageView backButtonView, proxyButtonView;
     private RadialProgressView radialProgressView;
 
     // Open animation stuff
@@ -321,6 +332,8 @@ public class LoginActivity extends BaseFragment {
     private boolean[] doneProgressVisible = new boolean[2];
     private Runnable[] editDoneCallback = new Runnable[2];
     private boolean[] postedEditDoneCallback = new boolean[2];
+
+    private boolean forceDisableSafetyNet;
 
     private static class ProgressView extends View {
 
@@ -479,6 +492,9 @@ public class LoginActivity extends BaseFragment {
 
                 int statusBarHeight = AndroidUtilities.isTablet() ? 0 : AndroidUtilities.statusBarHeight;
                 marginLayoutParams = (MarginLayoutParams) backButtonView.getLayoutParams();
+                marginLayoutParams.topMargin = AndroidUtilities.dp(16) + statusBarHeight;
+
+                marginLayoutParams = (MarginLayoutParams) proxyButtonView.getLayoutParams();
                 marginLayoutParams.topMargin = AndroidUtilities.dp(16) + statusBarHeight;
 
                 marginLayoutParams = (MarginLayoutParams) radialProgressView.getLayoutParams();
@@ -643,6 +659,18 @@ public class LoginActivity extends BaseFragment {
         backButtonView.setPadding(padding, padding, padding, padding);
         sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(32, 32, Gravity.LEFT | Gravity.TOP, 16, 16, 0, 0));
 
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        boolean proxyEnabled;
+        proxyEnabled = preferences.getBoolean("proxy_enabled", false);
+
+        proxyButtonView = new ImageView(context);
+        proxyButtonView.setImageResource(proxyEnabled ? R.drawable.proxy_on : R.drawable.proxy_off);
+        proxyButtonView.setOnClickListener(v -> presentFragment(new ProxyListActivity()));
+        proxyButtonView.setContentDescription(LocaleController.getString("ProxySettings", R.string.ProxySettings));
+        padding = AndroidUtilities.dp(3);
+        proxyButtonView.setPadding(padding, padding, padding, padding);
+        sizeNotifierFrameLayout.addView(proxyButtonView, LayoutHelper.createFrame(32, 32, Gravity.RIGHT | Gravity.TOP, 0, 16, 16, 0));
+
         radialProgressView = new RadialProgressView(context);
         radialProgressView.setSize(AndroidUtilities.dp(20));
         radialProgressView.setAlpha(0);
@@ -799,7 +827,9 @@ public class LoginActivity extends BaseFragment {
             ConnectionsManager.getInstance(currentAccount).setAppPaused(false, false);
         }
         AndroidUtilities.requestAdjustResize(getParentActivity(), classGuid);
-        fragmentView.requestLayout();
+        if (fragmentView != null) {
+            fragmentView.requestLayout();
+        }
         try {
             if (currentViewNum >= VIEW_CODE_MESSAGE && currentViewNum <= VIEW_CODE_CALL && views[currentViewNum] instanceof LoginActivitySmsView) {
                 int time = ((LoginActivitySmsView) views[currentViewNum]).openTime;
@@ -1260,6 +1290,10 @@ public class LoginActivity extends BaseFragment {
         if (animated && doneProgressVisible[currentDoneType] == show && !fromCallback) {
             return;
         }
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            AndroidUtilities.runOnUIThread(() -> showEditDoneProgress(show, animated, fromCallback));
+            return;
+        }
         boolean floating = currentDoneType == DONE_TYPE_FLOATING;
 
         if (!fromCallback && !floating) {
@@ -1475,6 +1509,7 @@ public class LoginActivity extends BaseFragment {
                         showDoneButton(true, true);
                     }
                     outView.setVisibility(View.GONE);
+                    outView.onHide();
                     outView.setX(0);
                 }
             });
@@ -1489,6 +1524,7 @@ public class LoginActivity extends BaseFragment {
         } else {
             backButtonView.setVisibility(views[page].needBackButton() || newAccount ? View.VISIBLE : View.GONE);
             views[currentViewNum].setVisibility(View.GONE);
+            views[currentViewNum].onHide();
             currentViewNum = page;
             views[page].setParams(params, false);
             views[page].setVisibility(View.VISIBLE);
@@ -1551,6 +1587,7 @@ public class LoginActivity extends BaseFragment {
 
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.mainUserInfoChanged);
                 LocaleController.getInstance().loadRemoteLanguages(currentAccount);
+                RestrictedLanguagesSelectActivity.checkRestrictedLanguages(true);
             }
         } else if (getParentActivity() instanceof ExternalActionActivity) {
             ((ExternalActionActivity) getParentActivity()).onFinishLogin();
@@ -1578,6 +1615,12 @@ public class LoginActivity extends BaseFragment {
         MessagesController.getInstance(currentAccount).checkPromoInfo(true);
         ConnectionsManager.getInstance(currentAccount).updateDcSettings();
 
+        if (res.future_auth_token != null) {
+            AuthTokensHelper.saveLogInToken(res);
+        } else {
+            FileLog.d("onAuthSuccess future_auth_token is empty");
+        }
+
         if (afterSignup) {
             MessagesController.getInstance(currentAccount).putDialogsEndReachedAfterRegistration();
         }
@@ -1592,11 +1635,109 @@ public class LoginActivity extends BaseFragment {
         setPage(VIEW_CODE_EMAIL_SETUP, true, params, false);
     }
 
-    private void fillNextCodeParams(Bundle params, TLRPC.TL_auth_sentCode res) {
+    private void fillNextCodeParams(Bundle params, TLRPC.auth_SentCode res) {
         fillNextCodeParams(params, res, true);
     }
 
-    private void fillNextCodeParams(Bundle params, TLRPC.TL_auth_sentCode res, boolean animate) {
+    private void resendCodeFromSafetyNet(Bundle params, TLRPC.auth_SentCode res) {
+        if (!isRequestingFirebaseSms) {
+            return;
+        }
+        needHideProgress(false);
+        isRequestingFirebaseSms = false;
+
+        TLRPC.TL_auth_resendCode req = new TLRPC.TL_auth_resendCode();
+        req.phone_number = params.getString("phoneFormated");
+        req.phone_code_hash = res.phone_code_hash;
+        ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> {
+            if (response != null) {
+                AndroidUtilities.runOnUIThread(() -> fillNextCodeParams(params, (TLRPC.auth_SentCode) response));
+            } else {
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (getParentActivity() == null || getParentActivity().isFinishing() || getContext() == null) {
+                        return;
+                    }
+                    new AlertDialog.Builder(getContext())
+                            .setTitle(LocaleController.getString(R.string.RestorePasswordNoEmailTitle))
+                            .setMessage(LocaleController.getString(R.string.SafetyNetErrorOccurred))
+                            .setPositiveButton(LocaleController.getString(R.string.OK), (dialog, which) -> {
+                                forceDisableSafetyNet = true;
+                                if (currentViewNum != VIEW_PHONE_INPUT) {
+                                    setPage(VIEW_PHONE_INPUT, true, null, true);
+                                }
+                            })
+                            .show();
+                });
+            }
+        }, ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
+    }
+
+    private boolean isRequestingFirebaseSms;
+    private void fillNextCodeParams(Bundle params, TLRPC.auth_SentCode res, boolean animate) {
+        if (res.type instanceof TLRPC.TL_auth_sentCodeTypeFirebaseSms && !res.type.verifiedFirebase && !isRequestingFirebaseSms) {
+            if (PushListenerController.GooglePushListenerServiceProvider.INSTANCE.hasServices()) {
+                needShowProgress(0);
+                isRequestingFirebaseSms = true;
+                SafetyNet.getClient(ApplicationLoader.applicationContext).attest(res.type.nonce, BuildVars.SAFETYNET_KEY)
+                        .addOnSuccessListener(attestationResponse -> {
+                            String jws = attestationResponse.getJwsResult();
+
+                            if (jws != null) {
+                                TLRPC.TL_auth_requestFirebaseSms req = new TLRPC.TL_auth_requestFirebaseSms();
+                                req.phone_number = params.getString("phoneFormated");
+                                req.phone_code_hash = res.phone_code_hash;
+                                req.safety_net_token = jws;
+                                req.flags |= 1;
+
+                                String[] spl = jws.split("\\.");
+                                if (spl.length > 0) {
+                                    try {
+                                        JSONObject obj = new JSONObject(new String(Base64.decode(spl[1].getBytes(StandardCharsets.UTF_8), 0)));
+
+                                        if (obj.optBoolean("basicIntegrity") && obj.optBoolean("ctsProfileMatch")) {
+                                            ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> {
+                                                needHideProgress(false);
+                                                isRequestingFirebaseSms = false;
+                                                if (response instanceof TLRPC.TL_boolTrue) {
+                                                    res.type.verifiedFirebase = true;
+                                                    AndroidUtilities.runOnUIThread(() -> fillNextCodeParams(params, res, animate));
+                                                } else {
+                                                    FileLog.d("Resend firebase sms because auth.requestFirebaseSms = false");
+                                                    resendCodeFromSafetyNet(params, res);
+                                                }
+                                            }, ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
+                                        } else {
+                                            FileLog.d("Resend firebase sms because ctsProfileMatch or basicIntegrity = false");
+                                            resendCodeFromSafetyNet(params, res);
+                                        }
+                                    } catch (JSONException e) {
+                                        FileLog.e(e);
+
+                                        FileLog.d("Resend firebase sms because of exception");
+                                        resendCodeFromSafetyNet(params, res);
+                                    }
+                                } else {
+                                    FileLog.d("Resend firebase sms because can't split JWS token");
+                                    resendCodeFromSafetyNet(params, res);
+                                }
+                            } else {
+                                FileLog.d("Resend firebase sms because JWS = null");
+                                resendCodeFromSafetyNet(params, res);
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            FileLog.e(e);
+
+                            FileLog.d("Resend firebase sms because of safetynet exception");
+                            resendCodeFromSafetyNet(params, res);
+                        });
+            } else {
+                FileLog.d("Resend firebase sms because firebase is not available");
+                resendCodeFromSafetyNet(params, res);
+            }
+            return;
+        }
+
         params.putString("phoneHash", res.phone_code_hash);
         if (res.next_type instanceof TLRPC.TL_auth_codeTypeCall) {
             params.putInt("nextType", AUTH_TYPE_CALL);
@@ -1626,9 +1767,10 @@ public class LoginActivity extends BaseFragment {
                 params.putInt("type", AUTH_TYPE_FLASH_CALL);
                 params.putString("pattern", res.type.pattern);
                 setPage(VIEW_CODE_FLASH_CALL, animate, params, false);
-            } else if (res.type instanceof TLRPC.TL_auth_sentCodeTypeSms) {
+            } else if (res.type instanceof TLRPC.TL_auth_sentCodeTypeSms || res.type instanceof TLRPC.TL_auth_sentCodeTypeFirebaseSms) {
                 params.putInt("type", AUTH_TYPE_SMS);
                 params.putInt("length", res.type.length);
+                params.putBoolean("firebase", res.type instanceof TLRPC.TL_auth_sentCodeTypeFirebaseSms);
                 setPage(VIEW_CODE_SMS, animate, params, false);
             } else if (res.type instanceof TLRPC.TL_auth_sentCodeTypeFragmentSms) {
                 params.putInt("type", AUTH_TYPE_FRAGMENT_SMS);
@@ -1668,6 +1810,9 @@ public class LoginActivity extends BaseFragment {
         private ImageView chevronRight;
         private CheckBoxCell syncContactsBox;
         private CheckBoxCell testBackendCheckBox;
+
+        AlertDialog qrDialog = null;
+        ImageView imageView = null;
 
         @CountryState
         private int countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
@@ -1870,6 +2015,9 @@ public class LoginActivity extends BaseFragment {
                             if (c.code.startsWith(text)) {
                                 matchedCountries++;
                                 if (c.code.equals(text)) {
+                                    if (lastMatchedCountry != null && lastMatchedCountry.code.equals(c.code)) {
+                                        matchedCountries--;
+                                    }
                                     lastMatchedCountry = c;
                                 }
                             }
@@ -2118,27 +2266,19 @@ public class LoginActivity extends BaseFragment {
                 return false;
             });
 
-            TextView proxySettings = new TextView(context);
-            proxySettings.setPadding(AndroidUtilities.dp(34), 0, AndroidUtilities.dp(34), 0);
-            proxySettings.setGravity(Gravity.CENTER);
-            proxySettings.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            proxySettings.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
-            SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-            spannableStringBuilder.append(".  ").append(LocaleController.getString("CG_ProxySettings", R.string.CG_ProxySettings));
-            spannableStringBuilder.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.proxy_off)), 0, 1, 0);
-            proxySettings.setText(spannableStringBuilder);
-            proxySettings.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-            proxySettings.setBackgroundDrawable(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(6), Theme.getColor(Theme.key_featuredStickers_addButton), Theme.getColor(Theme.key_featuredStickers_addButtonPressed)));
-            addView(proxySettings, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM, 16, 24, 16, 14));
-            proxySettings.setOnClickListener(view -> presentFragment(new ProxyListActivity()));
-
-            TextView textViewProxy = new TextView(context);
-            textViewProxy.setText(LocaleController.getString("CG_ProxyInfo", R.string.CG_ProxyInfo));
-            textViewProxy.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
-            textViewProxy.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            textViewProxy.setGravity(Gravity.CENTER);
-            textViewProxy.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            addView(textViewProxy, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 16, 1, 16, 14));
+            TextView qrLogin = new TextView(context);
+            qrLogin.setPadding(AndroidUtilities.dp(34), 0, AndroidUtilities.dp(34), 0);
+            qrLogin.setGravity(Gravity.CENTER);
+            qrLogin.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            qrLogin.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            SpannableStringBuilder spannableStringBuilderQR = new SpannableStringBuilder();
+            spannableStringBuilderQR.append(".  ").append(LocaleController.getString("CG_QRLoginTitle", R.string.CG_QRLoginTitle));
+            spannableStringBuilderQR.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.msg_qr_mini)), 0, 1, 0);
+            qrLogin.setText(spannableStringBuilderQR);
+            qrLogin.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
+            qrLogin.setBackground(Theme.AdaptiveRipple.filledRect(getThemedColor(Theme.key_featuredStickers_addButton), 6));
+            addView(qrLogin, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM, 16, 24, 16, 14));
+            qrLogin.setOnClickListener(view -> exportLoginToken(true));
 
             int bottomMargin = 72;
             if (/*newAccount && */activityMode == MODE_LOGIN) {
@@ -2160,6 +2300,7 @@ public class LoginActivity extends BaseFragment {
                     }
                 });
             }
+
             if (activityMode == MODE_LOGIN) {
                 testBackendCheckBox = new CheckBoxCell(context, 2);
                 testBackendCheckBox.setText(LocaleController.getString(R.string.DebugTestBackend), "", testBackend, false);
@@ -2205,8 +2346,7 @@ public class LoginActivity extends BaseFragment {
 
             HashMap<String, String> languageMap = new HashMap<>();
 
-            try {
-                BufferedReader reader = new BufferedReader(new InputStreamReader(getResources().getAssets().open("countries.txt")));
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(getResources().getAssets().open("countries.txt")))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String[] args = line.split(";");
@@ -2227,7 +2367,6 @@ public class LoginActivity extends BaseFragment {
                     }
                     languageMap.put(args[1], args[2]);
                 }
-                reader.close();
             } catch (Exception e) {
                 FileLog.e(e);
             }
@@ -2277,7 +2416,7 @@ public class LoginActivity extends BaseFragment {
 
         private void loadCountries() {
             TLRPC.TL_help_getCountriesList req = new TLRPC.TL_help_getCountriesList();
-            req.lang_code = "";
+            req.lang_code = LocaleController.getInstance().getCurrentLocaleInfo() != null ? LocaleController.getInstance().getCurrentLocaleInfo().getLangCode() : Locale.getDefault().getCountry();
             getConnectionsManager().sendRequest(req, (response, error) -> {
                 AndroidUtilities.runOnUIThread(() -> {
                     if (error == null) {
@@ -2292,7 +2431,11 @@ public class LoginActivity extends BaseFragment {
                                 TLRPC.TL_help_countryCode countryCode = c.country_codes.get(k);
                                 if (countryCode != null) {
                                     CountrySelectActivity.Country countryWithCode = new CountrySelectActivity.Country();
-                                    countryWithCode.name = c.default_name;
+                                    countryWithCode.name = c.name;
+                                    countryWithCode.defaultName = c.default_name;
+                                    if (countryWithCode.name == null && countryWithCode.defaultName != null) {
+                                        countryWithCode.name = countryWithCode.defaultName;
+                                    }
                                     countryWithCode.code = countryCode.country_code;
                                     countryWithCode.shortname = c.iso2;
 
@@ -2542,7 +2685,7 @@ public class LoginActivity extends BaseFragment {
 
         @Override
         public void onNextPressed(String code) {
-            if (getParentActivity() == null || nextPressed) {
+            if (getParentActivity() == null || nextPressed || isRequestingFirebaseSms) {
                 return;
             }
 
@@ -2770,17 +2913,41 @@ public class LoginActivity extends BaseFragment {
             TLRPC.TL_codeSettings settings = new TLRPC.TL_codeSettings();
             settings.allow_flashcall = simcardAvailable && allowCall && allowCancelCall && allowReadCallLog;
             settings.allow_missed_call = simcardAvailable && allowCall;
-            settings.allow_app_hash = PushListenerController.GooglePushListenerServiceProvider.INSTANCE.hasServices();
+            settings.allow_app_hash = settings.allow_firebase = PushListenerController.GooglePushListenerServiceProvider.INSTANCE.hasServices();
+            if (forceDisableSafetyNet || TextUtils.isEmpty(BuildVars.SAFETYNET_KEY)) {
+                settings.allow_firebase = false;
+            }
 
-            ArrayList<TLRPC.TL_auth_loggedOut> tokens = MessagesController.getSavedLogOutTokens();
+            ArrayList<TLRPC.TL_auth_authorization> loginTokens = AuthTokensHelper.getSavedLogInTokens();
+            if (loginTokens != null) {
+                for (int i = 0; i < loginTokens.size(); i++) {
+                    if (loginTokens.get(i).future_auth_token == null) {
+                        continue;
+                    }
+                    if (settings.logout_tokens == null) {
+                        settings.logout_tokens = new ArrayList<>();
+                    }
+                    if (BuildVars.DEBUG_VERSION) {
+                        FileLog.d("login token to check " + new String(loginTokens.get(i).future_auth_token, StandardCharsets.UTF_8));
+                    }
+                    settings.logout_tokens.add(loginTokens.get(i).future_auth_token);
+                    if (settings.logout_tokens.size() >= 20) {
+                        break;
+                    }
+                }
+            }
+            ArrayList<TLRPC.TL_auth_loggedOut> tokens = AuthTokensHelper.getSavedLogOutTokens();
             if (tokens != null) {
                 for (int i = 0; i < tokens.size(); i++) {
                     if (settings.logout_tokens == null) {
                         settings.logout_tokens = new ArrayList<>();
                     }
                     settings.logout_tokens.add(tokens.get(i).future_auth_token);
+                    if (settings.logout_tokens.size() >= 20) {
+                        break;
+                    }
                 }
-                MessagesController.saveLogOutTokens(tokens);
+                AuthTokensHelper.saveLogOutTokens(tokens);
             }
             if (settings.logout_tokens != null) {
                 settings.flags |= 64;
@@ -2847,7 +3014,21 @@ public class LoginActivity extends BaseFragment {
             int reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 nextPressed = false;
                 if (error == null) {
-                    fillNextCodeParams(params, (TLRPC.TL_auth_sentCode) response);
+
+                    if (response instanceof TLRPC.TL_auth_sentCodeSuccess) {
+                        TLRPC.auth_Authorization auth = ((TLRPC.TL_auth_sentCodeSuccess) response).authorization;
+                        if (auth instanceof TLRPC.TL_auth_authorizationSignUpRequired) {
+                            TLRPC.TL_auth_authorizationSignUpRequired authorization = (TLRPC.TL_auth_authorizationSignUpRequired) response;
+                            if (authorization.terms_of_service != null) {
+                                currentTermsOfService = authorization.terms_of_service;
+                            }
+                            setPage(VIEW_REGISTER, true, params, false);
+                        } else {
+                            onAuthSuccess((TLRPC.TL_auth_authorization) auth);
+                        }
+                    } else {
+                        fillNextCodeParams(params, (TLRPC.auth_SentCode) response);
+                    }
                 } else {
                     if (error.text != null) {
                         if (error.text.contains("SESSION_PASSWORD_NEEDED")) {
@@ -2890,7 +3071,9 @@ public class LoginActivity extends BaseFragment {
                         }
                     }
                 }
-                needHideProgress(false);
+                if (!isRequestingFirebaseSms) {
+                    needHideProgress(false);
+                }
             }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagTryDifferentDc | ConnectionsManager.RequestFlagEnableUnauthorized);
             needShowProgress(reqId);
         }
@@ -3072,10 +3255,169 @@ public class LoginActivity extends BaseFragment {
             }
         }
 
+        public void exportLoginToken(boolean show) {
+            getNotificationCenter().removeObserver(this, NotificationCenter.onUpdateLoginToken);
+
+            Context context = getContext();
+            if (context == null) {
+                return;
+            }
+
+            if (show)  {
+                getConnectionsManager().cleanup(false);
+            } else if (qrDialog == null || !qrDialog.isShowing()) {
+                return;
+            }
+
+            TLRPC.TL_auth_exportLoginToken req = new TLRPC.TL_auth_exportLoginToken();
+            req.api_hash = BuildVars.APP_HASH;
+            req.api_id = BuildVars.APP_ID;
+            for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
+                UserConfig userConfig = UserConfig.getInstance(a);
+                if (userConfig.isClientActivated()) {
+                    long uid = userConfig.getClientUserId();
+                    req.except_ids.add(uid);
+                }
+            }
+
+            AlertDialog progressDialog = new AlertDialog(getParentActivity(), AlertDialog.ALERT_TYPE_SPINNER);
+            int requestId = getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                progressDialog.dismiss();
+                if (error == null) {
+                    if (response instanceof TLRPC.TL_auth_loginToken) {
+                        getNotificationCenter().addObserver(this, NotificationCenter.onUpdateLoginToken);
+                        TLRPC.TL_auth_loginToken res = (TLRPC.TL_auth_loginToken) response;
+                        if (show) {
+                            LinearLayout linearLayout = new LinearLayout(context);
+                            linearLayout.setOrientation(LinearLayout.VERTICAL);
+                            linearLayout.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT, 4, 4, 4, 4));
+
+                            TextView titleTextView = new TextView(context);
+                            titleTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+                            titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+                            titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+                            titleTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+                            titleTextView.setText(LocaleController.getString("CG_QRLoginTitle", R.string.CG_QRLoginTitle));
+                            linearLayout.addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 24, 8, 0));
+
+                            TextView descriptionTextView = new TextView(context);
+                            descriptionTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+                            descriptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+                            descriptionTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+                            descriptionTextView.setText(LocaleController.getString("CG_QRLoginMessage", R.string.CG_QRLoginMessage));
+                            descriptionTextView.setPadding(0, AndroidUtilities.dp(8), 0, 0);
+                            linearLayout.addView(descriptionTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 0, 8, 0));
+
+                            imageView = new ImageView(context) {
+                                @Override
+                                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                                    int size = MeasureSpec.getSize(widthMeasureSpec);
+                                    super.onMeasure(MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY));
+                                }
+                            };
+                            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                            imageView.setOutlineProvider(new ViewOutlineProvider() {
+                                @Override
+                                public void getOutline(View view, Outline outline) {
+                                    outline.setRoundRect(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight(), AndroidUtilities.dp(12));
+                                }
+                            });
+                            imageView.setClipToOutline(true);
+
+                            linearLayout.addView(imageView, LayoutHelper.createLinear(240, 240, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 24, 24, 24, 24));
+
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setView(linearLayout);
+                            qrDialog = builder.create();
+                            qrDialog.setOnDismissListener(d -> getNotificationCenter().removeObserver(this, NotificationCenter.onUpdateLoginToken));
+                            showDialog(qrDialog);
+                        }
+                        String link = "tg://login?token=" + Base64.encodeToString(res.token, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+                        imageView.setImageBitmap(QrHelper.createQR(link));
+                        long expires = res.expires - getConnectionsManager().getCurrentTime();
+                        if (expires < 0) {
+                            expires = 20;
+                        }
+                        AndroidUtilities.runOnUIThread(() -> exportLoginToken(false), expires * 1000L);
+                    } else if (response instanceof TLRPC.TL_auth_loginTokenSuccess) {
+                        qrDialog.dismiss();
+                        postDelayed(() -> {
+                            AndroidUtilities.hideKeyboard(codeField);
+                            onAuthSuccess((TLRPC.TL_auth_authorization) ((TLRPC.TL_auth_loginTokenSuccess) response).authorization);
+                        }, 150);
+                    } else if (response instanceof TLRPC.TL_auth_loginTokenMigrateTo) {
+                        qrDialog.dismiss();
+                        showDoneButton(true, true);
+                        TLRPC.TL_auth_loginTokenMigrateTo res = (TLRPC.TL_auth_loginTokenMigrateTo) response;
+
+                        ConnectionsManager.native_moveToDatacenter(currentAccount, res.dc_id);
+                        TLRPC.TL_auth_importLoginToken request = new TLRPC.TL_auth_importLoginToken();
+                        request.token = res.token;
+                        getConnectionsManager().sendRequest(request, (response1, error1) -> AndroidUtilities.runOnUIThread(() -> {
+                            if (error1 == null) {
+                                if (response1 instanceof TLRPC.TL_auth_loginTokenSuccess) {
+                                    postDelayed(() -> {
+                                        showDoneButton(false, true);
+                                        AndroidUtilities.hideKeyboard(codeField);
+                                        onAuthSuccess((TLRPC.TL_auth_authorization) ((TLRPC.TL_auth_loginTokenSuccess) response1).authorization);
+                                    }, 150);
+                                }
+                            } else if (error1.text != null) {
+                                handleError(error1.text);
+                            }
+                        }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagTryDifferentDc | ConnectionsManager.RequestFlagEnableUnauthorized);
+                    }
+                } else if (error.text != null) {
+                    handleError(error.text);
+                }
+
+            }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagTryDifferentDc | ConnectionsManager.RequestFlagEnableUnauthorized);
+            progressDialog.setOnCancelListener(dialog -> {
+                getConnectionsManager().cancelRequest(requestId, true);
+                if (qrDialog != null) {
+                    qrDialog.dismiss();
+                }
+            });
+            progressDialog.showDelayed(300);
+        }
+
+        private void handleError(String errorText) {
+            if (qrDialog != null) {
+                qrDialog.dismiss();
+            }
+            if (errorText.contains("SESSION_PASSWORD_NEEDED")) {
+                TLRPC.TL_account_getPassword req = new TLRPC.TL_account_getPassword();
+                getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                    nextPressed = false;
+                    showDoneButton(false, true);
+                    if (error == null) {
+                        TLRPC.TL_account_password password = (TLRPC.TL_account_password) response;
+                        if (!TwoStepVerificationActivity.canHandleCurrentPassword(password, true)) {
+                            AlertsCreator.showUpdateAppAlert(getParentActivity(), LocaleController.getString("UpdateAppAlert", R.string.UpdateAppAlert), true);
+                            return;
+                        }
+                        Bundle bundle = new Bundle();
+                        SerializedData data = new SerializedData(password.getObjectSize());
+                        password.serializeToStream(data);
+                        bundle.putString("password", Utilities.bytesToHex(data.toByteArray()));
+                        setPage(VIEW_PASSWORD, true, bundle, false);
+                    } else {
+                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), error.text);
+                    }
+                }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
+            } else if (errorText.startsWith("FLOOD_WAIT")) {
+                needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("FloodWait", R.string.FloodWait));
+            } else {
+                needShowAlert(LocaleController.getString("AppName", R.string.AppName), errorText);
+            }
+        }
+
         @Override
         public void didReceivedNotification(int id, int account, Object... args) {
             if (id == NotificationCenter.emojiLoaded) {
                 countryButton.getCurrentView().invalidate();
+            } else if (id == NotificationCenter.onUpdateLoginToken) {
+                exportLoginToken(false);
             }
         }
     }
@@ -3132,6 +3474,8 @@ public class LoginActivity extends BaseFragment {
         private int currentType;
         @AuthType
         private int nextType;
+
+        private boolean isResendingCode = false;
 
         private String pattern = "*";
         private String prefix = "";
@@ -3297,13 +3641,81 @@ public class LoginActivity extends BaseFragment {
 
             problemFrame = new FrameLayout(context);
 
-            timeText = new TextView(context);
+            timeText = new TextView(context) {
+                private LoadingDrawable loadingDrawable = new LoadingDrawable();
+
+                {
+                    loadingDrawable.setAppearByGradient(true);
+                }
+
+                @Override
+                public void setText(CharSequence text, BufferType type) {
+                    super.setText(text, type);
+
+                    updateLoadingLayout();
+                }
+
+                @Override
+                protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+                    super.onLayout(changed, left, top, right, bottom);
+
+                    updateLoadingLayout();
+                }
+
+                private void updateLoadingLayout() {
+                    Layout layout = getLayout();
+                    if (layout == null) {
+                        return;
+                    }
+                    CharSequence text = layout.getText();
+                    if (text == null) {
+                        return;
+                    }
+                    LinkPath path = new LinkPath(true);
+                    int start = 0;
+                    int end = text.length();
+                    path.setCurrentLayout(layout, start, 0);
+                    layout.getSelectionPath(start, end, path);
+                    loadingDrawable.usePath(path);
+                    loadingDrawable.setRadiiDp(4);
+
+                    int color = getThemedColor(Theme.key_chat_linkSelectBackground);
+                    loadingDrawable.setColors(
+                            Theme.multAlpha(color, 0.85f),
+                            Theme.multAlpha(color, 2f),
+                            Theme.multAlpha(color, 3.5f),
+                            Theme.multAlpha(color, 6f)
+                    );
+
+                    loadingDrawable.updateBounds();
+                }
+
+                @Override
+                protected void onDraw(Canvas canvas) {
+                    super.onDraw(canvas);
+
+                    if (isResendingCode) {
+                        canvas.save();
+                        canvas.translate(getPaddingLeft(), getPaddingTop());
+                        loadingDrawable.draw(canvas);
+                        canvas.restore();
+                        invalidate();
+                    }
+                }
+            };
             timeText.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            timeText.setPadding(0, AndroidUtilities.dp(2), 0, AndroidUtilities.dp(10));
+            timeText.setPadding(AndroidUtilities.dp(6), AndroidUtilities.dp(8), AndroidUtilities.dp(6), AndroidUtilities.dp(16));
             timeText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             timeText.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
             timeText.setOnClickListener(v-> {
-                if (nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_SMS || nextType == AUTH_TYPE_MISSED_CALL) {
+                if (isRequestingFirebaseSms || isResendingCode) {
+                    return;
+                }
+                isResendingCode = true;
+                timeText.invalidate();
+                timeText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteValueText));
+
+                if (nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_SMS || nextType == AUTH_TYPE_MISSED_CALL || nextType == AUTH_TYPE_FRAGMENT_SMS) {
                     timeText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
                     if (nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_MISSED_CALL) {
                         timeText.setText(LocaleController.getString("Calling", R.string.Calling));
@@ -3352,11 +3764,72 @@ public class LoginActivity extends BaseFragment {
                 anim.setInterpolator(Easings.easeInOutQuad);
                 errorViewSwitcher.setOutAnimation(anim);
 
-                problemText = new TextView(context);
+                problemText = new TextView(context) {
+                    private LoadingDrawable loadingDrawable = new LoadingDrawable();
+
+                    {
+                        loadingDrawable.setAppearByGradient(true);
+                    }
+
+                    @Override
+                    public void setText(CharSequence text, BufferType type) {
+                        super.setText(text, type);
+
+                        updateLoadingLayout();
+                    }
+
+                    @Override
+                    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+                        super.onLayout(changed, left, top, right, bottom);
+
+                        updateLoadingLayout();
+                    }
+
+                    private void updateLoadingLayout() {
+                        Layout layout = getLayout();
+                        if (layout == null) {
+                            return;
+                        }
+                        CharSequence text = layout.getText();
+                        if (text == null) {
+                            return;
+                        }
+                        LinkPath path = new LinkPath(true);
+                        int start = 0;
+                        int end = text.length();
+                        path.setCurrentLayout(layout, start, 0);
+                        layout.getSelectionPath(start, end, path);
+                        loadingDrawable.usePath(path);
+                        loadingDrawable.setRadiiDp(4);
+
+                        int color = getThemedColor(Theme.key_chat_linkSelectBackground);
+                        loadingDrawable.setColors(
+                                Theme.multAlpha(color, 0.85f),
+                                Theme.multAlpha(color, 2f),
+                                Theme.multAlpha(color, 3.5f),
+                                Theme.multAlpha(color, 6f)
+                        );
+
+                        loadingDrawable.updateBounds();
+                    }
+
+                    @Override
+                    protected void onDraw(Canvas canvas) {
+                        super.onDraw(canvas);
+
+                        if (isResendingCode) {
+                            canvas.save();
+                            canvas.translate(getPaddingLeft(), getPaddingTop());
+                            loadingDrawable.draw(canvas);
+                            canvas.restore();
+                            invalidate();
+                        }
+                    }
+                };
                 problemText.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
                 problemText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
                 problemText.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
-                problemText.setPadding(0, AndroidUtilities.dp(4), 0, AndroidUtilities.dp(4));
+                problemText.setPadding(AndroidUtilities.dp(6), AndroidUtilities.dp(8), AndroidUtilities.dp(6), AndroidUtilities.dp(16));
                 problemFrame.addView(problemText, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER));
                 errorViewSwitcher.addView(problemFrame, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER));
             } else {
@@ -3425,7 +3898,7 @@ public class LoginActivity extends BaseFragment {
 
             if (currentType != AUTH_TYPE_FRAGMENT_SMS) {
                 problemText.setOnClickListener(v -> {
-                    if (nextPressed) {
+                    if (nextPressed || timeText.getVisibility() != View.GONE || isResendingCode) {
                         return;
                     }
                     boolean email = nextType == 0;
@@ -3512,6 +3985,14 @@ public class LoginActivity extends BaseFragment {
         }
 
         private void resendCode() {
+            if (nextPressed || isResendingCode || isRequestingFirebaseSms) {
+                return;
+            }
+
+            isResendingCode = true;
+            timeText.invalidate();
+            problemText.invalidate();
+
             final Bundle params = new Bundle();
             params.putString("phone", phone);
             params.putString("ephone", emailPhone);
@@ -4389,6 +4870,13 @@ public class LoginActivity extends BaseFragment {
                 }
                 onNextPressed(num);
             }
+        }
+
+        @Override
+        public void onHide() {
+            super.onHide();
+            isResendingCode = false;
+            nextPressed = false;
         }
 
         @Override
@@ -5454,6 +5942,10 @@ public class LoginActivity extends BaseFragment {
             resendCodeView.setMaxLines(2);
             resendCodeView.setText(LocaleController.getString(R.string.ResendCode));
             resendCodeView.setOnClickListener(v -> {
+                if (resendCodeView.getVisibility() != View.VISIBLE || resendCodeView.getAlpha() != 1f) {
+                    return;
+                }
+
                 showResendCodeView(false);
 
                 TLRPC.TL_auth_resendCode req = new TLRPC.TL_auth_resendCode();
@@ -5672,8 +6164,10 @@ public class LoginActivity extends BaseFragment {
             AndroidUtilities.cancelRunOnUIThread(resendCodeTimeout);
 
             codeFieldContainer.isFocusSuppressed = true;
-            for (CodeNumberField f : codeFieldContainer.codeField) {
-                f.animateFocusedProgress(0);
+            if (codeFieldContainer.codeField != null) {
+                for (CodeNumberField f : codeFieldContainer.codeField) {
+                    f.animateFocusedProgress(0);
+                }
             }
 
             code = codeFieldContainer.getCode();
@@ -5720,8 +6214,10 @@ public class LoginActivity extends BaseFragment {
             }
 
             codeFieldContainer.isFocusSuppressed = true;
-            for (CodeNumberField f : codeFieldContainer.codeField) {
-                f.animateFocusedProgress(0);
+            if (codeFieldContainer.codeField != null) {
+                for (CodeNumberField f : codeFieldContainer.codeField) {
+                    f.animateFocusedProgress(0);
+                }
             }
 
             String finalCode = code;
@@ -5806,12 +6302,14 @@ public class LoginActivity extends BaseFragment {
                         }
 
                         if (!isWrongCode) {
-                            for (int a = 0; a < codeFieldContainer.codeField.length; a++) {
-                                codeFieldContainer.codeField[a].setText("");
+                            if (codeFieldContainer.codeField != null) {
+                                for (int a = 0; a < codeFieldContainer.codeField.length; a++) {
+                                    codeFieldContainer.codeField[a].setText("");
+                                }
+                                codeFieldContainer.codeField[0].requestFocus();
                             }
 
                             codeFieldContainer.isFocusSuppressed = false;
-                            codeFieldContainer.codeField[0].requestFocus();
                         }
                     }
                 }
@@ -5872,7 +6370,7 @@ public class LoginActivity extends BaseFragment {
                 inboxImageView.getAnimatedDrawable().setCurrentFrame(0, false);
                 inboxImageView.playAnimation();
 
-                if (codeFieldContainer != null) {
+                if (codeFieldContainer != null && codeFieldContainer.codeField != null) {
                     codeFieldContainer.setText("");
                     codeFieldContainer.codeField[0].requestFocus();
                 }
@@ -6656,7 +7154,7 @@ public class LoginActivity extends BaseFragment {
 
             setOrientation(VERTICAL);
 
-            imageUpdater = new ImageUpdater(false);
+            imageUpdater = new ImageUpdater(false, ImageUpdater.FOR_TYPE_USER, false);
             imageUpdater.setOpenWithFrontfaceCamera(true);
             imageUpdater.setSearchAvailable(false);
             imageUpdater.setUploadAfterSelect(false);
@@ -6957,7 +7455,7 @@ public class LoginActivity extends BaseFragment {
         }
 
         @Override
-        public void didUploadPhoto(final TLRPC.InputFile photo, final TLRPC.InputFile video, double videoStartTimestamp, String videoPath, final TLRPC.PhotoSize bigSize, final TLRPC.PhotoSize smallSize, boolean isVideo) {
+        public void didUploadPhoto(final TLRPC.InputFile photo, final TLRPC.InputFile video, double videoStartTimestamp, String videoPath, final TLRPC.PhotoSize bigSize, final TLRPC.PhotoSize smallSize, boolean isVideo, TLRPC.VideoSize emojiMarkup) {
             AndroidUtilities.runOnUIThread(() -> {
                 avatar = smallSize.location;
                 avatarBig = bigSize.location;
@@ -7334,6 +7832,8 @@ public class LoginActivity extends BaseFragment {
 
         backButtonView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         backButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));
+        proxyButtonView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        proxyButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));
 
         radialProgressView.setProgressColor(Theme.getColor(Theme.key_chats_actionBackground));
 

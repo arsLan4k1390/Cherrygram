@@ -23,7 +23,7 @@ object DrawerBitmapHelper {
             try {
                 val photo = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(user.photo.photo_big, true)
                 val photoData = ByteArray(photo.length().toInt())
-                val photoIn: FileInputStream = FileInputStream(photo)
+                val photoIn = FileInputStream(photo)
                 DataInputStream(photoIn).readFully(photoData)
                 photoIn.close()
                 var bg = BitmapFactory.decodeByteArray(photoData, 0, photoData.size)
@@ -34,6 +34,27 @@ object DrawerBitmapHelper {
             }
         }
     }
+
+    /*@JvmStatic
+    fun setAccountBitmap(user: TLRPC.User) {  //try-with-resources
+        if (user.photo != null) {
+            val photo = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(user.photo.photo_big, true)
+            try {
+                FileInputStream(photo).use { photoIn ->
+                    val photoData = ByteArray(photo.length().toInt())
+                    DataInputStream(photoIn).use { data ->
+                        data.readFully(photoData)
+                        var bg = BitmapFactory.decodeByteArray(photoData, 0, photoData.size)
+                        if (CherrygramConfig.drawerBlur) bg =
+                            DrawerBitmapHelperKotlin.blurDrawerWallpaper(bg)
+                        DrawerBitmapHelperKotlin.currentAccountBitmap = BitmapDrawable(Resources.getSystem(), bg)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }*/
 
     @JvmStatic
     fun darkenBitmap(bm: Bitmap): Bitmap {

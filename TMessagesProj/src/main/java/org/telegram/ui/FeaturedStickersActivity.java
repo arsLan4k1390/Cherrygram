@@ -34,8 +34,6 @@ import java.util.ArrayList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class FeaturedStickersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private ListAdapter listAdapter;
@@ -74,7 +72,6 @@ public class FeaturedStickersActivity extends BaseFragment implements Notificati
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("FeaturedStickers", R.string.FeaturedStickers));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

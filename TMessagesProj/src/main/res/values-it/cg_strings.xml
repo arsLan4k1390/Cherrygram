@@ -7,8 +7,6 @@
     <string name="CG_Country">Nazione/Regione</string>
     <string name="CG_ChooseCountry">Scegli un Paese/Regione</string>
     <string name="CG_WrongCountry">Prefisso Nazionale non valido</string>
-    <string name="CG_ProxyInfo">Potrebbe essere necessario impostare un proxy prima di effettuare il login, nel caso in cui il vostro Paese/Regione o ISP blocchi Telegram.</string>
-    <string name="CG_ProxySettings">Impostazioni Proxy</string>
     <string name="CG_TestBackendNumber">Numero di prova</string>
     <string name="CG_TestBackendOn">Questo account si collegherà alla test mode.</string>
     <string name="CG_TestBackendOff">Questo account si connetterà al server di produzione.</string>
@@ -21,9 +19,6 @@
     <string name="CG_ChooseFolderIcon">Seleziona Icona</string>
     <string name="CP_NewTabs_NoCounter">Nascondi contatore in schede</string>
     <string name="CP_NewTabs_NoCounter_Desc">Questo nasconderà il contatore dei messaggi non letti</string>
-    <string name="CP_VKUIFoldersStyle">Stile cartelle VKUI</string>
-    <string name="CP_VKUIFoldersStyle_Desc">Questo attiverà lo stile delle cartelle da VK</string>
-    <string name="CP_VKUIFoldersStyle_Frame">Correzione della dimensione del frame VKUI</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">Vai all\'inizio</string>
@@ -44,12 +39,6 @@
     <string name="CG_FwdMenu_EnableCaptions">Abilita didascalie</string>
     <string name="CG_FwdMenu_DisableCaptions">Nascondi le didascalie</string>
     <!--Chats screen-->
-    <!--Group permissions-->
-    <string name="GP_UserRestrictionsSendStickers2">Invia sticker</string>
-    <string name="GP_UserRestrictionsSendGifs">Invia GIF</string>
-    <string name="GP_UserRestrictionsSendGames">Invia Giochi Animati</string>
-    <string name="GP_UserRestrictionsUseInlineBot">Usa Bot Inline</string>
-    <!--Group permissions-->
     <!--Misc-->
     <string name="LS_EnterPasscode">Inserisci il tuo codice di accesso Cherrygram</string>
     <string name="CG_SwitchBackend">Passerai al server di prova. Per favore non premere OK se non sai cosa stai facendo. È possibile passare al server normale premendo nuovamente \"Cambia backend\" nel menu di debug.</string>
@@ -81,6 +70,9 @@
     <string name="CGP_Crowdin">Contribuisci alla traduzione</string>
     <string name="CGP_Header_Categories">Categorie</string>
     <!--Cherrygram Preferences-->
+    <!--General Preferences-->
+    <string name="AP_Header_General">Generale</string>
+    <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Aspetto</string>
     <string name="AP_RedesignCategory">Ridisegna</string>
@@ -98,6 +90,7 @@
     <string name="AP_IconReplacement_VKUI">Icone VKUI</string>
     <string name="AP_IconReplacement_Solar">Icone solari di @Design480</string>
     <string name="AP_IconReplacement_Default">Predefinito</string>
+    <string name="AP_SystemEmoji">Usa le emoji di sistema</string>
     <string name="AP_CenterTitle">Centra titolo nella barra delle azioni</string>
     <string name="AP_ToolBarShadow">Disabilita ombra barra strumenti</string>
     <string name="AP_TransparentSB">Barra di stato trasparente</string>
@@ -125,6 +118,11 @@
     <string name="AP_FolderNameInHeader">Nome cartella invece di \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Questo cambierà \"Cherrygram\" nella barra delle azioni con il nome della cartella (utile se hai solo icone al posto dei nomi delle cartelle)</string>
     <string name="CP_NewTabs_RemoveAllChats">Nascondi la cartella \"Tutte le chat\"</string>
+    <string name="AP_Tab_Style">Stili di cartella</string>
+    <string name="AP_Tab_Style_Default">Predefinito</string>
+    <string name="AP_Tab_Style_Rounded">Arrotondato</string>
+    <string name="AP_Tab_Style_Text">Text</string>
+    <string name="AP_Tab_Style_Pills">Pillole</string>
     <string name="AP_DrawerCategory">Drawer</string>
     <string name="AP_DrawerPreferences">Preferenze drawer</string>
     <string name="AP_DrawerAvatar">Foto del profilo come sfondo</string>
@@ -204,8 +202,9 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Sperimentale</string>
+    <string name="CG_OpenProfile">Apri profilo invece dell\'anteprima della chat</string>
     <string name="CG_ResidentNotification">Mostra notifica permanente</string>
-    <string name="EP_PhotosSize">Dimensione foto</string>
+    <string name="EP_PhotosSize">Invia foto grandi (2560px)</string>
     <string name="EP_ShowRPCError">Avvisi su tutti gli errori RPC</string>
     <string name="EP_Network">Rete</string>
     <string name="EP_DownloadSpeedBoost">Aumenta velocità di download</string>
@@ -248,7 +247,6 @@
     <!--Updates Preferences-->
     <!--Donations-->
     <string name="DP_Donate">Dona</string>
-    <string name="DP_DonateInfo">Cherrygram Premium costa 10 USD. Non dimenticare di inviare lo screenshot della transazione a @arsLan se vuoi ottenere le funzionalità premium di Cherry. Questo pagamento è una tantum.</string>
     <string name="DP_Donate_Method">Scegli la Modalità</string>
     <!--Donations-->
     <!--Cherrygram screens-->

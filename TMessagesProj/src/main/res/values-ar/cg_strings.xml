@@ -7,8 +7,6 @@
     <string name="CG_Country">البلد/المنطقة</string>
     <string name="CG_ChooseCountry">اختر البلد/المنطقة</string>
     <string name="CG_WrongCountry">رمز البلد/المنطقة غير صحيح</string>
-    <string name="CG_ProxyInfo">قد تحتاج إلى إعداد وكيل (بروكسي) قبل تسجيل الدخول ، في حالة قيام بلدك أو مزود خدمة الإنترنت بحظر Telegram.</string>
-    <string name="CG_ProxySettings">إعدادات الوكيل (بروكسي)</string>
     <string name="CG_TestBackendNumber">إختبار رقم</string>
     <string name="CG_TestBackendOn">سيقوم هذا الحساب بالاتصال بواجهة الإختبار الخلفية.</string>
     <string name="CG_TestBackendOff">سيتصل هذا الحساب بالخلفية الإنتاجية.</string>
@@ -21,9 +19,6 @@
     <string name="CG_ChooseFolderIcon">اختر أيقونة</string>
     <string name="CP_NewTabs_NoCounter">إخفاء العداد في التبويب</string>
     <string name="CP_NewTabs_NoCounter_Desc">سيؤدي هذا إلى إخفاء عداد الرسائل غير المقروءة</string>
-    <string name="CP_VKUIFoldersStyle">نمط مجلدات VKUI</string>
-    <string name="CP_VKUIFoldersStyle_Desc">سيؤدي هذا إلى تشغيل نمط المجلدات من VK</string>
-    <string name="CP_VKUIFoldersStyle_Frame">تصحيح حجم إطار VKUI</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">إلى البداية</string>
@@ -44,12 +39,6 @@
     <string name="CG_FwdMenu_EnableCaptions">تفعيل الوصف</string>
     <string name="CG_FwdMenu_DisableCaptions">إخفاء الوصف</string>
     <!--Chats screen-->
-    <!--Group permissions-->
-    <string name="GP_UserRestrictionsSendStickers2">إرسال ملصقات</string>
-    <string name="GP_UserRestrictionsSendGifs">إرسال صور متحركة</string>
-    <string name="GP_UserRestrictionsSendGames">إرسال ألعاب متحركة</string>
-    <string name="GP_UserRestrictionsUseInlineBot">استخدام الروبوتات المضمنة</string>
-    <!--Group permissions-->
     <!--Misc-->
     <string name="LS_EnterPasscode">أدخل رمز مرور Cherrygram الخاص بك</string>
     <string name="CG_SwitchBackend">أنت ذاهب للتبديل إلى خادم الاختبار. من فضلك لا تضغط على موافق إذا كنت لا تعرف ما تفعله. يمكنك التبديل إلى الخادم العادي عن طريق الضغط على \"تبديل الخلفية\" في قائمة التصحيح مرة أخرى.</string>
@@ -81,6 +70,9 @@
     <string name="CGP_Crowdin">المساعدة في الترجمة</string>
     <string name="CGP_Header_Categories">الفئات</string>
     <!--Cherrygram Preferences-->
+    <!--General Preferences-->
+    <string name="AP_Header_General">عام</string>
+    <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">المظهر</string>
     <string name="AP_RedesignCategory">إعادة التصميم</string>
@@ -98,6 +90,7 @@
     <string name="AP_IconReplacement_VKUI">أيقونات VKUI</string>
     <string name="AP_IconReplacement_Solar">أيقونات شمسية من @Design480</string>
     <string name="AP_IconReplacement_Default">افتراضي</string>
+    <string name="AP_SystemEmoji">استخدم الرموز التعبيرية للنظام</string>
     <string name="AP_CenterTitle">عنوان المركز في شريط العمل</string>
     <string name="AP_ToolBarShadow">تعطيل ضل شريط الأدوات</string>
     <string name="AP_TransparentSB">شريط الحالة الشفاف</string>
@@ -125,6 +118,11 @@
     <string name="AP_FolderNameInHeader">اسم المجلد بدلا من \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">سيؤدي هذا إلى تغيير \" Cherrygram\ \" في شريط الإجراءات إلى اسم المجلد الخاص بك (مفيد إذا كان لديك أيقونات فقط بدلا من أسماء المجلدات)</string>
     <string name="CP_NewTabs_RemoveAllChats">إخفاء تبويب \"الكل\"</string>
+    <string name="AP_Tab_Style">نمط المجلد</string>
+    <string name="AP_Tab_Style_Default">افتراضي</string>
+    <string name="AP_Tab_Style_Rounded">مدور</string>
+    <string name="AP_Tab_Style_Text">نص</string>
+    <string name="AP_Tab_Style_Pills">أقراص</string>
     <string name="AP_DrawerCategory">الشريط الجانبي</string>
     <string name="AP_DrawerPreferences">أيقونات الشريط الجانبي</string>
     <string name="AP_DrawerAvatar">صورة الملف الشخصي كخلفية شريط الجاني</string>
@@ -204,8 +202,9 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">تجريبي</string>
+    <string name="CG_OpenProfile">فتح الملف الشخصي بدلاً من معاينة الدردشة</string>
     <string name="CG_ResidentNotification">إظهار إشعار دائم</string>
-    <string name="EP_PhotosSize">حجم الصور</string>
+    <string name="EP_PhotosSize">إرسال صور كبيرة (2560 بكسل)</string>
     <string name="EP_ShowRPCError">عرض جميع أخطاء RPC</string>
     <string name="EP_Network">الشبكة</string>
     <string name="EP_DownloadSpeedBoost">زيادة سرعة التنزيل</string>

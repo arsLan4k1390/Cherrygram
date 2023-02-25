@@ -43,8 +43,6 @@ import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PrivacyUsersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ContactsActivity.ContactsActivityDelegate {
 
     private RecyclerListView listView;
@@ -116,7 +114,6 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         if (currentType == TYPE_BLOCKED) {
             actionBar.setTitle(LocaleController.getString("BlockedUsers", R.string.BlockedUsers));

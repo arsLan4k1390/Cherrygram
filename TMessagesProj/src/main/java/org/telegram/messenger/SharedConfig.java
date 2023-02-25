@@ -18,7 +18,6 @@ import android.os.Environment;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.SparseArray;
 import android.webkit.WebView;
 
 import androidx.annotation.IntDef;
@@ -28,7 +27,6 @@ import org.json.JSONObject;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.SwipeGestureSettingsView;
 
 import java.io.File;
@@ -41,21 +39,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 public class SharedConfig {
+    /**
+     * V2: Ping and check time serialized
+     */
+    private final static int PROXY_SCHEMA_V2 = 2;
+    private final static int PROXY_CURRENT_SCHEMA_VERSION = PROXY_SCHEMA_V2;
+
     public final static int PASSCODE_TYPE_PIN = 0,
             PASSCODE_TYPE_PASSWORD = 1;
 
-    public static LiteMode getLiteMode() {
-        if (liteMode == null) {
-            liteMode = new LiteMode();
-        }
-        return liteMode;
-    }
-
     public static boolean loopStickers() {
-        return loopStickers && !getLiteMode().enabled;
+        return LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_STICKERS_CHAT);
     }
 
     @Retention(RetentionPolicy.SOURCE)
@@ -99,7 +97,6 @@ public class SharedConfig {
     public static String lastUpdateVersion;
     public static int suggestStickers;
     public static boolean suggestAnimatedEmoji;
-    public static boolean loopStickers;
     public static int keepMedia = CacheByChatsController.KEEP_MEDIA_ONE_MONTH; //deprecated
     public static int lastKeepMediaCheckTime;
     public static int lastLogsCheckTime;
@@ -113,6 +110,7 @@ public class SharedConfig {
     public static boolean disableVoiceAudioEffects;
     public static boolean forceDisableTabletMode;
     public static boolean useLNavigation;
+    public static boolean updateStickersOrderOnSend = true;
     private static int lastLocalId = -210000;
 
     public static String storageCacheDir;
@@ -125,11 +123,9 @@ public class SharedConfig {
     private static final Object sync = new Object();
     private static final Object localIdSync = new Object();
 
-    public static int saveToGalleryFlags;
+//    public static int saveToGalleryFlags;
     public static int mapPreviewType = 2;
     public static boolean chatBubbles = Build.VERSION.SDK_INT >= 30;
-    public static boolean autoplayGifs = true;
-    public static boolean autoplayVideo = true;
     public static boolean raiseToSpeak = false;
     public static boolean recordViaSco = false;
     public static boolean customTabs = true;
@@ -142,8 +138,7 @@ public class SharedConfig {
     public static boolean streamMkv = false;
     public static boolean saveStreamMedia = true;
     public static boolean smoothKeyboard = true;
-    public static boolean pauseMusicOnRecord = true;
-    public static boolean chatBlur = true;
+    public static boolean pauseMusicOnRecord = false;
     public static boolean noiseSupression;
     public static boolean noStatusBar = true;
     public static boolean forceRtmpStream;
@@ -161,6 +156,8 @@ public class SharedConfig {
     public static boolean fontSizeIsDefault;
     public static int bubbleRadius = 17;
     public static int ivFontSize = 16;
+    public static boolean proxyRotationEnabled;
+    public static int proxyRotationTimeout;
     public static int messageSeenHintCount;
     public static int emojiInteractionsHintCount;
     public static int dayNightThemeSwitchHintCount;
@@ -171,7 +168,10 @@ public class SharedConfig {
 
     public static boolean hasEmailLogin;
 
+    @PerformanceClass
     private static int devicePerformanceClass;
+    @PerformanceClass
+    private static int overrideDevicePerformanceClass;
 
     public static boolean drawDialogIcons;
     public static boolean useThreeLinesLayout;
@@ -184,8 +184,53 @@ public class SharedConfig {
     public static int fastScrollHintCount = 3;
     public static boolean dontAskManageStorage;
 
+    public static boolean translateChats = true;
+
     public static boolean isFloatingDebugActive;
     public static LiteMode liteMode;
+
+    private static final int[] LOW_SOC = {
+            -1775228513, // EXYNOS 850
+            802464304,  // EXYNOS 7872
+            802464333,  // EXYNOS 7880
+            802464302,  // EXYNOS 7870
+            2067362118, // MSM8953
+            2067362060, // MSM8937
+            2067362084, // MSM8940
+            2067362241, // MSM8992
+            2067362117, // MSM8952
+            2067361998, // MSM8917
+            -1853602818 // SDM439
+    };
+
+    private static final int[] LOW_DEVICES = {
+            1903542002, // XIAOMI NIKEL (Redmi Note 4)
+            1904553494, // XIAOMI OLIVE (Redmi 8)
+            1616144535, // OPPO CPH2273 (Oppo A54s)
+            -713271737, // OPPO OP4F2F (Oppo A54)
+            -1394191140, // SAMSUNG A12 (Galaxy A12)
+            -270252297, // SAMSUNG A12S (Galaxy A12)
+            -270251367, // SAMSUNG A21S (Galaxy A21s)
+            -270252359  // SAMSUNG A10S (Galaxy A10s)
+    };
+
+    private static final int[] AVERAGE_DEVICES = {
+            812981419, // XIAOMI ANGELICA (Redmi 9C)
+            -993913431 // XIAOMI DANDELION (Redmi 9A)
+    };
+
+    private static final int[] HIGH_DEVICES = {
+            1908570923, // XIAOMI SWEET (Redmi Note 10 Pro)
+            -980514379, // XIAOMI SECRET (Redmi Note 10S)
+            577463889, // XIAOMI JOYEUSE (Redmi Note 9 Pro)
+            1764745014, // XIAOMI BEGONIA (Redmi Note 8 Pro)
+            1908524435, // XIAOMI SURYA (Poco X3 NFC)
+            -215787089, // XIAOMI KAMA (Poco X3)
+            -215458996, // XIAOMI VAYU (Poco X3 Pro)
+            -1394179578, // SAMSUNG M21
+            220599115, // SAMSUNG J6LTE
+            1737652784 // SAMSUNG J6PRIMELTE
+    };
 
     static {
         loadConfig();
@@ -205,23 +250,23 @@ public class SharedConfig {
         public boolean available;
         public long availableCheckTime;
 
-        public ProxyInfo(String a, int p, String u, String pw, String s) {
-            address = a;
-            port = p;
-            username = u;
-            password = pw;
-            secret = s;
-            if (address == null) {
-                address = "";
+        public ProxyInfo(String address, int port, String username, String password, String secret) {
+            this.address = address;
+            this.port = port;
+            this.username = username;
+            this.password = password;
+            this.secret = secret;
+            if (this.address == null) {
+                this.address = "";
             }
-            if (password == null) {
-                password = "";
+            if (this.password == null) {
+                this.password = "";
             }
-            if (username == null) {
-                username = "";
+            if (this.username == null) {
+                this.username = "";
             }
-            if (secret == null) {
-                secret = "";
+            if (this.secret == null) {
+                this.secret = "";
             }
         }
 
@@ -279,6 +324,8 @@ public class SharedConfig {
                 editor.putBoolean("forwardingOptionsHintShown", forwardingOptionsHintShown);
                 editor.putInt("lockRecordAudioVideoHint", lockRecordAudioVideoHint);
                 editor.putString("storageCacheDir", !TextUtils.isEmpty(storageCacheDir) ? storageCacheDir : "");
+                editor.putBoolean("proxyRotationEnabled", proxyRotationEnabled);
+                editor.putInt("proxyRotationTimeout", proxyRotationTimeout);
 
                 if (pendingAppUpdate != null) {
                     try {
@@ -302,6 +349,7 @@ public class SharedConfig {
                 editor.putBoolean("hasEmailLogin", hasEmailLogin);
                 editor.putBoolean("useLNavigation", useLNavigation);
                 editor.putBoolean("floatingDebugActive", isFloatingDebugActive);
+                editor.putBoolean("record_via_sco", recordViaSco);
                 editor.apply();
             } catch (Exception e) {
                 FileLog.e(e);
@@ -345,6 +393,8 @@ public class SharedConfig {
             passportConfigJson = preferences.getString("passportConfigJson", "");
             passportConfigHash = preferences.getInt("passportConfigHash", 0);
             storageCacheDir = preferences.getString("storageCacheDir", null);
+            proxyRotationEnabled = preferences.getBoolean("proxyRotationEnabled", false);
+            proxyRotationTimeout = preferences.getInt("proxyRotationTimeout", ProxyRotationController.DEFAULT_TIMEOUT_INDEX);
             String authKeyString = preferences.getString("pushAuthKey", null);
             if (!TextUtils.isEmpty(authKeyString)) {
                 pushAuthKey = Base64.decode(authKeyString, Base64.DEFAULT);
@@ -399,15 +449,7 @@ public class SharedConfig {
             }
 
             preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-            boolean saveToGalleryLegacy = preferences.getBoolean("save_gallery", false);
-            if (saveToGalleryLegacy && BuildVars.NO_SCOPED_STORAGE) {
-                saveToGalleryFlags = SAVE_TO_GALLERY_FLAG_PEER + SAVE_TO_GALLERY_FLAG_CHANNELS + SAVE_TO_GALLERY_FLAG_GROUP;
-                preferences.edit().remove("save_gallery").putInt("save_gallery_flags", saveToGalleryFlags).apply();
-            } else {
-                saveToGalleryFlags = preferences.getInt("save_gallery_flags", 0);
-            }
-            autoplayGifs = preferences.getBoolean("autoplay_gif", true);
-            autoplayVideo = preferences.getBoolean("autoplay_video", true);
+            SaveToGallerySettingsHelper.load(preferences);
             mapPreviewType = preferences.getInt("mapPreviewType", 2);
             raiseToSpeak = preferences.getBoolean("raise_to_speak", false);
             recordViaSco = preferences.getBoolean("record_via_sco", false);
@@ -429,12 +471,13 @@ public class SharedConfig {
             saveStreamMedia = preferences.getBoolean("saveStreamMedia", true);
             smoothKeyboard = preferences.getBoolean("smoothKeyboard2", true);
             pauseMusicOnRecord = preferences.getBoolean("pauseMusicOnRecord", false);
-            chatBlur = preferences.getBoolean("chatBlur", true);
             forceDisableTabletMode = preferences.getBoolean("forceDisableTabletMode", false);
             streamAllVideo = preferences.getBoolean("streamAllVideo", BuildVars.DEBUG_VERSION);
             streamMkv = preferences.getBoolean("streamMkv", false);
             suggestStickers = preferences.getInt("suggestStickers", 0);
             suggestAnimatedEmoji = preferences.getBoolean("suggestAnimatedEmoji", true);
+            overrideDevicePerformanceClass = preferences.getInt("overrideDevicePerformanceClass", -1);
+            devicePerformanceClass = preferences.getInt("devicePerformanceClass", -1);
             sortContactsByName = preferences.getBoolean("sortContactsByName", false);
             sortFilesByName = preferences.getBoolean("sortFilesByName", false);
             noSoundHintShowed = preferences.getBoolean("noSoundHintShowed", false);
@@ -442,8 +485,6 @@ public class SharedConfig {
             useThreeLinesLayout = preferences.getBoolean("useThreeLinesLayout", false);
             archiveHidden = preferences.getBoolean("archiveHidden", false);
             distanceSystemType = preferences.getInt("distanceSystemType", 0);
-            devicePerformanceClass = preferences.getInt("devicePerformanceClass", -1);
-            loopStickers = preferences.getBoolean("loopStickers", true);
             keepMedia = preferences.getInt("keep_media", CacheByChatsController.KEEP_MEDIA_ONE_MONTH);
             noStatusBar = preferences.getBoolean("noStatusBar", true);
             forceRtmpStream = preferences.getBoolean("forceRtmpStream", false);
@@ -469,6 +510,7 @@ public class SharedConfig {
             hasEmailLogin = preferences.getBoolean("hasEmailLogin", false);
             useLNavigation = preferences.getBoolean("useLNavigation", false);
             isFloatingDebugActive = preferences.getBoolean("floatingDebugActive", false);
+            updateStickersOrderOnSend = preferences.getBoolean("updateStickersOrderOnSend", true);
 
             preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
             showNotificationsForAllAccounts = preferences.getBoolean("AllAccounts", true);
@@ -519,6 +561,14 @@ public class SharedConfig {
             lastUptimeMillis = SystemClock.elapsedRealtime();
         }
         saveConfig();
+    }
+
+    public static boolean isAutoplayVideo() {
+        return LiteMode.isEnabled(LiteMode.FLAG_AUTOPLAY_VIDEOS);
+    }
+
+    public static boolean isAutoplayGifs() {
+        return LiteMode.isEnabled(LiteMode.FLAG_AUTOPLAY_GIFS);
     }
 
     public static boolean isPassportConfigLoaded() {
@@ -739,6 +789,13 @@ public class SharedConfig {
         editor.apply();
     }
 
+    public static void toggleUpdateStickersOrderOnSend() {
+        SharedPreferences preferences = MessagesController.getGlobalMainSettings();
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("updateStickersOrderOnSend", updateStickersOrderOnSend = !updateStickersOrderOnSend);
+        editor.commit();
+    }
+
     public static void checkLogsToDelete() {
         if (!BuildVars.LOGS_ENABLED) {
             return;
@@ -751,8 +808,10 @@ public class SharedConfig {
         Utilities.cacheClearQueue.postRunnable(() -> {
             long currentTime = time - 60 * 60 * 24 * 10;
             try {
-                File sdCard = ApplicationLoader.applicationContext.getExternalFilesDir(null);
-                File dir = new File(sdCard.getAbsolutePath() + "/logs");
+                File dir = AndroidUtilities.getLogsDir();
+                if (dir == null) {
+                    return;
+                }
                 Utilities.clearDir(dir.getAbsolutePath(), 0, currentTime, false);
             } catch (Throwable e) {
                 FileLog.e(e);
@@ -762,180 +821,6 @@ public class SharedConfig {
             editor.putInt("lastLogsCheckTime", lastLogsCheckTime);
             editor.apply();
         });
-    }
-
-    public static void checkKeepMedia() {
-        int time = (int) (System.currentTimeMillis() / 1000);
-        if (!BuildVars.DEBUG_PRIVATE_VERSION && Math.abs(time - lastKeepMediaCheckTime) < 60 * 60) {
-            return;
-        }
-        lastKeepMediaCheckTime = time;
-        File cacheDir = FileLoader.checkDirectory(FileLoader.MEDIA_DIR_CACHE);
-
-        Utilities.cacheClearQueue.postRunnable(() -> {
-            boolean hasExceptions = false;
-            ArrayList<CacheByChatsController> cacheByChatsControllers = new ArrayList<>();
-            for (int account = 0; account < UserConfig.MAX_ACCOUNT_COUNT; account++) {
-                if (UserConfig.getInstance(account).isClientActivated()) {
-                    CacheByChatsController cacheByChatsController = UserConfig.getInstance(account).getMessagesController().getCacheByChatsController();
-                    cacheByChatsControllers.add(cacheByChatsController);
-                    if (cacheByChatsController.getKeepMediaExceptionsByDialogs().size() > 0) {
-                        hasExceptions = true;
-                    }
-                }
-            }
-
-            int[] keepMediaByTypes = new int[3];
-            boolean allKeepMediaTypesForever = true;
-            long keepMediaMinSeconds = Long.MAX_VALUE;
-            for (int i = 0; i < 3; i++) {
-                keepMediaByTypes[i] = SharedConfig.getPreferences().getInt("keep_media_type_" + i, CacheByChatsController.getDefault(i));
-                if (keepMediaByTypes[i] != CacheByChatsController.KEEP_MEDIA_FOREVER) {
-                    allKeepMediaTypesForever = false;
-                }
-                long days = CacheByChatsController.getDaysInSeconds(keepMediaByTypes[i]);
-                if (days < keepMediaMinSeconds) {
-                    keepMediaMinSeconds = days;
-                }
-            }
-            if (hasExceptions) {
-                allKeepMediaTypesForever = false;
-            }
-            if (!allKeepMediaTypesForever) {
-                //long currentTime = time - 60 * 60 * 24 * days;
-                final SparseArray<File> paths = ImageLoader.getInstance().createMediaPaths();
-                for (int a = 0; a < paths.size(); a++) {
-                    boolean isCacheDir = false;
-                    if (paths.keyAt(a) == FileLoader.MEDIA_DIR_CACHE) {
-                        isCacheDir = true;
-                    }
-                    File dir = paths.valueAt(a);
-                    try {
-                        File[] files = dir.listFiles();
-                        ArrayList<CacheByChatsController.KeepMediaFile> keepMediaFiles = new ArrayList<>();
-                        for (int i = 0; i < files.length; i++) {
-                            keepMediaFiles.add(new CacheByChatsController.KeepMediaFile(files[i]));
-                        }
-                        for (int i = 0; i < cacheByChatsControllers.size(); i++) {
-                            cacheByChatsControllers.get(i).lookupFiles(keepMediaFiles);
-                        }
-                        for (int i = 0; i < keepMediaFiles.size(); i++) {
-                            CacheByChatsController.KeepMediaFile file = keepMediaFiles.get(i);
-                            if (file.keepMedia == CacheByChatsController.KEEP_MEDIA_FOREVER) {
-                                continue;
-                            }
-                            long seconds;
-                            boolean isException = false;
-                            if (file.keepMedia >= 0) {
-                                isException = true;
-                                seconds = CacheByChatsController.getDaysInSeconds(file.keepMedia);
-                            } else if (file.dialogType >= 0) {
-                                seconds = CacheByChatsController.getDaysInSeconds(keepMediaByTypes[file.dialogType]);
-                            } else if (isCacheDir) {
-                                continue;
-                            } else {
-                                seconds = keepMediaMinSeconds;
-                            }
-                            if (seconds == Long.MAX_VALUE) {
-                                continue;
-                            }
-                            long lastUsageTime = Utilities.getLastUsageFileTime(file.file.getAbsolutePath());
-                            long timeLocal = time - seconds;
-                            boolean needDelete = lastUsageTime < timeLocal;
-                            if (needDelete) {
-                                try {
-                                    file.file.delete();
-                                } catch (Exception exception) {
-                                    FileLog.e(exception);
-                                }
-                            }
-                        }
-                    } catch (Throwable e) {
-                        FileLog.e(e);
-                    }
-                }
-            }
-
-            int maxCacheGb = SharedConfig.getPreferences().getInt("cache_limit", Integer.MAX_VALUE);
-            if (maxCacheGb != Integer.MAX_VALUE) {
-                long maxCacheSize;
-                if (maxCacheGb == 1) {
-                    maxCacheSize = 1024L * 1024L * 300L;
-                } else {
-                    maxCacheSize = maxCacheGb * 1024L * 1024L * 1000L;
-                }
-                final SparseArray<File> paths = ImageLoader.getInstance().createMediaPaths();
-                long totalSize = 0;
-                for (int a = 0; a < paths.size(); a++) {
-                    totalSize += Utilities.getDirSize(paths.valueAt(a).getAbsolutePath(), 0, true);
-                }
-                if (totalSize > maxCacheSize) {
-                    ArrayList<FileInfoInternal> allFiles = new ArrayList<>();
-                    for (int a = 0; a < paths.size(); a++) {
-                        File dir = paths.valueAt(a);
-                        fillFilesRecursive(dir, allFiles);
-                    }
-                    Collections.sort(allFiles, (o1, o2) -> {
-                        if (o2.lastUsageDate > o1.lastUsageDate) {
-                            return -1;
-                        } else if (o2.lastUsageDate < o1.lastUsageDate) {
-                            return 1;
-                        }
-                        return 0;
-                    });
-                    for (int i = 0; i < allFiles.size(); i++) {
-                        long size = allFiles.get(i).file.length();
-                        totalSize -= size;
-                        try {
-                            allFiles.get(i).file.delete();
-                        } catch (Exception e) {
-
-                        }
-
-                        if (totalSize < maxCacheSize) {
-                            break;
-                        }
-                    }
-                }
-
-            }
-
-
-            //TODO now every day generating cache for reactions and cleared it after one day -\_(-_-)_/-
-            //need fix
-            File stickersPath = new File(cacheDir, "acache");
-            if (stickersPath.exists()) {
-                long currentTime = time - 60 * 60 * 24;
-                try {
-                    Utilities.clearDir(stickersPath.getAbsolutePath(), 0, currentTime, false);
-                } catch (Throwable e) {
-                    FileLog.e(e);
-                }
-            }
-            MessagesController.getGlobalMainSettings().edit()
-                    .putInt("lastKeepMediaCheckTime", lastKeepMediaCheckTime)
-                    .apply();
-        });
-    }
-
-    private static void fillFilesRecursive(final File fromFolder, ArrayList<FileInfoInternal> fileInfoList) {
-        if (fromFolder == null) {
-            return;
-        }
-        File[] files = fromFolder.listFiles();
-        if (files == null) {
-            return;
-        }
-        for (final File fileEntry : files) {
-            if (fileEntry.isDirectory()) {
-                fillFilesRecursive(fileEntry, fileInfoList);
-            } else {
-                if (fileEntry.getName().equals(".nomedia")) {
-                    continue;
-                }
-                fileInfoList.add(new FileInfoInternal(fileEntry));
-            }
-        }
     }
 
     public static void toggleDisableVoiceAudioEffects() {
@@ -990,11 +875,7 @@ public class SharedConfig {
     }
 
     public static void toggleLoopStickers() {
-        loopStickers = !loopStickers;
-        SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("loopStickers", loopStickers);
-        editor.apply();
+        LiteMode.toggleFlag(LiteMode.FLAG_ANIMATED_STICKERS_CHAT);
     }
 
     public static void toggleBigEmoji() {
@@ -1010,7 +891,7 @@ public class SharedConfig {
         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("suggestAnimatedEmoji", suggestAnimatedEmoji);
-        editor.apply();
+        editor.commit();
     }
 
     public static void setPlaybackOrderType(int type) {
@@ -1043,26 +924,15 @@ public class SharedConfig {
         editor.apply();
     }
 
-    public static void toggleSaveToGalleryFlag(int flag) {
-        if ((saveToGalleryFlags & flag) != 0) {
-            saveToGalleryFlags &= ~flag;
-        } else {
-            saveToGalleryFlags |= flag;
+    public static void overrideDevicePerformanceClass(int performanceClass) {
+        MessagesController.getGlobalMainSettings().edit().putInt("overrideDevicePerformanceClass", overrideDevicePerformanceClass = performanceClass).remove("lite_mode").commit();
+        if (liteMode != null) {
+            liteMode.loadPreference();
         }
-        SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-        preferences.edit().putInt("save_gallery_flags", saveToGalleryFlags).apply();
-        ImageLoader.getInstance().checkMediaPaths();
-        ImageLoader.getInstance().getCacheOutQueue().postRunnable(() -> {
-            checkSaveToGalleryFiles();
-        });
     }
 
     public static void toggleAutoplayGifs() {
-        autoplayGifs = !autoplayGifs;
-        SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("autoplay_gif", autoplayGifs);
-        editor.apply();
+        LiteMode.toggleFlag(LiteMode.FLAG_AUTOPLAY_GIFS);
     }
 
     public static void setUseThreeLinesLayout(boolean value) {
@@ -1083,11 +953,7 @@ public class SharedConfig {
     }
 
     public static void toggleAutoplayVideo() {
-        autoplayVideo = !autoplayVideo;
-        SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("autoplay_video", autoplayVideo);
-        editor.apply();
+        LiteMode.toggleFlag(LiteMode.FLAG_AUTOPLAY_VIDEOS, !isAutoplayVideo());
     }
 
     public static boolean isSecretMapPreviewSet() {
@@ -1205,11 +1071,7 @@ public class SharedConfig {
     }
 
     public static void toggleChatBlur() {
-        chatBlur = !chatBlur;
-        SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("chatBlur", chatBlur);
-        editor.apply();
+        LiteMode.toggleFlag(LiteMode.FLAG_CHAT_BLUR);
     }
 
     public static void toggleForceDisableTabletMode() {
@@ -1264,17 +1126,46 @@ public class SharedConfig {
             byte[] bytes = Base64.decode(list, Base64.DEFAULT);
             SerializedData data = new SerializedData(bytes);
             int count = data.readInt32(false);
-            for (int a = 0; a < count; a++) {
-                ProxyInfo info = new ProxyInfo(
-                        data.readString(false),
-                        data.readInt32(false),
-                        data.readString(false),
-                        data.readString(false),
-                        data.readString(false));
-                proxyList.add(0, info);
-                if (currentProxy == null && !TextUtils.isEmpty(proxyAddress)) {
-                    if (proxyAddress.equals(info.address) && proxyPort == info.port && proxyUsername.equals(info.username) && proxyPassword.equals(info.password)) {
-                        currentProxy = info;
+            if (count == -1) { // V2 or newer
+                int version = data.readByte(false);
+
+                if (version == PROXY_SCHEMA_V2) {
+                    count = data.readInt32(false);
+
+                    for (int i = 0; i < count; i++) {
+                        ProxyInfo info = new ProxyInfo(
+                                data.readString(false),
+                                data.readInt32(false),
+                                data.readString(false),
+                                data.readString(false),
+                                data.readString(false));
+
+                        info.ping = data.readInt64(false);
+                        info.availableCheckTime = data.readInt64(false);
+
+                        proxyList.add(info);
+                        if (currentProxy == null && !TextUtils.isEmpty(proxyAddress)) {
+                            if (proxyAddress.equals(info.address) && proxyPort == info.port && proxyUsername.equals(info.username) && proxyPassword.equals(info.password)) {
+                                currentProxy = info;
+                            }
+                        }
+                    }
+                } else {
+                    FileLog.e("Unknown proxy schema version: " + version);
+                }
+            } else {
+                for (int a = 0; a < count; a++) {
+                    ProxyInfo info = new ProxyInfo(
+                            data.readString(false),
+                            data.readInt32(false),
+                            data.readString(false),
+                            data.readString(false),
+                            data.readString(false));
+                    proxyList.add(0, info);
+                    if (currentProxy == null && !TextUtils.isEmpty(proxyAddress)) {
+                        if (proxyAddress.equals(info.address) && proxyPort == info.port && proxyUsername.equals(info.username) && proxyPassword.equals(info.password)) {
+                            currentProxy = info;
+                        }
                     }
                 }
             }
@@ -1287,16 +1178,33 @@ public class SharedConfig {
     }
 
     public static void saveProxyList() {
+        List<ProxyInfo> infoToSerialize = new ArrayList<>(proxyList);
+        Collections.sort(infoToSerialize, (o1, o2) -> {
+            long bias1 = SharedConfig.currentProxy == o1 ? -200000 : 0;
+            if (!o1.available) {
+                bias1 += 100000;
+            }
+            long bias2 = SharedConfig.currentProxy == o2 ? -200000 : 0;
+            if (!o2.available) {
+                bias2 += 100000;
+            }
+            return Long.compare(o1.ping + bias1, o2.ping + bias2);
+        });
         SerializedData serializedData = new SerializedData();
-        int count = proxyList.size();
+        serializedData.writeInt32(-1);
+        serializedData.writeByte(PROXY_CURRENT_SCHEMA_VERSION);
+        int count = infoToSerialize.size();
         serializedData.writeInt32(count);
         for (int a = count - 1; a >= 0; a--) {
-            ProxyInfo info = proxyList.get(a);
+            ProxyInfo info = infoToSerialize.get(a);
             serializedData.writeString(info.address != null ? info.address : "");
             serializedData.writeInt32(info.port);
             serializedData.writeString(info.username != null ? info.username : "");
             serializedData.writeString(info.password != null ? info.password : "");
             serializedData.writeString(info.secret != null ? info.secret : "");
+
+            serializedData.writeInt64(info.ping);
+            serializedData.writeInt64(info.availableCheckTime);
         }
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
         preferences.edit().putString("proxy_list", Base64.encodeToString(serializedData.toByteArray(), Base64.NO_WRAP)).apply();
@@ -1315,6 +1223,10 @@ public class SharedConfig {
         proxyList.add(0, proxyInfo);
         saveProxyList();
         return proxyInfo;
+    }
+
+    public static boolean isProxyEnabled() {
+        return MessagesController.getGlobalMainSettings().getBoolean("proxy_enabled", false) && currentProxy != null;
     }
 
     public static void deleteProxy(ProxyInfo proxyInfo) {
@@ -1348,7 +1260,7 @@ public class SharedConfig {
                 File videoPath = new File(telegramPath, "Telegram Video");
                 videoPath.mkdir();
 
-                if (saveToGalleryFlags != 0 || !BuildVars.NO_SCOPED_STORAGE) {
+                if (!BuildVars.NO_SCOPED_STORAGE) {
                     if (imagePath.isDirectory()) {
                         new File(imagePath, ".nomedia").delete();
                     }
@@ -1421,38 +1333,105 @@ public class SharedConfig {
 
     @PerformanceClass
     public static int getDevicePerformanceClass() {
+        if (overrideDevicePerformanceClass != -1) {
+            return overrideDevicePerformanceClass;
+        }
         if (devicePerformanceClass == -1) {
-            int androidVersion = Build.VERSION.SDK_INT;
-            int cpuCount = ConnectionsManager.CPU_COUNT;
-            int memoryClass = ((ActivityManager) ApplicationLoader.applicationContext.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
-            int totalCpuFreq = 0;
-            int freqResolved = 0;
-            for (int i = 0; i < cpuCount; i++) {
-                try {
-                    RandomAccessFile reader = new RandomAccessFile(String.format(Locale.ENGLISH, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", i), "r");
-                    String line = reader.readLine();
-                    if (line != null) {
-                        totalCpuFreq += Utilities.parseInt(line) / 1000;
-                        freqResolved++;
-                    }
-                    reader.close();
-                } catch (Throwable ignore) {}
-            }
-            int maxCpuFreq = freqResolved == 0 ? -1 : (int) Math.ceil(totalCpuFreq / (float) freqResolved);
+            devicePerformanceClass = measureDevicePerformanceClass();
+        }
+        return devicePerformanceClass;
+    }
 
-            if (androidVersion < 21 || cpuCount <= 2 || memoryClass <= 100 || cpuCount <= 4 && maxCpuFreq != -1 && maxCpuFreq <= 1250 || cpuCount <= 4 && maxCpuFreq <= 1600 && memoryClass <= 128 && androidVersion <= 21 || cpuCount <= 4 && maxCpuFreq <= 1300 && memoryClass <= 128 && androidVersion <= 24) {
-                devicePerformanceClass = PERFORMANCE_CLASS_LOW;
-            } else if (cpuCount < 8 || memoryClass <= 160 || maxCpuFreq != -1 && maxCpuFreq <= 2050 || maxCpuFreq == -1 && cpuCount == 8 && androidVersion <= 23) {
-                devicePerformanceClass = PERFORMANCE_CLASS_AVERAGE;
-            } else {
-                devicePerformanceClass = PERFORMANCE_CLASS_HIGH;
+    public static int measureDevicePerformanceClass() {
+        int androidVersion = Build.VERSION.SDK_INT;
+        int cpuCount = ConnectionsManager.CPU_COUNT;
+        int memoryClass = ((ActivityManager) ApplicationLoader.applicationContext.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
+
+        if (Build.DEVICE != null && Build.MANUFACTURER != null) {
+            int hash = (Build.MANUFACTURER + " " + Build.DEVICE).toUpperCase().hashCode();
+            for (int i = 0; i < LOW_DEVICES.length; ++i) {
+                if (LOW_DEVICES[i] == hash) {
+                    return PERFORMANCE_CLASS_LOW;
+                }
             }
-            if (BuildVars.LOGS_ENABLED) {
-                FileLog.d("device performance info selected_class = " + devicePerformanceClass + " (cpu_count = " + cpuCount + ", freq = " + maxCpuFreq + ", memoryClass = " + memoryClass + ", android version " + androidVersion + ", manufacture " + Build.MANUFACTURER + ")");
+            for (int i = 0; i < AVERAGE_DEVICES.length; ++i) {
+                if (AVERAGE_DEVICES[i] == hash) {
+                    return PERFORMANCE_CLASS_AVERAGE;
+                }
+            }
+            for (int i = 0; i < HIGH_DEVICES.length; ++i) {
+                if (HIGH_DEVICES[i] == hash) {
+                    return PERFORMANCE_CLASS_HIGH;
+                }
             }
         }
 
-        return devicePerformanceClass;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && Build.SOC_MODEL != null) {
+            int hash = Build.SOC_MODEL.toUpperCase().hashCode();
+            for (int i = 0; i < LOW_SOC.length; ++i) {
+                if (LOW_SOC[i] == hash) {
+                    return PERFORMANCE_CLASS_LOW;
+                }
+            }
+        }
+
+        int totalCpuFreq = 0;
+        int freqResolved = 0;
+        for (int i = 0; i < cpuCount; i++) {
+            try {
+                RandomAccessFile reader = new RandomAccessFile(String.format(Locale.ENGLISH, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", i), "r");
+                String line = reader.readLine();
+                if (line != null) {
+                    totalCpuFreq += Utilities.parseInt(line) / 1000;
+                    freqResolved++;
+                }
+                reader.close();
+            } catch (Throwable ignore) {}
+        }
+        int maxCpuFreq = freqResolved == 0 ? -1 : (int) Math.ceil(totalCpuFreq / (float) freqResolved);
+
+        long ram = -1;
+        try {
+            ActivityManager.MemoryInfo memoryInfo = new ActivityManager.MemoryInfo();
+            ((ActivityManager) ApplicationLoader.applicationContext.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryInfo(memoryInfo);
+            ram = memoryInfo.totalMem;
+        } catch (Exception ignore) {}
+
+        int performanceClass;
+        if (
+            androidVersion < 21 ||
+            cpuCount <= 2 ||
+            memoryClass <= 100 ||
+            cpuCount <= 4 && maxCpuFreq != -1 && maxCpuFreq <= 1250 ||
+            cpuCount <= 4 && maxCpuFreq <= 1600 && memoryClass <= 128 && androidVersion <= 21 ||
+            cpuCount <= 4 && maxCpuFreq <= 1300 && memoryClass <= 128 && androidVersion <= 24 ||
+            ram != -1 && ram < 2L * 1024L * 1024L * 1024L
+        ) {
+            performanceClass = PERFORMANCE_CLASS_LOW;
+        } else if (
+            cpuCount < 8 ||
+            memoryClass <= 160 ||
+            maxCpuFreq != -1 && maxCpuFreq <= 2055 ||
+            maxCpuFreq == -1 && cpuCount == 8 && androidVersion <= 23
+        ) {
+            performanceClass = PERFORMANCE_CLASS_AVERAGE;
+        } else {
+            performanceClass = PERFORMANCE_CLASS_HIGH;
+        }
+        if (BuildVars.LOGS_ENABLED) {
+            FileLog.d("device performance info selected_class = " + performanceClass + " (cpu_count = " + cpuCount + ", freq = " + maxCpuFreq + ", memoryClass = " + memoryClass + ", android version " + androidVersion + ", manufacture " + Build.MANUFACTURER + ", screenRefreshRate=" + AndroidUtilities.screenRefreshRate + ")");
+        }
+
+        return performanceClass;
+    }
+
+    public static String performanceClassName(int perfClass) {
+        switch (perfClass) {
+            case PERFORMANCE_CLASS_HIGH: return "HIGH";
+            case PERFORMANCE_CLASS_AVERAGE: return "AVERAGE";
+            case PERFORMANCE_CLASS_LOW: return "LOW";
+            default: return "UNKNOWN";
+        }
     }
 
     public static void setMediaColumnsCount(int count) {
@@ -1479,7 +1458,7 @@ public class SharedConfig {
     }
 
     public static boolean chatBlurEnabled() {
-        return canBlurChat() && chatBlur;
+        return canBlurChat() && LiteMode.isEnabled(LiteMode.FLAG_CHAT_BLUR);
     }
 
     public static class BackgroundActivityPrefs {
@@ -1491,6 +1470,14 @@ public class SharedConfig {
 
         public static void setLastCheckedBackgroundActivity(long l) {
             prefs.edit().putLong("last_checked", l).apply();
+        }
+
+        public static int getDismissedCount() {
+            return prefs.getInt("dismissed_count", 0);
+        }
+
+        public static void increaseDismissedCount() {
+            prefs.edit().putInt("dismissed_count", getDismissedCount() + 1).apply();
         }
     }
 
@@ -1511,50 +1498,15 @@ public class SharedConfig {
         return ApplicationLoader.applicationContext.getSharedPreferences("userconfing", Context.MODE_PRIVATE);
     }
 
-    private static class FileInfoInternal {
-        final File file;
-        final long lastUsageDate;
-
-        private FileInfoInternal(File file) {
-            this.file = file;
-            this.lastUsageDate = Utilities.getLastUsageFileTime(file.getAbsolutePath());
-        }
+    public static boolean deviceIsLow() {
+        return getDevicePerformanceClass() == PERFORMANCE_CLASS_LOW;
     }
 
+    public static boolean deviceIsAboveAverage() {
+        return getDevicePerformanceClass() >= PERFORMANCE_CLASS_AVERAGE;
+    }
 
-    public static class LiteMode {
-
-        private boolean enabled;
-
-        LiteMode() {
-            loadPreference();
-        }
-
-        public boolean enabled() {
-            return enabled;
-        }
-
-        public void toggleMode() {
-            enabled = !enabled;
-            savePreference();
-            AnimatedEmojiDrawable.lightModeChanged();
-        }
-
-        private void loadPreference() {
-            int flags = MessagesController.getGlobalMainSettings().getInt("light_mode", getDevicePerformanceClass() == PERFORMANCE_CLASS_LOW ? 1 : 0) ;
-            enabled = (flags & 1) != 0;
-        }
-
-        public void savePreference() {
-            int flags = 0;
-            if (enabled) {
-                flags |= 1;
-            }
-            MessagesController.getGlobalMainSettings().edit().putInt("light_mode", flags).apply();
-        }
-
-        public boolean animatedEmojiEnabled() {
-            return !enabled;
-        }
+    public static boolean deviceIsHigh() {
+        return getDevicePerformanceClass() >= PERFORMANCE_CLASS_HIGH;
     }
 }

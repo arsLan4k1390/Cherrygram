@@ -38,12 +38,6 @@ import org.telegram.ui.Components.StickersAlert;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.collection.LongSparseArray;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class ArchivedStickersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private final LongSparseArray<TLRPC.StickerSetCovered> installingStickerSets = new LongSparseArray<>();
@@ -96,7 +90,6 @@ public class ArchivedStickersActivity extends BaseFragment implements Notificati
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         if (currentType == MediaDataController.TYPE_IMAGE) {
             actionBar.setTitle(LocaleController.getString("ArchivedStickers", R.string.ArchivedStickers));

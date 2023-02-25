@@ -17,11 +17,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.util.Log;
 
 import androidx.core.content.FileProvider;
 
@@ -44,7 +44,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
@@ -133,37 +132,9 @@ public class UpdaterUtils {
                 if (arr.length() == 0) {
                     return;
                 }
-
-                String link, cpu = null;
-                try {
-                    PackageInfo info = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
-                    switch (info.versionCode % 10) {
-                        case 1:
-                        case 3:
-                            cpu = "arm-v7a";
-                            break;
-                        case 2:
-                        case 4:
-                            cpu = "x86";
-                            break;
-                        case 5:
-                        case 7:
-                            cpu = "arm64-v8a";
-                            break;
-                        case 6:
-                        case 8:
-                            cpu = "x86_64";
-                            break;
-                        case 0:
-                        case 9:
-                            cpu = "universal";
-                            break;
-                    }
-                } catch (Exception e) {
-                    cpu = Build.SUPPORTED_ABIS[0];
-                }
-
                 for (int i = 0; i < arr.length(); i++) {
+                    String cpu = CherrygramExtras.INSTANCE.getAbiCode();
+                    String link;
                     downloadURL = link = arr.getJSONObject(i).getString("browser_download_url");
                     //Log.d ("DownloadLink", downloadURL);
                     if (ApplicationLoader.isHuaweiStoreBuild()) {
@@ -171,10 +142,10 @@ public class UpdaterUtils {
                         //Log.d ("DownloadLinkHuawei", downloadURL);
                     }
                     size = AndroidUtilities.formatFileSize(arr.getJSONObject(i).getLong("size"));
-                    if (link.contains("arm64") && Objects.equals(cpu, "arm64-v8a") ||
-                        link.contains("arm7") && Objects.equals(cpu, "armeabi-v7a") ||
+                    if (link.contains("arm64-v8a") && Objects.equals(cpu, "arm64-v8a") ||
+                        link.contains("armeabi-v7a") && Objects.equals(cpu, "armeabi-v7a") ||
                         link.contains("x86") && Objects.equals(cpu, "x86") ||
-                        link.contains("x64") && Objects.equals(cpu, "x86_64") ||
+                        link.contains("x86_64") && Objects.equals(cpu, "x86_64") ||
                         link.contains("universal") && Objects.equals(cpu, "universal")){
                         break;
                     }
@@ -206,23 +177,23 @@ public class UpdaterUtils {
     public static void downloadApk(Context context, String link, String title) {
         if (!updateDownloaded) {
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(link));
+//            Log.d ("DownloadedApkLink", link);
 
-            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);
+            request.setAllowedNetworkTypes(3);
             request.setTitle(title);
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             request.setDestinationInExternalFilesDir(context, "ota/" + version, "update.apk");
 
-            DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-            id = manager.enqueue(request);
+            id = ((DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(request);
 
             DownloadReceiver downloadBroadcastReceiver = new DownloadReceiver();
             IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction("android.intent.action.DOWNLOAD_COMPLETE");
             intentFilter.addAction("android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED");
             context.registerReceiver(downloadBroadcastReceiver, intentFilter);
-        } else {
-            installApk(context, apkFile.getAbsolutePath());
+            return;
         }
+        installApk(context, apkFile.getAbsolutePath());
     }
 
     public static void installApk(Context context, String path) {
@@ -286,14 +257,12 @@ public class UpdaterUtils {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     public static long getMillisFromDate(String d, String format) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat(format);
         try {
-           Date date = sdf.parse(d);
-           assert date != null;
-           return date.getTime();
+            return Objects.requireNonNull(new SimpleDateFormat(format).parse(d)).getTime();
         } catch (Exception ignore) {
-           return 1L;
+            return 1L;
         }
     }
 
@@ -340,9 +309,11 @@ public class UpdaterUtils {
     public interface OnTranslationSuccess {
         void run(String translated);
     }
+
     public interface OnTranslationFail {
         void run();
     }
+
     public static void translate(CharSequence text, OnTranslationSuccess onSuccess, OnTranslationFail onFail) {
         Utilities.globalQueue.postRunnable(() -> {
             String uri;
@@ -390,9 +361,13 @@ public class UpdaterUtils {
                     updateDownloaded = false;
                 }
             } else if (Objects.equals(intent.getAction(), DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
-                Intent viewDownloadIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
-                viewDownloadIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(viewDownloadIntent);
+                try {
+                    Intent viewDownloadIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
+                    viewDownloadIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(viewDownloadIntent);
+                } catch (Exception e) {
+                    FileLog.e("Downloads activity not found: ", e);
+                }
             }
         }
     }

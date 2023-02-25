@@ -210,7 +210,6 @@ public abstract class BottomSheetWithRecyclerListView extends BottomSheet {
 
             actionBar.setCastShadows(true);
             actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
             actionBar.setTitle(getTitle());
             actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
                 @Override

@@ -20,9 +20,9 @@ import java.io.InputStream
 
 @Suppress("DEPRECATION")
 class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, wrapped.displayMetrics, wrapped.configuration) {
-    var activeReplacement: BaseIconReplace = CherrygramConfig.getIconReplacement()
+    var activeReplacement: BaseIconReplace = CherrygramConfig.getIconReplacement1()
     fun reloadReplacements() {
-        activeReplacement = CherrygramConfig.getIconReplacement()
+        activeReplacement = CherrygramConfig.getIconReplacement1()
     }
 
     @Deprecated("Deprecated in Java")

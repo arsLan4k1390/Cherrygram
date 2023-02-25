@@ -110,6 +110,8 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
     private boolean needReorder;
     private int currentType;
 
+    private int dynamicPackOrder;
+    private int dynamicPackOrderInfo;
     private int suggestRow;
     private int suggestAnimatedEmojiRow;
     private int suggestAnimatedEmojiInfoRow;
@@ -448,6 +450,9 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
                 ((TextCheckCell) view).setChecked(SharedConfig.suggestAnimatedEmoji);
             } else if (position == reactionsDoubleTapRow) {
                 presentFragment(new ReactionsDoubleTapManageActivity());
+            } else if (position == dynamicPackOrder) {
+                SharedConfig.toggleUpdateStickersOrderOnSend();
+                ((TextCheckCell) view).setChecked(SharedConfig.updateStickersOrderOnSend);
             }
         });
         listView.setOnItemLongClickListener((view, position) -> {
@@ -628,7 +633,7 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
             loopInfoRow = -1;
         }
 
-        if (currentType == MediaDataController.TYPE_EMOJIPACKS && hasUsefulPacks) {
+        if (currentType == MediaDataController.TYPE_EMOJIPACKS) {
             suggestAnimatedEmojiRow = rowCount++;
             suggestAnimatedEmojiInfoRow = rowCount++;
         } else {
@@ -691,6 +696,14 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
                 featuredStickersShowMoreRow = rowCount++;
             }
             featuredStickersShadowRow = rowCount++;
+        }
+
+        if (currentType == MediaDataController.TYPE_IMAGE) {
+            dynamicPackOrder = rowCount++;
+            dynamicPackOrderInfo = rowCount++;
+        } else {
+            dynamicPackOrder = -1;
+            dynamicPackOrderInfo = -1;
         }
 
         int stickerSetsCount = newList.size();
@@ -759,6 +772,9 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
 
                     @Override
                     public void onMoved(int fromPosition, int toPosition) {
+                        if (currentType == MediaDataController.TYPE_EMOJIPACKS) {
+                            listAdapter.notifyItemMoved(startRow + fromPosition, startRow + toPosition);
+                        }
                     }
 
                     @Override
@@ -783,9 +799,6 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
 
                     @Override
                     public void onMoved(int fromPosition, int toPosition) {
-                        if (currentType == MediaDataController.TYPE_EMOJIPACKS) {
-                            listAdapter.notifyItemMoved(startRow + fromPosition, startRow + toPosition);
-                        }
                     }
 
                     @Override
@@ -1082,6 +1095,8 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
                         infoPrivacyCell.setText(LocaleController.getString("SuggestAnimatedEmojiInfo", R.string.SuggestAnimatedEmojiInfo));
                     } else if (position == masksInfoRow) {
                         infoPrivacyCell.setText(LocaleController.getString("MasksInfo", R.string.MasksInfo));
+                    } else if (position == dynamicPackOrderInfo) {
+                        infoPrivacyCell.setText(LocaleController.getString("DynamicPackOrderInfo"));
                     }
                     break;
                 case TYPE_TEXT_AND_VALUE: {
@@ -1145,11 +1160,13 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
                 case TYPE_SWITCH:
                     TextCheckCell cell = (TextCheckCell) holder.itemView;
                     if (position == loopRow) {
-                        cell.setTextAndCheck(LocaleController.getString("LoopAnimatedStickers", R.string.LoopAnimatedStickers), SharedConfig.loopStickers, true);
+                        cell.setTextAndCheck(LocaleController.getString("LoopAnimatedStickers", R.string.LoopAnimatedStickers), SharedConfig.loopStickers(), true);
                     } else if (position == largeEmojiRow) {
                         cell.setTextAndCheck(LocaleController.getString("LargeEmoji", R.string.LargeEmoji), SharedConfig.allowBigEmoji, true);
                     } else if (position == suggestAnimatedEmojiRow) {
                         cell.setTextAndCheck(LocaleController.getString("SuggestAnimatedEmoji", R.string.SuggestAnimatedEmoji), SharedConfig.suggestAnimatedEmoji, false);
+                    } else if (position == dynamicPackOrder) {
+                        cell.setTextAndCheck(LocaleController.getString("DynamicPackOrder"), SharedConfig.updateStickersOrderOnSend, false);
                     }
                     break;
                 case TYPE_DOUBLE_TAP_REACTIONS: {
@@ -1169,7 +1186,7 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
                             TLRPC.TL_availableReaction availableReaction = MediaDataController.getInstance(currentAccount).getReactionsMap().get(reaction);
                             if (availableReaction != null) {
                                 SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(availableReaction.static_icon.thumbs, Theme.key_windowBackgroundGray, 1.0f);
-                                settingsCell.getValueBackupImageView().getImageReceiver().setImage(ImageLocation.getForDocument(availableReaction.center_icon), "100_100_lastframe", svgThumb, "webp", availableReaction, 1);
+                                settingsCell.getValueBackupImageView().getImageReceiver().setImage(ImageLocation.getForDocument(availableReaction.center_icon), "100_100_lastreactframe", svgThumb, "webp", availableReaction, 1);
                             }
                         }
                     }
@@ -1356,13 +1373,13 @@ public class StickersActivity extends BaseFragment implements NotificationCenter
                 return TYPE_FEATURED_STICKER_SET;
             } else if (i >= stickersStartRow && i < stickersEndRow) {
                 return TYPE_STICKER_SET;
-            } else if (i == stickersBotInfo || i == archivedInfoRow || i == loopInfoRow || i == suggestAnimatedEmojiInfoRow || i == masksInfoRow) {
+            } else if (i == stickersBotInfo || i == archivedInfoRow || i == loopInfoRow || i == suggestAnimatedEmojiInfoRow || i == masksInfoRow || i == dynamicPackOrderInfo) {
                 return TYPE_INFO;
             } else if (i == archivedRow || i == masksRow || i == emojiPacksRow || i == suggestRow || i == featuredStickersShowMoreRow) {
                 return TYPE_TEXT_AND_VALUE;
             } else if (i == stickersShadowRow || i == featuredStickersShadowRow) {
                 return TYPE_SHADOW;
-            } else if (i == loopRow || i == largeEmojiRow || i == suggestAnimatedEmojiRow) {
+            } else if (i == loopRow || i == largeEmojiRow || i == suggestAnimatedEmojiRow || i == dynamicPackOrder) {
                 return TYPE_SWITCH;
             } else if (i == reactionsDoubleTapRow) {
                 return TYPE_DOUBLE_TAP_REACTIONS;

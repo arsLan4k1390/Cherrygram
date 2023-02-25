@@ -327,7 +327,10 @@ public class CameraXController {
         vCapture = VideoCapture.withOutput(recorder);
 
         ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder()
-                .setCaptureMode(CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode() ? ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY : ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .setCaptureMode(CherrygramConfig.INSTANCE.getReduceCameraXLatency() ?
+                    ImageCapture.CAPTURE_MODE_ZERO_SHUTTER_LAG:
+                    (CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode() ? ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY : ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                )
                 .setTargetAspectRatio(AspectRatio.RATIO_16_9);
 
         provider.unbindAll();
@@ -570,7 +573,7 @@ public class CameraXController {
                         exif.rotate(orientation);
                     }
                     exif.save();
-                } catch (JpegImageUtils.CodecFailedException | IOException e) {
+                } catch (JpegImageUtils.CodecFailedException | IOException | IllegalStateException e) {
                     e.printStackTrace();
                     FileLog.e(e);
                 }

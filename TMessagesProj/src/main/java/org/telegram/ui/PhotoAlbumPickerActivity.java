@@ -74,9 +74,6 @@ import org.telegram.ui.Components.SizeNotifierFrameLayout;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class PhotoAlbumPickerActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
@@ -171,7 +168,6 @@ public class PhotoAlbumPickerActivity extends BaseFragment implements Notificati
         actionBar.setItemsColor(Theme.getColor(Theme.key_dialogTextBlack), false);
         actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_dialogButtonSelector), false);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -620,7 +616,7 @@ public class PhotoAlbumPickerActivity extends BaseFragment implements Notificati
                 loading = false;
             }
         } else if (id == NotificationCenter.closeChats) {
-            removeSelfFromStack();
+            removeSelfFromStack(true);
         }
     }
 

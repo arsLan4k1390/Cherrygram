@@ -1,6 +1,7 @@
 package uz.unnarsx.cherrygram.tgkit;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
@@ -11,8 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
+import org.telegram.ui.ActionBar.ActionBarMenu;
+import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
@@ -24,11 +28,15 @@ import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextDetailSettingsCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
+import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.crashlytics.Crashlytics;
+import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.preferences.BasePreferencesEntry;
 import uz.unnarsx.cherrygram.prefviews.SettingsSliderCell;
 import uz.unnarsx.cherrygram.tgkit.preference.TGKitCategory;
@@ -49,6 +57,9 @@ public class TGKitSettingsFragment extends BaseFragment {
     private ListAdapter listAdapter;
     private RecyclerListView listView;
     private int rowCount;
+
+    private final static int report_details = 2;
+    private final static int restart_app = 3;
 
     public TGKitSettingsFragment(BasePreferencesEntry entry) {
         super();
@@ -78,17 +89,28 @@ public class TGKitSettingsFragment extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setTitle(settings.name);
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);
         }
         actionBar.setAllowOverlayTitle(true);
+
+        ActionBarMenu menu = actionBar.createMenu();
+        ActionBarMenuItem menuItem = menu.addItem(0, R.drawable.ic_ab_other);
+        menuItem.setContentDescription(LocaleController.getString("AccDescrMoreOptions", R.string.AccDescrMoreOptions));
+        menuItem.addSubItem(report_details, R.drawable.bug_solar, LocaleController.getString("CG_CopyReportDetails", R.string.CG_CopyReportDetails));
+        menuItem.addSubItem(restart_app, R.drawable.msg_retry, LocaleController.getString("CG_Restart", R.string.CG_Restart));
+
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
                     finishFragment();
+                } else if (id == report_details) {
+                    AndroidUtilities.addToClipboard(Crashlytics.getReportMessage() + "\n\n#bug");
+                    BulletinFactory.of(TGKitSettingsFragment.this).createCopyBulletin(LocaleController.getString("CG_ReportDetailsCopied", R.string.CG_ReportDetailsCopied)).show();
+                } else if (id == restart_app) {
+                    AppRestartHelper.triggerRebirth(context, new Intent(context, LaunchActivity.class));
                 }
             }
         });

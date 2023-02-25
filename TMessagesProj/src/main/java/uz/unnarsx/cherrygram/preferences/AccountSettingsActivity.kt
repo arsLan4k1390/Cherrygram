@@ -107,7 +107,6 @@ class AccountSettingsActivity : BaseFragment() {
                                     var errorText = LocaleController.getString("ErrorOccurred", R.string.ErrorOccurred)
                                     if (error != null) {
                                         errorText += """
-                                           
                                            ${error.text}
                                            """.trimIndent()
                                     }
@@ -265,12 +264,8 @@ class AccountSettingsActivity : BaseFragment() {
 
         override fun getItemViewType(position: Int): Int {
             return when (position) {
-                deleteAccountRow -> {
-                    2
-                }
-                accountRow -> {
-                    4
-                }
+                deleteAccountRow -> 2
+                accountRow -> 4
                 else -> 3
             }
         }

@@ -8,6 +8,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -41,6 +42,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.util.Consumer;
 import androidx.core.view.ViewCompat;
 import androidx.dynamicanimation.animation.DynamicAnimation;
@@ -60,11 +62,14 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.DialogsActivity;
+import org.telegram.ui.LaunchActivity;
 
 import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
 
 public class Bulletin {
 
@@ -209,6 +214,9 @@ public class Bulletin {
             layout.onAttach(this);
 
             containerLayout.addOnLayoutChangeListener(containerLayoutListener = (v, left, top1, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                if (currentDelegate != null && !currentDelegate.allowLayoutChanges()) {
+                    return;
+                }
                 if (!top) {
                     int newOffset = currentDelegate != null ? currentDelegate.getBottomOffset(tag) : 0;
                     if (lastBottomOffset != newOffset) {
@@ -579,6 +587,10 @@ public class Bulletin {
         }
 
         default void onHide(Bulletin bulletin) {
+        }
+
+        default boolean allowLayoutChanges() {
+            return true;
         }
     }
     //endregion
@@ -1264,6 +1276,7 @@ public class Bulletin {
         }
 
         public void setAnimation(TLRPC.Document document, int w, int h, String... layers) {
+            imageView.setAutoRepeat(true);
             imageView.setAnimation(document, w, h);
             for (String layer : layers) {
                 imageView.setLayerColor(layer + ".**", textColor);
@@ -1356,7 +1369,7 @@ public class Bulletin {
             } else {
                 linearLayout = new LinearLayout(getContext());
                 linearLayout.setOrientation(LinearLayout.VERTICAL);
-                addView(linearLayout, LayoutHelper.createFrameRelatively(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.START | Gravity.CENTER_VERTICAL, 18 + 56 + 2, 0, 8, 0));
+                addView(linearLayout, LayoutHelper.createFrameRelatively(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.START | Gravity.CENTER_VERTICAL, 18 + 56 + 2, 0, 8, 0));
 
                 textView = new LinkSpanDrawable.LinksTextView(context) {
                     @Override
@@ -1530,6 +1543,87 @@ public class Bulletin {
         }
 
         public UndoButton setDelayedAction(Runnable delayedAction) {
+            this.delayedAction = delayedAction;
+            return this;
+        }
+
+        private int getThemedColor(String key) {
+            Integer color = resourcesProvider != null ? resourcesProvider.getColor(key) : null;
+            return color != null ? color : Theme.getColor(key);
+        }
+    }
+
+    @SuppressLint("ViewConstructor")
+    public static final class RestartButton extends Button {
+
+        private final Theme.ResourcesProvider resourcesProvider;
+        private Runnable undoAction;
+        private Runnable delayedAction;
+
+        private Bulletin bulletin;
+        private TextView undoTextView;
+        private boolean isUndone;
+
+        public RestartButton(@NonNull Context context, boolean text) {
+            this(context, text, null);
+        }
+
+        public RestartButton(@NonNull Context context, boolean text, Theme.ResourcesProvider resourcesProvider) {
+            super(context);
+            this.resourcesProvider = resourcesProvider;
+
+            final int undoCancelColor = getThemedColor(Theme.key_undo_cancelColor);
+
+            if (text) {
+                undoTextView = new TextView(context);
+                undoTextView.setOnClickListener(v -> restart());
+                undoTextView.setBackground(Theme.createSelectorDrawable((undoCancelColor & 0x00ffffff) | 0x19000000, Theme.RIPPLE_MASK_ROUNDRECT_6DP));
+                undoTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+                undoTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+                undoTextView.setTextColor(undoCancelColor);
+                undoTextView.setText(LocaleController.getString("BotUnblock", R.string.BotUnblock));
+                undoTextView.setGravity(Gravity.CENTER_VERTICAL);
+                ViewHelper.setPaddingRelative(undoTextView, 12, 8, 12, 8);
+                addView(undoTextView, LayoutHelper.createFrameRelatively(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 8, 0, 8, 0));
+            }
+        }
+
+        public RestartButton setText(CharSequence text) {
+            if (undoTextView != null) {
+                undoTextView.setText(text);
+            }
+            return this;
+        }
+
+        public void restart() {
+            if (bulletin != null) {
+                isUndone = true;
+                if (undoAction != null) {
+                    AppRestartHelper.triggerRebirth(getContext(), new Intent(getContext(), LaunchActivity.class));
+                }
+                bulletin.hide();
+            }
+        }
+
+        @Override
+        public void onAttach(@NonNull Layout layout, @NonNull Bulletin bulletin) {
+            this.bulletin = bulletin;
+        }
+
+        @Override
+        public void onDetach(@NonNull Layout layout) {
+            this.bulletin = null;
+            if (delayedAction != null && !isUndone) {
+                delayedAction.run();
+            }
+        }
+
+        public RestartButton setUndoAction(Runnable undoAction) {
+            this.undoAction = undoAction;
+            return this;
+        }
+
+        public RestartButton setDelayedAction(Runnable delayedAction) {
             this.delayedAction = delayedAction;
             return this;
         }
@@ -1746,6 +1840,7 @@ public class Bulletin {
             } catch (Exception ignore) {}
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
         private void applyInsets(WindowInsets insets) {
             if (container != null) {
                 container.setPadding(

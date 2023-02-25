@@ -57,8 +57,6 @@ import org.telegram.ui.Components.ShareAlert;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class WebviewActivity extends BaseFragment {
 
     private WebView webView;
@@ -159,7 +157,6 @@ public class WebviewActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

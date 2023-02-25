@@ -4,19 +4,18 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
+import androidx.core.util.Pair
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.messenger.SharedConfig
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
+import org.telegram.ui.Components.BulletinFactory
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.extras.CherrygramExtras
-import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
 import uz.unnarsx.cherrygram.tgkit.preference.*
-import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSliderPreference
-import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
     val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
@@ -89,6 +88,14 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("AP_SystemEmoji", R.string.AP_SystemEmoji)
+                contract({
+                    return@contract CherrygramConfig.systemEmoji
+                }) {
+                    CherrygramConfig.systemEmoji = it
+                }
+            }
+            switch {
                 title = LocaleController.getString("AP_SystemFonts", R.string.AP_SystemFonts)
                 summary = LocaleController.getString("AP_SystemFonts_Desc", R.string.AP_SystemFonts_Desc)
 
@@ -96,108 +103,14 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.systemFonts
                 }) {
                     CherrygramConfig.systemFonts = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
-        }
-
-        category(LocaleController.getString("CP_Snowflakes_Header", R.string.CP_Snowflakes_Header)) {
-            switch {
-                title = LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)
-                contract({
-                    return@contract CherrygramConfig.drawSnowInDrawer
-                }) {
-                    CherrygramConfig.drawSnowInDrawer = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_Snowflakes_AH", R.string.CP_Snowflakes_AH)
-                contract({
-                    return@contract CherrygramConfig.drawSnowInActionBar
-                }) {
-                    CherrygramConfig.drawSnowInActionBar = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_Header_Chats", R.string.CP_Header_Chats)
-                contract({
-                    return@contract CherrygramConfig.drawSnowInChat
-                }) {
-                    CherrygramConfig.drawSnowInChat = it
-                }
-            }
-        }
-
-        category(LocaleController.getString("CP_PremAndAnim_Header", R.string.CP_PremAndAnim_Header)) {
-            switch {
-                title = LocaleController.getString("CP_DisableAnimAvatars", R.string.CP_DisableAnimAvatars)
-
-                contract({
-                    return@contract CherrygramConfig.disableAnimatedAvatars
-                }) {
-                    CherrygramConfig.disableAnimatedAvatars = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DisableReactionsOverlay", R.string.CP_DisableReactionsOverlay)
-                summary = LocaleController.getString("CP_DisableReactionsOverlay_Desc", R.string.CP_DisableReactionsOverlay_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.disableReactionsOverlay
-                }) {
-                    CherrygramConfig.disableReactionsOverlay = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DrawSmallReactions", R.string.CP_DrawSmallReactions)
-                summary = LocaleController.getString("CP_DrawSmallReactions_Desc", R.string.CP_DrawSmallReactions_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.drawSmallReactions
-                }) {
-                    CherrygramConfig.drawSmallReactions = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DisableReactionAnim", R.string.CP_DisableReactionAnim)
-                summary = LocaleController.getString("CP_DisableReactionAnim_Desc", R.string.CP_DisableReactionAnim_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.disableReactionAnim
-                }) {
-                    CherrygramConfig.disableReactionAnim = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DisablePremiumStatuses", R.string.CP_DisablePremiumStatuses)
-                summary = LocaleController.getString("CP_DisablePremiumStatuses_Desc", R.string.CP_DisablePremiumStatuses_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.disablePremiumStatuses
-                }) {
-                    CherrygramConfig.disablePremiumStatuses = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DisablePremStickAnim", R.string.CP_DisablePremStickAnim)
-                summary = LocaleController.getString("CP_DisablePremStickAnim_Desc", R.string.CP_DisablePremStickAnim_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.disablePremStickAnim
-                }) {
-                    CherrygramConfig.disablePremStickAnim = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DisablePremStickAutoPlay", R.string.CP_DisablePremStickAutoPlay)
-                summary = LocaleController.getString("CP_DisablePremStickAutoPlay_Desc", R.string.CP_DisablePremStickAutoPlay_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.disablePremStickAutoPlay
-                }) {
-                    CherrygramConfig.disablePremStickAutoPlay = it
-                }
-            }
-
         }
 
         category(LocaleController.getString("AS_Filters_Header", R.string.CP_Filters_Header)) {
@@ -209,6 +122,12 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.folderNameInHeader
                 }) {
                     CherrygramConfig.folderNameInHeader = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -218,77 +137,87 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.newTabs_hideAllChats
                 }) {
                     CherrygramConfig.newTabs_hideAllChats = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
-            switch {
-                title = LocaleController.getString("CP_VKUIFoldersStyle", R.string.CP_VKUIFoldersStyle)
-                summary = LocaleController.getString("CP_VKUIFoldersStyle_Desc", R.string.CP_VKUIFoldersStyle_Desc)
+
+            list {
+                title = LocaleController.getString("AP_Tab_Style", R.string.AP_Tab_Style)
 
                 contract({
-                    return@contract CherrygramConfig.vkuiFoldersStyle
+                    return@contract listOf(
+                        Pair(CherrygramConfig.TAB_STYLE_DEFAULT, LocaleController.getString("AP_Tab_Style_Default", R.string.AP_Tab_Style_Default)),
+                        Pair(CherrygramConfig.TAB_STYLE_ROUNDED, LocaleController.getString("AP_Tab_Style_Rounded", R.string.AP_Tab_Style_Rounded)),
+                        Pair(CherrygramConfig.TAB_STYLE_TEXT, LocaleController.getString("AP_Tab_Style_Text", R.string.AP_Tab_Style_Text)),
+                        Pair(CherrygramConfig.TAB_STYLE_VKUI, "VKUI"),
+                        Pair(CherrygramConfig.TAB_STYLE_PILLS, LocaleController.getString("AP_Tab_Style_Pills", R.string.AP_Tab_Style_Pills))
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.tab_style) {
+                        CherrygramConfig.TAB_STYLE_ROUNDED -> LocaleController.getString("AP_Tab_Style_Rounded", R.string.AP_Tab_Style_Rounded)
+                        CherrygramConfig.TAB_STYLE_TEXT -> LocaleController.getString("AP_Tab_Style_Text", R.string.AP_Tab_Style_Text)
+                        CherrygramConfig.TAB_STYLE_VKUI -> "VKUI"
+                        CherrygramConfig.TAB_STYLE_PILLS -> LocaleController.getString("AP_Tab_Style_Pills", R.string.AP_Tab_Style_Pills)
+                        else -> LocaleController.getString("AP_Tab_Style_Default", R.string.AP_Tab_Style_Default)
+                    }
                 }) {
-                    CherrygramConfig.vkuiFoldersStyle = it
+                    CherrygramConfig.tab_style = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
         }
 
-        category(LocaleController.getString("CP_VKUIFoldersStyle_Frame", R.string.CP_VKUIFoldersStyle_Frame)) {
-            slider {
-                contract = object : TGKitSliderPreference.TGSLContract {
-                    override fun setValue(value: Int) {
-                        CherrygramConfig.frameCorrection = value
-                    }
-
-                    override fun getPreferenceValue(): Int {
-                        return CherrygramConfig.frameCorrection
-                    }
-
-                    override fun getMin(): Int {
-                        return 15
-                    }
-
-                    override fun getMax(): Int {
-                        return 40
-                    }
-                }
-            }
-        }
-
-        category(LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)) {
-            textIcon {
-                title = LocaleController.getString("AP_DrawerPreferences", R.string.AP_DrawerPreferences)
-                icon = R.drawable.msg_list
-                listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(DrawerPreferencesEntry())
-                }
-            }
-        }
-
-        category(LocaleController.getString("AP_ProfileCategory", R.string.AP_ProfileCategory)) {
+        category(LocaleController.getString("CP_Snowflakes_Header", R.string.CP_Snowflakes_Header)) {
             switch {
-                title = LocaleController.getString("AP_HideUserPhone", R.string.AP_HideUserPhone)
-                summary = LocaleController.getString("AP_HideUserPhoneSummary", R.string.AP_HideUserPhoneSummary)
-
+                title = LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)
                 contract({
-                    return@contract CherrygramConfig.hidePhoneNumber
+                    return@contract CherrygramConfig.drawSnowInDrawer
                 }) {
-                    CherrygramConfig.hidePhoneNumber = it
+                    CherrygramConfig.drawSnowInDrawer = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
-                title = LocaleController.getString("AP_ShowID", R.string.AP_ShowID)
+                title = LocaleController.getString("CP_Snowflakes_AH", R.string.CP_Snowflakes_AH)
                 contract({
-                    return@contract CherrygramConfig.showId
+                    return@contract CherrygramConfig.drawSnowInActionBar
                 }) {
-                    CherrygramConfig.showId = it
+                    CherrygramConfig.drawSnowInActionBar = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
-                title = LocaleController.getString("AP_ShowDC", R.string.AP_ShowDC)
+                title = LocaleController.getString("CP_Header_Chats", R.string.CP_Header_Chats)
                 contract({
-                    return@contract CherrygramConfig.showDc
+                    return@contract CherrygramConfig.drawSnowInChat
                 }) {
-                    CherrygramConfig.showDc = it
+                    CherrygramConfig.drawSnowInChat = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
         }

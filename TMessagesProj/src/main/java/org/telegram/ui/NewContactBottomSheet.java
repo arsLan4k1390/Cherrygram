@@ -40,6 +40,7 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
+import org.telegram.messenger.UserConfig;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -104,6 +105,7 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
 
     public NewContactBottomSheet(BaseFragment parentFragment, Context context) {
         super(context, true);
+        waitingKeyboard = true;
         smoothKeyboardAnimationEnabled = true;
         classGuid = ConnectionsManager.generateClassGuid();
         this.parentFragment = parentFragment;
@@ -520,8 +522,7 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
 
         HashMap<String, String> languageMap = new HashMap<>();
 
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(ApplicationLoader.applicationContext.getResources().getAssets().open("countries.txt")));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(ApplicationLoader.applicationContext.getResources().getAssets().open("countries.txt")))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] args = line.split(";");
@@ -542,7 +543,6 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
                 }
                 languageMap.put(args[1], args[2]);
             }
-            reader.close();
         } catch (Exception e) {
             FileLog.e(e);
         }
@@ -628,7 +628,6 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
 
         plusTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         codeDividerView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhiteInputField));
-
         return fragmentView;
     }
 
@@ -699,7 +698,7 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
         firstNameField.getEditText().requestFocus();
         AndroidUtilities.runOnUIThread(() -> {
             AndroidUtilities.showKeyboard(firstNameField.getEditText());
-        }, 200);
+        }, 50);
     }
 
     private void showEditDoneProgress(boolean show, boolean animated) {
@@ -709,14 +708,12 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
 
     public static String getPhoneNumber(Context context, TLRPC.User user, String number, boolean withCoutryCode) {
         HashMap<String, String> codesMap = new HashMap<>();
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(context.getResources().getAssets().open("countries.txt")));
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(context.getResources().getAssets().open("countries.txt")))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] args = line.split(";");
                 codesMap.put(args[0], args[2]);
             }
-            reader.close();
         } catch (Exception e) {
             FileLog.e(e);
         }
@@ -740,6 +737,27 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
     public void setInitialPhoneNumber(String value, boolean withCoutryCode) {
         initialPhoneNumber = value;
         initialPhoneNumberWithCountryCode = withCoutryCode;
+
+        if (!TextUtils.isEmpty(initialPhoneNumber)) {
+            TLRPC.User user = UserConfig.getInstance(currentAccount).getCurrentUser();
+            if (initialPhoneNumber.startsWith("+")) {
+                codeField.setText(initialPhoneNumber.substring(1));
+            } else if (initialPhoneNumberWithCountryCode || user == null || TextUtils.isEmpty(user.phone)) {
+                codeField.setText(initialPhoneNumber);
+            } else {
+                String phone = user.phone;
+                for (int a = 4; a >= 1; a--) {
+                    String sub = phone.substring(0, a);
+                    List<CountrySelectActivity.Country> country = codesMap.get(sub);
+                    if (country != null && country.size() > 0) {
+                        codeField.setText(country.get(0).code);
+                        break;
+                    }
+                }
+                phoneField.setText(initialPhoneNumber);
+            }
+            initialPhoneNumber = null;
+        }
     }
 
     public void setInitialName(String firstName, String lastName) {

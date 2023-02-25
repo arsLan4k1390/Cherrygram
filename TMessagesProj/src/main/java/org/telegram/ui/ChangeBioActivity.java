@@ -48,7 +48,6 @@ import org.telegram.ui.Components.OutlineTextContainerView;
 
 import java.util.ArrayList;
 
-
 public class ChangeBioActivity extends BaseFragment {
 
     private EditTextBoldCursor firstNameField;

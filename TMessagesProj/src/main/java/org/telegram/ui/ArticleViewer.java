@@ -167,7 +167,7 @@ import org.telegram.ui.Components.TextPaintMarkSpan;
 import org.telegram.ui.Components.TextPaintSpan;
 import org.telegram.ui.Components.TextPaintUrlSpan;
 import org.telegram.ui.Components.TextPaintWebpageUrlSpan;
-import org.telegram.ui.Components.TranslateAlert;
+import org.telegram.ui.Components.TranslateAlert2;
 import org.telegram.ui.Components.TypefaceSpan;
 import org.telegram.ui.Components.WebPlayerView;
 
@@ -1111,7 +1111,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 checkingForLongPress = false;
                 if (pressedLink != null) {
                     if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
-                        windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                        windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                     }
                     showCopyPopup(pressedLink.getSpan().getUrl());
                     pressedLink = null;
@@ -1126,11 +1126,11 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                         textSelectionHelper.trySelect(pressedLinkOwnerView);
                     }
                     if (textSelectionHelper.isSelectionMode() && !CherrygramConfig.INSTANCE.getDisableVibration()) {
-                        windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                        windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                     }
                 } else if (pressedLinkOwnerLayout != null && pressedLinkOwnerView != null) {
                     if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
-                        windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                        windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                     }
                     int[] location = new int[2];
                     pressedLinkOwnerView.getLocationInWindow(location);
@@ -1216,7 +1216,14 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         }
 
         BottomSheet.Builder builder = new BottomSheet.Builder(parentActivity);
-        builder.setTitle(urlFinal);
+        String formattedUrl = urlFinal;
+        try {
+            formattedUrl = URLDecoder.decode(urlFinal.replaceAll("\\+", "%2b"), "UTF-8");
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        builder.setTitle(formattedUrl);
+        builder.setTitleMultipleLines(true);
         builder.setItems(new CharSequence[]{LocaleController.getString("Open", R.string.Open), LocaleController.getString("Copy", R.string.Copy)}, (dialog, which) -> {
             if (parentActivity == null) {
                 return;
@@ -1566,9 +1573,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             listView[0].setVisibility(View.VISIBLE);
             int index = order == 1 ? 0 : 1;
             listView[index].setBackgroundColor(backgroundPaint.getColor());
-            if (Build.VERSION.SDK_INT >= 18) {
-                listView[index].setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            }
+            listView[index].setLayerType(View.LAYER_TYPE_HARDWARE, null);
             if (order == 1) {
                 pageSwitchAnimation.playTogether(ObjectAnimator.ofFloat(listView[0], View.TRANSLATION_X, AndroidUtilities.dp(56), 0),
                         ObjectAnimator.ofFloat(listView[0], View.ALPHA, 0.0f, 1.0f));
@@ -1587,9 +1592,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                     textSelectionHelper.setParentView(listView[0]);
                     textSelectionHelper.layoutManager = layoutManager[0];
                     listView[index].setBackgroundDrawable(null);
-                    if (Build.VERSION.SDK_INT >= 18) {
-                        listView[index].setLayerType(View.LAYER_TYPE_NONE, null);
-                    }
+                    listView[index].setLayerType(View.LAYER_TYPE_NONE, null);
                     pageSwitchAnimation = null;
                 }
             });
@@ -2653,22 +2656,24 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                                             pressedEnd = end;
                                         }
                                     }
-                                    if (pressedLink != null) {
-                                        links.removeLink(pressedLink);
-                                    }
-                                    pressedLink = new LinkSpanDrawable<TextPaintUrlSpan>(selectedLink, null, x, y);
-                                    pressedLink.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteLinkSelection) & 0x33ffffff);
-                                    links.addLink(pressedLink, pressedLinkOwnerLayout);
-                                    try {
-                                        LinkPath path = pressedLink.obtainNewPath();
-                                        path.setCurrentLayout(layout, pressedStart, 0);
-                                        TextPaint textPaint = selectedLink.getTextPaint();
-                                        int shift = textPaint != null ? textPaint.baselineShift : 0;
-                                        path.setBaselineShift(shift != 0 ? shift + AndroidUtilities.dp(shift > 0 ? 5 : -2) : 0);
-                                        layout.getSelectionPath(pressedStart, pressedEnd, path);
-                                        parentView.invalidate();
-                                    } catch (Exception e) {
-                                        FileLog.e(e);
+                                    if (pressedLink == null || pressedLink.getSpan() != selectedLink) {
+                                        if (pressedLink != null) {
+                                            links.removeLink(pressedLink);
+                                        }
+                                        pressedLink = new LinkSpanDrawable(selectedLink, null, x, y);
+                                        pressedLink.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteLinkSelection) & 0x33ffffff);
+                                        links.addLink(pressedLink, pressedLinkOwnerLayout);
+                                        try {
+                                            LinkPath path = pressedLink.obtainNewPath();
+                                            path.setCurrentLayout(layout, pressedStart, 0);
+                                            TextPaint textPaint = selectedLink.getTextPaint();
+                                            int shift = textPaint != null ? textPaint.baselineShift : 0;
+                                            path.setBaselineShift(shift != 0 ? shift + AndroidUtilities.dp(shift > 0 ? 5 : -2) : 0);
+                                            layout.getSelectionPath(pressedStart, pressedEnd, path);
+                                            parentView.invalidate();
+                                        } catch (Exception e) {
+                                            FileLog.e(e);
+                                        }
                                     }
                                 }
                             }
@@ -3062,6 +3067,11 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 } else {
                     return super.drawChild(canvas, child, drawingTime);
                 }
+            }
+
+            @Override
+            public void invalidate() {
+                super.invalidate();
             }
         };
         windowView.addView(containerView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT));
@@ -3676,10 +3686,8 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         boolean isLightNavigation = navigationBrightness >= 0.721f;
         if (isLightNavigation && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             uiFlags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-            navigationBarPaint.setColor(navigationColor);
-        } else if (!isLightNavigation) {
-            navigationBarPaint.setColor(navigationColor);
         }
+        navigationBarPaint.setColor(navigationColor);
         windowLayoutParams.systemUiVisibility = uiFlags;
 
         if (Build.VERSION.SDK_INT >= 21) {
@@ -3693,9 +3701,9 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
 
         textSelectionHelper = new TextSelectionHelper.ArticleTextSelectionHelper();
         textSelectionHelper.setParentView(listView[0]);
-        if (MessagesController.getGlobalMainSettings().getBoolean("translate_button", true)) {
+        if (MessagesController.getInstance(currentAccount).getTranslateController().isContextTranslateEnabled()) {
             textSelectionHelper.setOnTranslate((text, fromLang, toLang, onAlertDismiss) -> {
-                TranslateAlert.showAlert(parentActivity, parentFragment, currentAccount, fromLang, toLang, text, false, null, onAlertDismiss);
+                TranslateAlert2.showAlert(parentActivity, parentFragment, currentAccount, fromLang, toLang, text, null, false, null, onAlertDismiss);
             });
         }
         textSelectionHelper.layoutManager = layoutManager[0];

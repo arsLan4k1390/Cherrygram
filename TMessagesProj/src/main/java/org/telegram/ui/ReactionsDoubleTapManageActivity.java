@@ -41,8 +41,6 @@ import org.telegram.ui.Components.SimpleThemeDescription;
 import java.util.ArrayList;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class ReactionsDoubleTapManageActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private LinearLayout contentView;
@@ -70,7 +68,6 @@ public class ReactionsDoubleTapManageActivity extends BaseFragment implements No
     public View createView(Context context) {
         actionBar.setTitle(LocaleController.getString("Reactions", R.string.Reactions));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

@@ -33,8 +33,6 @@ import org.telegram.ui.Components.LayoutHelper;
 
 import java.io.File;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PhotoCropActivity extends BaseFragment {
 
     public interface PhotoEditActivityDelegate {
@@ -421,7 +419,6 @@ public class PhotoCropActivity extends BaseFragment {
         actionBar.setTitleColor(0xffffffff);
         actionBar.setItemsColor(0xffffffff, false);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("CropImage", R.string.CropImage));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

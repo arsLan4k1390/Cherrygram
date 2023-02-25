@@ -397,11 +397,12 @@ public abstract class PrivateVideoPreviewDialog extends FrameLayout implements V
                     }
                     Utilities.blurBitmap(lastBitmap, 7, 1, lastBitmap.getWidth(), lastBitmap.getHeight(), lastBitmap.getRowBytes());
                     File file = new File(ApplicationLoader.getFilesDirFixed(), "cthumb" + visibleCameraPage + ".jpg");
-                    FileOutputStream stream = new FileOutputStream(file);
-                    lastBitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
-                    View view = viewPager.findViewWithTag(visibleCameraPage - (needScreencast ? 0 : 1));
-                    if (view instanceof ImageView) {
-                        ((ImageView) view).setImageBitmap(lastBitmap);
+                    try (FileOutputStream stream = new FileOutputStream(file)) {
+                        lastBitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
+                        View view = viewPager.findViewWithTag(visibleCameraPage - (needScreencast ? 0 : 1));
+                        if (view instanceof ImageView) {
+                            ((ImageView) view).setImageBitmap(lastBitmap);
+                        }
                     }
                 }
 

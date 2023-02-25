@@ -35,8 +35,6 @@ import java.util.ArrayList;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class QuickRepliesSettingsActivity extends BaseFragment {
 
 	private ListAdapter listAdapter;
@@ -69,7 +67,6 @@ public class QuickRepliesSettingsActivity extends BaseFragment {
 	@Override
 	public View createView(Context context) {
 		actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
 		actionBar.setTitle(LocaleController.getString("VoipQuickReplies", R.string.VoipQuickReplies));
 		if (AndroidUtilities.isTablet()) {
 			actionBar.setOccupyStatusBar(false);

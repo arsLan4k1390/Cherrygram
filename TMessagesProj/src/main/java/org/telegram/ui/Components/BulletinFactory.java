@@ -62,6 +62,8 @@ public final class BulletinFactory {
         PHOTO("PhotoSavedHint", R.string.PhotoSavedHint, Icon.SAVED_TO_GALLERY),
         PHOTOS("PhotosSavedHint", Icon.SAVED_TO_GALLERY),
 
+        STICKER("CG_StickerSavedHint", R.string.CG_StickerSavedHint, Icon.SAVED_TO_GALLERY),
+
         VIDEO("VideoSavedHint", R.string.VideoSavedHint, Icon.SAVED_TO_GALLERY),
         VIDEOS("VideosSavedHint", Icon.SAVED_TO_GALLERY),
 
@@ -154,12 +156,37 @@ public final class BulletinFactory {
         return create(layout, text.length() < 20 ? Bulletin.DURATION_SHORT : Bulletin.DURATION_LONG);
     }
 
+    public Bulletin createSimpleBulletin(int iconRawId, CharSequence text, int maxLines) {
+        final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
+        layout.setAnimation(iconRawId, 36, 36);
+        layout.textView.setText(text);
+        layout.textView.setSingleLine(false);
+        layout.textView.setMaxLines(maxLines);
+        return create(layout, text.length() < 20 ? Bulletin.DURATION_SHORT : Bulletin.DURATION_LONG);
+    }
+
     public Bulletin createSimpleBulletin(int iconRawId, CharSequence text, CharSequence subtext) {
         final Bulletin.TwoLineLottieLayout layout = new Bulletin.TwoLineLottieLayout(getContext(), resourcesProvider);
         layout.setAnimation(iconRawId, 36, 36);
         layout.titleTextView.setText(text);
         layout.subtitleTextView.setText(subtext);
         return create(layout, (text.length() + subtext.length()) < 20 ? Bulletin.DURATION_SHORT : Bulletin.DURATION_LONG);
+    }
+
+    public Bulletin createRestartBulletin(int iconRawId, CharSequence text, CharSequence button, Runnable onButtonClick) {
+        return createRestartBulletin(iconRawId, text, button, text.length() < 20 ? Bulletin.DURATION_SHORT : Bulletin.DURATION_LONG, onButtonClick);
+    }
+
+    public Bulletin createRestartBulletin(int iconRawId, CharSequence text, CharSequence button, int duration, Runnable onButtonClick) {
+        final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
+        layout.setAnimation(iconRawId, 36, 36);
+        layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        layout.textView.setTextDirection(View.TEXT_DIRECTION_LOCALE);
+        layout.textView.setSingleLine(false);
+        layout.textView.setMaxLines(3);
+        layout.textView.setText(text);
+        layout.setButton(new Bulletin.RestartButton(getContext(), true, resourcesProvider).setText(button).setUndoAction(onButtonClick));
+        return create(layout, duration);
     }
 
     public Bulletin createSimpleBulletin(int iconRawId, CharSequence text, CharSequence button, Runnable onButtonClick) {
@@ -170,6 +197,7 @@ public final class BulletinFactory {
         final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
         layout.setAnimation(iconRawId, 36, 36);
         layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        layout.textView.setTextDirection(View.TEXT_DIRECTION_LOCALE);
         layout.textView.setSingleLine(false);
         layout.textView.setMaxLines(3);
         layout.textView.setText(text);
@@ -291,12 +319,28 @@ public final class BulletinFactory {
         return createEmojiBulletin(MediaDataController.getInstance(UserConfig.selectedAccount).getEmojiAnimatedSticker(emoji), text, button, onButtonClick);
     }
 
+    public Bulletin createEmojiBulletin(TLRPC.Document document, CharSequence text) {
+        final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
+        if (MessageObject.isTextColorEmoji(document)) {
+            layout.imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_undo_infoColor), PorterDuff.Mode.SRC_IN));
+        }
+        layout.setAnimation(document, 36, 36);
+        layout.textView.setText(text);
+        layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        layout.textView.setSingleLine(false);
+        layout.textView.setMaxLines(3);
+        return create(layout, Bulletin.DURATION_LONG);
+    }
+
     public Bulletin createEmojiBulletin(TLRPC.Document document, CharSequence text, CharSequence button, Runnable onButtonClick) {
         final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
         if (MessageObject.isTextColorEmoji(document)) {
             layout.imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_undo_infoColor), PorterDuff.Mode.SRC_IN));
         }
         layout.setAnimation(document, 36, 36);
+        if (layout.imageView.getImageReceiver() != null) {
+            layout.imageView.getImageReceiver().setRoundRadius(AndroidUtilities.dp(4));
+        }
         layout.textView.setText(text);
         layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         layout.textView.setSingleLine(false);
@@ -478,19 +522,21 @@ public final class BulletinFactory {
         String str = LocaleController.getString(R.string.PrivacyVoiceMessagesPremiumOnly);
         SpannableStringBuilder spannable = new SpannableStringBuilder(str);
         int indexStart = str.indexOf('*'), indexEnd = str.lastIndexOf('*');
-        spannable.replace(indexStart, indexEnd + 1, str.substring(indexStart + 1, indexEnd));
-        spannable.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(@NonNull View widget) {
-                fragment.presentFragment(new PremiumPreviewFragment("settings"));
-            }
+        if (indexStart >= 0) {
+            spannable.replace(indexStart, indexEnd + 1, str.substring(indexStart + 1, indexEnd));
+            spannable.setSpan(new ClickableSpan() {
+                @Override
+                public void onClick(@NonNull View widget) {
+                    fragment.presentFragment(new PremiumPreviewFragment("settings"));
+                }
 
-            @Override
-            public void updateDrawState(@NonNull TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setUnderlineText(false);
-            }
-        }, indexStart, indexEnd - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                @Override
+                public void updateDrawState(@NonNull TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                }
+            }, indexStart, indexEnd - 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
         layout.textView.setText(spannable);
         layout.textView.setSingleLine(false);
         layout.textView.setMaxLines(2);

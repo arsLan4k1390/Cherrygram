@@ -80,13 +80,6 @@ import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
 
-import androidx.annotation.Keep;
-import androidx.collection.LongSparseArray;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class UsersSelectActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, View.OnClickListener {
 
     public final static int TYPE_FILTER = 0;
@@ -435,7 +428,6 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
             actionBar.setAllowOverlayTitle(false);
         }
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         if (type == TYPE_FILTER) {
             if (isInclude) {

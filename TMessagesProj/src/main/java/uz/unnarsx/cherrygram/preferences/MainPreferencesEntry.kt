@@ -1,26 +1,27 @@
 package uz.unnarsx.cherrygram.preferences
 
-import android.content.Intent
 import org.telegram.messenger.*
 import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.Components.BulletinFactory
-import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.tgkit.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.updater.UpdaterBottomSheet
 import uz.unnarsx.cherrygram.tgkit.preference.category
 import uz.unnarsx.cherrygram.tgkit.preference.textDetail
 import uz.unnarsx.cherrygram.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.tgkit.preference.tgKitScreen
-import uz.unnarsx.cherrygram.crashlytics.Crashlytics
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextDetailRow
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
-
 
 class MainPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("CGP_AdvancedSettings", R.string.CGP_AdvancedSettings)) {
         category(LocaleController.getString("CGP_Header_Categories", R.string.CGP_Header_Categories)) {
+            textIcon {
+                title = LocaleController.getString("AP_Header_General", R.string.AP_Header_General)
+                icon = R.drawable.msg_settings
+                listener = TGKitTextIconRow.TGTIListener {
+                    it.presentFragment(CherrygramPreferencesNavigator.createGeneral())
+                }
+            }
             textIcon {
                 title = LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)
                 icon = R.drawable.msg_theme
@@ -46,7 +47,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 title = LocaleController.getString("EP_Category_Experimental", R.string.EP_Category_Experimental)
                 icon = R.drawable.msg_fave
                 listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(ExperimentalPrefenrecesEntry())
+                    it.presentFragment(ExperimentalPreferencesEntry())
                 }
             }
             textIcon {
@@ -104,33 +105,6 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     value = "Crowdin"
                     listener = TGKitTextIconRow.TGTIListener {
                         Browser.openUrl(bf.parentActivity, "https://crowdin.com/project/cherrygram")
-                    }
-                }
-                /*textIcon {
-                    title = LocaleController.getString("UP_Category_Updates", R.string.UP_Category_Updates)
-                    icon = R.drawable.sync_outline_28
-                    listener = TGKitTextIconRow.TGTIListener {
-                        UpdaterBottomSheet(bf.parentActivity, false).show()
-                    }
-                }*/
-                textIcon {
-                    title = LocaleController.getString("CG_CopyReportDetails", R.string.CG_CopyReportDetails)
-                    icon = R.drawable.bug_solar
-                    listener = TGKitTextIconRow.TGTIListener {
-                        AndroidUtilities.addToClipboard(Crashlytics.getReportMessage().toString() + "\n\n#bug")
-                        BulletinFactory.of(bf).createErrorBulletin(
-                            LocaleController.getString("CG_ReportDetailsCopied", R.string.CG_ReportDetailsCopied)
-                        ).show()
-                    }
-                }
-                textIcon {
-                    title = LocaleController.getString("CG_Restart", R.string.CG_Restart)
-                    icon = R.drawable.msg_retry
-                    listener = TGKitTextIconRow.TGTIListener {
-                        AppRestartHelper.triggerRebirth(
-                            ApplicationLoader.applicationContext,
-                            Intent(ApplicationLoader.applicationContext, LaunchActivity::class.java)
-                        )
                     }
                 }
             }

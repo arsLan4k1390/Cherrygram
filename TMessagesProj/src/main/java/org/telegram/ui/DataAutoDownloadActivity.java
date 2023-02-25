@@ -53,8 +53,6 @@ import org.telegram.ui.Components.SlideChooseView;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class DataAutoDownloadActivity extends BaseFragment {
 
     private ListAdapter listAdapter;
@@ -134,7 +132,6 @@ public class DataAutoDownloadActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         if (currentType == 0) {
             actionBar.setTitle(LocaleController.getString("AutoDownloadOnMobileData", R.string.AutoDownloadOnMobileData));
         } else if (currentType == 1) {

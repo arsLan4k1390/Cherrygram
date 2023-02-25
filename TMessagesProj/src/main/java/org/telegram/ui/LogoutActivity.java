@@ -47,8 +47,6 @@ import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class LogoutActivity extends BaseFragment {
 
     private ListAdapter listAdapter;
@@ -95,7 +93,6 @@ public class LogoutActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setTitle(LocaleController.getString("LogOutTitle", R.string.LogOutTitle));
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);

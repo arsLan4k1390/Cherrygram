@@ -94,7 +94,7 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
     private BitmapDrawable[] shadow = new BitmapDrawable[2];
     private boolean[] shadowVisibility = new boolean[2];
     private AnimatorSet[] shadowAnimation = new AnimatorSet[2];
-    private int customViewOffset = 20;
+    private int customViewOffset = 12;
 
     private String dialogButtonColorKey = Theme.key_dialogButton;
 
@@ -269,15 +269,17 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
     
     public AlertDialog(Context context, int progressStyle, Theme.ResourcesProvider resourcesProvider) {
         super(context, R.style.TransparentDialog);
-        blurredNativeBackground = supportsNativeBlur() && progressViewStyle == ALERT_TYPE_MESSAGE;
-        blurredBackground = blurredNativeBackground || !supportsNativeBlur()/* && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH*/;
         this.resourcesProvider = resourcesProvider;
+
+        blurredNativeBackground = supportsNativeBlur() && progressViewStyle == ALERT_TYPE_MESSAGE;
+        backgroundColor = getThemedColor(Theme.key_dialogBackground);
+        final boolean isDark = AndroidUtilities.computePerceivedBrightness(backgroundColor) < 0.721f;
+        blurredBackground = blurredNativeBackground || !supportsNativeBlur()/* && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH*/ && isDark;
 
         backgroundPaddings = new Rect();
         if (progressStyle != ALERT_TYPE_SPINNER || blurredBackground) {
             shadowDrawable = context.getResources().getDrawable(R.drawable.popup_fixed_alert3).mutate();
-            backgroundColor = getThemedColor(Theme.key_dialogBackground);
-            blurOpacity = progressStyle == ALERT_TYPE_SPINNER ? 0.55f : (AndroidUtilities.computePerceivedBrightness(backgroundColor) < 0.721f ? 0.80f : 0.92f);
+            blurOpacity = progressStyle == ALERT_TYPE_SPINNER ? 0.55f : (isDark ? 0.80f : 0.97f);
             shadowDrawable.setColorFilter(new PorterDuffColorFilter(backgroundColor, PorterDuff.Mode.MULTIPLY));
             shadowDrawable.getPadding(backgroundPaddings);
         }
@@ -380,7 +382,7 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
                         availableHeight -= topImageView.getMeasuredHeight();
                     }
                     if (topView != null) {
-                        int w = width - AndroidUtilities.dp(16);
+                        int w = width;
                         int h;
                         if (aspectRatio == 0) {
                             float scale = w / 936.0f;
@@ -781,10 +783,6 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
         }
         if (!TextUtils.isEmpty(message)) {
             messageTextView.setText(message);
-            if (customView != null) {
-                ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) messageTextView.getLayoutParams();
-                params.topMargin = AndroidUtilities.dp(16);
-            }
             messageTextView.setVisibility(View.VISIBLE);
         } else {
             messageTextView.setVisibility(View.GONE);
@@ -1468,10 +1466,6 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
 
         public Builder(Context context) {
             this(context, null);
-        }
-
-        public Builder(Context context, int progressViewStyle) {
-            alertDialog = new AlertDialog(context, progressViewStyle, null);
         }
 
         public Builder(Context context, Theme.ResourcesProvider resourcesProvider) {

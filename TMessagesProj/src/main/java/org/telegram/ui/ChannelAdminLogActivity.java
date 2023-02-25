@@ -2227,9 +2227,9 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             File f = AndroidUtilities.getSharingDirectory();
             f.mkdirs();
             f = new File(f, "vcard.vcf");
-            BufferedWriter writer = new BufferedWriter(new FileWriter(f));
-            writer.write(vcard);
-            writer.close();
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(f))) {
+                writer.write(vcard);
+            }
             showDialog(new PhonebookShareAlert(this, null, user, null, f, first_name, last_name));
         } catch (Exception e) {
             FileLog.e(e);

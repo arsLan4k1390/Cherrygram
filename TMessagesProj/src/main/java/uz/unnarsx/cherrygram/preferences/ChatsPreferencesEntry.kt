@@ -7,6 +7,7 @@ import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.BulletinFactory
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSliderPreference.TGSLContract
@@ -24,6 +25,12 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.blockStickers
                 }) {
                     CherrygramConfig.blockStickers = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -179,6 +186,12 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.showSeconds
                 }) {
                     CherrygramConfig.showSeconds = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             list {
@@ -230,6 +243,12 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.hideKeyboardOnScroll
                 }) {
                     CherrygramConfig.hideKeyboardOnScroll = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -355,6 +374,12 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.enableProximity
                 }) {
                     CherrygramConfig.enableProximity = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
         }
@@ -367,6 +392,12 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.iosSound
                 }) {
                     CherrygramConfig.iosSound = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {

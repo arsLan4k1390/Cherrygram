@@ -15,7 +15,7 @@ import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
-//import uz.unnarsx.cherrygram.stickers.StickersIDsDownloader
+import uz.unnarsx.cherrygram.stickers.StickersIDsDownloader
 import uz.unnarsx.cherrygram.icons.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.icons.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.icons.icon_replaces.SolarIconReplace
@@ -38,7 +38,7 @@ object CherrygramConfig {
     // Appearance Settings
     //Redesign
     var iconReplacement by sharedPreferences.int("AP_Icon_Replacements", getDefaultVKUI())
-    fun getIconReplacement(): BaseIconReplace {
+    fun getIconReplacement1(): BaseIconReplace {
         return when (iconReplacement) {
             0 -> VkIconReplace()
             1 -> SolarIconReplace()
@@ -54,11 +54,12 @@ object CherrygramConfig {
     var centerTitle by sharedPreferences.boolean("AP_CenterTitle", true)
     var disableToolBarShadow by sharedPreferences.boolean("AP_ToolBarShadow", false)
     var flatNavbar by sharedPreferences.boolean("AP_FlatNB", false)
+    var systemEmoji by sharedPreferences.boolean("AP_SystemEmoji", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
 
     var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false)
-    var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", true)
-    var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", true)
+    var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", false)
+    var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false)
 
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
     fun toggleOldNotificationIcon() { // Telegram chats settings
@@ -98,29 +99,24 @@ object CherrygramConfig {
     var disablePremStickAnim by sharedPreferences.boolean("CP_DisablePremStickAnim", false)
     var disablePremStickAutoPlay by sharedPreferences.boolean("CP_DisablePremStickAutoPlay", false)
     //Folders
+    var tabsOnForward by sharedPreferences.boolean("CP_TabsOnForward", true)
     var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
     var newTabs_hideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
-    fun toggleNewTabs_hideAllChats() { // Telegram folders settings
+    /*fun toggleNewTabs_hideAllChats() { // Telegram folders settings
         newTabs_hideAllChats = !newTabs_hideAllChats
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean("CP_NewTabs_RemoveAllChats", newTabs_hideAllChats)
         editor.apply()
         preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-    var tabsOnForward by sharedPreferences.boolean("CP_TabsOnForward", true)
-
-    var vkuiFoldersStyle by sharedPreferences.boolean("CP_VKUIFoldersStyle", false)
-    fun toggleVKUIFoldersStyle() { // Telegram folders settings
-        vkuiFoldersStyle = !vkuiFoldersStyle
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-        val editor = preferences.edit()
-        editor.putBoolean("CP_VKUIFoldersStyle", vkuiFoldersStyle)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
-    var frameCorrection by sharedPreferences.int("frameCorrection", 20)
+    }*/
+    
+    const val TAB_STYLE_DEFAULT = 0
+    const val TAB_STYLE_ROUNDED = 1
+    const val TAB_STYLE_TEXT = 2
+    const val TAB_STYLE_VKUI = 3
+    const val TAB_STYLE_PILLS = 4
+    var tab_style by sharedPreferences.int("AP_Tab_Style", TAB_STYLE_DEFAULT)
 
     var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
     fun toggleNewTabs_noUnread() { // Telegram folders settings
@@ -215,7 +211,7 @@ object CherrygramConfig {
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
     //Direct Share
     var usersDrawShareButton by sharedPreferences.boolean("CP_UsersDrawShareButton", false)
-    //    var groupsDrawShareButton by sharedPreferences.boolean("CP_GroupsDrawShareButton", false)
+//    var groupsDrawShareButton by sharedPreferences.boolean("CP_GroupsDrawShareButton", false)
     var supergroupsDrawShareButton by sharedPreferences.boolean("CP_SupergroupsDrawShareButton", false)
     var channelsDrawShareButton by sharedPreferences.boolean("CP_ChannelsDrawShareButton", true)
     var botsDrawShareButton by sharedPreferences.boolean("CP_BotsDrawShareButton", true)
@@ -268,6 +264,16 @@ object CherrygramConfig {
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
+    var reduceCameraXLatency by sharedPreferences.boolean("CP_ReduceCameraXLatency", false)
+    fun toggleReduceCameraXLatency() {
+        reduceCameraXLatency = !reduceCameraXLatency
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
+        val editor = preferences.edit()
+        editor.putBoolean("CP_ReduceCameraXLatency", reduceCameraXLatency)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
     var cameraResolution by sharedPreferences.int("CP_CameraResolution", -1)
     //Camera
     var disableAttachCamera by sharedPreferences.boolean("CP_DisableCam", false)
@@ -305,9 +311,15 @@ object CherrygramConfig {
     const val BOOST_EXTREME = 2
     var downloadSpeedBoost by sharedPreferences.int("EP_DownloadSpeedBoost", BOOST_NONE)
 
-    const val DEFAULT_SIZE = 0
-    const val HQ_SIZE = 1
-    var photoSize by sharedPreferences.int("CP_PhotoSize", HQ_SIZE)
+    var largePhotos by sharedPreferences.boolean("CP_LargePhotos", true)
+    fun toggleLargePhotos() {
+        largePhotos = !largePhotos
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
+        val editor = preferences.edit()
+        editor.putBoolean("CP_LargePhotos", largePhotos)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
 
     var uploadSpeedBoost by sharedPreferences.boolean("EP_UploadSpeedBoost", false)
     fun toggleUploadSpeedBoost() {
@@ -388,21 +400,17 @@ object CherrygramConfig {
     var forwardNotify by sharedPreferences.boolean("CG_ForwardNotify", true)
     var noAuthorship by sharedPreferences.boolean("CG_NoAuthorship", false)
 
-    //Translator
-    var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")
-    var translationTarget by sharedPreferences.string("translationTarget", "app")
-
     init {
         CherrygramToasts.init(sharedPreferences)
         fuckOff()
         if (blockStickers) {
             CherrygramExtras.downloadCherrygramLogo(ApplicationLoader.applicationContext)
         }
-        /*try {
+        try {
             StickersIDsDownloader.SET_IDS = URL("https://raw.githubusercontent.com/arsLan4k1390/Cherrygram/main/stickers.txt").readText().lines()
 //            Log.d("SetsDownloader", StickersIDsDownloader.SET_IDS.toString())
         }
-        catch (e: Exception) { }*/
+        catch (e: Exception) { }
     }
 
     private fun fuckOff() {
@@ -415,6 +423,10 @@ object CherrygramConfig {
 
     fun isCherryVerified(chat: TLRPC.Chat): Boolean {
         return LocalVerifications.getVerify().stream().anyMatch { id: Long -> id == chat.id }
+    }
+
+    fun isDeleteAllHidden(chat: TLRPC.Chat): Boolean {
+        return LocalVerifications.hideDeleteAll().stream().anyMatch { id: Long -> id == chat.id }
     }
 
     fun isDirectApp(): Boolean {

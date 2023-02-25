@@ -44,8 +44,6 @@ import org.telegram.ui.Components.SlideChooseView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class LinkEditActivity extends BaseFragment {
 
     public final static int CREATE_TYPE = 0;
@@ -96,7 +94,6 @@ public class LinkEditActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         if (type == CREATE_TYPE) {
             actionBar.setTitle(LocaleController.getString("NewLink", R.string.NewLink));

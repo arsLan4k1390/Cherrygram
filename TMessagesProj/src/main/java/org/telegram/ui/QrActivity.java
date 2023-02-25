@@ -334,7 +334,6 @@ public class QrActivity extends BaseFragment {
         closeImageView = new ImageView(context);
         closeImageView.setBackground(Theme.createSimpleSelectorCircleDrawable(AndroidUtilities.dp(34), 0x28000000, 0x28ffffff));
         closeImageView.setImageResource(R.drawable.ic_ab_back);
-
         closeImageView.setScaleType(ImageView.ScaleType.CENTER);
         closeImageView.setOnClickListener(v -> finishFragment());
         rootLayout.addView(closeImageView, LayoutHelper.createFrame(34, 34));
@@ -375,7 +374,9 @@ public class QrActivity extends BaseFragment {
         fragmentView = rootLayout;
         Utilities.themeQueue.postRunnable(() -> {
             homeTheme.loadPreviewColors(currentAccount);
-
+            if (fragmentView == null) {
+                return;
+            }
             fragmentView.postDelayed(() -> {
                 onItemSelected(currentTheme, 0, true);
             }, 17);
@@ -1264,7 +1265,7 @@ public class QrActivity extends BaseFragment {
             super.onDetachedFromWindow();
             if (loadingMatrix != null) {
                 loadingMatrix.stop();
-                loadingMatrix.recycle();
+                loadingMatrix.recycle(false);
                 loadingMatrix = null;
             }
         }

@@ -44,11 +44,6 @@ import org.telegram.ui.Components.ScrollSlidingTextTabStrip;
 
 import java.util.ArrayList;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class DialogOrContactPickerActivity extends BaseFragment {
 
     private static class ViewPage extends FrameLayout {
@@ -92,18 +87,19 @@ public class DialogOrContactPickerActivity extends BaseFragment {
         args.putBoolean("onlySelect", true);
         args.putBoolean("checkCanWrite", false);
         args.putBoolean("resetDelegate", false);
-        args.putInt("dialogsType", 9);
+        args.putInt("dialogsType", DialogsActivity.DIALOGS_TYPE_BLOCK);
         dialogsActivity = new DialogsActivity(args);
-        dialogsActivity.setDelegate((fragment, dids, message, param) -> {
+        dialogsActivity.setDelegate((fragment, dids, message, param, topicsFragment) -> {
             if (dids.isEmpty()) {
-                return;
+                return true;
             }
             long did = dids.get(0).dialogId;
             if (!DialogObject.isUserDialog(did)) {
-                return;
+                return true;
             }
             TLRPC.User user = getMessagesController().getUser(did);
             showBlockAlert(user);
+            return true;
         });
         dialogsActivity.onFragmentCreate();
 
@@ -123,7 +119,6 @@ public class DialogOrContactPickerActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setTitle(LocaleController.getString("BlockUserMultiTitle", R.string.BlockUserMultiTitle));
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);

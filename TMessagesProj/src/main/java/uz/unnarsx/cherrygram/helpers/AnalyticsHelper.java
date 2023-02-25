@@ -25,7 +25,7 @@ public class AnalyticsHelper {
         public void onPreparedLog(@NonNull Log log, @NonNull String groupName, int flags) {
             var device = log.getDevice();
             device.setAppVersion("CG_v" + BuildConfig.VERSION_NAME_CHERRY + ", TG_v" + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
-            device.setAppBuild(String.valueOf(BuildConfig.VERSION_CODE / 10));
+            device.setAppBuild(String.valueOf(BuildConfig.VERSION_CODE));
         }
     };
 

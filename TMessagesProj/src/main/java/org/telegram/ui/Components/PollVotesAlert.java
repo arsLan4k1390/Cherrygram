@@ -71,8 +71,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PollVotesAlert extends BottomSheet {
 
     private RecyclerListView listView;
@@ -869,7 +867,6 @@ public class PollVotesAlert extends BottomSheet {
         };
         actionBar.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setItemsColor(Theme.getColor(Theme.key_dialogTextBlack), false);
         actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_dialogButtonSelector), false);
         actionBar.setTitleColor(Theme.getColor(Theme.key_dialogTextBlack));

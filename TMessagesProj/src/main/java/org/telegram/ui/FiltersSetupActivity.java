@@ -77,7 +77,6 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
     private int folderStyleTitlesRow;
     private int folderStyleEmojiTitlesRow;
     private int folderStyleNoUnreadRow;
-    //private int vkuiFoldersStyleRow;
     private int folderStyleEmojiRow;
     private int folderStyleSectionRow;
     private int recommendedHeaderRow;
@@ -456,7 +455,6 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
         folderStyleEmojiRow = rowCount++;
         folderStyleEmojiTitlesRow = rowCount++;
         folderStyleNoUnreadRow = rowCount++;
-        //vkuiFoldersStyleRow = rowCount++;
         folderStyleSectionRow = rowCount++;
         int count = getMessagesController().dialogFilters.size();
         if (!getUserConfig().isPremium()) {
@@ -580,13 +578,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getNewTabs_noUnread());
                 }
                 getParentActivity().recreate();
-            } /*else if (position == vkuiFoldersStyleRow) {
-                CherrygramConfig.INSTANCE.toggleVKUIFoldersStyle();
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getVkuiFoldersStyle());
-                }
-                getParentActivity().recreate();
-            }*/ else if (position >= filtersStartRow && position < filtersEndRow) {
+            } else if (position >= filtersStartRow && position < filtersEndRow) {
                 int filterPosition = position - filtersStartRow;
                 if (!showAllChats) {
                     filterPosition++;
@@ -964,9 +956,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                     textCheckCell.setEnabled(true, null);
                     if (position == folderStyleNoUnreadRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_NewTabs_NoCounter", R.string.CP_NewTabs_NoCounter), LocaleController.getString("CP_NewTabs_NoCounter_Desc", R.string.CP_NewTabs_NoCounter_Desc), CherrygramConfig.INSTANCE.getNewTabs_noUnread(), true, true);
-                    } /*else if (position == vkuiFoldersStyleRow) {
-                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_VKUIFoldersStyle", R.string.CP_VKUIFoldersStyle), LocaleController.getString("CP_VKUIFoldersStyle_Desc", R.string.CP_VKUIFoldersStyle_Desc), CherrygramConfig.INSTANCE.getVkuiFoldersStyle(), true, true);
-                    }*/
+                    }
                     break;
                 }
             }
@@ -986,7 +976,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 return 4;
             } else if (position == folderStyleTitlesRow || position == folderStyleEmojiTitlesRow || position == folderStyleEmojiRow) {
                 return 6;
-            } else if (position == folderStyleNoUnreadRow/* || position == vkuiFoldersStyleRow*/) {
+            } else if (position == folderStyleNoUnreadRow) {
                 return 7;
             } else {
                 return 5;

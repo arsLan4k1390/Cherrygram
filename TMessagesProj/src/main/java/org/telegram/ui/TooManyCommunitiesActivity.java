@@ -48,8 +48,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class TooManyCommunitiesActivity extends BaseFragment {
 
     public static final int TYPE_JOIN = 0;
@@ -128,7 +126,6 @@ public class TooManyCommunitiesActivity extends BaseFragment {
         type = arguments.getInt("type", TYPE_JOIN);
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("LimitReached", R.string.LimitReached));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

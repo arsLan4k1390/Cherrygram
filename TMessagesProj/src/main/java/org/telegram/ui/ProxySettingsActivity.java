@@ -73,8 +73,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class ProxySettingsActivity extends BaseFragment {
 
     private final static int TYPE_SOCKS5 = 0;
@@ -199,7 +197,6 @@ public class ProxySettingsActivity extends BaseFragment {
     public View createView(Context context) {
         actionBar.setTitle(LocaleController.getString("ProxyDetails", R.string.ProxyDetails));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(false);
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);

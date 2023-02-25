@@ -101,11 +101,7 @@ public class PhoneFormat {
     }
 
     public void init(String countryCode) {
-        InputStream stream = null;
-        ByteArrayOutputStream bos = null;
-        try {
-            stream = ApplicationLoader.applicationContext.getAssets().open("PhoneFormats.dat");
-            bos = new ByteArrayOutputStream();
+        try (InputStream stream = ApplicationLoader.applicationContext.getAssets().open("PhoneFormats.dat"); ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             byte[] buf = new byte[1024];
             int len;
             while ((len = stream.read(buf, 0, 1024)) != -1) {
@@ -115,23 +111,9 @@ public class PhoneFormat {
             buffer = ByteBuffer.wrap(data);
             buffer.order(ByteOrder.LITTLE_ENDIAN);
         } catch (Exception e) {
+            FileLog.e(e);
             e.printStackTrace();
             return;
-        } finally {
-            try {
-                if (bos != null) {
-                    bos.close();
-                }
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
-            try {
-                if (stream != null) {
-                    stream.close();
-                }
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
         }
 
         if (countryCode != null && countryCode.length() != 0) {

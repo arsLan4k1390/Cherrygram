@@ -56,8 +56,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PollCreateActivity extends BaseFragment {
 
     private ActionBarMenuItem doneItem;
@@ -172,7 +170,6 @@ public class PollCreateActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         if (quizOnly == 1) {
             actionBar.setTitle(LocaleController.getString("NewQuiz", R.string.NewQuiz));
         } else {

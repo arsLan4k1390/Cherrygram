@@ -13,12 +13,8 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
-import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,6 +31,8 @@ import org.telegram.ui.Components.RLottieImageView;
 
 import java.util.Set;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class DrawerActionCell extends FrameLayout {
 
     private ImageView imageView;
@@ -47,20 +45,28 @@ public class DrawerActionCell extends FrameLayout {
     public DrawerActionCell(Context context) {
         super(context);
 
+        int frameSize = 24;
+        if (CherrygramConfig.INSTANCE.getIconReplacement() == 0) frameSize = 26;
+
         imageView = new ImageView(context);
-        addView(imageView, LayoutHelper.createFrame(26, 26, Gravity.LEFT | Gravity.TOP, 19, 12, 0, 0));
+        imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_menuItemIcon), PorterDuff.Mode.SRC_IN));
+        addView(imageView, LayoutHelper.createFrame(frameSize, frameSize, Gravity.LEFT | Gravity.TOP, 19, 12, 0, 0));
+//        addView(imageView, LayoutHelper.createFrame(24, 24, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL ? 0 : 19, 12, LocaleController.isRTL ? 19 : 0, 0));
 
         lottieImageView = new RLottieImageView(context);
         lottieImageView.setAutoRepeat(false);
         lottieImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_menuItemIcon), PorterDuff.Mode.SRC_IN));
-        addView(lottieImageView, LayoutHelper.createFrame(26, 26, Gravity.LEFT | Gravity.TOP, 19, 12, 0, 0));
+        addView(lottieImageView, LayoutHelper.createFrame(24, 24, Gravity.LEFT | Gravity.TOP, 17, 10, 0, 0));
+//        addView(lottieImageView, LayoutHelper.createFrame(28, 28, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL ? 0 : 17, 10, LocaleController.isRTL ? 17 : 0, 0));
 
         textView = new AnimatedTextView(context, true, true, true);
         textView.setAnimationProperties(.6f, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
         textView.setTextColor(Theme.getColor(Theme.key_chats_menuItemText));
         textView.setTextSize(AndroidUtilities.dp(15));
         textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        textView.setIgnoreRTL(true);
         addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 15 + 24 + 29, 2, 16, 0));
+//        addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL ? 16 : 62, 0, LocaleController.isRTL ? 62 : 16, 0));
 
         setWillNotDraw(false);
     }
@@ -108,11 +114,7 @@ public class DrawerActionCell extends FrameLayout {
                 imageView.setImageDrawable(null);
                 lottieImageView.setAnimation(currentLottieId = lottieId, 28, 28);
             } else {
-                Drawable drawable = getResources().getDrawable(resId).mutate();
-                if (drawable != null) {
-                    drawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_menuItemIcon), PorterDuff.Mode.MULTIPLY));
-                }
-                imageView.setImageDrawable(drawable);
+                imageView.setImageResource(resId);
                 lottieImageView.clearAnimationDrawable();
                 currentLottieId = 0;
             }

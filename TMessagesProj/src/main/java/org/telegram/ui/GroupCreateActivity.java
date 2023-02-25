@@ -92,8 +92,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class GroupCreateActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, View.OnClickListener {
 
     private ScrollView scrollView;
@@ -409,7 +407,6 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
         doneButtonVisible = chatType == ChatObject.CHAT_TYPE_CHANNEL;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         if (chatType == ChatObject.CHAT_TYPE_CHANNEL) {
             actionBar.setTitle(LocaleController.getString("ChannelAddSubscribers", R.string.ChannelAddSubscribers));
@@ -730,9 +727,9 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
                                 TLRPC.Chat chat = getMessagesController().getChat(channelId);
                                 AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                                 if (ChatObject.canAddAdmins(chat)) {
-                                    builder.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
+                                    builder.setTitle(LocaleController.getString("AddBotAdminAlert", R.string.AddBotAdminAlert));
                                     builder.setMessage(LocaleController.getString("AddBotAsAdmin", R.string.AddBotAsAdmin));
-                                    builder.setPositiveButton(LocaleController.getString("MakeAdmin", R.string.MakeAdmin), (dialogInterface, i) -> {
+                                    builder.setPositiveButton(LocaleController.getString("AddAsAdmin", R.string.AddAsAdmin), (dialogInterface, i) -> {
                                         delegate2.needAddBot(user);
                                         if (editText.length() > 0) {
                                             editText.setText(null);
@@ -1016,7 +1013,6 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
                 linearLayout.addView(cells[0], LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
                 cells[0].setOnClickListener(v -> cells[0].setChecked(!cells[0].isChecked(), true));
 
-                builder.setCustomViewOffset(12);
                 builder.setView(linearLayout);
             }
             builder.setPositiveButton(LocaleController.getString("Add", R.string.Add), (dialogInterface, i) -> onAddToGroupDone(cells[0] != null && cells[0].isChecked() ? 100 : 0));

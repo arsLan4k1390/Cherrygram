@@ -76,8 +76,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class NotificationsCustomSettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private RecyclerListView listView;
@@ -144,7 +142,6 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
         searchWas = false;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         if (currentType == -1) {
             actionBar.setTitle(LocaleController.getString("NotificationsExceptions", R.string.NotificationsExceptions));
@@ -400,14 +397,14 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
                 args.putBoolean("onlySelect", true);
                 args.putBoolean("checkCanWrite", false);
                 if (currentType == NotificationsController.TYPE_GROUP) {
-                    args.putInt("dialogsType", 6);
+                    args.putInt("dialogsType", DialogsActivity.DIALOGS_TYPE_GROUPS_ONLY);
                 } else if (currentType == NotificationsController.TYPE_CHANNEL) {
-                    args.putInt("dialogsType", 5);
+                    args.putInt("dialogsType", DialogsActivity.DIALOGS_TYPE_CHANNELS_ONLY);
                 } else {
-                    args.putInt("dialogsType", 4);
+                    args.putInt("dialogsType", DialogsActivity.DIALOGS_TYPE_USERS_ONLY);
                 }
                 DialogsActivity activity = new DialogsActivity(args);
-                activity.setDelegate((fragment, dids, message, param) -> {
+                activity.setDelegate((fragment, dids, message, param, topicsFragment) -> {
                     Bundle args2 = new Bundle();
                     args2.putLong("dialog_id", dids.get(0).dialogId);
                     args2.putBoolean("exception", true);
@@ -417,6 +414,7 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
                         updateRows(true);
                     });
                     presentFragment(profileNotificationsActivity, true);
+                    return true;
                 });
                 presentFragment(activity);
             } else if (position == deleteAllRow) {

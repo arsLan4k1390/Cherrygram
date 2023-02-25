@@ -259,11 +259,7 @@ public class Star3DIcon {
 
     public String loadFromAsset(Context context, String name) {
         StringBuilder sb = new StringBuilder();
-        InputStream is = null;
-        try {
-            is = context.getAssets().open(name);
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+        try (InputStream is = context.getAssets().open(name);BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             String str;
             while ((str = br.readLine()) != null) {
                 if (str.startsWith("//")) {
@@ -271,8 +267,6 @@ public class Star3DIcon {
                 }
                 sb.append(str);
             }
-            br.close();
-            is.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

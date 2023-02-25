@@ -90,8 +90,6 @@ import org.telegram.ui.Components.spoilers.SpoilersTextView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class TwoStepVerificationSetupActivity extends BaseFragment {
 
     private RLottieImageView imageView;
@@ -236,7 +234,7 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
         }
         if (animationDrawables != null) {
             for (int a = 0; a < animationDrawables.length; a++) {
-                animationDrawables[a].recycle();
+                animationDrawables[a].recycle(false);
             }
             animationDrawables = null;
         }
@@ -250,7 +248,6 @@ public class TwoStepVerificationSetupActivity extends BaseFragment {
     public View createView(Context context) {
         actionBar.setBackgroundDrawable(null);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(false);
         actionBar.setTitleColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         actionBar.setItemsColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), false);

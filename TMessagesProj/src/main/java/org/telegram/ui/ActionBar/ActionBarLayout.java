@@ -25,6 +25,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
@@ -44,6 +45,7 @@ import androidx.core.graphics.ColorUtils;
 import androidx.core.math.MathUtils;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.MessagesController;
@@ -258,9 +260,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                                             if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
                                                 try {
                                                     button.performHapticFeedback(HapticFeedbackConstants.TEXT_HANDLE_MOVE, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-                                                } catch (Exception ignore) {
-
-                                                }
+                                                } catch (Exception ignore) {}
                                             }
                                         }
                                     }
@@ -707,7 +707,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             lastFragment.setParentLayout(null);
 
             fragmentsStack.remove(fragmentsStack.size() - 1);
-            onFragmentStackChanged();
+            onFragmentStackChanged("onSlideAnimationEnd");
 
             LayoutContainer temp = containerView;
             containerView = containerViewBack;
@@ -1038,7 +1038,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             fragment.onFragmentDestroy();
             fragment.setParentLayout(null);
             fragmentsStack.remove(fragment);
-            onFragmentStackChanged();
+            onFragmentStackChanged("presentFragmentInternalRemoveOld");
         } else {
             if (fragment.fragmentView != null) {
                 ViewGroup parent = (ViewGroup) fragment.fragmentView.getParent();
@@ -1083,7 +1083,9 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 }
                 long newTime = System.nanoTime() / 1000000;
                 long dt = newTime - lastFrameTime;
-                if (dt > 18) {
+                if (dt > 40 && first) {
+                    dt = 0;
+                } else if (dt > 18) {
                     dt = 18;
                 }
                 lastFrameTime = newTime;
@@ -1231,6 +1233,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 parent.removeView(fragmentView);
             }
         }
+
         View wrappedView = fragmentView;
         containerViewBack.addView(wrappedView);
         int menuHeight = 0;
@@ -1278,8 +1281,10 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             fragment.actionBar.setTitleOverlayText(titleOverlayText, titleOverlayTextId, overlayAction);
         }
         fragmentsStack.add(fragment);
-        onFragmentStackChanged();
+
+        onFragmentStackChanged("presentFragment");
         fragment.onResume();
+
         currentActionBar = fragment.actionBar;
         if (!fragment.hasOwnBackground && fragmentView.getBackground() == null) {
             fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
@@ -1428,7 +1433,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                                     if (delayedAnimationResumed) {
                                         delayedOpenAnimationRunnable.run();
                                     } else {
-                                        AndroidUtilities.runOnUIThread(delayedOpenAnimationRunnable, 200);
+                                        AndroidUtilities.runOnUIThread(delayedOpenAnimationRunnable, 100);
                                     }
                                 }
                             }
@@ -1502,16 +1507,20 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         this.onFragmentStackChangedListener = onFragmentStackChanged;
     }
 
-    private void onFragmentStackChanged() {
+    private void onFragmentStackChanged(String action) {
         if (onFragmentStackChangedListener != null) {
             onFragmentStackChangedListener.run();
         }
         ImageLoader.getInstance().onFragmentStackChanged();
+        checkBlackScreen(action);
     }
 
     @Override
     public boolean addFragmentToStack(BaseFragment fragment, int position) {
         if (delegate != null && !delegate.needAddFragmentToStack(fragment, this) || !fragment.onFragmentCreate()) {
+            return false;
+        }
+        if (fragmentsStack.contains(fragment)) {
             return false;
         }
         fragment.setParentLayout(this);
@@ -1534,12 +1543,42 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 }
             }
             fragmentsStack.add(fragment);
-            onFragmentStackChanged();
+            attachView(fragment);
+            fragment.onResume();
+            fragment.onTransitionAnimationEnd(false, true);
+            fragment.onTransitionAnimationEnd(true, true);
+            fragment.onBecomeFullyVisible();
+            onFragmentStackChanged("addFragmentToStack " + position);
         } else {
             fragmentsStack.add(position, fragment);
-            onFragmentStackChanged();
+            onFragmentStackChanged("addFragmentToStack");
         }
         return true;
+    }
+
+    private void attachView(BaseFragment fragment) {
+        View fragmentView = fragment.fragmentView;
+        if (fragmentView == null) {
+            fragmentView = fragment.createView(parentActivity);
+        } else {
+            ViewGroup parent = (ViewGroup) fragmentView.getParent();
+            if (parent != null) {
+                fragment.onRemoveFromParent();
+                parent.removeView(fragmentView);
+            }
+        }
+        containerView.addView(fragmentView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+        if (fragment.actionBar != null && fragment.actionBar.shouldAddToContainer()) {
+            if (removeActionBarExtraHeight) {
+                fragment.actionBar.setOccupyStatusBar(false);
+            }
+            ViewGroup parent = (ViewGroup) fragment.actionBar.getParent();
+            if (parent != null) {
+                parent.removeView(fragment.actionBar);
+            }
+            containerView.addView(fragment.actionBar);
+            fragment.actionBar.setTitleOverlayText(titleOverlayText, titleOverlayTextId, overlayAction);
+        }
     }
 
     private void closeLastFragmentInternalRemoveOld(BaseFragment fragment) {
@@ -1551,7 +1590,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         containerViewBack.setVisibility(View.INVISIBLE);
         containerViewBack.setTranslationY(0);
         bringChildToFront(containerView);
-        onFragmentStackChanged();
+        onFragmentStackChanged("closeLastFragmentInternalRemoveOld");
     }
 
     @Override
@@ -1765,7 +1804,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                         Bulletin.getVisibleBulletin().hide();
                     }
                 }
-                onFragmentStackChanged();
+                onFragmentStackChanged("closeLastFragment");
             } else {
                 closeLastFragmentInternalRemoveOld(currentFragment);
                 currentFragment.onTransitionAnimationEnd(false, true);
@@ -1779,7 +1818,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 layoutToIgnore = containerView;
 
                 onCloseAnimationEndRunnable = () -> {
-                    removeFragmentFromStackInternal(currentFragment);
+                    removeFragmentFromStackInternal(currentFragment, false);
                     setVisibility(GONE);
                     if (backgroundView != null) {
                         backgroundView.setVisibility(GONE);
@@ -1812,7 +1851,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 });
                 currentAnimation.start();
             } else {
-                removeFragmentFromStackInternal(currentFragment);
+                removeFragmentFromStackInternal(currentFragment, false);
                 setVisibility(GONE);
                 if (backgroundView != null) {
                     backgroundView.setVisibility(GONE);
@@ -1884,29 +1923,45 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         bringToFront(fragmentsStack.size() - 1);
     }
 
-    private void removeFragmentFromStackInternal(BaseFragment fragment) {
-        fragment.onPause();
-        fragment.onFragmentDestroy();
-        fragment.setParentLayout(null);
-        fragmentsStack.remove(fragment);
-        onFragmentStackChanged();
+    private void removeFragmentFromStackInternal(BaseFragment fragment, boolean allowFinishFragment) {
+        if (!fragmentsStack.contains(fragment)) {
+            return;
+        }
+        if (allowFinishFragment && fragmentsStack.get(fragmentsStack.size() - 1) == fragment) {
+            fragment.finishFragment();
+        } else {
+            if (fragmentsStack.get(fragmentsStack.size() - 1) == fragment && fragmentsStack.size() > 1) {
+                fragment.finishFragment(false);
+            } else {
+                fragment.onPause();
+                fragment.onFragmentDestroy();
+                fragment.setParentLayout(null);
+                fragmentsStack.remove(fragment);
+                onFragmentStackChanged("removeFragmentFromStackInternal " + allowFinishFragment);
+            }
+        }
     }
 
     @Override
-    public void removeFragmentFromStack(BaseFragment fragment) {
+    public void removeFragmentFromStack(BaseFragment fragment, boolean immediate) {
+        if (((fragmentsStack.size() > 0 && fragmentsStack.get(fragmentsStack.size() - 1) == fragment) || (fragmentsStack.size() > 1 && fragmentsStack.get(fragmentsStack.size() - 2) == fragment))) {
+            onOpenAnimationEnd();
+            onCloseAnimationEnd();
+        }
+        checkBlackScreen("removeFragmentFromStack " + immediate);
         if (useAlphaAnimations && fragmentsStack.size() == 1 && AndroidUtilities.isTablet()) {
             closeLastFragment(true);
         } else {
             if (delegate != null && fragmentsStack.size() == 1 && AndroidUtilities.isTablet()) {
                 delegate.needCloseLastFragment(this);
             }
-            removeFragmentFromStackInternal(fragment);
+            removeFragmentFromStackInternal(fragment, fragment.allowFinishFragmentInsteadOfRemoveFromStack() && !immediate);
         }
     }
 
     public void removeAllFragments() {
         for (int a = 0; a < fragmentsStack.size(); a++) {
-            removeFragmentFromStackInternal(fragmentsStack.get(a));
+            removeFragmentFromStackInternal(fragmentsStack.get(a), false);
             a--;
         }
     }
@@ -2403,6 +2458,36 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             }
         }
         return null;
+    }
+
+
+    ArrayList<String> lastActions = new ArrayList<>();
+    Runnable debugBlackScreenRunnable = () -> {
+        if (getLastFragment() != null && containerView.getChildCount() == 0) {
+            if (BuildVars.DEBUG_VERSION) {
+                FileLog.e(new RuntimeException(TextUtils.join(", ", lastActions)));
+            }
+            rebuildAllFragmentViews(true, true);
+        }
+    };
+
+
+    public void checkBlackScreen(String action) {
+//        if (!BuildVars.DEBUG_VERSION) {
+//            return;
+//        }
+        if (BuildVars.DEBUG_VERSION) {
+            lastActions.add(0, action + " " + fragmentsStack.size());
+            if (lastActions.size() > 20) {
+                ArrayList<String> actions = new ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                    actions.add(lastActions.get(i));
+                }
+                lastActions = actions;
+            }
+        }
+        AndroidUtilities.cancelRunOnUIThread(debugBlackScreenRunnable);
+        AndroidUtilities.runOnUIThread(debugBlackScreenRunnable, 500);
     }
 
 }

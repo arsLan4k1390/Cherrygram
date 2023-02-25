@@ -53,8 +53,6 @@ import org.telegram.ui.Components.URLSpanReplacement;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class IdenticonActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private TextView textView;
@@ -105,7 +103,6 @@ public class IdenticonActivity extends BaseFragment implements NotificationCente
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("EncryptionKey", R.string.EncryptionKey));
 

@@ -36,8 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class ChatReactionsEditActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     private final static int TYPE_INFO = 0, TYPE_HEADER = 1, TYPE_REACTION = 2, TYPE_CONTROLS_CONTAINER = 3;
 
@@ -100,7 +98,6 @@ public class ChatReactionsEditActivity extends BaseFragment implements Notificat
 
         actionBar.setTitle(LocaleController.getString("Reactions", R.string.Reactions));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

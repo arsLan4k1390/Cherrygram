@@ -37,6 +37,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -56,6 +57,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.ErrorDatabaseHelper;
+
+import javax.net.ssl.SSLException;
 
 public class ConnectionsManager extends BaseController {
 
@@ -292,90 +295,102 @@ public class ConnectionsManager extends BaseController {
         return sendRequest(object, onComplete, null, onQuickAck, onWriteToSocket, flags, datacenterId, connetionType, immediate);
     }
 
+    public int sendRequestSync(final TLObject object, final RequestDelegate onComplete, final QuickAckDelegate onQuickAck, final WriteToSocketDelegate onWriteToSocket, final int flags, final int datacenterId, final int connetionType, final boolean immediate) {
+        final int requestToken = lastRequestToken.getAndIncrement();
+        sendRequestInternal(object, onComplete, null, onQuickAck, onWriteToSocket, flags, datacenterId, connetionType, immediate, requestToken);
+        return requestToken;
+    }
+
     public int sendRequest(final TLObject object, final RequestDelegate onComplete, final RequestDelegateTimestamp onCompleteTimestamp, final QuickAckDelegate onQuickAck, final WriteToSocketDelegate onWriteToSocket, final int flags, final int datacenterId, final int connetionType, final boolean immediate) {
         final int requestToken = lastRequestToken.getAndIncrement();
         Utilities.stageQueue.postRunnable(() -> {
-            if (BuildVars.LOGS_ENABLED) {
-                FileLog.d("send request " + object + " with token = " + requestToken);
-            }
-            try {
-                NativeByteBuffer buffer = new NativeByteBuffer(object.getObjectSize());
-                object.serializeToStream(buffer);
-                object.freeResources();
-
-                long startRequestTime = 0;
-                if (BuildVars.DEBUG_PRIVATE_VERSION && BuildVars.LOGS_ENABLED) {
-                    startRequestTime = System.currentTimeMillis();
-                }
-                long finalStartRequestTime = startRequestTime;
-                native_sendRequest(currentAccount, buffer.address, (response, errorCode, errorText, networkType, timestamp, requestMsgId) -> {
-                    try {
-                        TLObject resp = null;
-                        TLRPC.TL_error error = null;
-
-                        if (response != 0) {
-                            NativeByteBuffer buff = NativeByteBuffer.wrap(response);
-                            buff.reused = true;
-                            try {
-                                resp = object.deserializeResponse(buff, buff.readInt32(true), true);
-                            } catch (Exception e2) {
-                                if (BuildVars.DEBUG_PRIVATE_VERSION) {
-                                    throw e2;
-                                }
-                                FileLog.fatal(e2);
-                                return;
-                            }
-                        } else if (errorText != null) {
-                            error = new TLRPC.TL_error();
-                            error.code = errorCode;
-                            error.text = errorText;
-                            if (BuildVars.LOGS_ENABLED) {
-                                FileLog.e(object + " got error " + error.code + " " + error.text);
-                            }
-                            if (CherrygramConfig.INSTANCE.getShowRPCError()) {
-                                ErrorDatabaseHelper.showErrorToast(object, errorText);
-                            }
-                        }
-                        if (BuildVars.DEBUG_PRIVATE_VERSION && !getUserConfig().isClientActivated() && error != null && error.code == 400 && Objects.equals(error.text, "CONNECTION_NOT_INITED")) {
-                            if (BuildVars.LOGS_ENABLED) {
-                                FileLog.d("Cleanup keys for " + currentAccount + " because of CONNECTION_NOT_INITED");
-                            }
-                            cleanup(true);
-                            sendRequest(object, onComplete, onCompleteTimestamp, onQuickAck, onWriteToSocket, flags, datacenterId, connetionType, immediate);
-                            return;
-                        }
-                        if (resp != null) {
-                            resp.networkType = networkType;
-                        }
-                        if (BuildVars.LOGS_ENABLED) {
-                            FileLog.d("java received " + resp + " error = " + error);
-                        }
-                        //FileLog.dumpResponseAndRequest(object, resp, error, requestMsgId, finalStartRequestTime, requestToken);
-                        final TLObject finalResponse = resp;
-                        final TLRPC.TL_error finalError = error;
-                        Utilities.stageQueue.postRunnable(() -> {
-                            if (onComplete != null) {
-                                onComplete.run(finalResponse, finalError);
-                            } else if (onCompleteTimestamp != null) {
-                                onCompleteTimestamp.run(finalResponse, finalError, timestamp);
-                            }
-                            if (finalResponse != null) {
-                                finalResponse.freeResources();
-                            }
-                        });
-                    } catch (Exception e) {
-                        FileLog.e(e);
-                    }
-                }, onQuickAck, onWriteToSocket, flags, datacenterId, connetionType, immediate, requestToken);
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
+            sendRequestInternal(object, onComplete, onCompleteTimestamp, onQuickAck, onWriteToSocket, flags, datacenterId, connetionType, immediate, requestToken);
         });
         return requestToken;
     }
 
+    private void sendRequestInternal(TLObject object, RequestDelegate onComplete, RequestDelegateTimestamp onCompleteTimestamp, QuickAckDelegate onQuickAck, WriteToSocketDelegate onWriteToSocket, int flags, int datacenterId, int connetionType, boolean immediate, int requestToken) {
+        if (BuildVars.LOGS_ENABLED) {
+            FileLog.d("send request " + object + " with token = " + requestToken);
+        }
+        try {
+            NativeByteBuffer buffer = new NativeByteBuffer(object.getObjectSize());
+            object.serializeToStream(buffer);
+            object.freeResources();
+
+            long startRequestTime = 0;
+            if (BuildVars.DEBUG_PRIVATE_VERSION && BuildVars.LOGS_ENABLED) {
+                startRequestTime = System.currentTimeMillis();
+            }
+            long finalStartRequestTime = startRequestTime;
+            native_sendRequest(currentAccount, buffer.address, (response, errorCode, errorText, networkType, timestamp, requestMsgId) -> {
+                try {
+                    TLObject resp = null;
+                    TLRPC.TL_error error = null;
+
+                    if (response != 0) {
+                        NativeByteBuffer buff = NativeByteBuffer.wrap(response);
+                        buff.reused = true;
+                        try {
+                            resp = object.deserializeResponse(buff, buff.readInt32(true), true);
+                        } catch (Exception e2) {
+                            if (BuildVars.DEBUG_PRIVATE_VERSION) {
+                                throw e2;
+                            }
+                            FileLog.fatal(e2);
+                            return;
+                        }
+                    } else if (errorText != null) {
+                        error = new TLRPC.TL_error();
+                        error.code = errorCode;
+                        error.text = errorText;
+                        if (BuildVars.LOGS_ENABLED) {
+                            FileLog.e(object + " got error " + error.code + " " + error.text);
+                        }
+                        if (CherrygramConfig.INSTANCE.getShowRPCError()) {
+                            ErrorDatabaseHelper.showErrorToast(object, errorText);
+                        }
+                    }
+                    if (BuildVars.DEBUG_PRIVATE_VERSION && !getUserConfig().isClientActivated() && error != null && error.code == 400 && Objects.equals(error.text, "CONNECTION_NOT_INITED")) {
+                        if (BuildVars.LOGS_ENABLED) {
+                            FileLog.d("Cleanup keys for " + currentAccount + " because of CONNECTION_NOT_INITED");
+                        }
+                        cleanup(true);
+                        sendRequest(object, onComplete, onCompleteTimestamp, onQuickAck, onWriteToSocket, flags, datacenterId, connetionType, immediate);
+                        return;
+                    }
+                    if (resp != null) {
+                        resp.networkType = networkType;
+                    }
+                    if (BuildVars.LOGS_ENABLED) {
+                        FileLog.d("java received " + resp + " error = " + error);
+                    }
+                    //FileLog.dumpResponseAndRequest(object, resp, error, requestMsgId, finalStartRequestTime, requestToken);
+                    final TLObject finalResponse = resp;
+                    final TLRPC.TL_error finalError = error;
+                    Utilities.stageQueue.postRunnable(() -> {
+                        if (onComplete != null) {
+                            onComplete.run(finalResponse, finalError);
+                        } else if (onCompleteTimestamp != null) {
+                            onCompleteTimestamp.run(finalResponse, finalError, timestamp);
+                        }
+                        if (finalResponse != null) {
+                            finalResponse.freeResources();
+                        }
+                    });
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
+            }, onQuickAck, onWriteToSocket, flags, datacenterId, connetionType, immediate, requestToken);
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+    }
+
     public void cancelRequest(int token, boolean notifyServer) {
-        native_cancelRequest(currentAccount, token, notifyServer);
+        Utilities.stageQueue.postRunnable(() -> {
+            native_cancelRequest(currentAccount, token, notifyServer);
+        });
     }
 
     public void cleanup(boolean resetKeys) {
@@ -383,7 +398,9 @@ public class ConnectionsManager extends BaseController {
     }
 
     public void cancelRequestsForGuid(int guid) {
-        native_cancelRequestsForGuid(currentAccount, guid);
+        Utilities.stageQueue.postRunnable(() -> {
+            native_cancelRequestsForGuid(currentAccount, guid);
+        });
     }
 
     public void bindRequestToGuid(int requestToken, int guid) {
@@ -444,7 +461,7 @@ public class ConnectionsManager extends BaseController {
             packageId = "";
         }
 
-        native_init(currentAccount, version, layer, apiId, deviceModel, systemVersion, appVersion, langCode, systemLangCode, configPath, logPath, regId, cFingerprint, installer, packageId, timezoneOffset, userId, enablePushConnection, ApplicationLoader.isNetworkOnline(), ApplicationLoader.getCurrentNetworkType());
+        native_init(currentAccount, version, layer, apiId, deviceModel, systemVersion, appVersion, langCode, systemLangCode, configPath, logPath, regId, cFingerprint, installer, packageId, timezoneOffset, userId, enablePushConnection, ApplicationLoader.isNetworkOnline(), ApplicationLoader.getCurrentNetworkType(), SharedConfig.measureDevicePerformanceClass());
         checkConnection();
     }
 
@@ -768,7 +785,8 @@ public class ConnectionsManager extends BaseController {
     public static native void native_applyDatacenterAddress(int currentAccount, int datacenterId, String ipAddress, int port);
     public static native int native_getConnectionState(int currentAccount);
     public static native void native_setUserId(int currentAccount, long id);
-    public static native void native_init(int currentAccount, int version, int layer, int apiId, String deviceModel, String systemVersion, String appVersion, String langCode, String systemLangCode, String configPath, String logPath, String regId, String cFingerprint, String installer, String packageId, int timezoneOffset, long userId, boolean enablePushConnection, boolean hasNetwork, int networkType);
+    public static native void native_init(int currentAccount, int version, int layer, int apiId, String deviceModel, String systemVersion, String appVersion, String langCode, String systemLangCode, String configPath, String logPath, String regId, String cFingerprint, String installer, String packageId, int timezoneOffset, long userId, boolean enablePushConnection, boolean hasNetwork, int networkType, int performanceClass);
+    public static native void native_moveToDatacenter(int currentAccount, int datacenterId);
     public static native void native_setProxySettings(int currentAccount, String address, int port, String username, String password, String secret);
     public static native void native_setLangCode(int currentAccount, String langCode);
     public static native void native_setRegId(int currentAccount, String regId);
@@ -798,9 +816,6 @@ public class ConnectionsManager extends BaseController {
 
     @SuppressLint("NewApi")
     protected byte getIpStrategy() {
-        if (Build.VERSION.SDK_INT < 19) {
-            return USE_IPV4_ONLY;
-        }
         if (BuildVars.LOGS_ENABLED) {
             try {
                 NetworkInterface networkInterface;
@@ -898,8 +913,6 @@ public class ConnectionsManager extends BaseController {
         }
 
         protected ResolvedDomain doInBackground(Void... voids) {
-            ByteArrayOutputStream outbuf = null;
-            InputStream httpConnectionStream = null;
             boolean done = false;
             try {
                 URL downloadUrl = new URL("https://www.google.com/resolve?name=" + currentHostName + "&type=A");
@@ -909,23 +922,22 @@ public class ConnectionsManager extends BaseController {
                 httpConnection.setConnectTimeout(1000);
                 httpConnection.setReadTimeout(2000);
                 httpConnection.connect();
-                httpConnectionStream = httpConnection.getInputStream();
 
-                outbuf = new ByteArrayOutputStream();
-
-                byte[] data = new byte[1024 * 32];
-                while (true) {
-                    int read = httpConnectionStream.read(data);
-                    if (read > 0) {
-                        outbuf.write(data, 0, read);
-                    } else if (read == -1) {
-                        break;
-                    } else {
-                        break;
+                JSONObject jsonObject;
+                try (InputStream httpConnectionStream = httpConnection.getInputStream();ByteArrayOutputStream outbuf = new ByteArrayOutputStream()) {
+                    byte[] data = new byte[1024 * 32];
+                    while (true) {
+                        int read = httpConnectionStream.read(data);
+                        if (read > 0) {
+                            outbuf.write(data, 0, read);
+                        } else if (read == -1) {
+                            break;
+                        } else {
+                            break;
+                        }
                     }
+                     jsonObject = new JSONObject(outbuf.toString("UTF-8"));
                 }
-
-                JSONObject jsonObject = new JSONObject(new String(outbuf.toByteArray()));
                 if (jsonObject.has("Answer")) {
                     JSONArray array = jsonObject.getJSONArray("Answer");
                     int len = array.length();
@@ -939,22 +951,7 @@ public class ConnectionsManager extends BaseController {
                 }
                 done = true;
             } catch (Throwable e) {
-                FileLog.e(e);
-            } finally {
-                try {
-                    if (httpConnectionStream != null) {
-                        httpConnectionStream.close();
-                    }
-                } catch (Throwable e) {
-                    FileLog.e(e);
-                }
-                try {
-                    if (outbuf != null) {
-                        outbuf.close();
-                    }
-                } catch (Exception ignore) {
-
-                }
+                FileLog.e(e, false);
             }
             if (!done) {
                 try {
@@ -1193,7 +1190,7 @@ public class ConnectionsManager extends BaseController {
                 buffer.writeBytes(bytes);
                 return buffer;
             } catch (Throwable e) {
-                FileLog.e(e);
+                FileLog.e(e, !(e instanceof SocketTimeoutException || e instanceof SSLException));
             } finally {
                 try {
                     if (httpConnectionStream != null) {
@@ -1319,7 +1316,7 @@ public class ConnectionsManager extends BaseController {
                         httpConnectionStream.close();
                     }
                 } catch (Throwable e) {
-                    FileLog.e(e, false);
+                    FileLog.e(e);
                 }
                 try {
                     if (outbuf != null) {

@@ -24,7 +24,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
 ## Changes:
 
-*General:*
+*Addons:*
 - OTA updates - thanks to exteraGram :),
 - Material You (Monet) themes and app icon,
 - No content restrictions,
@@ -60,16 +60,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Icons with titles,
 - Hide messages counter in tabs.
 
-*Cherrygram Appearance Preferences:*
-- VKUI icons in app,
-- Solar icons in app,
-- Enable/Disable toolbar shadow,
-- Flat statusbar,
-- Transparent navigation bar,
-- Enable/Disable system fonts,
-- Snow in Drawer,
-- Snow in App Header,
-- Snow in Chats
+*Cherrygram General Preferences:*
 - Enable/Disable animated avatars,
 - Enable/Disable reactions overlay,
 - Draw small reactions,
@@ -77,20 +68,33 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Enable/Disable premium statuses in profile,
 - Enable/Disable taps on premium stickers,
 - Enable/Disable premium stickers auto-play,
-- Show folder name instead of app name,
-- Hide "All chats" tab,
-- VKUI tabs style,
-- Show tabs on forward screen,
 - Hiding your phone number from settings and menu,
 - Showing ID in profile,
-- Showing DC in profile,
+- Showing DC in profile.
 *Drawer Preferences:*
 - Profile photo as drawer background,
 - Darken menu header background,
 - Gradient menu header background,
-- Blur menu header background and blur itensity,
+- Blur menu header background and blur intensity,
 - Drawer icons set,
 - Enable/Disable drawer buttons.
+
+*Cherrygram Appearance Preferences:*
+- VKUI icons in app,
+- Solar icons in app,
+- Center title in action bar,
+- Enable/Disable toolbar shadow,
+- Flat statusbar,
+- Transparent navigation bar,
+- Enable/Disable system emoji,
+- Enable/Disable system fonts,
+- Show folder name instead of app name,
+- Hide "All chats" tab,
+- Tab style (Default, Rounded, Text, VKUI or Pills),
+- Show tabs on forward screen,
+- Snow in Drawer,
+- Snow in App Header,
+- Snow in Chats.
 
 *Cherrygram Chats Preferences:*
 - Blocking stickers (which cause Telegram apps crash),
@@ -103,8 +107,9 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Ask before a call,
 - Show forwarded message date,
 - Show seconds in timestamps,
-- Double tap action,
+- Double tap action (Disable, Reaction, Reply, Save message or Edit message),
 - Enable/Disable transition to the next channel,
+- Show/Hide bottom button in channels (Mute/Unmute),
 - Hide keyboard while scrolling a chat,
 - Enable/Disable "Send as channel" button,
 - Recent emojis counter (amplifier),
@@ -115,27 +120,28 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Pause music while playing voice and video messages,
 - Disable in-app vibration,
 - Disable "Flip" photos,
-- Enable/Disable proxymity sensor actions,
+- Enable/Disable proximity sensor actions,
 - Enable/Disable incoming message sound from Telegram IOS app,
 - Silence notifications from non-contacts.
 
 *Cherrygram Camera Preferences:*
 - Camera Type (Default, CameraX or System camera),
-- Motion smoothness,
 - Disable camera in attachments menu,
 - Default camera for video messages,
-- Custom camera aspect for videomessages,
+- Custom camera aspect ratio for video-messages (1:1, 4:3 or 16:9).
 
 *Cherrygram Experimental Preferences:*
 - Enable/Disable alternative navigation,
 - Choose different photos size,
+- Open profile instead of chat preview,
 - Show a resident notification,
 - Toast all RPC errors,
 - Download speed boost - Thanks to Nekogram for the idea :),
 - Upload speed boost - Thanks to Nekogram for the idea :),
-- Slow network mode - Thanks to Telegraher for the idea :),
+- Slow network mode - Thanks to Telegraher for the idea :).
 
 *Cherrygram Security Preferences:*
+- Enable/Disable Microsoft AppCenter,
 - "Kaboom" (Erase all Cherrygram data in 1 click) - Thanks to Telegraher :),
 - Delete old cache folder (/sdcard/Telegram),
 - Delete your Telegram account.
@@ -153,7 +159,7 @@ MTproto protocol manuals: https://core.telegram.org/mtproto
 1. Fill out storeFile, storePassword, keyAlias, keyPassword in app's build.gradle to sign your app
 1. Go to https://console.firebase.google.com/, create two android apps with application IDs uz.unnarsx.cherrygram and uz.unnarsx.cherrygram.beta, turn on firebase messaging and download `google-services.json`, which should be copied into `TMessagesProj` folder.
 1. Open the project in the Studio (note that it should be opened, NOT imported).
-1. Fill out values in `TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.java` – there’s a link for each of the variables showing where and which data to obtain.
+1. Fill out values in `TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt` – there’s a link for each of the variables showing where and which data to obtain.
 1. You are ready to compile and use Cherrygram.
 
 

@@ -33,7 +33,6 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-
 import androidx.multidex.MultiDex;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -306,6 +305,7 @@ public class ApplicationLoader extends Application {
         AndroidUtilities.runOnUIThread(ApplicationLoader::startPushService);
 
         LauncherIconController.tryFixLauncherIconIfNeeded();
+        ProxyRotationController.init();
     }
 
     public static void startPushService() {

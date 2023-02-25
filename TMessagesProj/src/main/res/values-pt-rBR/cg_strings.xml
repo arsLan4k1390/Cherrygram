@@ -7,8 +7,6 @@
     <string name="CG_Country">País/Região</string>
     <string name="CG_ChooseCountry">Escolha um País/Região</string>
     <string name="CG_WrongCountry">Código de país/região inválido</string>
-    <string name="CG_ProxyInfo">Pode ser necessário configurar um proxy antes de iniciar sessão, caso o seu país/região ou ISP bloqueie o Telegram.</string>
-    <string name="CG_ProxySettings">Definições de proxy</string>
     <string name="CG_TestBackendNumber">Número de teste</string>
     <string name="CG_TestBackendOn">Esta conta irá ligar-se ao backend do teste.</string>
     <string name="CG_TestBackendOff">Esta conta irá ligar-se ao backend de produção.</string>
@@ -21,9 +19,6 @@
     <string name="CG_ChooseFolderIcon">Escolha um Ícone</string>
     <string name="CP_NewTabs_NoCounter">Esconder contador em separadores</string>
     <string name="CP_NewTabs_NoCounter_Desc">Isto irá esconder o contador de mensagens não lidas</string>
-    <string name="CP_VKUIFoldersStyle">Estilo de pastas VKUI</string>
-    <string name="CP_VKUIFoldersStyle_Desc">Isto irá ativar o estilo de pastas do VK</string>
-    <string name="CP_VKUIFoldersStyle_Frame">Correção do tamanho da moldura VKUI</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">Para o início</string>
@@ -44,12 +39,6 @@
     <string name="CG_FwdMenu_EnableCaptions">Ativar legendas</string>
     <string name="CG_FwdMenu_DisableCaptions">Ocultar legendas</string>
     <!--Chats screen-->
-    <!--Group permissions-->
-    <string name="GP_UserRestrictionsSendStickers2">Enviar sticker</string>
-    <string name="GP_UserRestrictionsSendGifs">Enviar GIFs</string>
-    <string name="GP_UserRestrictionsSendGames">Enviar Jogos Animados</string>
-    <string name="GP_UserRestrictionsUseInlineBot">Usar Bots em linha</string>
-    <!--Group permissions-->
     <!--Misc-->
     <string name="LS_EnterPasscode">Introduza o seu código de acesso Cherrygram</string>
     <string name="CG_SwitchBackend">Vai mudar para o servidor de testes. Por favor, não prima OK se 
@@ -85,6 +74,9 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CGP_Crowdin">Ajudar com a tradução</string>
     <string name="CGP_Header_Categories">Categorias</string>
     <!--Cherrygram Preferences-->
+    <!--General Preferences-->
+    <string name="AP_Header_General">Geral</string>
+    <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Aparência</string>
     <string name="AP_RedesignCategory">Redesenho</string>
@@ -102,6 +94,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_IconReplacement_VKUI">Ícones VKUI</string>
     <string name="AP_IconReplacement_Solar">Ícones solares por @Design480</string>
     <string name="AP_IconReplacement_Default">Por defeito</string>
+    <string name="AP_SystemEmoji">Utilizar os emojis do sistema</string>
     <string name="AP_CenterTitle">Centralizar título na barra de ação</string>
     <string name="AP_ToolBarShadow">Desativar a sombra da barra de ferramentas</string>
     <string name="AP_TransparentSB">Barra de estado transparente</string>
@@ -129,6 +122,11 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_FolderNameInHeader">Nome da pasta em vez de \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Isto mudará \"Cherrygram\" na barra de ação para o nome da sua pasta (útil se tiver apenas ícones em vez de nomes de pastas)</string>
     <string name="CP_NewTabs_RemoveAllChats">Esconder o separador \"Todos os chats\"</string>
+    <string name="AP_Tab_Style">Estilo de pestaña</string>
+    <string name="AP_Tab_Style_Default">Por defeito</string>
+    <string name="AP_Tab_Style_Rounded">Arredondado</string>
+    <string name="AP_Tab_Style_Text">Text</string>
+    <string name="AP_Tab_Style_Pills">Comprimidos</string>
     <string name="AP_DrawerCategory">Gaveta</string>
     <string name="AP_DrawerPreferences">Preferências de gaveta</string>
     <string name="AP_DrawerAvatar">Foto de perfil como fundo de gaveta</string>
@@ -211,8 +209,9 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
+    <string name="CG_OpenProfile">Abrir perfil em vez de pré-visualizar o chat</string>
     <string name="CG_ResidentNotification">Mostrar uma notificação persistente</string>
-    <string name="EP_PhotosSize">Tamanho das fotos</string>
+    <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
     <string name="EP_ShowRPCError">Torrar todos os erros RPC</string>
     <string name="EP_Network">Rede</string>
     <string name="EP_DownloadSpeedBoost">Otimizar velocidade de download</string>
@@ -255,7 +254,6 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <!--Updates Preferences-->
     <!--Donations-->
     <string name="DP_Donate">Faça um donativo</string>
-    <string name="DP_DonateInfo">Os custos premium do Cherrygram são de 10 EUR. Não se esqueça de enviar a captura de tela da transação para @arsLan se quiser obter os recursos premium do Cherry. Este pagamento é um pagamento único.</string>
     <string name="DP_Donate_Method">Escolher o método</string>
     <!--Donations-->
     <!--Cherrygram screens-->

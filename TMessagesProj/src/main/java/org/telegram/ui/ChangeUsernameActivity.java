@@ -1411,6 +1411,4 @@ public class ChangeUsernameActivity extends BaseFragment {
             parentLayout.getDrawerLayoutContainer().setBehindKeyboardColor(Theme.getColor(Theme.key_windowBackgroundWhite));
         }
     }
-
-    //TODO Fix outline design
 }

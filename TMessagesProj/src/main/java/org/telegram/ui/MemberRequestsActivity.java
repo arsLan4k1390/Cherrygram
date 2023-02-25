@@ -13,8 +13,6 @@ import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Delegates.MemberRequestsDelegate;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class MemberRequestsActivity extends BaseFragment {
 
     public static final int searchMenuItem = 0;
@@ -46,7 +44,6 @@ public class MemberRequestsActivity extends BaseFragment {
             }
         });
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setTitle(delegate.isChannel ? LocaleController.getString("SubscribeRequests", R.string.SubscribeRequests) : LocaleController.getString("MemberRequests", R.string.MemberRequests));
 
         ActionBarMenu menu = actionBar.createMenu();

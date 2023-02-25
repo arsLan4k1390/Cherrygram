@@ -1882,8 +1882,7 @@ public class VoIPFragment implements VoIPService.StateListener, NotificationCent
             return;
         }
         byte[] auth_key = null;
-        try {
-            ByteArrayOutputStream buf = new ByteArrayOutputStream();
+        try (ByteArrayOutputStream buf = new ByteArrayOutputStream()) {
             buf.write(service.getEncryptionKey());
             buf.write(service.getGA());
             auth_key = buf.toByteArray();

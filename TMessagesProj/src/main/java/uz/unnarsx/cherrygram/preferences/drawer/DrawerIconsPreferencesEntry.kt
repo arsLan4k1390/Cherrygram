@@ -1,18 +1,15 @@
 package uz.unnarsx.cherrygram.preferences.drawer
 
 import android.app.Activity
-import android.content.Intent
 import android.content.SharedPreferences
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.LaunchActivity
+import org.telegram.ui.Components.BulletinFactory
 import uz.unnarsx.cherrygram.CherrygramConfig
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.preferences.BasePreferencesEntry
-import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 
 class DrawerIconsPreferencesEntry : BasePreferencesEntry {
     val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
@@ -25,6 +22,12 @@ class DrawerIconsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.createGroupDrawerButton
                 }) {
                     CherrygramConfig.createGroupDrawerButton = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -34,6 +37,12 @@ class DrawerIconsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.secretChatDrawerButton
                 }) {
                     CherrygramConfig.secretChatDrawerButton = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -43,6 +52,12 @@ class DrawerIconsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.createChannelDrawerButton
                 }) {
                     CherrygramConfig.createChannelDrawerButton = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -52,6 +67,12 @@ class DrawerIconsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.contactsDrawerButton
                 }) {
                     CherrygramConfig.contactsDrawerButton = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -61,6 +82,12 @@ class DrawerIconsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.callsDrawerButton
                 }) {
                     CherrygramConfig.callsDrawerButton = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -70,6 +97,12 @@ class DrawerIconsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.savedMessagesDrawerButton
                 }) {
                     CherrygramConfig.savedMessagesDrawerButton = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -79,6 +112,12 @@ class DrawerIconsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.archivedChatsDrawerButton
                 }) {
                     CherrygramConfig.archivedChatsDrawerButton = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -88,6 +127,12 @@ class DrawerIconsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.peopleNearbyDrawerButton
                 }) {
                     CherrygramConfig.peopleNearbyDrawerButton = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -97,6 +142,12 @@ class DrawerIconsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.scanQRDrawerButton
                 }) {
                     CherrygramConfig.scanQRDrawerButton = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
             switch {
@@ -106,20 +157,12 @@ class DrawerIconsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.cGPreferencesDrawerButton
                 }) {
                     CherrygramConfig.cGPreferencesDrawerButton = it
-                }
-            }
-
-        }
-
-        category(LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply)) {
-            textIcon {
-                title = LocaleController.getString("CG_Restart", R.string.CG_Restart)
-                icon = R.drawable.msg_retry
-                listener = TGKitTextIconRow.TGTIListener {
-                    AppRestartHelper.triggerRebirth(
-                        ApplicationLoader.applicationContext,
-                        Intent(ApplicationLoader.applicationContext, LaunchActivity::class.java)
-                    )
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
         }

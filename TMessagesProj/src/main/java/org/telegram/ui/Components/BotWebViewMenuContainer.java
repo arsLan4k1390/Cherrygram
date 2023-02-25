@@ -121,17 +121,22 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
         }
     };
 
+    private void checkBotMenuItem() {
+        if (botMenuItem == null) {
+            ActionBarMenu menu = parentEnterView.getParentFragment().getActionBar().createMenu();
+            botMenuItem = menu.addItem(1000, R.drawable.ic_ab_other);
+            botMenuItem.setVisibility(GONE);
+
+            botMenuItem.addSubItem(R.id.menu_reload_page, R.drawable.msg_retry, LocaleController.getString(R.string.BotWebViewReloadPage));
+        }
+    }
+
     public BotWebViewMenuContainer(@NonNull Context context, ChatActivityEnterView parentEnterView) {
         super(context);
 
         this.parentEnterView = parentEnterView;
         ChatActivity chatActivity = parentEnterView.getParentFragment();
         ActionBar actionBar = chatActivity.getActionBar();
-        ActionBarMenu menu = actionBar.createMenu();
-        botMenuItem = menu.addItem(1000, R.drawable.ic_ab_other);
-        botMenuItem.setVisibility(GONE);
-
-        botMenuItem.addSubItem(R.id.menu_reload_page, R.drawable.msg_retry, LocaleController.getString(R.string.BotWebViewReloadPage));
         actionBarOnItemClick = actionBar.getActionBarMenuOnItemClick();
 
         webViewContainer = new BotWebViewContainer(context, parentEnterView.getParentFragment().getResourceProvider(), getColor(Theme.key_windowBackgroundWhite));
@@ -451,6 +456,7 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
                 ActionBar actionBar = chatActivity.getActionBar();
                 if (value == 100 && parentEnterView.hasBotWebView()) {
                     chatActivity.showHeaderItem(false);
+                    checkBotMenuItem();
                     botMenuItem.setVisibility(VISIBLE);
                     actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
                         @Override
@@ -480,7 +486,9 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
                     });
                 } else {
                     chatActivity.showHeaderItem(true);
-                    botMenuItem.setVisibility(GONE);
+                    if (botMenuItem != null) {
+                        botMenuItem.setVisibility(GONE);
+                    }
                     actionBar.setActionBarMenuOnItemClick(actionBarOnItemClick);
                 }
             });
@@ -643,7 +651,7 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
         this.botId = botId;
         this.botUrl = botUrl;
 
-        savedEditText = parentEnterView.getEditField().getText();
+        savedEditText = parentEnterView.getEditText();
         parentEnterView.getEditField().setText(null);
         savedReplyMessageObject = parentEnterView.getReplyingMessageObject();
         savedEditMessageObject = parentEnterView.getEditingMessageObject();
@@ -813,7 +821,7 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
         }
 
         AndroidUtilities.runOnUIThread(()->{
-            if (savedEditText != null) {
+            if (savedEditText != null && parentEnterView.getEditField() != null) {
                 parentEnterView.getEditField().setText(savedEditText);
                 savedEditText = null;
             }

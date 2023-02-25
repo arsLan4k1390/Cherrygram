@@ -58,8 +58,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class GroupStickersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private FrameLayout emptyFrameView;
@@ -119,7 +117,6 @@ public class GroupStickersActivity extends BaseFragment implements NotificationC
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("GroupStickers", R.string.GroupStickers));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

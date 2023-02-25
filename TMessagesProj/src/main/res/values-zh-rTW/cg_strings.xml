@@ -7,8 +7,6 @@
     <string name="CG_Country">國家/地區</string>
     <string name="CG_ChooseCountry">選擇國家/地區</string>
     <string name="CG_WrongCountry">國碼為無效</string>
-    <string name="CG_ProxyInfo">您可能需要在登入前設定代理伺服器，以防您的國家/地區或ISP封鎖了Telegram</string>
-    <string name="CG_ProxySettings">代理伺服器設定</string>
     <string name="CG_TestBackendNumber">測試帳戶</string>
     <string name="CG_TestBackendOn">使用測試伺服器登入帳戶</string>
     <string name="CG_TestBackendOff">使用主用伺服器登入帳戶</string>
@@ -21,9 +19,6 @@
     <string name="CG_ChooseFolderIcon">選擇圖示</string>
     <string name="CP_NewTabs_NoCounter">隱藏Tab列數字</string>
     <string name="CP_NewTabs_NoCounter_Desc">隱藏未讀訊息數量</string>
-    <string name="CP_VKUIFoldersStyle">VKUI 資料夾樣式</string>
-    <string name="CP_VKUIFoldersStyle_Desc">開啟由 VK 提供的資料夾樣式</string>
-    <string name="CP_VKUIFoldersStyle_Frame">VKUI 框架大小校正</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">回到頂端</string>
@@ -44,12 +39,6 @@
     <string name="CG_FwdMenu_EnableCaptions">顯示字幕</string>
     <string name="CG_FwdMenu_DisableCaptions">隱藏字幕</string>
     <!--Chats screen-->
-    <!--Group permissions-->
-    <string name="GP_UserRestrictionsSendStickers2">傳送貼圖</string>
-    <string name="GP_UserRestrictionsSendGifs">傳送 GIF</string>
-    <string name="GP_UserRestrictionsSendGames">傳送動態遊戲</string>
-    <string name="GP_UserRestrictionsUseInlineBot">使用內嵌機器人傳送</string>
-    <!--Group permissions-->
     <!--Misc-->
     <string name="LS_EnterPasscode">輸入 Cherrygram 密碼</string>
     <string name="CG_SwitchBackend">即將切換到測試伺服器。如果您不知道自己在做什麼，請立即退出。您可以再次長按調試選單中的切換後端來切換到普通伺服器</string>
@@ -81,6 +70,9 @@
     <string name="CGP_Crowdin">協助翻譯</string>
     <string name="CGP_Header_Categories">偏好</string>
     <!--Cherrygram Preferences-->
+    <!--General Preferences-->
+    <string name="AP_Header_General">一般</string>
+    <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">主題</string>
     <string name="AP_RedesignCategory">介面</string>
@@ -98,6 +90,7 @@
     <string name="AP_IconReplacement_VKUI">VKUI 圖示</string>
     <string name="AP_IconReplacement_Solar">由 @Design480 設計的 Solar 圖示</string>
     <string name="AP_IconReplacement_Default">預設</string>
+    <string name="AP_SystemEmoji">使用系統 Emoji</string>
     <string name="AP_CenterTitle">在操作列中置中標題</string>
     <string name="AP_ToolBarShadow">停用工具列陰影</string>
     <string name="AP_TransparentSB">透明狀態列</string>
@@ -125,6 +118,11 @@
     <string name="AP_FolderNameInHeader">使用資料夾名稱而非「Cherrygram」</string>
     <string name="AP_FolderNameInHeader_Desc">這會將操作列中的「Cherrygram」變更為資料夾名稱 (開啟僅顯示圖示時效果為最佳)</string>
     <string name="CP_NewTabs_RemoveAllChats">隱藏所有對話 Tab</string>
+    <string name="AP_Tab_Style">Tab 樣式</string>
+    <string name="AP_Tab_Style_Default">預設</string>
+    <string name="AP_Tab_Style_Rounded">圓形</string>
+    <string name="AP_Tab_Style_Text">文字</string>
+    <string name="AP_Tab_Style_Pills">藥丸</string>
     <string name="AP_DrawerCategory">側邊欄</string>
     <string name="AP_DrawerPreferences">側邊欄偏好設定</string>
     <string name="AP_DrawerAvatar">側邊欄背景使用大頭貼圖片</string>
@@ -204,8 +202,9 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">實驗功能</string>
+    <string name="CG_OpenProfile">長按對話大頭貼開啟個人檔案</string>
     <string name="CG_ResidentNotification">顯示永久通知</string>
-    <string name="EP_PhotosSize">圖片大小</string>
+    <string name="EP_PhotosSize">傳送大型圖片(2560 像素)</string>
     <string name="EP_ShowRPCError">透過 Toast 提示全部 RPC 錯誤</string>
     <string name="EP_Network">網路</string>
     <string name="EP_DownloadSpeedBoost">下載加速</string>

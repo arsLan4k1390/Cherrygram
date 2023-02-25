@@ -6,6 +6,7 @@ import uz.unnarsx.cherrygram.preferences.drawer.DrawerIconsPreferencesEntry
 object CherrygramPreferencesNavigator {
     @JvmStatic
     fun createMainMenu() = TGKitSettingsFragment(MainPreferencesEntry())
+    fun createGeneral() = TGKitSettingsFragment(GeneralPreferencesEntry())
     fun createAppearance() = TGKitSettingsFragment(AppearancePreferencesEntry())
     fun createDrawerIcons() = TGKitSettingsFragment(DrawerIconsPreferencesEntry())
     fun createChats() = TGKitSettingsFragment(ChatsPreferencesEntry())

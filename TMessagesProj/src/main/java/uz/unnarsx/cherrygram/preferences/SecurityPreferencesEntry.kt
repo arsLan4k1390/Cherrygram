@@ -8,6 +8,7 @@ import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.BulletinFactory
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
@@ -36,6 +37,12 @@ class SecurityPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.appcenterAnalytics
                 }) {
                     CherrygramConfig.appcenterAnalytics = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
                 }
             }
 

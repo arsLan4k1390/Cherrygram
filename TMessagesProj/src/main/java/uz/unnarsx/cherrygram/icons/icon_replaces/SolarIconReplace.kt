@@ -38,10 +38,6 @@ class SolarIconReplace : BaseIconReplace() {
             R.drawable.msg_language to R.drawable.msg_language_solar,
             R.drawable.msg_ask_question to R.drawable.msg_ask_question_solar,
             R.drawable.msg_policy to R.drawable.msg_policy_solar,
-            R.drawable.msg_email to R.drawable.msg_email_solar,
-            R.drawable.msg_storage_usage to R.drawable.msg_storage_usage_solar,
-            R.drawable.msg_data_usage to R.drawable.msg_data_usage_solar, //need to replace with new
-            R.drawable.msg_storage_path to R.drawable.msg_storage_path_solar, //need to replace with new
             // Logout activity
             R.drawable.msg_contact_add to R.drawable.msg_contact_add_solar,
             R.drawable.msg_clearcache to R.drawable.msg_delete_solar,

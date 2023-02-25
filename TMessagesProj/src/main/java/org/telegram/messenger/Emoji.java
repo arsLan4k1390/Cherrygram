@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.helpers.EmojiHelper;
 
 public class Emoji {
 
@@ -65,7 +66,15 @@ public class Emoji {
     private static Runnable invalidateUiRunnable = () -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.emojiLoaded);
     public static float emojiDrawingYOffset;
     public static boolean emojiDrawingUseAlpha = true;
-    
+
+    private static String[] DEFAULT_RECENT = new String[]{
+            "\uD83D\uDE02", "\uD83D\uDE18", "\u2764", "\uD83D\uDE0D", "\uD83D\uDE0A", "\uD83D\uDE01",
+            "\uD83D\uDC4D", "\u263A", "\uD83D\uDE14", "\uD83D\uDE04", "\uD83D\uDE2D", "\uD83D\uDC8B",
+            "\uD83D\uDE12", "\uD83D\uDE33", "\uD83D\uDE1C", "\uD83D\uDE48", "\uD83D\uDE09", "\uD83D\uDE03",
+            "\uD83D\uDE22", "\uD83D\uDE1D", "\uD83D\uDE31", "\uD83D\uDE21", "\uD83D\uDE0F", "\uD83D\uDE1E",
+            "\uD83D\uDE05", "\uD83D\uDE1A", "\uD83D\uDE4A", "\uD83D\uDE0C", "\uD83D\uDE00", "\uD83D\uDE0B",
+            "\uD83D\uDE06", "\uD83D\uDC4C", "\uD83D\uDE10", "\uD83D\uDE15"
+    };
 
     static {
         drawImgSize = AndroidUtilities.dp(20);
@@ -234,6 +243,7 @@ public class Emoji {
         private DrawableInfo info;
         private boolean fullSize = false;
         private static Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
+        private static Paint textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
         private static Rect rect = new Rect();
         public int placeholderColor = 0x10000000;
 
@@ -270,6 +280,14 @@ public class Emoji {
                 b = getDrawRect();
             } else {
                 b = getBounds();
+            }
+
+            if (CherrygramConfig.INSTANCE.getSystemEmoji()) {
+                String emoji = fixEmoji(EmojiData.data[info.page][info.emojiIndex]);
+                textPaint.setTypeface(EmojiHelper.getSystemEmojiTypeface());
+                textPaint.setTextSize(b.height() * 0.8f);
+                canvas.drawText(emoji, 0, emoji.length(), b.left, b.bottom - b.height() * 0.225f, textPaint);
+                return;
             }
 
             if (!canvas.quickReject(b.left, b.top, b.right, b.bottom, Canvas.EdgeType.AA)) {
@@ -499,7 +517,7 @@ public class Emoji {
     }
 
     public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, boolean createNew, int[] emojiOnly, int alignment) {
-        if (SharedConfig.useSystemEmoji || cs == null || cs.length() == 0) {
+        if (/*SharedConfig.useSystemEmoji ||*/ cs == null || cs.length() == 0) {
             return cs;
         }
         Spannable s;
@@ -664,6 +682,14 @@ public class Emoji {
         emojiUseHistory.put(code, ++count);
     }
 
+    public static void removeRecentEmoji(String code) {
+        emojiUseHistory.remove(code);
+        recentEmoji.remove(code);
+        if (emojiUseHistory.isEmpty() || recentEmoji.isEmpty()) {
+            addRecentEmoji(DEFAULT_RECENT[0]);
+        }
+    }
+
     public static void sortEmoji() {
         recentEmoji.clear();
         for (HashMap.Entry<String, Integer> entry : emojiUseHistory.entrySet()) {
@@ -757,15 +783,8 @@ public class Emoji {
             }
             if (emojiUseHistory.isEmpty()) {
                 if (!preferences.getBoolean("filled_default", false)) {
-                    String[] newRecent = new String[]{
-                            "\uD83D\uDE02", "\uD83D\uDE18", "\u2764", "\uD83D\uDE0D", "\uD83D\uDE0A", "\uD83D\uDE01",
-                            "\uD83D\uDC4D", "\u263A", "\uD83D\uDE14", "\uD83D\uDE04", "\uD83D\uDE2D", "\uD83D\uDC8B",
-                            "\uD83D\uDE12", "\uD83D\uDE33", "\uD83D\uDE1C", "\uD83D\uDE48", "\uD83D\uDE09", "\uD83D\uDE03",
-                            "\uD83D\uDE22", "\uD83D\uDE1D", "\uD83D\uDE31", "\uD83D\uDE21", "\uD83D\uDE0F", "\uD83D\uDE1E",
-                            "\uD83D\uDE05", "\uD83D\uDE1A", "\uD83D\uDE4A", "\uD83D\uDE0C", "\uD83D\uDE00", "\uD83D\uDE0B",
-                            "\uD83D\uDE06", "\uD83D\uDC4C", "\uD83D\uDE10", "\uD83D\uDE15"};
-                    for (int i = 0; i < newRecent.length; i++) {
-                        emojiUseHistory.put(newRecent[i], newRecent.length - i);
+                    for (int i = 0; i < DEFAULT_RECENT.length; i++) {
+                        emojiUseHistory.put(DEFAULT_RECENT[i], DEFAULT_RECENT.length - i);
                     }
                     preferences.edit().putBoolean("filled_default", true).apply();
                     saveRecentEmoji();

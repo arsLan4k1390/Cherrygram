@@ -67,8 +67,6 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class InviteContactsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, View.OnClickListener {
 
     private ScrollView scrollView;
@@ -320,7 +318,6 @@ public class InviteContactsActivity extends BaseFragment implements Notification
         currentDeletingSpan = null;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("InviteFriends", R.string.InviteFriends));
 

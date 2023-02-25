@@ -274,7 +274,6 @@ public class CameraScanActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        
         if (shownAsBottomSheet) {
             actionBar.setItemsColor(0xffffffff, false);
             actionBar.setItemsBackgroundColor(0xffffffff, false);

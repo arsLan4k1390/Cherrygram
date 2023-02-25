@@ -7,8 +7,6 @@
     <string name="CG_Country">País/Región</string>
     <string name="CG_ChooseCountry">Elige un País/Región</string>
     <string name="CG_WrongCountry">Código de País/Región no válido</string>
-    <string name="CG_ProxyInfo">Es posible que deba configurar un proxy antes de iniciar sesión, en caso de que su país o ISP bloqueen Telegram.</string>
-    <string name="CG_ProxySettings">Ajustes de proxy</string>
     <string name="CG_TestBackendNumber">Número de prueba</string>
     <string name="CG_TestBackendOn">Esta cuenta se conectará con el backend de prueba.</string>
     <string name="CG_TestBackendOff">Esta cuenta se conectará con el backend de producción.</string>
@@ -21,9 +19,6 @@
     <string name="CG_ChooseFolderIcon">Elige un icono</string>
     <string name="CP_NewTabs_NoCounter">Ocultar contador en pestañas</string>
     <string name="CP_NewTabs_NoCounter_Desc">Esto ocultará el contador de mensajes no leídos</string>
-    <string name="CP_VKUIFoldersStyle">Estilo de carpetas VKUI</string>
-    <string name="CP_VKUIFoldersStyle_Desc">Esto activará el estilo de las carpetas de VK</string>
-    <string name="CP_VKUIFoldersStyle_Frame">Corrección de Tamaño de marco VKUI</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">Al inicio</string>
@@ -44,12 +39,6 @@
     <string name="CG_FwdMenu_EnableCaptions">Habilitar textos</string>
     <string name="CG_FwdMenu_DisableCaptions">Ocultar textos</string>
     <!--Chats screen-->
-    <!--Group permissions-->
-    <string name="GP_UserRestrictionsSendStickers2">Enviar Stickers</string>
-    <string name="GP_UserRestrictionsSendGifs">Enviar GIFs</string>
-    <string name="GP_UserRestrictionsSendGames">Enviar juegos animados</string>
-    <string name="GP_UserRestrictionsUseInlineBot">Usar bots inline</string>
-    <!--Group permissions-->
     <!--Misc-->
     <string name="LS_EnterPasscode">Introduzca su código de acceso de Cherrygram</string>
     <string name="CG_SwitchBackend">Vas a cambiar al servidor de pruebas. Por favor, no presiones OK si no sabes lo que estás haciendo. Puede cambiar al servidor normal pulsando \"Switch backend\" en el menú de depuración de nuevo.</string>
@@ -81,6 +70,9 @@
     <string name="CGP_Crowdin">Ayuda con la traducción</string>
     <string name="CGP_Header_Categories">Categorías</string>
     <!--Cherrygram Preferences-->
+    <!--General Preferences-->
+    <string name="AP_Header_General">General</string>
+    <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Apariencia</string>
     <string name="AP_RedesignCategory">Rediseño</string>
@@ -98,6 +90,7 @@
     <string name="AP_IconReplacement_VKUI">Iconos VKUI</string>
     <string name="AP_IconReplacement_Solar">Iconos solares por @Design480</string>
     <string name="AP_IconReplacement_Default">Por defecto</string>
+    <string name="AP_SystemEmoji">Usar emojis del sistema</string>
     <string name="AP_CenterTitle">Centrar título en la barra de acción</string>
     <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
     <string name="AP_TransparentSB">Barra de estado transparente</string>
@@ -125,6 +118,11 @@
     <string name="AP_FolderNameInHeader">Nombre de la carpeta en lugar de \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Esto cambiará \"Cherrygram\" en la barra de acción al nombre de tu carpeta (útil si solo tienes iconos en lugar de nombres de carpetas)</string>
     <string name="CP_NewTabs_RemoveAllChats">Ocultar carpeta \"Todos\"</string>
+    <string name="AP_Tab_Style">Estilo Tabs (Pestañas)</string>
+    <string name="AP_Tab_Style_Default">Por defecto</string>
+    <string name="AP_Tab_Style_Rounded">Redondeado</string>
+    <string name="AP_Tab_Style_Text">Texto</string>
+    <string name="AP_Tab_Style_Pills">Pastillas</string>
     <string name="AP_DrawerCategory">Cajón</string>
     <string name="AP_DrawerPreferences">Preferencias del cajón</string>
     <string name="AP_DrawerAvatar">Foto de perfil como fondo del cajón</string>
@@ -204,8 +202,9 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
+    <string name="CG_OpenProfile">Abrir perfil en lugar de vista previa del chat</string>
     <string name="CG_ResidentNotification">Mostrar una notificación permanente</string>
-    <string name="EP_PhotosSize">Tamaño fotos</string>
+    <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
     <string name="EP_ShowRPCError">Enviar todos los errores RPC</string>
     <string name="EP_Network">Red</string>
     <string name="EP_DownloadSpeedBoost">Aumento de velocidad de descarga</string>
