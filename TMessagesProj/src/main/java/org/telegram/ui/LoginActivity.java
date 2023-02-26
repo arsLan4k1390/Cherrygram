@@ -3346,7 +3346,9 @@ public class LoginActivity extends BaseFragment {
                             onAuthSuccess((TLRPC.TL_auth_authorization) ((TLRPC.TL_auth_loginTokenSuccess) response).authorization);
                         }, 150);
                     } else if (response instanceof TLRPC.TL_auth_loginTokenMigrateTo) {
-                        qrDialog.dismiss();
+                        if (qrDialog != null) {
+                            qrDialog.dismiss();
+                        }
                         showDoneButton(true, true);
                         TLRPC.TL_auth_loginTokenMigrateTo res = (TLRPC.TL_auth_loginTokenMigrateTo) response;
 

@@ -3653,8 +3653,6 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 AndroidUtilities.runOnUIThread(() -> {
                     recordStartRunnable = null;
                     NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.recordStartError, guid);
-                    NotificationCenter.getInstance(recordingCurrentAccount).postNotificationName(NotificationCenter.audioDidSent, recordingGuid, null, null);
-
                 });
                 return;
             }
@@ -3663,7 +3661,6 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
             AndroidUtilities.runOnUIThread(() -> {
                 recordStartRunnable = null;
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.recordStarted, guid, true);
-                NotificationCenter.getInstance(recordingCurrentAccount).postNotificationName(NotificationCenter.audioDidSent, recordingGuid, null, null);
             });
         }, paused ? 500 : 50);
     }
