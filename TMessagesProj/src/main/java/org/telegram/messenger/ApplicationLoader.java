@@ -560,7 +560,7 @@ public class ApplicationLoader extends Application {
         return result;
     }
 
-    /*public static void startAppCenter(Activity context) {
+    public static void startAppCenter(Activity context) {
         applicationLoaderInstance.startAppCenterInternal(context);
     }
 
@@ -582,6 +582,6 @@ public class ApplicationLoader extends Application {
 
     protected void startAppCenterInternal(Activity context) {
 
-    }*/
+    }
 
 }

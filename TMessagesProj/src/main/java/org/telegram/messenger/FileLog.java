@@ -298,9 +298,9 @@ public class FileLog {
         if (!BuildVars.LOGS_ENABLED) {
             return;
         }
-        /*if (BuildVars.DEBUG_VERSION && needSent(e) && logToAppCenter) {
+        if (BuildVars.DEBUG_VERSION && needSent(e) && logToAppCenter) {
             AndroidUtilities.appCenterLog(e);
-        }*/
+        }
         if (BuildVars.DEBUG_VERSION && e.getMessage() != null && e.getMessage().contains("disk image is malformed") && !databaseIsMalformed) {
             FileLog.d("copy malformed files");
             databaseIsMalformed = true;
@@ -345,9 +345,9 @@ public class FileLog {
         if (!BuildVars.LOGS_ENABLED) {
             return;
         }
-        /*if (BuildVars.DEBUG_VERSION && needSent(e) && logToAppCenter) {
+        if (BuildVars.DEBUG_VERSION && needSent(e) && logToAppCenter) {
             AndroidUtilities.appCenterLog(e);
-        }*/
+        }
         ensureInitied();
         e.printStackTrace();
         if (getInstance().streamWriter != null) {

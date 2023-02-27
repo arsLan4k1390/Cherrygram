@@ -1152,9 +1152,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } catch (Throwable e) {
                 FileLog.e(e);
                 AndroidUtilities.runOnUIThread(() -> {
-                    RecyclerListView innerListView = sharedMediaLayout.getCurrentListView();
-                    if (innerListView != null && innerListView.getAdapter() != null) {
-                        innerListView.getAdapter().notifyDataSetChanged();
+                    try {
+                        RecyclerListView innerListView = sharedMediaLayout.getCurrentListView();
+                        if (innerListView != null && innerListView.getAdapter() != null) {
+                            innerListView.getAdapter().notifyDataSetChanged();
+                        }
+                    } catch (Throwable e2) {
+
                     }
                 });
             }
