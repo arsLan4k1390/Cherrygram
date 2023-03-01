@@ -294,6 +294,7 @@
     <!--Donations-->
     <string name="DP_Donate">Donate</string>
     <string name="DP_Donate_Method">Choose method</string>
+    <string name="DP_Donate_Cryptocurrency">Cryptocurrency</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 

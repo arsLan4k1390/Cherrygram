@@ -33,7 +33,6 @@ import android.text.TextWatcher;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.transition.TransitionValues;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -451,7 +450,6 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                         updateSendButton();
                         updateFields();
                         updateDescription();
-                        Log.d("sticker set id", String.valueOf(stickerSet.set.id));
                         adapter.notifyDataSetChanged();
                     } else {
                         dismiss();

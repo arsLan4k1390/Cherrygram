@@ -42,7 +42,7 @@ public class TextCheckCell2 extends FrameLayout {
     private LinearLayout collapseViewContainer;
     private AnimatedTextView animatedTextView;
     private View collapsedArrow;
-    public View checkBoxClickArea;
+    private View checkBoxClickArea;
 
     public void setCollapseArrow(String text, boolean collapsed, Runnable onCheckClick) {
         if (collapseViewContainer == null) {
@@ -192,6 +192,9 @@ public class TextCheckCell2 extends FrameLayout {
             checkBox.setAlpha(0.5f);
             textView.setAlpha(0.5f);
             valueTextView.setAlpha(0.5f);
+        }
+        if (checkBoxClickArea != null) {
+            checkBoxClickArea.setEnabled(value);
         }
     }
 

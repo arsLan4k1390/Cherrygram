@@ -26,13 +26,13 @@ public class BuildVars {
     public static boolean USE_CLOUD_STRINGS = true;
     public static boolean CHECK_UPDATES = false;
     public static boolean NO_SCOPED_STORAGE = Build.VERSION.SDK_INT <= 29;
-    public static int BUILD_VERSION = 3161;
-    public static String BUILD_VERSION_STRING = "9.4.8";
+    public static int BUILD_VERSION = 3164;
+    public static String BUILD_VERSION_STRING = "9.4.9";
     public static int APP_ID = 4;
     public static String APP_HASH = "014b35b6184100b085b0d0572f9b5103";
 
     // SafetyNet key for Google Identity SDK, set it to empty to disable
-    public static String SAFETYNET_KEY = "AIzaSyDqt8P-7F7CPCseMkOiVRgb1LY8RN1bvH8";
+    public static String SAFETYNET_KEY = "";
     public static String SMS_HASH = isStandaloneApp() ? "w0lkcmTZkKh" : (DEBUG_VERSION ? "O2P2z+/jBpJ" : "oLeq9AcOZkT");
     public static String PLAYSTORE_APP_URL = "https://telegram.me/Cherry_gram";
     public static String GOOGLE_AUTH_CLIENT_ID = "119732785963-ooptebss6v859a1ojsqn05j6oejon5ug.apps.googleusercontent.com";

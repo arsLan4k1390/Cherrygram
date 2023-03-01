@@ -3195,6 +3195,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     ArrayList<MessageObject> messages = getSelectedMessages();
                     forwardMessages(messages, false, true, 0, UserConfig.getInstance(currentAccount).getClientUserId());
                     createUndoView();
+                    if (undoView == null) {
+                        return;
+                    }
                     undoView.showWithAction(getUserConfig().getClientUserId(), UndoView.ACTION_FWD_MESSAGES, messages.size());
                 } else if (id == OPTION_DELETE_ALL_FROM_SELF) {
                     getMessageHelper().createDeleteHistoryAlert(ChatActivity.this, currentChat, mergeDialogId, themeDelegate);
@@ -25540,6 +25543,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         messageCell.updateButtonState(false, true, false);
                     }
                     createUndoView();
+                    if (undoView == null) {
+                        return;
+                    }
                     undoView.setInfoText(LocaleController.formatString("CG_ClearedFromCache", R.string.CG_ClearedFromCache));
                     undoView.showWithAction(0, UndoView.ACTION_CACHE_WAS_CLEARED, null, null);
                 } catch (Exception ignore) {
@@ -26194,6 +26200,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
                 forwardMessages(messages, false, true, 0, getUserConfig().getClientUserId());
                 createUndoView();
+                if (undoView == null) {
+                    return;
+                }
                 undoView.showWithAction(getUserConfig().getClientUserId(), UndoView.ACTION_FWD_MESSAGES, messages.size());
                 break;
             }

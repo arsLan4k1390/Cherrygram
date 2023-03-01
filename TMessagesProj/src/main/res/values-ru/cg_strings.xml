@@ -285,6 +285,7 @@
     <!--Donations-->
     <string name="DP_Donate">Поддержать разработку</string>
     <string name="DP_Donate_Method">Выберите метод</string>
+    <string name="DP_Donate_Cryptocurrency">Криптовалюта</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 

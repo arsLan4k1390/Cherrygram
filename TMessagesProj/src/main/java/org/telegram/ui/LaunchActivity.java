@@ -201,6 +201,7 @@ import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry;
 import uz.unnarsx.cherrygram.tgkit.CherrygramPreferencesNavigator;
 import uz.unnarsx.cherrygram.helpers.MonetHelper;
 import uz.unnarsx.cherrygram.updater.UpdaterUtils;
@@ -630,7 +631,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 } else if (id == 1000) {
                     ActionIntroActivity fragment = new ActionIntroActivity(ActionIntroActivity.ACTION_TYPE_QR_LOGIN);
                     fragment.setQrLoginDelegate(code -> {
-                        AlertDialog progressDialog = new AlertDialog(LaunchActivity.this, 3);
+                        AlertDialog progressDialog = new AlertDialog(LaunchActivity.this, AlertDialog.ALERT_TYPE_SPINNER);
                         progressDialog.setCanCancel(false);
                         progressDialog.show();
                         byte[] token = Base64.decode(code.substring("tg://login?token=".length()), Base64.URL_SAFE);
@@ -646,10 +647,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                             }
                         }));
                     });
-                    actionBarLayout.presentFragment(fragment, false, true, true, false);
+                    actionBarLayout.presentFragment(new INavigationLayout.NavigationParams(fragment).setNoAnimation(true));
                     if (AndroidUtilities.isTablet()) {
-                        actionBarLayout.showLastFragment();
-                        rightActionBarLayout.showLastFragment();
+                        actionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST);
+                        rightActionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST);
                         drawerLayoutContainer.setAllowOpenDrawer(false, false);
                     } else {
                         drawerLayoutContainer.setAllowOpenDrawer(true, false);
@@ -2255,16 +2256,34 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                 }
                                 case "tg": {
                                     String url = data.toString();
+                                    BaseFragment fragment = actionBarLayout.getFragmentStack().get(0);
                                     if (url.startsWith("tg:premium_offer") || url.startsWith("tg://premium_offer")) {
                                         String finalUrl = url;
                                         AndroidUtilities.runOnUIThread(() -> {
                                         if (!actionBarLayout.getFragmentStack().isEmpty()) {
-                                            BaseFragment fragment = actionBarLayout.getFragmentStack().get(0);
                                             Uri uri = Uri.parse(finalUrl);
                                             fragment.presentFragment(new PremiumPreviewFragment(uri.getQueryParameter("ref")));
                                         }});
-                                    } else if (url.startsWith("tg:restart_cherrygram") || url.startsWith("tg://restart_cherrygram")) {
+                                    } else if (url.startsWith("tg:cg_restart") || url.startsWith("tg://cg_restart")) {
                                         AppRestartHelper.triggerRebirth(ApplicationLoader.applicationContext, new Intent(ApplicationLoader.applicationContext, LaunchActivity.class));
+                                    } else if (url.startsWith("tg:cg_main") || url.startsWith("tg://cg_main")) {
+                                        presentFragment(CherrygramPreferencesNavigator.createMainMenu());
+                                    } else if (url.startsWith("tg:cg_general") || url.startsWith("tg://cg_general")) {
+                                        fragment.presentFragment(CherrygramPreferencesNavigator.INSTANCE.createGeneral());
+                                    } else if (url.startsWith("tg:cg_drawer") || url.startsWith("tg://cg_drawer")) {
+                                        presentFragment(new DrawerPreferencesEntry());
+                                    } else if (url.startsWith("tg:cg_appearance") || url.startsWith("tg://cg_appearance")) {
+                                        fragment.presentFragment(CherrygramPreferencesNavigator.INSTANCE.createAppearance());
+                                    } else if (url.startsWith("tg:cg_chats") || url.startsWith("tg://cg_chats")) {
+                                        fragment.presentFragment(CherrygramPreferencesNavigator.INSTANCE.createChats());
+                                    } else if (url.startsWith("tg:cg_camera") || url.startsWith("tg://cg_camera")) {
+                                        presentFragment(new CameraPrefenrecesEntry());
+                                    } else if (url.startsWith("tg:cg_experimental") || url.startsWith("tg://cg_experimental")) {
+                                        presentFragment(new ExperimentalPreferencesEntry());
+                                    } else if (url.startsWith("tg:cg_security") || url.startsWith("tg://cg_security")) {
+                                        fragment.presentFragment(CherrygramPreferencesNavigator.INSTANCE.createSecurity());
+                                    } else if (url.startsWith("tg:cg_donates") || url.startsWith("tg://cg_donates")) {
+                                        fragment.presentFragment(CherrygramPreferencesNavigator.INSTANCE.createDonate());
                                     } else if (url.startsWith("tg:resolve") || url.startsWith("tg://resolve")) {
                                         url = url.replace("tg:resolve", "tg://telegram.org").replace("tg://resolve", "tg://telegram.org");
                                         data = Uri.parse(url);
@@ -2546,10 +2565,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                             open_settings = 5;
                                         } else if (url.contains("notifications")) {
                                             open_settings = 7;
-                                        } else if (url.contains("cherrygram_camera")) {
-                                            open_settings = 8;
-                                        } else if (url.contains("cherrygram_experimental")) {
-                                            open_settings = 9;
                                         } else {
                                             open_settings = 1;
                                         }
@@ -2907,10 +2922,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     fragment = new EditWidgetActivity(open_widget_edit_type, open_widget_edit);
                 } else if (open_settings == 7) {
                     fragment = new NotificationsSettingsActivity();
-                } else if (open_settings == 8) {
-                    fragment = new CameraPrefenrecesEntry();
-                } else if (open_settings == 9) {
-                    fragment = new ExperimentalPreferencesEntry();
                 } else {
                     fragment = null;
                 }

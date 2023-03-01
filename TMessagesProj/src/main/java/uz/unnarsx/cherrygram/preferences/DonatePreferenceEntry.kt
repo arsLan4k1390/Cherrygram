@@ -55,7 +55,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                     Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
             }
-            textIcon {
+            /*textIcon {
                 title = "Apelsin Donates (Uzbekistan)"
                 divider = true
 
@@ -70,7 +70,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 listener = TGKitTextIconRow.TGTIListener {
                     Browser.openUrl(bf.parentActivity, "https://payme.uz/@arslan4k1390")
                 }
-            }
+            }*/
             textIcon {
                 title = "QIWI Wallet"
                 divider = true
@@ -81,41 +81,50 @@ class DonatePreferenceEntry : BasePreferencesEntry {
             }
             textIcon {
                 title = "QIWI MIR Card"
-                divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
                     AndroidUtilities.addToClipboard("2200730250744709")
                     Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
             }
-            /*textIcon {
-                title = "YooMoney Wallet"
+        }
+
+        category(LocaleController.getString("DP_Donate_Cryptocurrency", R.string.DP_Donate_Cryptocurrency)) {
+            textIcon {
+                title = "Bitcoin"
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    val openURL = Intent(android.content.Intent.ACTION_VIEW)
-                    openURL.data = Uri.parse("https://yoomoney.ru/to/4100116983696293")
-                    bf.parentActivity.startActivity(openURL)
+                    AndroidUtilities.addToClipboard("1Pr6GqqWakgKWW1nDjVyHUYo1AcWbSN453")
+                    Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
-            }*/
-            /*textIcon {
-                title = "TON Coin"
+            }
+            textIcon {
+                title = "TON Coin (v3R2)"
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
                     AndroidUtilities.addToClipboard("EQCVVayzZkpm4LoHi9yuJQFjxRqi2qM4o0dqMLvZnXOFFE-3")
                     Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
-            }*/
-//            textIcon {
-//                title = "Bitcoin"
-//                divider = true
-//
-//                listener = TGKitTextIconRow.TGTIListener {
-//                    AndroidUtilities.addToClipboard("3JQ7rBmnbJBxQQ25TsFLzy1F74k3jgfcYj")
-//                    Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
-//                }
-//            }
+            }
+            textIcon {
+                title = "Ethereum (ERC20)"
+                divider = true
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    AndroidUtilities.addToClipboard("0xa8392346f426443ef7e3d98047bace6dbcc0e7d8")
+                    Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
+                }
+            }
+            textIcon {
+                title = "TetherUS - USDT (TRC20)"
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    AndroidUtilities.addToClipboard("TKnPT5rojMf851ejov2Xu4pxKcMfSh4Ws9")
+                    Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }

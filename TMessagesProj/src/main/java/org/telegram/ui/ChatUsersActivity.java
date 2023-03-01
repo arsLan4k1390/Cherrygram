@@ -1052,7 +1052,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                     return;
                 } else if (position > permissionsSectionRow && position <= Math.max(manageTopicsRow, changeInfoRow)) {
                     TextCheckCell2 checkCell = (TextCheckCell2) view;
-                    if (!checkCell.isEnabled()) {
+                    if (position != sendMediaRow && !checkCell.isEnabled()) {
                         return;
                     }
                     if (checkCell.hasIcon()) {
@@ -3044,10 +3044,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int viewType = holder.getItemViewType();
-            if (viewType == VIEW_TYPE_EXPANDABLE_SWITCH) {
-                return true;
-            }
-            if (viewType == 7 || viewType == VIEW_TYPE_INNER_CHECK) {
+            if (viewType == 7 || viewType == VIEW_TYPE_EXPANDABLE_SWITCH || viewType == VIEW_TYPE_INNER_CHECK) {
                 return ChatObject.canBlockUsers(currentChat);
             } else if (viewType == 0) {
                 ManageChatUserCell cell = (ManageChatUserCell) holder.itemView;
@@ -3070,6 +3067,9 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 } else if (position == hideMembersRow) {
                     return ChatObject.canUserDoAdminAction(currentChat, ChatObject.ACTION_BLOCK_USERS);
                 }
+            }
+            if (viewType == VIEW_TYPE_INNER_CHECK) {
+                return true;
             }
             return false;
         }
@@ -3414,15 +3414,13 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                         checkCell.setCollapseArrow(String.format(Locale.US, "%d/9", sentMediaCount), !sendMediaExpanded, new Runnable() {
                             @Override
                             public void run() {
-                                if (ChatObject.canBlockUsers(currentChat)) {
-                                    boolean checked = !checkCell.isChecked();
-                                    checkCell.setChecked(checked);
-                                    setSendMediaEnabled(checked);
-                                }
+                                if (!ChatObject.canBlockUsers(currentChat)) return;
+                                boolean checked = !checkCell.isChecked();
+                                checkCell.setChecked(checked);
+                                setSendMediaEnabled(checked);
+
                             }
                         });
-                        checkCell.setAlpha(ChatObject.canBlockUsers(currentChat) ? 1.0f : 0.5f);
-                        checkCell.checkBoxClickArea.setEnabled(ChatObject.canBlockUsers(currentChat));
                     } else if (position == sendStickersRow) {
                         checkCell.setTextAndCheck(LocaleController.getString("UserRestrictionsSendStickers", R.string.UserRestrictionsSendStickers), !defaultBannedRights.send_stickers, true, animated);
                     } else if (position == embedLinksRow) {
