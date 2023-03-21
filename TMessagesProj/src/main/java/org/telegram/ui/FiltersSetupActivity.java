@@ -570,14 +570,14 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 RadioCell currRadioCell = (RadioCell) listView.getChildAt(position);
                 oldRadioCell.setChecked(false, true);
                 currRadioCell.setChecked(true, true);
+                ignoreUpdates = true;
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
-                getParentActivity().recreate();
+                ignoreUpdates = false;
             } else if (position == folderStyleNoUnreadRow) {
                 CherrygramConfig.INSTANCE.toggleNewTabs_noUnread();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getNewTabs_noUnread());
                 }
-                getParentActivity().recreate();
             } else if (position >= filtersStartRow && position < filtersEndRow) {
                 int filterPosition = position - filtersStartRow;
                 if (!showAllChats) {
@@ -761,13 +761,13 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                                 showDialog(alertDialog);
                                 TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
                                 if (button != null) {
-                                    button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+                                    button.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
                                 }
                             }
                         });
                         final AlertDialog dialog = builder1.create();
                         showDialog(dialog);
-                        dialog.setItemColor(items.length - 1, Theme.getColor(Theme.key_dialogTextRed2), Theme.getColor(Theme.key_dialogRedIcon));
+                        dialog.setItemColor(items.length - 1, Theme.getColor(Theme.key_dialogTextRed), Theme.getColor(Theme.key_dialogRedIcon));
                     });
                     view = filterCell;
                     break;

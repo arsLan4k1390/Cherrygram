@@ -3,10 +3,6 @@
     <!-- by t.me/arsLan-->
     <!--Telegram screens-->
     <!--Sign in screen-->
-    <string name="CG_StartText">Перевірте код Країни/Регіону і введіть свій номер телефону.</string>
-    <string name="CG_Country">Країна/Регіон</string>
-    <string name="CG_ChooseCountry">Оберіть Країну/Регіон</string>
-    <string name="CG_WrongCountry">Некоректний код Країни/Регіону</string>
     <string name="CG_TestBackendNumber">Тестовий номер</string>
     <string name="CG_TestBackendOn">Авторизація на тестовому сервері.</string>
     <string name="CG_TestBackendOff">Авторизація на основному сервері.</string>
@@ -78,7 +74,6 @@
     <string name="AP_RedesignCategory">Редизайн</string>
     <string name="AP_IconReplacements">Заміна іконок</string>
     <string name="AP_Old_Notification_Icon">Стандартна іконка повідомлень (Telegram)</string>
-    <string name="AP_Default_Notification_Name">Стандартна іконка повідомлень (Telegram)</string>
     <string name="AP_ChangeIconFilter">Використовувати іконки Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Вам потрібно перейти в цей розділ, щоб побачити нові іконки</string>
     <string name="AP_ChangeIcon_Default">По замовчуванню</string>
@@ -93,7 +88,6 @@
     <string name="AP_SystemEmoji">Використовувати системні емодзі</string>
     <string name="AP_CenterTitle">Центрувати заголовок в панелі дій</string>
     <string name="AP_ToolBarShadow">Відключити тінь у тулбару</string>
-    <string name="AP_TransparentSB">Прозорий статусбар</string>
     <string name="AP_FlatNB">Прозора панель навігації</string>
     <string name="AP_FlatNB_Desc">Панель навигації набуває кольору панелі відправки повідомлень</string>
     <string name="AP_SystemFonts">Використовувати системний шрифт</string>

@@ -494,6 +494,14 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
         }
     }
 
+    public void dismissWindow() {
+        reactionsWindow.dismiss();
+    }
+
+    public CustomEmojiReactionsWindow getReactionsWindow() {
+        return reactionsWindow;
+    }
+
     private void showCustomEmojiReactionDialog() {
         if (reactionsWindow != null) {
             return;
@@ -969,7 +977,7 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
                     }
                 }
             } else {
-                if (BuildVars.DEBUG_VERSION) {
+                if (BuildVars.DEBUG_PRIVATE_VERSION) {
                     throw new RuntimeException("Unknown chat reactions type: " + reactionsChat.available_reactions);
                 }
             }
@@ -1163,7 +1171,7 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
         alertDialog.show();
         TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (button != null) {
-            button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+            button.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
         }
     }
 
@@ -1363,7 +1371,7 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
             if (currentReaction.emojicon != null) {
                 TLRPC.TL_availableReaction defaultReaction = MediaDataController.getInstance(currentAccount).getReactionsMap().get(currentReaction.emojicon);
                 if (defaultReaction != null) {
-                    SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(defaultReaction.activate_animation, Theme.key_windowBackgroundWhiteGrayIcon, 1.0f);
+                    SvgHelper.SvgDrawable svgThumb = DocumentObject.getSvgThumb(defaultReaction.activate_animation, Theme.key_windowBackgroundWhiteGrayIcon, 0.2f);
                     if (!LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_EMOJI_REACTIONS)) {
                         if (SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_LOW) {
                             loopImageView.getImageReceiver().setImage(ImageLocation.getForDocument(defaultReaction.select_animation), "60_60_firstframe", null, null, hasEnterAnimation ? null : svgThumb, 0, "tgs", currentReaction, 0);
@@ -1589,6 +1597,14 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
                 startEnterAnimation(false);
             }
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (getAlpha() < 0.5f) {
+            return false;
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     @Override

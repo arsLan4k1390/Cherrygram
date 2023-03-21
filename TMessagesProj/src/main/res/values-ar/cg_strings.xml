@@ -3,10 +3,6 @@
     <!-- by t.me/arsLan-->
     <!--Telegram screens-->
     <!--Sign in screen-->
-    <string name="CG_StartText">يرجى تأكيد رمز البلد وإدخال رقم هاتفك.</string>
-    <string name="CG_Country">البلد/المنطقة</string>
-    <string name="CG_ChooseCountry">اختر البلد/المنطقة</string>
-    <string name="CG_WrongCountry">رمز البلد/المنطقة غير صحيح</string>
     <string name="CG_TestBackendNumber">إختبار رقم</string>
     <string name="CG_TestBackendOn">سيقوم هذا الحساب بالاتصال بواجهة الإختبار الخلفية.</string>
     <string name="CG_TestBackendOff">سيتصل هذا الحساب بالخلفية الإنتاجية.</string>
@@ -78,7 +74,6 @@
     <string name="AP_RedesignCategory">إعادة التصميم</string>
     <string name="AP_IconReplacements">استبدال الأيقونات</string>
     <string name="AP_Old_Notification_Icon">رمز الاشعارات الافتراضي (تيليجرام)</string>
-    <string name="AP_Default_Notification_Name">اسم الإشعار الافتراضي (تلغرام)</string>
     <string name="AP_ChangeIconFilter">إستخدام أيقونة تيليجرام</string>
     <string name="AP_ChangeIconFilter_Desc">يجب عليك إعادة إدخال هذا القسم لرؤية الرموز الجديدة</string>
     <string name="AP_ChangeIcon_Default">افتراضي</string>
@@ -93,7 +88,6 @@
     <string name="AP_SystemEmoji">استخدم الرموز التعبيرية للنظام</string>
     <string name="AP_CenterTitle">عنوان المركز في شريط العمل</string>
     <string name="AP_ToolBarShadow">تعطيل ضل شريط الأدوات</string>
-    <string name="AP_TransparentSB">شريط الحالة الشفاف</string>
     <string name="AP_FlatNB">شريط التنقل الشفاف</string>
     <string name="AP_FlatNB_Desc">سيحصل شريط التنقل على لون لوحة الرسائل</string>
     <string name="AP_SystemFonts">أستخدم خطوط النظام</string>

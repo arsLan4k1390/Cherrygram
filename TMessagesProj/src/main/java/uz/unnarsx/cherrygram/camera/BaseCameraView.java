@@ -8,6 +8,7 @@
 package uz.unnarsx.cherrygram.camera;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.TextureView;
 import android.widget.FrameLayout;
@@ -68,4 +69,10 @@ public abstract class BaseCameraView extends FrameLayout {
     public abstract float getTextureHeight(float width, float height);
 
     public abstract void startSwitchingAnimation();
+
+    public abstract void setThumbDrawable(Drawable drawable);
+
+    public abstract void showTexture(boolean show, boolean animated);
+
+    public abstract void initTexture();
 }

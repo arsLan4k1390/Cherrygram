@@ -54,6 +54,7 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.ReplacementSpan;
 import android.util.Base64;
@@ -97,6 +98,7 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.AuthTokensHelper;
 import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.CallReceiver;
 import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLog;
@@ -568,6 +570,7 @@ public class LoginActivity extends BaseFragment {
         };
         keyboardLinearLayout.addView(slideViewsContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 0, 1f));
         keyboardView = new CustomPhoneKeyboardView(context);
+        keyboardView.setViewToFindFocus(slideViewsContainer);
         keyboardLinearLayout.addView(keyboardView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, CustomPhoneKeyboardView.KEYBOARD_HEIGHT_DP));
 
         views[VIEW_PHONE_INPUT] = new PhoneView(context);
@@ -1461,6 +1464,10 @@ public class LoginActivity extends BaseFragment {
     public void setPage(@ViewNumber int page, boolean animated, Bundle params, boolean back) {
         boolean needFloatingButton = page == VIEW_PHONE_INPUT || page == VIEW_REGISTER || page == VIEW_PASSWORD ||
                 page == VIEW_NEW_PASSWORD_STAGE_1 || page == VIEW_NEW_PASSWORD_STAGE_2 || page == VIEW_ADD_EMAIL;
+        if (page == currentViewNum) {
+            animated = false;
+        }
+
         if (needFloatingButton) {
             if (page == VIEW_PHONE_INPUT) {
                 checkPermissions = true;
@@ -1784,6 +1791,8 @@ public class LoginActivity extends BaseFragment {
                 params.putString("emailPattern", res.type.email_pattern);
                 params.putInt("length", res.type.length);
                 params.putInt("nextPhoneLoginDate", res.type.next_phone_login_date);
+                params.putInt("resetAvailablePeriod", res.type.reset_available_period);
+                params.putInt("resetPendingDate", res.type.reset_pending_date);
                 setPage(VIEW_CODE_EMAIL, animate, params, false);
             }
         }
@@ -1839,9 +1848,6 @@ public class LoginActivity extends BaseFragment {
 
             subtitleView = new TextView(context);
             subtitleView.setText(LocaleController.getString(activityMode == MODE_CHANGE_PHONE_NUMBER ? R.string.ChangePhoneHelp : R.string.StartText));
-            /*if (ApplicationLoader.isHuaweiStoreBuild()) {
-                subtitleView.setText(LocaleController.getString(activityMode == MODE_CHANGE_PHONE_NUMBER ? R.string.ChangePhoneHelp : R.string.CG_StartText));
-            }*/
             subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             subtitleView.setGravity(Gravity.CENTER);
             subtitleView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
@@ -1876,16 +1882,10 @@ public class LoginActivity extends BaseFragment {
 
             countryOutlineView = new OutlineTextContainerView(context);
             countryOutlineView.setText(LocaleController.getString(R.string.Country));
-            /*if (ApplicationLoader.isHuaweiStoreBuild()) {
-                countryOutlineView.setText(LocaleController.getString(R.string.CG_Country));
-            }*/
             countryOutlineView.addView(countryButtonLinearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP, 0, 0, 0, 0));
             countryOutlineView.setForceUseCenter(true);
             countryOutlineView.setFocusable(true);
             countryOutlineView.setContentDescription(LocaleController.getString(R.string.Country));
-            /*if (ApplicationLoader.isHuaweiStoreBuild()) {
-                countryOutlineView.setContentDescription(LocaleController.getString(R.string.CG_Country));
-            }*/
             countryOutlineView.setOnFocusChangeListener((v, hasFocus) -> countryOutlineView.animateSelection(hasFocus ? 1 : 0));
             addView(countryOutlineView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, 24, 16, 14));
             countryOutlineView.setOnClickListener(view -> {
@@ -2111,9 +2111,6 @@ public class LoginActivity extends BaseFragment {
 
                         if (countryState == COUNTRY_STATE_INVALID) {
                             setCountryButtonText(LocaleController.getString(R.string.WrongCountry));
-                            /*if (ApplicationLoader.isHuaweiStoreBuild()) {
-                                setCountryButtonText(LocaleController.getString(R.string.CG_WrongCountry));
-                            }*/
                         }
                     } else {
                         if (countryState == COUNTRY_STATE_INVALID) {
@@ -2856,16 +2853,10 @@ public class LoginActivity extends BaseFragment {
 
             if (countryState == COUNTRY_STATE_EMPTY) {
                 needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("ChooseCountry", R.string.ChooseCountry));
-                /*if (ApplicationLoader.isHuaweiStoreBuild()) {
-                    needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("CG_ChooseCountry", R.string.CG_ChooseCountry));
-                }*/
                 needHideProgress(false);
                 return;
             } else if (countryState == COUNTRY_STATE_INVALID && !BuildVars.DEBUG_VERSION) {
                 needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("WrongCountry", R.string.WrongCountry));
-                /*if (ApplicationLoader.isHuaweiStoreBuild()) {
-                    needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("CG_WrongCountry", R.string.CG_WrongCountry));
-                }*/
                 needHideProgress(false);
                 return;
             }
@@ -3057,6 +3048,8 @@ public class LoginActivity extends BaseFragment {
                         } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
                             needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("InvalidCode", R.string.InvalidCode));
                         } else if (error.text.contains("PHONE_CODE_EXPIRED")) {
+                            onBackPressed(true);
+                            setPage(VIEW_PHONE_INPUT, true, null, true);
                             needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("CodeExpired", R.string.CodeExpired));
                         } else if (error.text.startsWith("FLOOD_WAIT")) {
                             needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("FloodWait", R.string.FloodWait));
@@ -4128,6 +4121,9 @@ public class LoginActivity extends BaseFragment {
             } else if (currentType == AUTH_TYPE_FLASH_CALL) {
                 AndroidUtilities.setWaitingForCall(true);
                 NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.didReceiveCall);
+                AndroidUtilities.runOnUIThread(() -> {
+                    CallReceiver.checkLastReceivedCall();
+                });
             }
 
             currentParams = params;
@@ -4226,7 +4222,9 @@ public class LoginActivity extends BaseFragment {
             if (currentType == AUTH_TYPE_MESSAGE) {
                 setProblemTextVisible(true);
                 timeText.setVisibility(GONE);
-                problemText.setVisibility(VISIBLE);
+                if (problemText != null) {
+                    problemText.setVisibility(VISIBLE);
+                }
             } else if (currentType == AUTH_TYPE_FLASH_CALL && (nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_SMS)) {
                 setProblemTextVisible(false);
                 timeText.setVisibility(VISIBLE);
@@ -4248,7 +4246,9 @@ public class LoginActivity extends BaseFragment {
                 timeText.setText(LocaleController.formatString("CallAvailableIn", R.string.CallAvailableIn, 2, 0));
                 setProblemTextVisible(time < 1000);
                 timeText.setVisibility(time < 1000 ? GONE : VISIBLE);
-                problemText.setVisibility(time < 1000 ? VISIBLE : GONE);
+                if (problemText != null) {
+                    problemText.setVisibility(time < 1000 ? VISIBLE : GONE);
+                }
 
                 SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
                 String hash = preferences.getString("sms_hash", null);
@@ -4271,11 +4271,15 @@ public class LoginActivity extends BaseFragment {
                 timeText.setText(LocaleController.formatString("SmsAvailableIn", R.string.SmsAvailableIn, 2, 0));
                 setProblemTextVisible(time < 1000);
                 timeText.setVisibility(time < 1000 ? GONE : VISIBLE);
-                problemText.setVisibility(time < 1000 ? VISIBLE : GONE);
+                if (problemText != null) {
+                    problemText.setVisibility(time < 1000 ? VISIBLE : GONE);
+                }
                 createTimer();
             } else {
                 timeText.setVisibility(GONE);
-                problemText.setVisibility(VISIBLE);
+                if (problemText != null) {
+                    problemText.setVisibility(VISIBLE);
+                }
                 setProblemTextVisible(false);
                 createCodeTimer();
             }
@@ -4327,7 +4331,9 @@ public class LoginActivity extends BaseFragment {
                         if (codeTime <= 1000) {
                             setProblemTextVisible(true);
                             timeText.setVisibility(GONE);
-                            problemText.setVisibility(VISIBLE);
+                            if (problemText != null) {
+                                problemText.setVisibility(VISIBLE);
+                            }
                             destroyCodeTimer();
                         }
                     });
@@ -4874,6 +4880,7 @@ public class LoginActivity extends BaseFragment {
                     AndroidUtilities.endIncomingCall();
                 }
                 onNextPressed(num);
+                CallReceiver.clearLastCall();
             }
         }
 
@@ -5654,7 +5661,7 @@ public class LoginActivity extends BaseFragment {
             requestPhone = currentParams.getString("phoneFormated");
             phoneHash = currentParams.getString("phoneHash");
 
-            int v = params.getBoolean("googleSignInAllowed") ? VISIBLE : GONE;
+            int v = params.getBoolean("googleSignInAllowed") && PushListenerController.GooglePushListenerServiceProvider.INSTANCE.hasServices() ? VISIBLE : GONE;
             loginOrView.setVisibility(v);
             signInWithGoogleView.setVisibility(v);
 
@@ -5766,6 +5773,8 @@ public class LoginActivity extends BaseFragment {
                     } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
                         needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("InvalidCode", R.string.InvalidCode));
                     } else if (error.text.contains("PHONE_CODE_EXPIRED")) {
+                        onBackPressed(true);
+                        setPage(VIEW_PHONE_INPUT, true, null, true);
                         needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("CodeExpired", R.string.CodeExpired));
                     } else if (error.text.startsWith("FLOOD_WAIT")) {
                         needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("FloodWait", R.string.FloodWait));
@@ -5819,14 +5828,19 @@ public class LoginActivity extends BaseFragment {
         private TextView signInWithGoogleView;
         private FrameLayout resendFrameLayout;
         private TextView resendCodeView;
+        private FrameLayout cantAccessEmailFrameLayout;
+        private TextView cantAccessEmailView;
+        private TextView emailResetInView;
         private TextView wrongCodeView;
         private LoginOrView loginOrView;
         private RLottieImageView inboxImageView;
 
+        private boolean resetRequestPending;
         private Bundle currentParams;
         private boolean nextPressed;
         private GoogleSignInAccount googleAccount;
 
+        private int resetAvailablePeriod, resetPendingDate;
         private String phone, emailPhone, email;
         private String requestPhone, phoneHash;
         private boolean isFromSetup;
@@ -5844,9 +5858,11 @@ public class LoginActivity extends BaseFragment {
 
             if (errorViewSwitcher.getCurrentView() != resendFrameLayout) {
                 errorViewSwitcher.showNext();
+                AndroidUtilities.updateViewVisibilityAnimated(cantAccessEmailFrameLayout, resendCodeView.getVisibility() != VISIBLE && activityMode != MODE_CHANGE_LOGIN_EMAIL && !isSetup, 1f, true);
             }
         };
         private Runnable resendCodeTimeout = () -> showResendCodeView(true);
+        private Runnable updateResetPendingDateCallback = this::updateResetPendingDate;
 
         public LoginActivityEmailCodeView(Context context, boolean setup) {
             super(context);
@@ -5939,6 +5955,83 @@ public class LoginActivity extends BaseFragment {
                 googleClient.signOut().addOnCompleteListener(command -> getParentActivity().startActivityForResult(googleClient.getSignInIntent(), BasePermissionsActivity.REQUEST_CODE_SIGN_IN_WITH_GOOGLE));
             });
 
+            cantAccessEmailFrameLayout = new FrameLayout(context);
+            AndroidUtilities.updateViewVisibilityAnimated(cantAccessEmailFrameLayout, activityMode != MODE_CHANGE_LOGIN_EMAIL && !isSetup, 1f, false);
+
+            cantAccessEmailView = new TextView(context) {
+                @Override
+                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                    super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(100), MeasureSpec.AT_MOST));
+                }
+            };
+            cantAccessEmailView.setText(LocaleController.getString(R.string.LoginCantAccessThisEmail));
+            cantAccessEmailView.setGravity(Gravity.CENTER);
+            cantAccessEmailView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            cantAccessEmailView.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16));
+            cantAccessEmailView.setMaxLines(2);
+            cantAccessEmailView.setOnClickListener(v -> {
+                String rawPattern = currentParams.getString("emailPattern");
+                SpannableStringBuilder email = new SpannableStringBuilder(rawPattern);
+                int startIndex = rawPattern.indexOf('*'), endIndex = rawPattern.lastIndexOf('*');
+                if (startIndex != endIndex && startIndex != -1 && endIndex != -1) {
+                    TextStyleSpan.TextStyleRun run = new TextStyleSpan.TextStyleRun();
+                    run.flags |= TextStyleSpan.FLAG_STYLE_SPOILER;
+                    run.start = startIndex;
+                    run.end = endIndex + 1;
+                    email.setSpan(new TextStyleSpan(run), startIndex, endIndex + 1, 0);
+                }
+
+                new AlertDialog.Builder(context)
+                        .setTitle(LocaleController.getString(R.string.LoginEmailResetTitle))
+                        .setMessage(AndroidUtilities.formatSpannable(AndroidUtilities.replaceTags(LocaleController.getString(R.string.LoginEmailResetMessage)), email, getTimePattern(resetAvailablePeriod)))
+                        .setPositiveButton(LocaleController.getString(R.string.LoginEmailResetButton), (dialog, which) -> {
+                            Bundle params = new Bundle();
+                            params.putString("phone", phone);
+                            params.putString("ephone", emailPhone);
+                            params.putString("phoneFormated", requestPhone);
+
+                            TLRPC.TL_auth_resetLoginEmail req = new TLRPC.TL_auth_resetLoginEmail();
+                            req.phone_number = requestPhone;
+                            req.phone_code_hash = phoneHash;
+                            getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                                if (response instanceof TLRPC.TL_auth_sentCode) {
+                                    TLRPC.TL_auth_sentCode sentCode = (TLRPC.TL_auth_sentCode) response;
+                                    if (sentCode.type instanceof TLRPC.TL_auth_sentCodeTypeEmailCode) {
+                                        sentCode.type.email_pattern = currentParams.getString("emailPattern");
+                                        resetRequestPending = true;
+                                    }
+                                    fillNextCodeParams(params, sentCode);
+                                } else if (error != null && error.text != null) {
+                                    if (error.text.contains("PHONE_CODE_EXPIRED")) {
+                                        onBackPressed(true);
+                                        setPage(VIEW_PHONE_INPUT, true, null, true);
+                                        needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("CodeExpired", R.string.CodeExpired));
+                                    } else {
+                                        AlertsCreator.processError(currentAccount, error, LoginActivity.this, req);
+                                    }
+                                }
+                            }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
+                        })
+                        .setNegativeButton(LocaleController.getString(R.string.Cancel), null)
+                        .show();
+            });
+            cantAccessEmailFrameLayout.addView(cantAccessEmailView);
+
+            emailResetInView = new TextView(context) {
+                @Override
+                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                    super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(Math.max(MeasureSpec.getSize(heightMeasureSpec), AndroidUtilities.dp(100)), MeasureSpec.AT_MOST));
+                }
+            };
+            emailResetInView.setGravity(Gravity.CENTER);
+            emailResetInView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            emailResetInView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            emailResetInView.setMaxLines(3);
+            emailResetInView.setOnClickListener(v -> requestEmailReset());
+            emailResetInView.setPadding(0, AndroidUtilities.dp(16), 0, AndroidUtilities.dp(16));
+            emailResetInView.setVisibility(GONE);
+            cantAccessEmailFrameLayout.addView(emailResetInView);
+
             resendCodeView = new TextView(context);
             resendCodeView.setGravity(Gravity.CENTER);
             resendCodeView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
@@ -6001,18 +6094,57 @@ public class LoginActivity extends BaseFragment {
             wrongCodeView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
             wrongCodeView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             wrongCodeView.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
-            wrongCodeView.setPadding(0, AndroidUtilities.dp(4), 0, AndroidUtilities.dp(4));
+            wrongCodeView.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16));
             errorViewSwitcher.addView(wrongCodeView);
 
             FrameLayout bottomContainer = new FrameLayout(context);
             if (setup) {
                 bottomContainer.addView(errorViewSwitcher, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 0, 0, 0, 32));
             } else {
-                bottomContainer.addView(errorViewSwitcher, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 0, 8, 0, 0));
+                bottomContainer.addView(errorViewSwitcher, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
+                bottomContainer.addView(cantAccessEmailFrameLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
                 bottomContainer.addView(loginOrView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 16, Gravity.CENTER, 0, 0, 0, 16));
                 bottomContainer.addView(signInWithGoogleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM, 0, 0, 0, 16));
             }
             addView(bottomContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 0, 1f));
+        }
+
+        private boolean requestingEmailReset;
+        private void requestEmailReset() {
+            if (requestingEmailReset) {
+                return;
+            }
+            requestingEmailReset = true;
+
+            Bundle params = new Bundle();
+            params.putString("phone", phone);
+            params.putString("ephone", emailPhone);
+            params.putString("phoneFormated", requestPhone);
+
+            TLRPC.TL_auth_resetLoginEmail req = new TLRPC.TL_auth_resetLoginEmail();
+            req.phone_number = requestPhone;
+            req.phone_code_hash = phoneHash;
+            getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                requestingEmailReset = false;
+                if (response instanceof TLRPC.TL_auth_sentCode) {
+                    TLRPC.TL_auth_sentCode sentCode = (TLRPC.TL_auth_sentCode) response;
+                    fillNextCodeParams(params, sentCode);
+                } else if (error != null && error.text != null) {
+                    if (error.text.contains("TASK_ALREADY_EXISTS")) {
+                        new AlertDialog.Builder(getContext())
+                                .setTitle(LocaleController.getString(R.string.LoginEmailResetPremiumRequiredTitle))
+                                .setMessage(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.LoginEmailResetPremiumRequiredMessage, LocaleController.addNbsp(PhoneFormat.getInstance().format("+" + requestPhone)))))
+                                .setPositiveButton(LocaleController.getString(R.string.OK), null)
+                                .show();
+                    } else if (error.text.contains("PHONE_CODE_EXPIRED")) {
+                        onBackPressed(true);
+                        setPage(VIEW_PHONE_INPUT, true, null, true);
+                        needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("CodeExpired", R.string.CodeExpired));
+                    } else {
+                        AlertsCreator.processError(currentAccount, error, LoginActivity.this, req);
+                    }
+                }
+            }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
         }
 
         @Override
@@ -6022,6 +6154,8 @@ public class LoginActivity extends BaseFragment {
             signInWithGoogleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
             loginOrView.updateColors();
             resendCodeView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
+            cantAccessEmailView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
+            emailResetInView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
             wrongCodeView.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
 
             codeFieldContainer.invalidate();
@@ -6036,6 +6170,7 @@ public class LoginActivity extends BaseFragment {
 
         private void showResendCodeView(boolean show) {
             AndroidUtilities.updateViewVisibilityAnimated(resendCodeView, show);
+            AndroidUtilities.updateViewVisibilityAnimated(cantAccessEmailFrameLayout, !show && activityMode != MODE_CHANGE_LOGIN_EMAIL && !isSetup);
 
             if (loginOrView.getVisibility() != GONE) {
                 loginOrView.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 16, Gravity.CENTER, 0, 0, 0, show ? 8 : 16));
@@ -6072,11 +6207,23 @@ public class LoginActivity extends BaseFragment {
             isFromSetup = currentParams.getBoolean("setup");
             length = currentParams.getInt("length");
             email = currentParams.getString("email");
+            resetAvailablePeriod = currentParams.getInt("resetAvailablePeriod");
+            resetPendingDate = currentParams.getInt("resetPendingDate");
 
             if (activityMode == MODE_CHANGE_LOGIN_EMAIL) {
                 confirmTextView.setText(LocaleController.formatString(R.string.CheckYourNewEmailSubtitle, email));
+                AndroidUtilities.updateViewVisibilityAnimated(cantAccessEmailFrameLayout, false, 1f, false);
             } else if (isSetup) {
                 confirmTextView.setText(LocaleController.formatString(R.string.VerificationCodeSubtitle, email));
+                AndroidUtilities.updateViewVisibilityAnimated(cantAccessEmailFrameLayout, false, 1f, false);
+            } else {
+                AndroidUtilities.updateViewVisibilityAnimated(cantAccessEmailFrameLayout, true, 1f, false);
+
+                cantAccessEmailView.setVisibility(resetPendingDate == 0 ? VISIBLE : GONE);
+                emailResetInView.setVisibility(resetPendingDate != 0 ? VISIBLE : GONE);
+                if (resetPendingDate != 0) {
+                    updateResetPendingDate();
+                }
             }
 
             codeFieldContainer.setNumbersCount(length, AUTH_TYPE_MESSAGE);
@@ -6121,7 +6268,7 @@ public class LoginActivity extends BaseFragment {
                 confirmTextView.setText(AndroidUtilities.formatSpannable(LocaleController.getString(R.string.CheckYourEmailSubtitle), confirmText));
             }
 
-            int v = params.getBoolean("googleSignInAllowed") ? VISIBLE : GONE;
+            int v = params.getBoolean("googleSignInAllowed") && PushListenerController.GooglePushListenerServiceProvider.INSTANCE.hasServices() ? VISIBLE : GONE;
             loginOrView.setVisibility(v);
             signInWithGoogleView.setVisibility(v);
 
@@ -6131,6 +6278,81 @@ public class LoginActivity extends BaseFragment {
             if (!restore && params.containsKey("nextType")) {
                 AndroidUtilities.runOnUIThread(resendCodeTimeout, params.getInt("timeout"));
             }
+
+            if (resetPendingDate != 0) {
+                AndroidUtilities.runOnUIThread(updateResetPendingDateCallback, 1000);
+            }
+        }
+
+        @Override
+        public void onHide() {
+            super.onHide();
+
+            if (resetPendingDate != 0) {
+                AndroidUtilities.cancelRunOnUIThread(updateResetPendingDateCallback);
+            }
+        }
+
+        private String getTimePatternForTimer(int timeRemaining) {
+            int days = timeRemaining / 86400;
+            int hours = (timeRemaining % 86400) / 3600;
+            int minutes = ((timeRemaining % 86400) % 3600) / 60;
+            int seconds = ((timeRemaining % 86400) % 3600) % 60;
+
+            String time;
+            if (days != 0) {
+                time = LocaleController.formatString(R.string.LoginEmailResetInSinglePattern, LocaleController.formatPluralString("Days", days));
+            } else {
+                String timer = (hours != 0 ? String.format(Locale.ROOT, "%02d:", hours) : "") + String.format(Locale.ROOT, "%02d:", minutes) + String.format(Locale.ROOT, "%02d", seconds);
+                time = LocaleController.formatString(R.string.LoginEmailResetInSinglePattern, timer);
+            }
+            return time;
+        }
+
+        private String getTimePattern(int timeRemaining) {
+            int days = timeRemaining / 86400;
+            int hours = (timeRemaining % 86400) / 3600;
+            int minutes = ((timeRemaining % 86400) % 3600) / 60;
+
+            if (days == 0 && hours == 0) {
+                minutes = Math.max(1, minutes);
+            }
+
+            String time;
+            if (days != 0 && hours != 0) {
+                time = LocaleController.formatString(R.string.LoginEmailResetInDoublePattern, LocaleController.formatPluralString("Days", days), LocaleController.formatPluralString("Hours", hours));
+            } else if (hours != 0 && minutes != 0) {
+                time = LocaleController.formatString(R.string.LoginEmailResetInDoublePattern, LocaleController.formatPluralString("Hours", hours), LocaleController.formatPluralString("Minutes", minutes));
+            } else if (days != 0) {
+                time = LocaleController.formatString(R.string.LoginEmailResetInSinglePattern, LocaleController.formatPluralString("Days", days));
+            } else if (hours != 0) {
+                time = LocaleController.formatString(R.string.LoginEmailResetInSinglePattern, LocaleController.formatPluralString("Hours", days));
+            } else {
+                time = LocaleController.formatString(R.string.LoginEmailResetInSinglePattern, LocaleController.formatPluralString("Minutes", minutes));
+            }
+            return time;
+        }
+
+        private void updateResetPendingDate() {
+            int timeRemaining = (int) (resetPendingDate - System.currentTimeMillis() / 1000L);
+            if (resetPendingDate <= 0 || timeRemaining <= 0) {
+                emailResetInView.setVisibility(VISIBLE);
+                emailResetInView.setText(LocaleController.getString(R.string.LoginEmailResetPleaseWait));
+                AndroidUtilities.runOnUIThread(this::requestEmailReset, 1000);
+                return;
+            }
+            String str = LocaleController.formatString(R.string.LoginEmailResetInTime, getTimePatternForTimer(timeRemaining));
+            SpannableStringBuilder ssb = SpannableStringBuilder.valueOf(str);
+            int startIndex = str.indexOf('*'), endIndex = str.lastIndexOf('*');
+            if (startIndex != endIndex && startIndex != -1 && endIndex != -1) {
+                ssb.replace(endIndex, endIndex + 1, "");
+                ssb.replace(startIndex, startIndex + 1, "");
+                ssb.setSpan(new ForegroundColorSpan(getThemedColor(Theme.key_windowBackgroundWhiteBlueText4)), startIndex, endIndex - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+
+            emailResetInView.setText(ssb);
+
+            AndroidUtilities.runOnUIThread(updateResetPendingDateCallback, 1000);
         }
 
         private void onPasscodeError(boolean clear) {
@@ -6355,6 +6577,7 @@ public class LoginActivity extends BaseFragment {
             }
             if (errorViewSwitcher.getCurrentView() == resendFrameLayout) {
                 errorViewSwitcher.showNext();
+                AndroidUtilities.updateViewVisibilityAnimated(cantAccessEmailFrameLayout, false, 1f, true);
             }
             codeFieldContainer.codeField[0].requestFocus();
             AndroidUtilities.shakeViewSpring(codeFieldContainer, 10f, () -> {
@@ -6375,6 +6598,10 @@ public class LoginActivity extends BaseFragment {
         @Override
         public void onShow() {
             super.onShow();
+            if (resetRequestPending) {
+                resetRequestPending = false;
+                return;
+            }
             AndroidUtilities.runOnUIThread(() -> {
                 inboxImageView.getAnimatedDrawable().setCurrentFrame(0, false);
                 inboxImageView.playAnimation();
@@ -7531,7 +7758,7 @@ public class LoginActivity extends BaseFragment {
         public boolean onBackPressed(boolean force) {
             if (!force) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                builder.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
+                builder.setTitle(LocaleController.getString(R.string.Warning));
                 builder.setMessage(LocaleController.getString("AreYouSureRegistration", R.string.AreYouSureRegistration));
                 builder.setNegativeButton(LocaleController.getString("Stop", R.string.Stop), (dialogInterface, i) -> {
                     onBackPressed(true);
@@ -7641,6 +7868,8 @@ public class LoginActivity extends BaseFragment {
                     } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
                         needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("InvalidCode", R.string.InvalidCode));
                     } else if (error.text.contains("PHONE_CODE_EXPIRED")) {
+                        onBackPressed(true);
+                        setPage(VIEW_PHONE_INPUT, true, null, true);
                         needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("CodeExpired", R.string.CodeExpired));
                     } else if (error.text.contains("FIRSTNAME_INVALID")) {
                         needShowAlert(LocaleController.getString(R.string.RestorePasswordNoEmailTitle), LocaleController.getString("InvalidFirstName", R.string.InvalidFirstName));

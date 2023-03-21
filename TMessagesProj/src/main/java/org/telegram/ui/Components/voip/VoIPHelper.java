@@ -511,7 +511,7 @@ public class VoIPHelper {
 		commentBox.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
 		commentBox.setHintTextColor(Theme.getColor(Theme.key_dialogTextHint));
 		commentBox.setBackground(null);
-		commentBox.setLineColors(Theme.getColor(Theme.key_dialogInputField), Theme.getColor(Theme.key_dialogInputFieldActivated), Theme.getColor(Theme.key_dialogTextRed2));
+		commentBox.setLineColors(Theme.getColor(Theme.key_dialogInputField), Theme.getColor(Theme.key_dialogInputFieldActivated), Theme.getColor(Theme.key_dialogTextRed));
 		commentBox.setPadding(0, AndroidUtilities.dp(4), 0, AndroidUtilities.dp(4));
 		commentBox.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
 		commentBox.setVisibility(View.GONE);
@@ -752,10 +752,10 @@ public class VoIPHelper {
 		}
 	}
 
-    public static void showGroupCallAlert(BaseFragment fragment, TLRPC.Chat currentChat, TLRPC.InputPeer peer, boolean recreate, AccountInstance accountInstance) {
+	public static void showGroupCallAlert(BaseFragment fragment, TLRPC.Chat currentChat, TLRPC.InputPeer peer, boolean recreate, AccountInstance accountInstance) {
 		if (fragment == null || fragment.getParentActivity() == null) {
 			return;
 		}
 		JoinCallAlert.checkFewUsers(fragment.getParentActivity(), -currentChat.id, accountInstance, param -> startCall(currentChat, peer, null, true, fragment.getParentActivity(), fragment, accountInstance));
-    }
+	}
 }

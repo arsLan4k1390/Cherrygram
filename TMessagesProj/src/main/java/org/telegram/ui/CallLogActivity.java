@@ -70,6 +70,8 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class CallLogActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
 	private ListAdapter listViewAdapter;
@@ -423,6 +425,14 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 		iconMissed = new ImageSpan(redDrawable, ImageSpan.ALIGN_BOTTOM);
 
 		actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+
+		if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+			actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+			actionBar.setTitleColor(Theme.getColor("windowBackgroundWhiteBlackText"));
+			actionBar.setItemsColor(Theme.getColor("windowBackgroundWhiteBlackText"), false);
+			actionBar.setItemsBackgroundColor(Theme.getColor("listSelectorSDK21"), false);
+		}
+
 		actionBar.setAllowOverlayTitle(true);
 		actionBar.setTitle(LocaleController.getString("Calls", R.string.Calls));
 		actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
@@ -624,7 +634,7 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 		showDialog(alertDialog);
 		TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
 		if (button != null) {
-			button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+			button.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
 		}
 	}
 

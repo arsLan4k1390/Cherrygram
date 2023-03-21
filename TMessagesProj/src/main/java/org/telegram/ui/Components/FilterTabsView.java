@@ -48,7 +48,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.Emoji;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
@@ -156,6 +155,7 @@ public class FilterTabsView extends FrameLayout {
                 return false;
             }
             title = CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON ? newTitle : "";
+            realTitle = newTitle;
             return true;
         }
     }
@@ -352,6 +352,7 @@ public class FilterTabsView extends FrameLayout {
                 counterWidth = 0;
                 countWidth = 0;
             }
+
 
             if (showRemove && (isEditing || editingStartAnimationProgress != 0)) {
                 countWidth = (int) (countWidth + (AndroidUtilities.dp(20) - countWidth) * editingStartAnimationProgress);
@@ -1213,6 +1214,7 @@ public class FilterTabsView extends FrameLayout {
         if (delegate != null) {
             delegate.onPageSelected(tab, scrollingForward);
             delegate.onTabSelected(tab, scrollingForward, true);
+            oldAnimatedTab = currentPosition;
         }
         scrollToChild(position);
     }
@@ -1285,6 +1287,7 @@ public class FilterTabsView extends FrameLayout {
         listView.setItemAnimator(animated ? itemAnimator : null);
         adapter.notifyDataSetChanged();
         delegate.onTabSelected(tabs.get(currentPosition), false, false);
+        oldAnimatedTab = currentPosition;
     }
 
     public void animateColorsTo(String line, String active, String unactive, String selector, String background) {
@@ -1458,6 +1461,7 @@ public class FilterTabsView extends FrameLayout {
             int trueTabsWidth;
             if (!CherrygramConfig.INSTANCE.getNewTabs_hideAllChats())  {
                 Tab firstTab = findDefaultTab();
+                assert firstTab != null;
                 firstTab.setTitle(LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
                 int tabWith = firstTab.getWidth(false);
                 firstTab.setTitle(allTabsWidth > width ? LocaleController.getString("FilterAllChatsShort", R.string.FilterAllChatsShort) : LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
@@ -1525,6 +1529,8 @@ public class FilterTabsView extends FrameLayout {
         }
     }
 
+    private int oldAnimatedTab = -1;
+
     public void selectTabWithId(int id, float progress) {
         int position = idToPosition.get(id, -1);
         if (position < 0) {
@@ -1548,8 +1554,12 @@ public class FilterTabsView extends FrameLayout {
         invalidate();
         scrollToChild(position);
 
+        if ((((progress >= 0.5f && oldAnimatedTab != position) || (progress <= 0.5f && oldAnimatedTab != currentPosition)) && manualScrollingToPosition != currentPosition)) {
+            position = progress >= 0.5f ? position : currentPosition;
+            delegate.onTabSelected(tabs.get(position), currentPosition < position, true);
+            oldAnimatedTab = position;
+        }
         if (progress >= 1.0f) {
-            if (manualScrollingToPosition != currentPosition) delegate.onTabSelected(tabs.get(position), currentPosition < position, true);
             manualScrollingToPosition = -1;
             manualScrollingToId = -1;
             currentPosition = position;

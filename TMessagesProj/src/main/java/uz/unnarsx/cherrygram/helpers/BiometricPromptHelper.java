@@ -193,7 +193,7 @@ public class BiometricPromptHelper {
     private void showTemporaryMessage(CharSequence message) {
         AndroidUtilities.cancelRunOnUIThread(resetRunnable);
         errorTextView.setText(message);
-        errorTextView.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+        errorTextView.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
         errorTextView.setContentDescription(message);
         Vibrator v = (Vibrator) parentActivity.getSystemService(Context.VIBRATOR_SERVICE);
         if (v != null) {

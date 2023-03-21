@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
@@ -36,6 +37,7 @@ import androidx.camera.view.PreviewView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.camera.CameraView;
 import org.telegram.messenger.camera.Size;
@@ -52,7 +54,7 @@ public class CameraXView extends BaseCameraView {
     private final ImageView blurredStubView;
     private final Paint outerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint innerPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final CameraXController.CameraLifecycle lifecycle;
+    private CameraXController.CameraLifecycle lifecycle;
     private CameraView.CameraViewDelegate delegate;
     private float focusProgress = 1.0f;
     private float innerAlpha;
@@ -61,7 +63,7 @@ public class CameraXView extends BaseCameraView {
     private long lastDrawTime;
     private int cx;
     private int cy;
-    private final CameraXController controller;
+    private CameraXController controller;
 
     private int displayOrientation = 0;
     private int worldOrientation = 0;
@@ -69,6 +71,7 @@ public class CameraXView extends BaseCameraView {
 
     private ValueAnimator flipAnimator;
     private boolean flipHalfReached;
+    private Drawable thumbDrawable;
 
     private long mLastClickTime;
 
@@ -118,15 +121,23 @@ public class CameraXView extends BaseCameraView {
     }
 
 
-    public CameraXView(Context context, boolean frontface) {
+    public CameraXView(Context context, boolean frontface, boolean lazy) {
         super(context, null);
+        this.frontface = frontface;
+        setWillNotDraw(!lazy);
         previewView = new PreviewView(context);
+        previewView.setAlpha(0);
         placeholderView = new ImageView(context);
         placeholderView.setVisibility(View.GONE);
         placeholderView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         previewView.setImplementationMode(PreviewView.ImplementationMode.COMPATIBLE);
         previewView.setFocusableInTouchMode(false);
-        addView(previewView);
+        previewView.setBackgroundColor(Color.BLACK);
+        if (!lazy) {
+            initTexture();
+        } else {
+            AndroidUtilities.runOnUIThread(() -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cameraInitied));
+        }
         addView(placeholderView);
         blurredStubView = new ImageView(context);
         addView(blurredStubView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
@@ -135,9 +146,6 @@ public class CameraXView extends BaseCameraView {
         outerPaint.setStyle(Paint.Style.STROKE);
         outerPaint.setStrokeWidth(AndroidUtilities.dp(2));
         innerPaint.setColor(0x7fffffff);
-        lifecycle = new CameraXController.CameraLifecycle();
-        controller = new CameraXController(lifecycle, previewView.getMeteringPointFactory(), previewView.getSurfaceProvider());
-        controller.setFrontFace(frontface);
         ((DisplayManager) getContext().getSystemService(Context.DISPLAY_SERVICE)).registerDisplayListener(displayOrientationListener, null);
         worldOrientationListener.enable();
     }
@@ -150,10 +158,6 @@ public class CameraXView extends BaseCameraView {
     @Override
     public boolean isFrontface() {
         return controller.isFrontface();
-    }
-
-    public void initCamera() {
-        controller.initCamera(getContext(), controller.isFrontface(), this::observeStream);
     }
 
     //ugly api behaviour after permission check
@@ -169,7 +173,9 @@ public class CameraXView extends BaseCameraView {
     }
 
     public void closeCamera() {
-        controller.closeCamera();
+        if (controller != null) {
+            controller.closeCamera();
+        }
     }
 
     private void observeStream() {
@@ -181,7 +187,11 @@ public class CameraXView extends BaseCameraView {
                 placeholderView.setImageBitmap(null);
                 placeholderView.setVisibility(View.GONE);
                 AndroidUtilities.runOnUIThread(this::onFirstFrameRendered);
+                if (previewView.getAlpha() == 0) {
+                    showTexture(true, true);
+                }
             }
+            AndroidUtilities.runOnUIThread(() -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cameraInitied));
         });
     }
 
@@ -302,6 +312,58 @@ public class CameraXView extends BaseCameraView {
     }
 
     @Override
+    public void setThumbDrawable(Drawable drawable) {
+        if (thumbDrawable != null) {
+            thumbDrawable.setCallback(null);
+        }
+        thumbDrawable = drawable;
+        if (thumbDrawable != null) {
+            thumbDrawable.setCallback(this);
+        }
+    }
+
+    private ValueAnimator textureViewAnimator;
+    @Override
+    public void showTexture(boolean show, boolean animated) {
+        if (previewView == null) {
+            return;
+        }
+        if (textureViewAnimator != null) {
+            textureViewAnimator.cancel();
+            textureViewAnimator = null;
+        }
+        if (animated) {
+            textureViewAnimator = ValueAnimator.ofFloat(previewView.getAlpha(), show ? 1 : 0);
+            textureViewAnimator.addUpdateListener(anm -> previewView.setAlpha((float) anm.getAnimatedValue()));
+            textureViewAnimator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    previewView.setAlpha(show ? 1 : 0);
+                    textureViewAnimator = null;
+                }
+            });
+            textureViewAnimator.start();
+        } else {
+            previewView.setAlpha(show ? 1 : 0);
+        }
+    }
+
+    private boolean textureInited = false;
+    private final boolean frontface;
+    @Override
+    public void initTexture() {
+        if (textureInited) {
+            return;
+        }
+        addView(previewView, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
+        lifecycle = new CameraXController.CameraLifecycle();
+        controller = new CameraXController(lifecycle, previewView.getMeteringPointFactory(), previewView.getSurfaceProvider());
+        controller.setFrontFace(frontface);
+        controller.initCamera(getContext(), controller.isFrontface(), this::observeStream);
+        textureInited = true;
+    }
+
+    @Override
     protected void dispatchDraw(Canvas canvas) {
         if (flipAnimator != null) {
             canvas.drawColor(Color.BLACK);
@@ -356,7 +418,9 @@ public class CameraXView extends BaseCameraView {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        lifecycle.stop();
+        if (lifecycle != null) {
+            lifecycle.stop();
+        }
         ((DisplayManager) getContext().getSystemService(Context.DISPLAY_SERVICE)).unregisterDisplayListener(displayOrientationListener);
         worldOrientationListener.disable();
     }
@@ -391,6 +455,9 @@ public class CameraXView extends BaseCameraView {
     }
 
     public boolean isExposureCompensationSupported() {
+        if (controller == null) {
+            return false;
+        }
         return controller.isExposureCompensationSupported();
     }
 
@@ -530,6 +597,25 @@ public class CameraXView extends BaseCameraView {
 
     @Override
     public void setRecordFile(File generateVideoPath) {
+    }
+
+    Rect bounds = new Rect();
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        if (thumbDrawable != null) {
+            bounds.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+            int W = thumbDrawable.getIntrinsicWidth(), H = thumbDrawable.getIntrinsicHeight();
+            float scale = 1f / Math.min(W / (float) Math.max(1, bounds.width()), H / (float) Math.max(1, bounds.height()));
+            thumbDrawable.setBounds(
+                    (int) (bounds.centerX() - W * scale / 2f),
+                    (int) (bounds.centerY() - H * scale / 2f),
+                    (int) (bounds.centerX() + W * scale / 2f),
+                    (int) (bounds.centerY() + H * scale / 2f)
+            );
+            thumbDrawable.draw(canvas);
+        }
+        super.onDraw(canvas);
     }
 
     @Override

@@ -25,6 +25,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 ## Changes:
 
 *Addons:*
+- Flashlight support for video messages (both cameras),
 - OTA updates - thanks to exteraGram :),
 - Material You (Monet) themes and app icon,
 - No content restrictions,
@@ -82,12 +83,14 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 *Cherrygram Appearance Preferences:*
 - VKUI icons in app,
 - Solar icons in app,
+- Default notification icon (Telegram),
 - Center title in action bar,
+- Overriding header color in dark themes,
 - Enable/Disable toolbar shadow,
-- Flat statusbar,
 - Transparent navigation bar,
 - Enable/Disable system emoji,
 - Enable/Disable system fonts,
+- Pencil icon for edited messages instead of "edited",
 - Show folder name instead of app name,
 - Hide "All chats" tab,
 - Tab style (Default, Rounded, Text, VKUI or Pills),
@@ -107,6 +110,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Ask before a call,
 - Show forwarded message date,
 - Show seconds in timestamps,
+- Left button action (Forward w/o authorship, Direct Share or Reply),
 - Double tap action (Disable, Reaction, Reply, Save message or Edit message),
 - Enable/Disable transition to the next channel,
 - Show/Hide bottom button in channels (Mute/Unmute),

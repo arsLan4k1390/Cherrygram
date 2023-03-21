@@ -3,10 +3,6 @@
     <!-- by t.me/arsLan-->
     <!--Telegram screens-->
     <!--Sign in screen-->
-    <string name="CG_StartText">請確認您的國碼，然後輸入您的手機號碼。</string>
-    <string name="CG_Country">國家/地區</string>
-    <string name="CG_ChooseCountry">選擇國家/地區</string>
-    <string name="CG_WrongCountry">國碼為無效</string>
     <string name="CG_TestBackendNumber">測試帳戶</string>
     <string name="CG_TestBackendOn">使用測試伺服器登入帳戶</string>
     <string name="CG_TestBackendOff">使用主用伺服器登入帳戶</string>
@@ -78,7 +74,6 @@
     <string name="AP_RedesignCategory">介面</string>
     <string name="AP_IconReplacements">替換圖示</string>
     <string name="AP_Old_Notification_Icon">預設通知圖示 (Telegram)</string>
-    <string name="AP_Default_Notification_Name">預設通知名稱 (Telegram)</string>
     <string name="AP_ChangeIconFilter">使用 Telegram 原始圖示</string>
     <string name="AP_ChangeIconFilter_Desc">您必須重新進入此部分才可以看到新圖示</string>
     <string name="AP_ChangeIcon_Default">預設</string>
@@ -93,7 +88,6 @@
     <string name="AP_SystemEmoji">使用系統 Emoji</string>
     <string name="AP_CenterTitle">在操作列中置中標題</string>
     <string name="AP_ToolBarShadow">停用工具列陰影</string>
-    <string name="AP_TransparentSB">透明狀態列</string>
     <string name="AP_FlatNB">透明導覽列</string>
     <string name="AP_FlatNB_Desc">導覽列將跟隨對話頁面顏色變化</string>
     <string name="AP_SystemFonts">使用系統字型</string>

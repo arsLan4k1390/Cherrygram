@@ -612,7 +612,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
                 }
 
                 if (prevAvatar == null && fromCache) {
-                    MessagesController.getInstance(currentAccount).loadDialogPhotos(did, 80, 0, false, getClassGuid());
+                    MessagesController.getInstance(currentAccount).loadDialogPhotos(did, 100, 0, false, getClassGuid());
                 }
             }
         }

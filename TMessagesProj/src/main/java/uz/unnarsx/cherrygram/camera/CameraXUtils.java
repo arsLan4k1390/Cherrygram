@@ -112,10 +112,10 @@ public class CameraXUtils {
     }
 
     private static Map<Quality, Size> getAvailableVideoSizes(CameraSelector cameraSelector, ProcessCameraProvider provider) {
-        return cameraSelector.filter(provider.getAvailableCameraInfos()).parallelStream()
+        return cameraSelector.filter(provider.getAvailableCameraInfos()).stream()
                 .findFirst()
                 .map(camInfo ->
-                        QualitySelector.getSupportedQualities(camInfo).parallelStream().collect(
+                        QualitySelector.getSupportedQualities(camInfo).stream().collect(
                                 Collectors.toMap(
                                         Function.identity(),
                                         quality -> Optional.ofNullable(QualitySelector.getResolution(camInfo, quality))
@@ -129,15 +129,15 @@ public class CameraXUtils {
         int suggestedRes = getSuggestedResolution(false);
         Map<Quality, Size> sizes = getAvailableVideoSizes();
 
-        int min = sizes.values().parallelStream()
+        int min = sizes.values().stream()
                 .mapToInt(Size::getHeight)
                 .min().orElse(0);
 
-        int max = sizes.values().parallelStream()
+        int max = sizes.values().stream()
                 .mapToInt(Size::getHeight)
                 .max().orElse(0);
 
-        getAvailableVideoSizes().values().parallelStream()
+        getAvailableVideoSizes().values().stream()
                 .sorted(Comparator.comparingInt(Size::getHeight).reversed())
                 .mapToInt(Size::getHeight)
                 .filter(height -> height <= suggestedRes)
@@ -156,14 +156,14 @@ public class CameraXUtils {
 
     public static Size getPreviewBestSize() {
         int suggestedRes = getSuggestedResolution(true);
-        return getAvailableVideoSizes().values().parallelStream()
-                .filter(size -> size.getHeight() <= CherrygramConfig.INSTANCE.getCameraResolution() && size.getHeight() < suggestedRes)
-                .findFirst()
+        return getAvailableVideoSizes().values().stream()
+                .filter(size -> size.getHeight() <= CherrygramConfig.INSTANCE.getCameraResolution() && size.getHeight() <= suggestedRes)
+                .max(Comparator.comparingInt(Size::getHeight))
                 .orElse(new Size(0, 0));
     }
 
     public static Quality getVideoQuality() {
-        return getAvailableVideoSizes().entrySet().parallelStream()
+        return getAvailableVideoSizes().entrySet().stream()
                 .filter(entry -> entry.getValue().getHeight() == CherrygramConfig.INSTANCE.getCameraResolution())
                 .map(Map.Entry::getKey)
                 .findFirst()

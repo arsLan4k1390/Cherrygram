@@ -1917,7 +1917,7 @@ public class LNavigation extends FrameLayout implements INavigationLayout, Float
     }
 
     @Override
-    public ViewGroup getOverlayContainerView() {
+    public FrameLayout getOverlayContainerView() {
         return overlayLayout;
     }
 
@@ -2233,7 +2233,7 @@ public class LNavigation extends FrameLayout implements INavigationLayout, Float
             for (int i = 0; i < getChildCount(); i++) {
                 View child = getChildAt(i);
                 if (!(child instanceof ActionBar)) {
-                    FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) child.getLayoutParams();
+                    LayoutParams layoutParams = (LayoutParams) child.getLayoutParams();
                     if (child.getFitsSystemWindows()) {
                         child.layout(layoutParams.leftMargin, layoutParams.topMargin, layoutParams.leftMargin + child.getMeasuredWidth(), layoutParams.topMargin + child.getMeasuredHeight());
                     } else {

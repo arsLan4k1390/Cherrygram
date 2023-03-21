@@ -37,6 +37,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.Property;
 import android.util.TypedValue;
@@ -70,6 +71,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ContactsController;
+import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.DocumentObject;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.ImageLocation;
@@ -81,7 +83,6 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SendMessagesHelper;
-import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.ConnectionsManager;
@@ -95,10 +96,12 @@ import org.telegram.ui.ActionBar.AdjustPanLayoutHelper;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
+import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.BasePermissionsActivity;
 import org.telegram.ui.ChatActivity;
+import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PassportActivity;
 import org.telegram.ui.PaymentFormActivity;
@@ -113,7 +116,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.PermissionHelper;
+import uz.unnarsx.cherrygram.helpers.PermissionsUtils;
 
 public class ChatAttachAlert extends BottomSheet implements NotificationCenter.NotificationCenterDelegate, BottomSheet.BottomSheetDelegateInterface {
 
@@ -229,6 +232,53 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
                         if (webViewLayout.canExpandByRequest()) {
                             webViewLayout.scrollToTop();
+                        }
+                    }
+
+                    @Override
+                    public void onWebAppSwitchInlineQuery(TLRPC.User botUser, String query, List<String> chatTypes) {
+                        if (chatTypes.isEmpty()) {
+                            if (baseFragment instanceof ChatActivity) {
+                                ((ChatActivity) baseFragment).getChatActivityEnterView().setFieldText("@" + UserObject.getPublicUsername(botUser) + " " + query);
+                            }
+                            dismiss(true);
+                        } else {
+                            Bundle args = new Bundle();
+                            args.putInt("dialogsType", DialogsActivity.DIALOGS_TYPE_START_ATTACH_BOT);
+                            args.putBoolean("onlySelect", true);
+
+                            args.putBoolean("allowGroups", chatTypes.contains("groups"));
+                            args.putBoolean("allowUsers", chatTypes.contains("users"));
+                            args.putBoolean("allowChannels", chatTypes.contains("channels"));
+                            args.putBoolean("allowBots", chatTypes.contains("bots"));
+
+                            DialogsActivity dialogsActivity = new DialogsActivity(args);
+                            OverlayActionBarLayoutDialog overlayActionBarLayoutDialog = new OverlayActionBarLayoutDialog(getContext(), resourcesProvider);
+                            dialogsActivity.setDelegate((fragment, dids, message1, param, topicsFragment) -> {
+                                long did = dids.get(0).dialogId;
+
+                                Bundle args1 = new Bundle();
+                                args1.putBoolean("scrollToTopOnResume", true);
+                                if (DialogObject.isEncryptedDialog(did)) {
+                                    args1.putInt("enc_id", DialogObject.getEncryptedChatId(did));
+                                } else if (DialogObject.isUserDialog(did)) {
+                                    args1.putLong("user_id", did);
+                                } else {
+                                    args1.putLong("chat_id", -did);
+                                }
+                                args1.putString("inline_query_input", "@" + UserObject.getPublicUsername(botUser) + " " + query);
+
+                                BaseFragment lastFragment = baseFragment;
+                                if (MessagesController.getInstance(currentAccount).checkCanOpenChat(args1, lastFragment)) {
+                                    overlayActionBarLayoutDialog.dismiss();
+                                    dismiss(true);
+
+                                    lastFragment.presentFragment(new INavigationLayout.NavigationParams(new ChatActivity(args1)).setRemoveLast(true));
+                                }
+                                return true;
+                            });
+                            overlayActionBarLayoutDialog.show();
+                            overlayActionBarLayoutDialog.addFragment(dialogsActivity);
                         }
                     }
 
@@ -632,6 +682,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
     private FrameLayout frameLayout2;
     protected EditTextEmoji commentTextView;
+    private int[] commentTextViewLocation = new int[2];
     private FrameLayout writeButtonContainer;
     private ImageView writeButton;
     private Drawable writeButtonDrawable;
@@ -1072,7 +1123,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             }
 
             imageView.setSize(AndroidUtilities.dp(28), AndroidUtilities.dp(28));
-            imageView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_attachContactIcon), PorterDuff.Mode.SRC_IN));
+            imageView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_attachIcon), PorterDuff.Mode.SRC_IN));
             attachMenuBot = bot;
             selector.setVisibility(GONE);
             updateMargins();
@@ -1181,6 +1232,8 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     invalidate();
                     frameLayout2.invalidate();
 
+                    updateCommentTextViewPosition();
+
                     if (currentAttachLayout != null) {
                         currentAttachLayout.onContainerTranslationUpdated(currentPanTranslationY);
                     }
@@ -1262,7 +1315,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 setMeasuredDimension(widthSize, heightSize);
                 widthSize -= backgroundPaddingLeft * 2;
 
-                int keyboardSize = SharedConfig.smoothKeyboard ? 0 : measureKeyboardHeight();
+                int keyboardSize = 0;
                 if (!commentTextView.isWaitingForKeyboardOpen() && keyboardSize <= AndroidUtilities.dp(20) && !commentTextView.isPopupShowing() && !commentTextView.isAnimatePopupClosing()) {
                     ignoreLayout = true;
                     commentTextView.hideEmojiView();
@@ -1271,7 +1324,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
                 if (keyboardSize <= AndroidUtilities.dp(20)) {
                     int paddingBottom;
-                    if (SharedConfig.smoothKeyboard && keyboardVisible) {
+                    if (keyboardVisible) {
                         paddingBottom = 0;
                     } else {
                         paddingBottom = commentTextView.getEmojiPadding();
@@ -1329,7 +1382,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
                 int keyboardSize = measureKeyboardHeight();
                 int paddingBottom = getPaddingBottom();
-                if (SharedConfig.smoothKeyboard && keyboardVisible) {
+                if (keyboardVisible) {
                     paddingBottom += 0;
                 } else {
                     paddingBottom += keyboardSize <= AndroidUtilities.dp(20) && !AndroidUtilities.isInMultiwindow && !AndroidUtilities.isTablet() ? commentTextView.getEmojiPadding() : 0;
@@ -1978,14 +2031,14 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     }
                     showLayout(photoLayout);
                 } else if (num == 3) {
-                    if (Build.VERSION.SDK_INT >= 23 && !PermissionHelper.isAudioPermissionGranted()) {
-                        PermissionHelper.requestAudioPermission(baseFragment.getParentActivity());
+                    if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isAudioPermissionGranted()) {
+                        PermissionsUtils.requestAudioPermission(baseFragment.getParentActivity());
                         return;
                     }
                     openAudioLayout(true);
                 } else if (num == 4) {
-                    if (Build.VERSION.SDK_INT >= 23 && !PermissionHelper.isStoragePermissionGranted()) {
-                        PermissionHelper.requestStoragePermission(baseFragment.getParentActivity());
+                    if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isStoragePermissionGranted()) {
+                        PermissionsUtils.requestStoragePermission(baseFragment.getParentActivity());
                         return;
                     }
                     openDocumentsLayout(true);
@@ -2179,7 +2232,13 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     float dy = (messageEditTextPredrawHeigth - editText.getMeasuredHeight()) + (messageEditTextPredrawScrollY - editText.getScrollY());
                     editText.setOffsetY(editText.getOffsetY() - dy);
                     ValueAnimator a = ValueAnimator.ofFloat(editText.getOffsetY(), 0);
-                    a.addUpdateListener(animation -> editText.setOffsetY((float) animation.getAnimatedValue()));
+                    a.addUpdateListener(animation -> {
+                        editText.setOffsetY((float) animation.getAnimatedValue());
+                        updateCommentTextViewPosition();
+                        if (currentAttachLayout == photoLayout) {
+                            photoLayout.onContainerTranslationUpdated(currentPanTranslationY);
+                        }
+                    });
                     if (messageEditTextAnimator != null) {
                         messageEditTextAnimator.cancel();
                     }
@@ -2206,6 +2265,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 }
                 chatActivityEnterViewAnimateFromTop = frameLayout2.getTop() + captionEditTextTopOffset;
                 frameLayout2.invalidate();
+                updateCommentTextViewPosition();
             }
 
             @Override
@@ -2222,6 +2282,12 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             @Override
             protected void closeParent() {
                 ChatAttachAlert.super.dismiss();
+            }
+
+            @Override
+            protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+                super.onLayout(changed, left, top, right, bottom);
+                updateCommentTextViewPosition();
             }
         };
         commentTextView.setHint(LocaleController.getString("AddCaption", R.string.AddCaption));
@@ -2561,6 +2627,14 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         if (context instanceof LaunchActivity) {
             ((LaunchActivity) context).removeOverlayPasscodeView(passcodeView);
         }
+    }
+
+    public void updateCommentTextViewPosition() {
+        commentTextView.getLocationOnScreen(commentTextViewLocation);
+    }
+
+    public int getCommentTextViewTop() {
+        return commentTextViewLocation[1];
     }
 
     private void showCaptionLimitBulletin(BaseFragment parentFragment) {
@@ -4225,7 +4299,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             dialog.show();
             TextView button = (TextView) dialog.getButton(DialogInterface.BUTTON_POSITIVE);
             if (button != null) {
-                button.setTextColor(getThemedColor(Theme.key_dialogTextRed2));
+                button.setTextColor(getThemedColor(Theme.key_dialogTextRed));
             }
             return;
         }

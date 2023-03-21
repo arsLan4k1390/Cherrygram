@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.Components.BackButtonMenu;
@@ -16,6 +17,8 @@ import org.telegram.ui.LNavigation.LNavigation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public interface INavigationLayout {
     int REBUILD_FLAG_REBUILD_LAST = 1, REBUILD_FLAG_REBUILD_ONLY_LAST = 2;
@@ -49,7 +52,7 @@ public interface INavigationLayout {
     void expandPreviewFragment();
     void finishPreviewFragment();
     void setFragmentPanTranslationOffset(int offset);
-    ViewGroup getOverlayContainerView();
+    FrameLayout getOverlayContainerView();
     void setHighlightActionButtons(boolean highlight);
     float getCurrentPreviewFragmentAlpha();
     void drawCurrentPreviewFragment(Canvas canvas, Drawable foregroundDrawable);
@@ -78,7 +81,7 @@ public interface INavigationLayout {
     void setPulledDialogs(List<BackButtonMenu.PulledDialog> pulledDialogs);
 
     static INavigationLayout newLayout(Context context) {
-        return SharedConfig.useLNavigation ? new LNavigation(context) : new ActionBarLayout(context);
+        return CherrygramConfig.INSTANCE.getUseLNavigation() ? new LNavigation(context) : new ActionBarLayout(context);
     }
 
     default void removeFragmentFromStack(BaseFragment fragment) {

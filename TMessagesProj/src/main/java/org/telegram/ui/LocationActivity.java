@@ -133,7 +133,6 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
     private ActionBarMenuItem searchItem;
     private MapOverlayView overlayView;
     private HintView hintView;
-    private BaseFragment fragment;
 
     private UndoView[] undoView = new UndoView[2];
     private boolean canUndo;
@@ -1105,30 +1104,30 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                     }
                 }
             } else if (position == 2 && locationType == 1 || position == 1 && locationType == 2 || position == 3 && locationType == 3) {
+                TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                 builder.setTitle(LocaleController.getString("StopLiveLocationAlertToTitle", R.string.StopLiveLocationAlertToTitle));
-                if (fragment instanceof DialogsActivity) {
-                    builder.setMessage(LocaleController.getString("StopLiveLocationAlertAllText", R.string.StopLiveLocationAlertAllText));
+
+                if (finalChat != null) {
+                    builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("StopLiveLocationAlertToGroupText", R.string.StopLiveLocationAlertToGroupText, finalChat.title)));
+                } else if (user != null) {
+                    builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("StopLiveLocationAlertToUserText", R.string.StopLiveLocationAlertToUserText, UserObject.getFirstName(user))));
                 } else {
-                    TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
-                    if (finalChat != null) {
-                        builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("StopLiveLocationAlertToGroupText", R.string.StopLiveLocationAlertToGroupText, finalChat.title)));
-                    } else if (user != null) {
-                        builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("StopLiveLocationAlertToUserText", R.string.StopLiveLocationAlertToUserText, UserObject.getFirstName(user))));
-                    } else {
-                        builder.setMessage(LocaleController.getString("AreYouSure", R.string.AreYouSure));
-                    }
+                    builder.setMessage(LocaleController.getString("AreYouSure", R.string.AreYouSure));
                 }
+
                 builder.setPositiveButton(LocaleController.getString("Stop", R.string.Stop), (dialogInterface, i) -> {
                     getLocationController().removeSharingLocation(dialogId);
                     finishFragment();
                 });
                 builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+
                 AlertDialog alertDialog = builder.create();
                 builder.show();
+
                 TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
                 if (button != null) {
-                    button.setTextColor(getThemedColor(Theme.key_dialogTextRed2));
+                    button.setTextColor(getThemedColor(Theme.key_dialogTextRed));
                 }
             } else {
                 Object object = adapter.getItem(position);
@@ -2587,12 +2586,11 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
     }
 
     @Override
-    public void finishFragment(boolean animated) {
+    public boolean finishFragment(boolean animated) {
         if (onCheckGlScreenshot()) {
-            return;
+            return false;
         }
-
-        super.finishFragment(animated);
+        return super.finishFragment(animated);
     }
 
     private boolean onCheckGlScreenshot() {

@@ -84,6 +84,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ChatEditActivity extends BaseFragment implements ImageUpdater.ImageUpdaterDelegate, NotificationCenter.NotificationCenterDelegate {
 
     private View doneButton;
@@ -335,6 +337,14 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
         }
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+
+        if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            actionBar.setTitleColor(Theme.getColor("windowBackgroundWhiteBlackText"));
+            actionBar.setItemsColor(Theme.getColor("windowBackgroundWhiteBlackText"), false);
+            actionBar.setItemsBackgroundColor(Theme.getColor("listSelectorSDK21"), false);
+        }
+
         actionBar.setAllowOverlayTitle(true);
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {

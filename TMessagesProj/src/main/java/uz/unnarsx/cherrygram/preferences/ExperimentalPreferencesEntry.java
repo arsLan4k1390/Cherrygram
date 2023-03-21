@@ -75,12 +75,17 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
 
+        if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            actionBar.setTitleColor(Theme.getColor("windowBackgroundWhiteBlackText"));
+            actionBar.setItemsColor(Theme.getColor("windowBackgroundWhiteBlackText"), false);
+            actionBar.setItemsBackgroundColor(Theme.getColor("listSelectorSDK21"), false);
+        }
+
         actionBar.setTitle(LocaleController.getString("EP_Category_Experimental", R.string.EP_Category_Experimental));
         actionBar.setAllowOverlayTitle(false);
 
-        if (AndroidUtilities.isTablet()) {
-            actionBar.setOccupyStatusBar(false);
-        }
+        actionBar.setOccupyStatusBar(!AndroidUtilities.isTablet());
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -106,9 +111,9 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
             if (position == altNavigationRow) {
-                SharedConfig.toggleUseLNavigation();
+                CherrygramConfig.INSTANCE.toggleUseLNavigation();
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(SharedConfig.useLNavigation);
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUseLNavigation());
                 }
                 BulletinFactory.of(this).createRestartBulletin(
                         R.raw.chats_infotip,
@@ -268,7 +273,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
                     textCheckCell.setEnabled(true, null);
                     if (position == altNavigationRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString(R.string.AltNavigationEnable), SharedConfig.useLNavigation, true);
+                        textCheckCell.setTextAndCheck(LocaleController.getString(R.string.AltNavigationEnable), CherrygramConfig.INSTANCE.getUseLNavigation(), true);
                     } else if (position == largePhotosRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("EP_PhotosSize", R.string.EP_PhotosSize), CherrygramConfig.INSTANCE.getLargePhotos(), true);
                     } else if (position == openProfileRow) {

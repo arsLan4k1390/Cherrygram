@@ -125,7 +125,7 @@ class AccountSettingsActivity : BaseFragment() {
                 val dialog = builder.create()
                 dialog.setOnShowListener {
                     val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE) as TextView
-                    button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2))
+                    button.setTextColor(Theme.getColor(Theme.key_dialogTextRed))
                     button.isEnabled = false
                     val buttonText = button.text
                     object : CountDownTimer(60000, 100) {

@@ -99,6 +99,8 @@ import org.telegram.ui.Components.StickerEmptyView;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ContactsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private ContactsAdapter listViewAdapter;
@@ -226,6 +228,14 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         searchWas = false;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+
+        if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            actionBar.setTitleColor(Theme.getColor("windowBackgroundWhiteBlackText"));
+            actionBar.setItemsColor(Theme.getColor("windowBackgroundWhiteBlackText"), false);
+            actionBar.setItemsBackgroundColor(Theme.getColor("listSelectorSDK21"), false);
+        }
+
         actionBar.setAllowOverlayTitle(true);
         if (destroyAfterSelect) {
             if (returnAsResult) {

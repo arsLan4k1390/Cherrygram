@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="auto">
 
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" tools:ignore="ProtectedPermissions"/>
+
     <application android:name="org.telegram.messenger.ApplicationLoaderImpl" tools:replace="name">
         <service android:name="org.telegram.messenger.GoogleVoiceClientService" android:exported="true"/>
         <activity

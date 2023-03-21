@@ -8,10 +8,8 @@
 
 package org.telegram.ui.Components;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
@@ -31,14 +29,13 @@ import org.telegram.messenger.SendMessagesHelper;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
-import org.telegram.ui.BasePermissionsActivity;
 import org.telegram.ui.PhotoAlbumPickerActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.helpers.PermissionHelper;
+import uz.unnarsx.cherrygram.helpers.PermissionsUtils;
 
 public class WallpaperUpdater {
 
@@ -113,8 +110,8 @@ public class WallpaperUpdater {
     public void openGallery() {
         if (parentFragment != null) {
             if (Build.VERSION.SDK_INT >= 23 && parentFragment.getParentActivity() != null) {
-                if (!PermissionHelper.isImagesPermissionGranted()) {
-                    PermissionHelper.requestImagesPermission(parentFragment.getParentActivity());
+                if (!PermissionsUtils.isImagesPermissionGranted()) {
+                    PermissionsUtils.requestImagesPermission(parentFragment.getParentActivity());
                     return;
                 }
             }

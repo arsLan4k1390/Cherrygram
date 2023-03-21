@@ -520,6 +520,14 @@ public class ManageLinksActivity extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+
+        if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            actionBar.setTitleColor(Theme.getColor("windowBackgroundWhiteBlackText"));
+            actionBar.setItemsColor(Theme.getColor("windowBackgroundWhiteBlackText"), false);
+            actionBar.setItemsBackgroundColor(Theme.getColor("listSelectorSDK21"), false);
+        }
+
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString("InviteLinks", R.string.InviteLinks));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
@@ -1125,7 +1133,7 @@ public class ManageLinksActivity extends BaseFragment {
                 AlertDialog alert = builder.create();
                 builder.show();
                 if (redLastItem) {
-                    alert.setItemColor(items.size() - 1, Theme.getColor(Theme.key_dialogTextRed2), Theme.getColor(Theme.key_dialogRedIcon));
+                    alert.setItemColor(items.size() - 1, Theme.getColor(Theme.key_dialogTextRed), Theme.getColor(Theme.key_dialogRedIcon));
                 }
             });
             optionsView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 1));

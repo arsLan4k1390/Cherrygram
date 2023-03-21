@@ -1,7 +1,6 @@
 package uz.unnarsx.cherrygram.tgkit.preference.types
 
 import android.app.Activity
-import android.view.View
 import androidx.core.util.Pair
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.AlertsCreator
@@ -15,8 +14,8 @@ class TGKitListPreference : TGKitPreference() {
         return TGPType.LIST
     }
 
-    fun callActionHueta(bf: BaseFragment, pr: Activity, view: View, x: Float, y: Float, ti: TempInterface) {
-        var selected: Int = 0
+    fun callActionHueta(bf: BaseFragment, pr: Activity, ti: TempInterface) {
+        var selected = 0
         val titleArray = mutableListOf<String>()
         val idArray = mutableListOf<Int>()
 

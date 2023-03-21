@@ -28,16 +28,27 @@ class SolarIconReplace : BaseIconReplace() {
             R.drawable.msg_settings to R.drawable.msg_settings_solar,
             R.drawable.msg_settings_old to R.drawable.msg_settings_solar,
             R.drawable.msg_notifications to R.drawable.msg_notifications_solar,
-            R.drawable.msg_data to R.drawable.msg_data_solar,
+            R.drawable.msg2_notifications to R.drawable.msg_notifications_solar,
+            R.drawable.msg2_data to R.drawable.msg_data_solar,
+            R.drawable.msg2_battery to R.drawable.msg2_battery_solar,
             R.drawable.msg_msgbubble3 to R.drawable.msg_discussion_solar,
+            R.drawable.msg2_discussion to R.drawable.msg_discussion_solar,
             R.drawable.msg_sticker to R.drawable.msg_sticker_solar,
-            R.drawable.msg_folder to R.drawable.msg_folder_solar,
+            R.drawable.msg2_folder to R.drawable.msg_folder_solar,
             R.drawable.msg_folders to R.drawable.msg_folder_solar,
-            R.drawable.msg_devices to R.drawable.msg_devices_solar,
+            R.drawable.msg2_devices to R.drawable.msg_devices_solar,
             R.drawable.menu_devices to R.drawable.msg_devices_solar,
             R.drawable.msg_language to R.drawable.msg_language_solar,
-            R.drawable.msg_ask_question to R.drawable.msg_ask_question_solar,
+            R.drawable.msg2_language to R.drawable.msg_language_solar,
+            R.drawable.msg2_ask_question to R.drawable.msg_ask_question_solar,
             R.drawable.msg_policy to R.drawable.msg_policy_solar,
+            R.drawable.msg2_policy to R.drawable.msg_policy_solar,
+
+            // Power Saving
+            R.drawable.msg2_sticker to R.drawable.msg_sticker_solar,
+            R.drawable.msg2_smile_status to R.drawable.input_smile_solar,
+            R.drawable.msg2_call_earpiece to R.drawable.msg_calls_regular_solar,
+            R.drawable.msg2_videocall to R.drawable.msg_videocall_solar,
             // Logout activity
             R.drawable.msg_contact_add to R.drawable.msg_contact_add_solar,
             R.drawable.msg_clearcache to R.drawable.msg_delete_solar,
@@ -48,7 +59,6 @@ class SolarIconReplace : BaseIconReplace() {
             //Chats
             R.drawable.ic_ab_back to R.drawable.alt_arrow_left_solar,
             R.drawable.msg_arrow_back to R.drawable.alt_arrow_left_solar,
-            R.drawable.calls_back to R.drawable.alt_arrow_left_solar,
             R.drawable.ic_ab_other to R.drawable.ic_ab_other_solar, //need to replace with new
             R.drawable.msg_unmute to R.drawable.msg_unmute_solar, //need to replace with new
             R.drawable.msg_mute to R.drawable.msg_mute_solar,
@@ -74,6 +84,7 @@ class SolarIconReplace : BaseIconReplace() {
             R.drawable.msg_retry to R.drawable.msg_retry_solar, // Restart Cherrygram
             R.drawable.msg_gift_premium to R.drawable.msg_gift_premium_solar,
             R.drawable.msg_secret to R.drawable.msg_secret_solar,
+            R.drawable.msg2_secret to R.drawable.msg_secret_solar,
             R.drawable.msg_discussion to R.drawable.msg_discussion_solar,
             R.drawable.msg_home to R.drawable.msg_home_solar,
             //Topics
@@ -135,7 +146,7 @@ class SolarIconReplace : BaseIconReplace() {
             R.drawable.input_notify_on to R.drawable.input_notify_on_solar, //need to replace with new
             //Emoji panel
             R.drawable.msg_emoji_recent to R.drawable.msg_emoji_recent_solar,
-            //R.drawable.smiles_tab_gif to R.drawable.picture_outline_28,
+//            R.drawable.smiles_tab_gif to R.drawable.picture_outline_28,
             R.drawable.input_keyboard to R.drawable.input_keyboard_solar,
             R.drawable.smiles_tab_clear to R.drawable.smiles_tab_clear_solar,
 

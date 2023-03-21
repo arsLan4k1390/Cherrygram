@@ -84,7 +84,7 @@ public class CameraXController {
     private boolean isInitiated = false;
     private final CameraLifecycle lifecycle;
     private ProcessCameraProvider provider;
-    private Camera camera;
+    public static Camera camera;
     private CameraSelector cameraSelector;
     private CameraXView.VideoSavedCallback videoSavedCallback;
     private boolean abandonCurrentVideo = false;
@@ -241,8 +241,14 @@ public class CameraXController {
         return iCapture.getFlashMode();
     }
 
-    public boolean isFlashAvailable() {
+    public static boolean isFlashAvailable() {
         return camera.getCameraInfo().hasFlashUnit();
+    }
+
+    public static void setTorchEnabled(boolean b) {
+        if (isFlashAvailable()) {
+            camera.getCameraControl().enableTorch(b);
+        }
     }
 
     public boolean isAvailableHdrMode() {
@@ -328,8 +334,8 @@ public class CameraXController {
 
         ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder()
                 .setCaptureMode(CherrygramConfig.INSTANCE.getReduceCameraXLatency() ?
-                    ImageCapture.CAPTURE_MODE_ZERO_SHUTTER_LAG:
-                    (CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode() ? ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY : ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                                ImageCapture.CAPTURE_MODE_ZERO_SHUTTER_LAG:
+                                (CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode() ? ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY : ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
                 )
                 .setTargetAspectRatio(AspectRatio.RATIO_16_9);
 
@@ -378,6 +384,7 @@ public class CameraXController {
 
     @SuppressLint("UnsafeExperimentalUsageError")
     public boolean isExposureCompensationSupported() {
+        if (camera == null) return false;
         return camera.getCameraInfo().getExposureState().isExposureCompensationSupported();
     }
 

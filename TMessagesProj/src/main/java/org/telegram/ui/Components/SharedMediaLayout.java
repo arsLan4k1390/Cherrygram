@@ -3837,7 +3837,11 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                             photoVideoAdapter.notifyDataSetChanged();
                         }
                     } else {
-                        adapter.notifyDataSetChanged();
+                        try {
+                            adapter.notifyDataSetChanged();
+                        } catch (Throwable e) {
+
+                        }
                     }
                     if (sharedMediaData[type].messages.isEmpty() && !sharedMediaData[type].loading) {
                         if (listView != null) {
@@ -6195,7 +6199,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                 emptyStubView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 return new RecyclerListView.Holder(emptyStubView);
             }
-            View view = new UserCell(mContext, 9, 0, true, false, resourcesProvider,false, false);
+            View view = new UserCell(mContext, 9, 0, true, false, resourcesProvider, false);
             view.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             return new RecyclerListView.Holder(view);
         }

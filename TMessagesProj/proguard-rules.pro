@@ -101,8 +101,12 @@
 -keepclassmembernames class org.telegram.ui.* { <fields>; }
 -keepclassmembernames class org.telegram.ui.Cells.* { <fields>; }
 -keepclassmembernames class org.telegram.ui.Components.* { <fields>; }
+-keep class org.telegram.ui.Components.RLottieDrawable$LottieMetadata { <fields>; }
 -keep,allowshrinking,allowobfuscation class org.telegram.ui.Components.GroupCreateSpan {
     public void updateColors();
+ }
+-keep,allowshrinking,allowobfuscation class org.telegram.ui.Components.Premium.GLIcon.ObjLoader {
+    public <init>();
  }
 
 # Keep Cherrygram fields name
@@ -184,3 +188,7 @@
 -overloadaggressively
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
+
+# Use -keep to explicitly keep any other classes shrinking would remove
+#-dontoptimize
+-dontobfuscate

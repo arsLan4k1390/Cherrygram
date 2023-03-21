@@ -81,12 +81,18 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+
+        if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            actionBar.setTitleColor(Theme.getColor("windowBackgroundWhiteBlackText"));
+            actionBar.setItemsColor(Theme.getColor("windowBackgroundWhiteBlackText"), false);
+            actionBar.setItemsBackgroundColor(Theme.getColor("listSelectorSDK21"), false);
+        }
+
         actionBar.setTitle(LocaleController.getString("CP_Category_Camera", R.string.CP_Category_Camera));
         actionBar.setAllowOverlayTitle(false);
 
-        if (AndroidUtilities.isTablet()) {
-            actionBar.setOccupyStatusBar(false);
-        }
+        actionBar.setOccupyStatusBar(!AndroidUtilities.isTablet());
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -268,13 +274,13 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                     if (position == cameraAdviseRow) {
                         String advise;
                         switch (CherrygramConfig.INSTANCE.getCameraType()) {
-                            case 0:
+                            case CherrygramConfig.TELEGRAM_CAMERA:
                                 advise = LocaleController.getString("CP_DefaultCameraDesc", R.string.CP_DefaultCameraDesc);
                                 break;
-                            case 1:
+                            case CherrygramConfig.CAMERA_X:
                                 advise = LocaleController.getString("CP_CameraXDesc", R.string.CP_CameraXDesc);
                                 break;
-                            case 2:
+                            case CherrygramConfig.SYSTEM_CAMERA:
                             default:
                                 advise = LocaleController.getString("CP_SystemCameraDesc", R.string.CP_SystemCameraDesc);
                                 break;
@@ -344,13 +350,13 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                             super.onSelectedCamera(cameraSelected);
                             int oldValue = CherrygramConfig.INSTANCE.getCameraType();
                             CherrygramConfig.INSTANCE.setCameraType(cameraSelected);
-                            if (cameraSelected == 1) {
+                            if (cameraSelected == CherrygramConfig.CAMERA_X) {
                                 updateRowsId(false);
                                 listAdapter.notifyItemInserted(cameraXOptimizeRow);
                                 listAdapter.notifyItemInserted(reduceCameraXLatency);
                                 listAdapter.notifyItemInserted(cameraXQualityRow);
                                 listAdapter.notifyItemChanged(cameraAdviseRow);
-                            } else if (oldValue == 1){
+                            } else if (oldValue == CherrygramConfig.CAMERA_X){
                                 listAdapter.notifyItemRemoved(cameraXOptimizeRow);
                                 listAdapter.notifyItemRemoved(reduceCameraXLatency);
                                 listAdapter.notifyItemRemoved(cameraXQualityRow);

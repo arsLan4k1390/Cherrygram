@@ -78,27 +78,18 @@ public class UpdaterUtils {
         return userAgents[randomNum];
     }
 
-    public static void checkDirs() {
-        otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
-        if (version != null) {
-            versionPath = new File(otaPath, version);
-            apkFile = new File(versionPath, "update.apk");
-            if (!versionPath.exists()) {
-                versionPath.mkdirs();
-            }
-            updateDownloaded = apkFile.exists();
-        }
+    public interface OnUpdateNotFound {
+        void run();
+    }
+
+    public interface OnUpdateFound {
+        void run();
     }
 
     public static void checkUpdates(Context context, boolean manual) {
         checkUpdates(context, manual, () -> {}, () -> {});
     }
-    public interface OnUpdateNotFound {
-        void run();
-    }
-    public interface OnUpdateFound {
-        void run();
-    }
+
     public static void checkUpdates(Context context, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound) {
 
         Utilities.globalQueue.postRunnable(() -> {
@@ -174,54 +165,6 @@ public class UpdaterUtils {
         });
     }
 
-    public static void downloadApk(Context context, String link, String title) {
-        if (!updateDownloaded) {
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(link));
-//            Log.d ("DownloadedApkLink", link);
-
-            request.setAllowedNetworkTypes(3);
-            request.setTitle(title);
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            request.setDestinationInExternalFilesDir(context, "ota/" + version, "update.apk");
-
-            id = ((DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(request);
-
-            DownloadReceiver downloadBroadcastReceiver = new DownloadReceiver();
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction("android.intent.action.DOWNLOAD_COMPLETE");
-            intentFilter.addAction("android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED");
-            context.registerReceiver(downloadBroadcastReceiver, intentFilter);
-            return;
-        }
-        installApk(context, apkFile.getAbsolutePath());
-    }
-
-    public static void installApk(Context context, String path) {
-        File file = new File(path);
-        if (!file.exists()) {
-            return;
-        }
-        Intent install = new Intent(Intent.ACTION_VIEW);
-        Uri fileUri;
-        if (Build.VERSION.SDK_INT >= 24) {
-            fileUri = FileProvider.getUriForFile(context, ApplicationLoader.getApplicationId() + ".provider", file);
-        } else {
-            fileUri = Uri.fromFile(file);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !ApplicationLoader.applicationContext.getPackageManager().canRequestPackageInstalls()) {
-            AlertsCreator.createApkRestrictedDialog(context, null).show();
-            return;
-        }
-        if (fileUri != null) {
-            install.setDataAndType(fileUri, "application/vnd.android.package-archive");
-            install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            if (install.resolveActivity(context.getPackageManager()) != null) {
-                context.startActivity(install);
-            }
-        }
-    }
-
     public static boolean isNewVersion(String... v) {
         if (v.length != 2) {
             return false;
@@ -233,6 +176,18 @@ public class UpdaterUtils {
             }
         }
         return Integer.parseInt(v[0]) < Integer.parseInt(v[1]);
+    }
+
+    public static void checkDirs() {
+        otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
+        if (version != null) {
+            versionPath = new File(otaPath, version);
+            apkFile = new File(versionPath, "update.apk");
+            if (!versionPath.exists()) {
+                versionPath.mkdirs();
+            }
+            updateDownloaded = apkFile.exists();
+        }
     }
 
     public static String getOtaDirSize() {
@@ -351,7 +306,6 @@ public class UpdaterUtils {
     }
 
     public static class DownloadReceiver extends BroadcastReceiver {
-
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Objects.equals(intent.getAction(), DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
@@ -368,6 +322,52 @@ public class UpdaterUtils {
                 } catch (Exception e) {
                     FileLog.e("Downloads activity not found: ", e);
                 }
+            }
+        }
+    }
+
+    public static void downloadApk(Context context, String link, String title) {
+        if (!updateDownloaded) {
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(link));
+//            Log.d ("DownloadedApkLink", link);
+
+            request.setAllowedNetworkTypes(3);
+            request.setTitle(title);
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            request.setDestinationInExternalFilesDir(context, "ota/" + version, "update.apk");
+
+            id = ((DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE)).enqueue(request);
+
+            DownloadReceiver downloadBroadcastReceiver = new DownloadReceiver();
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+            intentFilter.addAction(DownloadManager.ACTION_NOTIFICATION_CLICKED);
+            context.registerReceiver(downloadBroadcastReceiver, intentFilter);
+            return;
+        }
+        installApk(context, apkFile.getAbsolutePath());
+    }
+
+    public static void installApk(Context context, String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            return;
+        }
+        Intent install = new Intent(Intent.ACTION_VIEW);
+        Uri fileUri;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            fileUri = FileProvider.getUriForFile(context, ApplicationLoader.getApplicationId() + ".provider", file);
+        } else {
+            fileUri = Uri.fromFile(file);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !ApplicationLoader.applicationContext.getPackageManager().canRequestPackageInstalls()) {
+            AlertsCreator.createApkRestrictedDialog(context, null).show();
+        } else if (fileUri != null) {
+            install.setDataAndType(fileUri, "application/vnd.android.package-archive");
+            install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            install.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            if (install.resolveActivity(context.getPackageManager()) != null) {
+                context.startActivity(install);
             }
         }
     }

@@ -185,8 +185,9 @@ public class Bulletin {
         }
     }
 
-    public void setDuration(int duration) {
+    public Bulletin setDuration(int duration) {
         this.duration = duration;
+        return this;
     }
 
     public Bulletin show() {
@@ -1115,6 +1116,7 @@ public class Bulletin {
         public final BackupImageView imageView;
         public final TextView titleTextView;
         public final TextView subtitleTextView;
+        private final LinearLayout linearLayout;
 
         public TwoLineLayout(@NonNull Context context, Theme.ResourcesProvider resourcesProvider) {
             super(context, resourcesProvider);
@@ -1123,7 +1125,7 @@ public class Bulletin {
 
             addView(imageView = new BackupImageView(context), LayoutHelper.createFrameRelatively(29, 29, Gravity.START | Gravity.CENTER_VERTICAL, 12, 12, 12, 12));
 
-            final LinearLayout linearLayout = new LinearLayout(context);
+            linearLayout = new LinearLayout(context);
             linearLayout.setOrientation(LinearLayout.VERTICAL);
             addView(linearLayout, LayoutHelper.createFrameRelatively(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.START | Gravity.CENTER_VERTICAL, 54, 8, 12, 8));
 
@@ -1147,6 +1149,11 @@ public class Bulletin {
         public CharSequence getAccessibilityText() {
             return titleTextView.getText() + ".\n" + subtitleTextView.getText();
         }
+
+        public void hideImage() {
+            imageView.setVisibility(GONE);
+            ((MarginLayoutParams) linearLayout.getLayoutParams()).setMarginStart(AndroidUtilities.dp(12));
+        }
     }
 
     public static class TwoLineLottieLayout extends ButtonLayout {
@@ -1154,6 +1161,7 @@ public class Bulletin {
         public final RLottieImageView imageView;
         public final LinkSpanDrawable.LinksTextView titleTextView;
         public final LinkSpanDrawable.LinksTextView subtitleTextView;
+        private final LinearLayout linearLayout;
 
         private final int textColor;
 
@@ -1169,7 +1177,7 @@ public class Bulletin {
             final int undoInfoColor = getThemedColor(Theme.key_undo_infoColor);
             final int undoLinkColor = getThemedColor(Theme.key_undo_cancelColor);
 
-            final LinearLayout linearLayout = new LinearLayout(context);
+            linearLayout = new LinearLayout(context);
             linearLayout.setOrientation(LinearLayout.VERTICAL);
             addView(linearLayout, LayoutHelper.createFrameRelatively(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.START | Gravity.CENTER_VERTICAL, 52, 8, 8, 8));
 
@@ -1209,6 +1217,11 @@ public class Bulletin {
 
         public CharSequence getAccessibilityText() {
             return titleTextView.getText() + ".\n" + subtitleTextView.getText();
+        }
+
+        public void hideImage() {
+            imageView.setVisibility(GONE);
+            ((MarginLayoutParams) linearLayout.getLayoutParams()).setMarginStart(AndroidUtilities.dp(10));
         }
     }
 
@@ -1564,10 +1577,6 @@ public class Bulletin {
         private TextView undoTextView;
         private boolean isUndone;
 
-        public RestartButton(@NonNull Context context, boolean text) {
-            this(context, text, null);
-        }
-
         public RestartButton(@NonNull Context context, boolean text, Theme.ResourcesProvider resourcesProvider) {
             super(context);
             this.resourcesProvider = resourcesProvider;
@@ -1775,7 +1784,11 @@ public class Bulletin {
                     @Override
                     public void removeView(View child) {
                         super.removeView(child);
-                        BulletinWindow.this.dismiss();
+                        try {
+                            BulletinWindow.this.dismiss();
+                        } catch (Exception ignore) {
+
+                        }
                         removeDelegate(container);
                     }
                 },

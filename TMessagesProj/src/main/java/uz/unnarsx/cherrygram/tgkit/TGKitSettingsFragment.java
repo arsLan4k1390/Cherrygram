@@ -35,6 +35,7 @@ import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.crashlytics.Crashlytics;
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.preferences.BasePreferencesEntry;
@@ -89,11 +90,17 @@ public class TGKitSettingsFragment extends BaseFragment {
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-        actionBar.setTitle(settings.name);
-        if (AndroidUtilities.isTablet()) {
-            actionBar.setOccupyStatusBar(false);
+
+        if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            actionBar.setTitleColor(Theme.getColor("windowBackgroundWhiteBlackText"));
+            actionBar.setItemsColor(Theme.getColor("windowBackgroundWhiteBlackText"), false);
+            actionBar.setItemsBackgroundColor(Theme.getColor("listSelectorSDK21"), false);
         }
+
+        actionBar.setTitle(settings.name);
         actionBar.setAllowOverlayTitle(true);
+        actionBar.setOccupyStatusBar(!AndroidUtilities.isTablet());
 
         ActionBarMenu menu = actionBar.createMenu();
         ActionBarMenuItem menuItem = menu.addItem(0, R.drawable.ic_ab_other);
@@ -144,7 +151,7 @@ public class TGKitSettingsFragment extends BaseFragment {
                 if (preference.listener != null) preference.listener.onClick(this);
             } else if (pref instanceof TGKitListPreference) {
                 TGKitListPreference preference = ((TGKitListPreference) pref);
-                preference.callActionHueta(this, getParentActivity(), view, x, y, () -> {
+                preference.callActionHueta(this, getParentActivity(), () -> {
                     if (view instanceof TextDetailSettingsCell)
                         ((TextDetailSettingsCell) view).setTextAndValue(preference.title, preference.getContract().getValue(), preference.getDivider());
                 });

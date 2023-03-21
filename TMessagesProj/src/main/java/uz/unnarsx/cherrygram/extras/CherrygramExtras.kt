@@ -11,7 +11,7 @@ import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.4.7"
+    var CG_VERSION = "7.4.8"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getDCGeo(dcId: Int): String {
@@ -83,21 +83,4 @@ object CherrygramExtras {
         }
     }
 
-    @JvmStatic
-    @get:ColorInt
-    val lightStatusbarColor: Int
-        get() = if (SharedConfig.noStatusBar) {
-            0x00000000
-        } else {
-            0x0f000000
-        }
-
-    @JvmStatic
-    @get:ColorInt
-    val darkStatusbarColor: Int
-        get() = if (SharedConfig.noStatusBar) {
-            0x00000000
-        } else {
-            0x33000000
-        }
 }

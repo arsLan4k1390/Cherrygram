@@ -1,6 +1,5 @@
 package org.telegram.ui;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -11,7 +10,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -93,8 +91,7 @@ import org.telegram.ui.Components.URLSpanNoUnderline;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.PermissionHelper;
+import uz.unnarsx.cherrygram.helpers.PermissionsUtils;
 
 @TargetApi(18)
 public class CameraScanActivity extends BaseFragment {
@@ -476,7 +473,7 @@ public class CameraScanActivity extends BaseFragment {
             actionBar.setTitleColor(0xffffffff);
             actionBar.setItemsColor(0xffffffff, false);
             actionBar.setItemsBackgroundColor(0x22ffffff, false);
-            viewGroup.setBackgroundColor(Theme.getColor(Theme.key_wallet_blackBackground));
+            viewGroup.setBackgroundColor(0xFF000000);
             viewGroup.addView(actionBar);
         }
 
@@ -652,8 +649,8 @@ public class CameraScanActivity extends BaseFragment {
                         return;
                     }
                     if (Build.VERSION.SDK_INT >= 23) {
-                        if (!PermissionHelper.isImagesAndVideoPermissionGranted()) {
-                            PermissionHelper.requestImagesAndVideoPermission(getParentActivity());
+                        if (!PermissionsUtils.isImagesAndVideoPermissionGranted()) {
+                            PermissionsUtils.requestImagesAndVideoPermission(getParentActivity());
                             return;
                         }
                     }

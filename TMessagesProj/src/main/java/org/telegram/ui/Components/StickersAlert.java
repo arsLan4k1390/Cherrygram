@@ -51,6 +51,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
@@ -815,6 +816,8 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
         containerView.addView(optionsButton, LayoutHelper.createFrame(40, 40, Gravity.TOP | Gravity.RIGHT, 0, 5, 5, 0));
         optionsButton.addSubItem(1, R.drawable.msg_share, LocaleController.getString("StickersShare", R.string.StickersShare));
         optionsButton.addSubItem(2, R.drawable.msg_link, LocaleController.getString("CopyLink", R.string.CopyLink));
+        optionsButton.addSubItem(3, R.drawable.msg_info, LocaleController.getString("CG_CopySetId", R.string.CG_CopySetId));
+        optionsButton.addSubItem(4, R.drawable.msg_openprofile, LocaleController.getString("ChannelCreator", R.string.ChannelCreator));
         optionsButton.setOnClickListener(v -> optionsButton.toggleSubMenu());
         optionsButton.setDelegate(this::onSubItemClick);
         optionsButton.setContentDescription(LocaleController.getString("AccDescrMoreOptions", R.string.AccDescrMoreOptions));
@@ -1026,7 +1029,29 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
             } catch (Exception e) {
                 FileLog.e(e);
             }
+        } else if (id == 3) {
+            String stickerSetID = String.valueOf(stickerSet.set.id);
+            try {
+                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                android.content.ClipData clip = android.content.ClipData.newPlainText("label", stickerSetID);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(getContext(), LocaleController.getString("TextCopied", R.string.TextCopied), Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        } else if (id == 4) {
+            long owner = stickerSet.set.id >> 32;
+            String stickerSetID = "@tgdb_bot " + owner;
+            try {
+                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                android.content.ClipData clip = android.content.ClipData.newPlainText("label", stickerSetID);
+                clipboard.setPrimaryClip(clip);
+                Toast.makeText(getContext(), LocaleController.getString("TextCopied", R.string.TextCopied), Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
         }
+
     }
 
     private void updateFields() {
@@ -1252,7 +1277,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
 
         EditTextBoldCursor editText = new EditTextBoldCursor(context);
         editText.setBackground(null);
-        editText.setLineColors(Theme.getColor(Theme.key_dialogInputField), Theme.getColor(Theme.key_dialogInputFieldActivated), Theme.getColor(Theme.key_dialogTextRed2));
+        editText.setLineColors(Theme.getColor(Theme.key_dialogInputField), Theme.getColor(Theme.key_dialogInputFieldActivated), Theme.getColor(Theme.key_dialogTextRed));
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         editText.setTextColor(getThemedColor(Theme.key_dialogTextBlack));
         editText.setMaxLines(1);

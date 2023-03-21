@@ -8,6 +8,8 @@
 
 package org.telegram.ui.Components;
 
+import static android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -64,6 +66,7 @@ import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageReceiver;
+import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
 import org.telegram.messenger.MediaDataController;
@@ -84,7 +87,6 @@ import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.BasePermissionsActivity;
 import org.telegram.ui.Cells.PhotoAttachCameraCell;
 import org.telegram.ui.Cells.PhotoAttachPermissionCell;
 import org.telegram.ui.Cells.PhotoAttachPhotoCell;
@@ -106,10 +108,10 @@ import uz.unnarsx.cherrygram.camera.BaseCameraView;
 import uz.unnarsx.cherrygram.camera.CameraXController;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.camera.CameraXView;
-import uz.unnarsx.cherrygram.camera.EffectSelector;
+import uz.unnarsx.cherrygram.camera.EffectSelectorView;
 import uz.unnarsx.cherrygram.camera.LockAnimationView;
 import uz.unnarsx.cherrygram.camera.SlideControlView;
-import uz.unnarsx.cherrygram.helpers.PermissionHelper;
+import uz.unnarsx.cherrygram.helpers.PermissionsUtils;
 
 public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayout implements NotificationCenter.NotificationCenterDelegate {
 
@@ -165,7 +167,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     private ShutterButton shutterButton;
     private SlideControlView zoomControlView;
     private final SlideControlView evControlView;
-    private final EffectSelector effectSelector;
+    private final EffectSelectorView effectSelector;
     private final LockAnimationView lockAnimationView;
     private AnimatorSet zoomControlAnimation;
     private Runnable zoomControlHideRunnable;
@@ -225,11 +227,11 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     public final static int open_in = 3;
     public final static int preview_gap = 4;
     public final static int preview = 5;
+    private boolean isExposureCompensationSupported = false;
 
     private ActionBarMenuSubItem spoilerItem;
     private ActionBarMenuSubItem compressItem;
     protected ActionBarMenuSubItem previewItem;
-    private boolean isExposureCompensationSupported = false;
 
     boolean forceDarkTheme;
     private int animationIndex = -1;
@@ -607,7 +609,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         parentAlert.selectedMenuItem.addSubItem(group, R.drawable.msg_ungroup, LocaleController.getString("SendWithoutGrouping", R.string.SendWithoutGrouping));
         spoilerItem = parentAlert.selectedMenuItem.addSubItem(spoiler, R.drawable.msg_spoiler, LocaleController.getString("EnablePhotoSpoiler", R.string.EnablePhotoSpoiler));
         parentAlert.selectedMenuItem.addSubItem(open_in, R.drawable.msg_openin, LocaleController.getString("OpenInExternalApp", R.string.OpenInExternalApp));
-        parentAlert.selectedMenuItem.addGap(preview_gap);
+        parentAlert.selectedMenuItem.addColoredGap(preview_gap);
         previewItem = parentAlert.selectedMenuItem.addSubItem(preview, R.drawable.msg_view_file, LocaleController.getString("AttachMediaPreviewButton", R.string.AttachMediaPreviewButton));
         parentAlert.selectedMenuItem.setFitSubItems(true);
 
@@ -718,7 +720,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     }
                     return;
                 } else if (noGalleryPermissions) {
-                    PermissionHelper.requestImagesAndVideoPermission(parentAlert.baseFragment.getParentActivity());
+                    PermissionsUtils.requestImagesAndVideoPermission(parentAlert.baseFragment.getParentActivity());
                     return;
                 }
             }
@@ -799,7 +801,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     }
                 }, hasSpoiler ? 250 : 0);
             } else {
-                if (SharedConfig.inappCamera && CherrygramConfig.INSTANCE.getCameraType() != 2 && !CherrygramConfig.INSTANCE.getDisableAttachCamera()) {
+                if (SharedConfig.inappCamera && CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.SYSTEM_CAMERA && !CherrygramConfig.INSTANCE.getDisableAttachCamera()) {
                     openCamera(true);
                 } else {
                     if (parentAlert.delegate != null) {
@@ -907,7 +909,6 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         container.addView(recordTime, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 16, 0, 0));
 
         cameraPanel = new FrameLayout(context) {
-
             @Override
             protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
                 int cx;
@@ -965,7 +966,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 return;
             }
             openPhotoViewer(null, false, false);
-            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                 CameraController.getInstance().stopPreview(((CameraView) cameraView).getCameraSession());
             }
         });
@@ -987,7 +988,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         lockAnimationView.setAlpha(0.0f);
         container.addView(lockAnimationView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 100, Gravity.LEFT | Gravity.TOP, 0, 0, 0, 100 + 16));
 
-        effectSelector = new EffectSelector(context) {
+        effectSelector = new EffectSelectorView(context) {
             @Override
             protected void onEffectSelected(int cameraEffect) {
                 super.onEffectSelected(cameraEffect);
@@ -1067,7 +1068,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     AndroidUtilities.runOnUIThread(videoRecordRunnable, 1000);
                 };
                 AndroidUtilities.lockOrientation(parentAlert.baseFragment.getParentActivity());
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                     CameraController.getInstance().recordVideo(((CameraView) cameraView).getCameraSession(), outputFile, parentAlert.avatarPicker != 0, (thumbPath, duration) -> {
                         if (outputFile == null || parentAlert.baseFragment == null || cameraView == null) {
                             return;
@@ -1144,7 +1145,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     outputFile = null;
                 }
                 resetRecordState();
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                     CameraController.getInstance().stopVideoRecording(((CameraView) cameraView).getCameraSession(), true);
                 } else {
                     if (animate) {
@@ -1160,7 +1161,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
 
             @Override
             public void shutterReleased() {
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                     if (takingPhoto || cameraView == null || ((CameraView) cameraView).getCameraSession() == null) {
                         return;
                     }
@@ -1172,7 +1173,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 }
                 if (shutterButton.getState() != ShutterButton.State.DEFAULT) {
                     resetRecordState();
-                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                         CameraController.getInstance().stopVideoRecording(((CameraView) cameraView).getCameraSession(), false);
                     } else {
                         effectSelector.animate().alpha(1f).setDuration(200);
@@ -1188,7 +1189,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     return;
                 }
                 final File cameraFile = AndroidUtilities.generatePicturePath(parentAlert.baseFragment instanceof ChatActivity && ((ChatActivity) parentAlert.baseFragment).isSecretChat(), null);
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                     final boolean sameTakePictureOrientation = ((CameraView) cameraView).getCameraSession().isSameTakePictureOrientation();
                     ((CameraView) cameraView).getCameraSession().setFlipFront(parentAlert.baseFragment instanceof ChatActivity || parentAlert.avatarPicker == 2);
                     takingPhoto = CameraController.getInstance().takePicture(cameraFile, ((CameraView) cameraView).getCameraSession(), () -> {
@@ -1359,6 +1360,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 }
             });
             animator.start();
+
         });
         switchCameraButton.setContentDescription(LocaleController.getString("AccDescrSwitchCamera", R.string.AccDescrSwitchCamera));
 
@@ -1372,7 +1374,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     return;
                 }
                 String next = null;
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                     String current = ((CameraView) cameraView).getCameraSession().getCurrentFlashMode();
                     next = ((CameraView) cameraView).getCameraSession().getNextFlashMode();
                     if (current.equals(next)) {
@@ -1906,7 +1908,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 evControlView.setSliderValue(0.5f, true);
                 cameraZoom = cameraView.resetZoom();
                 zoomControlView.setSliderValue(cameraZoom, false);
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                     CameraController.getInstance().startPreview(((CameraView) cameraView).getCameraSession());
                 }
             }
@@ -1973,7 +1975,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     evControlView.setSliderValue(0.5f, true);
                     cameraZoom = cameraView.resetZoom();
                     zoomControlView.setSliderValue(cameraZoom, false);
-                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                         CameraController.getInstance().startPreview(((CameraView) cameraView).getCameraSession());
                     }
                 }
@@ -2027,7 +2029,11 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 }
                 if (!(parentAlert.baseFragment instanceof ChatActivity) || !((ChatActivity) parentAlert.baseFragment).isSecretChat()) {
                     for (int a = 0, size = cameraPhotos.size(); a < size; a++) {
-                        AndroidUtilities.addMediaToGallery(((MediaController.PhotoEntry) cameraPhotos.get(a)).path);
+                        MediaController.PhotoEntry entry = (MediaController.PhotoEntry) cameraPhotos.get(a);
+                        if (entry.ttl > 0) {
+                            continue;
+                        }
+                        AndroidUtilities.addMediaToGallery(entry.path);
                     }
                 }
                 parentAlert.applyCaption();
@@ -2189,10 +2195,10 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         }
         boolean old = deviceHasGoodCamera;
         boolean old2 = noCameraPermissions;
-        if (!SharedConfig.inappCamera || CherrygramConfig.INSTANCE.getDisableAttachCamera()) {
+        if (!SharedConfig.inappCamera || CherrygramConfig.INSTANCE.getDisableAttachCamera() || CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.SYSTEM_CAMERA) {
             deviceHasGoodCamera = false;
         } else {
-            if (Build.VERSION.SDK_INT >= 23 && CherrygramConfig.INSTANCE.getCameraType() == 1) {
+            if (Build.VERSION.SDK_INT >= 23) {
                 if (noCameraPermissions = (parentAlert.baseFragment.getParentActivity().checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)) {
                     if (request) {
                         try {
@@ -2206,10 +2212,15 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                         }
                     }
                     deviceHasGoodCamera = false;
-                } else {
+                } else if (CameraXUtils.isCameraXSupported() && CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_X) {
                     deviceHasGoodCamera = CameraXView.hasGoodCamera(getContext());
+                } else {
+                    if (request || SharedConfig.hasCameraCache) {
+                        CameraController.getInstance().initCamera(null);
+                    }
+                    deviceHasGoodCamera = CameraController.getInstance().isCameraInitied();
                 }
-            } else if (CameraXUtils.isCameraXSupported() && CherrygramConfig.INSTANCE.getCameraType() == 1) {
+            } else if (CameraXUtils.isCameraXSupported() && CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_X) {
                 deviceHasGoodCamera = CameraXView.hasGoodCamera(getContext());
             } else {
                 if (request || SharedConfig.hasCameraCache) {
@@ -2231,9 +2242,13 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
 
     boolean cameraExpanded;
     private void openCamera(boolean animated) {
-        if (cameraView == null || cameraInitAnimation != null || !cameraView.isInited() || parentAlert.isDismissed()) {
+        if (cameraView == null || cameraInitAnimation != null || parentAlert.isDismissed()) {
             return;
         }
+        if (!cameraView.isInited() && LiteMode.isEnabled(LiteMode.FLAGS_CHAT)) {
+            return;
+        }
+        cameraView.initTexture();
         if (parentAlert.avatarPicker == 2 || parentAlert.baseFragment instanceof ChatActivity) {
             tooltipTextView.setVisibility(VISIBLE);
         } else {
@@ -2271,9 +2286,12 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         animateCameraValues[2] = itemSize;
         additionCloseCameraY = 0;
         cameraExpanded = true;
-        cameraView.setFpsLimit(-1);
+        if (cameraView != null) {
+            cameraView.setFpsLimit(-1);
+        }
         AndroidUtilities.hideKeyboard(this);
         AndroidUtilities.setLightNavigationBar(parentAlert.getWindow(), false);
+        parentAlert.getWindow().addFlags(FLAG_KEEP_SCREEN_ON);
         if (animated) {
             setCameraOpenProgress(0);
             cameraAnimationInProgress = true;
@@ -2300,10 +2318,12 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 public void onAnimationEnd(Animator animator) {
                     NotificationCenter.getInstance(parentAlert.currentAccount).onAnimationFinish(animationIndex);
                     cameraAnimationInProgress = false;
-                    if (Build.VERSION.SDK_INT >= 21 && cameraView != null) {
-                        cameraView.invalidateOutline();
-                    } else if (cameraView != null) {
-                        cameraView.invalidate();
+                    if (cameraView != null) {
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            cameraView.invalidateOutline();
+                        } else {
+                            cameraView.invalidate();
+                        }
                     }
                     if (cameraOpened) {
                         parentAlert.delegate.onCameraOpened();
@@ -2326,14 +2346,20 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 }
             }
             parentAlert.delegate.onCameraOpened();
-            if (Build.VERSION.SDK_INT >= 21) {
+            if (cameraView != null && Build.VERSION.SDK_INT >= 21) {
                 cameraView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN);
             }
         }
         cameraOpened = true;
-        cameraView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        if (cameraView != null) {
+            cameraView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        }
         if (Build.VERSION.SDK_INT >= 19) {
             gridView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+        }
+
+        if (!LiteMode.isEnabled(LiteMode.FLAGS_CHAT) && cameraView != null && cameraView.isInited()) {
+            cameraView.showTexture(true, animated);
         }
     }
 
@@ -2354,8 +2380,9 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             return;
         }
         if (cameraView == null) {
-            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
-                cameraView = new CameraView(parentAlert.baseFragment.getParentActivity(), parentAlert.openWithFrontFaceCamera) {
+            final boolean lazy = !LiteMode.isEnabled(LiteMode.FLAGS_CHAT);
+            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+                cameraView = new CameraView(parentAlert.baseFragment.getParentActivity(), parentAlert.openWithFrontFaceCamera, lazy) {
 
                     Bulletin.Delegate bulletinDelegate = new Bulletin.Delegate() {
                         @Override
@@ -2368,12 +2395,13 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                         if (Build.VERSION.SDK_INT >= 21) {
                             super.dispatchDraw(canvas);
                         } else {
+                            int maxY = (int) Math.min(parentAlert.getCommentTextViewTop() + currentPanTranslationY + parentAlert.getContainerView().getTranslationY() - cameraView.getTranslationY(), getMeasuredHeight());
                             if (cameraAnimationInProgress) {
-                                AndroidUtilities.rectTmp.set(animationClipLeft + cameraViewOffsetX * (1f - cameraOpenProgress), animationClipTop + cameraViewOffsetY * (1f - cameraOpenProgress), animationClipRight, animationClipBottom);
+                                AndroidUtilities.rectTmp.set(animationClipLeft + cameraViewOffsetX * (1f - cameraOpenProgress), animationClipTop + cameraViewOffsetY * (1f - cameraOpenProgress), animationClipRight, Math.min(maxY, animationClipBottom));
                             } else if (!cameraAnimationInProgress && !cameraOpened) {
-                                AndroidUtilities.rectTmp.set(cameraViewOffsetX, cameraViewOffsetY, getMeasuredWidth(), getMeasuredHeight());
+                                AndroidUtilities.rectTmp.set(cameraViewOffsetX, cameraViewOffsetY, getMeasuredWidth(), Math.min(maxY, getMeasuredHeight()));
                             } else {
-                                AndroidUtilities.rectTmp.set(0 , 0, getMeasuredWidth(), getMeasuredHeight());
+                                AndroidUtilities.rectTmp.set(0 , 0, getMeasuredWidth(), Math.min(maxY, getMeasuredHeight()));
                             }
                             canvas.save();
                             canvas.clipRect(AndroidUtilities.rectTmp);
@@ -2395,8 +2423,11 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     }
                 };
             } else {
-                cameraView = new CameraXView(parentAlert.baseFragment.getParentActivity(), parentAlert.openWithFrontFaceCamera);
-                ((CameraXView) cameraView).initCamera();
+                cameraView = new CameraXView(parentAlert.baseFragment.getParentActivity(), parentAlert.openWithFrontFaceCamera, lazy);
+            }
+
+            if (cameraCell != null && lazy) {
+                cameraView.setThumbDrawable(cameraCell.getDrawable());
             }
             cameraView.setRecordFile(AndroidUtilities.generateVideoPath(parentAlert.baseFragment instanceof ChatActivity && ((ChatActivity) parentAlert.baseFragment).isSecretChat()));
             cameraView.setFocusable(true);
@@ -2405,14 +2436,20 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 cameraView.setOutlineProvider(new ViewOutlineProvider() {
                     @Override
                     public void getOutline(View view, Outline outline) {
+                        int maxY = (int) Math.min(parentAlert.getCommentTextViewTop() + currentPanTranslationY + parentAlert.getContainerView().getTranslationY() - cameraView.getTranslationY(), view.getMeasuredHeight());
+                        if (cameraOpened) {
+                            maxY = view.getMeasuredHeight();
+                        } else if (cameraAnimationInProgress) {
+                            maxY = AndroidUtilities.lerp(maxY, view.getMeasuredHeight(), cameraOpenProgress);
+                        }
                         if (cameraAnimationInProgress) {
                             AndroidUtilities.rectTmp.set(animationClipLeft + cameraViewOffsetX * (1f - cameraOpenProgress), animationClipTop + cameraViewOffsetY * (1f - cameraOpenProgress), animationClipRight,  animationClipBottom);
-                            outline.setRect((int) AndroidUtilities.rectTmp.left,(int) AndroidUtilities.rectTmp.top, (int) AndroidUtilities.rectTmp.right, (int) AndroidUtilities.rectTmp.bottom);
+                            outline.setRect((int) AndroidUtilities.rectTmp.left,(int) AndroidUtilities.rectTmp.top, (int) AndroidUtilities.rectTmp.right, Math.min(maxY, (int) AndroidUtilities.rectTmp.bottom));
                         } else if (!cameraAnimationInProgress && !cameraOpened) {
                             int rad = AndroidUtilities.dp(8 * parentAlert.cornerRadius);
-                            outline.setRoundRect((int) cameraViewOffsetX, (int) cameraViewOffsetY, view.getMeasuredWidth() + rad, view.getMeasuredHeight() + rad, rad);
+                            outline.setRoundRect((int) cameraViewOffsetX, (int) cameraViewOffsetY, view.getMeasuredWidth() + rad, Math.min(maxY, view.getMeasuredHeight()) + rad, rad);
                         } else {
-                            outline.setRect(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
+                            outline.setRect(0, 0, view.getMeasuredWidth(), Math.min(maxY, view.getMeasuredHeight()));
                         }
                     }
                 });
@@ -2425,7 +2462,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 public void onCameraInit() {
                     String current;
                     String next;
-                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                         current = ((CameraView) cameraView).getCameraSession().getCurrentFlashMode();
                         next = ((CameraView) cameraView).getCameraSession().getNextFlashMode();
                         if (current.equals(next)) {
@@ -2443,6 +2480,9 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                             }
                         }
                     } else {
+                        if (((CameraXView) cameraView).isExposureCompensationSupported()) {
+                            evControlView.setVisibility(View.VISIBLE);
+                        }
                         effectSelector.loadEffects((CameraXView) cameraView);
                         if (cameraOpened) {
                             effectSelector.setVisibility(cameraView.isFrontface() ? GONE:VISIBLE);
@@ -2506,6 +2546,12 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 cameraIcon = new FrameLayout(parentAlert.baseFragment.getParentActivity()) {
                     @Override
                     protected void onDraw(Canvas canvas) {
+                        int maxY = (int) Math.min(parentAlert.getCommentTextViewTop() + currentPanTranslationY + parentAlert.getContainerView().getTranslationY() - cameraView.getTranslationY(), getMeasuredHeight());
+                        if (cameraOpened) {
+                            maxY = getMeasuredHeight();
+                        } else if (cameraAnimationInProgress) {
+                            maxY = AndroidUtilities.lerp(maxY, getMeasuredHeight(), cameraOpenProgress);
+                        }
                         int w = cameraDrawable.getIntrinsicWidth();
                         int h = cameraDrawable.getIntrinsicHeight();
                         int x = (itemSize - w) / 2;
@@ -2513,8 +2559,16 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                         if (cameraViewOffsetY != 0) {
                             y -= cameraViewOffsetY;
                         }
+                        boolean clip = maxY < getMeasuredHeight();
+                        if (clip) {
+                            canvas.save();
+                            canvas.clipRect(0, 0, getMeasuredWidth(), maxY);
+                        }
                         cameraDrawable.setBounds(x, y, x + w, y + h);
                         cameraDrawable.draw(canvas);
+                        if (clip) {
+                            canvas.restore();
+                        }
                     }
                 };
                 cameraIcon.setWillNotDraw(false);
@@ -2522,9 +2576,9 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             }
             parentAlert.getContainer().addView(cameraIcon, 2, new FrameLayout.LayoutParams(itemSize, itemSize));
 
-            cameraView.setAlpha(mediaEnabled ? 0.0f : 0.2f);
+            cameraView.setAlpha(mediaEnabled ? 1.0f : 0.2f);
             cameraView.setEnabled(mediaEnabled);
-            cameraIcon.setAlpha(mediaEnabled ? 0.0f : 0.2f);
+            cameraIcon.setAlpha(mediaEnabled ? 1.0f : 0.2f);
             cameraIcon.setEnabled(mediaEnabled);
             if (isHidden) {
                 cameraView.setVisibility(GONE);
@@ -2563,7 +2617,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 break;
             }
         }
-        if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+        if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
             ((CameraView) cameraView).destroy(async, null);
         } else {
             ((CameraXView) cameraView).closeCamera();
@@ -2587,7 +2641,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         }
         try {
             Bitmap bitmap;
-            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                 TextureView textureView = cameraView.getTextureView();
                 bitmap = textureView.getBitmap();
             } else {
@@ -2772,12 +2826,15 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 public void onAnimationEnd(Animator animator) {
                     NotificationCenter.getInstance(parentAlert.currentAccount).onAnimationFinish(animationIndex);
                     cameraExpanded = false;
+                    parentAlert.getWindow().clearFlags(FLAG_KEEP_SCREEN_ON);
                     setCameraOpenProgress(0f);
                     cameraAnimationInProgress = false;
-                    if (Build.VERSION.SDK_INT >= 21 && cameraView != null) {
-                        cameraView.invalidateOutline();
-                    } else if (cameraView != null){
-                        cameraView.invalidate();
+                    if (cameraView != null) {
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            cameraView.invalidateOutline();
+                        } else {
+                            cameraView.invalidate();
+                        }
                     }
                     cameraOpened = false;
 
@@ -2814,6 +2871,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             animatorSet.start();
         } else {
             cameraExpanded = false;
+            parentAlert.getWindow().clearFlags(FLAG_KEEP_SCREEN_ON);
             setCameraOpenProgress(0f);
             animateCameraValues[0] = 0;
             setCameraOpenProgress(0);
@@ -2841,14 +2899,22 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 }
             }
             cameraOpened = false;
-            cameraView.setFpsLimit(30);
-            if (Build.VERSION.SDK_INT >= 21) {
-                cameraView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            if (cameraView != null) {
+                cameraView.setFpsLimit(30);
+                if (Build.VERSION.SDK_INT >= 21) {
+                    cameraView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+                }
             }
         }
-        cameraView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        if (cameraView != null) {
+            cameraView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        }
         if (Build.VERSION.SDK_INT >= 19) {
             gridView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        }
+
+        if (!LiteMode.isEnabled(LiteMode.FLAGS_CHAT) && cameraView != null) {
+            cameraView.showTexture(false, animated);
         }
     }
 
@@ -2890,23 +2956,20 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         float fromScaleY = startHeight / endHeight;
         float fromScaleX = startWidth/ endWidth;
 
-        float scaleOffsetX = 0;
-        float scaleOffsetY = 0;
-
         if (cameraExpanded) {
             cameraViewW = (int) endWidth;
             cameraViewH = (int) endHeight;
-            float s = fromScale * (1f - value) + value;
-            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+            final float s = fromScale * (1f - value) + value;
+            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                 cameraView.getTextureView().setScaleX(s);
                 cameraView.getTextureView().setScaleY(s);
             }
 
-            float sX = fromScaleX * (1f - value) + value;
-            float sY = fromScaleY * (1f - value) + value;
+            final float sX = fromScaleX * (1f - value) + value;
+            final float sY = fromScaleY * (1f - value) + value;
 
-            scaleOffsetY = (1 - sY) * endHeight / 2;
-            scaleOffsetX =  (1 - sX) * endWidth / 2;
+            final float scaleOffsetY = (1 - sY) * endHeight / 2;
+            final float scaleOffsetX =  (1 - sX) * endWidth / 2;
 
             cameraView.setTranslationX(fromX * (1f - value) + toX * value - scaleOffsetX);
             cameraView.setTranslationY(fromY * (1f - value) + toY * value - scaleOffsetY);
@@ -3068,18 +3131,18 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             int finalWidth = itemSize;
             int finalHeight = itemSize;
 
-            FrameLayout.LayoutParams layoutParams;
+            LayoutParams layoutParams;
             if (!cameraOpened) {
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                     ((CameraView) cameraView).setClipTop((int) cameraViewOffsetY);
                     ((CameraView) cameraView).setClipBottom((int) cameraViewOffsetBottomY);
                 }
-                layoutParams = (FrameLayout.LayoutParams) cameraView.getLayoutParams();
+                layoutParams = (LayoutParams) cameraView.getLayoutParams();
                 if (layoutParams.height != finalHeight || layoutParams.width != finalWidth) {
                     layoutParams.width = finalWidth;
                     layoutParams.height = finalHeight;
                     cameraView.setLayoutParams(layoutParams);
-                    final FrameLayout.LayoutParams layoutParamsFinal = layoutParams;
+                    final LayoutParams layoutParamsFinal = layoutParams;
                     AndroidUtilities.runOnUIThread(() -> {
                         if (cameraView != null) {
                             cameraView.setLayoutParams(layoutParamsFinal);
@@ -3091,12 +3154,12 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             finalWidth = (int) (itemSize - cameraViewOffsetX);
             finalHeight = (int) clamp(itemSize - cameraViewOffsetY - cameraViewOffsetBottomY, 0.0f, itemSize);
 
-            layoutParams = (FrameLayout.LayoutParams) cameraIcon.getLayoutParams();
+            layoutParams = (LayoutParams) cameraIcon.getLayoutParams();
             if (layoutParams.height != finalHeight || layoutParams.width != finalWidth) {
                 layoutParams.width = finalWidth;
                 layoutParams.height = finalHeight;
                 cameraIcon.setLayoutParams(layoutParams);
-                final FrameLayout.LayoutParams layoutParamsFinal = layoutParams;
+                final LayoutParams layoutParamsFinal = layoutParams;
                 AndroidUtilities.runOnUIThread(() -> {
                     if (cameraIcon != null) {
                         cameraIcon.setLayoutParams(layoutParamsFinal);
@@ -3152,7 +3215,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
 
     public void checkStorage() {
         if (noGalleryPermissions && Build.VERSION.SDK_INT >= 23) {
-            noGalleryPermissions = !PermissionHelper.isImagesAndVideoPermissionGranted();
+            noGalleryPermissions = !PermissionsUtils.isImagesAndVideoPermissionGranted();
             if (!noGalleryPermissions) {
                 loadGalleryPhotos();
             }
@@ -3395,7 +3458,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         if (!requestingPermissions) {
             if (cameraView != null && shutterButton.getState() != ShutterButton.State.DEFAULT) {
                 resetRecordState();
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                     CameraController.getInstance().stopVideoRecording(((CameraView) cameraView).getCameraSession(), false);
                 } else {
                     ((CameraXView) cameraView).stopVideoRecording(false);
@@ -3512,7 +3575,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             }
         }
         if (Build.VERSION.SDK_INT >= 23) {
-            noGalleryPermissions = !PermissionHelper.isImagesAndVideoPermissionGranted();
+            noGalleryPermissions = !PermissionsUtils.isImagesAndVideoPermissionGranted();
         }
         if (galleryAlbumEntry != null) {
             for (int a = 0; a < Math.min(100, galleryAlbumEntry.photos.size()); a++) {
@@ -3701,7 +3764,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     private void pauseCameraPreview() {
         try {
             if (cameraView != null) {
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                     CameraSession cameraSession = ((CameraView) cameraView).getCameraSession();
                     if (cameraSession != null) {
                         CameraController.getInstance().stopPreview(cameraSession);
@@ -3717,7 +3780,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         try {
             checkCamera(false);
             if (cameraView != null) {
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
+                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                     CameraSession cameraSession = ((CameraView) cameraView).getCameraSession();
                     if (cameraSession != null) {
                         CameraController.getInstance().startPreview(cameraSession);
@@ -3806,9 +3869,35 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     }
 
     @Override
+    public void onPanTransitionStart(boolean keyboardVisible, int contentHeight) {
+        super.onPanTransitionStart(keyboardVisible, contentHeight);
+        checkCameraViewPosition();
+        if (cameraView != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                cameraView.invalidateOutline();
+            } else {
+                cameraView.invalidate();
+            }
+        }
+        if (cameraIcon != null) {
+            cameraIcon.invalidate();
+        }
+    }
+
+    @Override
     void onContainerTranslationUpdated(float currentPanTranslationY) {
         this.currentPanTranslationY = currentPanTranslationY;
         checkCameraViewPosition();
+        if (cameraView != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                cameraView.invalidateOutline();
+            } else {
+                cameraView.invalidate();
+            }
+        }
+        if (cameraIcon != null) {
+            cameraIcon.invalidate();
+        }
         invalidate();
     }
 

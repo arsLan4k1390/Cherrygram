@@ -749,9 +749,6 @@ public class NotificationsController extends BaseController {
             boolean updated = false;
             for (int a = 0, N = editedMessages.size(); a < N; a++) {
                 long dialogId = editedMessages.keyAt(a);
-                if (pushDialogs.indexOfKey(dialogId) < 0) {
-                    continue;
-                }
                 ArrayList<MessageObject> messages = editedMessages.valueAt(a);
                 for (int b = 0, N2 = messages.size(); b < N2; b++) {
                     MessageObject messageObject = messages.get(b);
@@ -3427,7 +3424,7 @@ public class NotificationsController extends BaseController {
             if (sound != null) {
                 notificationChannel.setSound(sound, builder.build());
             } else {
-                notificationChannel.setSound(null, null);
+               // notificationChannel.setSound(null, null);
             }
             if (BuildVars.LOGS_ENABLED) {
                 FileLog.d("create new channel " + channelId);
@@ -3511,21 +3508,12 @@ public class NotificationsController extends BaseController {
             if (DialogObject.isEncryptedDialog(dialog_id) || pushDialogs.size() > 1 || passcode) {
                 if (passcode) {
                     if (chatId != 0) {
-                        name = "Cherrygram";
-                        if (CherrygramConfig.INSTANCE.getDefaultNotificationName()) {
-                            name = "Telegram";
-                        }
+                        name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                     } else {
-                        name = "Cherrygram";
-                        if (CherrygramConfig.INSTANCE.getDefaultNotificationName()) {
-                            name = "Telegram";
-                        }
+                        name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                     }
                 } else {
-                    name = "Cherrygram";
-                    if (CherrygramConfig.INSTANCE.getDefaultNotificationName()) {
-                        name = "Telegram";
-                    }
+                    name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                 }
                 replace = false;
             } else {
@@ -4237,24 +4225,15 @@ public class NotificationsController extends BaseController {
                         continue;
                     }
                 }
-                name = "Cherrygram";
-                if (CherrygramConfig.INSTANCE.getDefaultNotificationName()) {
-                    name = "Telegram";
-                }
+                name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                 photoPath = null;
             }
 
             if (waitingForPasscode) {
                 if (DialogObject.isChatDialog(dialogId)) {
-                    name = "Cherrygram";
-                    if (CherrygramConfig.INSTANCE.getDefaultNotificationName()) {
-                        name = "Telegram";
-                    }
+                    name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                 } else {
-                    name = "Cherrygram";
-                    if (CherrygramConfig.INSTANCE.getDefaultNotificationName()) {
-                        name = "Telegram";
-                    }
+                    name = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                 }
                 photoPath = null;
                 canReply = false;
@@ -4410,19 +4389,13 @@ public class NotificationsController extends BaseController {
                         if (DialogObject.isChatDialog(dialogId)) {
                             if (isChannel) {
                                 if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) {
-                                    personName = "Cherrygram";
-                                    if (CherrygramConfig.INSTANCE.getDefaultNotificationName()) {
-                                        personName = "Telegram";
-                                    }
+                                    personName = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                                 }
                             } else {
                                 personName = LocaleController.getString("NotificationHiddenChatUserName", R.string.NotificationHiddenChatUserName);
                             }
                         } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) {
-                            personName = "Cherrygram";
-                            if (CherrygramConfig.INSTANCE.getDefaultNotificationName()) {
-                                personName = "Telegram";
-                            }
+                            personName = LocaleController.getString("CG_AppName", R.string.CG_AppName);
                         }
                     }
                 } else {

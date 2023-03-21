@@ -3,10 +3,6 @@
     <!-- by t.me/arsLan-->
     <!--Telegram screens-->
     <!--Sign in screen-->
-    <string name="CG_StartText">Conferma il prefisso internazionale e inserisci il tuo numero di telefono.</string>
-    <string name="CG_Country">Nazione/Regione</string>
-    <string name="CG_ChooseCountry">Scegli un Paese/Regione</string>
-    <string name="CG_WrongCountry">Prefisso Nazionale non valido</string>
     <string name="CG_TestBackendNumber">Numero di prova</string>
     <string name="CG_TestBackendOn">Questo account si collegherà alla test mode.</string>
     <string name="CG_TestBackendOff">Questo account si connetterà al server di produzione.</string>
@@ -78,7 +74,6 @@
     <string name="AP_RedesignCategory">Ridisegna</string>
     <string name="AP_IconReplacements">Sostituzioni icone</string>
     <string name="AP_Old_Notification_Icon">Icona di notifica predefinita (Telegram)</string>
-    <string name="AP_Default_Notification_Name">Nome di notifica predefinito (Telegram)</string>
     <string name="AP_ChangeIconFilter">Usa icone Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Devi reinserire questa sezione per vedere le nuove icone</string>
     <string name="AP_ChangeIcon_Default">Predefinito</string>
@@ -93,7 +88,6 @@
     <string name="AP_SystemEmoji">Usa le emoji di sistema</string>
     <string name="AP_CenterTitle">Centra titolo nella barra delle azioni</string>
     <string name="AP_ToolBarShadow">Disabilita ombra barra strumenti</string>
-    <string name="AP_TransparentSB">Barra di stato trasparente</string>
     <string name="AP_FlatNB">Barra di navigazione trasparente</string>
     <string name="AP_FlatNB_Desc">La barra di navigazione otterrà il colore del pannello Messaggi</string>
     <string name="AP_SystemFonts">Usa il font di sistema</string>

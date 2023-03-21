@@ -19,7 +19,9 @@ object StickersIDsDownloader: CoroutineScope by MainScope() {
                 SET_IDS = URL("https://raw.githubusercontent.com/arsLan4k1390/Cherrygram/main/stickers.txt").readText().lines()
 //                Log.d("SetsDownloader", SET_IDS.toString())
             }
-            catch (e: Exception) { }
+            catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

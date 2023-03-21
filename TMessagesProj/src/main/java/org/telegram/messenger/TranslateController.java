@@ -620,7 +620,7 @@ public class TranslateController extends BaseController {
 
         pendingLanguageChecks.add(hash);
 
-        Utilities.getStageQueue().postRunnable(() -> {
+        Utilities.stageQueue.postRunnable(() -> {
             LanguageDetector.detectLanguage(messageObject.messageOwner.message, lng -> AndroidUtilities.runOnUIThread(() -> {
                 String detectedLanguage = lng;
                 if (detectedLanguage == null) {
@@ -657,8 +657,8 @@ public class TranslateController extends BaseController {
             isTranslatable(messageObject) &&
             messageObject.messageOwner.originalLanguage != null &&
             !UNKNOWN_LANGUAGE.equals(messageObject.messageOwner.originalLanguage) &&
-            !RestrictedLanguagesSelectActivity.getRestrictedLanguages().contains(messageObject.messageOwner.originalLanguage) &&
-            !TextUtils.equals(getDialogTranslateTo(dialogId), messageObject.messageOwner.originalLanguage)
+            !RestrictedLanguagesSelectActivity.getRestrictedLanguages().contains(messageObject.messageOwner.originalLanguage)
+//            !TextUtils.equals(getDialogTranslateTo(dialogId), messageObject.messageOwner.originalLanguage)
         );
 
         if (isUnknown) {

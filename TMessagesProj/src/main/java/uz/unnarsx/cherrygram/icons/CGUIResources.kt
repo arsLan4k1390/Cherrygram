@@ -33,7 +33,6 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Throws(NotFoundException::class)
     override fun getDrawable(id: Int, theme: Theme?): Drawable? {
         return wrapped.getDrawable(activeReplacement.wrap(id), theme)
@@ -45,7 +44,6 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         return wrapped.getDrawableForDensity(activeReplacement.wrap(id), density)
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
         return wrapped.getDrawableForDensity(activeReplacement.wrap(id), density, theme)
     }

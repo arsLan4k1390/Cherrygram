@@ -442,7 +442,7 @@ public class FileRefController extends BaseController {
                 long id = Utilities.parseLong(string);
                 if (id > 0) {
                     TLRPC.TL_photos_getUserPhotos req = new TLRPC.TL_photos_getUserPhotos();
-                    req.limit = 80;
+                    req.limit = 100;
                     req.offset = 0;
                     req.max_id = 0;
                     req.user_id = getMessagesController().getInputUser(id);
@@ -450,7 +450,7 @@ public class FileRefController extends BaseController {
                 } else {
                     TLRPC.TL_messages_search req = new TLRPC.TL_messages_search();
                     req.filter = new TLRPC.TL_inputMessagesFilterChatPhotos();
-                    req.limit = 80;
+                    req.limit = 100;
                     req.offset_id = 0;
                     req.q = "";
                     req.peer = getMessagesController().getInputPeer(id);

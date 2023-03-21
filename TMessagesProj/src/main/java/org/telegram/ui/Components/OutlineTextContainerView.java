@@ -89,7 +89,7 @@ public class OutlineTextContainerView extends FrameLayout {
 
     public void setText(@NonNull String text, int number) {
         this.mText = text;
-        setText(mText + " (" + String.valueOf(number) + ")");
+        setText(mText + " (" + number + ")");
         invalidate();
     }
 

@@ -29,6 +29,7 @@ import android.text.util.Linkify;
 import android.util.Base64;
 
 import androidx.collection.LongSparseArray;
+import androidx.core.util.Pair;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.browser.Browser;
@@ -56,7 +57,6 @@ import org.telegram.ui.Components.URLSpanNoUnderlineBold;
 import org.telegram.ui.Components.URLSpanReplacement;
 import org.telegram.ui.Components.URLSpanUserMention;
 import org.telegram.ui.Components.spoilers.SpoilerEffect;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -75,6 +75,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.helpers.MessageHelper;
 
 public class MessageObject {
 
@@ -181,6 +182,7 @@ public class MessageObject {
     public String sponsoredChatInviteHash;
     public boolean sponsoredShowPeerPhoto;
     public boolean sponsoredRecommended;
+    public String sponsoredInfo, sponsoredAdditionalInfo;
 
     public TLRPC.TL_forumTopic replyToForumTopic; // used only for reply message in view all messages
 
@@ -232,7 +234,7 @@ public class MessageObject {
     public SendAnimationData sendAnimationData;
 
     private boolean hasUnwrappedEmoji;
-    private int emojiOnlyCount;
+    public int emojiOnlyCount, animatedEmojiCount;
     private int totalAnimatedEmojiCount;
     private boolean layoutCreated;
     private int generatedWithMinSize;
@@ -344,6 +346,10 @@ public class MessageObject {
         }
         return message.messageOwner.action instanceof TLRPC.TL_messageActionTopicCreate ||
                 message.messageOwner.action instanceof TLRPC.TL_messageActionTopicEdit;
+    }
+
+    public static boolean canCreateStripedThubms() {
+        return SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH;
     }
 
     public int getEmojiOnlyCount() {
@@ -1278,7 +1284,7 @@ public class MessageObject {
     }
 
     public void createStrippedThumb() {
-        if (photoThumbs == null || SharedConfig.getDevicePerformanceClass() != SharedConfig.PERFORMANCE_CLASS_HIGH && !hasExtendedMediaPreview()) {
+        if (photoThumbs == null || !canCreateStripedThubms() && !hasExtendedMediaPreview()) {
             return;
         }
         try {
@@ -1329,7 +1335,7 @@ public class MessageObject {
             AnimatedEmojiSpan[] aspans = ((Spannable) messageText).getSpans(0, messageText.length(), AnimatedEmojiSpan.class);
             emojiOnlyCount = Math.max(emojiOnly, (spans == null ? 0 : spans.length) + (aspans == null ? 0 : aspans.length));
             totalAnimatedEmojiCount = aspans == null ? 0 : aspans.length;
-            int animatedEmojiCount = 0;
+            animatedEmojiCount = 0;
             if (aspans != null) {
                 for (int i = 0; i < aspans.length; ++i) {
                     if (!aspans[i].standard) {
@@ -3084,24 +3090,6 @@ public class MessageObject {
                 }
                 wantedBotKeyboardWidth = Math.max(wantedBotKeyboardWidth, (maxButtonSize + AndroidUtilities.dp(12)) * size + AndroidUtilities.dp(5) * (size - 1));
             }
-        } else if (messageOwner.reactions != null) {
-            int size = messageOwner.reactions.results.size();
-            for (int a = 0; a < size; a++) {
-                TLRPC.ReactionCount reactionCount = messageOwner.reactions.results.get(a);
-                int maxButtonSize = 0;
-                botButtonsLayout.append(0).append(a);
-                CharSequence text = Emoji.replaceEmoji(String.format("%d %s", reactionCount.count, reactionCount.reaction), Theme.chat_msgBotButtonPaint.getFontMetricsInt(), AndroidUtilities.dp(15), false);
-                StaticLayout staticLayout = new StaticLayout(text, Theme.chat_msgBotButtonPaint, AndroidUtilities.dp(2000), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
-                if (staticLayout.getLineCount() > 0) {
-                    float width = staticLayout.getLineWidth(0);
-                    float left = staticLayout.getLineLeft(0);
-                    if (left < width) {
-                        width -= left;
-                    }
-                    maxButtonSize = Math.max(maxButtonSize, (int) Math.ceil(width) + AndroidUtilities.dp(4));
-                }
-                wantedBotKeyboardWidth = Math.max(wantedBotKeyboardWidth, (maxButtonSize + AndroidUtilities.dp(12)) * size + AndroidUtilities.dp(5) * (size - 1));
-            }
         }
     }
 
@@ -3412,7 +3400,7 @@ public class MessageObject {
                             messageText = LocaleController.formatString("MessageLifetimeRemoved", R.string.MessageLifetimeRemoved, UserObject.getFirstName(fromUser));
                         }
                     }
-                } else if (messageOwner.action instanceof TLRPC.TL_messageActionAttachMenuBotAllowed) {
+                } else if (messageOwner.action instanceof TLRPC.TL_messageActionAttachMenuBotAllowed || messageOwner.action instanceof TLRPC.TL_messageActionBotAllowed && ((TLRPC.TL_messageActionBotAllowed) messageOwner.action).attach_menu) {
                     messageText = LocaleController.getString(R.string.ActionAttachMenuBotAllowed);
                 } else if (messageOwner.action instanceof TLRPC.TL_messageActionRequestedPeer) {
                     TLRPC.Peer peer = ((TLRPC.TL_messageActionRequestedPeer) messageOwner.action).peer;
@@ -4086,7 +4074,7 @@ public class MessageObject {
         }
         for (int a = 0, N = document.thumbs.size(); a < N; a++) {
             TLRPC.PhotoSize photoSize = document.thumbs.get(a);
-            if (photoSize != null && !(photoSize instanceof TLRPC.TL_photoSizeEmpty) && !(photoSize.location instanceof TLRPC.TL_fileLocationUnavailable)) {
+            if (photoSize != null && !(photoSize instanceof TLRPC.TL_photoSizeEmpty) && (!(photoSize.location instanceof TLRPC.TL_fileLocationUnavailable) || photoSize.bytes != null)) {
                 return true;
             }
         }
@@ -6106,7 +6094,7 @@ public class MessageObject {
     }
 
     public static boolean canAutoplayAnimatedSticker(TLRPC.Document document) {
-        return (isAnimatedStickerDocument(document, true) || isVideoStickerDocument(document)) && SharedConfig.getDevicePerformanceClass() != SharedConfig.PERFORMANCE_CLASS_LOW && LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_STICKERS_CHAT);
+        return (isAnimatedStickerDocument(document, true) || isVideoStickerDocument(document)) && LiteMode.isEnabled(LiteMode.FLAG_ANIMATED_STICKERS_KEYBOARD);
     }
 
     public static boolean isMaskDocument(TLRPC.Document document) {
@@ -6673,7 +6661,7 @@ public class MessageObject {
     }
 
     public boolean isMusic() {
-        return isMusicMessage(messageOwner) && !isVideo();
+        return isMusicMessage(messageOwner) && !isVideo() && !isRoundVideo();
     }
 
     public boolean isDocument() {

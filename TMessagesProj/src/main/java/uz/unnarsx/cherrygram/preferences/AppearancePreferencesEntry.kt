@@ -46,11 +46,34 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
 //            }
             switch {
+                title = LocaleController.getString("AP_Old_Notification_Icon", R.string.AP_Old_Notification_Icon)
+                contract({
+                    return@contract CherrygramConfig.oldNotificationIcon
+                }) {
+                    CherrygramConfig.oldNotificationIcon = it
+                    BulletinFactory.of(bf).createRestartBulletin(
+                        R.raw.chats_infotip,
+                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
+                    ) {
+                    }.show()
+                }
+            }
+            switch {
                 title = LocaleController.getString("AP_CenterTitle", R.string.AP_CenterTitle)
                 contract({
                     return@contract CherrygramConfig.centerTitle
                 }) {
                     CherrygramConfig.centerTitle = it
+                    bf.parentActivity.recreate()
+                }
+            }
+            switch {
+                title = LocaleController.getString("AP_OverrideHeader", R.string.AP_OverrideHeader)
+                contract({
+                    return@contract CherrygramConfig.overrideHeaderColor
+                }) {
+                    CherrygramConfig.overrideHeaderColor = it
                     bf.parentActivity.recreate()
                 }
             }
@@ -62,18 +85,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }) {
                     CherrygramConfig.disableToolBarShadow = it
                     bf.parentActivity.recreate()
-                }
-            }
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-                switch {
-                    title = LocaleController.getString("AP_TransparentSB", R.string.AP_TransparentSB)
-
-                    contract({
-                        return@contract SharedConfig.noStatusBar
-                    }) {
-                        SharedConfig.toggleNoStatusBar()
-                        bf.parentActivity.window.statusBarColor = if (Theme.getColor(Theme.key_actionBarDefault, null, true) == Color.WHITE) CherrygramExtras.lightStatusbarColor else CherrygramExtras.darkStatusbarColor
-                    }
                 }
             }
             switch {
@@ -109,6 +120,14 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                         LocaleController.getString("BotUnblock", R.string.BotUnblock)
                     ) {
                     }.show()
+                }
+            }
+            switch {
+                title = LocaleController.getString("AP_ShowPencilIcon", R.string.AP_ShowPencilIcon)
+                contract({
+                    return@contract CherrygramConfig.showPencilIcon
+                }) {
+                    CherrygramConfig.showPencilIcon = it
                 }
             }
         }

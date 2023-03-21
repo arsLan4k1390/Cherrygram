@@ -259,7 +259,7 @@ public class CameraSession {
                     } catch (Exception e) {
                         //
                     }
-                    params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+//                    params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
                     params.setZoom((int) (currentZoom * maxZoom));
                     try {
                         camera.setParameters(params);

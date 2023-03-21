@@ -59,6 +59,7 @@ import android.telephony.TelephonyManager;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.SpannedString;
@@ -136,6 +137,7 @@ import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.BackgroundGradientDrawable;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.CubicBezierInterpolator;
+import org.telegram.ui.Components.EllipsizeSpanAnimator;
 import org.telegram.ui.Components.ForegroundColorSpanThemable;
 import org.telegram.ui.Components.ForegroundDetector;
 import org.telegram.ui.Components.HideViewAfterAnimation;
@@ -185,6 +187,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -1902,6 +1905,7 @@ public class AndroidUtilities {
     }
 
     public static ArrayList<File> getRootDirs() {
+        HashSet<String> pathes = new HashSet<>();
         ArrayList<File> result = null;
         if (Build.VERSION.SDK_INT >= 19) {
             File[] dirs = ApplicationLoader.applicationContext.getExternalFilesDirs(null);
@@ -1922,7 +1926,10 @@ public class AndroidUtilities {
                                 continue;
                             }
                         }
-                        result.add(file);
+                        if (file != null && !pathes.contains(file.getAbsolutePath())) {
+                            pathes.add(file.getAbsolutePath());
+                            result.add(file);
+                        }
                     }
                 }
             }
@@ -1931,7 +1938,10 @@ public class AndroidUtilities {
             result = new ArrayList<>();
         }
         if (result.isEmpty()) {
-            result.add(Environment.getExternalStorageDirectory());
+            File dir = Environment.getExternalStorageDirectory();
+            if (dir != null && !pathes.contains(dir.getAbsolutePath())) {
+                result.add(dir);
+            }
         }
         return result;
     }
@@ -1943,7 +1953,9 @@ public class AndroidUtilities {
         } catch (Exception e) {
             FileLog.e(e);
         }
+
         if (state == null || state.startsWith(Environment.MEDIA_MOUNTED)) {
+            FileLog.d("external dir mounted");
             try {
                 File file;
                 if (Build.VERSION.SDK_INT >= 19) {
@@ -1960,8 +1972,20 @@ public class AndroidUtilities {
                 } else {
                     file = ApplicationLoader.applicationContext.getExternalCacheDir();
                 }
+                FileLog.d("check dir " + (file == null ? null : file.getPath()) + " ");
                 if (file != null && (file.exists() || file.mkdirs()) && file.canWrite()) {
+//                    boolean canWrite = true;
+//                    try {
+//                        AndroidUtilities.createEmptyFile(new File(file, ".nomedia"));
+//                    } catch (Exception e) {
+//                        canWrite = false;
+//                    }
+//                    if (canWrite) {
+//                        return file;
+//                    }
                     return file;
+                } else if (file != null) {
+                    FileLog.d("check dir file exist " + file.exists() + " can write " + file.canWrite());
                 }
             } catch (Exception e) {
                 FileLog.e(e);
@@ -2170,43 +2194,6 @@ public class AndroidUtilities {
             ApplicationLoader.applicationHandler.post(runnable);
         } else {
             ApplicationLoader.applicationHandler.postDelayed(runnable, delay);
-        }
-    }
-
-    public static void slowRunOnUIThread(Runnable runnable) {
-        slowRunOnUIThread(runnable, 12);
-    }
-
-    public static void slowRunOnUIThread(Runnable runnable, int triesCount) {
-        if (SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH) {
-            runOnUIThread(runnable);
-        } else {
-            runOnUIThread(new TryPost(runnable, triesCount));
-        }
-    }
-
-    private static class TryPost implements Runnable {
-
-        private final Runnable runnable;
-        private int triesCount;
-
-        private long lastTime = System.currentTimeMillis();
-        private final long threshold = (long) (1000L / AndroidUtilities.screenRefreshRate * 1.25f);
-
-        public TryPost(Runnable runnable, int triesCount) {
-            this.runnable = runnable;
-            this.triesCount = triesCount;
-        }
-
-        public void run() {
-            final long now = System.currentTimeMillis();
-            if (triesCount <= 0 || now - lastTime <= threshold) {
-                runnable.run();
-            } else {
-                triesCount--;
-                lastTime = now;
-                AndroidUtilities.runOnUIThread(this);
-            }
         }
     }
 
@@ -3474,24 +3461,25 @@ public class AndroidUtilities {
         return openForView(f, fileName, document.mime_type, activity, null);
     }
 
-    public static SpannableStringBuilder formatSpannableSimple(String format, CharSequence... cs) {
+    public static SpannableStringBuilder formatSpannableSimple(CharSequence format, CharSequence... cs) {
         return formatSpannable(format, i -> "%s", cs);
     }
 
-    public static SpannableStringBuilder formatSpannable(String format, CharSequence... cs) {
-        if (format.contains("%s"))
+    public static SpannableStringBuilder formatSpannable(CharSequence format, CharSequence... cs) {
+        if (format.toString().contains("%s"))
             return formatSpannableSimple(format, cs);
         return formatSpannable(format, i -> "%" + (i + 1) + "$s", cs);
     }
 
-    public static SpannableStringBuilder formatSpannable(String format, GenericProvider<Integer, String> keysProvider, CharSequence... cs) {
-        SpannableStringBuilder stringBuilder = new SpannableStringBuilder(format);
+    public static SpannableStringBuilder formatSpannable(CharSequence format, GenericProvider<Integer, String> keysProvider, CharSequence... cs) {
+        String str = format.toString();
+        SpannableStringBuilder stringBuilder = SpannableStringBuilder.valueOf(format);
         for (int i = 0; i < cs.length; i++) {
             String key = keysProvider.provide(i);
-            int j = format.indexOf(key);
+            int j = str.indexOf(key);
             if (j != -1) {
                 stringBuilder.replace(j, j + key.length(), cs[i]);
-                format = format.substring(0, j) + cs[i].toString() + format.substring(j + key.length());
+                str = str.substring(0, j) + cs[i].toString() + str.substring(j + key.length());
             }
         }
         return stringBuilder;
@@ -3796,14 +3784,43 @@ public class AndroidUtilities {
                 text = password;
                 detail = LocaleController.getString("UseProxyPassword", R.string.UseProxyPassword);
             } else if (a == 5) {
-                text = LocaleController.getString(R.string.Checking);
+                text = LocaleController.getString(R.string.ProxyBottomSheetChecking);
                 detail = LocaleController.getString(R.string.ProxyStatus);
             }
             if (TextUtils.isEmpty(text)) {
                 continue;
             }
-            TextDetailSettingsCell cell = new TextDetailSettingsCell(activity);
-            cell.setTextAndValue(text, detail, true);
+            AtomicReference<EllipsizeSpanAnimator> ellRef = new AtomicReference<>();
+            TextDetailSettingsCell cell = new TextDetailSettingsCell(activity) {
+                @Override
+                protected void onAttachedToWindow() {
+                    super.onAttachedToWindow();
+                    if (ellRef.get() != null) {
+                        ellRef.get().onAttachedToWindow();
+                    }
+                }
+
+                @Override
+                protected void onDetachedFromWindow() {
+                    super.onDetachedFromWindow();
+                    if (ellRef.get() != null) {
+                        ellRef.get().onDetachedFromWindow();
+                    }
+                }
+            };
+            if (a == 5) {
+                SpannableStringBuilder spannableStringBuilder = SpannableStringBuilder.valueOf(text);
+                EllipsizeSpanAnimator ellipsizeAnimator = new EllipsizeSpanAnimator(cell);
+                ellipsizeAnimator.addView(cell);
+                SpannableString ell = new SpannableString("...");
+                ellipsizeAnimator.wrap(ell, 0);
+                spannableStringBuilder.append(ell);
+                ellRef.set(ellipsizeAnimator);
+
+                cell.setTextAndValue(spannableStringBuilder, detail, true);
+            } else {
+                cell.setTextAndValue(text, detail, true);
+            }
             cell.getTextView().setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
             cell.getValueTextView().setTextColor(Theme.getColor(Theme.key_dialogTextGray3));
             linearLayout.addView(cell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
@@ -4250,44 +4267,6 @@ public class AndroidUtilities {
         }
     }
 
-    private static final HashMap<Window, ArrayList<Long>> flagSecureReasons = new HashMap<>();
-
-    // Sets FLAG_SECURE to true, until it gets unregistered (when returned callback is run)
-    // Useful for having multiple reasons to have this flag on.
-    public static Runnable registerFlagSecure(Window window) {
-        final long reasonId = (long) (Math.random() * 999999999);
-        final ArrayList<Long> reasonIds;
-        if (flagSecureReasons.containsKey(window)) {
-            reasonIds = flagSecureReasons.get(window);
-        } else {
-            reasonIds = new ArrayList<>();
-            flagSecureReasons.put(window, reasonIds);
-        }
-        reasonIds.add(reasonId);
-        updateFlagSecure(window);
-        return () -> {
-            reasonIds.remove(reasonId);
-            updateFlagSecure(window);
-        };
-    }
-    private static void updateFlagSecure(Window window) {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (window == null) {
-                return;
-            }
-            final boolean value = flagSecureReasons.containsKey(window) && flagSecureReasons.get(window).size() > 0;
-            try {
-                if (value) {
-                    window.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-                } else {
-                    window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-                }
-            } catch (Exception ignore) {
-
-            }
-        }
-    }
-
     public static void openSharing(BaseFragment fragment, String url) {
         if (fragment == null || fragment.getParentActivity() == null) {
             return;
@@ -4373,7 +4352,6 @@ public class AndroidUtilities {
                 if ((flags & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) == 0) {
                     flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
                     decorView.setSystemUiVisibility(flags);
-                    window.setStatusBarColor(CherrygramExtras.getLightStatusbarColor());
                 }
                 int statusBarColor;
                 if (!SharedConfig.noStatusBar && !forceTransparentStatusbar) {
@@ -4388,7 +4366,6 @@ public class AndroidUtilities {
                 if ((flags & View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR) != 0) {
                     flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
                     decorView.setSystemUiVisibility(flags);
-                    window.setStatusBarColor(CherrygramExtras.getDarkStatusbarColor());
                 }
                 int statusBarColor;
                 if (!SharedConfig.noStatusBar && !forceTransparentStatusbar) {
@@ -4791,6 +4768,22 @@ public class AndroidUtilities {
             capitalizeString = name.substring(0,1).toUpperCase() + name.substring(1);
         }
         return capitalizeString;
+    }
+
+    public static void selectionSort(ArrayList<CharSequence> x, ArrayList<String> y) {
+        for (int i = 0; i < x.size() - 1; i++) {
+            for (int j = i + 1; j < x.size(); j++) {
+                if (x.get(i).toString().compareTo(x.get(j).toString()) > 0) {
+                    CharSequence temp = x.get(i);
+                    x.set(i, x.get(j));
+                    x.set(j, temp);
+
+                    String tempStr = y.get(i);
+                    y.set(i, y.get(j));
+                    y.set(j, tempStr);
+                }
+            }
+        }
     }
 
     public static int getTransparentColor(int color, float opacity){

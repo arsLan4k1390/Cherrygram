@@ -195,6 +195,25 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             list {
+                title = LocaleController.getString("CP_LeftBottomButtonAction", R.string.CP_LeftBottomButtonAction)
+
+                contract({
+                    return@contract listOf(
+                        Pair(CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP, LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)),
+                        Pair(CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE, LocaleController.getString("DirectShare", R.string.DirectShare)),
+                        Pair(CherrygramConfig.LEFT_BUTTON_REPLY, LocaleController.getString("Reply", R.string.Reply))
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.leftBottomButton) {
+                        CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> LocaleController.getString("DirectShare", R.string.DirectShare)
+                        CherrygramConfig.LEFT_BUTTON_REPLY -> LocaleController.getString("Reply", R.string.Reply)
+                        else -> LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)
+                    }
+                }) {
+                    CherrygramConfig.leftBottomButton = it
+                }
+            }
+            list {
                 title = LocaleController.getString("CP_DoubleTapAction", R.string.CP_DoubleTapAction)
 
                 contract({

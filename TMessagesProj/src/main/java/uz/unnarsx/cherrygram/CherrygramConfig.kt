@@ -5,21 +5,19 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager
 import android.os.Build
-import org.telegram.messenger.*
+import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.BuildVars
 import org.telegram.tgnet.TLRPC
 import uz.unnarsx.cherrygram.extras.CherrygramExtras
 import uz.unnarsx.cherrygram.extras.LocalVerifications
 import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
-import uz.unnarsx.cherrygram.preferences.boolean
-import uz.unnarsx.cherrygram.preferences.int
-import uz.unnarsx.cherrygram.preferences.long
-import uz.unnarsx.cherrygram.preferences.string
-import uz.unnarsx.cherrygram.stickers.StickersIDsDownloader
 import uz.unnarsx.cherrygram.icons.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.icons.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.icons.icon_replaces.SolarIconReplace
 import uz.unnarsx.cherrygram.icons.icon_replaces.VkIconReplace
+import uz.unnarsx.cherrygram.preferences.*
+import uz.unnarsx.cherrygram.stickers.StickersIDsDownloader
 import java.net.URL
 import kotlin.system.exitProcess
 
@@ -52,34 +50,18 @@ object CherrygramConfig {
     }
 
     var centerTitle by sharedPreferences.boolean("AP_CenterTitle", true)
+    var overrideHeaderColor by sharedPreferences.boolean("AP_OverrideHeaderColor", true)
     var disableToolBarShadow by sharedPreferences.boolean("AP_ToolBarShadow", false)
     var flatNavbar by sharedPreferences.boolean("AP_FlatNB", false)
     var systemEmoji by sharedPreferences.boolean("AP_SystemEmoji", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
+    var showPencilIcon by sharedPreferences.boolean("AP_PencilIcon", false)
 
     var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false)
     var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", false)
     var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false)
 
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
-    fun toggleOldNotificationIcon() { // Telegram chats settings
-        oldNotificationIcon = !oldNotificationIcon
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-        val editor = preferences.edit()
-        editor.putBoolean("AP_Old_Notification_Icon", oldNotificationIcon)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
-
-    var defaultNotificationName by sharedPreferences.boolean("AP_Default_Notification_Name", false)
-    fun toggleDefaultNotificationName() { // Telegram chats settings
-        defaultNotificationName = !defaultNotificationName
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-        val editor = preferences.edit()
-        editor.putBoolean("AP_Default_Notification_Name", defaultNotificationName)
-        editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
-    }
 
     var filterLauncherIcon by sharedPreferences.boolean("AP_Filter_Launcher_Icon", false)
     fun toggleAppIconFilter() { // Telegram chats settings
@@ -224,6 +206,11 @@ object CherrygramConfig {
     var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", false)
     var showSeconds by sharedPreferences.boolean("CP_ShowSeconds", false)
 
+    const val LEFT_BUTTON_FORWARD_WO_AUTHORSHIP = 0
+    const val LEFT_BUTTON_DIRECT_SHARE = 1
+    const val LEFT_BUTTON_REPLY = 2
+    var leftBottomButton by sharedPreferences.int("CP_LeftBottomButton", LEFT_BUTTON_FORWARD_WO_AUTHORSHIP)
+
     const val DOUBLE_TAP_ACTION_NONE = 0
     const val DOUBLE_TAP_ACTION_REACTION = 1
     const val DOUBLE_TAP_ACTION_REPLY = 2
@@ -252,7 +239,10 @@ object CherrygramConfig {
 
     // Camera Settings
     //Camera type
-    var cameraType by sharedPreferences.int("CP_CameraType", 0)
+    const val TELEGRAM_CAMERA = 0
+    const val CAMERA_X = 1
+    const val SYSTEM_CAMERA = 2
+    var cameraType by sharedPreferences.int("CP_CameraType", TELEGRAM_CAMERA)
 
     var useCameraXOptimizedMode by sharedPreferences.boolean("CP_CameraXOptimizedMode", false)
     fun toggleCameraXOptimizedMode() {
@@ -301,11 +291,25 @@ object CherrygramConfig {
     const val Camera1to1 = 2
     var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", Camera16to9)
 
+    var previousBrightness by sharedPreferences.int("CG_PreviousBrightness", 0)
+    var previousBrightnessMode by sharedPreferences.int("CG_PreviousBrightnessMode", 0)
+    var whiteBackground by sharedPreferences.boolean("CG_WhiteBG", false)
+
     // Privacy
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
     var appcenterAnalytics by sharedPreferences.boolean("SP_AppCenterAnalytics", true)
 
     // Experimental
+    var useLNavigation by sharedPreferences.boolean("EP_UseLNavigation", false)
+    fun toggleUseLNavigation() {
+        useLNavigation = !useLNavigation
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
+        val editor = preferences.edit()
+        editor.putBoolean("EP_UseLNavigation", useLNavigation)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
     const val BOOST_NONE = 0
     const val BOOST_AVERAGE = 1
     const val BOOST_EXTREME = 2
@@ -400,6 +404,21 @@ object CherrygramConfig {
     var forwardNotify by sharedPreferences.boolean("CG_ForwardNotify", true)
     var noAuthorship by sharedPreferences.boolean("CG_NoAuthorship", false)
 
+    //Translator
+    var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")
+    var translationTarget by sharedPreferences.string("translationTarget", "app")
+
+    // Telegram Debug Menu
+    var openSearch by sharedPreferences.boolean("CP_OpenSearch", true)
+    fun toggleOpenSearch() {
+        openSearch = !openSearch
+        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
+        val editor = preferences.edit()
+        editor.putBoolean("CP_OpenSearch", openSearch)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
     init {
         CherrygramToasts.init(sharedPreferences)
         fuckOff()
@@ -410,7 +429,9 @@ object CherrygramConfig {
             StickersIDsDownloader.SET_IDS = URL("https://raw.githubusercontent.com/arsLan4k1390/Cherrygram/main/stickers.txt").readText().lines()
 //            Log.d("SetsDownloader", StickersIDsDownloader.SET_IDS.toString())
         }
-        catch (e: Exception) { }
+        catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun fuckOff() {
@@ -427,10 +448,6 @@ object CherrygramConfig {
 
     fun isDeleteAllHidden(chat: TLRPC.Chat): Boolean {
         return LocalVerifications.hideDeleteAll().stream().anyMatch { id: Long -> id == chat.id }
-    }
-
-    fun isDirectApp(): Boolean {
-        return "release" == BuildConfig.BUILD_TYPE || "debug" == BuildConfig.BUILD_TYPE
     }
 
 }

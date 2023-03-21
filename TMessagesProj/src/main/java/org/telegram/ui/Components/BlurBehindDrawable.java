@@ -17,6 +17,10 @@ import org.telegram.ui.ChatActivity;
 
 import static android.graphics.Canvas.ALL_SAVE_FLAG;
 
+import androidx.core.graphics.ColorUtils;
+
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class BlurBehindDrawable {
 
     DispatchQueue queue;
@@ -121,6 +125,9 @@ public class BlurBehindDrawable {
             canvas.restore();
             wasDraw = true;
             canvas.drawColor(0x1a000000);
+            if (CherrygramConfig.INSTANCE.getWhiteBackground()) {
+                canvas.drawColor(ColorUtils.setAlphaComponent(Color.WHITE, (int) (Color.alpha(Color.WHITE) * alpha / 2f)));
+            }
         }
         canvas.restore();
 

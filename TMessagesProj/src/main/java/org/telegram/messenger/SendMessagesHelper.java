@@ -1583,17 +1583,25 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             if (newDocument.mime_type == null) {
                 newDocument.mime_type = "";
             }
-            TLRPC.PhotoSize thumb = FileLoader.getClosestPhotoSizeWithSize(document.thumbs, 90);
-            if (thumb instanceof TLRPC.TL_photoSize || thumb instanceof TLRPC.TL_photoSizeProgressive) {
-                File file = FileLoader.getInstance(currentAccount).getPathToAttach(thumb, true);
-                if (file.exists()) {
-                    try {
-                        int len = (int) file.length();
-                        byte[] arr = new byte[(int) file.length()];
-                        RandomAccessFile reader = new RandomAccessFile(file, "r");
-                        reader.readFully(arr);
 
-                        TLRPC.PhotoSize newThumb = new TLRPC.TL_photoCachedSize();
+            TLRPC.PhotoSize thumb = FileLoader.getClosestPhotoSizeWithSize(document.thumbs, 10);
+            if (thumb instanceof TLRPC.TL_photoSize || thumb instanceof TLRPC.TL_photoSizeProgressive || thumb instanceof TLRPC.TL_photoStrippedSize) {
+                File file = FileLoader.getInstance(currentAccount).getPathToAttach(thumb, true);
+                if (thumb instanceof TLRPC.TL_photoStrippedSize || file.exists()) {
+                    try {
+                        byte[] arr;
+                        TLRPC.PhotoSize newThumb;
+                        if (thumb instanceof TLRPC.TL_photoStrippedSize) {
+                            newThumb = new TLRPC.TL_photoStrippedSize();
+                            arr = thumb.bytes;
+                        } else {
+                            newThumb = new TLRPC.TL_photoCachedSize();
+                            int len = (int) file.length();
+                            arr = new byte[(int) file.length()];
+                            RandomAccessFile reader = new RandomAccessFile(file, "r");
+                            reader.readFully(arr);
+                        }
+
                         TLRPC.TL_fileLocation_layer82 fileLocation = new TLRPC.TL_fileLocation_layer82();
                         fileLocation.dc_id = thumb.location.dc_id;
                         fileLocation.volume_id = thumb.location.volume_id;
@@ -3627,7 +3635,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                         }
                         params.put("ve", ve);
                     }
-                    if (encryptedChat != null && document.dc_id > 0 && !MessageObject.isStickerDocument(document) && !MessageObject.isAnimatedStickerDocument(document, true)) {
+                    if (encryptedChat != null && document.dc_id > 0 && !MessageObject.isStickerDocument(document) && !MessageObject.isAnimatedStickerDocument(document, true) && !MessageObject.isGifDocument(document)) {
                         newMsg.attachPath = FileLoader.getInstance(currentAccount).getPathToAttach(document).toString();
                     } else {
                         newMsg.attachPath = path;
@@ -4541,10 +4549,16 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                             reqSend.media.caption = caption;
                             TLRPC.PhotoSize thumb = getThumbForSecretChat(document.thumbs);
                             if (thumb != null) {
-                                ImageLoader.fillPhotoSizeWithBytes(thumb);
-                                ((TLRPC.TL_decryptedMessageMediaDocument) reqSend.media).thumb = thumb.bytes;
-                                reqSend.media.thumb_h = thumb.h;
-                                reqSend.media.thumb_w = thumb.w;
+                                if (thumb instanceof TLRPC.TL_photoStrippedSize) {
+                                    ((TLRPC.TL_decryptedMessageMediaDocument) reqSend.media).thumb = thumb.bytes;
+                                    reqSend.media.thumb_h = thumb.h;
+                                    reqSend.media.thumb_w = thumb.w;
+                                } else {
+                                    ImageLoader.fillPhotoSizeWithBytes(thumb);
+                                    ((TLRPC.TL_decryptedMessageMediaDocument) reqSend.media).thumb = thumb.bytes;
+                                    reqSend.media.thumb_h = thumb.h;
+                                    reqSend.media.thumb_w = thumb.w;
+                                }
                             } else {
                                 ((TLRPC.TL_decryptedMessageMediaDocument) reqSend.media).thumb = new byte[0];
                                 reqSend.media.thumb_h = 0;
@@ -4729,8 +4743,11 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         }
         for (int a = 0, N = arrayList.size(); a < N; a++) {
             TLRPC.PhotoSize size = arrayList.get(a);
-            if (size == null || size instanceof TLRPC.TL_photoStrippedSize || size instanceof TLRPC.TL_photoPathSize || size instanceof TLRPC.TL_photoSizeEmpty || size.location == null) {
+            if (size == null || size instanceof TLRPC.TL_photoPathSize || size instanceof TLRPC.TL_photoSizeEmpty || size.location == null) {
                 continue;
+            }
+            if (size instanceof TLRPC.TL_photoStrippedSize) {
+                return size;
             }
             TLRPC.TL_photoSize photoSize = new TLRPC.TL_photoSize_layer127();
             photoSize.type = size.type;
@@ -4847,6 +4864,20 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     if (message.sendEncryptedRequest != null && document.dc_id != 0) {
                         File file = new File(location);
                         if (!file.exists()) {
+                            file = getFileLoader().getPathToMessage(message.obj.messageOwner);
+                            if (file != null && file.exists()) {
+                                message.obj.messageOwner.attachPath = location = file.getAbsolutePath();
+                                message.obj.attachPathExists = true;
+                            }
+                        }
+                        if (file == null || !file.exists() && message.obj.getDocument() != null) {
+                            file = getFileLoader().getPathToAttach(message.obj.getDocument(), false);
+                            if (file != null && file.exists()) {
+                                message.obj.messageOwner.attachPath = location = file.getAbsolutePath();
+                                message.obj.attachPathExists = true;
+                            }
+                        }
+                        if (file == null || !file.exists()) {
                             putToDelayedMessages(FileLoader.getAttachFileName(document), message);
                             getFileLoader().loadFile(document, message.parentObject, FileLoader.PRIORITY_HIGH, 0);
                             return;
@@ -4887,9 +4918,25 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 } else {
                     String location = message.obj.messageOwner.attachPath;
                     TLRPC.Document document = message.obj.getDocument();
+
                     if (message.sendEncryptedRequest != null && document.dc_id != 0) {
                         File file = new File(location);
                         if (!file.exists()) {
+                            file = getFileLoader().getPathToMessage(message.obj.messageOwner);
+                            if (file != null && file.exists()) {
+                                message.obj.messageOwner.attachPath = location = file.getAbsolutePath();
+                                message.obj.attachPathExists = true;
+                            }
+                        }
+                        if (file == null || !file.exists() && message.obj.getDocument() != null) {
+                            file = getFileLoader().getPathToAttach(message.obj.getDocument(), false);
+                            if (file != null && file.exists()) {
+                                message.obj.messageOwner.attachPath = location = file.getAbsolutePath();
+                                message.obj.attachPathExists = true;
+                            }
+                        }
+
+                        if (file == null || !file.exists()) {
                             putToDelayedMessages(FileLoader.getAttachFileName(document), message);
                             getFileLoader().loadFile(document, message.parentObject, FileLoader.PRIORITY_HIGH, 0);
                             return;
@@ -6019,7 +6066,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 }
             }
 
-            if (newMsg.attachPath != null && newMsg.attachPath.startsWith(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE).getAbsolutePath())) {
+            if (newMsg.attachPath != null && newMsg.attachPath.startsWith(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE).getAbsolutePath()) && !MessageObject.isGifDocument(sentMessage.media.document)) {
                 File cacheFile = new File(newMsg.attachPath);
                 File cacheFile2 = FileLoader.getInstance(currentAccount).getPathToAttach(sentMessage.media.document, sentMessage.media.ttl_seconds != 0);
                 if (!cacheFile.renameTo(cacheFile2)) {

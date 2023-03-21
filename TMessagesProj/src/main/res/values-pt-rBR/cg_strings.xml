@@ -3,10 +3,8 @@
     <!-- by t.me/arsLan-->
     <!--Telegram screens-->
     <!--Sign in screen-->
-    <string name="CG_StartText">Por favor, confirme o seu código de país/região e introduza o seu número de telefone.</string>
-    <string name="CG_Country">País/Região</string>
-    <string name="CG_ChooseCountry">Escolha um País/Região</string>
-    <string name="CG_WrongCountry">Código de país/região inválido</string>
+    <string name="CG_QRLoginTitle">Aceder com Código QR</string>
+    <string name="CG_QRLoginMessage">Digitalize o QRCode com outro dispositivo para iniciar sessão.</string>
     <string name="CG_TestBackendNumber">Número de teste</string>
     <string name="CG_TestBackendOn">Esta conta irá ligar-se ao backend do teste.</string>
     <string name="CG_TestBackendOff">Esta conta irá ligar-se ao backend de produção.</string>
@@ -45,7 +43,7 @@
 não sabe o que está a fazer. Pode mudar para o servidor normal por 
 premindo novamente \" Mudar backend\" no menu debug.</string>
     <string name="CG_Restart">Reiniciar aplicação</string>
-    <string name="CG_RestartToApply">Reiniciar o aplicativo para aplicar alterações.</string>
+    <string name="CG_RestartToApply">Reiniciar para aplicar alterações</string>
     <string name="CG_PushService">Serviço de Notificações do Cherrygram.</string>
     <string name="CG_ForceClean">Forçar Limpeza de Cache do Telegram</string>
     <string name="CG_ForceCleanInfo">Use isto se você encarar um longo \"Calculando…\" quando tentar limpar o cache.\nIsto excluirá TUDO do seu cache - tenha cuidado!</string>
@@ -82,7 +80,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_RedesignCategory">Redesenho</string>
     <string name="AP_IconReplacements">Substituição de ícones</string>
     <string name="AP_Old_Notification_Icon">Ícone de notificação padrão (Telegram)</string>
-    <string name="AP_Default_Notification_Name">Nome de notificação padrão (Telegram)</string>
     <string name="AP_ChangeIconFilter">Usar ícones do Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Tem de voltar a entrar nesta secção para ver os novos ícones</string>
     <string name="AP_ChangeIcon_Default">Por defeito</string>
@@ -96,15 +93,16 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_IconReplacement_Default">Por defeito</string>
     <string name="AP_SystemEmoji">Utilizar os emojis do sistema</string>
     <string name="AP_CenterTitle">Centralizar título na barra de ação</string>
+    <string name="AP_OverrideHeader">Substituir cor do cabeçalho</string>
+    <string name="AP_OverrideHeader_Desc">funciona apenas no tema escuro</string>
     <string name="AP_ToolBarShadow">Desativar a sombra da barra de ferramentas</string>
-    <string name="AP_TransparentSB">Barra de estado transparente</string>
     <string name="AP_FlatNB">Barra de navegação transparente</string>
     <string name="AP_FlatNB_Desc">A barra de navegação terá a cor do Painel de Mensagens</string>
     <string name="AP_SystemFonts">Utilizar fontes do sistema</string>
-    <string name="AP_SystemFonts_Desc">Desativar isto (reinicie a aplicação) se a sua fonte não suportar formatação (Negrito, itálico, Mono espacial)</string>
-    <string name="CP_Snowflakes_Header">Flocos de neve (reinicie o aplicativo para aplicar)</string>
+    <string name="AP_SystemFonts_Desc">Desative isto se a sua fonte não suportar formatação (Negrito, italico, Monospace)</string>
+    <string name="CP_Snowflakes_Header">Flocos de neve</string>
     <string name="CP_Snowflakes_AH">Cabeçalho da aplicação</string>
-    <string name="CP_PremAndAnim_Header">Animações e Recursos Premium (reinicie o aplicativo para aplicar)</string>
+    <string name="CP_PremAndAnim_Header">Animações e Recursos Premium</string>
     <string name="CP_DisableAnimAvatars">Desativar avatares animados</string>
     <string name="CP_DisableReactionsOverlay">Desativar sobreposição de reações</string>
     <string name="CP_DisableReactionsOverlay_Desc">Isto irá desativar a sobreposição de popups com as reações disponíveis</string>
@@ -118,7 +116,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_DisablePremStickAnim_Desc">Nada acontecerá se você tocar no sticker premium</string>
     <string name="CP_DisablePremStickAutoPlay">Desativar auto-reprodução de stickers premium</string>
     <string name="CP_DisablePremStickAutoPlay_Desc">A animação de autocolantes premium não será reproduzida automaticamente (a funcionalidade não funcionará se desativar os toques nos autocolantes premium)</string>
-    <string name="CP_Filters_Header">Pastas (reinicie o aplicativo para aplicar)</string>
+    <string name="CP_Filters_Header">Pastas</string>
     <string name="AP_FolderNameInHeader">Nome da pasta em vez de \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Isto mudará \"Cherrygram\" na barra de ação para o nome da sua pasta (útil se tiver apenas ícones em vez de nomes de pastas)</string>
     <string name="CP_NewTabs_RemoveAllChats">Esconder o separador \"Todos os chats\"</string>
@@ -158,10 +156,12 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_ConfirmCalls">Perguntar antes de ligar</string>
     <string name="CP_ForwardMsgDate">Mostrar data da mensagem encaminhada</string>
     <string name="CP_ShowSeconds">Mostrar segundos na data e hora</string>
-    <string name="CP_ShowSeconds_Desc">Mostra os segundos do tempo das mensagens enviadas (reiniciar aplicação para aplicar)</string>
+    <string name="CP_ShowSeconds_Desc">Mostra os segundos do tempo das mensagens enviadas</string>
+    <string name="CP_LeftBottomButtonAction">Ação do botão esquerdo</string>
     <string name="CP_DoubleTapAction">Ação de duplo toque</string>
     <string name="CP_DisableSwipeToNext">Desativar transição para o próximo canal</string>
     <string name="CP_DisableSwipeToNext_Desc">Desativar mudança para o próximo canal ao rolar através de qualquer canal</string>
+    <string name="CP_HideMuteUnmuteButton">Esconder o botão inferior em canais</string>
     <string name="CP_HideKbdOnScroll">Ocultar o teclado no scroll</string>
     <string name="CP_HideSendAsChannel">Ocultar \"Enviar como canal\"</string>
     <string name="CP_Slider_RecentEmojisAmplifier">Contador de emojis recentes (reinicie o aplicativo para aplicar)</string>
@@ -179,10 +179,10 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_DisablePhotoTapAction">Desativar \"Virar fotos\"</string>
     <string name="CP_DisablePhotoTapAction_Desc">Isto desabilita a rotação de fotografias enquanto se bate na borda do ecrã</string>
     <string name="CP_Proximity">Permitir ações de proximidade</string>
-    <string name="CP_Proximity_Desc">Ao desligá-lo irá livrar-se do irritante encerramento do ecrã quando ouvir mensagens de voz (reinicie a aplicação para aplicar)</string>
+    <string name="CP_Proximity_Desc">Ao desligá-lo irá livrar-se do irritante encerramento do ecrã ao ouvir as mensagens de voz</string>
     <string name="CP_Header_Notification">Notificações</string>
     <string name="CP_IOSSound">Utilizar o som do Telegram IOS</string>
-    <string name="CP_IOSSound_Desc">Isto permitirá o som da mensagem recebida da aplicação Telegram para IOS (reiniciar aplicação para aplicar)</string>
+    <string name="CP_IOSSound_Desc">Isso permitirá o som da mensagem recebida do aplicativo Telegram para IOS</string>
     <string name="CP_SilenceNonContacts">Silenciar não-contatos</string>
     <string name="CP_SilenceNonContacts_Desc">Se ativado, as notificações com som virão apenas dos contactos. Pode adicionar uma pessoa aos seus contactos mesmo sem um número de telefone, faça-o no seu perfil</string>
     <!--Chats Preferences-->
@@ -194,6 +194,8 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_CameraXDesc">CameraX só é suportado em <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, efeitos e suporte de lentes depende do seu fabricante.</string>
     <string name="CP_PerformanceMode">Modo de desempenho</string>
     <string name="CP_PerformanceModeDesc">A qualidade da CameraX será reduzida em favor do desempenho</string>
+    <string name="CP_ZeroShutterLag">Sem atraso no obturador</string>
+    <string name="CP_ZeroShutterLagDesc">Minimizar a latência ao tirar fotografias, capturando rapidamente várias molduras antes e após premir o botão do obturador.</string>
     <string name="CP_CameraQuality">Qualidade da Câmara</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Acessar diretamente a câmara do sistema (não aplicável às mensagens de vídeo).</string>
@@ -255,6 +257,7 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <!--Donations-->
     <string name="DP_Donate">Faça um donativo</string>
     <string name="DP_Donate_Method">Escolher o método</string>
+    <string name="DP_Donate_Cryptocurrency">Criptomoedas</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 </resources>

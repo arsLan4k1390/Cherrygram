@@ -4,11 +4,6 @@
 
     <!--Telegram screens-->
     <!--Sign in screen-->
-    <string name="CG_StartText">Проверьте код Страны/Региона и введите свой номер телефона.</string>
-    <string name="CG_Country">Страна/Регион</string>
-    <string name="CG_ChooseCountry">Выберите Страну/Регион</string>
-    <string name="CG_WrongCountry">Некорректный код Страны/Региона</string>
-
     <string name="CG_QRLoginTitle">Войти по QR-коду</string>
     <string name="CG_QRLoginMessage">Отсканируйте QR-код с помощью другого устройства для входа в систему.</string>
 
@@ -69,6 +64,7 @@
     <string name="CG_SaveSticker">Сохранить стикер</string>
     <string name="CG_FailedToSaveSticker">Стикер не сохранен. Возможно, он еще не прогрузился.</string>
     <string name="CG_StickerSavedHint">Стикер сохранен в загрузки</string>
+    <string name="CG_CopySetId">Скопировать ID набора</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -94,7 +90,6 @@
     <string name="AP_RedesignCategory">Редизайн</string>
     <string name="AP_IconReplacements">Замена иконок</string>
     <string name="AP_Old_Notification_Icon">Стандартная иконка уведомлений (Telegram)</string>
-    <string name="AP_Default_Notification_Name">Стандартное название уведомлений (Telegram)</string>
     <string name="AP_ChangeIconFilter">Использовать иконки Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Вам нужно перезайти в этот раздел, чтобы увидеть новые иконки</string>
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
@@ -107,9 +102,11 @@
     <string name="AP_IconReplacement_Solar">Иконки Solar от @Design480</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
     <string name="AP_SystemEmoji">Использовать системные эмодзи</string>
+    <string name="AP_ShowPencilIcon">Иконка карандаша для редактированных сообщений</string>
     <string name="AP_CenterTitle">Центрирование заголовка</string>
+    <string name="AP_OverrideHeader">Изменение цвета заголовка</string>
+    <string name="AP_OverrideHeader_Desc">работает только в тёмной теме</string>
     <string name="AP_ToolBarShadow">Отключить тень у тулбара</string>
-    <string name="AP_TransparentSB">Прозрачная строка состояния</string>
     <string name="AP_FlatNB">Прозрачная навигационная панель</string>
     <string name="AP_FlatNB_Desc">Навигационная панель приобретет цвет панели отправки сообщений</string>
     <string name="AP_SystemFonts">Использовать системный шрифт</string>
@@ -178,6 +175,7 @@
     <string name="CP_ForwardMsgDate">Показывать дату пересланного сообщения</string>
     <string name="CP_ShowSeconds">Показывать секунды в метках времени</string>
     <string name="CP_ShowSeconds_Desc">Показывает секунды у времени отправленных сообщений</string>
+    <string name="CP_LeftBottomButtonAction">Действие левой кнопки</string>
     <string name="CP_DoubleTapAction">Действие при двойном нажатии</string>
     <string name="CP_DisableSwipeToNext">Отключить переход на следующий канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Отключить переключение на следующий канал при прокрутке любого канала</string>

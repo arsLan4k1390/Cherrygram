@@ -19,24 +19,30 @@ object CGFeatureHooks {
         CherrygramConfig.noAuthorship = b
     }
 
+    @JvmStatic
+    fun setFlashLight(b: Boolean) {
+        // ...
+        CherrygramConfig.whiteBackground = b
+    }
+
     private var currentPopup: ActionBarPopupWindow? = null
 
     @JvmStatic
     fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {
         currentPopup = CGFeatureJavaHooks.createPopupWindow(sa.container, field, sa.context, listOf(
-                CGFeatureJavaHooks.PopupItem(
-                        if (CherrygramConfig.forwardNoAuthorship) {
-                            LocaleController.getString("CG_FwdMenu_DisableNoForward", R.string.CG_FwdMenu_DisableNoForward)
-                        } else {
-                            LocaleController.getString("CG_FwdMenu_EnableNoForward", R.string.CG_FwdMenu_EnableNoForward)
-                        },
-                        R.drawable.msg_forward
-                ) {
-                    // Toggle!
-                    CherrygramConfig.forwardNoAuthorship = !CherrygramConfig.forwardNoAuthorship
-                    currentPopup?.dismiss()
-                    currentPopup = null
-                },
+            CGFeatureJavaHooks.PopupItem(
+                    if (CherrygramConfig.forwardNoAuthorship) {
+                        LocaleController.getString("CG_FwdMenu_DisableNoForward", R.string.CG_FwdMenu_DisableNoForward)
+                    } else {
+                        LocaleController.getString("CG_FwdMenu_EnableNoForward", R.string.CG_FwdMenu_EnableNoForward)
+                    },
+                    R.drawable.msg_forward
+            ) {
+                // Toggle!
+                CherrygramConfig.forwardNoAuthorship = !CherrygramConfig.forwardNoAuthorship
+                currentPopup?.dismiss()
+                currentPopup = null
+            },
             CGFeatureJavaHooks.PopupItem(
                 if (CherrygramConfig.forwardWithoutCaptions) {
                     LocaleController.getString("CG_FwdMenu_EnableCaptions", R.string.CG_FwdMenu_EnableCaptions)

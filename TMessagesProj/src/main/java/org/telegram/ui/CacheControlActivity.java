@@ -257,6 +257,10 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         });
     }
 
+    public static void resetCalculatedTotalSIze() {
+        lastTotalSizeCalculated = null;
+    }
+
     public static void getDeviceTotalSize(Utilities.Callback2<Long, Long> onDone) {
         if (lastDeviceTotalSize != null && lastDeviceTotalFreeSize != null) {
             if (onDone != null) {
@@ -462,6 +466,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 
     private void loadDialogEntities() {
         getFileLoader().getFileDatabase().getQueue().postRunnable(() -> {
+            getFileLoader().getFileDatabase().ensureDatabaseCreated();
             CacheModel cacheModel = new CacheModel(false);
             LongSparseArray<DialogFileEntities> dilogsFilesEntities = new LongSparseArray<>();
 
@@ -1126,12 +1131,12 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         ActionBarMenuItem otherItem = actionBar.createMenu().addItem(other_id, R.drawable.ic_ab_other);
         clearDatabaseItem = otherItem.addSubItem(clear_database_id, R.drawable.msg_delete, LocaleController.getString("ClearLocalDatabase", R.string.ClearLocalDatabase));
         clearDatabaseItem.setIconColor(Theme.getColor(Theme.key_dialogRedIcon));
-        clearDatabaseItem.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+        clearDatabaseItem.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
         updateDatabaseItemSize();
 
         kaboomItem = otherItem.addSubItem(kaboom_id, R.drawable.msg_delete, "Kaboom");
         kaboomItem.setIconColor(Theme.getColor(Theme.key_dialogRedIcon));
-        kaboomItem.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+        kaboomItem.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
 
         listAdapter = new ListAdapter(context);
 
@@ -1271,7 +1276,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         showDialog(dialog);
         TextView button = (TextView) dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (button != null) {
-            button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+            button.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
         }
     }
 
@@ -1437,7 +1442,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         AlertDialog alertDialog = builder.create();
         alertDialog.setOnShowListener(dialog1 -> {
             TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+            button.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
             button.setEnabled(false);
             var buttonText = button.getText();
             new CountDownTimer(10000, 100) {
@@ -1479,7 +1484,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         showDialog(alertDialog);
         TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (button != null) {
-            button.setTextColor(Theme.getColor(Theme.key_dialogTextRed2));
+            button.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
         }
     }
 
@@ -1815,8 +1820,17 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                 protected boolean verifyDrawable(@NonNull Drawable who) {
                     return who == valueTextView || who == textView || super.verifyDrawable(who);
                 }
+
+                @Override
+                public void onInitializeAccessibilityNodeInfo(AccessibilityNodeInfo info) {
+                    super.onInitializeAccessibilityNodeInfo(info);
+                    info.setClassName("android.widget.Button");
+                }
             };
             button.setBackground(Theme.AdaptiveRipple.filledRect(Theme.key_featuredStickers_addButton, 8));
+            button.setFocusable(true);
+            button.setFocusableInTouchMode(true);
+            button.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
 
             if (LocaleController.isRTL) {
                 rtlTextView = new TextView(context);
@@ -1866,6 +1880,8 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             valueTextView.setText(size <= 0 ? "" : AndroidUtilities.formatFileSize(size));
             setDisabled(size <= 0);
             button.invalidate();
+
+            button.setContentDescription(TextUtils.concat(textView.getText(), "\t", valueTextView.getText()));
         }
 
         public void setDisabled(boolean disabled) {
@@ -1905,7 +1921,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     return who == valueTextView || who == textView || super.verifyDrawable(who);
                 }
             };
-            button.setBackground(Theme.AdaptiveRipple.filledRect(Theme.key_dialogTextRed2, 8));
+            button.setBackground(Theme.AdaptiveRipple.filledRect(Theme.key_dialogTextRed, 8));
 
             textView = new AnimatedTextView.AnimatedTextDrawable(true, true, true);
             textView.setAnimationProperties(.25f, 0, 300, CubicBezierInterpolator.EASE_OUT_QUINT);
@@ -2501,7 +2517,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         arrayList.add(new ThemeDescription(listView, 0, new Class[]{StorageUsageView.class}, new String[]{"telegramCacheTextView"}, null, null, null, Theme.key_windowBackgroundWhiteGrayText));
         arrayList.add(new ThemeDescription(listView, 0, new Class[]{StorageUsageView.class}, new String[]{"freeSizeTextView"}, null, null, null, Theme.key_windowBackgroundWhiteGrayText));
         arrayList.add(new ThemeDescription(listView, 0, new Class[]{StorageUsageView.class}, new String[]{"calculationgTextView"}, null, null, null, Theme.key_windowBackgroundWhiteGrayText));
-        arrayList.add(new ThemeDescription(listView, 0, new Class[]{StorageUsageView.class}, new String[]{"paintProgress2"}, null, null, null, Theme.key_player_progressBackground2));
 
         arrayList.add(new ThemeDescription(listView, 0, new Class[]{SlideChooseView.class}, null, null, null, Theme.key_switchTrack));
         arrayList.add(new ThemeDescription(listView, 0, new Class[]{SlideChooseView.class}, null, null, null, Theme.key_switchTrackChecked));

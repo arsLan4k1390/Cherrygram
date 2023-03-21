@@ -209,11 +209,8 @@ public class ActionBar extends FrameLayout {
         backButtonImageView.setContentDescription(LocaleController.getString("AccDescrGoBack", R.string.AccDescrGoBack));
     }
 
-    public Drawable getBackButtonDrawableT() {
+    public Drawable getBackButtonDrawable() {
         return backButtonDrawable;
-    }
-    public UnreadImageView getBackButtonDrawable() {
-        return backButtonImageView;
     }
 
     public void setBackButtonDrawable(Drawable drawable) {
@@ -1253,6 +1250,7 @@ public class ActionBar extends FrameLayout {
         for (int i = 0; i < 2; i++) {
             if (titleTextView[0] != null && titleTextView[0].getVisibility() != GONE || subtitleTextView != null && subtitleTextView.getVisibility() != GONE) {
                 int availableWidth = CherrygramConfig.INSTANCE.getCenterTitle() ? (width - AndroidUtilities.dp(120)) : width - (menu != null ? menu.getMeasuredWidth() : 0) - AndroidUtilities.dp(16) - textLeft - titleRightMargin;
+
                 if (((fromBottom && i == 0) || (!fromBottom && i == 1)) && overlayTitleAnimation && titleAnimationRunning) {
                     titleTextView[i].setTextSize(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 20);
                 } else {

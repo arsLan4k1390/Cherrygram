@@ -235,6 +235,7 @@ public class MessageStatisticActivity extends BaseFragment implements Notificati
 
     @Override
     public View createView(Context context) {
+        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
 
         fragmentView = new FrameLayout(context);
         fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));

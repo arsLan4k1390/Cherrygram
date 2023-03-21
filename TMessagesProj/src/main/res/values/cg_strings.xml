@@ -2,15 +2,10 @@
 <resources>
     <!-- by t.me/arsLan-->
     <string name="CG_AppName" translatable="false">Cherrygram</string>
-    <string name="CG_AppNameBeta" translatable="false">Cherrygram Beta</string>
+    <string name="CG_AppNameBeta" translatable="false">Cherrygram</string>
 
     <!--Telegram screens-->
     <!--Sign in screen-->
-    <string name="CG_StartText">Please confirm your Country/Region code and enter your phone number.</string>
-    <string name="CG_Country">Country/Region</string>
-    <string name="CG_ChooseCountry">Choose a Country/Region</string>
-    <string name="CG_WrongCountry">Invalid Country/Region code</string>
-
     <string name="CG_QRLoginTitle">QR Login</string>
     <string name="CG_QRLoginMessage">Scan QRCode with another device to login.</string>
 
@@ -71,6 +66,7 @@
     <string name="CG_SaveSticker">Save sticker</string>
     <string name="CG_FailedToSaveSticker">Failed to save sticker. The sticker may have not loaded yet.</string>
     <string name="CG_StickerSavedHint">Sticker saved to downloads</string>
+    <string name="CG_CopySetId">Copy set ID</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -98,7 +94,6 @@
     <string name="AP_RedesignCategory">Redesign</string>
     <string name="AP_IconReplacements">Icon replacements</string>
     <string name="AP_Old_Notification_Icon">Default notification icon (Telegram)</string>
-    <string name="AP_Default_Notification_Name">Default notification name (Telegram)</string>
     <string name="AP_ChangeIconFilter">Use Telegram icons</string>
     <string name="AP_ChangeIconFilter_Desc">You have to re-enter this section to see the new icons</string>
     <string name="AP_ChangeIcon_Cherry" translatable="false">Cherry</string>
@@ -114,9 +109,11 @@
     <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
     <string name="AP_IconReplacement_Default">Default</string>
     <string name="AP_SystemEmoji">Use system emoji</string>
+    <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
     <string name="AP_CenterTitle">Center title in action bar</string>
+    <string name="AP_OverrideHeader">Override header color</string>
+    <string name="AP_OverrideHeader_Desc">works only in dark theme</string>
     <string name="AP_ToolBarShadow">Disable toolbar shadow</string>
-    <string name="AP_TransparentSB">Transparent statusbar</string>
     <string name="AP_FlatNB">Transparent navbar</string>
     <string name="AP_FlatNB_Desc">The navbar will get the color of the Messages Panel</string>
     <string name="AP_SystemFonts">Use system fonts</string>
@@ -186,6 +183,7 @@
     <string name="CP_ForwardMsgDate">Show forwarded message date</string>
     <string name="CP_ShowSeconds">Show seconds in timestamps</string>
     <string name="CP_ShowSeconds_Desc">Shows the seconds of the time of sent messages</string>
+    <string name="CP_LeftBottomButtonAction">Left button action</string>
     <string name="CP_DoubleTapAction">Double tap action</string>
     <string name="CP_DisableSwipeToNext">Disable transition to the next channel</string>
     <string name="CP_DisableSwipeToNext_Desc">Disable switching to the next channel when scrolling through any channel</string>
