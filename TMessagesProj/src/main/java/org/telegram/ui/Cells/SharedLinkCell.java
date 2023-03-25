@@ -871,7 +871,7 @@ public class SharedLinkCell extends FrameLayout {
             linkImageView.draw(canvas);
         }
 
-        if (needDivider) {
+        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             if (LocaleController.isRTL) {
                 canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth() - AndroidUtilities.dp(AndroidUtilities.leftBaseline), getMeasuredHeight() - 1, Theme.dividerPaint);
             } else {

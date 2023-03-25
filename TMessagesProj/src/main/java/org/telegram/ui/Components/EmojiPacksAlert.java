@@ -1426,17 +1426,6 @@ public class EmojiPacksAlert extends BottomSheet implements NotificationCenter.N
             } catch (Exception e) {
                 FileLog.e(e);
             }
-        } else if (id == 4) {
-            long owner = stickerSet.set.id >> 32;
-            String stickerSetID = "@tgdb_bot " + owner;
-            try {
-                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                android.content.ClipData clip = android.content.ClipData.newPlainText("label", stickerSetID);
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(getContext(), LocaleController.getString("TextCopied", R.string.TextCopied), Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
         }
     }
 
@@ -1653,7 +1642,6 @@ public class EmojiPacksAlert extends BottomSheet implements NotificationCenter.N
                 optionsButton.addSubItem(1, R.drawable.msg_share, LocaleController.getString("StickersShare", R.string.StickersShare));
                 optionsButton.addSubItem(2, R.drawable.msg_link, LocaleController.getString("CopyLink", R.string.CopyLink));
                 optionsButton.addSubItem(3, R.drawable.msg_info, LocaleController.getString("CG_CopySetId", R.string.CG_CopySetId));
-                optionsButton.addSubItem(4, R.drawable.msg_openprofile, LocaleController.getString("ChannelCreator", R.string.ChannelCreator));
                 optionsButton.setOnClickListener(v -> optionsButton.toggleSubMenu());
                 optionsButton.setDelegate(EmojiPacksAlert.this::onSubItemClick);
                 optionsButton.setContentDescription(LocaleController.getString("AccDescrMoreOptions", R.string.AccDescrMoreOptions));

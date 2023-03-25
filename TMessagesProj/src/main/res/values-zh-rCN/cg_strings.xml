@@ -58,7 +58,6 @@
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
-
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">自定义偏好</string>
     <string name="CGP_About_Desc">一个实验性的 Telegram 第三方客户端</string>
@@ -153,7 +152,6 @@
     <string name="CP_ConfirmCalls">通话前提醒</string>
     <string name="CP_ForwardMsgDate">显示转发日期时间</string>
     <string name="CP_ShowSeconds">在时间戳中显示秒数</string>
-    <string name="CP_ShowSeconds_Desc">显示发送消息时间的秒数</string>
     <string name="CP_LeftBottomButtonAction">左侧按钮功能</string>
     <string name="CP_DoubleTapAction">双击操作</string>
     <string name="CP_DisableSwipeToNext">禁用频道切换</string>

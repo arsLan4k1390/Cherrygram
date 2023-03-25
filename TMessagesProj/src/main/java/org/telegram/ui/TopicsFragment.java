@@ -132,6 +132,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class TopicsFragment extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ChatActivityInterface, RightSlidingDialogContainer.BaseFragmentWithFullscreen {
 
     private final static int BOTTOM_BUTTON_TYPE_JOIN = 0;
@@ -2859,7 +2861,7 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
             canvas.restore();
             canvas.save();
             canvas.translate(super.translationX, 0);
-            if (drawDivider) {
+            if (drawDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
                 int left = fullSeparator ? 0 : AndroidUtilities.dp(messagePaddingStart);
                 if (LocaleController.isRTL) {
                     canvas.drawLine(0 - super.translationX, getMeasuredHeight() - 1, getMeasuredWidth() - left, getMeasuredHeight() - 1, Theme.dividerPaint);

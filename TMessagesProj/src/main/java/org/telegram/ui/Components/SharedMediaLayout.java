@@ -116,6 +116,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 @SuppressWarnings("unchecked")
 public class SharedMediaLayout extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
@@ -2305,7 +2307,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
         shadowLine.setBackgroundColor(getThemedColor(Theme.key_divider));
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1);
         layoutParams.topMargin = AndroidUtilities.dp(48) - 1;
-        addView(shadowLine, layoutParams);
+        if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) addView(shadowLine, layoutParams);
 
         updateTabs(false);
         switchToCurrentSelectedMode(false);

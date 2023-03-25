@@ -31,6 +31,8 @@ import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Switch;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class TextCheckCell2 extends FrameLayout {
 
     private TextView textView;
@@ -242,7 +244,7 @@ public class TextCheckCell2 extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider) {
+        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(20), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(20) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
         }
     }

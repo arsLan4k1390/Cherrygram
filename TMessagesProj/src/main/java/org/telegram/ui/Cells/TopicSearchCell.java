@@ -18,6 +18,8 @@ import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Forum.ForumUtilities;
 import org.telegram.ui.Components.LayoutHelper;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class TopicSearchCell extends FrameLayout {
 
     BackupImageView backupImageView;
@@ -69,7 +71,7 @@ public class TopicSearchCell extends FrameLayout {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        if (drawDivider) {
+        if (drawDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             int left = AndroidUtilities.dp(56);
             if (LocaleController.isRTL) {
                 canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth() - left, getMeasuredHeight() - 1, Theme.dividerPaint);

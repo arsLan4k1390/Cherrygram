@@ -119,7 +119,7 @@ public class UpdaterBottomSheet extends BottomSheet {
                 @Override
                 protected void onDraw(Canvas canvas) {
                     super.onDraw(canvas);
-                    canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
+                    if (!CherrygramConfig.INSTANCE.getDisableDividers()) canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
                 }
             };
             changelogTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
@@ -175,20 +175,18 @@ public class UpdaterBottomSheet extends BottomSheet {
             buildType.setOnClickListener(v -> copyText(buildType.getTextView().getText() + ": " + buildType.getValueTextView().getText()));
             linearLayout.addView(buildType);
 
-            TextCheckWithIconCell installBetas = new TextCheckWithIconCell(context);
-            installBetas.setEnabled(true, null);
+            TextCell installBetas = new TextCell(context, 23, false, true, resourcesProvider);
             installBetas.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
-            installBetas.setTextAndCheckAndIcon(LocaleController.getString("UP_InstallBetas", R.string.UP_InstallBetas), R.drawable.test_tube_solar, CherrygramConfig.INSTANCE.getInstallBetas(), false);
+            installBetas.setTextAndCheckAndIcon(LocaleController.getString("UP_InstallBetas", R.string.UP_InstallBetas), CherrygramConfig.INSTANCE.getInstallBetas(), R.drawable.test_tube_solar, false);
             installBetas.setOnClickListener(v -> {
                 CherrygramConfig.INSTANCE.toggleInstallBetas();
                 installBetas.setChecked(!installBetas.isChecked());
             });
             linearLayout.addView(installBetas);
 
-            TextCheckWithIconCell checkOnLaunch = new TextCheckWithIconCell(context);
-            checkOnLaunch.setEnabled(true, null);
+            TextCell checkOnLaunch = new TextCell(context, 23, false, true, resourcesProvider);
             checkOnLaunch.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
-            checkOnLaunch.setTextAndCheckAndIcon(LocaleController.getString("UP_Auto_OTA", R.string.UP_Auto_OTA), R.drawable.msg_retry, CherrygramConfig.INSTANCE.getAutoOTA(), false);
+            checkOnLaunch.setTextAndCheckAndIcon(LocaleController.getString("UP_Auto_OTA", R.string.UP_Auto_OTA), CherrygramConfig.INSTANCE.getAutoOTA(), R.drawable.msg_retry, false);
             checkOnLaunch.setOnClickListener(v -> {
                 CherrygramConfig.INSTANCE.toggleAutoOTA();
                 checkOnLaunch.setChecked(!checkOnLaunch.isChecked());
@@ -199,7 +197,7 @@ public class UpdaterBottomSheet extends BottomSheet {
                 @Override
                 protected void onDraw(Canvas canvas) {
                     super.onDraw(canvas);
-                    canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
+                    if (!CherrygramConfig.INSTANCE.getDisableDividers()) canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
                 }
             };
             clearUpdates.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));

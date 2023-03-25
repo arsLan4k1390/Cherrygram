@@ -32,6 +32,8 @@ import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.LayoutHelper;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ManageChatUserCell extends FrameLayout {
 
     private BackupImageView avatarImageView;
@@ -351,7 +353,7 @@ public class ManageChatUserCell extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider) {
+        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             if (dividerColor != null) {
                 Theme.dividerExtraPaint.setColor(Theme.getColor(dividerColor, resourcesProvider));
             }

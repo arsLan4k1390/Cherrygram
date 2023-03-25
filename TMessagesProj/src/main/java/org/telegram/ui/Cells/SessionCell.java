@@ -49,6 +49,8 @@ import org.telegram.ui.Components.DotDividerSpan;
 import org.telegram.ui.Components.FlickerLoadingView;
 import org.telegram.ui.Components.LayoutHelper;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class SessionCell extends FrameLayout {
 
     private int currentType;
@@ -431,7 +433,7 @@ public class SessionCell extends FrameLayout {
                 canvas.restore();
             }
         }
-        if (needDivider) {
+        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             int margin = currentType == 1 ? 49 : 72;
             canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(margin), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(margin) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
         }

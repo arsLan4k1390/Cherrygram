@@ -148,7 +148,6 @@
     <string name="CP_ConfirmCalls">Запит перед звінком</string>
     <string name="CP_ForwardMsgDate">Показувати дату пересланого повідомлення</string>
     <string name="CP_ShowSeconds">Показувати секунди в мітках часу</string>
-    <string name="CP_ShowSeconds_Desc">Показувати секунди в часі відправлених повідомлень (потрібен перезапуск додатку)</string>
     <string name="CP_DoubleTapAction">Дія при подвійному дотику</string>
     <string name="CP_DisableSwipeToNext">Вимкнути перехід на наступний канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Вимкнути перехід на наступний канал при прокрутці будь якого каналу</string>

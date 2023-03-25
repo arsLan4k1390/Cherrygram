@@ -16,6 +16,8 @@ import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Forum.ForumUtilities;
 import org.telegram.ui.Components.LayoutHelper;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class TopicExceptionCell extends FrameLayout {
 
     public boolean drawDivider;
@@ -60,7 +62,7 @@ public class TopicExceptionCell extends FrameLayout {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        if (drawDivider) {
+        if (drawDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             canvas.drawLine(AndroidUtilities.dp(72), getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
         }
     }

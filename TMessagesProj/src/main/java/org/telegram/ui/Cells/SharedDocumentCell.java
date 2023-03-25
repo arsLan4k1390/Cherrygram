@@ -58,6 +58,8 @@ import java.io.File;
 import java.util.Date;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class SharedDocumentCell extends FrameLayout implements DownloadController.FileDownloadProgressListener {
 
     private ImageView placeholderImageView;
@@ -748,7 +750,7 @@ public class SharedDocumentCell extends FrameLayout implements DownloadControlle
     }
 
     private void drawDivider(Canvas canvas) {
-        if (needDivider) {
+        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             canvas.drawLine(AndroidUtilities.dp(72), getHeight() - 1, getWidth() - getPaddingRight(), getHeight() - 1, Theme.dividerPaint);
         }
     }

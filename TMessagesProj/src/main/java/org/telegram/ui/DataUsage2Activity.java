@@ -57,6 +57,8 @@ import org.telegram.ui.Components.ViewPagerFixed;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class DataUsage2Activity extends BaseFragment {
 
     private Theme.ResourcesProvider resourcesProvider;
@@ -1044,7 +1046,7 @@ public class DataUsage2Activity extends BaseFragment {
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
-            if (divider) {
+            if (divider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
                 canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(64), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(64) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
             }
         }

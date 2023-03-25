@@ -101,11 +101,13 @@
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
     <string name="AP_IconReplacement_Solar">Иконки Solar от @Design480</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
+    <string name="AP_OneUI_Switch_Style">Переключатели в стиле OneUI</string>
     <string name="AP_SystemEmoji">Использовать системные эмодзи</string>
-    <string name="AP_ShowPencilIcon">Иконка карандаша для редактированных сообщений</string>
+    <string name="AP_ShowPencilIcon">Иконка карандаша для изменённых сообщений</string>
     <string name="AP_CenterTitle">Центрирование заголовка</string>
     <string name="AP_OverrideHeader">Изменение цвета заголовка</string>
-    <string name="AP_OverrideHeader_Desc">работает только в тёмной теме</string>
+    <string name="AP_OverrideHeader_Desc">Работает только в тёмной теме</string>
+    <string name="AP_DisableDividers">Отключить разделители</string>
     <string name="AP_ToolBarShadow">Отключить тень у тулбара</string>
     <string name="AP_FlatNB">Прозрачная навигационная панель</string>
     <string name="AP_FlatNB_Desc">Навигационная панель приобретет цвет панели отправки сообщений</string>
@@ -166,6 +168,7 @@
     <string name="CP_BlockSomeSets_Desc">Некоторые стикеры, вызывающие вылет приложения, будут заменены логотипом Cherrygram. \nФайл \"Cherrygram Logo\" будет загружен после того, как Вы включите функцию и перезапустите приложение.</string>
     <string name="CP_TimeOnStick">Скрыть время отправки на стикерах</string>
 
+    <string name="CP_MessageMenu">Меню сообщения</string>
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включить счетчик непрочитанных чатов на кнопке «Назад» в открытом чате</string>
     <string name="CP_NoRounding">Отключить округление чисел</string>
@@ -173,8 +176,7 @@
     <string name="CP_DeleteForAll_Desc">При удалении сообщений галочка будет ставиться автоматически.</string>
     <string name="CP_ConfirmCalls">Спрашивать перед звонком</string>
     <string name="CP_ForwardMsgDate">Показывать дату пересланного сообщения</string>
-    <string name="CP_ShowSeconds">Показывать секунды в метках времени</string>
-    <string name="CP_ShowSeconds_Desc">Показывает секунды у времени отправленных сообщений</string>
+    <string name="CP_ShowSeconds">Показывать время с секундами</string>
     <string name="CP_LeftBottomButtonAction">Действие левой кнопки</string>
     <string name="CP_DoubleTapAction">Действие при двойном нажатии</string>
     <string name="CP_DisableSwipeToNext">Отключить переход на следующий канал</string>

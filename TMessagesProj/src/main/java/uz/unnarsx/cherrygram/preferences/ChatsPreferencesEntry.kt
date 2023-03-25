@@ -7,10 +7,10 @@ import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.Components.BulletinFactory
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSliderPreference.TGSLContract
+import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 
 class ChatsPreferencesEntry : BasePreferencesEntry {
     val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
@@ -25,12 +25,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.blockStickers
                 }) {
                     CherrygramConfig.blockStickers = it
-                    BulletinFactory.of(bf).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
-                    ) {
-                    }.show()
+                    createRestartBulletin(bf)
                 }
             }
             switch {
@@ -66,70 +61,23 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
 
         }
 
-        category(LocaleController.getString("DirectShare", R.string.DirectShare)) {
-            switch {
-                title = LocaleController.getString("FilterChats", R.string.FilterChats)
-
-                contract({
-                    return@contract CherrygramConfig.usersDrawShareButton
-                }) {
-                    CherrygramConfig.usersDrawShareButton = it
-                    bf.parentActivity.recreate()
-                }
-            }
-            /*switch {
-                title = "Groups"
-
-                contract({
-                    return@contract CherrygramConfig.groupsDrawShareButton
-                }) {
-                    CherrygramConfig.groupsDrawShareButton = it
-                    bf.parentActivity.recreate()
-                }
-            }*/
-            switch {
-                title = LocaleController.getString("FilterGroups", R.string.FilterGroups)
-
-                contract({
-                    return@contract CherrygramConfig.supergroupsDrawShareButton
-                }) {
-                    CherrygramConfig.supergroupsDrawShareButton = it
-                    bf.parentActivity.recreate()
-                }
-            }
-            switch {
-                title = LocaleController.getString("FilterChannels", R.string.FilterChannels)
-
-                contract({
-                    return@contract CherrygramConfig.channelsDrawShareButton
-                }) {
-                    CherrygramConfig.channelsDrawShareButton = it
-                    bf.parentActivity.recreate()
-                }
-            }
-            switch {
-                title = LocaleController.getString("FilterBots", R.string.FilterBots)
-
-                contract({
-                    return@contract CherrygramConfig.botsDrawShareButton
-                }) {
-                    CherrygramConfig.botsDrawShareButton = it
-                    bf.parentActivity.recreate()
-                }
-            }
-            switch {
-                title = LocaleController.getString("StickersName", R.string.StickersName)
-
-                contract({
-                    return@contract CherrygramConfig.stickersDrawShareButton
-                }) {
-                    CherrygramConfig.stickersDrawShareButton = it
-                    bf.parentActivity.recreate()
-                }
-            }
-        }
-
         category(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {
+            textIcon {
+                title = LocaleController.getString("DirectShare", R.string.DirectShare)
+                icon = R.drawable.msg_share
+                listener = TGKitTextIconRow.TGTIListener {
+                    AlertDialogSwitchHelper.showDirectShareAlert(bf)
+                }
+                divider = true
+            }
+            textIcon {
+                title = LocaleController.getString("CP_MessageMenu", R.string.CP_MessageMenu)
+                icon = R.drawable.msg_list
+                listener = TGKitTextIconRow.TGTIListener {
+                    AlertDialogSwitchHelper.showChatMenuIconsAlert(bf)
+                }
+                divider = true
+            }
             switch {
                 title = LocaleController.getString("CP_UnreadBadgeOnBackButton", R.string.CP_UnreadBadgeOnBackButton)
                 summary = LocaleController.getString("CP_UnreadBadgeOnBackButton_Desc", R.string.CP_UnreadBadgeOnBackButton_Desc)
@@ -138,16 +86,6 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.unreadBadgeOnBackButton
                 }) {
                     CherrygramConfig.unreadBadgeOnBackButton = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("AS_NoRounding", R.string.CP_NoRounding)
-                summary = LocaleController.getString("AS_NoRoundingSummary", R.string.CP_NoRoundingSummary)
-
-                contract({
-                    return@contract CherrygramConfig.noRounding
-                }) {
-                    CherrygramConfig.noRounding = it
                 }
             }
             switch {
@@ -161,15 +99,6 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = LocaleController.getString("CP_ConfirmCalls", R.string.CP_ConfirmCalls)
-
-                contract({
-                    return@contract CherrygramConfig.confirmCalls
-                }) {
-                    CherrygramConfig.confirmCalls = it
-                }
-            }
-            switch {
                 title = LocaleController.getString("CP_ForwardMsgDate", R.string.CP_ForwardMsgDate)
 
                 contract({
@@ -179,19 +108,11 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = LocaleController.getString("CP_ShowSeconds", R.string.CP_ShowSeconds)
-                summary = LocaleController.getString("CP_ShowSeconds_Desc", R.string.CP_ShowSeconds_Desc)
-
+                title = LocaleController.getString("AP_ShowPencilIcon", R.string.AP_ShowPencilIcon)
                 contract({
-                    return@contract CherrygramConfig.showSeconds
+                    return@contract CherrygramConfig.showPencilIcon
                 }) {
-                    CherrygramConfig.showSeconds = it
-                    BulletinFactory.of(bf).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
-                    ) {
-                    }.show()
+                    CherrygramConfig.showPencilIcon = it
                 }
             }
             list {
@@ -237,6 +158,16 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("CP_HideKbdOnScroll", R.string.CP_HideKbdOnScroll)
+
+                contract({
+                    return@contract CherrygramConfig.hideKeyboardOnScroll
+                }) {
+                    CherrygramConfig.hideKeyboardOnScroll = it
+                    createRestartBulletin(bf)
+                }
+            }
+            switch {
                 title = LocaleController.getString("CP_DisableSwipeToNext", R.string.CP_DisableSwipeToNext)
                 summary = LocaleController.getString("CP_DisableSwipeToNext_Desc", R.string.CP_DisableSwipeToNext_Desc)
 
@@ -253,30 +184,6 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.hideMuteUnmuteButton
                 }) {
                     CherrygramConfig.hideMuteUnmuteButton = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_HideKbdOnScroll", R.string.CP_HideKbdOnScroll)
-
-                contract({
-                    return@contract CherrygramConfig.hideKeyboardOnScroll
-                }) {
-                    CherrygramConfig.hideKeyboardOnScroll = it
-                    BulletinFactory.of(bf).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
-                    ) {
-                    }.show()
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_HideSendAsChannel", R.string.CP_HideSendAsChannel)
-
-                contract({
-                    return@contract CherrygramConfig.hideSendAsChannel
-                }) {
-                    CherrygramConfig.hideSendAsChannel = it
                 }
             }
         }
@@ -373,6 +280,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disableVibration
                 }) {
                     CherrygramConfig.disableVibration = it
+                    createRestartBulletin(bf)
                 }
             }
             switch {
@@ -393,12 +301,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.enableProximity
                 }) {
                     CherrygramConfig.enableProximity = it
-                    BulletinFactory.of(bf).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
-                    ) {
-                    }.show()
+                    createRestartBulletin(bf)
                 }
             }
         }
@@ -411,12 +314,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.iosSound
                 }) {
                     CherrygramConfig.iosSound = it
-                    BulletinFactory.of(bf).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock)
-                    ) {
-                    }.show()
+                    createRestartBulletin(bf)
                 }
             }
             switch {

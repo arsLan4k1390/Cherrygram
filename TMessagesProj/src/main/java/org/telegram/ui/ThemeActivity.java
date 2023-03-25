@@ -631,8 +631,8 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             swipeGestureRow = rowCount++;
             swipeGestureInfoRow = rowCount++;
 
-            liteModeRow = rowCount++;
-            liteModeInfoRow = rowCount++;
+//            liteModeRow = rowCount++;
+//            liteModeInfoRow = rowCount++;
 
             stickersRow = rowCount++;
             stickersInfoRow = rowCount++;

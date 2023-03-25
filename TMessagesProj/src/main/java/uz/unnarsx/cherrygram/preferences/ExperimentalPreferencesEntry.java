@@ -17,7 +17,6 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
-import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -25,7 +24,6 @@ import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextSettingsCell;
-import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.DialogsActivity;
@@ -34,6 +32,7 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.helpers.PopupHelper;
 
 public class ExperimentalPreferencesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
@@ -115,56 +114,31 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUseLNavigation());
                 }
-                BulletinFactory.of(this).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                        () -> {
-                }).show();
+                AppRestartHelper.createRestartBulletin(this);
             } else if (position == largePhotosRow) {
                 CherrygramConfig.INSTANCE.toggleLargePhotos();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getLargePhotos());
                 }
-                BulletinFactory.of(this).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                        () -> {
-                }).show();
+                AppRestartHelper.createRestartBulletin(this);
             } else if (position == openProfileRow) {
                 CherrygramConfig.INSTANCE.toggleOpenProfile();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getOpenProfile());
                 }
-                BulletinFactory.of(this).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                        () -> {
-                }).show();
+                AppRestartHelper.createRestartBulletin(this);
             } else if (position == residentNotificationRow) {
                 CherrygramConfig.INSTANCE.toggleResidentNotification();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getResidentNotification());
                 }
-                BulletinFactory.of(this).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                        () -> {
-                }).show();
+                AppRestartHelper.createRestartBulletin(this);
             } else if (position == showRPCErrorRow) {
                 CherrygramConfig.INSTANCE.toggleShowRPCError();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getShowRPCError());
                 }
-                BulletinFactory.of(this).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                        () -> {
-                }).show();
+                AppRestartHelper.createRestartBulletin(this);
             } else if (position == downloadSpeedBoostRow) {
                 ArrayList<String> arrayList = new ArrayList<>();
                 ArrayList<Integer> types = new ArrayList<>();
@@ -177,35 +151,20 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 PopupHelper.show(arrayList, LocaleController.getString("EP_DownloadSpeedBoost", R.string.EP_DownloadSpeedBoost), types.indexOf(CherrygramConfig.INSTANCE.getDownloadSpeedBoost()), context, i -> {
                     CherrygramConfig.INSTANCE.setDownloadSpeedBoost(types.get(i));
                     listAdapter.notifyItemChanged(downloadSpeedBoostRow);
-                    BulletinFactory.of(this).createRestartBulletin(
-                            R.raw.chats_infotip,
-                            LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                            LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                            () -> {
-                    }).show();
+                    AppRestartHelper.createRestartBulletin(this);
                 });
             } else if (position == uploadSpeedBoostRow) {
                 CherrygramConfig.INSTANCE.toggleUploadSpeedBoost();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUploadSpeedBoost());
                 }
-                BulletinFactory.of(this).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                        () -> {
-                }).show();
+                AppRestartHelper.createRestartBulletin(this);
             } else if (position == slowNetworkMode) {
                 CherrygramConfig.INSTANCE.toggleSlowNetworkMode();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getSlowNetworkMode());
                 }
-                BulletinFactory.of(this).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                        () -> {
-                }).show();
+                AppRestartHelper.createRestartBulletin(this);
             }
         });
 

@@ -9,6 +9,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Process;
 
+import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.R;
+import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.Components.BulletinFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -32,6 +37,15 @@ public final class AppRestartHelper extends Activity {
         startActivities(intents.toArray(new Intent[0]));
         finish();
         Runtime.getRuntime().exit(0);
+    }
+
+    public static void createRestartBulletin(BaseFragment fragment) {
+        BulletinFactory.of(fragment).createRestartBulletin(
+                R.raw.chats_infotip,
+                LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+                LocaleController.getString("BotUnblock", R.string.BotUnblock),
+                () -> {
+                }).show();
     }
 }
 

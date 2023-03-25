@@ -18,9 +18,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothProfile;
-import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -52,10 +50,10 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.os.Build;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.Settings;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -103,7 +101,6 @@ import org.telegram.messenger.video.MP4Builder;
 import org.telegram.messenger.video.Mp4Movie;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.voip.CellFlickerDrawable;
@@ -126,7 +123,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
-import javax.microedition.khronos.opengles.GL;
 
 import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
@@ -1044,13 +1040,6 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     private boolean initCamera() {
         ArrayList<CameraInfo> cameraInfos = CameraController.getInstance().getCameras();
 
-        ContentResolver cResolver = ApplicationLoader.applicationContext.getContentResolver();
-        int prevBrightness = Settings.System.getInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, 0);
-        int prevBrightnessMode = Settings.System.getInt(cResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, 0);
-        CherrygramConfig.INSTANCE.setPreviousBrightness(prevBrightness);
-        CherrygramConfig.INSTANCE.setPreviousBrightnessMode(prevBrightnessMode);
-//        FileLog.d("brightness " + prevBrightness);
-
         if (cameraInfos == null) {
             return false;
         }
@@ -1132,8 +1121,14 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
 
     private Size chooseOptimalSize(ArrayList<Size> previewSizes) {
         ArrayList<Size> sortedSizes = new ArrayList<>();
+        boolean allowBigSizeCamera = allowBigSizeCamera();
+        int maxVideoSize = allowBigSizeCamera ? 1440 : 1200;
+        if (Build.MANUFACTURER.equalsIgnoreCase("Samsung")) {
+            //1440 lead to gl crashes on samsung s9
+            maxVideoSize = 1200;
+        }
         for (int i = 0; i < previewSizes.size(); i++) {
-            if (Math.max(previewSizes.get(i).mHeight, previewSizes.get(i).mWidth) <= 1440 && Math.min(previewSizes.get(i).mHeight, previewSizes.get(i).mWidth) >= 320) {
+            if (Math.max(previewSizes.get(i).mHeight, previewSizes.get(i).mWidth) <= maxVideoSize && Math.min(previewSizes.get(i).mHeight, previewSizes.get(i).mWidth) >= 320) {
                 sortedSizes.add(previewSizes.get(i));
             }
         }
@@ -3158,68 +3153,36 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     }
 
     public void setMaxBrightness() {
-        int maxBrightness = 255;
-        boolean granted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(getContext());
-        boolean android5 = Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
+        float maxBrightness = 1F;
 
-        if (granted || android5) {
-            ContentResolver cResolver = ApplicationLoader.applicationContext.getContentResolver();
-            Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-            Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, maxBrightness);
-            CGFeatureHooks.setFlashLight(true);
+        WindowManager.LayoutParams attributes = ((Activity) getContext()).getWindow().getAttributes();
+        attributes.screenBrightness = maxBrightness;
+        ((Activity) getContext()).getWindow().setAttributes(attributes);
 
-            flashlightButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
-            switchCameraDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
-            switchCameraButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
-        } else {
-            new AlertDialog.Builder(baseFragment.getParentActivity())
-                    .setMessage(AndroidUtilities.replaceTags(LocaleController.getString("CameraPermissionText", R.string.CameraPermissionText)))
-                    .setPositiveButton(LocaleController.getString("PermissionOpenSettings", R.string.PermissionOpenSettings), (dialogInterface, i) -> {
-                        try {
-                            Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                            intent.setData(Uri.parse("package:" + getContext().getPackageName()));
-                            baseFragment.getParentActivity().startActivity(intent);
-                        } catch (Exception e) {
-                            FileLog.e(e);
-                        }
-                    })
-                    .setNegativeButton(LocaleController.getString("ContactsPermissionAlertNotNow", R.string.ContactsPermissionAlertNotNow), null)
-                    .setTopAnimation(R.raw.not_available, 72, false, Theme.getColor(Theme.key_dialogTopBackground))
-                    .show();
-        }
+        CGFeatureHooks.setFlashLight(true);
+        flashlightButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
+        switchCameraDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
+        switchCameraButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
     }
 
     public void setOldBrightness() {
-        int prevBrightness = CherrygramConfig.INSTANCE.getPreviousBrightness();
-        int prevBrightnessMode = CherrygramConfig.INSTANCE.getPreviousBrightnessMode();
-        boolean granted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && Settings.System.canWrite(getContext());
-        boolean android5 = Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP || Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP_MR1;
+        float previousBrightness = -1F;
 
-        if (granted || android5) {
-            ContentResolver cResolver = ApplicationLoader.applicationContext.getContentResolver();
-            Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-            Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, prevBrightness);
-            Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, prevBrightnessMode);
-            CGFeatureHooks.setFlashLight(false);
+        WindowManager.LayoutParams attributes = ((Activity) getContext()).getWindow().getAttributes();
+        attributes.screenBrightness = previousBrightness;
+        ((Activity) getContext()).getWindow().setAttributes(attributes);
 
-            flashlightButton.clearColorFilter();
-            switchCameraDrawable.clearColorFilter();
-            switchCameraButton.clearColorFilter();
-        } else {
-            new AlertDialog.Builder(baseFragment.getParentActivity())
-                    .setMessage(AndroidUtilities.replaceTags(LocaleController.getString("CameraPermissionText", R.string.CameraPermissionText)))
-                    .setPositiveButton(LocaleController.getString("PermissionOpenSettings", R.string.PermissionOpenSettings), (dialogInterface, i) -> {
-                        try {
-                            Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                            intent.setData(Uri.parse("package:" + getContext().getPackageName()));
-                            baseFragment.getParentActivity().startActivity(intent);
-                        } catch (Exception e) {
-                            FileLog.e(e);
-                        }
-                    })
-                    .setNegativeButton(LocaleController.getString("ContactsPermissionAlertNotNow", R.string.ContactsPermissionAlertNotNow), null)
-                    .setTopAnimation(R.raw.not_available, 72, false, Theme.getColor(Theme.key_dialogTopBackground))
-                    .show();
-        }
+        new CountDownTimer(300, 100) {
+            @Override
+            public void onTick(long millisUntilFinished) {}
+
+            @Override
+            public void onFinish() {
+                CGFeatureHooks.setFlashLight(false);
+                flashlightButton.clearColorFilter();
+                switchCameraDrawable.clearColorFilter();
+                switchCameraButton.clearColorFilter();
+            }
+        }.start();
     }
 }

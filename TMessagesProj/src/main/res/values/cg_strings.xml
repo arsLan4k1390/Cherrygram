@@ -108,11 +108,13 @@
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
     <string name="AP_IconReplacement_Default">Default</string>
+    <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
     <string name="AP_SystemEmoji">Use system emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
     <string name="AP_CenterTitle">Center title in action bar</string>
     <string name="AP_OverrideHeader">Override header color</string>
-    <string name="AP_OverrideHeader_Desc">works only in dark theme</string>
+    <string name="AP_OverrideHeader_Desc">Works only in dark theme</string>
+    <string name="AP_DisableDividers">Disable dividers</string>
     <string name="AP_ToolBarShadow">Disable toolbar shadow</string>
     <string name="AP_FlatNB">Transparent navbar</string>
     <string name="AP_FlatNB_Desc">The navbar will get the color of the Messages Panel</string>
@@ -173,16 +175,17 @@
     <string name="CP_BlockSomeSets_Desc">Some stickers which forces the app crash will be replaced by Cherrygram\'s logo. \n\"Cherrygram Logo\" file will be downloaded after you enable the feature and restart the app.</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
 
+    <string name="CP_MessageMenu">Message menu</string>
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
     <string name="CP_NoRounding">Disable number rounding</string>
-    <string name="CP_NoRoundingSummary" translatable="false">1.2K -> 1234</string>
+    <string name="CP_NoRoundingSummary" translatable="false">1.2K -> 1,234</string>
     <string name="CP_DeleteForAll">Use \"Delete for all\" by default</string>
     <string name="CP_DeleteForAll_Desc">Checkbox will be automatically checked while deleting messages.</string>
     <string name="CP_ConfirmCalls">Ask before calling</string>
     <string name="CP_ForwardMsgDate">Show forwarded message date</string>
-    <string name="CP_ShowSeconds">Show seconds in timestamps</string>
-    <string name="CP_ShowSeconds_Desc">Shows the seconds of the time of sent messages</string>
+    <string name="CP_ShowSeconds">Format time with seconds</string>
+    <string name="CP_ShowSeconds_Desc" translatable="false">12:34 -> 12:34:56</string>
     <string name="CP_LeftBottomButtonAction">Left button action</string>
     <string name="CP_DoubleTapAction">Double tap action</string>
     <string name="CP_DisableSwipeToNext">Disable transition to the next channel</string>

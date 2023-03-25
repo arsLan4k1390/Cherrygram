@@ -1698,7 +1698,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 TextView textView = new TextView(parentActivity) {
                     @Override
                     protected void onDraw(Canvas canvas) {
-                        canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, dividerPaint);
+                        if (!CherrygramConfig.INSTANCE.getDisableDividers()) canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, dividerPaint);
                         super.onDraw(canvas);
                     }
                 };

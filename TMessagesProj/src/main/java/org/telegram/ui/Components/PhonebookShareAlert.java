@@ -58,6 +58,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class PhonebookShareAlert extends BottomSheet {
 
     private ListAdapter listAdapter;
@@ -233,7 +235,7 @@ public class PhonebookShareAlert extends BottomSheet {
 
         @Override
         protected void onDraw(Canvas canvas) {
-            if (needDivider) {
+            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
                 canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(70), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(70) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
             }
         }

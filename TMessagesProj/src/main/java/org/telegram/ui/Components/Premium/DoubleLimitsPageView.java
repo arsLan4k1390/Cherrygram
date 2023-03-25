@@ -11,6 +11,8 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class DoubleLimitsPageView extends FrameLayout implements PagerHeaderView {
 
     final RecyclerListView recyclerListView;
@@ -37,7 +39,7 @@ public class DoubleLimitsPageView extends FrameLayout implements PagerHeaderView
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
+        if (!CherrygramConfig.INSTANCE.getDisableDividers()) canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
     }
 
     @Override

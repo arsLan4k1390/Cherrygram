@@ -148,7 +148,6 @@
     <string name="CP_ConfirmCalls">撥打前先詢問我</string>
     <string name="CP_ForwardMsgDate">顯示轉寄日期時間</string>
     <string name="CP_ShowSeconds">在時戳中顯示秒數</string>
-    <string name="CP_ShowSeconds_Desc">顯示傳送訊息時間的秒數 (重啟應用程式後生效)</string>
     <string name="CP_DoubleTapAction">雙擊操作</string>
     <string name="CP_DisableSwipeToNext">停用頻道切換</string>
     <string name="CP_DisableSwipeToNext_Desc">瀏覽頻道訊息時禁止切換至下一個頻道</string>

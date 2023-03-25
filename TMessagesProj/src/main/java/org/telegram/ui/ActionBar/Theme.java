@@ -3216,6 +3216,9 @@ public class Theme {
     private static HashMap<MessageObject, AudioVisualizerDrawable> animatedOutVisualizerDrawables;
 
     public static final String key_alwaysBlack = "alwaysBlack";
+    public static final String key_alwaysWhite = "alwaysWhite";
+    public static final String key_alwaysGray = "alwaysGray";
+    public static final String key_alwaysGrayDarkTheme = "alwaysGrayDarkTheme";
 
     public static final String key_dialogBackground = "dialogBackground";
     public static final String key_dialogBackgroundGray = "dialogBackgroundGray";
@@ -4066,6 +4069,9 @@ public class Theme {
 
     static {
         defaultColors.put(key_alwaysBlack, Color.BLACK);
+        defaultColors.put(key_alwaysWhite, Color.WHITE);
+        defaultColors.put(key_alwaysGray, 0xff999999);
+        defaultColors.put(key_alwaysGrayDarkTheme, 0xff656660);
 
         defaultColors.put(key_dialogBackground, 0xffffffff);
         defaultColors.put(key_dialogBackgroundGray, 0xfff0f0f0);

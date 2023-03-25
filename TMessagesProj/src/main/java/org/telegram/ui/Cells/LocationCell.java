@@ -32,6 +32,8 @@ import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.FlickerLoadingView;
 import org.telegram.ui.Components.LayoutHelper;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class LocationCell extends FrameLayout {
 
     private TextView nameTextView;
@@ -179,7 +181,7 @@ public class LocationCell extends FrameLayout {
         canvas.restore();
         super.onDraw(canvas);
 
-        if (needDivider) {
+        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             canvas.drawLine(
                 LocaleController.isRTL ? 0 : AndroidUtilities.dp(72),
                 getHeight() - 1,

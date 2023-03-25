@@ -51,6 +51,7 @@ import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Components.CombinedDrawable;
+import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.Components.Premium.PremiumFeatureBottomSheet;
@@ -62,6 +63,8 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.tabs.FolderIconHelper;
+
+import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class FiltersSetupActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -212,7 +215,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
 
         @Override
         protected void onDraw(Canvas canvas) {
-            if (needDivider) {
+            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
                 canvas.drawLine(0, getHeight() - 1, getWidth() - getPaddingRight(), getHeight() - 1, Theme.dividerPaint);
             }
         }
@@ -406,7 +409,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
 
         @Override
         protected void onDraw(Canvas canvas) {
-            if (needDivider) {
+            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
                 canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(62), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(62) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
             }
             if (currentFilter != null) {
@@ -549,6 +552,12 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 super.dispatchDraw(canvas);
             }
         };
+        DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
+        itemAnimator.setDurations(350);
+        itemAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
+        itemAnimator.setDelayAnimations(false);
+        itemAnimator.setSupportsChangeAnimations(false);
+        listView.setItemAnimator(itemAnimator);
         ((DefaultItemAnimator) listView.getItemAnimator()).setDelayAnimations(false);
         listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         listView.setVerticalScrollBarEnabled(false);
@@ -574,7 +583,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
                 ignoreUpdates = false;
             } else if (position == folderStyleNoUnreadRow) {
-                CherrygramConfig.INSTANCE.toggleNewTabs_noUnread();
+                CherrygramConfig.INSTANCE.toggleNewTabsNoUnread();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getNewTabs_noUnread());
                 }
@@ -798,6 +807,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                         while (getMessagesController().dialogFiltersById.get(filter.id) != null) {
                             filter.id++;
                         }
+                        filter.order = getMessagesController().dialogFilters.size();
                         filter.pendingUnreadCount = filter.unreadCount = -1;
                         for (int b = 0; b < 2; b++) {
                             ArrayList<TLRPC.InputPeer> fromArray = b == 0 ? suggested.filter.include_peers : suggested.filter.exclude_peers;
@@ -841,7 +851,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                         }
                         filter.emoticon = FolderIconHelper.getEmoticonData(filter.flags)[1];
                         ignoreUpdates = true;
-                        FilterCreateActivity.saveFilterToServer(filter, filter.flags, filter.emoticon, filter.name, filter.alwaysShow, filter.neverShow, filter.pinnedDialogs, true, true, true, true, false, FiltersSetupActivity.this, () -> {
+                        FilterCreateActivity.saveFilterToServer(filter, filter.flags, filter.emoticon, filter.name, filter.alwaysShow, filter.neverShow, filter.pinnedDialogs, true, false, true, true, false, FiltersSetupActivity.this, () -> {
                             getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
                             ignoreUpdates = false;
                             ArrayList<TLRPC.TL_dialogFilterSuggested> suggestedFilters = getMessagesController().suggestedFilters;
@@ -914,9 +924,9 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 }
                 case 3: {
                     if (position == createSectionRow) {
-                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
+                        holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                     } else {
-                        holder.itemView.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                        holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                     }
                     break;
                 }
@@ -936,7 +946,7 @@ public class FiltersSetupActivity extends BaseFragment implements NotificationCe
                 }
                 case 5: {
                     SuggestedFilterCell filterCell = (SuggestedFilterCell) holder.itemView;
-                    filterCell.setFilter(getMessagesController().suggestedFilters.get(position - recommendedStartRow), recommendedStartRow != recommendedEndRow - 1);
+                    filterCell.setFilter(getMessagesController().suggestedFilters.get(position - recommendedStartRow), position < recommendedEndRow - 1);
                     break;
                 }
                 case 6: {

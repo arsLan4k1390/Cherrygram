@@ -62,6 +62,15 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Hide messages counter in tabs.
 
 *Cherrygram General Preferences:*
+- Enable/Disable members rounding,
+- Show seconds in timestamps,
+- Enable/Disable system emoji,
+- Enable/Disable system fonts,
+- Default notification icon (Telegram),
+- Ask before a call,
+- Hiding your phone number from settings and menu,
+- Showing ID in profile,
+- Showing DC in profile.
 - Enable/Disable animated avatars,
 - Enable/Disable reactions overlay,
 - Draw small reactions,
@@ -69,28 +78,17 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Enable/Disable premium statuses in profile,
 - Enable/Disable taps on premium stickers,
 - Enable/Disable premium stickers auto-play,
-- Hiding your phone number from settings and menu,
-- Showing ID in profile,
-- Showing DC in profile.
-*Drawer Preferences:*
-- Profile photo as drawer background,
-- Darken menu header background,
-- Gradient menu header background,
-- Blur menu header background and blur intensity,
-- Drawer icons set,
-- Enable/Disable drawer buttons.
+- Enable/Disable "Send as channel" button,
 
 *Cherrygram Appearance Preferences:*
 - VKUI icons in app,
 - Solar icons in app,
-- Default notification icon (Telegram),
+- One UI (Samsung) Switchers style,
 - Center title in action bar,
-- Overriding header color in dark themes,
 - Enable/Disable toolbar shadow,
+- Enable/Disable dividers,
+- Overriding header color in dark themes,
 - Transparent navigation bar,
-- Enable/Disable system emoji,
-- Enable/Disable system fonts,
-- Pencil icon for edited messages instead of "edited",
 - Show folder name instead of app name,
 - Hide "All chats" tab,
 - Tab style (Default, Rounded, Text, VKUI or Pills),
@@ -98,24 +96,29 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Snow in Drawer,
 - Snow in App Header,
 - Snow in Chats.
+-   *Drawer Preferences:*
+- Profile photo as drawer background,
+- Darken menu header background,
+- Gradient menu header background,
+- Blur menu header background and blur intensity,
+- Drawer icons set,
+- Enable/Disable drawer buttons.
 
 *Cherrygram Chats Preferences:*
 - Blocking stickers (which cause Telegram apps crash),
 - Hide time on stickers,
 - Stickers size amplifier (changer),
-- Direct Share button (Select where to show it)
+- Direct Share button (Select where to show the button)
+- Configure message menu,
 - Showing unread chats counter on "Back" button like on IOS,
-- Enable/Disable members rounding,
 - Use "Delete for all" by default,
-- Ask before a call,
 - Show forwarded message date,
-- Show seconds in timestamps,
+- Pencil icon for edited messages instead of "edited",
 - Left button action (Forward w/o authorship, Direct Share or Reply),
 - Double tap action (Disable, Reaction, Reply, Save message or Edit message),
+- Hide keyboard while scrolling a chat,
 - Enable/Disable transition to the next channel,
 - Show/Hide bottom button in channels (Mute/Unmute),
-- Hide keyboard while scrolling a chat,
-- Enable/Disable "Send as channel" button,
 - Recent emojis counter (amplifier),
 - Recent stickers counter (amplifier),
 - Voice enhancements,

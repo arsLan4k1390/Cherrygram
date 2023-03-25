@@ -30,6 +30,8 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.LinkSpanDrawable;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class TextDetailCell extends FrameLayout {
 
     private final TextView textView;
@@ -168,7 +170,7 @@ public class TextDetailCell extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider) {
+        if (needDivider  && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             canvas.drawLine(
                 LocaleController.isRTL ? 0 : AndroidUtilities.dp(20),
                 getMeasuredHeight() - 1,

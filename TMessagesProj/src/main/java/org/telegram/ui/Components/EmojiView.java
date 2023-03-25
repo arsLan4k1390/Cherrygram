@@ -2616,7 +2616,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
 
         shadowLine = new View(context);
         shadowLine.setBackgroundColor(getThemedColor(Theme.key_chat_emojiPanelShadowLine));
-        bottomTabContainer.addView(shadowLine, new FrameLayout.LayoutParams(LayoutHelper.MATCH_PARENT, AndroidUtilities.getShadowHeight()));
+        if (!CherrygramConfig.INSTANCE.getDisableDividers()) bottomTabContainer.addView(shadowLine, new FrameLayout.LayoutParams(LayoutHelper.MATCH_PARENT, AndroidUtilities.getShadowHeight()));
 
         bottomTabContainerBackground = new View(context);
         bottomTabContainer.addView(bottomTabContainerBackground, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, AndroidUtilities.dp(40), Gravity.LEFT | Gravity.BOTTOM));

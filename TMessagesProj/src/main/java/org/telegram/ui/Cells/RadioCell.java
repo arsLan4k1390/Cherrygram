@@ -28,6 +28,8 @@ import org.telegram.ui.Components.RadioButton;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class RadioCell extends FrameLayout {
 
     private Theme.ResourcesProvider resourcesProvider;
@@ -119,7 +121,7 @@ public class RadioCell extends FrameLayout {
     }
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider) {
+        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(20), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(20) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
         }
     }

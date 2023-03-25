@@ -148,7 +148,6 @@
     <string name="CP_ConfirmCalls">Chiedi prima di chiamare</string>
     <string name="CP_ForwardMsgDate">Mostra la data del messaggio inoltrato</string>
     <string name="CP_ShowSeconds">Mostra i secondi nell\'orario</string>
-    <string name="CP_ShowSeconds_Desc">Mostra i secondi dell\'ora dei messaggi inviati (riavvia l\'app per applicare)</string>
     <string name="CP_DoubleTapAction">Azione col doppio tocco</string>
     <string name="CP_DisableSwipeToNext">Disabilita la transizione al prossimo canale</string>
     <string name="CP_DisableSwipeToNext_Desc">Disabilita il passaggio al canale successivo quando si scorre su qualsiasi canale</string>

@@ -148,7 +148,6 @@
     <string name="CP_ConfirmCalls">اسأل قبل الاتصال</string>
     <string name="CP_ForwardMsgDate">إظهار تاريخ الرسالة المعاد توجيهها</string>
     <string name="CP_ShowSeconds">إظهار الثواني في الطوابع الزمنية</string>
-    <string name="CP_ShowSeconds_Desc">يظهر الثواني من الوقت من الرسائل المرسلة (إعد تشغيل التطبيق)</string>
     <string name="CP_DoubleTapAction">انقر نقرًا مزدوجًا</string>
     <string name="CP_DisableSwipeToNext">تعطيل الانتقال إلى القناة التالية</string>
     <string name="CP_DisableSwipeToNext_Desc">تعطيل التبديل إلى القناة التالية عند التمرير عبر أي قناة</string>

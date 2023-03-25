@@ -64,6 +64,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifierLayout.ChildLayout {
 
     private static final int PAGE_TYPE_CHATS = 0;
@@ -1018,7 +1020,7 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
         @Override
         protected void dispatchDraw(Canvas canvas) {
             super.dispatchDraw(canvas);
-            if (drawDivider) {
+            if (drawDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
                 canvas.drawLine(getMeasuredWidth() - AndroidUtilities.dp(90), getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
             }
         }

@@ -51,6 +51,9 @@ public class Switch extends View {
     private boolean isChecked;
     private Paint paint;
     private Paint paint2;
+    private Paint paint3;
+    private Paint paint4;
+    private Paint paint5;
 
     private int drawIconType;
     private float iconProgress = 1.0f;
@@ -101,6 +104,9 @@ public class Switch extends View {
 
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint2 = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint3 = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint4 = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint5 = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint2.setStyle(Paint.Style.STROKE);
         paint2.setStrokeCap(Paint.Cap.ROUND);
         paint2.setStrokeWidth(AndroidUtilities.dp(2));
@@ -374,16 +380,39 @@ public class Switch extends View {
             return;
         }
 
+        int x;
+        float y;
+        int tx;
         int width = AndroidUtilities.dp(31);
-        int thumb = AndroidUtilities.dp(20);
-        int x = (getMeasuredWidth() - width) / 2;
-        float y = (getMeasuredHeight() - AndroidUtilities.dpf2(14)) / 2;
-        int tx = x + AndroidUtilities.dp(7) + (int) (AndroidUtilities.dp(17) * progress);
+        int thumb;
+
+        if (CherrygramConfig.INSTANCE.getOneUI_SwitchStyle()) {
+            thumb = AndroidUtilities.dp(16.5F); // толщина свитча
+            x = 12; // длина свитча когда он включен
+            y = getMeasuredHeight() / 2 - thumb / 2;
+
+            if (isChecked) {
+                tx = ((getMeasuredWidth() - width) / 2) + AndroidUtilities.dp(7) + (int) (AndroidUtilities.dp(17) * progress);
+            } else {
+                tx = ((getMeasuredWidth() - width) / 1) + AndroidUtilities.dp(7) + (int) (AndroidUtilities.dp(17) * progress);
+            }
+
+        } else {
+            thumb = AndroidUtilities.dp(20);
+            x = (getMeasuredWidth() - width) / 2;
+            y = (getMeasuredHeight() - AndroidUtilities.dpf2(14)) / 2;
+
+            tx = x + AndroidUtilities.dp(7) + (int) (AndroidUtilities.dp(17) * progress);
+        }
+
         int ty = getMeasuredHeight() / 2;
 
 
         int color1;
         int color2;
+        int color3;
+        int color4;
+        int color5;
         float colorProgress;
         int r1;
         int r2;
@@ -419,8 +448,12 @@ public class Switch extends View {
                 colorProgress = progress;
             }
 
-            color1 = Theme.getColor(trackColorKey, resourcesProvider);
-            color2 = Theme.getColor(trackCheckedColorKey, resourcesProvider);
+            color1 = Theme.getColor(trackColorKey, resourcesProvider); // WTF???
+            color2 = Theme.getColor(trackCheckedColorKey, resourcesProvider); // Enabled switch color
+            color3 = Theme.getColor(Theme.key_alwaysWhite, resourcesProvider); // Always white inner circle color in all themes
+            color4 = Theme.getColor(Theme.key_alwaysGray, resourcesProvider); // Gray color of disabled switch
+            color5 = Theme.getColor(Theme.key_alwaysGrayDarkTheme, resourcesProvider); // Dark gray thumb color of disabled switch
+
             if (a == 0 && iconDrawable != null && lastIconColor != (isChecked ? color2 : color1)) {
                 iconDrawable.setColorFilter(new PorterDuffColorFilter(lastIconColor = (isChecked ? color2 : color1), PorterDuff.Mode.MULTIPLY));
             }
@@ -441,10 +474,29 @@ public class Switch extends View {
             color = ((alpha & 0xff) << 24) | ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff);
             paint.setColor(color);
             paint2.setColor(color);
+            paint3.setColor(color3);
+            paint4.setColor(color4);
+            paint5.setColor(color5);
 
-            rectF.set(x, y, x + width, y + AndroidUtilities.dpf2(14));
-            canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(7), AndroidUtilities.dpf2(7), paint);
-            canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(10), paint);
+            if (CherrygramConfig.INSTANCE.getOneUI_SwitchStyle()) {
+                rectF.set(x, y, getMeasuredWidth(), getMeasuredHeight() / 2 + thumb / 2);
+                if (!isChecked) { //User gray color when switch is unchecked (disabled)
+                    canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(10), AndroidUtilities.dpf2(10), paint4); // Switch (thumb) color
+                    canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(10), paint4); // Outer (external) circle size and color
+
+                    if (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) { // Use different gray colors in dark and light themes
+                        canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(10), AndroidUtilities.dpf2(10), paint5);
+                        canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(10), paint5);
+                    }
+
+                }
+                canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(10), AndroidUtilities.dpf2(10), paint);
+                canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(10), paint);
+            } else { //Telegram style
+                rectF.set(x, y, x + width, y + AndroidUtilities.dpf2(14));
+                canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(7), AndroidUtilities.dpf2(7), paint);
+                canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(10), paint);
+            }
 
             if (a == 0 && rippleDrawable != null) {
                 rippleDrawable.setBounds(tx - AndroidUtilities.dp(18), ty - AndroidUtilities.dp(18), tx + AndroidUtilities.dp(18), ty + AndroidUtilities.dp(18));
@@ -491,7 +543,11 @@ public class Switch extends View {
             alpha = (int) (a1 + (a2 - a1) * colorProgress);
             paint.setColor(((alpha & 0xff) << 24) | ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff));
 
-            canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dp(8), paint);
+            if (CherrygramConfig.INSTANCE.getOneUI_SwitchStyle()) {
+                canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dp(8.5F), paint3); // Inner circle size and color
+            } else {
+                canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dp(8), paint);
+            }
 
             if (a == 0) {
                 if (iconDrawable != null) {

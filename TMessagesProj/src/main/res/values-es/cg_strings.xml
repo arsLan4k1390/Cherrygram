@@ -90,7 +90,7 @@
     <string name="AP_SystemEmoji">Usar emojis del sistema</string>
     <string name="AP_CenterTitle">Centrar título en la barra de acción</string>
     <string name="AP_OverrideHeader">Cambiar color de cabecera</string>
-    <string name="AP_OverrideHeader_Desc">sólo funciona en el tema oscuro</string>
+    <string name="AP_OverrideHeader_Desc">Sólo funciona en el tema oscuro</string>
     <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
     <string name="AP_FlatNB">Barra de navegación transparente</string>
     <string name="AP_FlatNB_Desc">La barra de navegación obtendrá el color del panel de mensajes</string>
@@ -152,7 +152,6 @@
     <string name="CP_ConfirmCalls">Preguntar antes de llamar</string>
     <string name="CP_ForwardMsgDate">Mostrar fecha del mensaje reenviado</string>
     <string name="CP_ShowSeconds">Mostrar segundos en marcas de tiempo</string>
-    <string name="CP_ShowSeconds_Desc">Muestra los segundos del tiempo de los mensajes enviados</string>
     <string name="CP_LeftBottomButtonAction">Acción del botón izquierdo</string>
     <string name="CP_DoubleTapAction">Acción de doble toque</string>
     <string name="CP_DisableSwipeToNext">Desactivar la transición al siguiente canal</string>

@@ -1,6 +1,9 @@
 package uz.unnarsx.cherrygram.preferences
 
+import org.telegram.messenger.LocaleController
+import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.BulletinFactory
 import uz.unnarsx.cherrygram.tgkit.preference.TGKitSettings
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitListPreference
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSettingsCellRow
@@ -34,4 +37,13 @@ interface BasePreferencesEntry {
     }
 
     fun getPreferences(bf: BaseFragment): TGKitSettings
+
+    fun createRestartBulletin(bf: BaseFragment) {
+        BulletinFactory.of(bf).createRestartBulletin(
+            R.raw.chats_infotip,
+            LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
+            LocaleController.getString("BotUnblock", R.string.BotUnblock)
+        ) {
+        }.show()
+    }
 }

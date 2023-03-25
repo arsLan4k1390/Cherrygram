@@ -22,6 +22,8 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 @SuppressLint("ViewConstructor")
 public class ThemeSelectorDrawerCell extends FrameLayout {
     private int noTheme = 0;
@@ -249,6 +251,6 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawLine(AndroidUtilities.dp(8), getMeasuredHeight() - 1, getMeasuredWidth() - AndroidUtilities.dp(8), getMeasuredHeight() - 1, Theme.dividerPaint);
+        if (!CherrygramConfig.INSTANCE.getDisableDividers()) canvas.drawLine(AndroidUtilities.dp(8), getMeasuredHeight() - 1, getMeasuredWidth() - AndroidUtilities.dp(8), getMeasuredHeight() - 1, Theme.dividerPaint);
     }
 }

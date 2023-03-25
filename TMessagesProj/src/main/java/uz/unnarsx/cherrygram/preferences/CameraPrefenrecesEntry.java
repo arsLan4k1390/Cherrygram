@@ -30,7 +30,6 @@ import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextCheckbox2Cell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
-import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
@@ -43,6 +42,7 @@ import java.util.stream.Stream;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.camera.CameraTypeSelector;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
+import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.helpers.EntitiesHelper;
 import uz.unnarsx.cherrygram.helpers.PopupHelper;
 
@@ -122,23 +122,13 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode());
                 }
-                BulletinFactory.of(this).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                        () -> {
-                }).show();
+                AppRestartHelper.createRestartBulletin(this);
             } else if (position == reduceCameraXLatency) {
                 CherrygramConfig.INSTANCE.toggleReduceCameraXLatency();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getReduceCameraXLatency());
                 }
-                BulletinFactory.of(this).createRestartBulletin(
-                        R.raw.chats_infotip,
-                        LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                        LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                        () -> {
-                        }).show();
+                AppRestartHelper.createRestartBulletin(this);
             } else if (position == cameraXQualityRow) {
                 Map<Quality, Size> availableSizes = CameraXUtils.getAvailableVideoSizes();
                 Stream<Integer> tmp = availableSizes.values().stream().sorted(Comparator.comparingInt(Size::getWidth).reversed()).map(Size::getHeight);
@@ -147,12 +137,7 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                 PopupHelper.show(arrayList, LocaleController.getString("CP_CameraQuality", R.string.CP_CameraQuality), types.indexOf(CherrygramConfig.INSTANCE.getCameraResolution()), context, i -> {
                     CherrygramConfig.INSTANCE.setCameraResolution(types.get(i));
                     listAdapter.notifyItemChanged(cameraXQualityRow);
-                    BulletinFactory.of(this).createRestartBulletin(
-                            R.raw.chats_infotip,
-                            LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                            LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                            () -> {
-                    }).show();
+                    AppRestartHelper.createRestartBulletin(this);
                 });
             } else if (position == disableAttachCameraRow) {
                 CherrygramConfig.INSTANCE.toggleDisableAttachCamera();
@@ -176,12 +161,7 @@ public class CameraPrefenrecesEntry extends BaseFragment implements Notification
                 PopupHelper.show(arrayList, (LocaleController.getString("CP_CameraAspectRatio", R.string.CP_CameraAspectRatio)), types.indexOf(CherrygramConfig.INSTANCE.getCameraAspectRatio()), context, i -> {
                     CherrygramConfig.INSTANCE.setCameraAspectRatio(types.get(i));
                     listAdapter.notifyItemChanged(cameraAspectRatioRow);
-                    BulletinFactory.of(this).createRestartBulletin(
-                            R.raw.chats_infotip,
-                            LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                            LocaleController.getString("BotUnblock", R.string.BotUnblock),
-                            () -> {
-                    }).show();
+                    AppRestartHelper.createRestartBulletin(this);
                 });
             }
         });
