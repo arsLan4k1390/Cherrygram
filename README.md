@@ -124,11 +124,10 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Voice enhancements,
 - Enable/Disable playing video on volume button click,
 - Auto pause video while switching to the background
-- Pause music while playing voice and video messages,
 - Disable in-app vibration,
-- Disable "Flip" photos,
 - Enable/Disable proximity sensor actions,
-- Enable/Disable incoming message sound from Telegram IOS app,
+- Enable/Disable incoming message sound or choose between IOS and Android,
+- Enable/Disable vibration in chats and choose vibration intensity,
 - Silence notifications from non-contacts.
 
 *Cherrygram Camera Preferences:*

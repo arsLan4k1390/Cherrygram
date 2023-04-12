@@ -51,6 +51,8 @@ import org.telegram.ui.ActionBar.Theme;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ViewPagerFixed extends FrameLayout {
 
     private Theme.ResourcesProvider resourcesProvider;
@@ -1148,7 +1150,7 @@ public class ViewPagerFixed extends FrameLayout {
                             return false;
                         }
                     }
-                    return super.canHighlightChildAt(child, x, y);
+                    return false;
                 }
             };
             if (hasStableIds) {
@@ -1163,7 +1165,7 @@ public class ViewPagerFixed extends FrameLayout {
             } else {
                 listView.setSelectorRadius(6);
             }
-            listView.setSelectorDrawableColor(Theme.getColor(selectorColorKey, resourcesProvider));
+            listView.setSelectorDrawableColor(0);
             listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) {
                 @Override
                 public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
@@ -1374,6 +1376,7 @@ public class ViewPagerFixed extends FrameLayout {
 
         @Override
         protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+            int folderStyle = CherrygramConfig.INSTANCE.getTab_style();
             boolean result = super.drawChild(canvas, child, drawingTime);
             if (child == listView) {
                 final int height = getMeasuredHeight();
@@ -1391,7 +1394,7 @@ public class ViewPagerFixed extends FrameLayout {
                     }
                     invalidate();
                 }
-                selectorDrawable.setAlpha((int) (255 * listView.getAlpha()));
+                selectorDrawable.setAlpha((int) (folderStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 50 : 255 * listView.getAlpha()));
                 int indicatorX = 0;
                 int indicatorWidth = 0;
                 if (animatingIndicator || manualScrollingToPosition != -1) {
@@ -1429,14 +1432,30 @@ public class ViewPagerFixed extends FrameLayout {
                         indicatorX = (int) (tabView.getX() + (tabView.getMeasuredWidth() - indicatorWidth) / 2);
                     }
                 }
-                if (indicatorWidth != 0) {
+                if (indicatorWidth != 0 && folderStyle != CherrygramConfig.TAB_STYLE_TEXT) {
                     lastDrawnIndicatorX = indicatorX;
                     lastDrawnIndicatorW = indicatorWidth;
                     if (indicatorProgress2 != 1f) {
                         indicatorX = (int) AndroidUtilities.lerp(lastDrawnIndicatorX, indicatorX, indicatorProgress2);
                         indicatorWidth = (int) AndroidUtilities.lerp(lastDrawnIndicatorW, indicatorWidth, indicatorProgress2);
                     }
-                    selectorDrawable.setBounds(indicatorX, (int) (height - AndroidUtilities.dpr(4) + hideProgress * AndroidUtilities.dpr(4)), indicatorX + indicatorWidth, (int) (height + hideProgress * AndroidUtilities.dpr(4)));
+
+                    if (folderStyle == CherrygramConfig.TAB_STYLE_ROUNDED) {
+                        selectorDrawable.setBounds(indicatorX, (int) (height - AndroidUtilities.dpr(4) + hideProgress * AndroidUtilities.dpr(4)), indicatorX + indicatorWidth, (int) (height + hideProgress * AndroidUtilities.dpr(4)));
+                        selectorDrawable.setCornerRadius(10F);
+                    } else if (folderStyle == CherrygramConfig.TAB_STYLE_VKUI) {
+                        indicatorX = indicatorX - 25;
+                        indicatorWidth = indicatorWidth + 50;
+                        selectorDrawable.setBounds(indicatorX, height - (height * 85 / 100), indicatorX + indicatorWidth, height - (height * 15 / 100));
+                        selectorDrawable.setCornerRadius(35F);
+                    } else if (folderStyle == CherrygramConfig.TAB_STYLE_PILLS) {
+                        indicatorX = indicatorX - 25;
+                        indicatorWidth = indicatorWidth + 50;
+                        selectorDrawable.setBounds(indicatorX, height - (height * 85 / 100), indicatorX + indicatorWidth, height - (height * 15 / 100));
+                        selectorDrawable.setCornerRadius(70F);
+                    } else {
+                        selectorDrawable.setBounds(indicatorX, (int) (height - AndroidUtilities.dpr(4) + hideProgress * AndroidUtilities.dpr(4)), indicatorX + indicatorWidth, (int) (height + hideProgress * AndroidUtilities.dpr(4)));
+                    }
                     selectorDrawable.draw(canvas);
                 }
                 if (crossfadeBitmap != null) {

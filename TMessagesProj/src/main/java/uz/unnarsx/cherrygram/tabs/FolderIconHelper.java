@@ -25,14 +25,14 @@ public class FolderIconHelper {
         folderIcons.put("\u26BD", R.drawable.filter_sport);
         folderIcons.put("\u2B50", R.drawable.filter_favorite);
         folderIcons.put("\uD83C\uDF93", R.drawable.filter_study);
-        folderIcons.put("\uD83D\uDEEB", R.drawable.filter_airplane);
+        folderIcons.put("\uD83D\uDEEB", R.drawable.filter_airplane); // to replace
         folderIcons.put("\uD83D\uDC64", R.drawable.filter_private);
         folderIcons.put("\uD83D\uDC65", R.drawable.filter_groups);
         folderIcons.put("\uD83D\uDCAC", R.drawable.filter_all);
         folderIcons.put("\u2705", R.drawable.filter_unread);
-        folderIcons.put("\uD83E\uDD16", R.drawable.filter_bot);
+        folderIcons.put("\uD83E\uDD16", R.drawable.filter_bot); // to replace
         folderIcons.put("\uD83D\uDC51", R.drawable.filter_crown);
-        folderIcons.put("\uD83C\uDF39", R.drawable.filter_flower);
+        folderIcons.put("\uD83C\uDF39", R.drawable.filter_flower); // to replace
         folderIcons.put("\uD83C\uDFE0", R.drawable.filter_home);
         folderIcons.put("\u2764", R.drawable.filter_love);
         folderIcons.put("\uD83C\uDFAD", R.drawable.filter_mask);
@@ -50,10 +50,7 @@ public class FolderIconHelper {
     }
 
     public static int getPadding() {
-        if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_MIX) {
-            return AndroidUtilities.dp(2);
-        }
-        return 0;
+        return 2;
     }
 
     public static int getTotalIconWidth() {

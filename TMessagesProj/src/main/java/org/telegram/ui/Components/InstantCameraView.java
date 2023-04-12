@@ -3179,6 +3179,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             @Override
             public void onFinish() {
                 CGFeatureHooks.setFlashLight(false);
+                invalidateBlur();
                 flashlightButton.clearColorFilter();
                 switchCameraDrawable.clearColorFilter();
                 switchCameraButton.clearColorFilter();

@@ -44,6 +44,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
+import android.view.HapticFeedbackConstants;
 
 import androidx.collection.LongSparseArray;
 import androidx.core.app.NotificationCompat;
@@ -79,6 +80,7 @@ import java.util.function.Consumer;
 
 import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.extras.VibrateUtil;
 
 public class NotificationsController extends BaseController {
 
@@ -868,7 +870,20 @@ public class NotificationsController extends BaseController {
                 int topicId = MessageObject.getTopicId(messageObject.messageOwner, getMessagesController().isForum(messageObject));
                 if (dialogId == openedDialogId && ApplicationLoader.isScreenOn) {
                     if (!isFcm) {
-                        playInChatSound();
+                        if (CherrygramConfig.INSTANCE.getNotificationSound() != CherrygramConfig.NOTIF_SOUND_DISABLE) {
+                            playInChatSound();
+                        }
+                        if (!CherrygramConfig.INSTANCE.getDisableVibration() && CherrygramConfig.INSTANCE.getVibrateInChats() != CherrygramConfig.VIBRATION_DISABLE) {
+                            if (CherrygramConfig.INSTANCE.getVibrateInChats() == CherrygramConfig.VIBRATION_CLICK) {
+                                VibrateUtil.INSTANCE.makeClickVibration();
+                            } else if (CherrygramConfig.INSTANCE.getVibrateInChats() == CherrygramConfig.VIBRATION_WAVE_FORM) {
+                                VibrateUtil.INSTANCE.makeWaveVibration();
+                            } else if (CherrygramConfig.INSTANCE.getVibrateInChats() == CherrygramConfig.VIBRATION_KEYBOARD_TAP) {
+                                VibrateUtil.vibrate(HapticFeedbackConstants.KEYBOARD_TAP);
+                            } else if (CherrygramConfig.INSTANCE.getVibrateInChats() == CherrygramConfig.VIBRATION_LONG) {
+                                VibrateUtil.vibrate();
+                            }
+                        }
                     }
                     continue;
                 }
@@ -2772,9 +2787,11 @@ public class NotificationsController extends BaseController {
                     }
                     if (soundIn == 0 && !soundInLoaded) {
                         soundInLoaded = true;
-                        soundIn = soundPool.load(ApplicationLoader.applicationContext, R.raw.sound_in, 1);
-                        if (CherrygramConfig.INSTANCE.getIosSound())
+                        if (CherrygramConfig.INSTANCE.getNotificationSound() == CherrygramConfig.NOTIF_SOUND_DEFAULT) {
+                            soundIn = soundPool.load(ApplicationLoader.applicationContext, R.raw.sound_in, 1);
+                        } else if (CherrygramConfig.INSTANCE.getNotificationSound() == CherrygramConfig.NOTIF_SOUND_IOS) {
                             soundIn = soundPool.load(ApplicationLoader.applicationContext, R.raw.sound_in_ios, 1);
+                        }
                     }
                     if (soundIn != 0) {
                         try {

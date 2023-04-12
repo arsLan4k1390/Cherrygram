@@ -9,6 +9,7 @@ import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 import java.io.File
@@ -36,7 +37,7 @@ class SecurityPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.appcenterAnalytics
                 }) {
                     CherrygramConfig.appcenterAnalytics = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
 

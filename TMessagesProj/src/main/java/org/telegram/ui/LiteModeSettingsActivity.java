@@ -80,6 +80,8 @@ public class LiteModeSettingsActivity extends BaseFragment {
 
     Bulletin restrictBulletin;
 
+    private int FLAGS_CHAT;
+
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
@@ -144,6 +146,7 @@ public class LiteModeSettingsActivity extends BaseFragment {
         });
 
         fragmentView = contentView;
+        FLAGS_CHAT = AndroidUtilities.isTablet() ? (LiteMode.FLAGS_CHAT & ~LiteMode.FLAG_CHAT_FORUM_TWOCOLUMN) : LiteMode.FLAGS_CHAT;
 
         updateItems();
 
@@ -170,7 +173,7 @@ public class LiteModeSettingsActivity extends BaseFragment {
             return 0;
         } else if (flags == LiteMode.FLAGS_ANIMATED_EMOJI) {
             return 1;
-        } else if (flags == LiteMode.FLAGS_CHAT) {
+        } else if (flags == FLAGS_CHAT) {
             return 2;
         }
         return -1;
@@ -208,10 +211,12 @@ public class LiteModeSettingsActivity extends BaseFragment {
             items.add(Item.asCheckbox(LocaleController.getString("LiteOptionsAutoplayReactions"), LiteMode.FLAG_ANIMATED_EMOJI_REACTIONS));
             items.add(Item.asCheckbox(LocaleController.getString("LiteOptionsAutoplayChat"), LiteMode.FLAG_ANIMATED_EMOJI_CHAT));
         }
-        items.add(Item.asSwitch(R.drawable.msg2_ask_question, LocaleController.getString("LiteOptionsChat"), LiteMode.FLAGS_CHAT));
+        items.add(Item.asSwitch(R.drawable.msg2_ask_question, LocaleController.getString("LiteOptionsChat"), FLAGS_CHAT));
         if (expanded[2]) {
             items.add(Item.asCheckbox(LocaleController.getString("LiteOptionsBackground"), LiteMode.FLAG_CHAT_BACKGROUND));
-            items.add(Item.asCheckbox(LocaleController.getString("LiteOptionsTopics"), LiteMode.FLAG_CHAT_FORUM_TWOCOLUMN));
+            if (!AndroidUtilities.isTablet()) {
+                items.add(Item.asCheckbox(LocaleController.getString("LiteOptionsTopics"), LiteMode.FLAG_CHAT_FORUM_TWOCOLUMN));
+            }
             items.add(Item.asCheckbox(LocaleController.getString("LiteOptionsSpoiler"), LiteMode.FLAG_CHAT_SPOILER));
             if (SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE) {
                 items.add(Item.asCheckbox(LocaleController.getString("LiteOptionsBlur"), LiteMode.FLAG_CHAT_BLUR));
@@ -462,7 +467,7 @@ public class LiteModeSettingsActivity extends BaseFragment {
             switchView.setVisibility(GONE);
             switchView.setColors(Theme.key_switchTrack, Theme.key_switchTrackChecked, Theme.key_windowBackgroundWhite, Theme.key_windowBackgroundWhite);
             switchView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-            addView(switchView, LayoutHelper.createFrame(37, 50, Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT), 19, 0, 19, 0));
+            addView(switchView, LayoutHelper.createFrame(39, 50, Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT), 19, 0, 19, 0));
 
             checkBoxView = new CheckBox2(context, 21);
             checkBoxView.setColor(Theme.key_radioBackgroundChecked, Theme.key_checkboxDisabled, Theme.key_checkboxCheck);

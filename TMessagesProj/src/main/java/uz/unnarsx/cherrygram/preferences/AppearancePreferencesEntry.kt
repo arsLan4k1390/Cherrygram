@@ -9,6 +9,7 @@ import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
 import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
@@ -75,7 +76,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disableDividers
                 }) {
                     CherrygramConfig.disableDividers = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -121,7 +122,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.folderNameInHeader
                 }) {
                     CherrygramConfig.folderNameInHeader = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -131,7 +132,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.newTabs_hideAllChats
                 }) {
                     CherrygramConfig.newTabs_hideAllChats = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
 
@@ -156,7 +157,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     }
                 }) {
                     CherrygramConfig.tab_style = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
         }
@@ -168,7 +169,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.drawSnowInDrawer
                 }) {
                     CherrygramConfig.drawSnowInDrawer = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -177,7 +178,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.drawSnowInActionBar
                 }) {
                     CherrygramConfig.drawSnowInActionBar = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -186,7 +187,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.drawSnowInChat
                 }) {
                     CherrygramConfig.drawSnowInChat = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
         }

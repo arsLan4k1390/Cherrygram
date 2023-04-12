@@ -168,16 +168,10 @@
     <string name="CP_PlayVideo_Desc">按下音量键时，播放当前界面任意视频</string>
     <string name="CP_AutoPauseVideo">自动暂停视频</string>
     <string name="CP_AutoPauseVideo_Desc">锁屏或切换到后台时</string>
-    <string name="CP_AudioFocus">播放媒体时暂停音乐</string>
-    <string name="CP_AudioFocus_Desc">收听语音消息或播放视频时暂停音乐。禁用本功能后音乐不会自动暂停，但声音会变低</string>
     <string name="CP_DisableVibration">禁用全局震动</string>
-    <string name="CP_DisablePhotoTapAction">禁用图片翻转</string>
-    <string name="CP_DisablePhotoTapAction_Desc">此功能可以禁止点击屏幕边缘时翻转图片</string>
     <string name="CP_Proximity">开启接近传感器</string>
     <string name="CP_Proximity_Desc">关闭本功能后，在您播放语音消息时不会黑屏</string>
     <string name="CP_Header_Notification">通知</string>
-    <string name="CP_IOSSound">使用 Telegram IOS 通知音</string>
-    <string name="CP_IOSSound_Desc">使用 IOS Telegram 通知声音</string>
     <string name="CP_SilenceNonContacts">静音非联系人消息</string>
     <string name="CP_SilenceNonContacts_Desc">启用后仅联系人的通知会发出声音，您可以在个人资料页添加联系人</string>
     <!--Chats Preferences-->

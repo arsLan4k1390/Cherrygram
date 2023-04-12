@@ -30,7 +30,7 @@ public class PopupHelper {
             cell.setPadding(AndroidUtilities.dp(4), 0, AndroidUtilities.dp(4), 0);
             cell.setTag(a);
             cell.setCheckColor(Theme.getColor(Theme.key_radioBackground, resourcesProvider), Theme.getColor(Theme.key_dialogRadioBackgroundChecked, resourcesProvider));
-            cell.setTextAndValue((String)entries.get(a), checkedIndex == a);
+            cell.setTextAndValue(entries.get(a), checkedIndex == a);
             linearLayout.addView(cell);
             cell.setOnClickListener(v -> {
                 Integer which = (Integer) v.getTag();

@@ -223,7 +223,7 @@ class AlertDialogSwitchHelper {
             linearLayoutInviteContainer.orientation = LinearLayout.VERTICAL
             linearLayout.addView(linearLayoutInviteContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT))
 
-            val count = 6
+            val count = 7
             for (a in 0 until count) {
                 val textCell = TextCell(context, 23, false, true, bf.resourceProvider)
                 when (a) {
@@ -244,15 +244,21 @@ class AlertDialogSwitchHelper {
                     }
                     3 -> {
                         textCell.setTextAndCheckAndIcon(
-                            LocaleController.getString("CG_ViewUserHistory", R.string.CG_ViewUserHistory), CherrygramConfig.showViewHistory, R.drawable.msg_recent, false
+                            LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship),
+                            CherrygramConfig.showForwardWoAuthorship, R.drawable.msg_forward, false
                         )
                     }
                     4 -> {
                         textCell.setTextAndCheckAndIcon(
-                            LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved), CherrygramConfig.showSaveMessage, R.drawable.msg_saved, false
+                            LocaleController.getString("CG_ViewUserHistory", R.string.CG_ViewUserHistory), CherrygramConfig.showViewHistory, R.drawable.msg_recent, false
                         )
                     }
                     5 -> {
+                        textCell.setTextAndCheckAndIcon(
+                            LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved), CherrygramConfig.showSaveMessage, R.drawable.msg_saved, false
+                        )
+                    }
+                    6 -> {
                         textCell.setTextAndCheckAndIcon(
                             LocaleController.getString("ReportChat", R.string.ReportChat), CherrygramConfig.showReport, R.drawable.msg_report, false
                         )
@@ -277,14 +283,18 @@ class AlertDialogSwitchHelper {
                             textCell.isChecked = CherrygramConfig.showForward
                         }
                         3 -> {
+                            CherrygramConfig.toggleShowForwardWoAuthorship()
+                            textCell.isChecked = CherrygramConfig.showForwardWoAuthorship
+                        }
+                        4 -> {
                             CherrygramConfig.toggleShowViewHistory()
                             textCell.isChecked = CherrygramConfig.showViewHistory
                         }
-                        4 -> {
+                        5 -> {
                             CherrygramConfig.toggleShowSaveMessage()
                             textCell.isChecked = CherrygramConfig.showSaveMessage
                         }
-                        5 -> {
+                        6 -> {
                             CherrygramConfig.toggleShowReport()
                             textCell.isChecked = CherrygramConfig.showReport
                         }

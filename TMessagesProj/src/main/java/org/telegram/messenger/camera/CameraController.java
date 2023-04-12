@@ -683,16 +683,25 @@ public class CameraController implements MediaRecorder.OnInfoListener {
     }
 
     private void finishRecordingVideo() {
+        MediaMetadataRetriever mediaMetadataRetriever = null;
         long duration = 0;
-        try (MediaMetadataRetriever mediaMetadataRetriever = new MediaMetadataRetriever()) {
+        try {
+            mediaMetadataRetriever = new MediaMetadataRetriever();
             mediaMetadataRetriever.setDataSource(recordedFile);
             String d = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
             if (d != null) {
                 duration = (int) Math.ceil(Long.parseLong(d) / 1000.0f);
             }
-            mediaMetadataRetriever.release();
         } catch (Exception e) {
             FileLog.e(e);
+        } finally {
+            try {
+                if (mediaMetadataRetriever != null) {
+                    mediaMetadataRetriever.release();
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
         }
         Bitmap bitmap = SendMessagesHelper.createVideoThumbnail(recordedFile, MediaStore.Video.Thumbnails.MINI_KIND);
         if (mirrorRecorderVideo) {

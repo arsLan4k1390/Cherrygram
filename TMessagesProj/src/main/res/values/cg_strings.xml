@@ -204,17 +204,15 @@
     <string name="CP_PlayVideo_Desc">When you press the volume button, any video on the screen in chat will be played</string>
     <string name="CP_AutoPauseVideo">Auto pause video</string>
     <string name="CP_AutoPauseVideo_Desc">When lock screen or switch to background</string>
-    <string name="CP_AudioFocus">Pause music while playing media</string>
-    <string name="CP_AudioFocus_Desc">Pause music while listening voice messages or playing videos. If disabled, music will be quieter, but won\'t be turned off</string>
     <string name="CP_DisableVibration">Disable vibration</string>
-    <string name="CP_DisablePhotoTapAction">Disable \"Flip photos\"</string>
-    <string name="CP_DisablePhotoTapAction_Desc">This disables flipping photos while tapping at the edge of the screen</string>
     <string name="CP_Proximity">Enable proximity actions</string>
     <string name="CP_Proximity_Desc">By turning it off you will get rid of the annoying screen shutdown when listening to voice messages</string>
 
     <string name="CP_Header_Notification">Notifications</string>
-    <string name="CP_IOSSound">Use Telegram IOS sound</string>
-    <string name="CP_IOSSound_Desc">This will enable incoming message sound from Telegram app for IOS</string>
+    <string name="CP_NotificationSound">Notification sound</string>
+    <string name="CP_IOSSound" translatable="false">IOS</string>
+    <string name="CP_VibrateInChats">In-chat vibration</string>
+    <string name="CP_VibrateInChats_Desc">Make a short vibration when you receive a message in chats</string>
     <string name="CP_SilenceNonContacts">Silence non-contacts</string>
     <string name="CP_SilenceNonContacts_Desc">If enabled, notifications with sound will come only from contacts. You can add a person to your contacts even without a phone number, do it in their profile</string>
     <!--Chats Preferences-->

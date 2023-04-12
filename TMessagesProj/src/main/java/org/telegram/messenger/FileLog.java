@@ -8,6 +8,8 @@
 
 package org.telegram.messenger;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.Log;
 
 import org.telegram.messenger.time.FastDateFormat;
@@ -111,7 +113,7 @@ public class FileLog {
     }
 
     public static void dumpUnparsedMessage(TLObject message, long messageId) {
-        if (!BuildVars.DEBUG_PRIVATE_VERSION || !BuildVars.LOGS_ENABLED || message == null) {
+        if (!BuildVars.DEBUG_PRIVATE_VERSION || !BuildVars.LOGS_ENABLED || message == null || SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
             return;
         }
         try {
@@ -155,6 +157,7 @@ public class FileLog {
 
             privateFields.add("networkType");
             privateFields.add("disableFree");
+            privateFields.add("mContext");
 
             //exclude file loading
             excludeRequests = new HashSet<>();
@@ -173,6 +176,9 @@ public class FileLog {
 
                 @Override
                 public boolean shouldSkipClass(Class<?> clazz) {
+                    if (clazz.isInstance(ColorStateList.class) || clazz.isInstance(Context.class)) {
+                        return true;
+                    }
                     return false;
                 }
             }).create();

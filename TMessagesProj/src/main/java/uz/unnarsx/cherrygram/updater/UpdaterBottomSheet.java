@@ -134,6 +134,12 @@ public class UpdaterBottomSheet extends BottomSheet {
                 animateText(changelogTextView, UpdaterUtils.replaceTags(isTranslated ? args[1] : (String) translatedC));
                 isTranslated ^= true;
             }, () -> {}));
+            UpdaterUtils.translate(args[1], (String translated)  -> {
+                translatedC = translated;
+                animateText(changelogTextView, UpdaterUtils.replaceTags(isTranslated ? args[1] : (String) translatedC));
+                isTranslated ^= true;
+            }, () -> {});
+
             linearLayout.addView(changelogTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
             TextView doneButton = new TextView(context);

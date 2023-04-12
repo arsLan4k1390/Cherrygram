@@ -2066,10 +2066,12 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                     editor.putString("lastDayTheme", applyingTheme.getKey());
                     editor.apply();
                 }
+                BaseFragment lastFragment = getParentLayout().getFragmentStack().get(Math.max(0, getParentLayout().getFragmentStack().size() - 2));
                 finishFragment();
                 if (screenType == SCREEN_TYPE_PREVIEW) {
                     NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.didApplyNewTheme, previousTheme, previousAccent, deleteOnCancel);
                 }
+                Theme.turnOffAutoNight(lastFragment);
             });
         }
 

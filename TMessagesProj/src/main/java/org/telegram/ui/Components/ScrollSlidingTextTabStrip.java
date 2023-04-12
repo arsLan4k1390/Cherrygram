@@ -32,6 +32,8 @@ import androidx.annotation.Keep;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
 
     public interface ScrollSlidingTabStripDelegate {
@@ -276,7 +278,7 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
         };
             tab.setWillNotDraw(false);
             tab.setGravity(Gravity.CENTER);
-            tab.setBackgroundDrawable(Theme.createSelectorDrawable(Theme.getColor(selectorColorKey, resourcesProvider), 3));
+//            tab.setBackgroundDrawable(Theme.createSelectorDrawable(Theme.getColor(selectorColorKey, resourcesProvider), 3));
             tab.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             tab.setSingleLine(true);
             tab.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
@@ -372,13 +374,26 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
 
     @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+        int folderStyle = CherrygramConfig.INSTANCE.getTab_style();
         boolean result = super.drawChild(canvas, child, drawingTime);
-        if (child == tabsContainer) {
+        if (child == tabsContainer && folderStyle != CherrygramConfig.TAB_STYLE_TEXT) {
             final int height = getMeasuredHeight();
-            selectorDrawable.setAlpha((int) (255 * tabsContainer.getAlpha()));
+            selectorDrawable.setAlpha((int) (folderStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 50 : 255 * tabsContainer.getAlpha()));
             float x = indicatorX + indicatorXAnimationDx;
             float w = x + indicatorWidth + indicatorWidthAnimationDx;
-            selectorDrawable.setBounds((int) x, height - AndroidUtilities.dpr(4), (int) w, height);
+
+            if (folderStyle == CherrygramConfig.TAB_STYLE_ROUNDED) {
+                selectorDrawable.setBounds((int) x, height - AndroidUtilities.dpr(4), (int) w, height);
+                selectorDrawable.setCornerRadius(10F);
+            } else if (folderStyle == CherrygramConfig.TAB_STYLE_VKUI) {
+                selectorDrawable.setBounds((int) x - 25, height - (height * 85 / 100), (int) w + 25, height - (height * 15 / 100));
+                selectorDrawable.setCornerRadius(35F);
+            } else if (folderStyle == CherrygramConfig.TAB_STYLE_PILLS) {
+                selectorDrawable.setBounds((int) x - 25, height - (height * 85 / 100), (int) w + 25, height - (height * 15 / 100));
+                selectorDrawable.setCornerRadius(70F);
+            } else {
+                selectorDrawable.setBounds((int) x, height - AndroidUtilities.dpr(4), (int) w, height);
+            }
             selectorDrawable.draw(canvas);
         }
         return result;

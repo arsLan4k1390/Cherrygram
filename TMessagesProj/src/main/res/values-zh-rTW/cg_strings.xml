@@ -162,16 +162,10 @@
     <string name="CP_PlayVideo_Desc">按下音量鍵時，播放當前介面任意影片</string>
     <string name="CP_AutoPauseVideo">自動暫停影片</string>
     <string name="CP_AutoPauseVideo_Desc">鎖定螢幕或切換至背景時</string>
-    <string name="CP_AudioFocus">播放媒體時暫停音樂</string>
-    <string name="CP_AudioFocus_Desc">收聽語音訊息或播放影片時暫停音樂。停用本功能後音樂不會自動暫停，但聲音會變低</string>
     <string name="CP_DisableVibration">停用全局震動</string>
-    <string name="CP_DisablePhotoTapAction">停用圖片翻轉</string>
-    <string name="CP_DisablePhotoTapAction_Desc">此功能可以禁止點擊螢幕邊緣時翻轉圖片</string>
     <string name="CP_Proximity">啟用距離感應器</string>
     <string name="CP_Proximity_Desc">關閉本功能後，在您播放語音訊息時不會黑屏 (重啟應用程式後生效)</string>
     <string name="CP_Header_Notification">通知</string>
-    <string name="CP_IOSSound">使用 Telegram IOS 通知音效</string>
-    <string name="CP_IOSSound_Desc">使用 IOS Telegram 通知音效 (重啟應用程式後生效)</string>
     <string name="CP_SilenceNonContacts">將非聯絡人訊息設為靜音</string>
     <string name="CP_SilenceNonContacts_Desc">啟用後僅限聯絡人的通知會發出聲效，您可以在個人檔案頁面新增聯絡人</string>
     <!--Chats Preferences-->

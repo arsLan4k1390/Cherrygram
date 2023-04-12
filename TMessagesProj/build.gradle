@@ -75,7 +75,7 @@ dependencies {
     implementation 'androidx.interpolator:interpolator:1.0.0'
 
     // Microsoft Analytics
-    def appCenterSdkVersion = '5.0.0'
+    def appCenterSdkVersion = '5.0.1'
     implementation "com.microsoft.appcenter:appcenter-analytics:${appCenterSdkVersion}"
     implementation "com.microsoft.appcenter:appcenter-crashes:${appCenterSdkVersion}"
 

@@ -2,12 +2,16 @@ package uz.unnarsx.cherrygram.preferences
 
 import android.app.Activity
 import android.content.SharedPreferences
+import android.media.MediaPlayer
+import android.view.HapticFeedbackConstants
 import androidx.core.util.Pair
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.extras.VibrateUtil
+import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSliderPreference.TGSLContract
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
@@ -25,7 +29,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.blockStickers
                 }) {
                     CherrygramConfig.blockStickers = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -164,7 +168,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.hideKeyboardOnScroll
                 }) {
                     CherrygramConfig.hideKeyboardOnScroll = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -264,33 +268,13 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = LocaleController.getString("CP_AudioFocus", R.string.CP_AudioFocus)
-                summary = LocaleController.getString("CP_AudioFocus_Desc", R.string.CP_AudioFocus_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.audioFocus
-                }) {
-                    CherrygramConfig.audioFocus = it
-                }
-            }
-            switch {
                 title = LocaleController.getString("CP_DisableVibration", R.string.CP_DisableVibration)
 
                 contract({
                     return@contract CherrygramConfig.disableVibration
                 }) {
                     CherrygramConfig.disableVibration = it
-                    createRestartBulletin(bf)
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DisablePhotoTapAction", R.string.CP_DisablePhotoTapAction)
-                summary = LocaleController.getString("CP_DisablePhotoTapAction_Desc", R.string.CP_DisablePhotoTapAction_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.disablePhotoTapAction
-                }) {
-                    CherrygramConfig.disablePhotoTapAction = it
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -301,22 +285,91 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.enableProximity
                 }) {
                     CherrygramConfig.enableProximity = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
         }
 
         category(LocaleController.getString("AS_Header_Notification", R.string.CP_Header_Notification)) {
-            switch {
-                title = LocaleController.getString("CP_IOSSound", R.string.CP_IOSSound)
-                summary = LocaleController.getString("CP_IOSSound_Desc", R.string.CP_IOSSound_Desc)
+            list {
+                title = LocaleController.getString("CP_NotificationSound", R.string.CP_NotificationSound)
+
                 contract({
-                    return@contract CherrygramConfig.iosSound
+                    return@contract listOf(
+                        Pair(CherrygramConfig.NOTIF_SOUND_DISABLE, LocaleController.getString("Disable", R.string.Disable)),
+                        Pair(CherrygramConfig.NOTIF_SOUND_DEFAULT, LocaleController.getString("Default", R.string.Default)),
+                        Pair(CherrygramConfig.NOTIF_SOUND_IOS, LocaleController.getString("CP_IOSSound", R.string.CP_IOSSound))
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.notificationSound) {
+                        CherrygramConfig.NOTIF_SOUND_DEFAULT -> LocaleController.getString("Default", R.string.Default)
+                        CherrygramConfig.NOTIF_SOUND_IOS -> LocaleController.getString("CP_IOSSound", R.string.CP_IOSSound)
+                        else -> LocaleController.getString("Disable", R.string.Disable)
+                    }
                 }) {
-                    CherrygramConfig.iosSound = it
-                    createRestartBulletin(bf)
+                    CherrygramConfig.notificationSound = it
+
+                    var tone = 0
+                    try {
+                        if (CherrygramConfig.notificationSound == 1) {
+                            tone = R.raw.sound_in
+                        } else if (CherrygramConfig.notificationSound == 2) {
+                            tone = R.raw.sound_in_ios
+                        }
+                        val mp: MediaPlayer = MediaPlayer.create(bf.context, tone)
+                        mp.start()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
+            list {
+                title = LocaleController.getString("CP_VibrateInChats", R.string.CP_VibrateInChats)
+
+                contract({
+                    return@contract listOf(
+                        Pair(CherrygramConfig.VIBRATION_DISABLE, LocaleController.getString("Disable", R.string.Disable)),
+                        Pair(CherrygramConfig.VIBRATION_CLICK, "1"),
+                        Pair(CherrygramConfig.VIBRATION_WAVE_FORM, "2"),
+                        Pair(CherrygramConfig.VIBRATION_KEYBOARD_TAP, "3"),
+                        Pair(CherrygramConfig.VIBRATION_LONG, "4")
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.vibrateInChats) {
+                        CherrygramConfig.VIBRATION_CLICK -> "1"
+                        CherrygramConfig.VIBRATION_WAVE_FORM -> "2"
+                        CherrygramConfig.VIBRATION_KEYBOARD_TAP -> "3"
+                        CherrygramConfig.VIBRATION_LONG -> "4"
+                        else -> LocaleController.getString("Disable", R.string.Disable)
+                    }
+                }) {
+                    CherrygramConfig.vibrateInChats = it
+
+                    try {
+                        when (CherrygramConfig.vibrateInChats) {
+                            CherrygramConfig.VIBRATION_CLICK -> {
+                                VibrateUtil.makeClickVibration()
+                            }
+                            CherrygramConfig.VIBRATION_WAVE_FORM -> {
+                                VibrateUtil.makeWaveVibration()
+                            }
+                            CherrygramConfig.VIBRATION_KEYBOARD_TAP -> {
+                                VibrateUtil.vibrate(HapticFeedbackConstants.KEYBOARD_TAP.toLong())
+                            }
+                            CherrygramConfig.VIBRATION_LONG -> {
+                                VibrateUtil.vibrate()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                }
+            }
+            hint(LocaleController.getString("CP_VibrateInChats_Desc", R.string.CP_VibrateInChats_Desc))
+
             switch {
                 title = LocaleController.getString("CP_SilenceNonContacts", R.string.CP_SilenceNonContacts)
                 summary = LocaleController.getString("CP_SilenceNonContacts_Desc", R.string.CP_SilenceNonContacts_Desc)

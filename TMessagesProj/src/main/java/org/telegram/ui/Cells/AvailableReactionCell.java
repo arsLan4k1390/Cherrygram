@@ -68,7 +68,7 @@ public class AvailableReactionCell extends FrameLayout {
         } else {
             switchView = new Switch(context);
             switchView.setColors(Theme.key_switchTrack, Theme.key_switchTrackChecked, Theme.key_switchTrackBlueThumb, Theme.key_switchTrackBlueThumbChecked);
-            addView(switchView, LayoutHelper.createFrameRelatively(37, 20, Gravity.END | Gravity.CENTER_VERTICAL, 0, 0, 22, 0));
+            addView(switchView, LayoutHelper.createFrameRelatively(39, 40, Gravity.END | Gravity.CENTER_VERTICAL, 0, 0, 22, 0));
         }
         overlaySelectorView = new View(context);
         overlaySelectorView.setBackground(Theme.getSelectorDrawable(false));

@@ -2458,7 +2458,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
     private void checkAudioFocus(MessageObject messageObject) {
         int neededAudioFocus;
         if (messageObject.isVoice() || messageObject.isVideo() || messageObject.isRoundVideo()) {
-            if (CherrygramConfig.INSTANCE.getAudioFocus()) {
+            if (useFrontSpeaker) {
                 neededAudioFocus = 3;
             } else {
                 neededAudioFocus = 2;

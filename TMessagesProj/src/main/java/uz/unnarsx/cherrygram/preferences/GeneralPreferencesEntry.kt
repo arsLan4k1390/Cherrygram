@@ -7,6 +7,7 @@ import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.tgkit.preference.*
 
 class GeneralPreferencesEntry : BasePreferencesEntry {
@@ -32,7 +33,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.showSeconds
                 }) {
                     CherrygramConfig.showSeconds = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -51,7 +52,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.systemFonts
                 }) {
                     CherrygramConfig.systemFonts = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -60,7 +61,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.oldNotificationIcon
                 }) {
                     CherrygramConfig.oldNotificationIcon = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
         }
@@ -83,7 +84,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.hidePhoneNumber
                 }) {
                     CherrygramConfig.hidePhoneNumber = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -92,7 +93,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.showId
                 }) {
                     CherrygramConfig.showId = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -101,7 +102,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.showDc
                 }) {
                     CherrygramConfig.showDc = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
         }
@@ -114,7 +115,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disableAnimatedAvatars
                 }) {
                     CherrygramConfig.disableAnimatedAvatars = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -125,7 +126,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disableReactionsOverlay
                 }) {
                     CherrygramConfig.disableReactionsOverlay = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -136,7 +137,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.drawSmallReactions
                 }) {
                     CherrygramConfig.drawSmallReactions = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -147,7 +148,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disableReactionAnim
                 }) {
                     CherrygramConfig.disableReactionAnim = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -158,7 +159,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disablePremiumStatuses
                 }) {
                     CherrygramConfig.disablePremiumStatuses = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -169,7 +170,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disablePremStickAnim
                 }) {
                     CherrygramConfig.disablePremStickAnim = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -180,7 +181,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disablePremStickAutoPlay
                 }) {
                     CherrygramConfig.disablePremStickAutoPlay = it
-                    createRestartBulletin(bf)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {

@@ -162,16 +162,10 @@
     <string name="CP_PlayVideo_Desc">عند الضغط على زر التحكم في الصوت ، سيتم تشغيل أي فيديو على الشاشة في الدردشة</string>
     <string name="CP_AutoPauseVideo">إيقاف تشغيل الفيديو</string>
     <string name="CP_AutoPauseVideo_Desc">عند قفل الشاشة أو التبديل إلى الخلفية</string>
-    <string name="CP_AudioFocus">إيقاف الموسيقى مؤقتا أثناء تشغيل الوسائط</string>
-    <string name="CP_AudioFocus_Desc">أوقف الموسيقى مؤقتا أثناء الاستماع إلى الرسائل الصوتية أو تشغيل مقاطع الفيديو. إذا تم تعطيله ، فستكون الموسيقى أكثر هدوءا ، ولكن لن يتم إيقاف تشغيلها</string>
     <string name="CP_DisableVibration">تعطيل الاهتزاز</string>
-    <string name="CP_DisablePhotoTapAction">تعطيل النقر على الصور</string>
-    <string name="CP_DisablePhotoTapAction_Desc">يؤدي هذا إلى تعطيل تقليب الصور أثناء النقر على حافة الشاشة</string>
     <string name="CP_Proximity">تمكين إجراءات القرب</string>
     <string name="CP_Proximity_Desc">من خلال إيقاف تشغيله ، ستتخلص من إيقاف تشغيل الشاشة المزعج عند الاستماع إلى الرسائل الصوتية (أعد تشغيل التطبيق)</string>
     <string name="CP_Header_Notification">الأشعارات</string>
-    <string name="CP_IOSSound">استخدم صوت تيليجرام iOS</string>
-    <string name="CP_IOSSound_Desc">وهذا سيمكن صوت رسالة واردة من تيليجرام iOS (إعد تشغيل التطبيق)</string>
     <string name="CP_SilenceNonContacts">إصمات المحادثات الغير مسجلة كجهات اتصال</string>
     <string name="CP_SilenceNonContacts_Desc">في حالة التمكين ، ستأتي الإشعارات ذات الصوت فقط من جهات الاتصال. يمكنك إضافة شخص إلى جهات الاتصال الخاصة بك حتى بدون رقم هاتف ، قم بذلك في ملفه الشخصي</string>
     <!--Chats Preferences-->

@@ -482,16 +482,14 @@ public class FilterTabsView extends FrameLayout {
                 if (animateTextChange) {
                     titleWidth = animateFromTitleWidth * (1f - changeProgress) + currentTab.titleWidth * changeProgress;
                 }
-                int textSpace = CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON ? AndroidUtilities.dp(6) : 0;
-                if (folderStyle >= CherrygramConfig.TAB_STYLE_VKUI) {
-                    textSpace = AndroidUtilities.dp(2);
-                    if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_MIX) {
-                        textSpace = AndroidUtilities.dp(6);
-                    }
+                int textSpace = 0;
 
-                } else if (folderStyle == CherrygramConfig.TAB_STYLE_ROUNDED || folderStyle == CherrygramConfig.TAB_STYLE_DEFAULT) {
+                if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_TEXT || CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_MIX) {
+                    textSpace = AndroidUtilities.dp(6);
+                } else if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_ICON) {
                     textSpace = AndroidUtilities.dp(4);
                 }
+
                 if (animateTextChange && titleAnimateOutLayout == null) {
                     x = textX - titleXOffset + titleOffsetX + titleWidth + textSpace;
                 } else {
@@ -982,7 +980,7 @@ public class FilterTabsView extends FrameLayout {
                         return false;
                     }
                 }
-                return super.canHighlightChildAt(child, x, y);
+                return false;
             }
         };
         listView.setClipChildren(false);
@@ -1092,7 +1090,7 @@ public class FilterTabsView extends FrameLayout {
         listView.setItemAnimator(itemAnimator);
         listView.setSelectorType(folderStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 100 : 8);
         listView.setSelectorRadius(6);
-        listView.setSelectorDrawableColor(Theme.getColor(selectorColorKey));
+        listView.setSelectorDrawableColor(0);
         listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) {
 
             @Override
@@ -1299,7 +1297,7 @@ public class FilterTabsView extends FrameLayout {
         aUnactiveTextColorKey = unactive;
         aBackgroundColorKey = background;
         selectorColorKey = selector;
-        listView.setSelectorDrawableColor(Theme.getColor(selectorColorKey));
+        listView.setSelectorDrawableColor(0);
 
         colorChangeAnimator = new AnimatorSet();
         colorChangeAnimator.playTogether(ObjectAnimator.ofFloat(this, COLORS, 0.0f, 1.0f));
@@ -1352,15 +1350,7 @@ public class FilterTabsView extends FrameLayout {
             selectorDrawable.setAlpha((int) (folderStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 50 : 255 * listView.getAlpha()));
             float indicatorX = 0;
             float indicatorWidth = 0;
-            if (!animatingIndicator && manualScrollingToPosition == -1) {
-                RecyclerListView.ViewHolder holder = listView.findViewHolderForAdapterPosition(currentPosition);
-                if (holder != null) {
-                    TabView tabView = (TabView) holder.itemView;
-                    indicatorWidth = Math.max(AndroidUtilities.dp(40), tabView.animateTabWidth ? tabView.animateFromTabWidth * (1f - tabView.changeProgress) + tabView.tabWidth * tabView.changeProgress : tabView.tabWidth);
-                    float viewWidth = tabView.animateTabWidth ? tabView.animateFromWidth * (1f - tabView.changeProgress) + tabView.getMeasuredWidth() * tabView.changeProgress : tabView.getMeasuredWidth();
-                    indicatorX = (int) (tabView.getX() + (viewWidth - indicatorWidth) / 2);
-                }
-            } else {
+            if (animatingIndicator || manualScrollingToPosition != -1) {
                 int position = layoutManager.findFirstVisibleItemPosition();
                 if (position != RecyclerListView.NO_POSITION) {
                     RecyclerListView.ViewHolder holder = listView.findViewHolderForAdapterPosition(position);
@@ -1387,17 +1377,37 @@ public class FilterTabsView extends FrameLayout {
                         indicatorWidth = (int) (prevW + (newW - prevW) * animatingIndicatorProgress);
                     }
                 }
+            } else {
+                RecyclerListView.ViewHolder holder = listView.findViewHolderForAdapterPosition(currentPosition);
+                if (holder != null) {
+                    TabView tabView = (TabView) holder.itemView;
+                    indicatorWidth = Math.max(AndroidUtilities.dp(40), tabView.animateTabWidth ? tabView.animateFromTabWidth * (1f - tabView.changeProgress) + tabView.tabWidth * tabView.changeProgress : tabView.tabWidth);
+                    float viewWidth = tabView.animateTabWidth ? tabView.animateFromWidth * (1f - tabView.changeProgress) + tabView.getMeasuredWidth() * tabView.changeProgress : tabView.getMeasuredWidth();
+                    indicatorX = (int) (tabView.getX() + (viewWidth - indicatorWidth) / 2);
+                }
             }
             if (indicatorWidth != 0 && folderStyle != CherrygramConfig.TAB_STYLE_TEXT) {
                 canvas.save();
                 canvas.translate(listView.getTranslationX(), 0);
                 canvas.scale(listView.getScaleX(), 1f, listView.getPivotX() + listView.getX(), listView.getPivotY());
 
-                int sideBound = folderStyle == CherrygramConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(6) : folderStyle == CherrygramConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0;
-                int topBound = folderStyle >= CherrygramConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(16) : height - AndroidUtilities.dpr(4);
-                int bottomBound = folderStyle >= CherrygramConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(16) : height;
+                if (folderStyle == CherrygramConfig.TAB_STYLE_ROUNDED) {
+                    selectorDrawable.setBounds((int) indicatorX, height - AndroidUtilities.dpr(4), (int) (indicatorX + indicatorWidth), height);
+                    selectorDrawable.setCornerRadius(10F);
+                } else if (folderStyle == CherrygramConfig.TAB_STYLE_VKUI) {
+                    indicatorX = indicatorX - 25;
+                    indicatorWidth = indicatorWidth + 50;
+                    selectorDrawable.setBounds((int) indicatorX, height - (height * 85 / 100), (int) (indicatorX + indicatorWidth), height - (height * 15 / 100));
+                    selectorDrawable.setCornerRadius(35F);
+                } else if (folderStyle == CherrygramConfig.TAB_STYLE_PILLS) {
+                    indicatorX = indicatorX - 25;
+                    indicatorWidth = indicatorWidth + 50;
+                    selectorDrawable.setBounds((int) indicatorX, height - (height * 85 / 100), (int) (indicatorX + indicatorWidth), height - (height * 15 / 100));
+                    selectorDrawable.setCornerRadius(70F);
+                } else {
+                    selectorDrawable.setBounds((int) indicatorX, height - AndroidUtilities.dpr(4), (int) (indicatorX + indicatorWidth), height);
+                }
 
-                selectorDrawable.setBounds((int) indicatorX - sideBound, topBound, (int) (indicatorX + indicatorWidth) + sideBound, bottomBound);
                 selectorDrawable.draw(canvas);
                 canvas.restore();
             }

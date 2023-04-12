@@ -11,7 +11,7 @@ import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.4.9"
+    var CG_VERSION = "7.5.0"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getDCGeo(dcId: Int): String {

@@ -287,7 +287,7 @@ public class Switch extends View {
         if (checked != isChecked) {
             isChecked = checked;
             if (attachedToWindow && animated) {
-                vibrateChecked(checked);
+                if (!CherrygramConfig.INSTANCE.getDisableVibration()) vibrateChecked(checked);
                 animateToCheckedState(checked);
             } else {
                 cancelCheckAnimator();
@@ -387,7 +387,7 @@ public class Switch extends View {
         int thumb;
 
         if (CherrygramConfig.INSTANCE.getOneUI_SwitchStyle()) {
-            thumb = AndroidUtilities.dp(16.5F); // толщина свитча
+            thumb = AndroidUtilities.dp(17.5F); // толщина свитча
             x = 12; // длина свитча когда он включен
             y = getMeasuredHeight() / 2 - thumb / 2;
 
@@ -481,17 +481,17 @@ public class Switch extends View {
             if (CherrygramConfig.INSTANCE.getOneUI_SwitchStyle()) {
                 rectF.set(x, y, getMeasuredWidth(), getMeasuredHeight() / 2 + thumb / 2);
                 if (!isChecked) { //User gray color when switch is unchecked (disabled)
-                    canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(10), AndroidUtilities.dpf2(10), paint4); // Switch (thumb) color
-                    canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(10), paint4); // Outer (external) circle size and color
+                    canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), paint4); // Switch (thumb) color
+                    canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(11), paint4); // Outer (external) circle size and color
 
                     if (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) { // Use different gray colors in dark and light themes
-                        canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(10), AndroidUtilities.dpf2(10), paint5);
-                        canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(10), paint5);
+                        canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), paint5);
+                        canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(11), paint5);
                     }
 
                 }
-                canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(10), AndroidUtilities.dpf2(10), paint);
-                canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(10), paint);
+                canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), paint);
+                canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(11), paint);
             } else { //Telegram style
                 rectF.set(x, y, x + width, y + AndroidUtilities.dpf2(14));
                 canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(7), AndroidUtilities.dpf2(7), paint);
@@ -544,7 +544,7 @@ public class Switch extends View {
             paint.setColor(((alpha & 0xff) << 24) | ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff));
 
             if (CherrygramConfig.INSTANCE.getOneUI_SwitchStyle()) {
-                canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dp(8.5F), paint3); // Inner circle size and color
+                canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dp(9.5F), paint3); // Inner circle size and color
             } else {
                 canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dp(8), paint);
             }

@@ -2591,7 +2591,9 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                 return true;
             }
         };
-        backspaceButton.setHapticFeedbackEnabled(true);
+        if (CherrygramConfig.INSTANCE.getDisableVibration()){
+            backspaceButton.setHapticFeedbackEnabled(true);
+        }
         backspaceButton.setImageResource(R.drawable.smiles_tab_clear);
         backspaceButton.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_emojiPanelBackspace), PorterDuff.Mode.MULTIPLY));
         backspaceButton.setScaleType(ImageView.ScaleType.CENTER);

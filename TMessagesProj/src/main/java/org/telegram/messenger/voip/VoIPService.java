@@ -76,7 +76,6 @@ import android.telephony.TelephonyManager;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.util.LruCache;
 import android.view.KeyEvent;
 import android.view.View;
@@ -139,7 +138,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -3123,7 +3121,11 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			if (hasAudioFocus) {
 				am.abandonAudioFocus(this);
 			}
-			Utilities.globalQueue.postRunnable(() -> soundPool.release());
+			Utilities.globalQueue.postRunnable(() -> {
+				if (soundPool != null) {
+					soundPool.release();
+				}
+			});
 		}
 
 		if (USE_CONNECTION_SERVICE) {
@@ -3574,6 +3576,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 		if (!USE_CONNECTION_SERVICE && btAdapter != null && btAdapter.isEnabled()) {
 			try {
 				MediaRouter mr = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
+				AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 				if (Build.VERSION.SDK_INT < 24) {
 					int headsetState = btAdapter.getProfileConnectionState(BluetoothProfile.HEADSET);
 					updateBluetoothHeadsetState(headsetState == BluetoothProfile.STATE_CONNECTED);
@@ -3589,7 +3592,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 							l.onAudioSettingsChanged();
 						}
 					} else {
-						updateBluetoothHeadsetState(false);
+						updateBluetoothHeadsetState(am.isBluetoothA2dpOn());
 					}
 				}
 			} catch (Throwable e) {
@@ -3754,9 +3757,6 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 	}
 
 	private void fetchBluetoothDeviceName() {
-		if (Build.VERSION.SDK_INT >= 31 && ApplicationLoader.applicationContext.checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-			return;
-		}
 		if (fetchingBluetoothDeviceName) {
 			return;
 		}

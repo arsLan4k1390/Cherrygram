@@ -224,7 +224,7 @@ object CherrygramConfig {
     }
 
     //Message menu
-    var showReply by sharedPreferences.boolean("CP_ShowReply", false)
+    var showReply by sharedPreferences.boolean("CP_ShowReply", true)
     fun toggleShowReply() {
         showReply = !showReply
         putBoolean("CP_ShowReply", showReply)
@@ -240,6 +240,12 @@ object CherrygramConfig {
     fun toggleShowForward() {
         showForward = !showForward
         putBoolean("CP_ShowForward", showForward)
+    }
+
+    var showForwardWoAuthorship by sharedPreferences.boolean("CP_ShowForward_WO_Authorship", false)
+    fun toggleShowForwardWoAuthorship() {
+        showForwardWoAuthorship = !showForwardWoAuthorship
+        putBoolean("CP_ShowForward_WO_Authorship", showForwardWoAuthorship)
     }
 
     var showViewHistory by sharedPreferences.boolean("CP_ShowViewHistory", true)
@@ -312,12 +318,21 @@ object CherrygramConfig {
     var playGIFasVideo by sharedPreferences.boolean("CP_PlayGIFasVideo", true)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
-    var audioFocus by sharedPreferences.boolean("CP_AudioFocus", false)
     var disableVibration by sharedPreferences.boolean("CP_DisableVibration", false)
-    var disablePhotoTapAction by sharedPreferences.boolean("CP_DisablePhotoTapAction", false)
     var enableProximity by sharedPreferences.boolean("CP_Proximity", true)
     //Notifications
-    var iosSound by sharedPreferences.boolean("CP_IOSSound", false)
+    const val NOTIF_SOUND_DISABLE = 0
+    const val NOTIF_SOUND_DEFAULT = 1
+    const val NOTIF_SOUND_IOS = 2
+    var notificationSound by sharedPreferences.int("CP_Notification_Sound", NOTIF_SOUND_DEFAULT)
+
+    const val VIBRATION_DISABLE = 0
+    const val VIBRATION_CLICK = 1
+    const val VIBRATION_WAVE_FORM = 2
+    const val VIBRATION_KEYBOARD_TAP = 3
+    const val VIBRATION_LONG = 4
+    var vibrateInChats by sharedPreferences.int("CP_VibrationInChats", VIBRATION_DISABLE)
+
     var silenceNonContacts by sharedPreferences.boolean("CP_SilenceNonContacts", false)
 
     // Camera Settings

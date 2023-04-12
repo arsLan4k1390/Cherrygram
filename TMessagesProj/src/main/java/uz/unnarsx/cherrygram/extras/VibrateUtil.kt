@@ -8,6 +8,7 @@ import android.os.VibratorManager
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.children
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
 import uz.unnarsx.cherrygram.CherrygramConfig
 
@@ -53,6 +54,36 @@ object VibrateUtil {
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(time)
             }
+        }
+    }
+
+    fun makeClickVibration() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val vibrator = AndroidUtilities.getVibrator()
+                val vibrationEffect = VibrationEffect.createPredefined(
+                    VibrationEffect.EFFECT_CLICK
+                )
+                vibrator.cancel()
+                vibrator.vibrate(vibrationEffect)
+            }
+        } catch (ignore: Exception) {
+        }
+    }
+
+    fun makeWaveVibration() { //MIUI moment
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val vibrator = AndroidUtilities.getVibrator()
+                val vibrationEffect = VibrationEffect.createWaveform(
+                    longArrayOf(75, 10, 5, 10),
+                    intArrayOf(5, 20, 90, 20),
+                    -1
+                )
+                vibrator.cancel()
+                vibrator.vibrate(vibrationEffect)
+            }
+        } catch (ignore: Exception) {
         }
     }
 

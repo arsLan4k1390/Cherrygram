@@ -162,16 +162,10 @@
     <string name="CP_PlayVideo_Desc">При натисканні на кнопку гучності буде ввімкнено відео на екране в діалозі</string>
     <string name="CP_AutoPauseVideo">Зупиняти видео</string>
     <string name="CP_AutoPauseVideo_Desc">Під час блокування екрану або згортанні додатку</string>
-    <string name="CP_AudioFocus">Заглушити музику під час ввімкнення медіа</string>
-    <string name="CP_AudioFocus_Desc">Заглушити музику при прослуховуванні аудіо/відеоповідомення. Якщо вимкнено, то при прослуховуванні голосового/відеоповідомлення музика буде тихішою, але не зовсім вимкнена</string>
     <string name="CP_DisableVibration">Вимкнути вібрацію</string>
-    <string name="CP_DisablePhotoTapAction">Вимкнути \"Перегортування фотографій\"</string>
-    <string name="CP_DisablePhotoTapAction_Desc">Вимикає перегортування фотографії при натисканні на край екрану</string>
     <string name="CP_Proximity">Ввімкнути датчик наближення</string>
     <string name="CP_Proximity_Desc">При ввімкнені ви позбавитесь від погасання екрану під час прослуховування аудіо/відеоповідомлень (потрібен перезапуск додатку)</string>
     <string name="CP_Header_Notification">Сповіщення</string>
-    <string name="CP_IOSSound">Звук з Telegram IOS</string>
-    <string name="CP_IOSSound_Desc">Це включить звук вхідного повідомлення з Telegram для IOS (потрібен перезапуск додатку)</string>
     <string name="CP_SilenceNonContacts">Заглушити не-контакти</string>
     <string name="CP_SilenceNonContacts_Desc">Якщо увімкнено, то сповіщення зі звуком приходитимуть тільки від контактів. Ви можете добавить людину в контакти без номера його телефона (в профілі людини)</string>
     <!--Chats Preferences-->

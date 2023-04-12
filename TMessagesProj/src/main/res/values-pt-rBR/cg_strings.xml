@@ -172,16 +172,10 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_PlayVideo_Desc">Quando se prime o botão de volume, qualquer vídeo no ecrã no chat será reproduzido</string>
     <string name="CP_AutoPauseVideo">Pausar vídeo automaticamente</string>
     <string name="CP_AutoPauseVideo_Desc">Quando bloquear a tela ou alternar para plano de fundo</string>
-    <string name="CP_AudioFocus">Pausar música ao reproduzir mídia</string>
-    <string name="CP_AudioFocus_Desc">Pausar a música enquanto se ouve mensagens de voz ou se reproduzem vídeos. Se estiver desativada, a música será mais silenciosa, mas não será desligada</string>
     <string name="CP_DisableVibration">Desativar a vibração</string>
-    <string name="CP_DisablePhotoTapAction">Desativar \"Virar fotos\"</string>
-    <string name="CP_DisablePhotoTapAction_Desc">Isto desabilita a rotação de fotografias enquanto se bate na borda do ecrã</string>
     <string name="CP_Proximity">Permitir ações de proximidade</string>
     <string name="CP_Proximity_Desc">Ao desligá-lo irá livrar-se do irritante encerramento do ecrã ao ouvir as mensagens de voz</string>
     <string name="CP_Header_Notification">Notificações</string>
-    <string name="CP_IOSSound">Utilizar o som do Telegram IOS</string>
-    <string name="CP_IOSSound_Desc">Isso permitirá o som da mensagem recebida do aplicativo Telegram para IOS</string>
     <string name="CP_SilenceNonContacts">Silenciar não-contatos</string>
     <string name="CP_SilenceNonContacts_Desc">Se ativado, as notificações com som virão apenas dos contactos. Pode adicionar uma pessoa aos seus contactos mesmo sem um número de telefone, faça-o no seu perfil</string>
     <!--Chats Preferences-->
