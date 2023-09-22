@@ -4,7 +4,7 @@
 
     <!--Telegram screens-->
     <!--Sign in screen-->
-    <string name="CG_QRLoginTitle">Войти по QR-коду</string>
+    <string name="CG_QRLoginTitle">Вход по QR</string>
     <string name="CG_QRLoginMessage">Отсканируйте QR-код с помощью другого устройства для входа в систему.</string>
 
     <string name="CG_TestBackendNumber">Тестовый номер</string>
@@ -65,6 +65,9 @@
     <string name="CG_FailedToSaveSticker">Стикер не сохранен. Возможно, он еще не прогрузился.</string>
     <string name="CG_StickerSavedHint">Стикер сохранен в загрузки</string>
     <string name="CG_CopySetId">Скопировать ID набора</string>
+    <string name="CG_ExportSettings">Экспорт настроек</string>
+    <string name="CG_ImportSettings">Импорт настроек</string>
+    <string name="CG_ImportSettingsAlert">Перезаписать настройки приложения\? Импорт настроек из ненадежных источников может привести к неработоспособности приложения.</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -95,6 +98,7 @@
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
     <string name="AP_ChangeIcon_Dark">Тёмная</string>
     <string name="AP_ChangeIcon_White">Белая</string>
+    <string name="AP_ChangeIcon_Laguna">Лагуна</string>
     <string name="AP_ChangeIcon_Green">Зеленая</string>
     <string name="AP_ChangeIcon_Sunset">Закат</string>
     <string name="AP_ChangeIcon_Sunrise">Восход</string>
@@ -105,24 +109,20 @@
     <string name="AP_SystemEmoji">Использовать системные эмодзи</string>
     <string name="AP_ShowPencilIcon">Иконка карандаша для изменённых сообщений</string>
     <string name="AP_CenterTitle">Центрирование заголовка</string>
-    <string name="AP_OverrideHeader">Изменение цвета заголовка</string>
-    <string name="AP_OverrideHeader_Desc">Работает только в тёмной теме</string>
+    <string name="AP_OverrideHeader">Изменение цвета заголовков</string>
+    <string name="AP_OverrideHeader_Desc">Заголовки будут такого же цвета, как и основной фон</string>
     <string name="AP_DisableDividers">Отключить разделители</string>
     <string name="AP_ToolBarShadow">Отключить тень у тулбара</string>
-    <string name="AP_FlatNB">Прозрачная навигационная панель</string>
-    <string name="AP_FlatNB_Desc">Навигационная панель приобретет цвет панели отправки сообщений</string>
     <string name="AP_SystemFonts">Использовать системный шрифт</string>
-    <string name="AP_SystemFonts_Desc">Отключите это, если Ваш шрифт не поддерживает форматирование (Жирный, Курсив, Моноширинный)</string>
 
     <string name="CP_Snowflakes_Header">Снежинки</string>
     <string name="CP_Snowflakes_AH">Заголовок приложения</string>
 
     <string name="CP_PremAndAnim_Header">Анимации и Premium функции</string>
+    <string name="CP_HideStories">Скрыть Истории</string>
     <string name="CP_DisableAnimAvatars">Отключить активные видеоаватары</string>
     <string name="CP_DisableReactionsOverlay">Отключить реакции</string>
     <string name="CP_DisableReactionsOverlay_Desc">Это отключит всплывающий список доступных реакций</string>
-    <string name="CP_DrawSmallReactions">Рисовать маленькие реакции</string>
-    <string name="CP_DrawSmallReactions_Desc">Включить маленькие реакции (старого стиля) вместо больших</string>
     <string name="CP_DisableReactionAnim">Отключить анимацию реакций</string>
     <string name="CP_DisableReactionAnim_Desc">(во время реакции на сообщение)</string>
     <string name="CP_DisablePremiumStatuses">Отключить Premium статусы</string>
@@ -141,6 +141,7 @@
     <string name="AP_Tab_Style_Rounded">Овал</string>
     <string name="AP_Tab_Style_Text">Текст</string>
     <string name="AP_Tab_Style_Pills">Таблетки</string>
+    <string name="AP_Tab_Style_Stroke">Добавить обводку</string>
 
     <string name="AP_DrawerCategory">Боковое меню</string>
     <string name="AP_DrawerPreferences">Настройки бокового меню</string>
@@ -196,8 +197,6 @@
     <string name="CP_AutoPauseVideo">Останавливать видео</string>
     <string name="CP_AutoPauseVideo_Desc">При блокировке экрана или сворачивании приложения</string>
     <string name="CP_DisableVibration">Отключить вибрацию</string>
-    <string name="CP_Proximity">Включить датчик приближения</string>
-    <string name="CP_Proximity_Desc">При выключении Вы избавитесь от раздражающего черного экрана при прослушивании аудио/видеосообщения</string>
 
     <string name="CP_Header_Notification">Уведомления</string>
     <string name="CP_NotificationSound">Звук уведомления</string>
@@ -249,6 +248,7 @@
     <string name="SP_Header_Privacy">Приватность</string>
     <string name="SP_NoProxyPromo">Не показывать спонсора прокси</string>
     <string name="SP_AppCenterAnalytics_Desc">Включив это, все сбои приложений (вылеты) и статистика будут отправлены в \"appcenter.ms\" для дальнейшего изучения разработчиком.</string>
+    <string name="SP_GoogleAnalytics_Desc">Включив это, все сбои приложений (вылеты) и статистика будут отправлены в \"console.firebase.google.com\" для дальнейшего изучения разработчиком.</string>
 
     <string name="SP_CleanOld">Очистить старый кэш (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Успешно удалено</string>

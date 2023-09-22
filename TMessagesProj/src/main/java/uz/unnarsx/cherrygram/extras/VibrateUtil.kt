@@ -67,8 +67,7 @@ object VibrateUtil {
                 vibrator.cancel()
                 vibrator.vibrate(vibrationEffect)
             }
-        } catch (ignore: Exception) {
-        }
+        } catch (ignore: Exception) { }
     }
 
     fun makeWaveVibration() { //MIUI moment
@@ -83,8 +82,7 @@ object VibrateUtil {
                 vibrator.cancel()
                 vibrator.vibrate(vibrationEffect)
             }
-        } catch (ignore: Exception) {
-        }
+        } catch (ignore: Exception) { }
     }
 
 }

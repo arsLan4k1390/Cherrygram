@@ -45,39 +45,6 @@ public class FolderIconHelper {
         folderIcons.put("\uD83D\uDCCB", R.drawable.filter_setup);
     }
 
-    public static int getIconWidth() {
-        return AndroidUtilities.dp(28);
-    }
-
-    public static int getPadding() {
-        return 2;
-    }
-
-    public static int getTotalIconWidth() {
-        int result = 0;
-        if (CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_TEXT) {
-            result = getIconWidth() + getPadding();
-        }
-        return result;
-    }
-
-    public static int getPaddingTab() {
-        if (CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON) {
-            return AndroidUtilities.dp(32);
-        }
-        return AndroidUtilities.dp(16);
-    }
-
-    public static int getTabIcon(String emoji) {
-        if (emoji != null) {
-            var folderIcon = folderIcons.get(emoji);
-            if (folderIcon != null) {
-                return folderIcon;
-            }
-        }
-        return R.drawable.filter_custom;
-    }
-
     public static String[] getEmoticonData(int newFilterFlags) {
         int flags = newFilterFlags & MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS;
         String newName = "";
@@ -95,6 +62,12 @@ public class FolderIconHelper {
             if (flags == 0) {
                 newName = LocaleController.getString("FilterContacts", R.string.FilterContacts);
                 newEmoticon = "\uD83D\uDC64";
+            } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS) != 0) {
+                flags &= ~MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS;
+                if (flags == 0) {
+                    newName = LocaleController.getString("FilterContacts", R.string.FilterContacts);
+                    newEmoticon = "\uD83D\uDC64";
+                }
             }
         } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS) != 0) {
             flags &= ~MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS;
@@ -122,5 +95,42 @@ public class FolderIconHelper {
             }
         }
         return new String[]{newName, newEmoticon};
+    }
+
+    public static int getIconWidth() {
+        return AndroidUtilities.dp(28);
+    }
+
+    public static int getPadding() {
+        if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_MIX) {
+            return AndroidUtilities.dp(6);
+        }
+        return 0;
+    }
+
+    public static int getTotalIconWidth() {
+        int result = 0;
+        if (CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_TEXT) {
+            result = getIconWidth() + getPadding();
+        }
+        return result;
+    }
+
+    public static int getPaddingTab() {
+        if (CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON ||
+                CherrygramConfig.INSTANCE.getTabStyle() >= CherrygramConfig.TAB_STYLE_VKUI) {
+            return AndroidUtilities.dp(32);
+        }
+        return AndroidUtilities.dp(16);
+    }
+
+    public static int getTabIcon(String emoji) {
+        if (emoji != null) {
+            var folderIcon = folderIcons.get(emoji);
+            if (folderIcon != null) {
+                return folderIcon;
+            }
+        }
+        return R.drawable.filter_custom;
     }
 }

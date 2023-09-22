@@ -59,7 +59,6 @@ public class OutlineTextContainerView extends FrameLayout {
         super(context);
         setWillNotDraw(false);
         textPaint.setTextSize(AndroidUtilities.dp(16));
-        textPaint.setTypeface(AndroidUtilities.getTypeface("fonts/rregular.ttf"));
         outlinePaint.setStyle(Paint.Style.STROKE);
         outlinePaint.setStrokeCap(Paint.Cap.ROUND);
         outlinePaint.setStrokeWidth(strokeWidthRegular);
@@ -87,12 +86,6 @@ public class OutlineTextContainerView extends FrameLayout {
         invalidate();
     }
 
-    public void setText(@NonNull String text, int number) {
-        this.mText = text;
-        setText(mText + " (" + number + ")");
-        invalidate();
-    }
-
     private void setColor(int color) {
         outlinePaint.setColor(color);
         invalidate();
@@ -100,9 +93,9 @@ public class OutlineTextContainerView extends FrameLayout {
 
     public void updateColor() {
         int textSelectionColor = ColorUtils.blendARGB(Theme.getColor(Theme.key_windowBackgroundWhiteHintText), Theme.getColor(Theme.key_windowBackgroundWhiteValueText), forceUseCenter ? 0f : selectionProgress);
-        textPaint.setColor(ColorUtils.blendARGB(textSelectionColor, Theme.getColor(Theme.key_dialogTextRed), errorProgress));
+        textPaint.setColor(ColorUtils.blendARGB(textSelectionColor, Theme.getColor(Theme.key_text_RedBold), errorProgress));
         int selectionColor = ColorUtils.blendARGB(Theme.getColor(Theme.key_windowBackgroundWhiteInputField), Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated), forceUseCenter ? 0f : selectionProgress);
-        setColor(ColorUtils.blendARGB(selectionColor, Theme.getColor(Theme.key_dialogTextRed), errorProgress));
+        setColor(ColorUtils.blendARGB(selectionColor, Theme.getColor(Theme.key_text_RedBold), errorProgress));
     }
 
     public void animateSelection(float newValue) {

@@ -29,6 +29,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -271,6 +273,68 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
     }
 
     @Override
+    public boolean isLightStatusBar() {
+        if (!CherrygramConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
+        int color = getThemedColor(Theme.key_windowBackgroundWhite);
+        return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
+    private void setDefaultGroupName() {
+        TLRPC.User currentUser = getUserConfig().getCurrentUser();
+        int members = selectedContacts.size() + 1;
+        if (members >= 2 && members <= 5 && TextUtils.isEmpty(editText.getText())) {
+            String txt = "";
+            try {
+                switch (members) {
+                    case 2:
+                        txt = LocaleController.formatString(
+                                "GroupCreateMembersTwo", R.string.GroupCreateMembersTwo,
+                                currentUser.first_name,
+                                getFirstNameByPos(0)
+                        );
+                        break;
+                    case 3:
+                        txt = LocaleController.formatString(
+                                "GroupCreateMembersThree", R.string.GroupCreateMembersThree,
+                                currentUser.first_name,
+                                getFirstNameByPos(0),
+                                getFirstNameByPos(1)
+                        );
+                        break;
+                    case 4:
+                        txt = LocaleController.formatString(
+                                "GroupCreateMembersFour", R.string.GroupCreateMembersFour,
+                                currentUser.first_name,
+                                getFirstNameByPos(0),
+                                getFirstNameByPos(1),
+                                getFirstNameByPos(2)
+                        );
+                        break;
+                    case 5:
+                        txt = LocaleController.formatString(
+                                "GroupCreateMembersFive", R.string.GroupCreateMembersFive,
+                                currentUser.first_name,
+                                getFirstNameByPos(0),
+                                getFirstNameByPos(1),
+                                getFirstNameByPos(2),
+                                getFirstNameByPos(3)
+                        );
+                        break;
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+            if (!TextUtils.isEmpty(txt)) {
+                editText.setText(txt);
+            }
+        }
+    }
+
+    private String getFirstNameByPos(int pos) {
+        return getMessagesController().getUser(selectedContacts.get(pos)).first_name;
+    }
+
+    @Override
     public View createView(Context context) {
         if (editText != null) {
             editText.onDestroy();
@@ -278,11 +342,14 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
 
-        if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-            actionBar.setTitleColor(Theme.getColor("windowBackgroundWhiteBlackText"));
-            actionBar.setItemsColor(Theme.getColor("windowBackgroundWhiteBlackText"), false);
-            actionBar.setItemsBackgroundColor(Theme.getColor("listSelectorSDK21"), false);
+        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
+            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
+            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
+            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
+            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+            //actionBar.setCastShadows(false);
         }
 
         actionBar.setAllowOverlayTitle(true);
@@ -544,6 +611,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
             editText.setText(nameToSet);
             nameToSet = null;
         }
+        setDefaultGroupName();
         InputFilter[] inputFilters = new InputFilter[1];
         inputFilters[0] = new InputFilter.LengthFilter(100);
         editText.setFilters(inputFilters);
@@ -990,7 +1058,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
             switch (viewType) {
                 case VIEW_TYPE_SHADOW_SECTION_CELL: {
                     view = new ShadowSectionCell(context);
-                    Drawable drawable = Theme.getThemedDrawable(context, R.drawable.greydivider_top, Theme.key_windowBackgroundGrayShadow);
+                    Drawable drawable = Theme.getThemedDrawableByKey(context, R.drawable.greydivider_top, Theme.key_windowBackgroundGrayShadow);
                     CombinedDrawable combinedDrawable = new CombinedDrawable(new ColorDrawable(Theme.getColor(Theme.key_windowBackgroundGray)), drawable);
                     combinedDrawable.setFullsize(true);
                     view.setBackgroundDrawable(combinedDrawable);
@@ -1009,7 +1077,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
                     break;
                 case VIEW_TYPE_TEXT_INFO_CELL:
                     view = new TextInfoPrivacyCell(context);
-                    Drawable drawable = Theme.getThemedDrawable(context, selectedContacts.size() == 0 ? R.drawable.greydivider_bottom : R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow);
+                    Drawable drawable = Theme.getThemedDrawableByKey(context, selectedContacts.size() == 0 ? R.drawable.greydivider_bottom : R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow);
                     CombinedDrawable combinedDrawable = new CombinedDrawable(new ColorDrawable(Theme.getColor(Theme.key_windowBackgroundGray)), drawable);
                     combinedDrawable.setFullsize(true);
                     view.setBackgroundDrawable(combinedDrawable);
@@ -1125,6 +1193,18 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
         };
 
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
+
+        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
+        } else {
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
+        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));

@@ -4,13 +4,13 @@ import org.telegram.messenger.*
 import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.tgkit.CherrygramPreferencesNavigator
-import uz.unnarsx.cherrygram.updater.UpdaterBottomSheet
 import uz.unnarsx.cherrygram.tgkit.preference.category
 import uz.unnarsx.cherrygram.tgkit.preference.textDetail
 import uz.unnarsx.cherrygram.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextDetailRow
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.updater.UpdaterBottomSheet
 
 class MainPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("CGP_AdvancedSettings", R.string.CGP_AdvancedSettings)) {
@@ -40,7 +40,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 title = LocaleController.getString("CP_Category_Camera", R.string.CP_Category_Camera)
                 icon = R.drawable.camera_solar
                 listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(CameraPrefenrecesEntry())
+                    it.presentFragment(CameraPreferencesEntry())
                 }
             }
             textIcon {
@@ -71,7 +71,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     title = LocaleController.getString("CG_AppName", R.string.CG_AppName) + " " + BuildConfig.VERSION_NAME_CHERRY + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING + " " + "(" + BuildVars.BUILD_VERSION + ")"
                     detail = LocaleController.getString("UP_TapToCheckUpdates", R.string.UP_TapToCheckUpdates)
                     listener = TGKitTextDetailRow.TGTDListener {
-                        UpdaterBottomSheet(bf.parentActivity, false).show()
+                        UpdaterBottomSheet(bf.parentActivity, bf, false, null).show()
                     }
                 }
                 textIcon {

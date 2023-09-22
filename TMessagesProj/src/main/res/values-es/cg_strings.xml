@@ -92,18 +92,13 @@
     <string name="AP_OverrideHeader">Cambiar color de cabecera</string>
     <string name="AP_OverrideHeader_Desc">Sólo funciona en el tema oscuro</string>
     <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
-    <string name="AP_FlatNB">Barra de navegación transparente</string>
-    <string name="AP_FlatNB_Desc">La barra de navegación obtendrá el color del panel de mensajes</string>
     <string name="AP_SystemFonts">Usar fuentes del sistema</string>
-    <string name="AP_SystemFonts_Desc">Desactive esto si su fuente no admite formatos (negrita, cursiva, monoespacio)</string>
     <string name="CP_Snowflakes_Header">Copos de nieve</string>
     <string name="CP_Snowflakes_AH">Encabezado de aplicaciones</string>
     <string name="CP_PremAndAnim_Header">Animaciones y funciones Premium</string>
     <string name="CP_DisableAnimAvatars">Deshabilitar avatares animados</string>
     <string name="CP_DisableReactionsOverlay">Desactivar la capa de reacciones</string>
     <string name="CP_DisableReactionsOverlay_Desc">Esto desactivará la capa emergente con las reacciones disponibles</string>
-    <string name="CP_DrawSmallReactions">Dibujar pequeñas reacciones</string>
-    <string name="CP_DrawSmallReactions_Desc">Dibujar pequeñas reacciones (antiguas) en lugar de grandes</string>
     <string name="CP_DisableReactionAnim">Desactivar animación de reacción</string>
     <string name="CP_DisableReactionAnim_Desc">(al reaccionar a un mensaje)</string>
     <string name="CP_DisablePremiumStatuses">Deshabilitar estados premium</string>
@@ -169,8 +164,6 @@
     <string name="CP_AutoPauseVideo">Pausar video automáticamente</string>
     <string name="CP_AutoPauseVideo_Desc">Cuando se bloquea la pantalla o cambia al fondo</string>
     <string name="CP_DisableVibration">Deshabilitar vibración</string>
-    <string name="CP_Proximity">Habilitar acciones de proximidad</string>
-    <string name="CP_Proximity_Desc">Al desactivarlo te librarás del molesto apagado de pantalla al escuchar mensajes de voz</string>
     <string name="CP_Header_Notification">Notificaciones</string>
     <string name="CP_SilenceNonContacts">Silenciar a los no contactos</string>
     <string name="CP_SilenceNonContacts_Desc">Si está activado, las notificaciones con sonido provendrán únicamente de contactos. Puedes añadir una persona a tus contactos incluso sin un número de teléfono, hazlo en su perfil</string>
@@ -214,6 +207,7 @@
     <string name="SP_Header_Privacy">Privacidad</string>
     <string name="SP_NoProxyPromo">No mostrar patrocinador del proxy</string>
     <string name="SP_AppCenterAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"appcenter.ms\" para que el desarrollador las revise.</string>
+    <string name="SP_GoogleAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"console.firebase.google.com\" para que el desarrollador las revise.</string>
     <string name="SP_CleanOld">Eliminar caché antigua (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Eliminado con éxito</string>
     <string name="SP_Category_Account">Cuenta</string>

@@ -1,10 +1,3 @@
-/*
- * This is the source code of OwlGram for Android v. 1.4.x.
- * It is licensed under GNU GPL v. 2 or later.
- * You should have received a copy of the license in this archive (see LICENSE).
- *
- * Copyright Laky64, 2021-2022.
- */
 package uz.unnarsx.cherrygram.camera;
 
 import android.animation.Animator;
@@ -51,7 +44,7 @@ public class ButtonEffect extends RelativeLayout {
         });
         imageView.setImageBitmap(getIcon());
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
         imageView.setLayoutParams(layoutParams);
         addView(imageView);

@@ -1094,7 +1094,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
     public void onPause() {
         AndroidUtilities.cancelRunOnUIThread(checkRunnable);
         if (Build.VERSION.SDK_INT >= 23) {
-            biometricPromptHelper.onPause();
+            biometricPromptHelper.dismiss();
         }
     }
 

@@ -8,8 +8,7 @@ import android.os.Build;
 import android.os.PatternMatcher;
 
 import androidx.annotation.RequiresApi;
-
-import com.google.android.exoplayer2.util.Log;
+import androidx.core.content.ContextCompat;
 
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
@@ -106,8 +105,7 @@ public class MonetHelper {
             int id = ids.getOrDefault(amoled && "n1_900".equals(color) ? "n1_1000" : color, 0);
             return ApplicationLoader.applicationContext.getColor(id);
         } catch (Exception e) {
-            Log.e("Theme", "Error loading color " + color);
-            e.printStackTrace();
+            FileLog.e("Error loading color " + color, e);
             return 0;
         }
     }
@@ -118,7 +116,7 @@ public class MonetHelper {
             IntentFilter packageFilter = new IntentFilter(ACTION_OVERLAY_CHANGED);
             packageFilter.addDataScheme("package");
             packageFilter.addDataSchemeSpecificPart("android", PatternMatcher.PATTERN_LITERAL);
-            context.registerReceiver(this, packageFilter);
+            ContextCompat.registerReceiver(context, this, packageFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
         }
 
         public void unregister(Context context) {

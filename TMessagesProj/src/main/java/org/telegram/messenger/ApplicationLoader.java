@@ -10,7 +10,6 @@ package org.telegram.messenger;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -31,6 +30,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.multidex.MultiDex;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -43,7 +43,6 @@ import org.telegram.ui.Components.ForegroundDetector;
 import org.telegram.ui.LauncherIconController;
 
 import java.io.File;
-import java.util.HashMap;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
@@ -51,7 +50,7 @@ import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
 
 public class ApplicationLoader extends Application {
 
-    private static ApplicationLoader applicationLoaderInstance;
+    public static ApplicationLoader applicationLoaderInstance;
 
     @SuppressLint("StaticFieldLeak")
     public static volatile Context applicationContext;
@@ -158,6 +157,7 @@ public class ApplicationLoader extends Application {
             return;
         }
         applicationInited = true;
+        NativeLoader.initNativeLibs(ApplicationLoader.applicationContext);
 
         try {
             LocaleController.getInstance(); //TODO improve
@@ -184,7 +184,7 @@ public class ApplicationLoader extends Application {
                 }
             };
             IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-            ApplicationLoader.applicationContext.registerReceiver(networkStateReceiver, filter);
+            ContextCompat.registerReceiver(ApplicationLoader.applicationContext, networkStateReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -193,7 +193,7 @@ public class ApplicationLoader extends Application {
             final IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
             filter.addAction(Intent.ACTION_SCREEN_OFF);
             final BroadcastReceiver mReceiver = new ScreenReceiver();
-            applicationContext.registerReceiver(mReceiver, filter);
+            ContextCompat.registerReceiver(ApplicationLoader.applicationContext, mReceiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -237,7 +237,6 @@ public class ApplicationLoader extends Application {
             ContactsController.getInstance(a).checkAppAccount();
             DownloadController.getInstance(a);
         }
-        ChatThemeController.init();
         BillingController.getInstance().startConnection();
     }
 
@@ -257,19 +256,6 @@ public class ApplicationLoader extends Application {
         if (CherrygramConfig.INSTANCE.getAppcenterAnalytics()) {
             AnalyticsHelper.start(this);
             AnalyticsHelper.trackEvent("App start");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                var am = getSystemService(ActivityManager.class);
-                var reasons = am.getHistoricalProcessExitReasons(null, 0, 1);
-                if (reasons.size() == 1) {
-                    var map = new HashMap<String, String>(5);
-                    map.put("description", reasons.get(0).getDescription());
-                    map.put("importance", String.valueOf(reasons.get(0).getImportance()));
-                    map.put("process", reasons.get(0).getProcessName());
-                    map.put("reason", String.valueOf(reasons.get(0).getReason()));
-                    map.put("status", String.valueOf(reasons.get(0).getStatus()));
-                    AnalyticsHelper.trackEvent("Last exit reasons", map);
-                }
-            }
         }
 
         super.onCreate();
@@ -578,4 +564,19 @@ public class ApplicationLoader extends Application {
 
     }
 
+    public static void logDualCamera(boolean success, boolean vendor) {
+        applicationLoaderInstance.logDualCameraInternal(success, vendor);
+    }
+
+    protected void logDualCameraInternal(boolean success, boolean vendor) {
+
+    }
+
+    public boolean checkApkInstallPermissions(final Context context) {
+        return false;
+    }
+
+    public boolean openApkInstall(Activity activity, TLRPC.Document document) {
+        return false;
+    }
 }

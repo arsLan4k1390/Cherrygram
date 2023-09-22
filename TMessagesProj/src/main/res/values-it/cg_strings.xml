@@ -88,18 +88,13 @@
     <string name="AP_SystemEmoji">Usa le emoji di sistema</string>
     <string name="AP_CenterTitle">Centra titolo nella barra delle azioni</string>
     <string name="AP_ToolBarShadow">Disabilita ombra barra strumenti</string>
-    <string name="AP_FlatNB">Barra di navigazione trasparente</string>
-    <string name="AP_FlatNB_Desc">La barra di navigazione otterrà il colore del pannello Messaggi</string>
     <string name="AP_SystemFonts">Usa il font di sistema</string>
-    <string name="AP_SystemFonts_Desc">Disabilita questa opzione (riavvia l\'app) se il carattere non supporta la formattazione (Bold Italic, Monospace)</string>
     <string name="CP_Snowflakes_Header">Fiocchi di neve (riavviare l\'app per applicare)</string>
     <string name="CP_Snowflakes_AH">Titolo dell\'applicazione</string>
     <string name="CP_PremAndAnim_Header">Animazioni e funzionalità Premium (riavvia l\'app per applicare)</string>
     <string name="CP_DisableAnimAvatars">Disabilita avatar animati</string>
     <string name="CP_DisableReactionsOverlay">Disabilita sovrapposizione delle reazioni</string>
     <string name="CP_DisableReactionsOverlay_Desc">Questo disabiliterà la sovrapposizione popup con le reazioni disponibili</string>
-    <string name="CP_DrawSmallReactions">Disegna piccole reazioni</string>
-    <string name="CP_DrawSmallReactions_Desc">Disegna piccole reazioni (vecchio stile) invece di grandi</string>
     <string name="CP_DisableReactionAnim">Disabilita l\'animazione della reazione</string>
     <string name="CP_DisableReactionAnim_Desc">(quando si reagisce a un messaggio)</string>
     <string name="CP_DisablePremiumStatuses">Disabilita stati premium</string>
@@ -163,8 +158,6 @@
     <string name="CP_AutoPauseVideo">Pausa automatica video</string>
     <string name="CP_AutoPauseVideo_Desc">Quando si blocca lo schermo o passa allo sfondo</string>
     <string name="CP_DisableVibration">Disabilita vibrazione</string>
-    <string name="CP_Proximity">Abilita il sensore di prossimità</string>
-    <string name="CP_Proximity_Desc">Spegnendolo si eliminerà il fastidioso arresto dello schermo durante l\'ascolto dei messaggi vocali (riavviare l\'app per applicare)</string>
     <string name="CP_Header_Notification">Notifiche</string>
     <string name="CP_SilenceNonContacts">Silenzia i non contatti</string>
     <string name="CP_SilenceNonContacts_Desc">Se abilitata, le notifiche con suono verranno solo dai contatti. Puoi aggiungere una persona ai tuoi contatti anche senza un numero di telefono, puoi farlo nel loro profilo</string>
@@ -206,6 +199,7 @@
     <string name="SP_Header_Privacy">Privacy</string>
     <string name="SP_NoProxyPromo">Non mostrare sponsor proxy</string>
     <string name="SP_AppCenterAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"appcenter.ms\" para que el desarrollador las revise.</string>
+    <string name="SP_GoogleAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"console.firebase.google.com\" para que el desarrollador las revise.</string>
     <string name="SP_CleanOld">Rimuovi la vecchia cache (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Rimosso con successo</string>
     <string name="SP_Category_Account">Account</string>

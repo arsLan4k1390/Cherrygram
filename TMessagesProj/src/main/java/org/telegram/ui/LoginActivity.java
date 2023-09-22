@@ -8,6 +8,9 @@
 
 package org.telegram.ui;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
+import static org.telegram.messenger.AndroidUtilities.lerp;
+
 import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -92,8 +95,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.zxing.common.detector.MathUtils;
 
 import org.telegram.PhoneFormat.PhoneFormat;
+import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.AuthTokensHelper;
@@ -126,6 +131,7 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.CheckBoxCell;
+import org.telegram.ui.Cells.DialogCell;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.AnimatedPhoneNumberEditText;
 import org.telegram.ui.Components.AvatarDrawable;
@@ -144,6 +150,7 @@ import org.telegram.ui.Components.LinkPath;
 import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.LoginOrView;
 import org.telegram.ui.Components.OutlineTextContainerView;
+import org.telegram.ui.Components.ProxyDrawable;
 import org.telegram.ui.Components.RLottieDrawable;
 import org.telegram.ui.Components.RLottieImageView;
 import org.telegram.ui.Components.RadialProgressView;
@@ -178,7 +185,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import uz.unnarsx.cherrygram.helpers.QrHelper;
 
 @SuppressLint("HardwareIds")
-public class LoginActivity extends BaseFragment {
+public class LoginActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     public final static boolean ENABLE_PASTED_TEXT_PROCESSING = false;
     private final static int SHOW_DELAY = SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_AVERAGE ? 150 : 100;
 
@@ -303,8 +310,11 @@ public class LoginActivity extends BaseFragment {
     private SizeNotifierFrameLayout sizeNotifierFrameLayout;
     private Runnable keyboardHideCallback;
 
-    private ImageView backButtonView, proxyButtonView;
+    private ImageView backButtonView;
     private RadialProgressView radialProgressView;
+
+    private ImageView proxyButtonView;
+    private ProxyDrawable proxyDrawable;
 
     // Open animation stuff
     private LinearLayout keyboardLinearLayout;
@@ -436,6 +446,17 @@ public class LoginActivity extends BaseFragment {
     }
 
     @Override
+    public int getNavigationBarColor() {
+        return getThemedColor(Theme.key_windowBackgroundWhite);
+    }
+
+    @Override
+    public void setNavigationBarColor(int color) {
+        color = getNavigationBarColor();
+        super.setNavigationBarColor(color);
+    }
+
+    @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
         for (int a = 0; a < views.length; a++) {
@@ -452,6 +473,13 @@ public class LoginActivity extends BaseFragment {
                 AndroidUtilities.cancelRunOnUIThread(callback);
             }
         }
+        getNotificationCenter().removeObserver(this, NotificationCenter.didUpdateConnectionState);
+    }
+
+    @Override
+    public boolean onFragmentCreate() {
+        getNotificationCenter().addObserver(this, NotificationCenter.didUpdateConnectionState);
+        return super.onFragmentCreate();
     }
 
     @Override
@@ -659,17 +687,13 @@ public class LoginActivity extends BaseFragment {
         backButtonView.setPadding(padding, padding, padding, padding);
         sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(32, 32, Gravity.LEFT | Gravity.TOP, 16, 16, 0, 0));
 
-        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
-        boolean proxyEnabled;
-        proxyEnabled = preferences.getBoolean("proxy_enabled", false);
-
         proxyButtonView = new ImageView(context);
-        proxyButtonView.setImageResource(proxyEnabled ? R.drawable.proxy_on : R.drawable.proxy_off);
+        proxyButtonView.setImageDrawable(proxyDrawable = new ProxyDrawable(context));
         proxyButtonView.setOnClickListener(v -> presentFragment(new ProxyListActivity()));
-        proxyButtonView.setContentDescription(LocaleController.getString("ProxySettings", R.string.ProxySettings));
-        padding = AndroidUtilities.dp(3);
-        proxyButtonView.setPadding(padding, padding, padding, padding);
-        sizeNotifierFrameLayout.addView(proxyButtonView, LayoutHelper.createFrame(32, 32, Gravity.RIGHT | Gravity.TOP, 0, 16, 16, 0));
+        proxyButtonView.setAlpha(0f);
+        proxyButtonView.setVisibility(View.GONE);
+        sizeNotifierFrameLayout.addView(proxyButtonView, LayoutHelper.createFrame(32, 32, Gravity.RIGHT | Gravity.TOP, 16, 16, 16, 16));
+        updateProxyButton(false, true);
 
         radialProgressView = new RadialProgressView(context);
         radialProgressView.setSize(AndroidUtilities.dp(20));
@@ -1615,6 +1639,7 @@ public class LoginActivity extends BaseFragment {
         ContactsController.getInstance(currentAccount).checkAppAccount();
         MessagesController.getInstance(currentAccount).checkPromoInfo(true);
         ConnectionsManager.getInstance(currentAccount).updateDcSettings();
+        MessagesController.getInstance(currentAccount).loadAppConfig();
 
         if (res.future_auth_token != null) {
             AuthTokensHelper.saveLogInToken(res);
@@ -1832,6 +1857,52 @@ public class LoginActivity extends BaseFragment {
         private boolean nextPressed = false;
         private boolean confirmedNumber = false;
 
+        ButtonsBox buttonsBox;
+        TextView qrButton, proxyButton;
+
+        class ButtonsBox extends FrameLayout {
+
+            private Paint paint = new Paint();
+            private float[] radii = new float[8];
+            private Path path = new Path();
+
+            public ButtonsBox(Context context) {
+                super(context);
+                setWillNotDraw(false);
+                paint.setColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            }
+
+            private float t;
+            public void setT(float t) {
+                this.t = t;
+                invalidate();
+            }
+
+            private void setRadii(float left, float right) {
+                radii[0] = radii[1] = radii[6] = radii[7] = left;
+                radii[2] = radii[3] = radii[4] = radii[5] = right;
+            }
+
+            @Override
+            protected void onDraw(Canvas canvas) {
+                super.onDraw(canvas);
+
+                final float cx = getMeasuredWidth() / 2f;
+
+                path.rewind();
+                AndroidUtilities.rectTmp.set(0, 0, cx - lerp(0, dp(4), t), getMeasuredHeight());
+                setRadii(dp(8), lerp(0, dp(8), t));
+                path.addRoundRect(AndroidUtilities.rectTmp, radii, Path.Direction.CW);
+                canvas.drawPath(path, paint);
+
+                path.rewind();
+                AndroidUtilities.rectTmp.set(cx + lerp(0, dp(4), t), 0, getMeasuredWidth(), getMeasuredHeight());
+                setRadii(lerp(0, dp(8), t), dp(8));
+                path.addRoundRect(AndroidUtilities.rectTmp, radii, Path.Direction.CW);
+                canvas.drawPath(path, paint);
+            }
+        }
+
         public PhoneView(Context context) {
             super(context);
 
@@ -1933,7 +2004,7 @@ public class LoginActivity extends BaseFragment {
             codeField.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             codeField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             codeField.setBackground(null);
-//            codeField.setLineColors(getThemedColor(Theme.key_windowBackgroundWhiteInputField), getThemedColor(Theme.key_windowBackgroundWhiteInputFieldActivated), getThemedColor(Theme.key_windowBackgroundWhiteRedText3));
+//            codeField.setLineColors(getThemedColor(Theme.key_windowBackgroundWhiteInputField), getThemedColor(Theme.key_windowBackgroundWhiteInputFieldActivated), getThemedColor(Theme.key_text_RedRegular));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 codeField.setShowSoftInputOnFocus(!(hasCustomKeyboard() && !isCustomKeyboardForceDisabled()));
             }
@@ -2128,7 +2199,7 @@ public class LoginActivity extends BaseFragment {
             phoneField.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             phoneField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             phoneField.setBackground(null);
-//            phoneField.setLineColors(getThemedColor(Theme.key_windowBackgroundWhiteInputField), getThemedColor(Theme.key_windowBackgroundWhiteInputFieldActivated), getThemedColor(Theme.key_windowBackgroundWhiteRedText3));
+//            phoneField.setLineColors(getThemedColor(Theme.key_windowBackgroundWhiteInputField), getThemedColor(Theme.key_windowBackgroundWhiteInputFieldActivated), getThemedColor(Theme.key_text_RedRegular));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 phoneField.setShowSoftInputOnFocus(!(hasCustomKeyboard() && !isCustomKeyboardForceDisabled()));
             }
@@ -2257,19 +2328,55 @@ public class LoginActivity extends BaseFragment {
                 return false;
             });
 
-            TextView qrLogin = new TextView(context);
-            qrLogin.setPadding(AndroidUtilities.dp(34), 0, AndroidUtilities.dp(34), 0);
-            qrLogin.setGravity(Gravity.CENTER);
-            qrLogin.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            qrLogin.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
-            SpannableStringBuilder spannableStringBuilderQR = new SpannableStringBuilder();
-            spannableStringBuilderQR.append(".  ").append(LocaleController.getString("CG_QRLoginTitle", R.string.CG_QRLoginTitle));
-            spannableStringBuilderQR.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.msg_qr_mini)), 0, 1, 0);
-            qrLogin.setText(spannableStringBuilderQR);
-            qrLogin.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-            qrLogin.setBackground(Theme.AdaptiveRipple.filledRect(getThemedColor(Theme.key_featuredStickers_addButton), 6));
-            addView(qrLogin, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM, 16, 24, 16, 14));
-            qrLogin.setOnClickListener(view -> exportLoginToken(true));
+            buttonsBox = new ButtonsBox(context);
+            SpannableStringBuilder spannableStringBuilder;
+            addView(buttonsBox, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 46, Gravity.FILL_HORIZONTAL | Gravity.BOTTOM, 22, 24, 22, 14));
+
+            proxyButton = new TextView(context) {
+                @Override
+                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                    super.onMeasure(
+                            MeasureSpec.makeMeasureSpec((MeasureSpec.getSize(widthMeasureSpec) - dp(8)) / 2, MeasureSpec.EXACTLY),
+                            MeasureSpec.makeMeasureSpec(dp(46), MeasureSpec.EXACTLY)
+                    );
+                }
+            };
+            proxyButton.setGravity(Gravity.CENTER);
+            proxyButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
+            proxyButton.setBackground(Theme.AdaptiveRipple.filledRect(getThemedColor(Theme.key_featuredStickers_addButton), 8));
+            proxyButton.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+            proxyButton.setTextSize(14);
+            spannableStringBuilder = new SpannableStringBuilder();
+            spannableStringBuilder.append("..").setSpan(new ColoredImageSpan(ContextCompat.getDrawable(context, R.drawable.msg2_proxy_off)), 0, 1, 0);
+            spannableStringBuilder.setSpan(new DialogCell.FixedWidthSpan(AndroidUtilities.dp(8)), 1, 2, 0);
+            spannableStringBuilder.append(LocaleController.getString("Proxy", R.string.Proxy));
+            spannableStringBuilder.append(".").setSpan(new DialogCell.FixedWidthSpan(AndroidUtilities.dp(5)), spannableStringBuilder.length() - 1, spannableStringBuilder.length(), 0);
+            proxyButton.setText(spannableStringBuilder);
+            proxyButton.setOnClickListener(v -> presentFragment(new ProxyListActivity()));
+            buttonsBox.addView(proxyButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT));
+
+            qrButton = new TextView(context) {
+                @Override
+                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                    super.onMeasure(
+                            MeasureSpec.makeMeasureSpec((MeasureSpec.getSize(widthMeasureSpec) - dp(8)) / 2, MeasureSpec.EXACTLY),
+                            MeasureSpec.makeMeasureSpec(dp(46), MeasureSpec.EXACTLY)
+                    );
+                }
+            };
+            qrButton.setGravity(Gravity.CENTER);
+            qrButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
+            qrButton.setBackground(Theme.AdaptiveRipple.filledRect(getThemedColor(Theme.key_featuredStickers_addButton), 8));
+            qrButton.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+            qrButton.setTextSize(14);
+            spannableStringBuilder = new SpannableStringBuilder();
+            spannableStringBuilder.append("..").setSpan(new ColoredImageSpan(ContextCompat.getDrawable(context, R.drawable.msg_qr_mini)), 0, 1, 0);
+            spannableStringBuilder.setSpan(new DialogCell.FixedWidthSpan(AndroidUtilities.dp(8)), 1, 2, 0);
+            spannableStringBuilder.append(LocaleController.getString("CG_QRLoginTitle", R.string.CG_QRLoginTitle));
+            spannableStringBuilder.append(".").setSpan(new DialogCell.FixedWidthSpan(AndroidUtilities.dp(5)), spannableStringBuilder.length() - 1, spannableStringBuilder.length(), 0);
+            qrButton.setText(spannableStringBuilder);
+            qrButton.setOnClickListener(view -> exportLoginToken(true));
+            buttonsBox.addView(qrButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.RIGHT));
 
             int bottomMargin = 72;
             if (/*newAccount && */activityMode == MODE_LOGIN) {
@@ -2614,7 +2721,10 @@ public class LoginActivity extends BaseFragment {
                     String hint = phoneFormatMap.get(code).get(index);
                     int ss = phoneField.getSelectionStart(), se = phoneField.getSelectionEnd();
                     phoneField.setHintText(hint != null ? hint.replace('X', '0') : null);
-                    phoneField.setSelection(ss, se);
+                    phoneField.setSelection(
+                        Math.max(0, Math.min(phoneField.length(), ss)),
+                        Math.max(0, Math.min(phoneField.length(), se))
+                    );
                     wasCountryHintIndex = index;
                 }
             } else if (wasCountryHintIndex != -1) {
@@ -2999,7 +3109,6 @@ public class LoginActivity extends BaseFragment {
             int reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 nextPressed = false;
                 if (error == null) {
-
                     if (response instanceof TLRPC.TL_auth_sentCodeSuccess) {
                         TLRPC.auth_Authorization auth = ((TLRPC.TL_auth_sentCodeSuccess) response).authorization;
                         if (auth instanceof TLRPC.TL_auth_authorizationSignUpRequired) {
@@ -3937,14 +4046,16 @@ public class LoginActivity extends BaseFragment {
                 codeFieldContainer.invalidate();
             }
 
-            String timeTextColorTag = (String) timeText.getTag();
-            if (timeTextColorTag == null) timeTextColorTag = Theme.key_windowBackgroundWhiteGrayText6;
+            Integer timeTextColorTag = (Integer) timeText.getTag();
+            if (timeTextColorTag == null) {
+                timeTextColorTag = Theme.key_windowBackgroundWhiteGrayText6;
+            }
             timeText.setTextColor(Theme.getColor(timeTextColorTag));
 
             if (currentType != AUTH_TYPE_FRAGMENT_SMS) {
                 problemText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
             }
-            wrongCode.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
+            wrongCode.setTextColor(Theme.getColor(Theme.key_text_RedBold));
         }
 
         private void applyLottieColors(RLottieDrawable drawable) {
@@ -4203,6 +4314,8 @@ public class LoginActivity extends BaseFragment {
                 if (currentType == AUTH_TYPE_MESSAGE) {
                     if (nextType == AUTH_TYPE_FLASH_CALL || nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_MISSED_CALL) {
                         problemText.setText(LocaleController.getString("DidNotGetTheCodePhone", R.string.DidNotGetTheCodePhone));
+                    } else if (nextType == AUTH_TYPE_FRAGMENT_SMS) {
+                        problemText.setText(LocaleController.getString("DidNotGetTheCodeFragment", R.string.DidNotGetTheCodeFragment));
                     } else if (nextType == 0) {
                         problemText.setText(LocaleController.getString("DidNotGetTheCode", R.string.DidNotGetTheCode));
                     } else {
@@ -4249,7 +4362,7 @@ public class LoginActivity extends BaseFragment {
                 } else if (nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_SMS || nextType == AUTH_TYPE_MISSED_CALL) {
                     createTimer();
                 }
-            } else if (currentType == AUTH_TYPE_SMS && (nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_FLASH_CALL)) {
+            } else if (currentType == AUTH_TYPE_SMS && (nextType == AUTH_TYPE_SMS || nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_FLASH_CALL)) {
                 timeText.setText(LocaleController.formatString("CallAvailableIn", R.string.CallAvailableIn, 2, 0));
                 setProblemTextVisible(time < 1000);
                 timeText.setVisibility(time < 1000 ? GONE : VISIBLE);
@@ -4325,6 +4438,9 @@ public class LoginActivity extends BaseFragment {
                 return;
             }
             codeTime = 15000;
+            if (time > codeTime) {
+                codeTime = time;
+            }
             codeTimer = new Timer();
             lastCodeTime = System.currentTimeMillis();
             codeTimer.schedule(new TimerTask() {
@@ -4387,6 +4503,8 @@ public class LoginActivity extends BaseFragment {
                             int seconds = time / 1000 - minutes * 60;
                             if (nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_FLASH_CALL || nextType == AUTH_TYPE_MISSED_CALL) {
                                 timeText.setText(LocaleController.formatString("CallAvailableIn", R.string.CallAvailableIn, minutes, seconds));
+                            } else if (currentType == AUTH_TYPE_SMS && nextType == AUTH_TYPE_SMS) {
+                                timeText.setText(LocaleController.formatString("ResendSmsAvailableIn", R.string.ResendSmsAvailableIn, minutes, seconds));
                             } else if (nextType == AUTH_TYPE_SMS) {
                                 timeText.setText(LocaleController.formatString("SmsAvailableIn", R.string.SmsAvailableIn, minutes, seconds));
                             }
@@ -4572,7 +4690,11 @@ public class LoginActivity extends BaseFragment {
                         tryHideProgress(false);
                         nextPressed = false;
                         if (error == null) {
-                            animateSuccess(() -> new AlertDialog.Builder(getParentActivity())
+                            Activity activity = getParentActivity();
+                            if (activity == null) {
+                                return;
+                            }
+                            animateSuccess(() -> new AlertDialog.Builder(activity)
                                     .setTitle(LocaleController.getString(R.string.CancelLinkSuccessTitle))
                                     .setMessage(LocaleController.formatString("CancelLinkSuccess", R.string.CancelLinkSuccess, PhoneFormat.getInstance().format("+" + phone)))
                                     .setPositiveButton(LocaleController.getString(R.string.Close), null)
@@ -5046,6 +5168,9 @@ public class LoginActivity extends BaseFragment {
                         needHideProgress(false);
                         if (error == null) {
                             final TLRPC.TL_auth_passwordRecovery res = (TLRPC.TL_auth_passwordRecovery) response;
+                            if (getParentActivity() == null) {
+                                return;
+                            }
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
 
                             String rawPattern = res.email_pattern;
@@ -5587,7 +5712,7 @@ public class LoginActivity extends BaseFragment {
             signInWithGoogleView.setMaxLines(2);
 
             SpannableStringBuilder str = new SpannableStringBuilder("d ");
-            Drawable dr = ContextCompat.getDrawable(context, com.google.firebase.messaging.R.drawable.googleg_standard_color_18);
+            Drawable dr = ContextCompat.getDrawable(context, com.google.android.gms.auth.api.R.drawable.googleg_standard_color_18);
             dr.setBounds(0, AndroidUtilities.dp(9), AndroidUtilities.dp(18), AndroidUtilities.dp(18 + 9));
             str.setSpan(new ImageSpan(dr, ImageSpan.ALIGN_BOTTOM), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             str.setSpan(new ReplacementSpan() {
@@ -5966,7 +6091,12 @@ public class LoginActivity extends BaseFragment {
                                 .requestIdToken(BuildVars.GOOGLE_AUTH_CLIENT_ID)
                                 .requestEmail()
                                 .build());
-                googleClient.signOut().addOnCompleteListener(command -> getParentActivity().startActivityForResult(googleClient.getSignInIntent(), BasePermissionsActivity.REQUEST_CODE_SIGN_IN_WITH_GOOGLE));
+                googleClient.signOut().addOnCompleteListener(command -> {
+                    if (getParentActivity() == null) {
+                        return;
+                    }
+                    getParentActivity().startActivityForResult(googleClient.getSignInIntent(), BasePermissionsActivity.REQUEST_CODE_SIGN_IN_WITH_GOOGLE);
+                });
             });
 
             cantAccessEmailFrameLayout = new FrameLayout(context);
@@ -6139,6 +6269,9 @@ public class LoginActivity extends BaseFragment {
             req.phone_number = requestPhone;
             req.phone_code_hash = phoneHash;
             getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                if (getParentActivity() == null) {
+                    return;
+                }
                 requestingEmailReset = false;
                 if (response instanceof TLRPC.TL_auth_sentCode) {
                     TLRPC.TL_auth_sentCode sentCode = (TLRPC.TL_auth_sentCode) response;
@@ -6170,7 +6303,7 @@ public class LoginActivity extends BaseFragment {
             resendCodeView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
             cantAccessEmailView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
             emailResetInView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
-            wrongCodeView.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
+            wrongCodeView.setTextColor(Theme.getColor(Theme.key_text_RedBold));
 
             codeFieldContainer.invalidate();
         }
@@ -8086,7 +8219,9 @@ public class LoginActivity extends BaseFragment {
 
         backButtonView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         backButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));
-        proxyButtonView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+
+        proxyDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), PorterDuff.Mode.SRC_IN));
+        proxyDrawable.setColorKey(Theme.key_windowBackgroundWhiteBlackText);
         proxyButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));
 
         radialProgressView.setProgressColor(Theme.getColor(Theme.key_chats_actionBackground));
@@ -8111,8 +8246,8 @@ public class LoginActivity extends BaseFragment {
         return SimpleThemeDescription.createThemeDescriptions(this::updateColors, Theme.key_windowBackgroundWhiteBlackText, Theme.key_windowBackgroundWhiteGrayText6,
                 Theme.key_windowBackgroundWhiteHintText, Theme.key_listSelector, Theme.key_chats_actionBackground, Theme.key_chats_actionIcon,
                 Theme.key_windowBackgroundWhiteInputField, Theme.key_windowBackgroundWhiteInputFieldActivated, Theme.key_windowBackgroundWhiteValueText,
-                Theme.key_dialogTextRed, Theme.key_windowBackgroundWhiteGrayText, Theme.key_checkbox, Theme.key_windowBackgroundWhiteBlueText4,
-                Theme.key_changephoneinfo_image2, Theme.key_chats_actionPressedBackground, Theme.key_windowBackgroundWhiteRedText2, Theme.key_windowBackgroundWhiteLinkText,
+                Theme.key_text_RedBold, Theme.key_windowBackgroundWhiteGrayText, Theme.key_checkbox, Theme.key_windowBackgroundWhiteBlueText4,
+                Theme.key_changephoneinfo_image2, Theme.key_chats_actionPressedBackground, Theme.key_text_RedRegular, Theme.key_windowBackgroundWhiteLinkText,
                 Theme.key_checkboxSquareUnchecked, Theme.key_checkboxSquareBackground, Theme.key_checkboxSquareCheck, Theme.key_dialogBackground, Theme.key_dialogTextGray2,
                 Theme.key_dialogTextBlack);
     }
@@ -8416,8 +8551,86 @@ public class LoginActivity extends BaseFragment {
     }
 
     @Override
+    public boolean isActionBarCrossfadeEnabled() {
+        return false;
+    }
+
+    @Override
     public boolean isLightStatusBar() {
         int color = Theme.getColor(Theme.key_windowBackgroundWhite, null, true);
         return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
+    private int currentConnectionState;
+
+    private void updateProxyButton(boolean animated, boolean force) {
+        if (proxyDrawable == null) {
+            return;
+        }
+        int state = getConnectionsManager().getConnectionState();
+        if (currentConnectionState == state && !force) {
+            return;
+        }
+        currentConnectionState = state;
+        SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
+        String proxyAddress = preferences.getString("proxy_ip", "");
+        final boolean proxyEnabled = preferences.getBoolean("proxy_enabled", false) && !TextUtils.isEmpty(proxyAddress);
+        final boolean connected = currentConnectionState == ConnectionsManager.ConnectionStateConnected || currentConnectionState == ConnectionsManager.ConnectionStateUpdating;
+        final boolean connecting = currentConnectionState == ConnectionsManager.ConnectionStateConnecting || currentConnectionState == ConnectionsManager.ConnectionStateWaitingForNetwork || currentConnectionState == ConnectionsManager.ConnectionStateConnectingToProxy;
+        if (proxyEnabled) {
+            proxyDrawable.setConnected(true, connected, animated);
+            showProxyButton(true, animated);
+        } else if (getMessagesController().blockedCountry && !SharedConfig.proxyList.isEmpty() || connecting) {
+            proxyDrawable.setConnected(true, connected, animated);
+            showProxyButtonDelayed();
+        } else {
+            showProxyButton(false, animated);
+        }
+    }
+
+    private boolean proxyButtonVisible;
+    private Runnable showProxyButtonDelayed;
+    private void showProxyButtonDelayed() {
+        if (proxyButtonVisible) {
+            return;
+        }
+        if (showProxyButtonDelayed != null) {
+            AndroidUtilities.cancelRunOnUIThread(showProxyButtonDelayed);
+        }
+        proxyButtonVisible = true;
+        AndroidUtilities.runOnUIThread(showProxyButtonDelayed = () -> {
+            proxyButtonVisible = false;
+            showProxyButton(true, true);
+        }, 5000);
+    }
+
+    private void showProxyButton(boolean show, boolean animated) {
+        if (show == proxyButtonVisible) {
+            return;
+        }
+        if (showProxyButtonDelayed != null) {
+            AndroidUtilities.cancelRunOnUIThread(showProxyButtonDelayed);
+            showProxyButtonDelayed = null;
+        }
+        proxyButtonVisible = show;
+        proxyButtonView.clearAnimation();
+        if (animated) {
+            proxyButtonView.setVisibility(View.VISIBLE);
+            proxyButtonView.animate().alpha(show ? 1 : 0).withEndAction(() -> {
+                if (!show) {
+                    proxyButtonView.setVisibility(View.GONE);
+                }
+            }).start();
+        } else {
+            proxyButtonView.setVisibility(show ? View.VISIBLE : View.GONE);
+            proxyButtonView.setAlpha(show ? 1f : 0f);
+        }
+    }
+
+    @Override
+    public void didReceivedNotification(int id, int account, Object... args) {
+        if (id == NotificationCenter.didUpdateConnectionState) {
+            updateProxyButton(true, false);
+        }
     }
 }

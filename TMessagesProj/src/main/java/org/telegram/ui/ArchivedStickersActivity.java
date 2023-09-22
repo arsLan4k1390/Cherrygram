@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.collection.LongSparseArray;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,6 +38,8 @@ import org.telegram.ui.Components.StickersAlert;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class ArchivedStickersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -88,11 +91,31 @@ public class ArchivedStickersActivity extends BaseFragment implements Notificati
     }
 
     @Override
+    public boolean isLightStatusBar() {
+        if (!CherrygramConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
+        int color = getThemedColor(Theme.key_windowBackgroundWhite);
+        return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
+    @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+
+        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
+            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
+            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
+            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
+            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+            //actionBar.setCastShadows(false);
+        }
+
         actionBar.setAllowOverlayTitle(true);
         if (currentType == MediaDataController.TYPE_IMAGE) {
             actionBar.setTitle(LocaleController.getString("ArchivedStickers", R.string.ArchivedStickers));
+        } else if (currentType == MediaDataController.TYPE_EMOJIPACKS) {
+            actionBar.setTitle(LocaleController.getString("ArchivedEmojiPacks", R.string.ArchivedEmojiPacks));
         } else {
             actionBar.setTitle(LocaleController.getString("ArchivedMasks", R.string.ArchivedMasks));
         }
@@ -173,7 +196,7 @@ public class ArchivedStickersActivity extends BaseFragment implements Notificati
     private void updateRows() {
         rowCount = 0;
         if (!sets.isEmpty()) {
-            archiveInfoRow = currentType == MediaDataController.TYPE_IMAGE ? rowCount++ : -1;
+            archiveInfoRow = currentType == MediaDataController.TYPE_IMAGE || currentType == MediaDataController.TYPE_EMOJIPACKS ? rowCount++ : -1;
             stickersStartRow = rowCount;
             stickersEndRow = rowCount + sets.size();
             rowCount += sets.size();
@@ -342,7 +365,7 @@ public class ArchivedStickersActivity extends BaseFragment implements Notificati
                 if (position == archiveInfoRow) {
                     cell.setTopPadding(17);
                     cell.setBottomPadding(10);
-                    cell.setText(LocaleController.getString("ArchivedStickersInfo", R.string.ArchivedStickersInfo));
+                    cell.setText(currentType == MediaDataController.TYPE_EMOJIPACKS ? LocaleController.getString("ArchivedEmojiInfo", R.string.ArchivedEmojiInfo) : LocaleController.getString("ArchivedStickersInfo", R.string.ArchivedStickersInfo));
                 } else {
                     cell.setTopPadding(10);
                     cell.setBottomPadding(17);
@@ -366,11 +389,11 @@ public class ArchivedStickersActivity extends BaseFragment implements Notificati
                     break;
                 case 1:
                     view = new LoadingCell(mContext);
-                    view.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
+                    view.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                     break;
                 case 2:
                     view = new TextInfoPrivacyCell(mContext);
-                    view.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
+                    view.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                     break;
             }
             view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
@@ -397,6 +420,18 @@ public class ArchivedStickersActivity extends BaseFragment implements Notificati
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{ArchivedStickerSetCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_BACKGROUNDFILTER, new Class[]{LoadingCell.class, TextInfoPrivacyCell.class}, null, null, null, Theme.key_windowBackgroundGrayShadow));
+
+        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
+        } else {
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
+        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));

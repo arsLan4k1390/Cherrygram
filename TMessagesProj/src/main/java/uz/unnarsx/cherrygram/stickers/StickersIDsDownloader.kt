@@ -11,15 +11,14 @@ import java.net.URL
 
 object StickersIDsDownloader: CoroutineScope by MainScope() {
 
-    var SET_IDS = listOf<String>()
+    private var SET_IDS = listOf<String>()
 
-    init {
+    fun getStickerSetIDs() {
         launch(Dispatchers.IO) {
             try {
                 SET_IDS = URL("https://raw.githubusercontent.com/arsLan4k1390/Cherrygram/main/stickers.txt").readText().lines()
-//                Log.d("SetsDownloader", SET_IDS.toString())
-            }
-            catch (e: Exception) {
+                Log.d("SetsDownloader", SET_IDS.toString())
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }

@@ -35,7 +35,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.helpers.PermissionsUtils;
+import uz.unnarsx.cherrygram.utils.PermissionsUtils;
 
 public class WallpaperUpdater {
 
@@ -109,9 +109,10 @@ public class WallpaperUpdater {
 
     public void openGallery() {
         if (parentFragment != null) {
-            if (Build.VERSION.SDK_INT >= 23 && parentFragment.getParentActivity() != null) {
+            final Activity activity = parentFragment.getParentActivity();
+            if (Build.VERSION.SDK_INT >= 23 && activity != null) {
                 if (!PermissionsUtils.isImagesPermissionGranted()) {
-                    PermissionsUtils.requestImagesPermission(parentFragment.getParentActivity());
+                    PermissionsUtils.requestImagesPermission(activity);
                     return;
                 }
             }

@@ -3,7 +3,6 @@ package uz.unnarsx.cherrygram.extras;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.TextUtils;
@@ -18,7 +17,6 @@ import android.widget.RelativeLayout;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
@@ -33,17 +31,13 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.ArticleViewer;
 import org.telegram.ui.CacheControlActivity;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.LayoutHelper;
-/*import org.telegram.ui.Components.PasscodeView;*/
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
 import org.telegram.ui.LoginActivity;
 import org.telegram.ui.PassportActivity;
 import org.telegram.ui.PhotoViewer;
-import org.telegram.ui.SecretMediaViewer;
-
 import java.util.ArrayList;
 
 public class KaboomWidgetActivity extends Activity implements INavigationLayout.INavigationLayoutDelegate {
@@ -52,17 +46,10 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
     private static ArrayList<BaseFragment> mainFragmentsStack = new ArrayList<>();
     private static ArrayList<BaseFragment> layerFragmentsStack = new ArrayList<>();
 
-    /*private PasscodeView passcodeView;*/
     protected INavigationLayout actionBarLayout;
     protected INavigationLayout layersActionBarLayout;
     protected SizeNotifierFrameLayout backgroundTablet;
     protected DrawerLayoutContainer drawerLayoutContainer;
-
-    private Intent passcodeSaveIntent;
-    private boolean passcodeSaveIntentIsNew;
-    private int passcodeSaveIntentAccount;
-    private int passcodeSaveIntentState;
-    private boolean passcodeSaveIntentIsRestore;
 
     private Runnable lockRunnable;
 
@@ -87,7 +74,7 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
             SharedConfig.lastPauseTime = (int) (SystemClock.elapsedRealtime() / 1000);
         }
 
-        AndroidUtilities.fillStatusBarHeight(this);
+        AndroidUtilities.fillStatusBarHeight(this, false);
         Theme.createDialogsResources(this);
         Theme.createChatResources(this, false);
 
@@ -177,15 +164,10 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
             launchLayout.addView(actionBarLayout.getView(), LayoutHelper.createRelative(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         }
 
-        // drawerLayoutContainer.setDrawerLayout(listView);
-
         drawerLayoutContainer.setParentActionBarLayout(actionBarLayout);
         actionBarLayout.setDrawerLayoutContainer(drawerLayoutContainer);
         actionBarLayout.setFragmentStack(mainFragmentsStack);
         actionBarLayout.setDelegate(this);
-
-        /*passcodeView = new PasscodeView(this);
-        drawerLayoutContainer.addView(passcodeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));*/
 
         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.closeOtherAppActivities, this);
 
@@ -194,77 +176,15 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
             layersActionBarLayout.removeAllFragments();
         }
 
-        handleIntent(getIntent(), false, savedInstanceState != null, false, UserConfig.selectedAccount, 0);
+        handleIntent(getIntent(), UserConfig.selectedAccount, 0);
         needLayout();
     }
 
-    /*private void showPasscodeActivity() {
-        if (passcodeView == null) {
-            return;
-        }
-        SharedConfig.appLocked = true;
-        if (SecretMediaViewer.hasInstance() && SecretMediaViewer.getInstance().isVisible()) {
-            SecretMediaViewer.getInstance().closePhoto(false, false);
-        } else if (PhotoViewer.hasInstance() && PhotoViewer.getInstance().isVisible()) {
-            PhotoViewer.getInstance().closePhoto(false, true);
-        } else if (ArticleViewer.hasInstance() && ArticleViewer.getInstance().isVisible()) {
-            ArticleViewer.getInstance().close(false, true);
-        }
-        passcodeView.onShow(true, false);
-        SharedConfig.isWaitingForPasscodeEnter = true;
-        drawerLayoutContainer.setAllowOpenDrawer(false, false);
-        passcodeView.setDelegate(() -> {
-            SharedConfig.isWaitingForPasscodeEnter = false;
-            if (passcodeSaveIntent != null) {
-                handleIntent(passcodeSaveIntent, passcodeSaveIntentIsNew, passcodeSaveIntentIsRestore, true, passcodeSaveIntentAccount, passcodeSaveIntentState);
-                passcodeSaveIntent = null;
-            }
-            drawerLayoutContainer.setAllowOpenDrawer(true, false);
-            actionBarLayout.showLastFragment();
-            if (AndroidUtilities.isTablet()) {
-                layersActionBarLayout.showLastFragment();
-            }
-        });
-    }*/
-
-    public void onFinishLogin() {
-        handleIntent(passcodeSaveIntent, passcodeSaveIntentIsNew, passcodeSaveIntentIsRestore, true, passcodeSaveIntentAccount, passcodeSaveIntentState);
-        actionBarLayout.removeAllFragments();
-        if (layersActionBarLayout != null) {
-            layersActionBarLayout.removeAllFragments();
-        }
-        if (backgroundTablet != null) {
-            backgroundTablet.setVisibility(View.VISIBLE);
-        }
-    }
-
-    /*protected boolean checkPasscode(final Intent intent, final boolean isNew, final boolean restore, final boolean fromPassword, final int intentAccount, int state) {
-        if (!fromPassword && (AndroidUtilities.needShowPasscode(true) || SharedConfig.isWaitingForPasscodeEnter)) {
-            showPasscodeActivity();
-            passcodeSaveIntent = intent;
-            passcodeSaveIntentIsNew = isNew;
-            passcodeSaveIntentIsRestore = restore;
-            passcodeSaveIntentAccount = intentAccount;
-            passcodeSaveIntentState = state;
-            UserConfig.getInstance(intentAccount).saveConfig(false);
-            return false;
-        }
-        return true;
-    }*/
-
-    protected boolean handleIntent(final Intent intent, final boolean isNew, final boolean restore, final boolean fromPassword, final int intentAccount, int state) {
-        /*if (!checkPasscode(intent, isNew, restore, fromPassword, intentAccount, state)) {
-            return false;
-        }*/
+    protected boolean handleIntent(final Intent intent, final int intentAccount, int state) {
         if ("org.telegram.passport.AUTHORIZE".equals(intent.getAction())) {
             if (state == 0) {
                 int activatedAccountsCount = UserConfig.getActivatedAccountsCount();
                 if (activatedAccountsCount == 0) {
-                    passcodeSaveIntent = intent;
-                    passcodeSaveIntentIsNew = isNew;
-                    passcodeSaveIntentIsRestore = restore;
-                    passcodeSaveIntentAccount = intentAccount;
-                    passcodeSaveIntentState = state;
 
                     LoginActivity fragment = new LoginActivity();
                     if (AndroidUtilities.isTablet()) {
@@ -292,7 +212,7 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
                         if (account != intentAccount) {
                             switchToAccount(account);
                         }
-                        handleIntent(intent, isNew, restore, fromPassword, account, 1);
+                        handleIntent(intent, account, 1);
                     });
                     alertDialog.show();
                     alertDialog.setCanceledOnTouchOutside(false);
@@ -426,7 +346,7 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        handleIntent(intent, true, false, false, UserConfig.selectedAccount, 0);
+        handleIntent(intent, UserConfig.selectedAccount, 0);
     }
 
     private void onFinish() {
@@ -452,7 +372,7 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
         if (AndroidUtilities.isTablet()) {
             RelativeLayout.LayoutParams relativeLayoutParams = (RelativeLayout.LayoutParams) layersActionBarLayout.getView().getLayoutParams();
             relativeLayoutParams.leftMargin = (AndroidUtilities.displaySize.x - relativeLayoutParams.width) / 2;
-            int y = (Build.VERSION.SDK_INT >= 21 ? AndroidUtilities.statusBarHeight : 0);
+            int y = AndroidUtilities.statusBarHeight;
             relativeLayoutParams.topMargin = y + (AndroidUtilities.displaySize.y - relativeLayoutParams.height - y) / 2;
             layersActionBarLayout.getView().setLayoutParams(relativeLayoutParams);
 
@@ -509,10 +429,6 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
             layersActionBarLayout.onPause();
         }
         ApplicationLoader.externalInterfacePaused = true;
-        /*onPasscodePause();
-        if (passcodeView != null) {
-            passcodeView.onPause();
-        }*/
     }
 
     @Override
@@ -529,70 +445,7 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
             layersActionBarLayout.onResume();
         }
         ApplicationLoader.externalInterfacePaused = false;
-        /*onPasscodeResume();
-        if (passcodeView.getVisibility() != View.VISIBLE) {
-            actionBarLayout.onResume();
-            if (AndroidUtilities.isTablet()) {
-                layersActionBarLayout.onResume();
-            }
-        } else {
-            actionBarLayout.dismissDialogs();
-            if (AndroidUtilities.isTablet()) {
-                layersActionBarLayout.dismissDialogs();
-            }
-            passcodeView.onResume();
-        }*/
     }
-
-    /*private void onPasscodePause() {
-        if (lockRunnable != null) {
-            AndroidUtilities.cancelRunOnUIThread(lockRunnable);
-            lockRunnable = null;
-        }
-        if (SharedConfig.passcodeHash.length() != 0) {
-            SharedConfig.lastPauseTime = (int) (SystemClock.elapsedRealtime() / 1000);
-            lockRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (lockRunnable == this) {
-                        if (AndroidUtilities.needShowPasscode(true)) {
-                            if (BuildVars.LOGS_ENABLED) {
-                                FileLog.d("lock app");
-                            }
-                            showPasscodeActivity();
-                        } else {
-                            if (BuildVars.LOGS_ENABLED) {
-                                FileLog.d("didn't pass lock check");
-                            }
-                        }
-                        lockRunnable = null;
-                    }
-                }
-            };
-            if (SharedConfig.appLocked) {
-                AndroidUtilities.runOnUIThread(lockRunnable, 1000);
-            } else if (SharedConfig.autoLockIn != 0) {
-                AndroidUtilities.runOnUIThread(lockRunnable, (long) SharedConfig.autoLockIn * 1000 + 1000);
-            }
-        } else {
-            SharedConfig.lastPauseTime = 0;
-        }
-        SharedConfig.saveConfig();
-    }
-
-    private void onPasscodeResume() {
-        if (lockRunnable != null) {
-            AndroidUtilities.cancelRunOnUIThread(lockRunnable);
-            lockRunnable = null;
-        }
-        if (AndroidUtilities.needShowPasscode(true)) {
-            showPasscodeActivity();
-        }
-        if (SharedConfig.lastPauseTime != 0) {
-            SharedConfig.lastPauseTime = 0;
-            SharedConfig.saveConfig();
-        }
-    }*/
 
     @Override
     public void onConfigurationChanged(android.content.res.Configuration newConfig) {
@@ -603,10 +456,6 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
 
     @Override
     public void onBackPressed() {
-        /*if (passcodeView.getVisibility() == View.VISIBLE) {
-            finish();
-            return;
-        }*/
         if (PhotoViewer.getInstance().isVisible()) {
             PhotoViewer.getInstance().closePhoto(true, false);
         } else if (drawerLayoutContainer.isDrawerOpened()) {

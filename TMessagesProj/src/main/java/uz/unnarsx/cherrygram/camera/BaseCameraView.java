@@ -1,10 +1,3 @@
-/*
- * This is the source code of OwlGram for Android v. 1.4.x.
- * It is licensed under GNU GPL v. 2 or later.
- * You should have received a copy of the license in this archive (see LICENSE).
- *
- * Copyright Laky64, 2021-2022.
- */
 package uz.unnarsx.cherrygram.camera;
 
 import android.content.Context;
@@ -31,12 +24,6 @@ public abstract class BaseCameraView extends FrameLayout {
 
     public BaseCameraView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-    }
-
-    public interface CameraViewDelegate {
-        void onCameraCreated();
-
-        void onCameraInit();
     }
 
     public abstract boolean isInited();
@@ -66,13 +53,13 @@ public abstract class BaseCameraView extends FrameLayout {
 
     public abstract TextureView getTextureView();
 
-    public abstract float getTextureHeight(float width, float height);
-
-    public abstract void startSwitchingAnimation();
-
-    public abstract void setThumbDrawable(Drawable drawable);
+    public abstract void initTexture();
 
     public abstract void showTexture(boolean show, boolean animated);
 
-    public abstract void initTexture();
+    public abstract void setThumbDrawable(Drawable drawable);
+
+    public abstract float getTextureHeight(float width, float height);
+
+    public abstract void startSwitchingAnimation();
 }

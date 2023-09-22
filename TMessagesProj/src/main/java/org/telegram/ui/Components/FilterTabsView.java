@@ -22,7 +22,6 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.os.SystemClock;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
@@ -65,7 +64,8 @@ import uz.unnarsx.cherrygram.tabs.FolderIconHelper;
 
 public class FilterTabsView extends FrameLayout {
 
-    int folderStyle = CherrygramConfig.INSTANCE.getTab_style();
+    int tabStyle = CherrygramConfig.INSTANCE.getTabStyle();
+    int tabMode = CherrygramConfig.INSTANCE.getTabMode();
 
     public int getCurrentTabStableId() {
         return positionToStableId.get(currentPosition, -1);
@@ -75,14 +75,15 @@ public class FilterTabsView extends FrameLayout {
         return positionToStableId.get(selectedType, -1);
     }
 
-    public void selectTabWithStableId(int stableId) {
+    public boolean selectTabWithStableId(int stableId) {
         for (int i = 0; i < tabs.size(); i++) {
             if (positionToStableId.get(i, -1) == stableId) {
                 currentPosition = i;
                 selectedTabId = positionToId.get(i);
-                break;
+                return true;
             }
         }
+        return false;
     }
 
     public interface FilterTabsViewDelegate {
@@ -120,7 +121,7 @@ public class FilterTabsView extends FrameLayout {
 
         public Tab(int i, String t, String e) {
             id = i;
-            title = CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON ? t:"";
+            title = tabMode != CherrygramConfig.TAB_TYPE_ICON ? t:"";
             realTitle = t;
             emoticon = e;
         }
@@ -154,7 +155,7 @@ public class FilterTabsView extends FrameLayout {
             if (TextUtils.equals(title, newTitle)) {
                 return false;
             }
-            title = CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON ? newTitle : "";
+            title = tabMode != CherrygramConfig.TAB_TYPE_ICON ? newTitle : "";
             realTitle = newTitle;
             return true;
         }
@@ -186,9 +187,9 @@ public class FilterTabsView extends FrameLayout {
         boolean animateTextX;
 
         String lastEmoticon;
-        float lastIconTab;
-        float animateFromIconTab;
-        boolean animateIconTab;
+        float lastIconX;
+        float animateFromIconX;
+        boolean animateIconX;
         private boolean animateIconChange;
         private Drawable iconAnimateInDrawable;
         private Drawable iconAnimateOutDrawable;
@@ -229,6 +230,7 @@ public class FilterTabsView extends FrameLayout {
         public void setTab(Tab tab, int position) {
             currentTab = tab;
             currentPosition = position;
+            setContentDescription(tab.title);
             requestLayout();
         }
 
@@ -244,7 +246,7 @@ public class FilterTabsView extends FrameLayout {
             animateCounterChange = false;
             animateTextChange = false;
             animateTextX = false;
-            animateIconTab = false;
+            animateIconX = false;
             animateIconChange = false;
             animateTabWidth = false;
             if (changeAnimator != null) {
@@ -278,17 +280,17 @@ public class FilterTabsView extends FrameLayout {
                 float s = (float) Math.sin((p + (currentPosition % 2)) * Math.PI * 2.5f);
                 float a = (float) (SystemClock.elapsedRealtime() / 400f * Math.PI * (currentPosition % 2 == 0 ? 1.0f : -1.0f));
                 canvas.translate(
-                    (float) (Math.cos(a) * AndroidUtilities.dp(0.33f) * (currentPosition % 2 == 0 ? 1.0f : -1.0f)),
-                    (float) (Math.sin(a) * -AndroidUtilities.dp(0.33f))
+                        (float) (Math.cos(a) * AndroidUtilities.dp(0.33f) * (currentPosition % 2 == 0 ? 1.0f : -1.0f)),
+                        (float) (Math.sin(a) * -AndroidUtilities.dp(0.33f))
                 );
                 canvas.rotate(1.4f * s, getMeasuredWidth() / 2f, getMeasuredHeight() / 2f);
             }
-            String key;
-            String animateToKey;
-            String otherKey;
-            String animateToOtherKey;
-            String unreadKey;
-            String unreadOtherKey;
+            int key;
+            int animateToKey;
+            int otherKey;
+            int animateToOtherKey;
+            int unreadKey;
+            int unreadOtherKey;
             int id1;
             int id2;
             if (manualScrollingToId != -1) {
@@ -313,7 +315,7 @@ public class FilterTabsView extends FrameLayout {
                 unreadKey = Theme.key_chats_tabUnreadUnactiveBackground;
                 unreadOtherKey = Theme.key_chats_tabUnreadActiveBackground;
             }
-            if (animateToKey == null) {
+            if (animateToKey < 0) {
                 if ((animatingIndicator || manualScrollingToId != -1) && (currentTab.id == id1 || currentTab.id == id2)) {
                     textPaint.setColor(ColorUtils.blendARGB(Theme.getColor(otherKey), Theme.getColor(key), animatingIndicatorProgress));
                 } else {
@@ -357,12 +359,13 @@ public class FilterTabsView extends FrameLayout {
             if (showRemove && (isEditing || editingStartAnimationProgress != 0)) {
                 countWidth = (int) (countWidth + (AndroidUtilities.dp(20) - countWidth) * editingStartAnimationProgress);
             }
-            if (CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON) {
+
+            if (tabMode != CherrygramConfig.TAB_TYPE_ICON) {
                 tabWidth = currentTab.iconWidth + currentTab.titleWidth + ((countWidth != 0 && !animateCounterRemove) ? countWidth + AndroidUtilities.dp(6 * (counterText != null ? 1.0f : editingStartAnimationProgress)) : 0);
             } else {
                 tabWidth = currentTab.iconWidth + ((countWidth != 0 && !animateCounterRemove) ? countWidth + AndroidUtilities.dp(6 * (counterText != null ? 1.0f : editingStartAnimationProgress)) : 0);
             }
-            float textX = ((getMeasuredWidth() - tabWidth) / 2f) + currentTab.iconWidth;
+            float textX = ((getMeasuredWidth() - tabWidth) / 2f) + currentTab.iconWidth - (tabMode == CherrygramConfig.TAB_TYPE_MIX ? AndroidUtilities.dp(2) : 0);
             if (animateTextX) {
                 textX = textX * changeProgress + animateFromTextX * (1f - changeProgress);
             }
@@ -411,9 +414,9 @@ public class FilterTabsView extends FrameLayout {
                 }
             }
 
-            int iconTab = 0;
+            int iconX = 0;
             // TAB ICON
-            if (CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_TEXT) {
+            if (tabMode != CherrygramConfig.TAB_TYPE_TEXT) {
                 int emoticonSize = FolderIconHelper.getIconWidth();
                 if (!TextUtils.equals(currentTab.emoticon, currentEmoticon)) {
                     currentEmoticon = currentTab.emoticon;
@@ -421,44 +424,41 @@ public class FilterTabsView extends FrameLayout {
                     icon = getResources().getDrawable(FolderIconHelper.getTabIcon(currentTab.id != getDefaultTabId() ? currentTab.emoticon:"\uD83D\uDCAC")).mutate();
                     icon.setBounds(bounds);
                 }
-                if (icon != null) {
-                    icon.setTint(textPaint.getColor());
-                    iconTab = (int) ((getMeasuredWidth() - tabWidth) / 2f);
-                    if (animateIconTab) {
-                        iconTab = (int) (iconTab * changeProgress + animateFromIconTab * (1f - changeProgress));
-                    }
-                    int iconY = (int) ((getMeasuredHeight() - emoticonSize) / 2f);
-                    if (animateIconChange) {
-                        if (iconAnimateOutDrawable != null) {
-                            canvas.save();
-                            canvas.translate(iconTab, iconY);
-                            int alpha = iconAnimateOutDrawable.getAlpha();
-                            iconAnimateOutDrawable.setAlpha((int) (alpha * (1f - changeProgress)));
-                            iconAnimateOutDrawable.draw(canvas);
-                            canvas.restore();
-                            iconAnimateOutDrawable.setAlpha(alpha);
-                        }
-                        if (iconAnimateInDrawable != null) {
-                            canvas.save();
-                            canvas.translate(iconTab, iconY);
-                            int alpha = iconAnimateInDrawable.getAlpha();
-                            iconAnimateInDrawable.setAlpha((int) (alpha * changeProgress));
-                            iconAnimateInDrawable.draw(canvas);
-                            canvas.restore();
-                            iconAnimateInDrawable.setAlpha(alpha);
-                        }
-                    } else {
-                        int alphaAnimation = 0;
+                icon.setTint(textPaint.getColor());
+                iconX = (int) ((getMeasuredWidth() - tabWidth) / 2f);
+                if (animateIconX) {
+                    iconX = (int) (iconX * changeProgress + animateFromIconX * (1f - changeProgress));
+                }
+                int iconY = (int) ((getMeasuredHeight() - emoticonSize) / 2f);
+                if (animateIconChange) {
+                    if (iconAnimateOutDrawable != null) {
                         canvas.save();
-                        canvas.translate(iconTab, iconY);
-                        icon.draw(canvas);
+                        canvas.translate(iconX, iconY);
+                        int alpha = iconAnimateOutDrawable.getAlpha();
+                        iconAnimateOutDrawable.setAlpha((int) (alpha * (1f - changeProgress)));
+                        iconAnimateOutDrawable.draw(canvas);
                         canvas.restore();
+                        iconAnimateOutDrawable.setAlpha(alpha);
                     }
+                    if (iconAnimateInDrawable != null) {
+                        canvas.save();
+                        canvas.translate(iconX, iconY);
+                        int alpha = iconAnimateInDrawable.getAlpha();
+                        iconAnimateInDrawable.setAlpha((int) (alpha * changeProgress));
+                        iconAnimateInDrawable.draw(canvas);
+                        canvas.restore();
+                        iconAnimateInDrawable.setAlpha(alpha);
+                    }
+                } else {
+                    canvas.save();
+                    canvas.translate(iconX, iconY);
+                    icon.draw(canvas);
+                    canvas.restore();
                 }
             }
 
             if (animateCounterEnter || counterText != null || showRemove && (isEditing || editingStartAnimationProgress != 0)) {
-                if (aBackgroundColorKey == null) {
+                if (aBackgroundColorKey < 0) {
                     textCounterPaint.setColor(Theme.getColor(backgroundColorKey));
                 } else {
                     int color1 = Theme.getColor(backgroundColorKey);
@@ -482,14 +482,7 @@ public class FilterTabsView extends FrameLayout {
                 if (animateTextChange) {
                     titleWidth = animateFromTitleWidth * (1f - changeProgress) + currentTab.titleWidth * changeProgress;
                 }
-                int textSpace = 0;
-
-                if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_TEXT || CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_MIX) {
-                    textSpace = AndroidUtilities.dp(6);
-                } else if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_ICON) {
-                    textSpace = AndroidUtilities.dp(4);
-                }
-
+                int textSpace = AndroidUtilities.dp(tabMode == CherrygramConfig.TAB_TYPE_ICON && tabStyle <= CherrygramConfig.TAB_STYLE_TEXT ? 3 : 6);
                 if (animateTextChange && titleAnimateOutLayout == null) {
                     x = textX - titleXOffset + titleOffsetX + titleWidth + textSpace;
                 } else {
@@ -578,7 +571,7 @@ public class FilterTabsView extends FrameLayout {
 
             lastEmoticon = currentEmoticon;
             lastTextX = textX;
-            lastIconTab = iconTab;
+            lastIconX = iconX;
             lastTabCount = currentTab.counter;
             lastTitleLayout = textLayout;
             lastTitle = currentText;
@@ -599,14 +592,14 @@ public class FilterTabsView extends FrameLayout {
                 }
                 progressToLocked = Utilities.clamp(progressToLocked, 1f, 0);
                 int unactiveColor = Theme.getColor(unactiveTextColorKey);
-                if (aUnactiveTextColorKey != null) {
+                if (aUnactiveTextColorKey >= 0) {
                     unactiveColor = ColorUtils.blendARGB(unactiveColor, Theme.getColor(aUnactiveTextColorKey), animationValue);
                 }
                 if (lockDrawableColor != unactiveColor) {
                     lockDrawableColor = unactiveColor;
                     lockDrawable.setColorFilter(new PorterDuffColorFilter(unactiveColor, PorterDuff.Mode.MULTIPLY));
                 }
-                int iconX = (int) ((getMeasuredWidth() - lockDrawable.getIntrinsicWidth()) / 2f + locIconXOffset);
+                iconX = (int) ((getMeasuredWidth() - lockDrawable.getIntrinsicWidth()) / 2f + locIconXOffset);
                 int iconY = getMeasuredHeight() - AndroidUtilities.dp(12);
                 lockDrawable.setBounds(iconX, iconY, iconX + lockDrawable.getIntrinsicWidth(), iconY + lockDrawable.getIntrinsicHeight());
                 if (progressToLocked != 1f) {
@@ -669,10 +662,10 @@ public class FilterTabsView extends FrameLayout {
                 countWidth = 0;
             }
             int tabWidth;
-            if (CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON) {
-                tabWidth = currentTab.iconWidth + currentTab.titleWidth + (countWidth != 0 ? countWidth + AndroidUtilities.dp(6 * 1.0f) : 0);
+            if (tabMode != CherrygramConfig.TAB_TYPE_ICON) {
+                tabWidth = currentTab.iconWidth + currentTab.titleWidth + (countWidth != 0 ? countWidth + AndroidUtilities.dp(6 * (counterText != null ? 1.0f : editingStartAnimationProgress)) : 0);
             } else {
-                tabWidth = currentTab.iconWidth + (countWidth != 0 ? countWidth + AndroidUtilities.dp(6 * 1.0f) : 0);
+                tabWidth = currentTab.iconWidth + (countWidth != 0 ? countWidth + AndroidUtilities.dp(6 * (counterText != null ? 1.0f : editingStartAnimationProgress)) : 0);
             }
             int textX = (getMeasuredWidth() - tabWidth) / 2 + currentTab.iconWidth;
 
@@ -727,12 +720,12 @@ public class FilterTabsView extends FrameLayout {
                 }
             }
 
-            if (CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_TEXT) {
+            if (tabMode != CherrygramConfig.TAB_TYPE_TEXT) {
                 int iconX = (int) ((getMeasuredWidth() - tabWidth) / 2f);
 
-                if (iconX != lastIconTab) {
-                    animateIconTab = true;
-                    animateFromIconTab = lastIconTab;
+                if (iconX != lastIconX) {
+                    animateIconX = true;
+                    animateFromIconX = lastIconX;
                     changed = true;
                 }
 
@@ -765,11 +758,7 @@ public class FilterTabsView extends FrameLayout {
             super.onInitializeAccessibilityNodeInfo(info);
             info.setSelected(currentTab != null && selectedTabId != -1 && currentTab.id == selectedTabId);
             info.addAction(AccessibilityNodeInfo.ACTION_CLICK);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                info.addAction(new AccessibilityNodeInfo.AccessibilityAction(AccessibilityNodeInfo.ACTION_LONG_CLICK, LocaleController.getString("AccDescrOpenMenu2", R.string.AccDescrOpenMenu2)));
-            } else {
-                info.addAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
-            }
+            info.addAction(new AccessibilityNodeInfo.AccessibilityAction(AccessibilityNodeInfo.ACTION_LONG_CLICK, LocaleController.getString("AccDescrOpenMenu2", R.string.AccDescrOpenMenu2)));
             if (currentTab != null) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(currentTab.title);
@@ -788,7 +777,7 @@ public class FilterTabsView extends FrameLayout {
             animateCounterChange = false;
             animateTextChange = false;
             animateTextX = false;
-            animateIconTab = false;
+            animateIconX = false;
             animateIconChange = false;
             animateTabWidth = false;
             changeAnimator = null;
@@ -859,15 +848,15 @@ public class FilterTabsView extends FrameLayout {
     private int scrollingToChild = -1;
     private GradientDrawable selectorDrawable;
 
-    private String tabLineColorKey = Theme.key_actionBarTabLine;
-    private String activeTextColorKey = Theme.key_actionBarTabActiveText;
-    private String unactiveTextColorKey = Theme.key_actionBarTabUnactiveText;
-    private String selectorColorKey = Theme.key_actionBarTabSelector;
-    private String backgroundColorKey = Theme.key_actionBarDefault;
-    private String aTabLineColorKey;
-    private String aActiveTextColorKey;
-    private String aUnactiveTextColorKey;
-    private String aBackgroundColorKey;
+    private int tabLineColorKey = Theme.key_actionBarTabLine;
+    private int activeTextColorKey = Theme.key_actionBarTabActiveText;
+    private int unactiveTextColorKey = Theme.key_actionBarTabUnactiveText;
+    private int selectorColorKey = Theme.key_actionBarTabSelector;
+    private int backgroundColorKey = Theme.key_actionBarDefault;
+    private int aTabLineColorKey = -1;
+    private int aActiveTextColorKey = -1;
+    private int aUnactiveTextColorKey = -1;
+    private int aBackgroundColorKey = -1;
 
     private int prevLayoutWidth;
 
@@ -926,7 +915,7 @@ public class FilterTabsView extends FrameLayout {
 
             int color1 = Theme.getColor(tabLineColorKey);
             int color2 = Theme.getColor(aTabLineColorKey);
-            selectorDrawable.setColor(ColorUtils.blendARGB(color1, color2, value));
+            selectorDrawable.setColor(ColorUtils.setAlphaComponent(ColorUtils.blendARGB(color1, color2, value), tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
 
             listView.invalidateViews();
             listView.invalidate();
@@ -950,13 +939,7 @@ public class FilterTabsView extends FrameLayout {
         deletePaint.setStrokeWidth(AndroidUtilities.dp(1.5f));
 
         selectorDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, null);
-        float rad = AndroidUtilities.dpf2(folderStyle == CherrygramConfig.TAB_STYLE_VKUI ? 10 : folderStyle == CherrygramConfig.TAB_STYLE_PILLS ? 30 : 3);
-        if (folderStyle == CherrygramConfig.TAB_STYLE_ROUNDED || folderStyle >= CherrygramConfig.TAB_STYLE_VKUI) {
-            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
-        } else {
-            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
-        }
-        selectorDrawable.setColor(Theme.getColor(tabLineColorKey));
+        updateSelector();
 
         setHorizontalScrollBarEnabled(false);
         listView = new RecyclerListView(context) {
@@ -980,7 +963,7 @@ public class FilterTabsView extends FrameLayout {
                         return false;
                     }
                 }
-                return false;
+                return super.canHighlightChildAt(child, x, y);
             }
         };
         listView.setClipChildren(false);
@@ -1088,9 +1071,9 @@ public class FilterTabsView extends FrameLayout {
         };
         itemAnimator.setDelayAnimations(false);
         listView.setItemAnimator(itemAnimator);
-        listView.setSelectorType(folderStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 100 : 8);
+        listView.setSelectorType(tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 100 : 8);
         listView.setSelectorRadius(6);
-        listView.setSelectorDrawableColor(0);
+        listView.setSelectorDrawableColor(Theme.getColor(selectorColorKey));
         listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) {
 
             @Override
@@ -1183,7 +1166,11 @@ public class FilterTabsView extends FrameLayout {
         return animatingIndicator;
     }
 
-    private void scrollToTab(Tab tab, int position) {
+    public void stopAnimatingIndicator() {
+        animatingIndicator = false;
+    }
+
+    public void scrollToTab(Tab tab, int position) {
         if (tab.isLocked) {
             if (delegate != null) {
                 delegate.onPageSelected(tab, false);
@@ -1222,6 +1209,17 @@ public class FilterTabsView extends FrameLayout {
             return;
         }
         scrollToTab(tabs.get(0), 0);
+    }
+
+    public boolean isFirstTab() {
+        return currentPosition <= 0;
+    }
+
+    public void selectLastTab() {
+        if (tabs.isEmpty()) {
+            return;
+        }
+        scrollToTab(tabs.get(tabs.size() - 1), tabs.size() - 1);
     }
 
     public void setAnimationIdicatorProgress(float value) {
@@ -1281,6 +1279,17 @@ public class FilterTabsView extends FrameLayout {
         tabs.add(tab);
     }
 
+    public int getTabsCount() {
+        return tabs.size();
+    }
+
+    public Tab getTab(int i) {
+        if (i < 0 || i >= getTabsCount()) {
+            return null;
+        }
+        return tabs.get(i);
+    }
+
     public void finishAddingTabs(boolean animated) {
         listView.setItemAnimator(animated ? itemAnimator : null);
         adapter.notifyDataSetChanged();
@@ -1288,7 +1297,7 @@ public class FilterTabsView extends FrameLayout {
         oldAnimatedTab = currentPosition;
     }
 
-    public void animateColorsTo(String line, String active, String unactive, String selector, String background) {
+    public void animateColorsTo(int line, int active, int unactive, int selector, int background) {
         if (colorChangeAnimator != null) {
             colorChangeAnimator.cancel();
         }
@@ -1297,7 +1306,7 @@ public class FilterTabsView extends FrameLayout {
         aUnactiveTextColorKey = unactive;
         aBackgroundColorKey = background;
         selectorColorKey = selector;
-        listView.setSelectorDrawableColor(0);
+        listView.setSelectorDrawableColor(Theme.getColor(selectorColorKey));
 
         colorChangeAnimator = new AnimatorSet();
         colorChangeAnimator.playTogether(ObjectAnimator.ofFloat(this, COLORS, 0.0f, 1.0f));
@@ -1309,10 +1318,10 @@ public class FilterTabsView extends FrameLayout {
                 backgroundColorKey = aBackgroundColorKey;
                 activeTextColorKey = aActiveTextColorKey;
                 unactiveTextColorKey = aUnactiveTextColorKey;
-                aTabLineColorKey = null;
-                aActiveTextColorKey = null;
-                aUnactiveTextColorKey = null;
-                aBackgroundColorKey = null;
+                aTabLineColorKey = -1;
+                aActiveTextColorKey = -1;
+                aUnactiveTextColorKey = -1;
+                aBackgroundColorKey = -1;
             }
         });
         colorChangeAnimator.start();
@@ -1326,7 +1335,7 @@ public class FilterTabsView extends FrameLayout {
         return positionToId.get(0, 0);
     }
 
-    public String getSelectorColorKey() {
+    public int getSelectorColorKey() {
         return selectorColorKey;
     }
 
@@ -1346,8 +1355,8 @@ public class FilterTabsView extends FrameLayout {
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         boolean result = super.drawChild(canvas, child, drawingTime);
         if (child == listView) {
-            int height = getMeasuredHeight();
-            selectorDrawable.setAlpha((int) (folderStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 50 : 255 * listView.getAlpha()));
+            final int height = getMeasuredHeight();
+            selectorDrawable.setAlpha((int) (255 * listView.getAlpha()));
             float indicatorX = 0;
             float indicatorWidth = 0;
             if (animatingIndicator || manualScrollingToPosition != -1) {
@@ -1386,28 +1395,16 @@ public class FilterTabsView extends FrameLayout {
                     indicatorX = (int) (tabView.getX() + (viewWidth - indicatorWidth) / 2);
                 }
             }
-            if (indicatorWidth != 0 && folderStyle != CherrygramConfig.TAB_STYLE_TEXT) {
+            if (indicatorWidth != 0 && tabStyle != CherrygramConfig.TAB_STYLE_TEXT) {
                 canvas.save();
                 canvas.translate(listView.getTranslationX(), 0);
                 canvas.scale(listView.getScaleX(), 1f, listView.getPivotX() + listView.getX(), listView.getPivotY());
-
-                if (folderStyle == CherrygramConfig.TAB_STYLE_ROUNDED) {
-                    selectorDrawable.setBounds((int) indicatorX, height - AndroidUtilities.dpr(4), (int) (indicatorX + indicatorWidth), height);
-                    selectorDrawable.setCornerRadius(10F);
-                } else if (folderStyle == CherrygramConfig.TAB_STYLE_VKUI) {
-                    indicatorX = indicatorX - 25;
-                    indicatorWidth = indicatorWidth + 50;
-                    selectorDrawable.setBounds((int) indicatorX, height - (height * 85 / 100), (int) (indicatorX + indicatorWidth), height - (height * 15 / 100));
-                    selectorDrawable.setCornerRadius(35F);
-                } else if (folderStyle == CherrygramConfig.TAB_STYLE_PILLS) {
-                    indicatorX = indicatorX - 25;
-                    indicatorWidth = indicatorWidth + 50;
-                    selectorDrawable.setBounds((int) indicatorX, height - (height * 85 / 100), (int) (indicatorX + indicatorWidth), height - (height * 15 / 100));
-                    selectorDrawable.setCornerRadius(70F);
-                } else {
-                    selectorDrawable.setBounds((int) indicatorX, height - AndroidUtilities.dpr(4), (int) (indicatorX + indicatorWidth), height);
+                updateSelector();
+                selectorDrawable.setBounds((int) indicatorX - (tabStyle == CherrygramConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0), tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(15) : height - AndroidUtilities.dpr(4), (int) (indicatorX + indicatorWidth) + (tabStyle == CherrygramConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0), tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(15) : height);
+                if (tabStyle >= CherrygramConfig.TAB_STYLE_VKUI && CherrygramConfig.INSTANCE.getTabStyleStroke()) {
+//                    selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), 0));
+                    selectorDrawable.setStroke(AndroidUtilities.dp(1), Theme.getColor(activeTextColorKey));
                 }
-
                 selectorDrawable.draw(canvas);
                 canvas.restore();
             }
@@ -1569,6 +1566,7 @@ public class FilterTabsView extends FrameLayout {
             delegate.onTabSelected(tabs.get(position), currentPosition < position, true);
             oldAnimatedTab = position;
         }
+
         if (progress >= 1.0f) {
             manualScrollingToPosition = -1;
             manualScrollingToId = -1;
@@ -1618,7 +1616,7 @@ public class FilterTabsView extends FrameLayout {
         if (!isEditing && orderChanged) {
             MessagesStorage.getInstance(UserConfig.selectedAccount).saveDialogFiltersOrder();
             TLRPC.TL_messages_updateDialogFiltersOrder req = new TLRPC.TL_messages_updateDialogFiltersOrder();
-            ArrayList<MessagesController.DialogFilter> filters = MessagesController.getInstance(UserConfig.selectedAccount).dialogFilters;
+            ArrayList<MessagesController.DialogFilter> filters = MessagesController.getInstance(UserConfig.selectedAccount).getDialogFilters();
             for (int a = 0, N = filters.size(); a < N; a++) {
                 MessagesController.DialogFilter filter = filters.get(a);
                 if (filter.isDefault()) {
@@ -1736,7 +1734,7 @@ public class FilterTabsView extends FrameLayout {
             if (idx1 < 0 || idx2 < 0 || idx1 >= count || idx2 >= count) {
                 return;
             }
-            ArrayList<MessagesController.DialogFilter> filters = MessagesController.getInstance(UserConfig.selectedAccount).dialogFilters;
+            ArrayList<MessagesController.DialogFilter> filters = MessagesController.getInstance(UserConfig.selectedAccount).getDialogFilters();
             if (CherrygramConfig.INSTANCE.getNewTabs_hideAllChats()) {
                 int defaultPosition = 0;
                 for (int i = 0; i < filters.size(); i++) {
@@ -1805,7 +1803,7 @@ public class FilterTabsView extends FrameLayout {
             if (theIndex < 0 || theIndex >= count) {
                 return;
             }
-            ArrayList<MessagesController.DialogFilter> filters = MessagesController.getInstance(UserConfig.selectedAccount).dialogFilters;
+            ArrayList<MessagesController.DialogFilter> filters = MessagesController.getInstance(UserConfig.selectedAccount).getDialogFilters();
             int temp = positionToStableId.get(theIndex),
                 temp2 = tabs.get(theIndex).id;
             for (int i = theIndex - 1; i >= 0; --i) {
@@ -1962,4 +1960,13 @@ public class FilterTabsView extends FrameLayout {
 
     }
 
+    public void updateSelector() {
+        selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
+        float rad = AndroidUtilities.dpf2(tabStyle == CherrygramConfig.TAB_STYLE_VKUI ? 10 : tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? 30 : 3);
+        if (tabStyle == CherrygramConfig.TAB_STYLE_ROUNDED || tabStyle >= CherrygramConfig.TAB_STYLE_VKUI) {
+            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
+        } else {
+            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
+        }
+    }
 }

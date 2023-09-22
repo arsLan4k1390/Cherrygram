@@ -1,6 +1,11 @@
 package uz.unnarsx.cherrygram.tgkit
 
-import uz.unnarsx.cherrygram.preferences.*
+import uz.unnarsx.cherrygram.preferences.AppearancePreferencesEntry
+import uz.unnarsx.cherrygram.preferences.ChatsPreferencesEntry
+import uz.unnarsx.cherrygram.preferences.DonatePreferenceEntry
+import uz.unnarsx.cherrygram.preferences.GeneralPreferencesEntry
+import uz.unnarsx.cherrygram.preferences.MainPreferencesEntry
+import uz.unnarsx.cherrygram.preferences.SecurityPreferencesEntry
 
 object CherrygramPreferencesNavigator {
     @JvmStatic

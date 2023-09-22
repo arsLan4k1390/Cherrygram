@@ -8,7 +8,7 @@ public class TGKitSliderPreference extends TGKitPreference {
     public TGSLContract contract;
 
     @Nullable
-    public String summary;
+    public String description;
 
     @Override
     public TGPType getType() {

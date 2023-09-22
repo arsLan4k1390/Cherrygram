@@ -337,9 +337,15 @@ public class AdminLogFilterAlert extends BottomSheet {
         });
         containerView.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, 0, 0, 0, 48));
 
-        View shadow = new View(context);
-        shadow.setBackgroundResource(R.drawable.header_shadow_reverse);
-        containerView.addView(shadow, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 3, Gravity.BOTTOM | Gravity.LEFT, 0, 0, 0, 48));
+        View shadow = new View(context) {
+            @Override
+            protected void onDraw(Canvas canvas) {
+                super.onDraw(canvas);
+//                if (!ExteraConfig.disableDividers)
+//                    canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
+            }
+        };
+        containerView.addView(shadow, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 1, Gravity.BOTTOM | Gravity.LEFT, 0, 0, 0, 48));
 
         saveButton = new BottomSheet.BottomSheetCell(context, 1);
         saveButton.setBackgroundDrawable(Theme.getSelectorDrawable(false));

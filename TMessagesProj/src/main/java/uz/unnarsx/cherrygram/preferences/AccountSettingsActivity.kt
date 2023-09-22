@@ -125,7 +125,7 @@ class AccountSettingsActivity : BaseFragment() {
                 val dialog = builder.create()
                 dialog.setOnShowListener {
                     val button = dialog.getButton(AlertDialog.BUTTON_POSITIVE) as TextView
-                    button.setTextColor(Theme.getColor(Theme.key_dialogTextRed))
+                    button.setTextColor(Theme.getColor(Theme.key_text_RedBold))
                     button.isEnabled = false
                     val buttonText = button.text
                     object : CountDownTimer(60000, 100) {
@@ -220,7 +220,7 @@ class AccountSettingsActivity : BaseFragment() {
                     textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText))
                     if (position == deleteAccountRow) {
                         textCell.setText(LocaleController.getString("SP_DeleteAccount", R.string.SP_DeleteAccount), false)
-                        textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteRedText))
+                        textCell.setTextColor(Theme.getColor(Theme.key_text_RedRegular))
                     }
                 }
                 3 -> {

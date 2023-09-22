@@ -88,18 +88,13 @@
     <string name="AP_SystemEmoji">Використовувати системні емодзі</string>
     <string name="AP_CenterTitle">Центрувати заголовок в панелі дій</string>
     <string name="AP_ToolBarShadow">Відключити тінь у тулбару</string>
-    <string name="AP_FlatNB">Прозора панель навігації</string>
-    <string name="AP_FlatNB_Desc">Панель навигації набуває кольору панелі відправки повідомлень</string>
     <string name="AP_SystemFonts">Використовувати системний шрифт</string>
-    <string name="AP_SystemFonts_Desc">Вимкніть, (потрібен перезапуск додатку), якщо ваш шрифт не підтримує форматування (Жирний, Курсив, Моно)</string>
     <string name="CP_Snowflakes_Header">Сніжинки (перезапустіть програму для застосування)</string>
     <string name="CP_Snowflakes_AH">Заголовок</string>
     <string name="CP_PremAndAnim_Header">Анімації та Преміум можливості (перезапустіть програму для застосування)</string>
     <string name="CP_DisableAnimAvatars">Вимкнути анімовані аватарки</string>
     <string name="CP_DisableReactionsOverlay">Вимкнути накладання реакцій</string>
     <string name="CP_DisableReactionsOverlay_Desc">Це вимкне накладання що спливає з доступними реакціями</string>
-    <string name="CP_DrawSmallReactions">Показувати маленькі реакції</string>
-    <string name="CP_DrawSmallReactions_Desc">Відображати маленькі (старі) реакції замість великих</string>
     <string name="CP_DisableReactionAnim">Вимкнути анімацію реакцій</string>
     <string name="CP_DisableReactionAnim_Desc">(під час реакції на повідомлення)</string>
     <string name="CP_DisablePremiumStatuses">Вимкнути преміум статуси</string>
@@ -163,8 +158,6 @@
     <string name="CP_AutoPauseVideo">Зупиняти видео</string>
     <string name="CP_AutoPauseVideo_Desc">Під час блокування екрану або згортанні додатку</string>
     <string name="CP_DisableVibration">Вимкнути вібрацію</string>
-    <string name="CP_Proximity">Ввімкнути датчик наближення</string>
-    <string name="CP_Proximity_Desc">При ввімкнені ви позбавитесь від погасання екрану під час прослуховування аудіо/відеоповідомлень (потрібен перезапуск додатку)</string>
     <string name="CP_Header_Notification">Сповіщення</string>
     <string name="CP_SilenceNonContacts">Заглушити не-контакти</string>
     <string name="CP_SilenceNonContacts_Desc">Якщо увімкнено, то сповіщення зі звуком приходитимуть тільки від контактів. Ви можете добавить людину в контакти без номера його телефона (в профілі людини)</string>
@@ -206,6 +199,7 @@
     <string name="SP_Header_Privacy">Приватність</string>
     <string name="SP_NoProxyPromo">Не показувати спонсора проксі</string>
     <string name="SP_AppCenterAnalytics_Desc">Включивши це, всі збої програми та статистичні дані будуть повідомлятися в \"appcenter.ms\" для подальшого розгляду розробником.</string>
+    <string name="SP_GoogleAnalytics_Desc">Включивши це, всі збої програми та статистичні дані будуть повідомлятися в \"console.firebase.google.com\" для подальшого розгляду розробником.</string>
     <string name="SP_CleanOld">Видалити старий кеш (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Видалено успішно</string>
     <string name="SP_Category_Account">Акаунт</string>

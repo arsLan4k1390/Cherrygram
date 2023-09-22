@@ -136,7 +136,7 @@ public abstract class PrivateVideoPreviewDialog extends FrameLayout implements V
         addView(textureView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
         ActionBar actionBar = new ActionBar(context);
-        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+        actionBar.setBackButtonDrawable(new BackDrawable(false));
         actionBar.setBackgroundColor(Color.TRANSPARENT);
         actionBar.setItemsColor(Theme.getColor(Theme.key_voipgroup_actionBarItems), false);
         actionBar.setOccupyStatusBar(true);

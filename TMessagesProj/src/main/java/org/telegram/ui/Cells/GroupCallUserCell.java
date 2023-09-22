@@ -127,7 +127,7 @@ public class GroupCallUserCell extends FrameLayout {
         muteButton.playAnimation();
     };
 
-    private String grayIconColor = Theme.key_voipgroup_mutedIcon;
+    private int grayIconColor = Theme.key_voipgroup_mutedIcon;
 
     private Runnable checkRaiseRunnable = () -> applyParticipantChanges(true, true);
 
@@ -587,8 +587,8 @@ public class GroupCallUserCell extends FrameLayout {
         applyParticipantChanges(animated, false);
     }
 
-    public void setGrayIconColor(String key, int value) {
-        if (!grayIconColor.equals(key)) {
+    public void setGrayIconColor(int key, int value) {
+        if (grayIconColor != key) {
             if (currentIconGray) {
                 lastMuteColor = Theme.getColor(key);
             }

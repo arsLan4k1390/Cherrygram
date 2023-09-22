@@ -30,8 +30,19 @@ class SecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("SP_GoogleAnalytics", R.string.SP_GoogleAnalytics)
+                description = LocaleController.getString("SP_GoogleAnalytics_Desc", R.string.SP_GoogleAnalytics_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.googleAnalytics
+                }) {
+                    CherrygramConfig.googleAnalytics = it
+                    AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
+            switch {
                 title = LocaleController.getString("SP_AppCenterAnalytics", R.string.SP_AppCenterAnalytics)
-                summary = LocaleController.getString("SP_AppCenterAnalytics_Desc", R.string.SP_AppCenterAnalytics_Desc)
+                description = LocaleController.getString("SP_AppCenterAnalytics_Desc", R.string.SP_AppCenterAnalytics_Desc)
 
                 contract({
                     return@contract CherrygramConfig.appcenterAnalytics
@@ -45,7 +56,7 @@ class SecurityPreferencesEntry : BasePreferencesEntry {
                 title = LocaleController.getString("SP_CleanOld", R.string.SP_CleanOld)
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    val file = File(Environment.getExternalStorageDirectory(), "Telegram");
+                    val file = File(Environment.getExternalStorageDirectory(), "Telegram")
                     file.deleteRecursively()
                     Toast.makeText(bf.parentActivity, LocaleController.getString("SP_RemovedS", R.string.SP_RemovedS), Toast.LENGTH_SHORT).show()
                 }

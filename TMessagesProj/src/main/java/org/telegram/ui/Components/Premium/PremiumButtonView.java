@@ -54,6 +54,7 @@ public class PremiumButtonView extends FrameLayout {
 
     private boolean isFlickerDisabled;
     CounterView counterView;
+    public boolean drawGradient = true;
 
     public PremiumButtonView(@NonNull Context context, boolean createOverlayTextView) {
         this(context, AndroidUtilities.dp(8), createOverlayTextView);
@@ -70,6 +71,7 @@ public class PremiumButtonView extends FrameLayout {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.HORIZONTAL);
         buttonTextView = new AnimatedTextView(context);
+        buttonTextView.setAnimationProperties(.35f, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
         buttonTextView.setGravity(Gravity.CENTER);
         buttonTextView.setTextColor(Color.WHITE);
         buttonTextView.setTextSize(AndroidUtilities.dp(14));
@@ -143,8 +145,13 @@ public class PremiumButtonView extends FrameLayout {
                     inc = true;
                 }
             }
-            PremiumGradient.getInstance().updateMainGradientMatrix(0, 0, getMeasuredWidth(), getMeasuredHeight(), -getMeasuredWidth() * 0.1f * progress, 0);
-            canvas.drawRoundRect(AndroidUtilities.rectTmp, radius, radius, PremiumGradient.getInstance().getMainGradientPaint());
+            if (drawGradient) {
+                PremiumGradient.getInstance().updateMainGradientMatrix(0, 0, getMeasuredWidth(), getMeasuredHeight(), -getMeasuredWidth() * 0.1f * progress, 0);
+                canvas.drawRoundRect(AndroidUtilities.rectTmp, radius, radius, PremiumGradient.getInstance().getMainGradientPaint());
+            } else {
+                paintOverlayPaint.setAlpha(255);
+                canvas.drawRoundRect(AndroidUtilities.rectTmp, radius, radius, paintOverlayPaint);
+            }
             invalidate();
         }
 

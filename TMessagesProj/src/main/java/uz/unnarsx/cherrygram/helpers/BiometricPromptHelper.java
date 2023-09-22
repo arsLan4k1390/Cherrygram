@@ -22,6 +22,7 @@ import androidx.annotation.RequiresApi;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.FingerprintController;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.AlertDialog;
@@ -57,6 +58,9 @@ public class BiometricPromptHelper {
         if (parentActivity == null || !hasBiometricEnrolled()) {
             return;
         }
+        if (!FingerprintController.isKeyReady() || FingerprintController.checkDeviceFingerprintsChanged()) {
+            return;
+        }
         Activity activity = parentActivity;
         if (Build.VERSION.SDK_INT >= 28) {
             cancellationSignal = new CancellationSignal();
@@ -87,7 +91,7 @@ public class BiometricPromptHelper {
             linearLayout.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT, 4, 4, 4, 4));
 
             TextView titleTextView = new TextView(activity);
-            titleTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            titleTextView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
             titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
             titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
             titleTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
@@ -193,13 +197,13 @@ public class BiometricPromptHelper {
     private void showTemporaryMessage(CharSequence message) {
         AndroidUtilities.cancelRunOnUIThread(resetRunnable);
         errorTextView.setText(message);
-        errorTextView.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
+        errorTextView.setTextColor(Theme.getColor(Theme.key_text_RedBold));
         errorTextView.setContentDescription(message);
         Vibrator v = (Vibrator) parentActivity.getSystemService(Context.VIBRATOR_SERVICE);
         if (v != null) {
             v.vibrate(100);
         }
-        AndroidUtilities.shakeView(errorTextView);
+        AndroidUtilities.shakeViewSpring(errorTextView);
         AndroidUtilities.runOnUIThread(resetRunnable, 2000);
     }
 
@@ -263,7 +267,7 @@ public class BiometricPromptHelper {
         return parentActivity.getDrawable(iconRes);
     }
 
-    public void onPause() {
+    public void dismiss() {
         if (alertDialog != null) {
             alertDialog.dismiss();
             alertDialog = null;

@@ -3,8 +3,11 @@ package uz.unnarsx.cherrygram
 import android.app.Activity
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.content.pm.PackageManager
 import android.os.Build
+import android.os.Bundle
+import org.telegram.messenger.AndroidUtilities
+import android.widget.Toast
+import kotlinx.coroutines.*
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.BuildVars
 import org.telegram.tgnet.TLRPC
@@ -12,24 +15,36 @@ import uz.unnarsx.cherrygram.extras.CherrygramExtras
 import uz.unnarsx.cherrygram.extras.LocalVerifications
 import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
-import uz.unnarsx.cherrygram.icons.icon_replaces.BaseIconReplace
-import uz.unnarsx.cherrygram.icons.icon_replaces.NoIconReplace
-import uz.unnarsx.cherrygram.icons.icon_replaces.SolarIconReplace
-import uz.unnarsx.cherrygram.icons.icon_replaces.VkIconReplace
-import uz.unnarsx.cherrygram.preferences.*
+import uz.unnarsx.cherrygram.helpers.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.icons.icon_replaces.*
+import uz.unnarsx.cherrygram.preferences.boolean
+import uz.unnarsx.cherrygram.preferences.int
+import uz.unnarsx.cherrygram.preferences.long
+import uz.unnarsx.cherrygram.preferences.string
 import uz.unnarsx.cherrygram.stickers.StickersIDsDownloader
-import java.net.URL
 import kotlin.system.exitProcess
 
-object CherrygramConfig {
+object CherrygramConfig: CoroutineScope by MainScope() {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
-    val listener = OnSharedPreferenceChangeListener { preferences: SharedPreferences?, key: String ->
-        val map = HashMap<String, String>(1)
+    val listener = OnSharedPreferenceChangeListener { preferences: SharedPreferences?, key: String? ->
+        val map = HashMap<String, String?>(1)
         map["key"] = key
         if (appcenterAnalytics) {
             AnalyticsHelper.trackEvent("Cherry config changed", map)
+        }
+
+        if (googleAnalytics) {
+            try {
+                val bundle = Bundle()
+                bundle.putString("key", key)
+                FirebaseAnalyticsHelper.trackEvent("cherry_config_changed", bundle)
+//                Toast.makeText(ApplicationLoader.applicationContext, bundle.toString(), Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(ApplicationLoader.applicationContext, "error", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -54,9 +69,9 @@ object CherrygramConfig {
     var showId by sharedPreferences.boolean("AP_ShowID", false)
     var showDc by sharedPreferences.boolean("AP_ShowDC", false)
     //Animations and Premium Features
+    var hideStories by sharedPreferences.boolean("CP_HideStories", false)
     var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
     var disableReactionsOverlay by sharedPreferences.boolean("CP_DisableReactionsOverlay", false)
-    var drawSmallReactions by sharedPreferences.boolean("CP_DrawSmallReactions", false)
     var disableReactionAnim by sharedPreferences.boolean("CP_DisableReactionAnim", false)
     var disablePremiumStatuses by sharedPreferences.boolean("CP_DisablePremiumStatuses", false)
     var disablePremStickAnim by sharedPreferences.boolean("CP_DisablePremStickAnim", false)
@@ -81,10 +96,10 @@ object CherrygramConfig {
 
     var oneUI_SwitchStyle by sharedPreferences.boolean("AP_OneUI_SwitchStyle", true)
     var centerTitle by sharedPreferences.boolean("AP_CenterTitle", true)
-    var disableToolBarShadow by sharedPreferences.boolean("AP_ToolBarShadow", false)
+    var disableToolBarShadow by sharedPreferences.boolean("AP_ToolBarShadow", true)
     var disableDividers by sharedPreferences.boolean("AP_DisableDividers", true)
     var overrideHeaderColor by sharedPreferences.boolean("AP_OverrideHeaderColor", true)
-    var flatNavbar by sharedPreferences.boolean("AP_FlatNB", false)
+    var flatNavbar by sharedPreferences.boolean("AP_FlatNavBar", true)
     //Drawer
     var drawerAvatar by sharedPreferences.boolean("AP_DrawerAvatar", true)
     fun toggleDrawerAvatar() {
@@ -181,32 +196,24 @@ object CherrygramConfig {
         putBoolean("AP_CGPreferencesDrawerButton", cGPreferencesDrawerButton)
     }
     //Folders
-    var tabsOnForward by sharedPreferences.boolean("CP_TabsOnForward", true)
     var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
     var newTabs_hideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
-    /*fun toggleNewTabs_hideAllChats() { // Telegram folders settings
-        newTabs_hideAllChats = !newTabs_hideAllChats
-        putBoolean("CP_NewTabs_RemoveAllChats", newTabs_hideAllChats)
-    }*/
+    var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
+
+    const val TAB_TYPE_MIX = 0
+    const val TAB_TYPE_TEXT = 1
+    const val TAB_TYPE_ICON = 2
+    var tabMode by sharedPreferences.int("AP_TabMode", 1)
 
     const val TAB_STYLE_DEFAULT = 0
     const val TAB_STYLE_ROUNDED = 1
     const val TAB_STYLE_TEXT = 2
     const val TAB_STYLE_VKUI = 3
     const val TAB_STYLE_PILLS = 4
-    var tab_style by sharedPreferences.int("AP_Tab_Style", TAB_STYLE_ROUNDED)
+    var tabStyle by sharedPreferences.int("AP_TabStyle", TAB_STYLE_ROUNDED)
+    var tabStyleStroke by sharedPreferences.boolean("AP_TabStyleAddStroke", false)
 
-    var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
-    fun toggleNewTabsNoUnread() { // Telegram folders settings
-        newTabs_noUnread = !newTabs_noUnread
-        putBoolean("CP_NewTabs_NoCounter", newTabs_noUnread)
-    }
-
-    const val TAB_TYPE_TEXT = 0 // Telegram folders settings
-    const val TAB_TYPE_MIX = 1 // Telegram folders settings
-    const val TAB_TYPE_ICON = 2 // Telegram folders settings
-    var tabMode by sharedPreferences.int("CG_FoldersType", 0)
-
+    //Snowflakes
     var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false)
     var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", false)
     var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false)
@@ -266,6 +273,13 @@ object CherrygramConfig {
         putBoolean("CP_ShowSaveMessage", showReport)
     }
 
+    var showJSON by sharedPreferences.boolean("CP_ShowJSON", false)
+    fun toggleShowJSON() {
+        showJSON = !showJSON
+        putBoolean("CP_ShowJSON", showJSON)
+    }
+
+    //Direct Share
     var supergroupsDrawShareButton by sharedPreferences.boolean("CP_SupergroupsDrawShareButton", false)
     fun toggleSupergroupsDrawShareButton() {
         supergroupsDrawShareButton = !supergroupsDrawShareButton
@@ -319,7 +333,6 @@ object CherrygramConfig {
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
     var disableVibration by sharedPreferences.boolean("CP_DisableVibration", false)
-    var enableProximity by sharedPreferences.boolean("CP_Proximity", true)
     //Notifications
     const val NOTIF_SOUND_DISABLE = 0
     const val NOTIF_SOUND_DEFAULT = 1
@@ -377,7 +390,8 @@ object CherrygramConfig {
 
     // Privacy
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
-    var appcenterAnalytics by sharedPreferences.boolean("SP_AppCenterAnalytics", true)
+    var appcenterAnalytics by sharedPreferences.boolean("SP_AppCenterAnalytics", !ApplicationLoader.checkPlayServices())
+    var googleAnalytics by sharedPreferences.boolean("SP_GoogleAnalytics", ApplicationLoader.checkPlayServices())
 
     // Experimental
     //General
@@ -468,22 +482,37 @@ object CherrygramConfig {
 
     init {
         CherrygramToasts.init(sharedPreferences)
-        fuckOff()
-        if (blockStickers) {
-            CherrygramExtras.downloadCherrygramLogo(ApplicationLoader.applicationContext)
-        }
-        try {
-            StickersIDsDownloader.SET_IDS = URL("https://raw.githubusercontent.com/arsLan4k1390/Cherrygram/main/stickers.txt").readText().lines()
-//            Log.d("SetsDownloader", StickersIDsDownloader.SET_IDS.toString())
-        }
-        catch (e: Exception) {
-            e.printStackTrace()
+//        fuckOff()
+    }
+
+    init {
+        launch(Dispatchers.IO) {
+            if (blockStickers) {
+                StickersIDsDownloader.getStickerSetIDs()
+                CherrygramExtras.downloadCherrygramLogo(ApplicationLoader.applicationContext)
+            }
+            delay(2000)
+            if (googleAnalytics) {
+                try {
+                    FirebaseAnalyticsHelper.start(ApplicationLoader.applicationContext)
+                    val bundle = Bundle()
+                    FirebaseAnalyticsHelper.trackEvent("cg_start", bundle)
+                    /*AndroidUtilities.runOnUIThread(Runnable {
+                        Toast.makeText(ApplicationLoader.applicationContext, "cg_start", Toast.LENGTH_SHORT).show()
+                    })*/
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                    /*AndroidUtilities.runOnUIThread(Runnable {
+                        Toast.makeText(ApplicationLoader.applicationContext, "error", Toast.LENGTH_SHORT).show()
+                    })*/
+                }
+            }
         }
     }
 
     private fun fuckOff() {
-        val good = "308203953082027da00302010202045c6a100c300d06092a864886f70d01010b0500307a310b300906035504061302555a311230100603550408130953616d61726b616e64311230100603550407130953616d61726b616e643111300f060355040a130854656c656772616d3111300f060355040b130854656c656772616d311d301b060355040313144172736c616e204b6861646a69627564696e6f763020170d3232303130333138343733315a180f32303731313232323138343733315a307a310b300906035504061302555a311230100603550408130953616d61726b616e64311230100603550407130953616d61726b616e643111300f060355040a130854656c656772616d3111300f060355040b130854656c656772616d311d301b060355040313144172736c616e204b6861646a69627564696e6f7630820122300d06092a864886f70d01010105000382010f003082010a0282010100905ab76f19c6fc8d50d50c4e6ae5fa32b72f2b3426bef7098f922a64e75b43af4c065bcc5f70e8d2a5517c7c089c3caddad964e876869c76662811f32e1b0e8ea46eb07375d0e563c4a440646be4b2a1947a83935a20039f1f0a19051561aaae714e9e5fe15494668f950303ab79176b432b2eadde75b9ac5ef61ef7c40db6711bd69b1912adb58802e74ff7cace591fde0b126788bded838303a82a5be479ce69a664745e8c9150d4510e0491608461be3598dfa9ff62e852aa544c7c17b00456dea5ecbb61c3cdb1bee00c5350f274ddd3c3579f812c1dd81b9825c0aa017ac2028c79c2b9a2c25ba29ea7d2a20da48188914b119dec1946280610073309e70203010001a321301f301d0603551d0e04160414282e1a317aa0a6133e8293a4b060ad1160c077c1300d06092a864886f70d01010b050003820101001f34812c430de1aa4644976c4df8686359283f381ab950fc9adc55a7b78a6fa762ad170c5df35baffe08689f1d64c396d610d6265df7fb9384520a97bf0665efabf4014ecd259c86ea4e5a384df3854e7a9e12b9388439f50bd9a70ef4a1b5a204ac717f5e431469ebc7cb4a4494e5681f369a56c11d4a912b15db76191029414749289b703c5739862d0e0bd89921b11a1bda953d529f22cd0596f41161b707f73f5a7e4df7e782bd73346001cb395127ab1a5901ec13518cd733d7b3c7a2e52b7e927e7f52a6e53efb4fde745829a4534f0f9cd04949e8240060ed5ac7373f2f04f5489211702e71fec86ba340ea87aa6e3f221e89a99ece1c33e710bb4efd"
-        val info = ApplicationLoader.applicationContext.packageManager.getPackageInfo("uz.unnarsx.cherrygram", PackageManager.GET_SIGNATURES).signatures[0].toCharsString()
+        val good = Extra.PACKAGE_HASH
+        val info = AndroidUtilities.getCertificateSHA256Fingerprint()
         if (info != good) {
             exitProcess(0)
         }

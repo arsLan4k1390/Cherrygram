@@ -16,6 +16,7 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BaseController;
 import org.telegram.messenger.ChatObject;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessageObject;
@@ -46,6 +47,7 @@ import uz.unnarsx.cherrygram.CherrygramConfig;
 public class MessageHelper extends BaseController {
 
     private static final MessageHelper[] Instance = new MessageHelper[UserConfig.MAX_ACCOUNT_COUNT];
+
     public static SpannableStringBuilder editedSpan;
     public static Drawable editedDrawable;
 
@@ -158,7 +160,7 @@ public class MessageHelper extends BaseController {
         fragment.showDialog(alertDialog);
         TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
         if (button != null) {
-            button.setTextColor(Theme.getColor(Theme.key_dialogTextRed));
+            button.setTextColor(Theme.getColor(Theme.key_text_RedBold));
         }
     }
 
@@ -212,7 +214,7 @@ public class MessageHelper extends BaseController {
             try {
                 latch.await();
             } catch (Exception e) {
-                e.printStackTrace();
+                FileLog.e(e);
             }
             if (!messageIds.isEmpty()) {
                 ArrayList<ArrayList<Integer>> lists = new ArrayList<>();

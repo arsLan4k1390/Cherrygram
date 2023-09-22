@@ -1,10 +1,3 @@
-/*
- * This is the source code of OwlGram for Android v. 1.4.x.
- * It is licensed under GNU GPL v. 2 or later.
- * You should have received a copy of the license in this archive (see LICENSE).
- *
- * Copyright Laky64, 2021-2022.
- */
 package uz.unnarsx.cherrygram.camera;
 
 import android.graphics.Bitmap;
@@ -133,7 +126,7 @@ public final class JpegImageUtils {
     }
 
     /**
-     * Crops byte array with given {@link android.graphics.Rect}.
+     * Crops byte array with given {@link Rect}.
      */
     @NonNull
     public static byte[] cropByteArray(@NonNull byte[] data, @Nullable Rect cropRect)
@@ -231,15 +224,15 @@ public final class JpegImageUtils {
             UNKNOWN
         }
 
-        private final CodecFailedException.FailureType mFailureType;
+        private final FailureType mFailureType;
 
-        CodecFailedException(String message, CodecFailedException.FailureType failureType) {
+        CodecFailedException(String message, FailureType failureType) {
             super(message);
             mFailureType = failureType;
         }
 
         @NonNull
-        public CodecFailedException.FailureType getFailureType() {
+        public FailureType getFailureType() {
             return mFailureType;
         }
     }

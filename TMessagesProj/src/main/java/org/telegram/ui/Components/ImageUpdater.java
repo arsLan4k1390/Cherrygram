@@ -22,10 +22,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Pair;
 import android.view.View;
 
 import androidx.core.content.FileProvider;
-import androidx.exifinterface.media.ExifInterface;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -63,7 +63,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uz.unnarsx.cherrygram.helpers.PermissionsUtils;
+import uz.unnarsx.cherrygram.utils.PermissionsUtils;
 
 public class ImageUpdater implements NotificationCenter.NotificationCenterDelegate, PhotoCropActivity.PhotoEditActivityDelegate {
     private final static int ID_TAKE_PHOTO = 0,
@@ -310,7 +310,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         sheet.setOnHideListener(onDismiss);
         parentFragment.showDialog(sheet);
         if (hasAvatar) {
-            sheet.setItemColor(items.size() - 1, Theme.getColor(Theme.key_dialogTextRed), Theme.getColor(Theme.key_dialogRedIcon));
+            sheet.setItemColor(items.size() - 1, Theme.getColor(Theme.key_text_RedBold), Theme.getColor(Theme.key_text_RedRegular));
         }
     }
 
@@ -689,12 +689,13 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         if (parentFragment == null) {
             return;
         }
-        if (Build.VERSION.SDK_INT >= 23 && parentFragment.getParentActivity() != null) {
+        final Activity activity = parentFragment.getParentActivity();
+        if (Build.VERSION.SDK_INT >= 23 && activity != null) {
             if (canSelectVideo ? !PermissionsUtils.isImagesAndVideoPermissionGranted() : !PermissionsUtils.isImagesPermissionGranted()) {
                 if (canSelectVideo) {
-                    PermissionsUtils.requestImagesAndVideoPermission(parentFragment.getParentActivity(), BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE_FOR_AVATAR);
+                    PermissionsUtils.requestImagesAndVideoPermission(activity, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE_FOR_AVATAR);
                 } else {
-                    PermissionsUtils.requestImagesPermission(parentFragment.getParentActivity(), BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE_FOR_AVATAR);
+                    PermissionsUtils.requestImagesPermission(activity, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE_FOR_AVATAR);
                 }
                 return;
             }
@@ -746,8 +747,12 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
     }
 
     public void openPhotoForEdit(String path, String thumb, int orientation, boolean isVideo) {
+        openPhotoForEdit(path, thumb, new Pair<>(orientation, 0), isVideo);
+    }
+
+    public void openPhotoForEdit(String path, String thumb, Pair<Integer, Integer> orientation, boolean isVideo) {
         final ArrayList<Object> arrayList = new ArrayList<>();
-        MediaController.PhotoEntry photoEntry = new MediaController.PhotoEntry(0, 0, 0, path, orientation, false, 0, 0, 0);
+        MediaController.PhotoEntry photoEntry = new MediaController.PhotoEntry(0, 0, 0, path, orientation.first, false, 0, 0, 0).setOrientation(orientation);
         photoEntry.isVideo = isVideo;
         photoEntry.thumbPath = thumb;
         arrayList.add(photoEntry);
@@ -782,24 +787,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
             } else if (requestCode == 13) {
                 parentFragment.getParentActivity().overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
                 PhotoViewer.getInstance().setParentActivity(parentFragment);
-                int orientation = 0;
-                try {
-                    ExifInterface ei = new ExifInterface(currentPicturePath);
-                    int exif = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                    switch (exif) {
-                        case ExifInterface.ORIENTATION_ROTATE_90:
-                            orientation = 90;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_180:
-                            orientation = 180;
-                            break;
-                        case ExifInterface.ORIENTATION_ROTATE_270:
-                            orientation = 270;
-                            break;
-                    }
-                } catch (Exception e) {
-                    FileLog.e(e);
-                }
+                Pair<Integer, Integer> orientation = AndroidUtilities.getImageOrientation(currentPicturePath);
                 openPhotoForEdit(currentPicturePath, null, orientation, false);
                 AndroidUtilities.addMediaToGallery(currentPicturePath);
                 currentPicturePath = null;
@@ -861,7 +849,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                     NotificationCenter.getInstance(currentAccount).addObserver(ImageUpdater.this, NotificationCenter.filePreparingStarted);
                     NotificationCenter.getInstance(currentAccount).addObserver(ImageUpdater.this, NotificationCenter.filePreparingFailed);
                     NotificationCenter.getInstance(currentAccount).addObserver(ImageUpdater.this, NotificationCenter.fileNewChunkAvailable);
-                    MediaController.getInstance().scheduleVideoConvert(avatarObject, true);
+                    MediaController.getInstance().scheduleVideoConvert(avatarObject, true, true);
                     uploadingImage = null;
                     if (delegate != null) {
                         delegate.didStartUpload(true);

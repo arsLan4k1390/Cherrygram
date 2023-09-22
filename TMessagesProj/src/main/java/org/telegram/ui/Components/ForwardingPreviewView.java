@@ -29,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildVars;
+import org.telegram.messenger.ChatMessageSharedResources;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.FileLog;
@@ -93,6 +94,7 @@ public class ForwardingPreviewView extends FrameLayout {
     ArrayList<ActionBarMenuSubItem> actionItems = new ArrayList<>();
 
     Rect rect = new Rect();
+    ChatMessageSharedResources sharedResources;
 
     private boolean firstLayout = true;
     ValueAnimator offsetsAnimator;
@@ -118,6 +120,7 @@ public class ForwardingPreviewView extends FrameLayout {
     @SuppressLint("ClickableViewAccessibility")
     public ForwardingPreviewView(@NonNull Context context, ForwardingMessagesParams params, TLRPC.User user, TLRPC.Chat chat, int currentAccount, ResourcesDelegate resourcesProvider)  {
         super(context);
+        sharedResources = new ChatMessageSharedResources(context);
         this.currentAccount = currentAccount;
         currentUser = user;
         currentChat = chat;
@@ -980,10 +983,11 @@ public class ForwardingPreviewView extends FrameLayout {
     }
 
     private class Adapter extends RecyclerView.Adapter {
+
         @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            ChatMessageCell chatMessageCell = new ChatMessageCell(parent.getContext(), false, resourcesProvider);
+            ChatMessageCell chatMessageCell = new ChatMessageCell(parent.getContext(), false, sharedResources, resourcesProvider);
             return new RecyclerListView.Holder(chatMessageCell);
         }
 
@@ -1032,8 +1036,7 @@ public class ForwardingPreviewView extends FrameLayout {
         return groupedMessages;
     }
 
-    private int getThemedColor(String key) {
-        Integer color = resourcesProvider != null ? resourcesProvider.getColor(key) : null;
-        return color != null ? color : Theme.getColor(key);
+    private int getThemedColor(int key) {
+        return Theme.getColor(key, resourcesProvider);
     }
 }

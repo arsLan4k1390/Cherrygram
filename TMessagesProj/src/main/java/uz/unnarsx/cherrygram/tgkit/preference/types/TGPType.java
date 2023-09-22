@@ -11,8 +11,8 @@ public enum TGPType {
     LIST(7, true),
     HINT(8, true);
 
-    public int adapterType;
-    public boolean enabled;
+    public final int adapterType;
+    public final boolean enabled;
 
     TGPType(int adapterType, boolean enabled) {
         this.adapterType = adapterType;

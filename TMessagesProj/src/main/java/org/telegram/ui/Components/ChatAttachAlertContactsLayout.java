@@ -273,9 +273,8 @@ public class ChatAttachAlertContactsLayout extends ChatAttachAlert.AttachAlertLa
             }
         }
 
-        private int getThemedColor(String key) {
-            Integer color = resourcesProvider != null ? resourcesProvider.getColor(key) : null;
-            return color != null ? color : Theme.getColor(key);
+        protected int getThemedColor(int key) {
+            return Theme.getColor(key, resourcesProvider);
         }
     }
 
@@ -428,7 +427,7 @@ public class ChatAttachAlertContactsLayout extends ChatAttachAlert.AttachAlertLa
         shadow.setBackgroundColor(getThemedColor(Theme.key_dialogShadowLine));
         shadow.setAlpha(0.0f);
         shadow.setTag(1);
-        if (!CherrygramConfig.INSTANCE.getDisableDividers()) addView(shadow, frameLayoutParams);
+        addView(shadow, frameLayoutParams);
 
         addView(frameLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 58, Gravity.LEFT | Gravity.TOP));
 

@@ -6,11 +6,7 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
-import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.FileLog;
-import org.telegram.messenger.browser.Browser;
-import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.CameraScanActivity;
 
 import java.util.HashMap;
 

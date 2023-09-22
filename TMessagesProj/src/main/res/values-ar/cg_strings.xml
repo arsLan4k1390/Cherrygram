@@ -88,18 +88,13 @@
     <string name="AP_SystemEmoji">استخدم الرموز التعبيرية للنظام</string>
     <string name="AP_CenterTitle">عنوان المركز في شريط العمل</string>
     <string name="AP_ToolBarShadow">تعطيل ضل شريط الأدوات</string>
-    <string name="AP_FlatNB">شريط التنقل الشفاف</string>
-    <string name="AP_FlatNB_Desc">سيحصل شريط التنقل على لون لوحة الرسائل</string>
     <string name="AP_SystemFonts">أستخدم خطوط النظام</string>
-    <string name="AP_SystemFonts_Desc">قم بتعطيل هذا (أعد تشغيل التطبيق) إذا كان الخط الخاص بك لا يدعم التنسيق (غامق ، مائل ، أحادي المسافة)</string>
     <string name="CP_Snowflakes_Header">الثلج (إعادة تشغيل التطبيق لتطبيق)</string>
     <string name="CP_Snowflakes_AH">رأس التطبيق</string>
     <string name="CP_PremAndAnim_Header">الرسوم المتحركة والميزات المدفوعة (إعد تشغيل التطبيق للتطبيق)</string>
     <string name="CP_DisableAnimAvatars">تعطيل الصور الرمزية المتحركة</string>
     <string name="CP_DisableReactionsOverlay">تعطيل تراكب ردود الأفعال</string>
     <string name="CP_DisableReactionsOverlay_Desc">سيؤدي هذا إلى تعطيل التراكب المنبثق مع التفاعلات المتاحة</string>
-    <string name="CP_DrawSmallReactions">ارسم ردود فعل صغيرة</string>
-    <string name="CP_DrawSmallReactions_Desc">ارسم تفاعلات صغيرة (على الطراز القديم) بدلاً من فعل كبير</string>
     <string name="CP_DisableReactionAnim">تعطيل ردود فعل الرسوم المتحركة</string>
     <string name="CP_DisableReactionAnim_Desc">(عند الرد على رسالة)</string>
     <string name="CP_DisablePremiumStatuses">تعطيل الحالات المميزة</string>
@@ -163,8 +158,6 @@
     <string name="CP_AutoPauseVideo">إيقاف تشغيل الفيديو</string>
     <string name="CP_AutoPauseVideo_Desc">عند قفل الشاشة أو التبديل إلى الخلفية</string>
     <string name="CP_DisableVibration">تعطيل الاهتزاز</string>
-    <string name="CP_Proximity">تمكين إجراءات القرب</string>
-    <string name="CP_Proximity_Desc">من خلال إيقاف تشغيله ، ستتخلص من إيقاف تشغيل الشاشة المزعج عند الاستماع إلى الرسائل الصوتية (أعد تشغيل التطبيق)</string>
     <string name="CP_Header_Notification">الأشعارات</string>
     <string name="CP_SilenceNonContacts">إصمات المحادثات الغير مسجلة كجهات اتصال</string>
     <string name="CP_SilenceNonContacts_Desc">في حالة التمكين ، ستأتي الإشعارات ذات الصوت فقط من جهات الاتصال. يمكنك إضافة شخص إلى جهات الاتصال الخاصة بك حتى بدون رقم هاتف ، قم بذلك في ملفه الشخصي</string>
@@ -206,6 +199,7 @@
     <string name="SP_Header_Privacy">الخصوصية</string>
     <string name="SP_NoProxyPromo">لا تظهر راعي الوكيل (البروكسي)</string>
     <string name="SP_AppCenterAnalytics_Desc">بتمكين هذا، سيتم إبلاغ جميع تعطل التطبيق والإحصاءات إلى \"appcenter.ms\" لمزيد من المراجعة من قبل المطور.</string>
+    <string name="SP_GoogleAnalytics_Desc">بتمكين هذا، سيتم إبلاغ جميع تعطل التطبيق والإحصاءات إلى \"console.firebase.google.com\" لمزيد من المراجعة من قبل المطور.</string>
     <string name="SP_CleanOld">إزالة ذاكرة التخزين المؤقت القديمة (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">تمت إزالته بنجاح</string>
     <string name="SP_Category_Account">الحساب</string>

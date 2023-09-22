@@ -67,6 +67,9 @@
     <string name="CG_FailedToSaveSticker">Failed to save sticker. The sticker may have not loaded yet.</string>
     <string name="CG_StickerSavedHint">Sticker saved to downloads</string>
     <string name="CG_CopySetId">Copy set ID</string>
+    <string name="CG_ExportSettings">Export settings</string>
+    <string name="CG_ImportSettings">Import settings</string>
+    <string name="CG_ImportSettingsAlert">Overwrite the settings\? Importing settings from unknown sources may result the app not working.</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -102,6 +105,7 @@
     <string name="AP_ChangeIcon_Monet_Pixel" translatable="false">Monet (Pixel)</string>
     <string name="AP_ChangeIcon_Dark">Dark</string>
     <string name="AP_ChangeIcon_White">White</string>
+    <string name="AP_ChangeIcon_Laguna">Laguna</string>
     <string name="AP_ChangeIcon_Green">Green</string>
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
@@ -112,24 +116,20 @@
     <string name="AP_SystemEmoji">Use system emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
     <string name="AP_CenterTitle">Center title in action bar</string>
-    <string name="AP_OverrideHeader">Override header color</string>
-    <string name="AP_OverrideHeader_Desc">Works only in dark theme</string>
+    <string name="AP_OverrideHeader">Override headers color</string>
+    <string name="AP_OverrideHeader_Desc">Headers will be the same color as the main background</string>
     <string name="AP_DisableDividers">Disable dividers</string>
     <string name="AP_ToolBarShadow">Disable toolbar shadow</string>
-    <string name="AP_FlatNB">Transparent navbar</string>
-    <string name="AP_FlatNB_Desc">The navbar will get the color of the Messages Panel</string>
     <string name="AP_SystemFonts">Use system fonts</string>
-    <string name="AP_SystemFonts_Desc">Disable this if your font does not support formatting (Bold, Italic, Monospace)</string>
 
     <string name="CP_Snowflakes_Header">Snowflakes</string>
     <string name="CP_Snowflakes_AH">App header</string>
 
     <string name="CP_PremAndAnim_Header">Animations and Premium Features</string>
+    <string name="CP_HideStories">Hide Stories</string>
     <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
     <string name="CP_DisableReactionsOverlay">Disable reactions overlay</string>
     <string name="CP_DisableReactionsOverlay_Desc">This will disable popup overlay with available reactions</string>
-    <string name="CP_DrawSmallReactions">Draw small reactions</string>
-    <string name="CP_DrawSmallReactions_Desc">Draw small (old-styled) reactions instead of big</string>
     <string name="CP_DisableReactionAnim">Disable reaction animation</string>
     <string name="CP_DisableReactionAnim_Desc">(when reacting to a message)</string>
     <string name="CP_DisablePremiumStatuses">Disable premium statuses</string>
@@ -148,6 +148,7 @@
     <string name="AP_Tab_Style_Rounded">Rounded</string>
     <string name="AP_Tab_Style_Text">Text</string>
     <string name="AP_Tab_Style_Pills">Pills</string>
+    <string name="AP_Tab_Style_Stroke">Add stroke</string>
 
     <string name="AP_DrawerCategory">Drawer</string>
     <string name="AP_DrawerPreferences">Drawer preferences</string>
@@ -205,8 +206,6 @@
     <string name="CP_AutoPauseVideo">Auto pause video</string>
     <string name="CP_AutoPauseVideo_Desc">When lock screen or switch to background</string>
     <string name="CP_DisableVibration">Disable vibration</string>
-    <string name="CP_Proximity">Enable proximity actions</string>
-    <string name="CP_Proximity_Desc">By turning it off you will get rid of the annoying screen shutdown when listening to voice messages</string>
 
     <string name="CP_Header_Notification">Notifications</string>
     <string name="CP_NotificationSound">Notification sound</string>
@@ -260,6 +259,8 @@
     <string name="SP_NoProxyPromo">Don\'t show proxy sponsor</string>
     <string name="SP_AppCenterAnalytics" translatable="false">Microsoft AppCenter</string>
     <string name="SP_AppCenterAnalytics_Desc">By enabling this, all application crashes and statistics will be reported to \"appcenter.ms\" for further review by the developer.</string>
+    <string name="SP_GoogleAnalytics" translatable="false">Google Analytics</string>
+    <string name="SP_GoogleAnalytics_Desc">By enabling this, all application crashes and statistics will be reported to \"console.firebase.google.com\" for further review by the developer.</string>
 
     <string name="SP_CleanOld">Remove old cache (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Removed successfully</string>

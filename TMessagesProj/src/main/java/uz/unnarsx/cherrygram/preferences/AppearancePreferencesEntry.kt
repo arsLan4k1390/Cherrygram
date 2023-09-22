@@ -5,13 +5,22 @@ import android.content.SharedPreferences
 import androidx.core.util.Pair
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
+import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.ActionBar.INavigationLayout
+import org.telegram.ui.DialogsActivity
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
-import uz.unnarsx.cherrygram.tgkit.preference.*
+import uz.unnarsx.cherrygram.tgkit.preference.category
+import uz.unnarsx.cherrygram.tgkit.preference.contract
+import uz.unnarsx.cherrygram.tgkit.preference.contractIcons
+import uz.unnarsx.cherrygram.tgkit.preference.list
+import uz.unnarsx.cherrygram.tgkit.preference.switch
+import uz.unnarsx.cherrygram.tgkit.preference.textIcon
+import uz.unnarsx.cherrygram.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
@@ -81,23 +90,12 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             }
             switch {
                 title = LocaleController.getString("AP_OverrideHeader", R.string.AP_OverrideHeader)
-                summary = LocaleController.getString("AP_OverrideHeader_Desc", R.string.AP_OverrideHeader_Desc)
+                description = LocaleController.getString("AP_OverrideHeader_Desc", R.string.AP_OverrideHeader_Desc)
 
                 contract({
                     return@contract CherrygramConfig.overrideHeaderColor
                 }) {
                     CherrygramConfig.overrideHeaderColor = it
-                    bf.parentActivity.recreate()
-                }
-            }
-            switch {
-                title = LocaleController.getString("AP_FlatNB", R.string.AP_FlatNB)
-                summary = LocaleController.getString("AP_FlatNB_Desc", R.string.AP_FlatNB_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.flatNavbar
-                }) {
-                    CherrygramConfig.flatNavbar = it
                     bf.parentActivity.recreate()
                 }
             }
@@ -116,7 +114,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
         category(LocaleController.getString("AS_Filters_Header", R.string.CP_Filters_Header)) {
             switch {
                 title = LocaleController.getString("AP_FolderNameInHeader", R.string.AP_FolderNameInHeader)
-                summary = LocaleController.getString("AP_FolderNameInHeader_Desc", R.string.AP_FolderNameInHeader_Desc)
+                description = LocaleController.getString("AP_FolderNameInHeader_Desc", R.string.AP_FolderNameInHeader_Desc)
 
                 contract({
                     return@contract CherrygramConfig.folderNameInHeader
@@ -136,6 +134,38 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
 
+            switch {
+                title = LocaleController.getString("CP_NewTabs_NoCounter", R.string.CP_NewTabs_NoCounter)
+
+                contract({
+                    return@contract CherrygramConfig.newTabs_noUnread
+                }) {
+                    CherrygramConfig.newTabs_noUnread = it
+                    bf.notificationCenter.postNotificationName(NotificationCenter.dialogFiltersUpdated);
+                }
+            }
+
+            list {
+                title = LocaleController.getString("CG_FoldersType_Header", R.string.CG_FoldersType_Header)
+
+                contract({
+                    return@contract listOf(
+                        Pair(CherrygramConfig.TAB_TYPE_MIX, LocaleController.getString("CG_FoldersTypeIconsTitles", R.string.CG_FoldersTypeIconsTitles)),
+                        Pair(CherrygramConfig.TAB_TYPE_TEXT, LocaleController.getString("CG_FoldersTypeTitles", R.string.CG_FoldersTypeTitles)),
+                        Pair(CherrygramConfig.TAB_TYPE_ICON, LocaleController.getString("CG_FoldersTypeIcons", R.string.CG_FoldersTypeIcons))
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.tabMode) {
+                        CherrygramConfig.TAB_TYPE_MIX -> LocaleController.getString("CG_FoldersTypeIconsTitles", R.string.CG_FoldersTypeIconsTitles)
+                        CherrygramConfig.TAB_TYPE_TEXT -> LocaleController.getString("CG_FoldersTypeTitles", R.string.CG_FoldersTypeTitles)
+                        else -> LocaleController.getString("CG_FoldersTypeIcons", R.string.CG_FoldersTypeIcons)
+                    }
+                }) {
+                    CherrygramConfig.tabMode = it
+                    AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
+
             list {
                 title = LocaleController.getString("AP_Tab_Style", R.string.AP_Tab_Style)
 
@@ -148,7 +178,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                         Pair(CherrygramConfig.TAB_STYLE_PILLS, LocaleController.getString("AP_Tab_Style_Pills", R.string.AP_Tab_Style_Pills))
                     )
                 }, {
-                    return@contract when (CherrygramConfig.tab_style) {
+                    return@contract when (CherrygramConfig.tabStyle) {
                         CherrygramConfig.TAB_STYLE_ROUNDED -> LocaleController.getString("AP_Tab_Style_Rounded", R.string.AP_Tab_Style_Rounded)
                         CherrygramConfig.TAB_STYLE_TEXT -> LocaleController.getString("AP_Tab_Style_Text", R.string.AP_Tab_Style_Text)
                         CherrygramConfig.TAB_STYLE_VKUI -> "VKUI"
@@ -156,9 +186,19 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                         else -> LocaleController.getString("AP_Tab_Style_Default", R.string.AP_Tab_Style_Default)
                     }
                 }) {
-                    CherrygramConfig.tab_style = it
+                    CherrygramConfig.tabStyle = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
+            }
+
+            switch {
+                title = LocaleController.getString("AP_Tab_Style_Stroke", R.string.AP_Tab_Style_Stroke)
+                contract({
+                    return@contract CherrygramConfig.tabStyleStroke
+                }) {
+                    CherrygramConfig.tabStyleStroke = it
+                }
+                AppRestartHelper.createRestartBulletin(bf)
             }
         }
 

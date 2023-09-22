@@ -3,15 +3,18 @@ package uz.unnarsx.cherrygram.extras
 import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
-import androidx.annotation.ColorInt
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.URLSpan
 import org.telegram.messenger.*
+import org.telegram.ui.Components.URLSpanNoUnderline
 import uz.unnarsx.cherrygram.CherrygramConfig
 import java.io.File
 import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.5.0"
+    var CG_VERSION = "7.6.0"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getDCGeo(dcId: Int): String {
@@ -60,9 +63,7 @@ object CherrygramExtras {
             return String.format("%1\$s | %2\$s", LocaleController.getInstance().formatterYear.format(Date(dateAndTime)),
                 LocaleController.getInstance().formatterDay.format(Date(dateAndTime))
             )
-        } catch (e: Exception) {
-            FileLog.e(e)
-        }
+        } catch (ignore: Exception) { }
         return "LOC_ERR"
     }
 
@@ -78,9 +79,24 @@ object CherrygramExtras {
                 val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 manager.enqueue(request)
             } catch (e: java.lang.Exception) {
-                e.printStackTrace()
+                FileLog.e(e)
             }
         }
+    }
+
+    fun getUrlNoUnderlineText(charSequence: CharSequence): CharSequence {
+        val spannable: Spannable = SpannableString(charSequence)
+        val spans = spannable.getSpans(0, charSequence.length, URLSpan::class.java)
+        for (urlSpan in spans) {
+            var span = urlSpan
+            val start = spannable.getSpanStart(span)
+            val end = spannable.getSpanEnd(span)
+            spannable.removeSpan(span)
+            span = object : URLSpanNoUnderline(span.url) {
+            }
+            spannable.setSpan(span, start, end, 0)
+        }
+        return spannable
     }
 
 }

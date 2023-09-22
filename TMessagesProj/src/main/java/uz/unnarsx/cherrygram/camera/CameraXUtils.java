@@ -1,10 +1,3 @@
-/*
- * This is the source code of OwlGram for Android v. 1.4.x.
- * It is licensed under GNU GPL v. 2 or later.
- * You should have received a copy of the license in this archive (see LICENSE).
- *
- * Copyright Laky64, 2021-2022.
- */
 package uz.unnarsx.cherrygram.camera;
 
 import static android.hardware.camera2.CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS;
@@ -148,10 +141,6 @@ public class CameraXUtils {
                         CherrygramConfig.INSTANCE.setCameraResolution(height);
                     }
                 });
-    }
-
-    public static int getCameraResolution() {
-        return cameraResolution;
     }
 
     public static Size getPreviewBestSize() {

@@ -63,7 +63,7 @@ public class ManageChatUserCell extends FrameLayout {
 
     private int currentAccount = UserConfig.selectedAccount;
 
-    private String dividerColor;
+    private int dividerColor = -1;
 
     private ManageChatUserCellDelegate delegate;
 
@@ -187,7 +187,7 @@ public class ManageChatUserCell extends FrameLayout {
         nameTextView.setTextColor(color);
     }
 
-    public void setDividerColor(String key) {
+    public void setDividerColor(int key) {
         dividerColor = key;
     }
 
@@ -354,10 +354,10 @@ public class ManageChatUserCell extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
-            if (dividerColor != null) {
+            if (dividerColor >= 0) {
                 Theme.dividerExtraPaint.setColor(Theme.getColor(dividerColor, resourcesProvider));
             }
-            canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(68), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(68) : 0), getMeasuredHeight() - 1, dividerColor != null ? Theme.dividerExtraPaint : Theme.dividerPaint);
+            canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(68), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(68) : 0), getMeasuredHeight() - 1, dividerColor >= 0 ? Theme.dividerExtraPaint : Theme.dividerPaint);
         }
     }
 }

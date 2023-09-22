@@ -1,10 +1,3 @@
-/*
- * This is the source code of OwlGram for Android v. 1.4.x.
- * It is licensed under GNU GPL v. 2 or later.
- * You should have received a copy of the license in this archive (see LICENSE).
- *
- * Copyright Laky64, 2021-2022.
- */
 package uz.unnarsx.cherrygram.camera;
 
 import android.content.Context;
@@ -21,6 +14,7 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.Components.LayoutHelper;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class EffectSelectorView extends LinearLayout {
@@ -53,20 +47,23 @@ public class EffectSelectorView extends LinearLayout {
         }
     }
 
+    private static final String[] GOOGLE_FUCKUPS = {"raven", "bluejay", "panther", "cheetah", "lynx"};
+
     public void loadEffects(CameraXView cameraXView) {
         if (getChildCount() == 0) {
+            boolean fuckup = Arrays.asList(GOOGLE_FUCKUPS).contains(Build.DEVICE);
             ArrayList<Integer> list_effect = new ArrayList<>();
-            if (cameraXView.isNightModeSupported()) {
+            if (!fuckup && cameraXView.isNightModeSupported()) {
                 list_effect.add(CameraXController.CAMERA_NIGHT);
             }
-            if (cameraXView.isAutoModeSupported()) {
+            if (!fuckup && cameraXView.isAutoModeSupported()) {
                 list_effect.add(CameraXController.CAMERA_AUTO);
             }
             list_effect.add(CameraXController.CAMERA_NONE);
             if (cameraXView.isWideModeSupported()) {
                 list_effect.add(CameraXController.CAMERA_WIDE);
             }
-            if (cameraXView.isHdrModeSupported()) {
+            if (!fuckup && cameraXView.isHdrModeSupported()) {
                 list_effect.add(CameraXController.CAMERA_HDR);
             }
             if (list_effect.size() == 1) {
@@ -75,7 +72,7 @@ public class EffectSelectorView extends LinearLayout {
             for (int i = 0; i < list_effect.size(); i++) {
                 int effect = list_effect.get(i);
                 LinearLayout linearLayout = new LinearLayout(getContext());
-                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
+                linearLayout.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
                 linearLayout.setGravity(Gravity.CENTER);
                 ButtonEffect buttonEffect = new ButtonEffect(getContext(), effect) {
                     @Override

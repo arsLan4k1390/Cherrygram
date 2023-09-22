@@ -9,11 +9,13 @@
 package org.telegram.ui;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,10 +40,13 @@ import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.EmptyTextProgressView;
+import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
+
+import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class PrivacyUsersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ContactsActivity.ContactsActivityDelegate {
 
@@ -112,8 +117,26 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
     }
 
     @Override
+    public boolean isLightStatusBar() {
+        if (!CherrygramConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
+        int color = getThemedColor(Theme.key_windowBackgroundWhite);
+        return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
+    @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+
+        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
+            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
+            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
+            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
+            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+            //actionBar.setCastShadows(false);
+        }
+
         actionBar.setAllowOverlayTitle(true);
         if (currentType == TYPE_BLOCKED) {
             actionBar.setTitle(LocaleController.getString("BlockedUsers", R.string.BlockedUsers));
@@ -160,6 +183,12 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
         frameLayout.addView(emptyView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
         listView = new RecyclerListView(context);
+        listView.setItemSelectorColorProvider(position -> {
+            if (position == deleteAllRow) {
+                return Theme.multAlpha(Theme.getColor(Theme.key_text_RedRegular), .12f);
+            }
+            return null;
+        });
         listView.setEmptyView(emptyView);
         listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         listView.setVerticalScrollBarEnabled(false);
@@ -227,9 +256,9 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
         listView.setOnItemLongClickListener((view, position) -> {
             if (position >= usersStartRow && position < usersEndRow) {
                 if (currentType == TYPE_BLOCKED) {
-                    showUnblockAlert(getMessagesController().blockePeers.keyAt(position - usersStartRow));
+                    showUnblockAlert(getMessagesController().blockePeers.keyAt(position - usersStartRow), view);
                 } else {
-                    showUnblockAlert(uidArray.get(position - usersStartRow));
+                    showUnblockAlert(uidArray.get(position - usersStartRow), view);
                 }
                 return true;
             }
@@ -269,34 +298,25 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
         delegate = privacyActivityDelegate;
     }
 
-    private void showUnblockAlert(Long uid) {
+    private void showUnblockAlert(Long uid, View view) {
         if (getParentActivity() == null) {
             return;
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-        CharSequence[] items;
-        if (currentType == TYPE_BLOCKED) {
-            items = new CharSequence[]{LocaleController.getString("Unblock", R.string.Unblock)};
-        } else {
-            items = new CharSequence[]{LocaleController.getString("Delete", R.string.Delete)};
-        }
-        builder.setItems(items, (dialogInterface, i) -> {
-            if (i == 0) {
-                if (currentType == TYPE_BLOCKED) {
-                    getMessagesController().unblockPeer(uid);
-                } else {
-                    uidArray.remove(uid);
-                    updateRows();
-                    if (delegate != null) {
-                        delegate.didUpdateUserList(uidArray, false);
-                    }
-                    if (uidArray.isEmpty()) {
-                        finishFragment();
-                    }
+        ItemOptions.makeOptions(this, view)
+            .setScrimViewBackground(new ColorDrawable(Theme.getColor(Theme.key_windowBackgroundWhite)))
+            .addIf(currentType == TYPE_BLOCKED, 0, LocaleController.getString("Unblock", R.string.Unblock), () -> getMessagesController().unblockPeer(uid))
+            .addIf(currentType != TYPE_BLOCKED, currentType == TYPE_PRIVACY ? R.drawable.msg_user_remove : 0, LocaleController.getString("Remove", R.string.Remove), true, () -> {
+                uidArray.remove(uid);
+                updateRows();
+                if (delegate != null) {
+                    delegate.didUpdateUserList(uidArray, false);
                 }
-            }
-        });
-        showDialog(builder.create());
+                if (uidArray.isEmpty()) {
+                    finishFragment();
+                }
+            })
+            .setMinWidth(190)
+            .show();
     }
 
     private void updateRows() {
@@ -412,7 +432,7 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     ((ManageChatUserCell) view).setDelegate((cell, click) -> {
                         if (click) {
-                            showUnblockAlert((Long) cell.getTag());
+                            showUnblockAlert((Long) cell.getTag(), cell);
                         }
                         return true;
                     });
@@ -434,7 +454,7 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
                 case 4:
                     TextCell textCell = new TextCell(parent.getContext());
                     textCell.setText(LocaleController.getString("NotificationsDeleteAllException", R.string.NotificationsDeleteAllException), false);
-                    textCell.setColors(null, Theme.key_windowBackgroundWhiteRedText5);
+                    textCell.setColors(-1, Theme.key_text_RedRegular);
                     view = textCell;
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
@@ -495,14 +515,14 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
                             privacyCell.setText(null);
                         }
                         if (usersStartRow == -1) {
-                            privacyCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
+                            privacyCell.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                         } else {
-                            privacyCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                            privacyCell.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                         }
                     } else if (position == usersDetailRow) {
                         privacyCell.setFixedSize(12);
                         privacyCell.setText("");
-                        privacyCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
+                        privacyCell.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                     }
                     break;
                 case 2:
@@ -561,6 +581,18 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
 
 
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
+
+        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
+        } else {
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
+        }
 
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{ManageChatUserCell.class, ManageChatTextCell.class, HeaderCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
 

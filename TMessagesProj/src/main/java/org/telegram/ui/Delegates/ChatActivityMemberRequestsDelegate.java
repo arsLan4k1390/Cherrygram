@@ -3,6 +3,7 @@ package org.telegram.ui.Delegates;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
@@ -28,6 +29,8 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.MemberRequestsBottomSheet;
 
 import java.util.List;
+
+import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class ChatActivityMemberRequestsDelegate {
 
@@ -60,7 +63,14 @@ public class ChatActivityMemberRequestsDelegate {
 
     public View getView() {
         if (root == null) {
-            root = new FrameLayout(fragment.getParentActivity());
+            root = new FrameLayout(fragment.getParentActivity()) {
+                @Override
+                protected void onDraw(Canvas canvas) {
+                    super.onDraw(canvas);
+                    if (!CherrygramConfig.INSTANCE.getDisableDividers())
+                        canvas.drawLine(0, getMeasuredHeight() - AndroidUtilities.dp(2), getMeasuredWidth(), getMeasuredHeight() - AndroidUtilities.dp(2), Theme.dividerPaint);
+                }
+            };
             root.setBackgroundResource(R.drawable.blockpanel);
             root.getBackground().mutate().setColorFilter(new PorterDuffColorFilter(fragment.getThemedColor(Theme.key_chat_topPanelBackground), PorterDuff.Mode.MULTIPLY));
             root.setVisibility(View.GONE);
@@ -109,7 +119,7 @@ public class ChatActivityMemberRequestsDelegate {
                 closePendingRequestsCount = pendingRequestsCount;
                 animatePendingRequests(false, true);
             });
-            root.addView(closeView, LayoutHelper.createFrame(36, LayoutHelper.MATCH_PARENT, Gravity.RIGHT | Gravity.TOP, 0, 0, 2, 0));
+            root.addView(closeView, LayoutHelper.createFrame(36, LayoutHelper.MATCH_PARENT, Gravity.RIGHT | Gravity.CENTER, 0, 0, 2, 0));
             if (chatInfo != null) {
                 setPendingRequests(chatInfo.requests_pending, chatInfo.recent_requesters, false);
             }

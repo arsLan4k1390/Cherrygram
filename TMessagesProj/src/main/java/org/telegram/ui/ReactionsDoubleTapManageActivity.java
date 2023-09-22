@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,6 +42,8 @@ import org.telegram.ui.Components.SimpleThemeDescription;
 import java.util.ArrayList;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ReactionsDoubleTapManageActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private LinearLayout contentView;
@@ -65,9 +68,27 @@ public class ReactionsDoubleTapManageActivity extends BaseFragment implements No
     }
 
     @Override
+    public boolean isLightStatusBar() {
+        if (!CherrygramConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
+        int color = getThemedColor(Theme.key_windowBackgroundWhite);
+        return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
+    @Override
     public View createView(Context context) {
         actionBar.setTitle(LocaleController.getString("Reactions", R.string.Reactions));
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+
+        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
+            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
+            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
+            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
+            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+            //actionBar.setCastShadows(false);
+        }
+
         actionBar.setAllowOverlayTitle(true);
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
@@ -107,7 +128,7 @@ public class ReactionsDoubleTapManageActivity extends BaseFragment implements No
                     case 2:
                         TextInfoPrivacyCell cell = new TextInfoPrivacyCell(context);
                         cell.setText(LocaleController.getString("DoubleTapPreviewRational", R.string.DoubleTapPreviewRational));
-                        cell.setBackground(Theme.getThemedDrawable(context, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                        cell.setBackground(Theme.getThemedDrawableByKey(context, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                         view = cell;
                         break;
                     case 3:
@@ -125,7 +146,7 @@ public class ReactionsDoubleTapManageActivity extends BaseFragment implements No
                                 );
                             }
                         };
-                        view.setBackground(Theme.getThemedDrawable(context, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
+                        view.setBackground(Theme.getThemedDrawableByKey(context, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                         break;
                     default:
                     case 1: {
@@ -372,7 +393,7 @@ public class ReactionsDoubleTapManageActivity extends BaseFragment implements No
                 Theme.key_listSelector,
                 Theme.key_windowBackgroundGray,
                 Theme.key_windowBackgroundWhiteGrayText4,
-                Theme.key_windowBackgroundWhiteRedText4,
+                Theme.key_text_RedRegular,
                 Theme.key_windowBackgroundChecked,
                 Theme.key_windowBackgroundCheckText,
                 Theme.key_switchTrackBlue,

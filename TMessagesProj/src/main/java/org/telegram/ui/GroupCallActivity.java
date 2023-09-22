@@ -96,6 +96,7 @@ import org.telegram.messenger.Utilities;
 import org.telegram.messenger.support.LongSparseIntArray;
 import org.telegram.messenger.voip.Instance;
 import org.telegram.messenger.voip.VoIPService;
+import org.telegram.messenger.voip.VoipAudioManager;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
@@ -120,6 +121,8 @@ import org.telegram.ui.Components.AudioPlayerAlert;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.BlobDrawable;
+import org.telegram.ui.Components.Bulletin;
+import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CheckBoxSquare;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.EditTextBoldCursor;
@@ -151,6 +154,7 @@ import org.telegram.ui.Components.voip.GroupCallStatusIcon;
 import org.telegram.ui.Components.voip.PrivateVideoPreviewDialog;
 import org.telegram.ui.Components.voip.RTMPStreamPipOverlay;
 import org.telegram.ui.Components.voip.VoIPToggleButton;
+import org.webrtc.voiceengine.WebRtcAudioTrack;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -158,6 +162,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
@@ -1725,6 +1730,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
 
     private GroupCallActivity(Context context, AccountInstance account, ChatObject.Call groupCall, TLRPC.Chat chat, TLRPC.InputPeer schedulePeer, boolean scheduleHasFewPeers, String scheduledHash) {
         super(context, false);
+        setOpenNoDelay(true);
         this.accountInstance = account;
         this.call = groupCall;
         this.schedulePeer = schedulePeer;
@@ -1744,6 +1750,14 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
 
             @Override
             public void onOpenAnimationEnd() {
+                VoIPService voipService = VoIPService.getSharedInstance();
+                if (voipService != null) {
+                    CountDownLatch latch = voipService.getGroupCallBottomSheetLatch();
+                    if (latch != null) {
+                        latch.countDown();
+                    }
+                }
+
                 if (muteButtonState == MUTE_BUTTON_STATE_SET_REMINDER) {
                     showReminderHint();
                 }
@@ -1760,7 +1774,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
             getWindow().setNavigationBarColor(0xff000000);
         }
         scrollNavBar = true;
-        navBarColorKey = null;
+        navBarColorKey = -1;
 
         scrimPaint = new Paint() {
             @Override
@@ -4419,8 +4433,8 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
                     soundItem.setIcon(VoIPService.getSharedInstance().isHeadsetPlugged() ? R.drawable.msg_voice_headphones : R.drawable.msg_voice_phone);
                     soundItem.setSubtext(VoIPService.getSharedInstance().isHeadsetPlugged() ? LocaleController.getString("VoipAudioRoutingHeadset", R.string.VoipAudioRoutingHeadset) : LocaleController.getString("VoipAudioRoutingPhone", R.string.VoipAudioRoutingPhone));
                 } else if (rout == VoIPService.AUDIO_ROUTE_SPEAKER) {
-                    AudioManager am = (AudioManager) context.getSystemService(AUDIO_SERVICE);
-                    if (am.isSpeakerphoneOn()) {
+                    VoipAudioManager vam = VoipAudioManager.get();
+                    if (vam.isSpeakerphoneOn()) {
                         soundItem.setIcon(R.drawable.msg_voice_speaker);
                         soundItem.setSubtext(LocaleController.getString("VoipAudioRoutingSpeaker", R.string.VoipAudioRoutingSpeaker));
                     } else {
@@ -4998,7 +5012,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
             scheduleButtonTextView.setSingleLine(true);
             scheduleButtonTextView.setEllipsize(TextUtils.TruncateAt.END);
             scheduleButtonTextView.setGravity(Gravity.CENTER);
-            scheduleButtonTextView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(4), 0, 0x3f000000));
+            scheduleButtonTextView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(8), 0, 0x3f000000));
             scheduleButtonTextView.setTextColor(0xffffffff);
             scheduleButtonTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
             scheduleButtonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
@@ -5129,7 +5143,11 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
                     calendar.setTimeInMillis(date);
                     int year = calendar.get(Calendar.YEAR);
                     if (year == currentYear) {
-                        return LocaleController.getInstance().formatterScheduleDay.format(date);
+                        return (
+                            LocaleController.getInstance().formatterWeek.format(date) +
+                            " " +
+                            LocaleController.getInstance().formatterScheduleDay.format(date)
+                        );
                     } else {
                         return LocaleController.getInstance().formatterScheduleYear.format(date);
                     }
@@ -7151,7 +7169,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
     }
 
     private boolean showMenuForCell(View rendererCell) {
-        if (itemAnimator.isRunning()) {
+        if (itemAnimator.isRunning() || getContext() == null) {
             return false;
         }
         if (avatarPriviewTransitionInProgress || avatarsPreviewShowed) {
@@ -7217,6 +7235,9 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
 
         boolean showWithAvatarPreview = !isLandscapeMode && !isTabletMode && !AndroidUtilities.isInMultiwindow;
         TLRPC.TL_groupCallParticipant participant = view.getParticipant();
+        if (participant == null) {
+            return false;
+        }
 
         Rect rect = new Rect();
 
@@ -7963,12 +7984,12 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
             int type = holder.getItemViewType();
             if (type == VIEW_TYPE_PARTICIPANT) {
                 GroupCallUserCell cell = (GroupCallUserCell) holder.itemView;
-                String key = actionBar.getTag() != null ? Theme.key_voipgroup_mutedIcon : Theme.key_voipgroup_mutedIconUnscrolled;
+                int key = actionBar.getTag() != null ? Theme.key_voipgroup_mutedIcon : Theme.key_voipgroup_mutedIconUnscrolled;
                 cell.setGrayIconColor(key, Theme.getColor(key));
                 cell.setDrawDivider(holder.getAdapterPosition() != getItemCount() - 2);
             } else if (type == VIEW_TYPE_CALL_INVITED) {
                 GroupCallInvitedCell cell = (GroupCallInvitedCell) holder.itemView;
-                String key = actionBar.getTag() != null ? Theme.key_voipgroup_mutedIcon : Theme.key_voipgroup_mutedIconUnscrolled;
+                int key = actionBar.getTag() != null ? Theme.key_voipgroup_mutedIcon : Theme.key_voipgroup_mutedIconUnscrolled;
                 cell.setGrayIconColor(key, Theme.getColor(key));
                 cell.setDrawDivider(holder.getAdapterPosition() != getItemCount() - 2);
             }
@@ -8695,5 +8716,27 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
 
     public boolean isRtmpStream() {
         return call != null && call.call.rtmp_stream;
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
+        if (parentActivity == null) {
+            return super.dispatchKeyEvent(event);
+        }
+        if (event.getAction() == KeyEvent.ACTION_DOWN && (event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_UP || event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN)) {
+            if (VoIPService.getSharedInstance() != null) {
+                if (Build.VERSION.SDK_INT >= 32) {
+                    boolean oldValue = WebRtcAudioTrack.isSpeakerMuted();
+                    AudioManager am = (AudioManager) parentActivity.getSystemService(AUDIO_SERVICE);
+                    int minVolume = am.getStreamMinVolume(AudioManager.STREAM_VOICE_CALL);
+                    boolean mute = am.getStreamVolume(AudioManager.STREAM_VOICE_CALL) == minVolume && event.getKeyCode() == KeyEvent.KEYCODE_VOLUME_DOWN;
+                    WebRtcAudioTrack.setSpeakerMute(mute);
+                    if (oldValue != WebRtcAudioTrack.isSpeakerMuted()) {
+                        getUndoView().showWithAction(0, mute ? UndoView.ACTION_VOIP_SOUND_MUTED : UndoView.ACTION_VOIP_SOUND_UNMUTED, null);
+                    }
+                }
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 }

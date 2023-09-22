@@ -26,7 +26,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
 *Addons:*
 - Flashlight support for video messages (both cameras),
-- OTA updates - thanks to exteraGram :),
+- OTA updates,
 - Material You (Monet) themes and app icon,
 - No content restrictions,
 - Support of up to 10 accounts,
@@ -37,8 +37,8 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Added native biometrics support,
 - "tg://user?id=int" Links support (e.g. "tg://user?id=282287840"),
 - Allow to set "Keep media" for one day,
-- "Kaboom" (Erase all Cherrygram's data in 1 click) (Thanks to Telegraher),
-- "Kaboom" desktop widget.
+- "Kaboom" (Erase all Cherrygram's data in 1 click),
+- "Kaboom" home screen widget.
 
 *Chats:*
 - Scrollable chat preview,
@@ -55,12 +55,6 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Open avatar by swiping down in profile,
 - Mention in chat by name (long press on username).
 
-*Telegram Folders Settings (Tab icon style):*
-- Only titles,
-- Only icons,
-- Icons with titles,
-- Hide messages counter in tabs.
-
 *Cherrygram General Preferences:*
 - Enable/Disable members rounding,
 - Show seconds in timestamps,
@@ -71,6 +65,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Hiding your phone number from settings and menu,
 - Showing ID in profile,
 - Showing DC in profile.
+- Enable/Disable Telegram Stories in app header,
 - Enable/Disable animated avatars,
 - Enable/Disable reactions overlay,
 - Draw small reactions,
@@ -87,16 +82,17 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Center title in action bar,
 - Enable/Disable toolbar shadow,
 - Enable/Disable dividers,
-- Overriding header color in dark themes,
+- Overriding header color,
 - Transparent navigation bar,
 - Show folder name instead of app name,
 - Hide "All chats" tab,
+- Hide messages counter in tabs.
 - Tab style (Default, Rounded, Text, VKUI or Pills),
-- Show tabs on forward screen,
+- Tab icon style (Only titles, Only icons and Icons with titles) with stroke,
 - Snow in Drawer,
 - Snow in App Header,
 - Snow in Chats.
--   *Drawer Preferences:*
+- *Drawer Preferences:*
 - Profile photo as drawer background,
 - Darken menu header background,
 - Gradient menu header background,
@@ -142,13 +138,13 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Open profile instead of chat preview,
 - Show a resident notification,
 - Toast all RPC errors,
-- Download speed boost - Thanks to Nekogram for the idea :),
-- Upload speed boost - Thanks to Nekogram for the idea :),
-- Slow network mode - Thanks to Telegraher for the idea :).
+- Download speed boost,
+- Upload speed boost,
+- Slow network mode.
 
 *Cherrygram Security Preferences:*
 - Enable/Disable Microsoft AppCenter,
-- "Kaboom" (Erase all Cherrygram data in 1 click) - Thanks to Telegraher :),
+- Enable/Disable Google Analytics,
 - Delete old cache folder (/sdcard/Telegram),
 - Delete your Telegram account.
 
@@ -162,18 +158,16 @@ MTproto protocol manuals: https://core.telegram.org/mtproto
 ## Compilation Guide
 
 1. Download the Cherrygram source code ( `git clone https://github.com/arslan4k1390/Cherrygram.git` )
-1. Fill out storeFile, storePassword, keyAlias, keyPassword in app's build.gradle to sign your app
-1. Go to https://console.firebase.google.com/, create two android apps with application IDs uz.unnarsx.cherrygram and uz.unnarsx.cherrygram.beta, turn on firebase messaging and download `google-services.json`, which should be copied into `TMessagesProj` folder.
-1. Open the project in the Studio (note that it should be opened, NOT imported).
-1. Fill out values in `TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt` – there’s a link for each of the variables showing where and which data to obtain.
-1. You are ready to compile and use Cherrygram.
+2. Fill out storeFile, storePassword, keyAlias, keyPassword in app's build.gradle to sign your app
+3. Go to https://console.firebase.google.com/, create two android apps with application IDs uz.unnarsx.cherrygram and uz.unnarsx.cherrygram.beta, turn on firebase messaging and download `google-services.json`, which should be copied into `TMessagesProj` folder.
+4. Open the project in the Studio (note that it should be opened, NOT imported).
+5. Fill out values in `TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt` – there’s a link for each of the variables showing where and which data to obtain.
+6. You are ready to compile and use Cherrygram.
 
 
 ## Thanks to:
 - [Catogram](https://github.com/Catogram/Catogram)
-- [exteraGram](https://github.com/exteraSquad/exteraGram)
-- [Nekogram](https://gitlab.com/Nekogram/Nekogram)
-- [Nekogram X](https://github.com/NekoX-Dev/NekoX)
-- [OwlGram](https://github.com/OwlGramDev/OwlGram)
-- [Telegram-FOSS](https://github.com/Telegram-FOSS-Team/Telegram-FOSS)
+- [Nekogram](https://gitlab.com/Nekogram/Nekogram) and [Nekogram X](https://github.com/NekoX-Dev/NekoX)
+- [OwlGram](https://github.com/OwlGramDev/OwlGram) and [exteraGram](https://github.com/exteraSquad/exteraGram)
+- [Telegraher](https://github.com/nikitasius/Telegraher)
 - [Telegram Monet](https://github.com/c3r5b8/Telegram-Monet)

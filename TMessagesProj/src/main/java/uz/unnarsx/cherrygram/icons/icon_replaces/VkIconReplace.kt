@@ -63,7 +63,6 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_callback to R.drawable.phone_outline_28,
             R.drawable.profile_video to R.drawable.videocam_outline_28,
             R.drawable.msg_videocall to R.drawable.videocam_outline_28,
-            R.drawable.msg_add to R.drawable.user_add_outline_24,
             R.drawable.msg_groups to R.drawable.users_outline_28,
             R.drawable.msg_channel to R.drawable.advertising_outline_28,
             R.drawable.msg_qrcode to R.drawable.qr_code_outline_28,
@@ -92,8 +91,6 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_stats to R.drawable.statistics_outline_28,
             R.drawable.msg_translate to R.drawable.hieroglyph_character_outline_28,
             // Action Bar
-            R.drawable.ic_ab_back to R.drawable.arrow_back,
-            R.drawable.msg_arrow_back to R.drawable.arrow_back,
             R.drawable.ic_ab_other to R.drawable.more_vertical_28,
             R.drawable.group_edit to R.drawable.msg_edit,
             R.drawable.group_edit_profile to R.drawable.msg_edit,
@@ -135,6 +132,8 @@ class VkIconReplace : BaseIconReplace() {
 
             R.drawable.msg_calls_regular to R.drawable.phone_wave_outline_28,
             R.drawable.msg_view_file to R.drawable.view_outline_28, // Cache settings
+            R. drawable.chats_saved to R.drawable.bookmark_outline_28, // Saved messages
+            R.drawable.profile_newmsg to R.drawable.comment_outline_28,
 
     )
 }

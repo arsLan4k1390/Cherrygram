@@ -1,7 +1,8 @@
 package uz.unnarsx.cherrygram
 
 import android.widget.FrameLayout
-import org.telegram.messenger.*
+import org.telegram.messenger.LocaleController
+import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.ActionBarPopupWindow
 import org.telegram.ui.Components.ShareAlert
 
@@ -31,11 +32,9 @@ object CGFeatureHooks {
     fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {
         currentPopup = CGFeatureJavaHooks.createPopupWindow(sa.container, field, sa.context, listOf(
             CGFeatureJavaHooks.PopupItem(
-                    if (CherrygramConfig.forwardNoAuthorship) {
+                    if (CherrygramConfig.forwardNoAuthorship)
                         LocaleController.getString("CG_FwdMenu_DisableNoForward", R.string.CG_FwdMenu_DisableNoForward)
-                    } else {
-                        LocaleController.getString("CG_FwdMenu_EnableNoForward", R.string.CG_FwdMenu_EnableNoForward)
-                    },
+                    else LocaleController.getString("CG_FwdMenu_EnableNoForward", R.string.CG_FwdMenu_EnableNoForward),
                     R.drawable.msg_forward
             ) {
                 // Toggle!
@@ -44,11 +43,9 @@ object CGFeatureHooks {
                 currentPopup = null
             },
             CGFeatureJavaHooks.PopupItem(
-                if (CherrygramConfig.forwardWithoutCaptions) {
+                if (CherrygramConfig.forwardWithoutCaptions)
                     LocaleController.getString("CG_FwdMenu_EnableCaptions", R.string.CG_FwdMenu_EnableCaptions)
-                } else {
-                    LocaleController.getString("CG_FwdMenu_DisableCaptions", R.string.CG_FwdMenu_DisableCaptions)
-                },
+                else LocaleController.getString("CG_FwdMenu_DisableCaptions", R.string.CG_FwdMenu_DisableCaptions),
                 R.drawable.msg_edit
             ) {
                 // Toggle!
@@ -57,11 +54,9 @@ object CGFeatureHooks {
                 currentPopup = null
             },
             CGFeatureJavaHooks.PopupItem(
-                if (CherrygramConfig.forwardNotify) {
+                if (CherrygramConfig.forwardWithoutCaptions)
                     LocaleController.getString("CG_FwdMenu_NoNotify", R.string.CG_FwdMenu_NoNotify)
-                } else {
-                    LocaleController.getString("CG_FwdMenu_Notify", R.string.CG_FwdMenu_Notify)
-                },
+                else LocaleController.getString("CG_FwdMenu_Notify", R.string.CG_FwdMenu_Notify),
                 R.drawable.input_notify_on
             ) {
                 // Toggle!

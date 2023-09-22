@@ -4,7 +4,7 @@ import org.telegram.messenger.MessageObject
 import org.telegram.tgnet.TLRPC
 
 object StickersIDsLocal {
-    val iDs = ArrayList<Long>()
+    private val iDs = ArrayList<Long>()
 
     @JvmStatic
     fun isLocalSetId(document: TLRPC.Document?): Boolean = iDs.stream().anyMatch { setID: Long ->
@@ -25,5 +25,6 @@ object StickersIDsLocal {
         iDs.add(5062008833983905790L)
         iDs.add(1169953291908415506L)
         iDs.add(6055278067666911216L)
+        iDs.add(4331929539736240157L)
     }
 }

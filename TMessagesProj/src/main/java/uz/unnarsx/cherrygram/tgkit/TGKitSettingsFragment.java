@@ -2,21 +2,26 @@ package uz.unnarsx.cherrygram.tgkit;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
+import org.telegram.messenger.SendMessagesHelper;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
@@ -33,13 +38,16 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.LaunchActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.crashlytics.Crashlytics;
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.helpers.BackupHelper;
+import uz.unnarsx.cherrygram.utils.PermissionsUtils;
 import uz.unnarsx.cherrygram.preferences.BasePreferencesEntry;
-import uz.unnarsx.cherrygram.prefviews.SettingsSliderCell;
+import uz.unnarsx.cherrygram.prefviews.StickerSliderCell;
 import uz.unnarsx.cherrygram.tgkit.preference.TGKitCategory;
 import uz.unnarsx.cherrygram.tgkit.preference.TGKitPreference;
 import uz.unnarsx.cherrygram.tgkit.preference.TGKitSettings;
@@ -51,6 +59,7 @@ import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSliderPreference;
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSwitchPreference;
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextDetailRow;
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow;
+import uz.unnarsx.cherrygram.utils.FileImportActivity;
 
 public class TGKitSettingsFragment extends BaseFragment {
     private final TGKitSettings settings;
@@ -61,6 +70,8 @@ public class TGKitSettingsFragment extends BaseFragment {
 
     private final static int report_details = 2;
     private final static int restart_app = 3;
+    private final static int backup_settings = 5;
+    private final static int restore_settings = 6;
 
     public TGKitSettingsFragment(BasePreferencesEntry entry) {
         super();
@@ -87,16 +98,28 @@ public class TGKitSettingsFragment extends BaseFragment {
         }
     }
 
+    protected boolean hasWhiteActionBar() {
+        return true;
+    }
+
+    @Override
+    public boolean isLightStatusBar() {
+        if (!hasWhiteActionBar()) return super.isLightStatusBar();
+        int color = getThemedColor(Theme.key_windowBackgroundWhite);
+        return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
     @Override
     public View createView(Context context) {
-        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+        actionBar.setBackButtonDrawable(new BackDrawable(false));
 
-        if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-            actionBar.setTitleColor(Theme.getColor("windowBackgroundWhiteBlackText"));
-            actionBar.setItemsColor(Theme.getColor("windowBackgroundWhiteBlackText"), false);
-            actionBar.setItemsBackgroundColor(Theme.getColor("listSelectorSDK21"), false);
-        }
+        actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+        actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
+        actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
+        actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
+        actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
+        actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+        actionBar.setCastShadows(false);
 
         actionBar.setTitle(settings.name);
         actionBar.setAllowOverlayTitle(true);
@@ -107,6 +130,8 @@ public class TGKitSettingsFragment extends BaseFragment {
         menuItem.setContentDescription(LocaleController.getString("AccDescrMoreOptions", R.string.AccDescrMoreOptions));
         menuItem.addSubItem(report_details, R.drawable.bug_solar, LocaleController.getString("CG_CopyReportDetails", R.string.CG_CopyReportDetails));
         menuItem.addSubItem(restart_app, R.drawable.msg_retry, LocaleController.getString("CG_Restart", R.string.CG_Restart));
+        menuItem.addSubItem(backup_settings, R.drawable.msg_openin, LocaleController.getString("CG_ExportSettings", R.string.CG_ExportSettings));
+        menuItem.addSubItem(restore_settings, R.drawable.msg_customize, LocaleController.getString("CG_ImportSettings", R.string.CG_ImportSettings));
 
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -118,6 +143,34 @@ public class TGKitSettingsFragment extends BaseFragment {
                     BulletinFactory.of(TGKitSettingsFragment.this).createCopyBulletin(LocaleController.getString("CG_ReportDetailsCopied", R.string.CG_ReportDetailsCopied)).show();
                 } else if (id == restart_app) {
                     AppRestartHelper.triggerRebirth(context, new Intent(context, LaunchActivity.class));
+                } else if (id == backup_settings) {
+                    BackupHelper.backupSettings(context);
+                } else if (id == restore_settings) {
+                    try {
+                        if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isStoragePermissionGranted()) {
+                            PermissionsUtils.requestStoragePermission(getParentActivity());
+                            return;
+                        }
+                    } catch (Throwable ignore) {}
+                    FileImportActivity fragment = new FileImportActivity(false);
+                    fragment.setMaxSelectedFiles(1);
+                    fragment.setAllowPhoto(false);
+                    fragment.setDelegate(new FileImportActivity.DocumentSelectActivityDelegate() {
+                        @Override
+                        public void didSelectFiles(FileImportActivity activity, ArrayList<String> files, String caption, boolean notify, int scheduleDate) {
+                            activity.finishFragment();
+                            BackupHelper.importSettings(getContext(), new File(files.get(0)));
+                        }
+
+                        @Override
+                        public void didSelectPhotos(ArrayList<SendMessagesHelper.SendingMediaInfo> photos, boolean notify, int scheduleDate) {
+                        }
+
+                        @Override
+                        public void startDocumentSelectActivity() {
+                        }
+                    });
+                    presentFragment(fragment);
                 }
             }
         });
@@ -152,8 +205,8 @@ public class TGKitSettingsFragment extends BaseFragment {
             } else if (pref instanceof TGKitListPreference) {
                 TGKitListPreference preference = ((TGKitListPreference) pref);
                 preference.callActionHueta(this, getParentActivity(), () -> {
-                    if (view instanceof TextDetailSettingsCell)
-                        ((TextDetailSettingsCell) view).setTextAndValue(preference.title, preference.getContract().getValue(), preference.getDivider());
+                    if (view instanceof TextSettingsCell)
+                        ((TextSettingsCell) view).setTextAndValue(preference.title, preference.getContract().getValue(), preference.getDivider());
                 });
             }
         });
@@ -175,6 +228,18 @@ public class TGKitSettingsFragment extends BaseFragment {
 
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{TextSettingsCell.class, TextCheckCell.class, HeaderCell.class, NotificationsCheckCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
+
+        if (hasWhiteActionBar()) {
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
+        } else {
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
+            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
+        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));
@@ -246,8 +311,8 @@ public class TGKitSettingsFragment extends BaseFragment {
                 case 3: {
                     TextCheckCell checkCell = (TextCheckCell) holder.itemView;
                     TGKitSwitchPreference pref = (TGKitSwitchPreference) positions.get(position);
-                    if (pref.summary != null) {
-                        checkCell.setTextAndValueAndCheck(pref.title, pref.summary, pref.contract.getPreferenceValue(), true, pref.divider);
+                    if (pref.description != null) {
+                        checkCell.setTextAndValueAndCheck(pref.title, pref.description, pref.contract.getPreferenceValue(), true, pref.divider);
                     } else {
                         checkCell.setTextAndCheck(pref.title, pref.contract.getPreferenceValue(), pref.divider);
                     }
@@ -266,13 +331,12 @@ public class TGKitSettingsFragment extends BaseFragment {
                     break;
                 }
                 case 6: {
-                    ((SettingsSliderCell) holder.itemView).setContract(((TGKitSliderPreference) positions.get(position)).contract);
+                    ((StickerSliderCell) holder.itemView).setContract(((TGKitSliderPreference) positions.get(position)).contract);
                     break;
                 }
                 case 7: {
-                    TextDetailSettingsCell settingsCell = (TextDetailSettingsCell) holder.itemView;
+                    TextSettingsCell settingsCell = (TextSettingsCell) holder.itemView;
                     TGKitListPreference pref = (TGKitListPreference) positions.get(position);
-                    settingsCell.setMultilineDetail(true);
                     settingsCell.setTextAndValue(pref.title, pref.getContract().getValue(), pref.getDivider());
                     break;
                 }
@@ -291,7 +355,7 @@ public class TGKitSettingsFragment extends BaseFragment {
                 checkCell.setChecked(((TGKitSwitchPreference) positions.get(position)).contract.getPreferenceValue());
             } else if (viewType == 7) {
                 int position = holder.getAdapterPosition();
-                TextDetailSettingsCell checkCell = (TextDetailSettingsCell) holder.itemView;
+                TextSettingsCell checkCell = (TextSettingsCell) holder.itemView;
                 TGKitListPreference pref = ((TGKitListPreference) positions.get(position));
                 checkCell.setTextAndValue(pref.title, pref.getContract().getValue(), pref.getDivider());
             }
@@ -307,13 +371,14 @@ public class TGKitSettingsFragment extends BaseFragment {
         }
 
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = null;
             switch (viewType) {
                 case 0:
                     view = new ShadowSectionCell(mContext);
                     break;
                 case 1:
+                case 7:
                     view = new TextSettingsCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
@@ -326,7 +391,6 @@ public class TGKitSettingsFragment extends BaseFragment {
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 4:
-                case 7:
                     view = new TextDetailSettingsCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
@@ -335,7 +399,7 @@ public class TGKitSettingsFragment extends BaseFragment {
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 6:
-                    view = new SettingsSliderCell(mContext);
+                    view = new StickerSliderCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 8:

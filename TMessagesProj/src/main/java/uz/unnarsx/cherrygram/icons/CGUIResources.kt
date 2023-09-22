@@ -11,7 +11,6 @@ import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import androidx.annotation.RequiresApi
-import com.google.android.exoplayer2.util.Log
 import org.xmlpull.v1.XmlPullParserException
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.icons.icon_replaces.BaseIconReplace
@@ -20,7 +19,7 @@ import java.io.InputStream
 
 @Suppress("DEPRECATION")
 class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, wrapped.displayMetrics, wrapped.configuration) {
-    var activeReplacement: BaseIconReplace = CherrygramConfig.getIconReplacement1()
+    private var activeReplacement: BaseIconReplace = CherrygramConfig.getIconReplacement1()
     fun reloadReplacements() {
         activeReplacement = CherrygramConfig.getIconReplacement1()
     }
@@ -46,10 +45,6 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
 
     override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
         return wrapped.getDrawableForDensity(activeReplacement.wrap(id), density, theme)
-    }
-
-    private fun logAnId(str: String, id: Int) {
-        Log.d("CGUIResources", "[$str] >> id: $id {name: ${getResourceName(id)}}")
     }
 
     //
@@ -220,9 +215,7 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
 
     @Deprecated("Deprecated in Java")
     override fun updateConfiguration(config: Configuration?, metrics: DisplayMetrics?) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            wrapped?.updateConfiguration(config, metrics)
-//        }
+        wrapped?.updateConfiguration(config, metrics) // ?. call prevents crash on Android 7 and lower
     }
 
     override fun getDisplayMetrics(): DisplayMetrics? {

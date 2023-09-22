@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.stream.Stream;
 
 import uz.unnarsx.cherrygram.CGFeatureHooks;
+import uz.unnarsx.cherrygram.utils.PermissionsUtils;
 
 @RequiresApi(api = Build.VERSION_CODES.R)
 public class FilesMigrationService extends Service {
@@ -270,7 +271,7 @@ public class FilesMigrationService extends Service {
             buttonTextView.setText(LocaleController.getString("MigrateOldFolderButton", R.string.MigrateOldFolderButton));
 
             buttonTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-            buttonTextView.setBackground(Theme.AdaptiveRipple.filledRect(Theme.key_featuredStickers_addButton, 6));
+            buttonTextView.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_featuredStickers_addButton, 6));
 
             linearLayout.addView(buttonTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, 0, 16, 15, 16, 16));
 
@@ -286,12 +287,12 @@ public class FilesMigrationService extends Service {
         public void migrateOldFolder() {
             Activity activity = fragment.getParentActivity();
             boolean canWrite = activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-            boolean canRead = activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+            boolean canRead = PermissionsUtils.isStoragePermissionGranted();
 
             if (!canRead || !canWrite) {
                 ArrayList<String> permissions = new ArrayList<>();
                 if (!canRead) {
-                    permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+                    PermissionsUtils.requestStoragePermission(activity);
                 }
                 if (!canWrite) {
                     permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);

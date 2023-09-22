@@ -96,18 +96,13 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_OverrideHeader">Substituir cor do cabeçalho</string>
     <string name="AP_OverrideHeader_Desc">Funciona apenas no tema escuro</string>
     <string name="AP_ToolBarShadow">Desativar a sombra da barra de ferramentas</string>
-    <string name="AP_FlatNB">Barra de navegação transparente</string>
-    <string name="AP_FlatNB_Desc">A barra de navegação terá a cor do Painel de Mensagens</string>
     <string name="AP_SystemFonts">Utilizar fontes do sistema</string>
-    <string name="AP_SystemFonts_Desc">Desative isto se a sua fonte não suportar formatação (Negrito, italico, Monospace)</string>
     <string name="CP_Snowflakes_Header">Flocos de neve</string>
     <string name="CP_Snowflakes_AH">Cabeçalho da aplicação</string>
     <string name="CP_PremAndAnim_Header">Animações e Recursos Premium</string>
     <string name="CP_DisableAnimAvatars">Desativar avatares animados</string>
     <string name="CP_DisableReactionsOverlay">Desativar sobreposição de reações</string>
     <string name="CP_DisableReactionsOverlay_Desc">Isto irá desativar a sobreposição de popups com as reações disponíveis</string>
-    <string name="CP_DrawSmallReactions">Desenhar pequenas reações</string>
-    <string name="CP_DrawSmallReactions_Desc">Desenhar reações pequenas (antigas) em vez de grandes</string>
     <string name="CP_DisableReactionAnim">Desativar animação de reação</string>
     <string name="CP_DisableReactionAnim_Desc">(quando reagir a uma mensagem)</string>
     <string name="CP_DisablePremiumStatuses">Desativar estado de premium</string>
@@ -173,8 +168,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_AutoPauseVideo">Pausar vídeo automaticamente</string>
     <string name="CP_AutoPauseVideo_Desc">Quando bloquear a tela ou alternar para plano de fundo</string>
     <string name="CP_DisableVibration">Desativar a vibração</string>
-    <string name="CP_Proximity">Permitir ações de proximidade</string>
-    <string name="CP_Proximity_Desc">Ao desligá-lo irá livrar-se do irritante encerramento do ecrã ao ouvir as mensagens de voz</string>
     <string name="CP_Header_Notification">Notificações</string>
     <string name="CP_SilenceNonContacts">Silenciar não-contatos</string>
     <string name="CP_SilenceNonContacts_Desc">Se ativado, as notificações com som virão apenas dos contactos. Pode adicionar uma pessoa aos seus contactos mesmo sem um número de telefone, faça-o no seu perfil</string>
@@ -221,6 +214,7 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <string name="SP_Header_Privacy">Privacidade</string>
     <string name="SP_NoProxyPromo">Não mostrar patrocinador proxy</string>
     <string name="SP_AppCenterAnalytics_Desc">Ao habilitar isso, todas as falhas e estatísticas do aplicativo serão relatadas para \"appcenter.ms\" para análise posterior pelo desenvolvedor.</string>
+    <string name="SP_GoogleAnalytics_Desc">Ao habilitar isso, todas as falhas e estatísticas do aplicativo serão relatadas para \"console.firebase.google.com\" para análise posterior pelo desenvolvedor.</string>
     <string name="SP_CleanOld">Remover cache antiga (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Removido com sucesso</string>
     <string name="SP_Category_Account">Conta</string>

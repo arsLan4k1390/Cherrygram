@@ -13,9 +13,9 @@ class SolarIconReplace : BaseIconReplace() {
             R.drawable.msg_markunread to R.drawable.msg_markunread_solar,
             R.drawable.chats_pin to R.drawable.msg_pin_solar,
             R.drawable.chats_unpin to R.drawable.unpin_outline_28,
+            R.drawable.chats_saved to R.drawable.msg_saved_solar,
 
             // Drawer
-            R.drawable.msg_add to R.drawable.msg_contact_add_solar,
             R.drawable.msg_groups to R.drawable.msg_groups_solar,
             R.drawable.msg_channel to R.drawable.msg_channel_solar,
             R.drawable.msg_contacts to R.drawable.msg_contacts_solar,
@@ -57,8 +57,6 @@ class SolarIconReplace : BaseIconReplace() {
 
             // Action Bar SubItems
             //Chats
-            R.drawable.ic_ab_back to R.drawable.alt_arrow_left_solar,
-            R.drawable.msg_arrow_back to R.drawable.alt_arrow_left_solar,
             R.drawable.ic_ab_other to R.drawable.ic_ab_other_solar, //need to replace with new
             R.drawable.msg_unmute to R.drawable.msg_unmute_solar, //need to replace with new
             R.drawable.msg_mute to R.drawable.msg_mute_solar,
@@ -70,8 +68,9 @@ class SolarIconReplace : BaseIconReplace() {
             R.drawable.msg_clear to R.drawable.msg_clear_solar,
             /*R.drawable.msg_colors to R.drawable.msg_colors_solar,*/
             R.drawable.msg_delete to R.drawable.msg_delete_solar,
-            R.drawable.msg_pinnedlist to R.drawable.msg_pinnedlist_solar, // Pinend messages
+            R.drawable.msg_pinnedlist to R.drawable.msg_pinnedlist_solar, // Pinned messages
             //Profile
+            R.drawable.profile_newmsg to R.drawable.profile_newmsg_solar,
             R.drawable.profile_video to R.drawable.profile_video_solar,
             R.drawable.ic_call to R.drawable.ic_call_solar,
             R.drawable.msg_calls_regular to R.drawable.msg_calls_regular_solar, //need to replace with new
@@ -170,7 +169,7 @@ class SolarIconReplace : BaseIconReplace() {
             R.drawable.msg_view_file to R.drawable.msg_message_solar, // Cache settings
 
             /*R.drawable.msg_gif to R.drawable.airplay_video_outline_28,
-            R.drawable.msg_search to R.drawable.magnifer,
-            R.drawable.ic_ab_search to R.drawable.magnifer,*/
+            R.drawable.msg_search to R.drawable.magnifier,
+            R.drawable.ic_ab_search to R.drawable.magnifier,*/
     )
 }

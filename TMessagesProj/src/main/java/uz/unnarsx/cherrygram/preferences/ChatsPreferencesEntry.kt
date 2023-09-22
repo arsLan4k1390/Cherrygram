@@ -23,7 +23,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
         category(LocaleController.getString("AccDescrStickers", R.string.AccDescrStickers)) {
             switch {
                 title = LocaleController.getString("CP_BlockSomeSets", R.string.CP_BlockSomeSets)
-                summary = LocaleController.getString("CP_BlockSomeSets_Desc", R.string.CP_BlockSomeSets_Desc)
+                description = LocaleController.getString("CP_BlockSomeSets_Desc", R.string.CP_BlockSomeSets_Desc)
 
                 contract({
                     return@contract CherrygramConfig.blockStickers
@@ -84,7 +84,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
             }
             switch {
                 title = LocaleController.getString("CP_UnreadBadgeOnBackButton", R.string.CP_UnreadBadgeOnBackButton)
-                summary = LocaleController.getString("CP_UnreadBadgeOnBackButton_Desc", R.string.CP_UnreadBadgeOnBackButton_Desc)
+                description = LocaleController.getString("CP_UnreadBadgeOnBackButton_Desc", R.string.CP_UnreadBadgeOnBackButton_Desc)
 
                 contract({
                     return@contract CherrygramConfig.unreadBadgeOnBackButton
@@ -94,7 +94,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
             }
             switch {
                 title = LocaleController.getString("CP_DeleteForAll", R.string.CP_DeleteForAll)
-                summary = LocaleController.getString("CP_DeleteForAll_Desc", R.string.CP_DeleteForAll_Desc)
+                description = LocaleController.getString("CP_DeleteForAll_Desc", R.string.CP_DeleteForAll_Desc)
 
                 contract({
                     return@contract CherrygramConfig.deleteForAll
@@ -173,7 +173,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
             }
             switch {
                 title = LocaleController.getString("CP_DisableSwipeToNext", R.string.CP_DisableSwipeToNext)
-                summary = LocaleController.getString("CP_DisableSwipeToNext_Desc", R.string.CP_DisableSwipeToNext_Desc)
+                description = LocaleController.getString("CP_DisableSwipeToNext_Desc", R.string.CP_DisableSwipeToNext_Desc)
 
                 contract({
                     return@contract CherrygramConfig.disableSwipeToNext
@@ -239,7 +239,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
         category(LocaleController.getString("AS_Header_Record", R.string.CP_Header_Record)) {
             switch {
                 title = LocaleController.getString("CP_VoiceEnhancements", R.string.CP_VoiceEnhancements)
-                summary = LocaleController.getString("CP_VoiceEnhancements_Desc", R.string.CP_VoiceEnhancements_Desc)
+                description = LocaleController.getString("CP_VoiceEnhancements_Desc", R.string.CP_VoiceEnhancements_Desc)
 
                 contract({
                     return@contract CherrygramConfig.voicesAgc
@@ -249,7 +249,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
             }
             switch {
                 title = LocaleController.getString("CP_PlayVideo", R.string.CP_PlayVideo)
-                summary = LocaleController.getString("CP_PlayVideo_Desc", R.string.CP_PlayVideo_Desc)
+                description = LocaleController.getString("CP_PlayVideo_Desc", R.string.CP_PlayVideo_Desc)
 
                 contract({
                     return@contract CherrygramConfig.playVideoOnVolume
@@ -259,7 +259,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
             }
             switch {
                 title = LocaleController.getString("CP_AutoPauseVideo", R.string.CP_AutoPauseVideo)
-                summary = LocaleController.getString("CP_AutoPauseVideo_Desc", R.string.CP_AutoPauseVideo_Desc)
+                description = LocaleController.getString("CP_AutoPauseVideo_Desc", R.string.CP_AutoPauseVideo_Desc)
 
                 contract({
                     return@contract CherrygramConfig.autoPauseVideo
@@ -274,17 +274,6 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disableVibration
                 }) {
                     CherrygramConfig.disableVibration = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_Proximity", R.string.CP_Proximity)
-                summary = LocaleController.getString("CP_Proximity_Desc", R.string.CP_Proximity_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.enableProximity
-                }) {
-                    CherrygramConfig.enableProximity = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
@@ -318,9 +307,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                         }
                         val mp: MediaPlayer = MediaPlayer.create(bf.context, tone)
                         mp.start()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                    } catch (ignore: Exception) { }
 
                     AppRestartHelper.createRestartBulletin(bf)
                 }
@@ -362,9 +349,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                                 VibrateUtil.vibrate()
                             }
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                    } catch (ignore: Exception) { }
 
                 }
             }
@@ -372,7 +357,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
 
             switch {
                 title = LocaleController.getString("CP_SilenceNonContacts", R.string.CP_SilenceNonContacts)
-                summary = LocaleController.getString("CP_SilenceNonContacts_Desc", R.string.CP_SilenceNonContacts_Desc)
+                description = LocaleController.getString("CP_SilenceNonContacts_Desc", R.string.CP_SilenceNonContacts_Desc)
 
 
                 contract({

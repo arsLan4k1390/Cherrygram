@@ -614,4 +614,9 @@ public class CountrySelectActivity extends BaseFragment {
 
         return themeDescriptions;
     }
+
+    @Override
+    public int getNavigationBarColor() {
+        return getThemedColor(Theme.key_windowBackgroundWhite);
+    }
 }

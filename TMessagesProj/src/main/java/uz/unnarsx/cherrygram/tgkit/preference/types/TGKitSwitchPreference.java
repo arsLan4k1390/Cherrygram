@@ -9,7 +9,7 @@ public class TGKitSwitchPreference extends TGKitPreference {
     public boolean divider = false;
 
     @Nullable
-    public String summary;
+    public String description;
 
     @Override
     public TGPType getType() {

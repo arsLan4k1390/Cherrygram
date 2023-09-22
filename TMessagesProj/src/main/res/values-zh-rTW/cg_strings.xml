@@ -88,18 +88,13 @@
     <string name="AP_SystemEmoji">使用系統 Emoji</string>
     <string name="AP_CenterTitle">在操作列中置中標題</string>
     <string name="AP_ToolBarShadow">停用工具列陰影</string>
-    <string name="AP_FlatNB">透明導覽列</string>
-    <string name="AP_FlatNB_Desc">導覽列將跟隨對話頁面顏色變化</string>
     <string name="AP_SystemFonts">使用系統字型</string>
-    <string name="AP_SystemFonts_Desc">如果你的字型不支持下列格式 (粗體，斜體，等寬)，請停用本功能 (重啟應用程式後生效)</string>
     <string name="CP_Snowflakes_Header">雪花特效顯示 (重啟應用程式後生效)</string>
     <string name="CP_Snowflakes_AH">程式頂部</string>
     <string name="CP_PremAndAnim_Header">動畫和 Premium 功能 (重啟應用程式後生效)</string>
     <string name="CP_DisableAnimAvatars">停用動畫大頭貼</string>
     <string name="CP_DisableReactionsOverlay">停用 Emoji 回應選項</string>
     <string name="CP_DisableReactionsOverlay_Desc">此功能將停用 Emoji 回應選項</string>
-    <string name="CP_DrawSmallReactions">改用小型 Emoji 回應選項</string>
-    <string name="CP_DrawSmallReactions_Desc">改用小型 (舊式) Emoji 回應而不是大型 Emoji 回應</string>
     <string name="CP_DisableReactionAnim">關閉回應動畫</string>
     <string name="CP_DisableReactionAnim_Desc">對訊息回應時禁用其動畫</string>
     <string name="CP_DisablePremiumStatuses">停用 Premium 狀態顯示</string>
@@ -163,8 +158,6 @@
     <string name="CP_AutoPauseVideo">自動暫停影片</string>
     <string name="CP_AutoPauseVideo_Desc">鎖定螢幕或切換至背景時</string>
     <string name="CP_DisableVibration">停用全局震動</string>
-    <string name="CP_Proximity">啟用距離感應器</string>
-    <string name="CP_Proximity_Desc">關閉本功能後，在您播放語音訊息時不會黑屏 (重啟應用程式後生效)</string>
     <string name="CP_Header_Notification">通知</string>
     <string name="CP_SilenceNonContacts">將非聯絡人訊息設為靜音</string>
     <string name="CP_SilenceNonContacts_Desc">啟用後僅限聯絡人的通知會發出聲效，您可以在個人檔案頁面新增聯絡人</string>

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +19,7 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
+import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.HeaderCell;
@@ -60,7 +62,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
-        updateRowsId(true);
+        updateRowsId();
         return true;
     }
 
@@ -70,16 +72,28 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
     }
 
+    protected boolean hasWhiteActionBar() {
+        return true;
+    }
+
+    @Override
+    public boolean isLightStatusBar() {
+        if (!hasWhiteActionBar()) return super.isLightStatusBar();
+        int color = getThemedColor(Theme.key_windowBackgroundWhite);
+        return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
     @Override
     public View createView(Context context) {
-        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+        actionBar.setBackButtonDrawable(new BackDrawable(false));
 
-        if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-            actionBar.setTitleColor(Theme.getColor("windowBackgroundWhiteBlackText"));
-            actionBar.setItemsColor(Theme.getColor("windowBackgroundWhiteBlackText"), false);
-            actionBar.setItemsBackgroundColor(Theme.getColor("listSelectorSDK21"), false);
-        }
+        actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+        actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
+        actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
+        actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
+        actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
+        actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+        actionBar.setCastShadows(false);
 
         actionBar.setTitle(LocaleController.getString("EP_Category_Experimental", R.string.EP_Category_Experimental));
         actionBar.setAllowOverlayTitle(false);
@@ -172,7 +186,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void updateRowsId(boolean notify) {
+    private void updateRowsId() {
         rowCount = 0;
 
         experimentalHeaderRow = rowCount++;
@@ -188,7 +202,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         uploadSpeedBoostRow = rowCount++;
         slowNetworkMode = rowCount++;
 
-        if (listAdapter != null && notify) {
+        if (listAdapter != null) {
             listAdapter.notifyDataSetChanged();
         }
     }
