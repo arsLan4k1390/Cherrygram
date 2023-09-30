@@ -282,6 +282,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.extras.CherrygramExtras;
 
 @SuppressLint("WrongConstant")
 @SuppressWarnings("unchecked")
@@ -2725,6 +2726,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
         default void onPreOpen() {}
         default void onPreClose() {}
+        default void onEditModeChanged(boolean isEditMode) {}
         default boolean onDeletePhoto(int index) {
             return true;
         }
@@ -3931,7 +3933,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     }
                 }
                 if (fromCache && placeProvider.canLoadMoreAvatars()) {
-                    MessagesController.getInstance(currentAccount).loadDialogPhotos(avatarsDialogId, 100, 0, false, classGuid);
+                    MessagesController.getInstance(currentAccount).loadDialogPhotos(avatarsDialogId, 80, 0, false, classGuid);
                 }
             }
         } else if (id == NotificationCenter.mediaCountDidLoad) {
@@ -4510,7 +4512,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             private Bulletin.Delegate delegate = new Bulletin.Delegate() {
                 @Override
                 public int getBottomOffset(int tag) {
-                    if (captionEdit.editText.getVisibility() == View.GONE) {
+                    if (captionEdit.getVisibility() == View.GONE) {
                         return 0;
                     }
                     return getHeight() - captionEdit.editText.getTop();
@@ -6052,9 +6054,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
             @Override
             protected void setupMentionContainer() {
-                if (parentChatActivity != null) {
-                    return;
-                }
                 mentionContainer.getAdapter().setAllowStickers(false);
                 mentionContainer.getAdapter().setAllowBots(false);
                 mentionContainer.getAdapter().setAllowChats(false);
@@ -9892,6 +9891,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         if (currentEditMode == mode || (isCurrentVideo && photoProgressViews[0].backgroundState != 3) && !isCurrentVideo && (centerImage.getBitmap() == null || photoProgressViews[0].backgroundState != -1) || changeModeAnimation != null || imageMoveAnimation != null || isCaptionOpen()) {
             return;
         }
+        if (placeProvider != null && (currentEditMode == EDIT_MODE_NONE || mode == EDIT_MODE_NONE)) {
+            placeProvider.onEditModeChanged(mode != EDIT_MODE_NONE);
+        }
         windowView.setClipChildren(mode == EDIT_MODE_FILTER);
         int navigationBarColorFrom = 0x7f000000;
         if (navigationBar.getBackground() instanceof ColorDrawable) {
@@ -11860,7 +11862,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     }
                 }
             } else if (avatarsDialogId != 0 && placeProvider.canLoadMoreAvatars()) {
-                MessagesController.getInstance(currentAccount).loadDialogPhotos(avatarsDialogId, 100, 0, true, classGuid);
+                MessagesController.getInstance(currentAccount).loadDialogPhotos(avatarsDialogId, 80, 0, true, classGuid);
             }
         }
         if (currentMessageObject != null && currentMessageObject.isVideo() || (CherrygramConfig.INSTANCE.getPlayGIFasVideo() && currentMessageObject != null && currentMessageObject.isGif()) || currentBotInlineResult != null && (currentBotInlineResult.type.equals("video") || MessageObject.isVideoDocument(currentBotInlineResult.document)) || (pageBlocksAdapter != null && (pageBlocksAdapter.isVideo(index) || pageBlocksAdapter.isHardwarePlayer(index))) || (sendPhotoType == SELECT_TYPE_NO_SELECT && ((MediaController.PhotoEntry)imagesArrLocals.get(index)).isVideo)) {
@@ -12274,8 +12276,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             CharSequence subtitle = null;
             TLRPC.Photo avatar = avatarsArr.get(switchingToIndex);
             if (avatar.date != 0) {
-                subtitle = LocaleController.formatDateAudio(avatar.date, false);
-                subtitle = String.format(Locale.US, "%s", subtitle);
+                subtitle = String.format("%s", CherrygramExtras.INSTANCE.createDateAndTime(avatar.date));
             }
             actionBarContainer.setSubtitle(subtitle, animated);
             //Show upload date and time of avatars.

@@ -15,12 +15,9 @@ import android.widget.FrameLayout;
 import androidx.core.util.Supplier;
 
 import org.telegram.ui.Components.BackButtonMenu;
-import org.telegram.ui.LNavigation.LNavigation;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public interface INavigationLayout {
     int REBUILD_FLAG_REBUILD_LAST = 1, REBUILD_FLAG_REBUILD_ONLY_LAST = 2;
@@ -83,16 +80,11 @@ public interface INavigationLayout {
     void setPulledDialogs(List<BackButtonMenu.PulledDialog> pulledDialogs);
 
     static INavigationLayout newLayout(Context context) {
-        return CherrygramConfig.INSTANCE.getUseLNavigation() ? new LNavigation(context) : new ActionBarLayout(context);
+        return new ActionBarLayout(context);
     }
 
     static INavigationLayout newLayout(Context context, Supplier<BottomSheet> supplier) {
-        return CherrygramConfig.INSTANCE.getUseLNavigation() ? new LNavigation(context) {
-            @Override
-            public BottomSheet getBottomSheet() {
-                return supplier.get();
-            }
-        } : new ActionBarLayout(context) {
+        return new ActionBarLayout(context) {
             @Override
             public BottomSheet getBottomSheet() {
                 return supplier.get();
@@ -291,14 +283,14 @@ public interface INavigationLayout {
     boolean isSheet();
 
     interface INavigationLayoutDelegate {
-        @SuppressWarnings("deprecation")
         default boolean needPresentFragment(INavigationLayout layout, NavigationParams params) {
             return needPresentFragment(params.fragment, params.removeLast, params.noAnimation, layout);
         }
 
         /**
-         * You should override {@link INavigationLayoutDelegate#needPresentFragment(INavigationLayout, NavigationParams)} for more fields
+         * @deprecated You should override {@link INavigationLayoutDelegate#needPresentFragment(INavigationLayout, NavigationParams)} for more fields
          */
+        @Deprecated
         default boolean needPresentFragment(BaseFragment fragment, boolean removeLast, boolean forceWithoutAnimation, INavigationLayout layout) {
             return true;
         }

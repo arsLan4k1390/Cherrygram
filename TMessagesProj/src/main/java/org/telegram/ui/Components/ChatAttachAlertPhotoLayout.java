@@ -178,6 +178,8 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     private final LockAnimationView lockAnimationView;
     private AnimatorSet zoomControlAnimation;
     private Runnable zoomControlHideRunnable;
+    private Runnable afterCameraInitRunnable;
+    private Boolean isCameraFrontfaceBeforeEnteringEditMode = null;
     private TextView counterTextView;
     private TextView tooltipTextView;
     private ImageView switchCameraButton;
@@ -373,6 +375,11 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         public void onClose() {
             resumeCameraPreview();
             AndroidUtilities.runOnUIThread(()-> setCurrentSpoilerVisible(-1, true), 150);
+        }
+
+        @Override
+        public void onEditModeChanged(boolean isEditMode) {
+            onPhotoEditModeChanged(isEditMode);
         }
 
         @Override
@@ -1978,6 +1985,20 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         PhotoViewer.getInstance().openPhotoForSelect(arrayList, index, type, false, new BasePhotoProvider() {
 
             @Override
+            public void onOpen() {
+                pauseCameraPreview();
+            }
+
+            @Override
+            public void onClose() {
+                resumeCameraPreview();
+            }
+
+            public void onEditModeChanged(boolean isEditMode) {
+                onPhotoEditModeChanged(isEditMode);
+            }
+
+            @Override
             public ImageReceiver.BitmapHolder getThumbForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index) {
                 return null;
             }
@@ -2362,6 +2383,9 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     if (cameraView != null) {
                         cameraView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_FULLSCREEN);
                     }
+                    if (afterCameraInitRunnable != null) {
+                        afterCameraInitRunnable.run();
+                    }
                 }
             });
             animatorSet.start();
@@ -2415,7 +2439,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         if (cameraView == null) {
             final boolean lazy = !LiteMode.isEnabled(LiteMode.FLAGS_CHAT);
             if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
-                cameraView = new CameraView(getContext(), parentAlert.openWithFrontFaceCamera, lazy) {
+                cameraView = new CameraView(getContext(), isCameraFrontfaceBeforeEnteringEditMode != null ? isCameraFrontfaceBeforeEnteringEditMode : parentAlert.openWithFrontFaceCamera, lazy) {
 
                     Bulletin.Delegate bulletinDelegate = new Bulletin.Delegate() {
                         @Override
@@ -2594,7 +2618,11 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 cameraView.setVisibility(GONE);
                 cameraIcon.setVisibility(GONE);
             }
-            checkCameraViewPosition();
+            if (cameraOpened) {
+                cameraIcon.setAlpha(0f);
+            } else {
+                checkCameraViewPosition();
+            }
             invalidate();
         }
         if (zoomControlView != null) {
@@ -2607,10 +2635,12 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         if (effectSelector != null) {
             effectSelector.resetSelectedEffect();
         }
-        cameraView.setTranslationX(cameraViewLocation[0]);
-        cameraView.setTranslationY(cameraViewLocation[1] + currentPanTranslationY);
-        cameraIcon.setTranslationX(cameraViewLocation[0]);
-        cameraIcon.setTranslationY(cameraViewLocation[1] + cameraViewOffsetY + currentPanTranslationY);
+        if (!cameraOpened) {
+            cameraView.setTranslationX(cameraViewLocation[0]);
+            cameraView.setTranslationY(cameraViewLocation[1] + currentPanTranslationY);
+            cameraIcon.setTranslationX(cameraViewLocation[0]);
+            cameraIcon.setTranslationY(cameraViewLocation[1] + cameraViewOffsetY + currentPanTranslationY);
+        }
     }
 
     public void hideCamera(boolean async) {
@@ -3763,6 +3793,24 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             }
         } catch (Exception e) {
             FileLog.e(e);
+        }
+    }
+
+    private void onPhotoEditModeChanged(boolean isEditMode) {
+        if (needCamera && !noCameraPermissions) {
+            if (isEditMode) {
+                if (cameraView != null) {
+                    isCameraFrontfaceBeforeEnteringEditMode = cameraView.isFrontface();
+                    hideCamera(true);
+                }
+            } else {
+                afterCameraInitRunnable = () -> {
+                    pauseCameraPreview();
+                    afterCameraInitRunnable = null;
+                    isCameraFrontfaceBeforeEnteringEditMode = null;
+                };
+                showCamera();
+            }
         }
     }
 

@@ -5,9 +5,12 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
@@ -15,10 +18,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LocaleController;
@@ -29,12 +30,11 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.CreationTextCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
-import org.telegram.ui.Cells.TextDetailSettingsCell;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import java.io.IOException;
 
 public class JsonHelper extends BaseFragment {
     private final MessageObject messageObject;
@@ -109,12 +109,16 @@ public class JsonHelper extends BaseFragment {
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
             if (position == exportRow) {
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                JsonElement je = JsonParser.parseString(gson.toJson(messageObject.messageOwner));
-                String prettyJsonString = gson.toJson(je);
+                try {
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                    String jsonString = mapper.writeValueAsString(messageObject.messageOwner);
 
-                AndroidUtilities.addToClipboard(prettyJsonString);
-                BulletinFactory.of(this).createCopyBulletin(LocaleController.formatString("TextCopied", R.string.TextCopied)).show();
+                    AndroidUtilities.addToClipboard(jsonString);
+                    BulletinFactory.of(this).createCopyBulletin(LocaleController.formatString("TextCopied", R.string.TextCopied)).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -163,15 +167,24 @@ public class JsonHelper extends BaseFragment {
                     holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                     break;
                 case 2:
-                    TextDetailSettingsCell settingsCell = (TextDetailSettingsCell) holder.itemView;
-                    settingsCell.setMultilineDetail(true);
-
-                    Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                    JsonElement je = JsonParser.parseString(gson.toJson(messageObject.messageOwner));
-                    String prettyJsonString = gson.toJson(je);
+                    TextView jsonTextView = (TextView) holder.itemView;
+                    jsonTextView.setGravity(Gravity.LEFT);
+                    jsonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+                    jsonTextView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+                    jsonTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+                    jsonTextView.setTextIsSelectable(true);
+                    jsonTextView.setPadding(100, 20, 20, 50);
 
                     if (position == jsonTextRow) {
-                        settingsCell.setTextAndValue("JSON:", prettyJsonString, true);
+                        try {
+                            ObjectMapper mapper = new ObjectMapper();
+                            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                            String jsonString = mapper.writeValueAsString(messageObject.messageOwner);
+
+                            jsonTextView.setText(jsonString);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     }
                     break;
                 /*case 3:
@@ -204,7 +217,7 @@ public class JsonHelper extends BaseFragment {
             View view;
             switch (viewType) {
                 case 2:
-                    view = new TextDetailSettingsCell(mContext);
+                    view = new TextView(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 /*case 3:

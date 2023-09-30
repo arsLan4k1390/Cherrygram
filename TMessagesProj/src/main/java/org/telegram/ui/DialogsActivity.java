@@ -743,10 +743,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
                 canvas.clipRect(0, -getY() + getActionBarTop() + getActionBarFullHeight(), getMeasuredWidth(), getMeasuredHeight());
                 if (slideFragmentProgress != 1f) {
-                    if (slideFragmentLite || CherrygramConfig.INSTANCE.getUseLNavigation()) {
+                    if (slideFragmentLite || CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING) {
                         canvas.translate((isDrawerTransition ? 1 : -1) * AndroidUtilities.dp(slideAmplitudeDp) * (1f - slideFragmentProgress), 0);
-                    } else if (slideFragmentL) {
-                        canvas.translate(slideAmplitudeL * (1f - slideFragmentProgress), 0);
                     } else {
                         final float s = 1f - 0.05f * (1f - slideFragmentProgress);
                         canvas.translate((isDrawerTransition ? AndroidUtilities.dp(4) : -AndroidUtilities.dp(4)) * (1f - slideFragmentProgress), 0);
@@ -757,10 +755,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 canvas.restore();
             } else if (child == actionBar && slideFragmentProgress != 1f) {
                 canvas.save();
-                if (slideFragmentLite || CherrygramConfig.INSTANCE.getUseLNavigation()) {
+                if (slideFragmentLite || CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING) {
                     canvas.translate((isDrawerTransition ? 1 : -1) * AndroidUtilities.dp(slideAmplitudeDp) * (1f - slideFragmentProgress), 0);
-                } else if (slideFragmentL) {
-                    canvas.translate(slideAmplitudeL * (1f - slideFragmentProgress), 0);
                 } else {
                     float s = 1f - 0.05f * (1f - slideFragmentProgress);
                     canvas.translate((isDrawerTransition ? AndroidUtilities.dp(4) : -AndroidUtilities.dp(4)) * (1f - slideFragmentProgress), 0);
@@ -968,10 +964,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 canvas.save();
                 canvas.translate(fragmentContextView.getX(), fragmentContextView.getY());
                 if (slideFragmentProgress != 1f) {
-                    if (slideFragmentLite || CherrygramConfig.INSTANCE.getUseLNavigation()) {
+                    if (slideFragmentLite || CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING) {
                         canvas.translate((isDrawerTransition ? 1 : -1) * AndroidUtilities.dp(slideAmplitudeDp) * (1f - slideFragmentProgress), 0);
-                    } else if (slideFragmentL) {
-                        canvas.translate(slideAmplitudeL * (1f - slideFragmentProgress), 0);
                     } else {
                         final float s = 1f - 0.05f * (1f - slideFragmentProgress);
                         canvas.translate((isDrawerTransition ? AndroidUtilities.dp(4) : -AndroidUtilities.dp(4)) * (1f - slideFragmentProgress), 0);
@@ -6872,27 +6866,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     @Override
     public void onBecomeFullyVisible() {
         super.onBecomeFullyVisible();
-        if (CherrygramConfig.INSTANCE.getUseLNavigation()) {
-            if (viewPages != null) {
-                for (int a = 0; a < viewPages.length; a++) {
-                    if (viewPages[a].dialogsType == 0 && viewPages[a].archivePullViewState == ARCHIVE_ITEM_STATE_HIDDEN && viewPages[a].layoutManager.findFirstVisibleItemPosition() == 0 && hasHiddenArchive()) {
-                        viewPages[a].layoutManager.scrollToPositionWithOffset(1, (int) actionBar.getTranslationY());
-                    }
-                    if (a == 0) {
-                        viewPages[a].dialogsAdapter.resume();
-                    } else {
-                        viewPages[a].dialogsAdapter.pause();
-                    }
-                }
-            }
-            if (searchIsShowed) {
-                AndroidUtilities.requestAdjustResize(getParentActivity(), classGuid);
-            }
-            updateVisibleRows(0, false);
-            updateProxyButton(false, true);
-            checkSuggestClearDatabase();
-        }
-
         if (isArchive()) {
             SharedPreferences preferences = MessagesController.getGlobalMainSettings();
             boolean showArchiveHint = preferences.getBoolean("archivehint", true);
@@ -11900,9 +11873,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
     float slideFragmentProgress = 1f;
     final int slideAmplitudeDp = 40;
-    final int slideAmplitudeL = AndroidUtilities.isTablet() ? AndroidUtilities.dp(320) : Math.min(AndroidUtilities.dp(320), Math.min(AndroidUtilities.getRealScreenSize().x, AndroidUtilities.getRealScreenSize().y) - AndroidUtilities.dp(56));
     boolean slideFragmentLite;
-    boolean slideFragmentL;
     boolean isSlideBackTransition;
     boolean isDrawerTransition;
     ValueAnimator slideBackTransitionAnimator;
@@ -12005,13 +11976,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
 
         slideFragmentLite = SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_AVERAGE || !LiteMode.isEnabled(LiteMode.FLAG_CHAT_SCALE);
-        slideFragmentL = CherrygramConfig.INSTANCE.getUseLNavigation() && isDrawerTransition;
         slideFragmentProgress = progress;
         if (fragmentView != null) {
             fragmentView.invalidate();
         }
 
-        if (slideFragmentLite || CherrygramConfig.INSTANCE.getUseLNavigation()) {
+        if (slideFragmentLite || CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING) {
             if (filterTabsView != null) {
                 filterTabsView.getListView().setTranslationX((isDrawerTransition ? 1 : -1) * AndroidUtilities.dp(slideAmplitudeDp) * (1f - slideFragmentProgress));
                 filterTabsView.invalidate();
@@ -12022,16 +11992,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (rightSlidingDialogContainer != null && rightSlidingDialogContainer.getFragmentView() != null) {
                 if (!rightFragmentTransitionInProgress) {
                     rightSlidingDialogContainer.getFragmentView().setTranslationX((isDrawerTransition ? 1 : -1) * AndroidUtilities.dp(slideAmplitudeDp) * (1f - slideFragmentProgress));
-                }
-            }
-        } else if (slideFragmentL) {
-            if (filterTabsView != null) {
-                filterTabsView.getListView().setTranslationX(slideAmplitudeL * (1f - slideFragmentProgress));
-                filterTabsView.invalidate();
-            }
-            if (rightSlidingDialogContainer != null && rightSlidingDialogContainer.getFragmentView() != null) {
-                if (!rightFragmentTransitionInProgress) {
-                    rightSlidingDialogContainer.getFragmentView().setTranslationX(slideAmplitudeL * (1f - slideFragmentProgress));
                 }
             }
         } else {

@@ -90,7 +90,6 @@
     <string name="AP_ToolBarShadow">تعطيل ضل شريط الأدوات</string>
     <string name="AP_SystemFonts">أستخدم خطوط النظام</string>
     <string name="CP_Snowflakes_Header">الثلج (إعادة تشغيل التطبيق لتطبيق)</string>
-    <string name="CP_Snowflakes_AH">رأس التطبيق</string>
     <string name="CP_PremAndAnim_Header">الرسوم المتحركة والميزات المدفوعة (إعد تشغيل التطبيق للتطبيق)</string>
     <string name="CP_DisableAnimAvatars">تعطيل الصور الرمزية المتحركة</string>
     <string name="CP_DisableReactionsOverlay">تعطيل تراكب ردود الأفعال</string>
@@ -195,7 +194,6 @@
     <string name="EP_SlowNetworkMode">وضع الشبكة البطيء</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_Security">الأمان</string>
     <string name="SP_Header_Privacy">الخصوصية</string>
     <string name="SP_NoProxyPromo">لا تظهر راعي الوكيل (البروكسي)</string>
     <string name="SP_AppCenterAnalytics_Desc">بتمكين هذا، سيتم إبلاغ جميع تعطل التطبيق والإحصاءات إلى \"appcenter.ms\" لمزيد من المراجعة من قبل المطور.</string>

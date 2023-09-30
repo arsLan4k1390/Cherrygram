@@ -3319,14 +3319,12 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     }
 
     public void setMaxBrightness() {
-        Activity parentActivity = delegate.getParentActivity();
-
-        WindowManager.LayoutParams attributes = parentActivity.getWindow().getAttributes();
+        WindowManager.LayoutParams attributes = ((Activity) getContext()).getWindow().getAttributes();
         attributes.screenBrightness = 1F; //maxBrightness
-        parentActivity.getWindow().setAttributes(attributes);
+        ((Activity) getContext()).getWindow().setAttributes(attributes);
 
         CGFeatureHooks.setFlashLight(true);
-        AndroidUtilities.setLightStatusBar(parentActivity.getWindow(), true);
+        AndroidUtilities.setLightStatusBar(((Activity) getContext()).getWindow(), true);
 //        flashlightButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
         switchCameraDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
         switchCameraButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
@@ -3344,11 +3342,9 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     }
 
     public void setOldBrightness() {
-        Activity parentActivity = delegate.getParentActivity();
-
-        WindowManager.LayoutParams attributes = parentActivity.getWindow().getAttributes();
+        WindowManager.LayoutParams attributes = ((Activity) getContext()).getWindow().getAttributes();
         attributes.screenBrightness = -1F; //previousBrightness
-        parentActivity.getWindow().setAttributes(attributes);
+        ((Activity) getContext()).getWindow().setAttributes(attributes);
 
         new CountDownTimer(300, 100) {
             @Override
@@ -3357,7 +3353,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             @Override
             public void onFinish() {
                 CGFeatureHooks.setFlashLight(false);
-                AndroidUtilities.setLightStatusBar(parentActivity.getWindow(), false);
+                AndroidUtilities.setLightStatusBar(((Activity) getContext()).getWindow(), false);
                 invalidateBlur();
 //                flashlightButton.clearColorFilter();
                 flashlightLottie.setAnimation(R.raw.torch_on, 50, 50, colorWhite);

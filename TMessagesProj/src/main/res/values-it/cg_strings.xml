@@ -90,7 +90,6 @@
     <string name="AP_ToolBarShadow">Disabilita ombra barra strumenti</string>
     <string name="AP_SystemFonts">Usa il font di sistema</string>
     <string name="CP_Snowflakes_Header">Fiocchi di neve (riavviare l\'app per applicare)</string>
-    <string name="CP_Snowflakes_AH">Titolo dell\'applicazione</string>
     <string name="CP_PremAndAnim_Header">Animazioni e funzionalità Premium (riavvia l\'app per applicare)</string>
     <string name="CP_DisableAnimAvatars">Disabilita avatar animati</string>
     <string name="CP_DisableReactionsOverlay">Disabilita sovrapposizione delle reazioni</string>
@@ -195,7 +194,6 @@
     <string name="EP_SlowNetworkMode">Modalità rete lenta</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_Security">Sicurezza</string>
     <string name="SP_Header_Privacy">Privacy</string>
     <string name="SP_NoProxyPromo">Non mostrare sponsor proxy</string>
     <string name="SP_AppCenterAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"appcenter.ms\" para que el desarrollador las revise.</string>

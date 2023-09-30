@@ -14,7 +14,7 @@ import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.6.0"
+    var CG_VERSION = "7.7.0"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getDCGeo(dcId: Int): String {
@@ -54,7 +54,7 @@ object CherrygramExtras {
         return abi
     }
 
-    fun createForwardDateAndTime(date: Long): String {
+    fun createDateAndTime(date: Long): String {
         var dateAndTime = date
         try {
             dateAndTime *= 1000

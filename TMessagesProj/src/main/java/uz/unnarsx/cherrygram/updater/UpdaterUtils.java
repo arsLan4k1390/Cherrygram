@@ -12,6 +12,7 @@ import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import org.json.JSONObject;
@@ -185,7 +186,7 @@ public class UpdaterUtils {
             var intentFilter = new IntentFilter();
             intentFilter.addAction("android.intent.action.DOWNLOAD_COMPLETE");
             intentFilter.addAction("android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED");
-            context.registerReceiver(downloadBroadcastReceiver, intentFilter);
+            ContextCompat.registerReceiver(context, downloadBroadcastReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
         } else {
             installApk(context, apkFile.getAbsolutePath());
         }

@@ -51,10 +51,10 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                title = LocaleController.getString("SP_Category_Security", R.string.SP_Category_Security)
+                title = LocaleController.getString("SP_Category_PrivacyAndSecurity", R.string.SP_Category_PrivacyAndSecurity)
                 icon = R.drawable.msg_secret
                 listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(CherrygramPreferencesNavigator.createSecurity())
+                    it.presentFragment(CherrygramPreferencesNavigator.createPrivacyAndSecurity())
                 }
             }
             textIcon {

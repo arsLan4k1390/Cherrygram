@@ -98,7 +98,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_ToolBarShadow">Desativar a sombra da barra de ferramentas</string>
     <string name="AP_SystemFonts">Utilizar fontes do sistema</string>
     <string name="CP_Snowflakes_Header">Flocos de neve</string>
-    <string name="CP_Snowflakes_AH">Cabeçalho da aplicação</string>
     <string name="CP_PremAndAnim_Header">Animações e Recursos Premium</string>
     <string name="CP_DisableAnimAvatars">Desativar avatares animados</string>
     <string name="CP_DisableReactionsOverlay">Desativar sobreposição de reações</string>
@@ -210,7 +209,6 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <string name="EP_SlowNetworkMode">Mostrar modo de rede</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_Security">Segurança</string>
     <string name="SP_Header_Privacy">Privacidade</string>
     <string name="SP_NoProxyPromo">Não mostrar patrocinador proxy</string>
     <string name="SP_AppCenterAnalytics_Desc">Ao habilitar isso, todas as falhas e estatísticas do aplicativo serão relatadas para \"appcenter.ms\" para análise posterior pelo desenvolvedor.</string>
@@ -244,7 +242,6 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <!--Donations-->
     <string name="DP_Donate">Faça um donativo</string>
     <string name="DP_Donate_Method">Escolher o método</string>
-    <string name="DP_Donate_Cryptocurrency">Criptomoedas</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 </resources>

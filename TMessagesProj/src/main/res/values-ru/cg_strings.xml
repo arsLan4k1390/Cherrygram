@@ -26,6 +26,8 @@
     <string name="CG_JumpToBeginning">В начало</string>
     <string name="CG_DeleteAllFromSelf">Удалить мои сообщения</string>
     <string name="CG_DeleteAllFromSelfAlert">Внимание! Это **удалит все Ваши сообщения** в этом чате для **всех**.</string>
+    <string name="CG_DeleteAllFromSelfAlertBefore">Внимание! Это **удалит все Ваши сообщения до %s** в этом чате для **всех** участников.</string>
+    <string name="CG_DeleteAllFromSelfBefore">Раньше...</string>
     <string name="CG_DeleteAllFromSelfAdmin">С правами администратора</string>
     <string name="CG_DeleteAllFromSelfDone">Все Ваши сообщения удалены</string>
 
@@ -116,7 +118,6 @@
     <string name="AP_SystemFonts">Использовать системный шрифт</string>
 
     <string name="CP_Snowflakes_Header">Снежинки</string>
-    <string name="CP_Snowflakes_AH">Заголовок приложения</string>
 
     <string name="CP_PremAndAnim_Header">Анимации и Premium функции</string>
     <string name="CP_HideStories">Скрыть Истории</string>
@@ -230,6 +231,10 @@
 
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Экспериментальные</string>
+    <string name="EP_NavigationAnimation">Анимация навигации</string>
+    <string name="EP_NavigationAnimationSpring">Spring</string>
+    <string name="EP_NavigationAnimationBezier">Обычная</string>
+    <string name="EP_NavigationAnimationCrossfading">Эффект плавного затухания</string>
     <string name="CG_OpenProfile">Открывать профиль вместо превью чатов</string>
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
     <string name="EP_PhotosSize">Отправлять большие фото (2560px)</string>
@@ -244,7 +249,7 @@
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->
-    <string name="SP_Category_Security">Безопасность</string>
+    <string name="SP_Category_PrivacyAndSecurity">Конфиденциальность и безопасность</string>
     <string name="SP_Header_Privacy">Приватность</string>
     <string name="SP_NoProxyPromo">Не показывать спонсора прокси</string>
     <string name="SP_AppCenterAnalytics_Desc">Включив это, все сбои приложений (вылеты) и статистика будут отправлены в \"appcenter.ms\" для дальнейшего изучения разработчиком.</string>
@@ -282,7 +287,6 @@
     <!--Donations-->
     <string name="DP_Donate">Поддержать разработку</string>
     <string name="DP_Donate_Method">Выберите метод</string>
-    <string name="DP_Donate_Cryptocurrency">Криптовалюта</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 

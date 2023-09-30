@@ -312,7 +312,7 @@ public class ActionBar extends FrameLayout {
             Drawable drawable = Theme.getCurrentHolidayDrawable();
             if (drawable != null) {
 
-                /*SimpleTextView titleView = (SimpleTextView) child;
+                SimpleTextView titleView = (SimpleTextView) child;
                 if (titleView.getVisibility() == View.VISIBLE && titleView.getText() instanceof String) {
                     TextPaint textPaint = titleView.getTextPaint();
                     textPaint.getFontMetricsInt(fontMetricsInt);
@@ -321,16 +321,14 @@ public class ActionBar extends FrameLayout {
                     int y = titleView.getTextStartY() + Theme.getCurrentHolidayDrawableYOffset() + (int) Math.ceil((titleView.getTextHeight() - rect.height()) / 2.0f);
                     drawable.setBounds(x, y - drawable.getIntrinsicHeight(), x + drawable.getIntrinsicWidth(), y);
                     drawable.setAlpha((int) (255 * titleView.getAlpha()));
-                    drawable.setColorFilter(textPaint.getColor(), PorterDuff.Mode.MULTIPLY);
                     drawable.draw(canvas);
                     if (overlayTitleAnimationInProgress) {
                         child.invalidate();
                         invalidate();
                     }
-                }*/
+                }
 
-//                if (Theme.canStartHolidayAnimation()) {
-                if (CherrygramConfig.INSTANCE.getDrawSnowInActionBar()) {
+                if (Theme.canStartHolidayAnimation()) {
                     if (snowflakesEffect == null) {
                         snowflakesEffect = new SnowflakesEffect(0);
                     }

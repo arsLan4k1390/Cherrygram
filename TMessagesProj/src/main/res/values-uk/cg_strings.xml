@@ -90,7 +90,6 @@
     <string name="AP_ToolBarShadow">Відключити тінь у тулбару</string>
     <string name="AP_SystemFonts">Використовувати системний шрифт</string>
     <string name="CP_Snowflakes_Header">Сніжинки (перезапустіть програму для застосування)</string>
-    <string name="CP_Snowflakes_AH">Заголовок</string>
     <string name="CP_PremAndAnim_Header">Анімації та Преміум можливості (перезапустіть програму для застосування)</string>
     <string name="CP_DisableAnimAvatars">Вимкнути анімовані аватарки</string>
     <string name="CP_DisableReactionsOverlay">Вимкнути накладання реакцій</string>
@@ -195,7 +194,6 @@
     <string name="EP_SlowNetworkMode">Режим медленной сети</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_Security">Безпека</string>
     <string name="SP_Header_Privacy">Приватність</string>
     <string name="SP_NoProxyPromo">Не показувати спонсора проксі</string>
     <string name="SP_AppCenterAnalytics_Desc">Включивши це, всі збої програми та статистичні дані будуть повідомлятися в \"appcenter.ms\" для подальшого розгляду розробником.</string>

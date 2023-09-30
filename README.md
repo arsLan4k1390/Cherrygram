@@ -31,7 +31,6 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - No content restrictions,
 - Support of up to 10 accounts,
 - Added ability to see avatar uploading date,
-- Increased avatars limit from 80 to 100,
 - Mutual contact icon in contacts list,
 - Allow to set a proxy before login,
 - Added native biometrics support,
@@ -92,7 +91,8 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Snow in Drawer,
 - Snow in App Header,
 - Snow in Chats.
-- *Drawer Preferences:*
+
+*Drawer Preferences:*
 - Profile photo as drawer background,
 - Darken menu header background,
 - Gradient menu header background,
@@ -133,7 +133,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Custom camera aspect ratio for video-messages (1:1, 4:3 or 16:9).
 
 *Cherrygram Experimental Preferences:*
-- Enable/Disable alternative navigation,
+- Enable/Disable spring animations for app navigation,
 - Choose different photos size,
 - Open profile instead of chat preview,
 - Show a resident notification,

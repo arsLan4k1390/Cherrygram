@@ -216,7 +216,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     //Snowflakes
     var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false)
     var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", false)
-    var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false)
 
     // Chats Settings
     //Stickers
@@ -395,10 +394,14 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     // Experimental
     //General
-    var useLNavigation by sharedPreferences.boolean("EP_UseLNavigation", false)
-    fun toggleUseLNavigation() {
-        useLNavigation = !useLNavigation
-        putBoolean("EP_UseLNavigation", useLNavigation)
+    const val ANIMATION_SPRING = 0
+    const val ANIMATION_CLASSIC = 1
+    var springAnimation by sharedPreferences.int("EP_SpringAnimation", ANIMATION_SPRING)
+
+    var actionbarCrossfade by sharedPreferences.boolean("EP_ActionbarCrossfade", true)
+    fun toggleActionbarCrossfade() {
+        actionbarCrossfade = !actionbarCrossfade
+        putBoolean("EP_ActionbarCrossfade", actionbarCrossfade)
     }
 
     var largePhotos by sharedPreferences.boolean("CP_LargePhotos", true)

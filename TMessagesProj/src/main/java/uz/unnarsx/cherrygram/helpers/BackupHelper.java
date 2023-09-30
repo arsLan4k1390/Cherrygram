@@ -171,7 +171,6 @@ public class BackupHelper {
         mainconfig.add("AP_TabStyleAddStroke");
         mainconfig.add("AP_DrawSnowInChat");
         mainconfig.add("AP_DrawSnowInDrawer");
-        mainconfig.add("AP_DrawSnowInActionBar");
         mainconfig.add("CP_BlockStickers");
         mainconfig.add("CP_Slider_StickerAmplifier");
         mainconfig.add("CP_TimeOnStick");

@@ -94,7 +94,6 @@
     <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
     <string name="AP_SystemFonts">Usar fuentes del sistema</string>
     <string name="CP_Snowflakes_Header">Copos de nieve</string>
-    <string name="CP_Snowflakes_AH">Encabezado de aplicaciones</string>
     <string name="CP_PremAndAnim_Header">Animaciones y funciones Premium</string>
     <string name="CP_DisableAnimAvatars">Deshabilitar avatares animados</string>
     <string name="CP_DisableReactionsOverlay">Desactivar la capa de reacciones</string>
@@ -203,7 +202,6 @@
     <string name="EP_SlowNetworkMode">Modo de red lenta</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_Security">Seguridad</string>
     <string name="SP_Header_Privacy">Privacidad</string>
     <string name="SP_NoProxyPromo">No mostrar patrocinador del proxy</string>
     <string name="SP_AppCenterAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"appcenter.ms\" para que el desarrollador las revise.</string>
@@ -237,7 +235,6 @@
     <!--Donations-->
     <string name="DP_Donate">Donar</string>
     <string name="DP_Donate_Method">Elegir método</string>
-    <string name="DP_Donate_Cryptocurrency">Criptomonedas</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 </resources>

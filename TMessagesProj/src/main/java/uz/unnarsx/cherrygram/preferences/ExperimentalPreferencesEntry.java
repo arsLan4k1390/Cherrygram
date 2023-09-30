@@ -44,7 +44,8 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     private RecyclerListView listView;
 
     private int experimentalHeaderRow;
-    private int altNavigationRow;
+    private int springAnimationRow;
+    private int actionbarCrossfadeRow;
     private int largePhotosRow;
     private int openProfileRow;
     private int residentNotificationRow;
@@ -62,7 +63,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
-        updateRowsId();
+        updateRowsId(true);
         return true;
     }
 
@@ -123,10 +124,30 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         }
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
-            if (position == altNavigationRow) {
-                CherrygramConfig.INSTANCE.toggleUseLNavigation();
+            if (position == springAnimationRow) {
+                ArrayList<String> arrayList = new ArrayList<>();
+                ArrayList<Integer> types = new ArrayList<>();
+                arrayList.add(LocaleController.getString("EP_NavigationAnimationSpring", R.string.EP_NavigationAnimationSpring));
+                types.add(CherrygramConfig.ANIMATION_SPRING);
+                arrayList.add(LocaleController.getString("EP_NavigationAnimationBezier", R.string.EP_NavigationAnimationBezier));
+                types.add(CherrygramConfig.ANIMATION_CLASSIC);
+
+                PopupHelper.show(arrayList, LocaleController.getString("EP_NavigationAnimation", R.string.EP_NavigationAnimation), types.indexOf(CherrygramConfig.INSTANCE.getSpringAnimation()), context, i -> {
+                    CherrygramConfig.INSTANCE.setSpringAnimation(types.get(i));
+                    listAdapter.notifyItemChanged(downloadSpeedBoostRow);
+                    if (CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_CLASSIC) {
+                        updateRowsId(false);
+                        listAdapter.notifyItemRemoved(actionbarCrossfadeRow);
+                    } else {
+                        listAdapter.notifyItemInserted(actionbarCrossfadeRow);
+                        updateRowsId(false);
+                    }
+                    AppRestartHelper.createRestartBulletin(this);
+                });
+            } else if (position == actionbarCrossfadeRow) {
+                CherrygramConfig.INSTANCE.toggleActionbarCrossfade();
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUseLNavigation());
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getActionbarCrossfade());
                 }
                 AppRestartHelper.createRestartBulletin(this);
             } else if (position == largePhotosRow) {
@@ -186,11 +207,14 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void updateRowsId() {
+    private void updateRowsId(boolean notify) {
         rowCount = 0;
 
         experimentalHeaderRow = rowCount++;
-        altNavigationRow = rowCount++;
+        springAnimationRow = rowCount++;
+        actionbarCrossfadeRow = -1;
+        if (CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING) actionbarCrossfadeRow = rowCount++;
+
         largePhotosRow = rowCount++;
         openProfileRow = rowCount++;
         residentNotificationRow = rowCount++;
@@ -202,7 +226,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         uploadSpeedBoostRow = rowCount++;
         slowNetworkMode = rowCount++;
 
-        if (listAdapter != null) {
+        if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
         }
     }
@@ -245,8 +269,8 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 case 3:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
                     textCheckCell.setEnabled(true, null);
-                    if (position == altNavigationRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString(R.string.AltNavigationEnable), CherrygramConfig.INSTANCE.getUseLNavigation(), true);
+                    if (position == actionbarCrossfadeRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("EP_NavigationAnimationCrossfading", R.string.EP_NavigationAnimationCrossfading), CherrygramConfig.INSTANCE.getActionbarCrossfade(), true);
                     } else if (position == largePhotosRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("EP_PhotosSize", R.string.EP_PhotosSize), CherrygramConfig.INSTANCE.getLargePhotos(), true);
                     } else if (position == openProfileRow) {
@@ -264,7 +288,19 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 case 4:
                     TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
                     textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                    if (position == downloadSpeedBoostRow) {
+                    if (position == springAnimationRow) {
+                        String value;
+                        switch (CherrygramConfig.INSTANCE.getSpringAnimation()) {
+                            case CherrygramConfig.ANIMATION_CLASSIC:
+                                value = LocaleController.getString("EP_NavigationAnimationBezier", R.string.EP_NavigationAnimationBezier);
+                                break;
+                            default:
+                            case CherrygramConfig.ANIMATION_SPRING:
+                                value = LocaleController.getString("EP_NavigationAnimationSpring", R.string.EP_NavigationAnimationSpring);
+                                break;
+                        }
+                        textCell.setTextAndValue(LocaleController.getString("EP_NavigationAnimation", R.string.EP_NavigationAnimation), value, true);
+                    } else if (position == downloadSpeedBoostRow) {
                         String value;
                         switch (CherrygramConfig.INSTANCE.getDownloadSpeedBoost()) {
                             case CherrygramConfig.BOOST_NONE:
@@ -321,9 +357,9 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 return 1;
             } else if (position == experimentalHeaderRow || position == networkHeaderRow) {
                 return 2;
-            } else if (position == altNavigationRow || position == largePhotosRow || position == openProfileRow || position == residentNotificationRow || position == showRPCErrorRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
+            } else if (position == actionbarCrossfadeRow || position == largePhotosRow || position == openProfileRow || position == residentNotificationRow || position == showRPCErrorRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
                 return 3;
-            } else if (position == downloadSpeedBoostRow) {
+            } else if (position == springAnimationRow || position == downloadSpeedBoostRow) {
                 return 4;
             }
             return 1;

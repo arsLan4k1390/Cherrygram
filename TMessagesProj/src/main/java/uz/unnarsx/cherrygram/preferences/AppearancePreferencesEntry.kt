@@ -213,15 +213,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = LocaleController.getString("CP_Snowflakes_AH", R.string.CP_Snowflakes_AH)
-                contract({
-                    return@contract CherrygramConfig.drawSnowInActionBar
-                }) {
-                    CherrygramConfig.drawSnowInActionBar = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            switch {
                 title = LocaleController.getString("CP_Header_Chats", R.string.CP_Header_Chats)
                 contract({
                     return@contract CherrygramConfig.drawSnowInChat

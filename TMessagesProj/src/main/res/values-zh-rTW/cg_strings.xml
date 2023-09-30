@@ -90,7 +90,6 @@
     <string name="AP_ToolBarShadow">停用工具列陰影</string>
     <string name="AP_SystemFonts">使用系統字型</string>
     <string name="CP_Snowflakes_Header">雪花特效顯示 (重啟應用程式後生效)</string>
-    <string name="CP_Snowflakes_AH">程式頂部</string>
     <string name="CP_PremAndAnim_Header">動畫和 Premium 功能 (重啟應用程式後生效)</string>
     <string name="CP_DisableAnimAvatars">停用動畫大頭貼</string>
     <string name="CP_DisableReactionsOverlay">停用 Emoji 回應選項</string>
@@ -195,7 +194,6 @@
     <string name="EP_SlowNetworkMode">緩慢網路模式</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_Security">安全</string>
     <string name="SP_Header_Privacy">隱私權</string>
     <string name="SP_NoProxyPromo">移除代理伺服器廣告</string>
     <string name="SP_AppCenterAnalytics_Desc">啟用此功能後，所有的當機日誌和統計資料都會上傳至 Microsoft AppCenter，以供開發人員分析和改善應用程式。</string>

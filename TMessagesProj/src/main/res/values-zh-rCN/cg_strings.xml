@@ -55,6 +55,10 @@
     <string name="CG_SaveSticker">保存贴纸</string>
     <string name="CG_FailedToSaveSticker">保存贴纸失败，贴纸可能尚未加载完成</string>
     <string name="CG_StickerSavedHint">贴纸已保存到下载文件夹</string>
+    <string name="CG_CopySetId">复制用户 ID</string>
+    <string name="CG_ExportSettings">导出设置</string>
+    <string name="CG_ImportSettings">导入设置</string>
+    <string name="CG_ImportSettingsAlert">是否复写设置？未知来源的配置文件可能导致APP无法正常工作</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -81,21 +85,25 @@
     <string name="AP_ChangeIcon_Default">默认</string>
     <string name="AP_ChangeIcon_Dark">深色</string>
     <string name="AP_ChangeIcon_White">白色</string>
+    <string name="AP_ChangeIcon_Laguna">Laguna</string>
     <string name="AP_ChangeIcon_Green">绿色</string>
     <string name="AP_ChangeIcon_Sunset">日落</string>
     <string name="AP_ChangeIcon_Sunrise">日出</string>
     <string name="AP_IconReplacement_VKUI">VKUI 图标</string>
     <string name="AP_IconReplacement_Solar">Solar 图标</string>
     <string name="AP_IconReplacement_Default">默认</string>
+    <string name="AP_OneUI_Switch_Style">OneUI 开关风格</string>
     <string name="AP_SystemEmoji">使用系统 Emoji</string>
+    <string name="AP_ShowPencilIcon">将消息底部的“已编辑”替换为铅笔图标</string>
     <string name="AP_CenterTitle">标题居中</string>
     <string name="AP_OverrideHeader">覆盖顶栏颜色</string>
-    <string name="AP_OverrideHeader_Desc">仅在深色主题下生效</string>
+    <string name="AP_OverrideHeader_Desc">顶栏颜色将和背景色保持一致</string>
+    <string name="AP_DisableDividers">禁用分隔线</string>
     <string name="AP_ToolBarShadow">禁用工具栏阴影</string>
     <string name="AP_SystemFonts">使用系统字体</string>
     <string name="CP_Snowflakes_Header">雪花效果</string>
-    <string name="CP_Snowflakes_AH">应用顶栏</string>
     <string name="CP_PremAndAnim_Header">动画和高级功能</string>
+    <string name="CP_HideStories">隐藏动态</string>
     <string name="CP_DisableAnimAvatars">禁用动态头像</string>
     <string name="CP_DisableReactionsOverlay">禁用表态弹窗</string>
     <string name="CP_DisableReactionsOverlay_Desc">禁用可使用表态的弹出窗口</string>
@@ -116,6 +124,7 @@
     <string name="AP_Tab_Style_Rounded">圆形</string>
     <string name="AP_Tab_Style_Text">文本</string>
     <string name="AP_Tab_Style_Pills">药丸</string>
+    <string name="AP_Tab_Style_Stroke">添加描边</string>
     <string name="AP_DrawerCategory">侧边栏</string>
     <string name="AP_DrawerPreferences">侧边栏自定义</string>
     <string name="AP_DrawerAvatar">侧边栏背景使用个人资料图片</string>
@@ -139,6 +148,7 @@
     <string name="CP_BlockSomeSets">屏蔽部分贴纸</string>
     <string name="CP_BlockSomeSets_Desc">一些会导致应用崩溃的贴纸将被Cherrygram的Logo替代。 \n\"Cherrygram Logo\" 文件将在您启用该功能并重启应用后下载</string>
     <string name="CP_TimeOnStick">隐藏贴纸时间</string>
+    <string name="CP_MessageMenu">消息菜单自定义</string>
     <string name="CP_UnreadBadgeOnBackButton">显示未读聊天数量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已打开的聊天中显示未读消息数</string>
     <string name="CP_NoRounding">禁用数字舍入</string>
@@ -146,7 +156,7 @@
     <string name="CP_DeleteForAll_Desc">删除消息时默认勾选全部删除</string>
     <string name="CP_ConfirmCalls">通话前提醒</string>
     <string name="CP_ForwardMsgDate">显示转发日期时间</string>
-    <string name="CP_ShowSeconds">在时间戳中显示秒数</string>
+    <string name="CP_ShowSeconds">时间显示秒</string>
     <string name="CP_LeftBottomButtonAction">左侧按钮功能</string>
     <string name="CP_DoubleTapAction">双击操作</string>
     <string name="CP_DisableSwipeToNext">禁用频道切换</string>
@@ -165,6 +175,9 @@
     <string name="CP_AutoPauseVideo_Desc">锁屏或切换到后台时</string>
     <string name="CP_DisableVibration">禁用全局震动</string>
     <string name="CP_Header_Notification">通知</string>
+    <string name="CP_NotificationSound">通知声音</string>
+    <string name="CP_VibrateInChats">来电振动</string>
+    <string name="CP_VibrateInChats_Desc">当您收到聊天消息时振动</string>
     <string name="CP_SilenceNonContacts">静音非联系人消息</string>
     <string name="CP_SilenceNonContacts_Desc">启用后仅联系人的通知会发出声音，您可以在个人资料页添加联系人</string>
     <!--Chats Preferences-->
@@ -203,10 +216,11 @@
     <string name="EP_SlowNetworkMode">优化网络连接</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_Security">安全</string>
+    <string name="SP_Category_PrivacyAndSecurity">安全</string>
     <string name="SP_Header_Privacy">隐私</string>
     <string name="SP_NoProxyPromo">移除代理赞助商</string>
     <string name="SP_AppCenterAnalytics_Desc">开启此功能后，所有的崩溃日志和统计数据都会上传至 Microsoft AppCenter，供给开发者分析和优化本应用</string>
+    <string name="SP_GoogleAnalytics_Desc">开启此功能后，所有的崩溃日志和统计数据都会上传至 “console.firebase.google.com”，供给开发者分析和优化本应用</string>
     <string name="SP_CleanOld">删除旧缓存 (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">删除成功</string>
     <string name="SP_Category_Account">帐号</string>
@@ -236,7 +250,6 @@
     <!--Donations-->
     <string name="DP_Donate">捐赠</string>
     <string name="DP_Donate_Method">选择付款方法</string>
-    <string name="DP_Donate_Cryptocurrency">加密货币</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 </resources>

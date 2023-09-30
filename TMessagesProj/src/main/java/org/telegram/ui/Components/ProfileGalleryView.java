@@ -331,7 +331,7 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.fileLoaded);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.fileLoadProgressChanged);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.reloadDialogPhotos);
-        MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 100, 0, true, parentClassGuid);
+        MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 80, 0, true, parentClassGuid);
     }
 
     public void onDestroy() {
@@ -519,12 +519,12 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
             if (!imagesLocations.isEmpty()) {
                 prevImageLocation = imageLocation;
                 if (reload) {
-                    MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 100, 0, true, parentClassGuid);
+                    MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 80, 0, true, parentClassGuid);
                 }
                 return true;
             } else {
                 if (reload) {
-                    MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 100, 0, true, parentClassGuid);
+                    MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 80, 0, true, parentClassGuid);
                 }
             }
         }
@@ -984,7 +984,7 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
                 forceResetPosition = false;
 
                 if (fromCache) {
-                    MessagesController.getInstance(currentAccount).loadDialogPhotos(did, 100, 0, false, parentClassGuid);
+                    MessagesController.getInstance(currentAccount).loadDialogPhotos(did, 80, 0, false, parentClassGuid);
                 }
                 if (callback != null) {
                     callback.onPhotosLoaded();
@@ -1028,7 +1028,7 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
             if (settingMainPhoto != 0) {
                 return;
             }
-            MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 100, 0, true, parentClassGuid);
+            MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 80, 0, true, parentClassGuid);
         }
     }
 
@@ -1251,7 +1251,7 @@ public class ProfileGalleryView extends CircularViewPager implements Notificatio
         reset();
         this.dialogId = dialogId;
 //        if (dialogId != 0) {
-//            MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 100, 0, true, parentClassGuid);
+//            MessagesController.getInstance(currentAccount).loadDialogPhotos(dialogId, 80, 0, true, parentClassGuid);
 //        }
     }
 

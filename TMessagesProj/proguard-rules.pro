@@ -95,6 +95,7 @@
 -keepclassmembers class * implements com.microsoft.appcenter.AppCenterService {
     public static ** getInstance();
 }
+-keep class com.fasterxml.jackson.**{ *; }
 
 -keep class org.telegram.messenger.voip.* { *; }
 -keep class org.telegram.messenger.AnimatedFileDrawableStream { <methods>; }

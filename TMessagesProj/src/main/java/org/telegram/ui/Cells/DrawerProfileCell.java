@@ -777,7 +777,6 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         avatarDrawable.setColor(Theme.getColor(Theme.key_avatar_backgroundInProfileBlue));
         avatarImageView.setForUserOrChat(user, avatarDrawable);
         if (CherrygramConfig.INSTANCE.getDrawerAvatar()) {
-//            DrawerBitmapHelper.setAccountBitmap(user);
             if (CherrygramConfig.INSTANCE.getDrawerGradient()) {
                 gradientBackground.setVisibility(VISIBLE);
             } else {

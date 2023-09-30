@@ -28,6 +28,8 @@
     <string name="CG_JumpToBeginning">To the beginning</string>
     <string name="CG_DeleteAllFromSelf">Delete own messages</string>
     <string name="CG_DeleteAllFromSelfAlert">Warning! This will **delete all messages from you** in this chat for **all** participants.</string>
+    <string name="CG_DeleteAllFromSelfAlertBefore">Warning! This will **delete all messages from you before %s** in this chat for **all** participants.</string>
+    <string name="CG_DeleteAllFromSelfBefore">Before...</string>
     <string name="CG_DeleteAllFromSelfAdmin">With admin rights</string>
     <string name="CG_DeleteAllFromSelfDone">All your messages are deleted</string>
 
@@ -123,7 +125,6 @@
     <string name="AP_SystemFonts">Use system fonts</string>
 
     <string name="CP_Snowflakes_Header">Snowflakes</string>
-    <string name="CP_Snowflakes_AH">App header</string>
 
     <string name="CP_PremAndAnim_Header">Animations and Premium Features</string>
     <string name="CP_HideStories">Hide Stories</string>
@@ -240,6 +241,10 @@
 
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
+    <string name="EP_NavigationAnimation">Navigation animation</string>
+    <string name="EP_NavigationAnimationSpring">Spring</string>
+    <string name="EP_NavigationAnimationBezier">Classic</string>
+    <string name="EP_NavigationAnimationCrossfading">Crossfading effect</string>
     <string name="CG_OpenProfile">Open profile instead of chat preview</string>
     <string name="CG_ResidentNotification">Show a resident notification</string>
     <string name="EP_PhotosSize">Send large photos (2560px)</string>
@@ -254,7 +259,7 @@
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->
-    <string name="SP_Category_Security">Security</string>
+    <string name="SP_Category_PrivacyAndSecurity">Privacy and Security</string>
     <string name="SP_Header_Privacy">Privacy</string>
     <string name="SP_NoProxyPromo">Don\'t show proxy sponsor</string>
     <string name="SP_AppCenterAnalytics" translatable="false">Microsoft AppCenter</string>
@@ -294,7 +299,6 @@
     <!--Donations-->
     <string name="DP_Donate">Donate</string>
     <string name="DP_Donate_Method">Choose method</string>
-    <string name="DP_Donate_Cryptocurrency">Cryptocurrency</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 

@@ -14,9 +14,9 @@ import uz.unnarsx.cherrygram.tgkit.preference.*
 import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
 import java.io.File
 
-class SecurityPreferencesEntry : BasePreferencesEntry {
+class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
     val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-    override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AS_Category_Security", R.string.SP_Category_Security)) {
+    override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("SP_Category_PrivacyAndSecurity", R.string.SP_Category_PrivacyAndSecurity)) {
         sharedPreferences.registerOnSharedPreferenceChangeListener(CherrygramConfig.listener)
         category(LocaleController.getString("SP_Header_Privacy", R.string.SP_Header_Privacy)) {
             switch {
@@ -68,7 +68,7 @@ class SecurityPreferencesEntry : BasePreferencesEntry {
                 title = LocaleController.getString("SP_DeleteAccount", R.string.SP_DeleteAccount)
                 icon = R.drawable.msg_delete
                 listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(AccountSettingsActivity())
+                    DeleteAccountDialog.showDeleteAccountDialog(bf)
                 }
             }
         }
