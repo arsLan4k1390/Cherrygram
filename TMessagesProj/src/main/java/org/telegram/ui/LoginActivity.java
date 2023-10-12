@@ -3436,7 +3436,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         }
                         AndroidUtilities.runOnUIThread(() -> exportLoginToken(false), expires * 1000L);
                     } else if (response instanceof TLRPC.TL_auth_loginTokenSuccess) {
-                        qrDialog.dismiss();
+                        if (qrDialog != null) {
+                            qrDialog.dismiss();
+                        }
                         postDelayed(() -> {
                             AndroidUtilities.hideKeyboard(codeField);
                             onAuthSuccess((TLRPC.TL_auth_authorization) ((TLRPC.TL_auth_loginTokenSuccess) response).authorization);

@@ -35,6 +35,8 @@ import org.telegram.ui.Components.GroupCreateCheckBox;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 
+import uz.unnarsx.cherrygram.extras.CherrygramExtras;
+
 public class DrawerUserCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     private SimpleTextView textView;
@@ -158,6 +160,7 @@ public class DrawerUserCell extends FrameLayout implements NotificationCenter.No
         imageView.getImageReceiver().setCurrentAccount(account);
         imageView.setForUserOrChat(user, avatarDrawable);
         checkBox.setVisibility(account == UserConfig.selectedAccount ? VISIBLE : INVISIBLE);
+        CherrygramExtras.checkCustomChatID(UserConfig.selectedAccount);
     }
 
     public int getAccountNumber() {

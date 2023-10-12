@@ -77,7 +77,7 @@ public class CameraXController {
     private boolean isInitiated = false;
     private final CameraLifecycle lifecycle;
     private ProcessCameraProvider provider;
-    public static Camera camera;
+    private static Camera camera;
     private CameraSelector cameraSelector;
     private CameraXView.VideoSavedCallback videoSavedCallback;
     private boolean abandonCurrentVideo = false;
@@ -133,7 +133,6 @@ public class CameraXController {
         this.meteringPointFactory = factory;
         this.surfaceProvider = surfaceProvider;
     }
-
 
     public boolean isInitied() {
         return isInitiated;
@@ -238,9 +237,9 @@ public class CameraXController {
         return camera.getCameraInfo().hasFlashUnit();
     }
 
-    public static void setTorchEnabled(boolean b) {
+    public static void setTorchEnabled(boolean enabled) {
         if (isFlashAvailable()) {
-            camera.getCameraControl().enableTorch(b);
+            camera.getCameraControl().enableTorch(enabled);
         }
     }
 
@@ -311,7 +310,6 @@ public class CameraXController {
                 case CAMERA_AUTO:
                     cameraSelector = extensionsManager.getExtensionEnabledCameraSelector(cameraSelector, ExtensionMode.AUTO);
                     break;
-                case CAMERA_NONE:
                 default:
                     cameraSelector = extensionsManager.getExtensionEnabledCameraSelector(cameraSelector, ExtensionMode.NONE);
                     break;
@@ -344,11 +342,11 @@ public class CameraXController {
             try {
                 camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, vCapture, iCapture);
                 noSupportedSurfaceCombinationWorkaround = false;
-            } catch (java.lang.IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 noSupportedSurfaceCombinationWorkaround = true;
                 try {
                     camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, iCapture);
-                } catch (java.lang.IllegalArgumentException ignored) {
+                } catch (IllegalArgumentException ignored) {
                 }
             }
         }
@@ -357,10 +355,8 @@ public class CameraXController {
         }
     }
 
-
     public void setZoom(float value) {
-        oldZoomSelection = value;
-        camera.getCameraControl().setLinearZoom(value);
+        camera.getCameraControl().setLinearZoom(oldZoomSelection = value);
     }
 
     public float resetZoom() {
@@ -573,7 +569,7 @@ public class CameraXController {
                         exif.rotate(orientation);
                     }
                     exif.save();
-                } catch (JpegImageUtils.CodecFailedException | IOException | IllegalStateException e) {
+                } catch (JpegImageUtils.CodecFailedException | IOException e) {
                     e.printStackTrace();
                     FileLog.e(e);
                 }

@@ -6,7 +6,6 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
@@ -38,7 +37,7 @@ import org.telegram.ui.DialogsActivity;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.tabs.FolderIconHelper;
+import uz.unnarsx.cherrygram.ui.tabs.FolderIconHelper;
 
 public class FiltersListBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 

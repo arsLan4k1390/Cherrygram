@@ -64,7 +64,7 @@ import org.telegram.ui.Components.UndoView;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.tabs.FolderIconHelper;
+import uz.unnarsx.cherrygram.ui.tabs.FolderIconHelper;
 
 public class FiltersSetupActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 

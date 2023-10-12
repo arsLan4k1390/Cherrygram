@@ -60,7 +60,7 @@ import org.telegram.ui.ActionBar.Theme;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.tabs.FolderIconHelper;
+import uz.unnarsx.cherrygram.ui.tabs.FolderIconHelper;
 
 public class FilterTabsView extends FrameLayout {
 

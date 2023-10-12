@@ -2935,6 +2935,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 		builder.setColorized(true);
 		Intent endIntent = new Intent(this, VoIPActionsReceiver.class);
 		endIntent.setAction(getPackageName() + ".END_CALL");
+		if (name == null) name = "";
 		Person caller = new Person.Builder()
 				.setIcon(IconCompat.createWithAdaptiveBitmap(MediaDataController.convertBitmapToAdaptive(photo)))
 				.setName(name)

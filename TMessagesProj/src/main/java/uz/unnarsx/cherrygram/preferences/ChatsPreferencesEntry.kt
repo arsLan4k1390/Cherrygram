@@ -12,9 +12,17 @@ import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.extras.VibrateUtil
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.tgkit.preference.*
-import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitSliderPreference.TGSLContract
-import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.ui.dialogs.AlertDialogSwitchHelper
+import uz.unnarsx.cherrygram.ui.tgkit.preference.category
+import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
+import uz.unnarsx.cherrygram.ui.tgkit.preference.hint
+import uz.unnarsx.cherrygram.ui.tgkit.preference.list
+import uz.unnarsx.cherrygram.ui.tgkit.preference.slider
+import uz.unnarsx.cherrygram.ui.tgkit.preference.switch
+import uz.unnarsx.cherrygram.ui.tgkit.preference.textIcon
+import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
+import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitSliderPreference.TGSLContract
+import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
 
 class ChatsPreferencesEntry : BasePreferencesEntry {
     val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
@@ -237,6 +245,16 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
         }
 
         category(LocaleController.getString("AS_Header_Record", R.string.CP_Header_Record)) {
+            switch {
+                title = LocaleController.getString("EP_PhotosSize", R.string.EP_PhotosSize)
+
+                contract({
+                    return@contract CherrygramConfig.largePhotos
+                }) {
+                    CherrygramConfig.largePhotos = it
+                    AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
             switch {
                 title = LocaleController.getString("CP_VoiceEnhancements", R.string.CP_VoiceEnhancements)
                 description = LocaleController.getString("CP_VoiceEnhancements_Desc", R.string.CP_VoiceEnhancements_Desc)

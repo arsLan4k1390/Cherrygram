@@ -3800,8 +3800,12 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         if (needCamera && !noCameraPermissions) {
             if (isEditMode) {
                 if (cameraView != null) {
-                    isCameraFrontfaceBeforeEnteringEditMode = cameraView.isFrontface();
-                    hideCamera(true);
+                    try {
+                        isCameraFrontfaceBeforeEnteringEditMode = cameraView.isFrontface();
+                        hideCamera(true);
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                    }
                 }
             } else {
                 afterCameraInitRunnable = () -> {

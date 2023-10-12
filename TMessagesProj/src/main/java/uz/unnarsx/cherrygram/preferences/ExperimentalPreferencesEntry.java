@@ -32,10 +32,10 @@ import org.telegram.ui.DialogsActivity;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.helpers.PopupHelper;
+import uz.unnarsx.cherrygram.ui.dialogs.TextFieldAlert;
 
 public class ExperimentalPreferencesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -46,10 +46,11 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     private int experimentalHeaderRow;
     private int springAnimationRow;
     private int actionbarCrossfadeRow;
-    private int largePhotosRow;
     private int openProfileRow;
     private int residentNotificationRow;
     private int showRPCErrorRow;
+    private int customChatRow;
+    private int customChatIdRow;
     private int experimentalSettingsDivisor;
 
     private int networkHeaderRow;
@@ -134,26 +135,15 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
 
                 PopupHelper.show(arrayList, LocaleController.getString("EP_NavigationAnimation", R.string.EP_NavigationAnimation), types.indexOf(CherrygramConfig.INSTANCE.getSpringAnimation()), context, i -> {
                     CherrygramConfig.INSTANCE.setSpringAnimation(types.get(i));
-                    listAdapter.notifyItemChanged(downloadSpeedBoostRow);
-                    if (CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_CLASSIC) {
-                        updateRowsId(false);
-                        listAdapter.notifyItemRemoved(actionbarCrossfadeRow);
-                    } else {
-                        listAdapter.notifyItemInserted(actionbarCrossfadeRow);
-                        updateRowsId(false);
-                    }
+                    listAdapter.notifyItemChanged(springAnimationRow);
+
+                    updateRowsId(false);
                     AppRestartHelper.createRestartBulletin(this);
                 });
             } else if (position == actionbarCrossfadeRow) {
                 CherrygramConfig.INSTANCE.toggleActionbarCrossfade();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getActionbarCrossfade());
-                }
-                AppRestartHelper.createRestartBulletin(this);
-            } else if (position == largePhotosRow) {
-                CherrygramConfig.INSTANCE.toggleLargePhotos();
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getLargePhotos());
                 }
                 AppRestartHelper.createRestartBulletin(this);
             } else if (position == openProfileRow) {
@@ -174,6 +164,30 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getShowRPCError());
                 }
                 AppRestartHelper.createRestartBulletin(this);
+            } else if (position == customChatRow) {
+                CherrygramConfig.INSTANCE.toggleCustomChatForSavedMessages();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getCustomChatForSavedMessages());
+                }
+                updateRowsId(false);
+            } else if (position == customChatIdRow) {
+                String currentValue = MessagesController.getMainSettings(currentAccount).getString("CP_CustomChatID", "CP_CustomChatID");
+                TextFieldAlert.createFieldAlert(
+                        context,
+                        LocaleController.getString("EP_CustomChat", R.string.EP_CustomChat),
+                        currentValue,
+                        (result) -> {
+                            if (result.isEmpty()) {
+                                result = currentValue;
+                            }
+                            SharedPreferences.Editor editor = MessagesController.getMainSettings(currentAccount).edit();
+                            editor.putString("CP_CustomChatID", result).apply();
+                            if (view instanceof TextSettingsCell) {
+                                ((TextSettingsCell) view).getValueTextView().setText(result);
+                            }
+                            return null;
+                        }
+                );
             } else if (position == downloadSpeedBoostRow) {
                 ArrayList<String> arrayList = new ArrayList<>();
                 ArrayList<Integer> types = new ArrayList<>();
@@ -209,16 +223,36 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     @SuppressLint("NotifyDataSetChanged")
     private void updateRowsId(boolean notify) {
         rowCount = 0;
+        int prevCustomChatIdRow = customChatIdRow;
+        int prevActionbarCrossfadeRow = actionbarCrossfadeRow;
 
         experimentalHeaderRow = rowCount++;
         springAnimationRow = rowCount++;
         actionbarCrossfadeRow = -1;
         if (CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING) actionbarCrossfadeRow = rowCount++;
+        if (listAdapter != null) {
+            if (prevActionbarCrossfadeRow == -1 && actionbarCrossfadeRow != -1) {
+                listAdapter.notifyItemInserted(actionbarCrossfadeRow);
+            } else if (prevActionbarCrossfadeRow != -1 && actionbarCrossfadeRow == -1) {
+                listAdapter.notifyItemRemoved(prevActionbarCrossfadeRow);
+            }
+        }
 
-        largePhotosRow = rowCount++;
         openProfileRow = rowCount++;
         residentNotificationRow = rowCount++;
         showRPCErrorRow = rowCount++;
+
+        customChatRow = rowCount++;
+        customChatIdRow = -1;
+        if (CherrygramConfig.INSTANCE.getCustomChatForSavedMessages()) customChatIdRow = rowCount++;
+        if (listAdapter != null) {
+            if (prevCustomChatIdRow == -1 && customChatIdRow != -1) {
+                listAdapter.notifyItemInserted(customChatIdRow);
+            } else if (prevCustomChatIdRow != -1 && customChatIdRow == -1) {
+                listAdapter.notifyItemRemoved(prevCustomChatIdRow);
+            }
+        }
+
         experimentalSettingsDivisor = rowCount++;
 
         networkHeaderRow = rowCount++;
@@ -271,14 +305,15 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     textCheckCell.setEnabled(true, null);
                     if (position == actionbarCrossfadeRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("EP_NavigationAnimationCrossfading", R.string.EP_NavigationAnimationCrossfading), CherrygramConfig.INSTANCE.getActionbarCrossfade(), true);
-                    } else if (position == largePhotosRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString("EP_PhotosSize", R.string.EP_PhotosSize), CherrygramConfig.INSTANCE.getLargePhotos(), true);
                     } else if (position == openProfileRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("CG_OpenProfile", R.string.CG_OpenProfile), CherrygramConfig.INSTANCE.getOpenProfile(), true);
                     } else if (position == residentNotificationRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("CG_ResidentNotification", R.string.CG_ResidentNotification), CherrygramConfig.INSTANCE.getResidentNotification(), true);
                     } else if (position == showRPCErrorRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("EP_ShowRPCError", R.string.EP_ShowRPCError), CherrygramConfig.INSTANCE.getShowRPCError(), true);
+                    } else if (position == customChatRow) {
+                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("EP_CustomChat", R.string.EP_CustomChat), LocaleController.getString("EP_CustomChat_Desc", R.string.EP_CustomChat_Desc), CherrygramConfig.INSTANCE.getCustomChatForSavedMessages(), true, true);
+
                     } else if (position == uploadSpeedBoostRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("EP_UploadloadSpeedBoost", R.string.EP_UploadloadSpeedBoost), CherrygramConfig.INSTANCE.getUploadSpeedBoost(), true);
                     } else if (position == slowNetworkMode) {
@@ -300,6 +335,11 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                                 break;
                         }
                         textCell.setTextAndValue(LocaleController.getString("EP_NavigationAnimation", R.string.EP_NavigationAnimation), value, true);
+                    } else if (position == customChatIdRow) {
+                        String t = "ID:";
+                        SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
+                        String v = preferences.getString("CP_CustomChatID", null);
+                        textCell.setTextAndValue(t, v, false);
                     } else if (position == downloadSpeedBoostRow) {
                         String value;
                         switch (CherrygramConfig.INSTANCE.getDownloadSpeedBoost()) {
@@ -357,9 +397,9 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 return 1;
             } else if (position == experimentalHeaderRow || position == networkHeaderRow) {
                 return 2;
-            } else if (position == actionbarCrossfadeRow || position == largePhotosRow || position == openProfileRow || position == residentNotificationRow || position == showRPCErrorRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
+            } else if (position == actionbarCrossfadeRow || position == openProfileRow || position == residentNotificationRow || position == showRPCErrorRow || position == customChatRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
                 return 3;
-            } else if (position == springAnimationRow || position == downloadSpeedBoostRow) {
+            } else if (position == springAnimationRow || position == customChatIdRow || position == downloadSpeedBoostRow) {
                 return 4;
             }
             return 1;

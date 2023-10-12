@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelTitle">Подписаться на официальный канал</string>
+    <string name="CG_FollowChannelInfo">Присоединяйтесь к нашему каналу, чтобы быть в курсе всех новостей и возможностей Cherrygram!</string>
+    <string name="CG_DoNotRemindAgain">Не напоминать</string>
 
     <!--Telegram screens-->
     <!--Sign in screen-->
@@ -239,6 +242,9 @@
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
     <string name="EP_PhotosSize">Отправлять большие фото (2560px)</string>
     <string name="EP_ShowRPCError">Всплывающие уведомления обо всех ошибках RPC</string>
+    <string name="EP_CustomChat">Пользовательский чат для Избранного</string>
+    <string name="EP_CustomChat_Desc">Установите ID другого чата/группы/канала, чтобы пересылать туда сообщения (через кнопку в панели действий, в меню сообщения или при двойном тапе)</string>
+    <string name="EP_CustomChatNotFound">Чат не найден!</string>
     <string name="EP_Network">Сеть</string>
     <string name="EP_DownloadSpeedBoost">Увеличение скорости загрузки</string>
     <string name="EP_DownloadSpeedBoostNone">Выкл.</string>

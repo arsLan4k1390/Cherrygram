@@ -26,5 +26,6 @@ object StickersIDsLocal {
         iDs.add(1169953291908415506L)
         iDs.add(6055278067666911216L)
         iDs.add(4331929539736240157L)
+        iDs.add(5091996690789957649L)
     }
 }

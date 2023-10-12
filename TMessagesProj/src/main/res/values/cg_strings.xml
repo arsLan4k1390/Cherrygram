@@ -3,6 +3,9 @@
     <!-- by t.me/arsLan-->
     <string name="CG_AppName" translatable="false">Cherrygram</string>
     <string name="CG_AppNameBeta" translatable="false">Cherrygram</string>
+    <string name="CG_FollowChannelTitle">Subscribe to the official channel</string>
+    <string name="CG_FollowChannelInfo">Join our channel to stay up to date with all the news and features of Cherrygram!</string>
+    <string name="CG_DoNotRemindAgain">Don\'t remind again</string>
 
     <!--Telegram screens-->
     <!--Sign in screen-->
@@ -249,6 +252,9 @@
     <string name="CG_ResidentNotification">Show a resident notification</string>
     <string name="EP_PhotosSize">Send large photos (2560px)</string>
     <string name="EP_ShowRPCError">Toast all RPC errors</string>
+    <string name="EP_CustomChat">Custom chat for Saved Messages</string>
+    <string name="EP_CustomChat_Desc">Set an ID from another chat/group/channel to forward messages there (button in action bar, message menu or double tap)</string>
+    <string name="EP_CustomChatNotFound">Chat not found!</string>
     <string name="EP_Network">Network</string>
     <string name="EP_DownloadSpeedBoost">Download speed boost</string>
     <string name="EP_DownloadSpeedBoostNone">Off</string>

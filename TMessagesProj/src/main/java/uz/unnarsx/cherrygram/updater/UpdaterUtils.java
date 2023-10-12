@@ -154,11 +154,15 @@ public class UpdaterUtils {
                 Update update = new Update(version, changelog, size, downloadURL, uploadDate);
                 if (update.isNew() && fragment != null) {
                     checkDirs();
-                    AndroidUtilities.runOnUIThread(() -> {
-                        (new UpdaterBottomSheet(fragment.getContext(), fragment, true, update)).show();
-                        if (onUpdateFound != null)
-                            onUpdateFound.run();
-                    });
+                    try {
+                        AndroidUtilities.runOnUIThread(() -> {
+                            (new UpdaterBottomSheet(fragment.getContext(), fragment, true, update)).show();
+                            if (onUpdateFound != null)
+                                onUpdateFound.run();
+                        });
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                    }
                 } else {
                     if (onUpdateNotFound != null)
                         AndroidUtilities.runOnUIThread(onUpdateNotFound::run);
@@ -186,7 +190,11 @@ public class UpdaterUtils {
             var intentFilter = new IntentFilter();
             intentFilter.addAction("android.intent.action.DOWNLOAD_COMPLETE");
             intentFilter.addAction("android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED");
-            ContextCompat.registerReceiver(context, downloadBroadcastReceiver, intentFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ContextCompat.registerReceiver(context, downloadBroadcastReceiver, intentFilter, ContextCompat.RECEIVER_EXPORTED);
+            } else  {
+                context.registerReceiver(downloadBroadcastReceiver, intentFilter);
+            }
         } else {
             installApk(context, apkFile.getAbsolutePath());
         }

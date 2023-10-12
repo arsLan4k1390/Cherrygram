@@ -5,23 +5,28 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.os.Build
 import android.os.Bundle
-import org.telegram.messenger.AndroidUtilities
 import android.widget.Toast
 import kotlinx.coroutines.*
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.BuildVars
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
 import uz.unnarsx.cherrygram.extras.CherrygramExtras
 import uz.unnarsx.cherrygram.extras.LocalVerifications
 import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.helpers.FirebaseAnalyticsHelper
-import uz.unnarsx.cherrygram.icons.icon_replaces.*
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
 import uz.unnarsx.cherrygram.stickers.StickersIDsDownloader
+import uz.unnarsx.cherrygram.ui.icons.icon_replaces.BaseIconReplace
+import uz.unnarsx.cherrygram.ui.icons.icon_replaces.NoIconReplace
+import uz.unnarsx.cherrygram.ui.icons.icon_replaces.SolarIconReplace
+import uz.unnarsx.cherrygram.ui.icons.icon_replaces.VkIconReplace
 import kotlin.system.exitProcess
 
 object CherrygramConfig: CoroutineScope by MainScope() {
@@ -52,6 +57,14 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean(key, value)
+        editor.apply()
+        preferences.registerOnSharedPreferenceChangeListener(listener)
+    }
+
+    fun putStringForUserPrefs(key: String, value: String) {
+        val preferences = MessagesController.getMainSettings(UserConfig.selectedAccount)
+        val editor = preferences.edit()
+        editor.putString(key, value)
         editor.apply()
         preferences.registerOnSharedPreferenceChangeListener(listener)
     }
@@ -405,10 +418,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     }
 
     var largePhotos by sharedPreferences.boolean("CP_LargePhotos", true)
-    fun toggleLargePhotos() {
-        largePhotos = !largePhotos
-        putBoolean("CP_LargePhotos", largePhotos)
-    }
 
     var openProfile by sharedPreferences.boolean("CG_OpenProfile", false)
     fun toggleOpenProfile() {
@@ -426,6 +435,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     fun toggleShowRPCError() {
         showRPCError = !showRPCError
         putBoolean("EP_ShowRPCError", showRPCError)
+    }
+
+    var customChatForSavedMessages by sharedPreferences.boolean("CP_CustomChatForSavedMessages", false)
+    fun toggleCustomChatForSavedMessages() {
+        customChatForSavedMessages = !customChatForSavedMessages
+        putBoolean("CP_CustomChatForSavedMessages", customChatForSavedMessages)
     }
 
     const val BOOST_NONE = 0

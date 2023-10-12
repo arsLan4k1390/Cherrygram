@@ -338,6 +338,7 @@ import uz.unnarsx.cherrygram.stickers.StickerDownloader;
 public class ChatActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, LocationActivity.LocationActivityDelegate, ChatAttachAlertDocumentLayout.DocumentSelectActivityDelegate, ChatActivityInterface, FloatingDebugProvider, InstantCameraView.Delegate {
 
     private boolean overrideHeaderColor = CherrygramConfig.INSTANCE.getOverrideHeaderColor();
+    private boolean customChatID = CherrygramConfig.INSTANCE.getCustomChatForSavedMessages();
 
     private final static boolean PULL_DOWN_BACK_FRAGMENT = false;
     private final static boolean DISABLE_PROGRESS_VIEW = true;
@@ -3312,13 +3313,22 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } else if (id == OPTION_JUMP_TO_BEGINNING) {
                     jumpToDate();
                 } else if (id == OPTION_SAVE_MESSAGE) {
-                    ArrayList<MessageObject> messages = getSelectedMessages();
-                    forwardMessages(messages, false, true, 0, UserConfig.getInstance(currentAccount).getClientUserId());
-                    createUndoView();
-                    if (undoView == null) {
-                        return;
+                    try {
+                        SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
+                        String savedMessagesChatID = preferences.getString("CP_CustomChatID", null);
+                        long chatID = Long.parseLong(savedMessagesChatID.replace("-100", "-"));
+
+                        ArrayList<MessageObject> messages = getSelectedMessages();
+                        forwardMessages(messages, false, true, 0, customChatID ? chatID : getUserConfig().getClientUserId());
+                        createUndoView();
+                        if (undoView == null) {
+                            return;
+                        }
+                        undoView.showWithAction(customChatID ? chatID : getUserConfig().getClientUserId(), UndoView.ACTION_FWD_MESSAGES, messages.size());
+                    } catch (Exception ignore) {
+                        clearSelectionMode();
+                        Toast.makeText(getParentActivity(), LocaleController.getString("EP_CustomChatNotFound", R.string.EP_CustomChatNotFound), Toast.LENGTH_SHORT).show();
                     }
-                    undoView.showWithAction(getUserConfig().getClientUserId(), UndoView.ACTION_FWD_MESSAGES, messages.size());
                 } else if (id == OPTION_DELETE_ALL_FROM_SELF) {
                     getMessageHelper().createDeleteHistoryAlert(ChatActivity.this, currentChat, forumTopic, mergeDialogId, themeDelegate);
                 } else if (id == OPTION_UPGRADE_GROUP) {
@@ -26917,18 +26927,26 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 break;
             }
             case OPTION_SAVE_MESSAGE_CHAT: {
-                ArrayList<MessageObject> messages = new ArrayList<>();
-                if (selectedObjectGroup != null) {
-                    messages.addAll(selectedObjectGroup.messages);
-                } else {
-                    messages.add(selectedObject);
+                try {
+                    SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
+                    String savedMessagesChatID = preferences.getString("CP_CustomChatID", null);
+                    long chatID = Long.parseLong(savedMessagesChatID.replace("-100", "-"));
+
+                    ArrayList<MessageObject> messages = new ArrayList<>();
+                    if (selectedObjectGroup != null) {
+                        messages.addAll(selectedObjectGroup.messages);
+                    } else {
+                        messages.add(selectedObject);
+                    }
+                    forwardMessages(messages, false, true, 0, customChatID ? chatID : getUserConfig().getClientUserId());
+                    createUndoView();
+                    if (undoView == null) {
+                        return;
+                    }
+                    undoView.showWithAction(customChatID ? chatID : getUserConfig().getClientUserId(), UndoView.ACTION_FWD_MESSAGES, messages.size());
+                } catch (Exception ignore) {
+                    Toast.makeText(getParentActivity(), LocaleController.getString("EP_CustomChatNotFound", R.string.EP_CustomChatNotFound), Toast.LENGTH_SHORT).show();
                 }
-                forwardMessages(messages, false, true, 0, getUserConfig().getClientUserId());
-                createUndoView();
-                if (undoView == null) {
-                    return;
-                }
-                undoView.showWithAction(getUserConfig().getClientUserId(), UndoView.ACTION_FWD_MESSAGES, messages.size());
                 break;
             }
             case OPTION_HIDE_SPONSORED_MESSAGE: {

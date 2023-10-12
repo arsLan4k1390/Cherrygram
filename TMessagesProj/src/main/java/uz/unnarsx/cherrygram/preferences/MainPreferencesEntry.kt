@@ -3,14 +3,15 @@ package uz.unnarsx.cherrygram.preferences
 import org.telegram.messenger.*
 import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
-import uz.unnarsx.cherrygram.tgkit.CherrygramPreferencesNavigator
-import uz.unnarsx.cherrygram.tgkit.preference.category
-import uz.unnarsx.cherrygram.tgkit.preference.textDetail
-import uz.unnarsx.cherrygram.tgkit.preference.textIcon
-import uz.unnarsx.cherrygram.tgkit.preference.tgKitScreen
-import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextDetailRow
-import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator
+import uz.unnarsx.cherrygram.ui.tgkit.preference.category
+import uz.unnarsx.cherrygram.ui.tgkit.preference.textDetail
+import uz.unnarsx.cherrygram.ui.tgkit.preference.textIcon
+import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
+import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextDetailRow
+import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
 import uz.unnarsx.cherrygram.updater.UpdaterBottomSheet
+import java.lang.String
 
 class MainPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("CGP_AdvancedSettings", R.string.CGP_AdvancedSettings)) {
@@ -91,7 +92,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                     }
                 }
                 textIcon {
-                    val commitInfo = java.lang.String.format("%s commit", BuildConfig.GIT_COMMIT_HASH)
+                    val commitInfo = String.format("%s commit", BuildConfig.GIT_COMMIT_HASH)
                     title = LocaleController.getString("CGP_Source", R.string.CGP_Source)
                     icon = R.mipmap.outline_source_white_28
                     value = commitInfo

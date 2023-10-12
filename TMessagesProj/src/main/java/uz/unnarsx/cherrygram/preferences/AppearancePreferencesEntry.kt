@@ -8,20 +8,18 @@ import org.telegram.messenger.LocaleController
 import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.ActionBar.INavigationLayout
-import org.telegram.ui.DialogsActivity
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
-import uz.unnarsx.cherrygram.tgkit.preference.category
-import uz.unnarsx.cherrygram.tgkit.preference.contract
-import uz.unnarsx.cherrygram.tgkit.preference.contractIcons
-import uz.unnarsx.cherrygram.tgkit.preference.list
-import uz.unnarsx.cherrygram.tgkit.preference.switch
-import uz.unnarsx.cherrygram.tgkit.preference.textIcon
-import uz.unnarsx.cherrygram.tgkit.preference.tgKitScreen
-import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.ui.drawer.DrawerPreferencesEntry
+import uz.unnarsx.cherrygram.ui.tgkit.preference.category
+import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
+import uz.unnarsx.cherrygram.ui.tgkit.preference.contractIcons
+import uz.unnarsx.cherrygram.ui.tgkit.preference.list
+import uz.unnarsx.cherrygram.ui.tgkit.preference.switch
+import uz.unnarsx.cherrygram.ui.tgkit.preference.textIcon
+import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
+import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
     val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)

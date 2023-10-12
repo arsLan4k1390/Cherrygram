@@ -10,8 +10,13 @@ import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.tgkit.preference.*
-import uz.unnarsx.cherrygram.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.ui.dialogs.DeleteAccountDialog
+import uz.unnarsx.cherrygram.ui.tgkit.preference.category
+import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
+import uz.unnarsx.cherrygram.ui.tgkit.preference.switch
+import uz.unnarsx.cherrygram.ui.tgkit.preference.textIcon
+import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
+import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
 import java.io.File
 
 class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
@@ -72,5 +77,6 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
         }
+
     }
 }

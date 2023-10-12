@@ -251,7 +251,7 @@ import java.util.zip.ZipOutputStream;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
-import uz.unnarsx.cherrygram.tgkit.CherrygramPreferencesNavigator;
+import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator;
 import uz.unnarsx.cherrygram.extras.CherrygramExtras;
 
 public class ProfileActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, SharedMediaLayout.SharedMediaPreloaderDelegate, ImageUpdater.ImageUpdaterDelegate, SharedMediaLayout.Delegate {

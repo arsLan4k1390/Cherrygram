@@ -27,7 +27,7 @@ import org.telegram.ui.LaunchActivity;
 import java.io.File;
 import java.io.IOException;
 
-import uz.unnarsx.cherrygram.prefviews.OnceBottomSheet;
+import uz.unnarsx.cherrygram.helpers.OnceBottomSheet;
 
 public class CrashReportBottomSheet extends OnceBottomSheet {
     public CrashReportBottomSheet(BaseFragment fragment) {

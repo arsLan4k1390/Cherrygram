@@ -95,8 +95,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.tabs.FolderIconHelper;
-import uz.unnarsx.cherrygram.tabs.IconSelectorAlert;
+import uz.unnarsx.cherrygram.ui.tabs.FolderIconHelper;
+import uz.unnarsx.cherrygram.ui.tabs.IconSelectorAlert;
 
 public class FilterCreateActivity extends BaseFragment {
 

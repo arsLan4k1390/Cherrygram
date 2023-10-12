@@ -517,7 +517,6 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != 1) {
             if (cameraSession != null) {
                 setOldBrightness();
-                AndroidUtilities.setLightStatusBar(delegate.getParentActivity().getWindow(), false);
 //                flashlightButton.setTag(null);
                 flashlightLottie.setTag(null);
                 cameraSession.destroy();
@@ -526,7 +525,6 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         } else {
             try {
                 setOldBrightness();
-                AndroidUtilities.setLightStatusBar(delegate.getParentActivity().getWindow(), false);
 //                flashlightButton.setTag(null);
                 flashlightLottie.setTag(null);
                 cameraXController.stopVideoRecording(true);

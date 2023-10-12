@@ -117,6 +117,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Show/Hide bottom button in channels (Mute/Unmute),
 - Recent emojis counter (amplifier),
 - Recent stickers counter (amplifier),
+- Large photos (2560px),
 - Voice enhancements,
 - Enable/Disable playing video on volume button click,
 - Auto pause video while switching to the background
@@ -134,10 +135,10 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
 *Cherrygram Experimental Preferences:*
 - Enable/Disable spring animations for app navigation,
-- Choose different photos size,
 - Open profile instead of chat preview,
 - Show a resident notification,
 - Toast all RPC errors,
+- Custom chat for Saved Messages,
 - Download speed boost,
 - Upload speed boost,
 - Slow network mode.

@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -136,8 +135,6 @@ import org.telegram.messenger.voip.VoIPService;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.ui.ActionBar.ActionBarLayout;
-import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.DrawerLayoutContainer;
@@ -145,7 +142,6 @@ import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Adapters.DrawerLayoutAdapter;
-import org.telegram.ui.Cells.CheckBoxCell;
 import org.telegram.ui.Cells.DrawerActionCell;
 import org.telegram.ui.Cells.DrawerAddCell;
 import org.telegram.ui.Cells.DrawerProfileCell;
@@ -217,14 +213,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.extras.CherrygramExtras;
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
-import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry;
-import uz.unnarsx.cherrygram.tgkit.CherrygramPreferencesNavigator;
+import uz.unnarsx.cherrygram.ui.drawer.DrawerPreferencesEntry;
+import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator;
 import uz.unnarsx.cherrygram.helpers.MonetHelper;
 import uz.unnarsx.cherrygram.updater.UpdaterUtils;
 import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry;
-import uz.unnarsx.cherrygram.icons.CGUIResources;
+import uz.unnarsx.cherrygram.ui.icons.CGUIResources;
 import uz.unnarsx.cherrygram.crashlytics.Crashlytics;
 
 public class LaunchActivity extends BasePermissionsActivity implements INavigationLayout.INavigationLayoutDelegate, NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate {
@@ -234,6 +231,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     public static boolean isResumed;
     public static Runnable onResumeStaticCallback;
 
+    private boolean isGroup;
     private CGUIResources res = null;
     @Override
     public Resources getResources() {
@@ -617,7 +615,26 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (id == 11) {
                     Bundle args = new Bundle();
-                    args.putLong("user_id", UserConfig.getInstance(currentAccount).getClientUserId());
+                    if (CherrygramConfig.INSTANCE.getCustomChatForSavedMessages()) {
+                        try {
+                            SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
+                            String savedMessagesChatID = preferences.getString("CP_CustomChatID", null);
+                            long chatID = Long.parseLong(savedMessagesChatID.replace("-100", ""));
+
+                            TLRPC.Chat chat = MessagesController.getInstance(UserConfig.selectedAccount).getChat(chatID);
+                            isGroup = (ChatObject.isChannel(chat) || ChatObject.isMegagroup(chat) || ChatObject.isChannelOrGiga(chat));
+
+                            if (isGroup) {
+                                args.putLong("chat_id", chatID);
+                            } else {
+                                args.putLong("user_id", chatID);
+                            }
+                        } catch (Exception ignore) {
+                            Toast.makeText(getApplicationContext(), LocaleController.getString("EP_CustomChatNotFound", R.string.EP_CustomChatNotFound), Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        args.putLong("user_id", UserConfig.getInstance(currentAccount).getClientUserId());
+                    }
                     presentFragment(new ChatActivity(args));
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (id == 12) {
@@ -1004,6 +1021,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         if (CherrygramConfig.INSTANCE.getAutoOTA()) {
             UpdaterUtils.checkUpdates(actionBarLayout.getFragmentStack().size() > 0 ? actionBarLayout.getFragmentStack().get(0) : layersActionBarLayout.getFragmentStack().get(0), false);
         }
+        CherrygramExtras.postCheckFollowChannel(this, currentAccount);
+        CherrygramExtras.checkCustomChatID(currentAccount);
 
         BackupAgent.requestBackup(this);
 
@@ -1420,6 +1439,17 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             showTosActivity(account, UserConfig.getInstance(account).unacceptedTermsOfService);
         }
         updateCurrentConnectionState(currentAccount);
+        new CountDownTimer(200, 100) {
+            @Override
+            public void onTick(long millisUntilFinished) {}
+
+            @Override
+            public void onFinish() {
+//                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.mainUserInfoChanged);
+                checkCurrentAccount();
+//                AppRestartHelper.triggerRebirth(ApplicationLoader.applicationContext, new Intent(ApplicationLoader.applicationContext, LaunchActivity.class));
+            }
+        }.start();
     }
 
     private void switchToAvailableAccountOrLogout() {
