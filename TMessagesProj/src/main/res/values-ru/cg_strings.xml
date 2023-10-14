@@ -238,7 +238,6 @@
     <string name="EP_NavigationAnimationSpring">Spring</string>
     <string name="EP_NavigationAnimationBezier">Обычная</string>
     <string name="EP_NavigationAnimationCrossfading">Эффект плавного затухания</string>
-    <string name="CG_OpenProfile">Открывать профиль вместо превью чатов</string>
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
     <string name="EP_PhotosSize">Отправлять большие фото (2560px)</string>
     <string name="EP_ShowRPCError">Всплывающие уведомления обо всех ошибках RPC</string>

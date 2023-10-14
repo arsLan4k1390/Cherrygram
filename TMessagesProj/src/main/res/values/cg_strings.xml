@@ -248,7 +248,6 @@
     <string name="EP_NavigationAnimationSpring">Spring</string>
     <string name="EP_NavigationAnimationBezier">Classic</string>
     <string name="EP_NavigationAnimationCrossfading">Crossfading effect</string>
-    <string name="CG_OpenProfile">Open profile instead of chat preview</string>
     <string name="CG_ResidentNotification">Show a resident notification</string>
     <string name="EP_PhotosSize">Send large photos (2560px)</string>
     <string name="EP_ShowRPCError">Toast all RPC errors</string>

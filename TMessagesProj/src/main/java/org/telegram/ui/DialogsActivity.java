@@ -43,6 +43,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.LongSparseArray;
@@ -7796,13 +7797,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (!actionBar.isActionModeShowed() && !AndroidUtilities.isTablet() && !onlySelect && view instanceof DialogCell && !getMessagesController().isForum(((DialogCell) view).getDialogId()) && !rightSlidingDialogContainer.hasFragment()) {
             DialogCell cell = (DialogCell) view;
             if (cell.isPointInsideAvatar(x, y)) {
-                long dialogId = cell.getDialogId();
-                if (CherrygramConfig.INSTANCE.getOpenProfile() && !DialogObject.isChatDialog(dialogId)) {
-                    Bundle args = new Bundle();
-                    args.putLong("user_id", dialogId);
-                    args.putBoolean("expandPhoto", false);
-                    return presentFragment(new ProfileActivity(args));
-                }
                 return showChatPreview(cell);
             }
         }
@@ -7974,7 +7968,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
 //        boolean hasFolders = getMessagesController().filtersEnabled && getMessagesController().dialogFiltersLoaded && getMessagesController().dialogFilters != null && getMessagesController().dialogFilters.size() > 0;
         final ActionBarPopupWindow.ActionBarPopupWindowLayout[] previewMenu = new ActionBarPopupWindow.ActionBarPopupWindowLayout[1];
-//
+        final ActionBarPopupWindow.ActionBarPopupWindowLayout[] previewMenu1 = new ActionBarPopupWindow.ActionBarPopupWindowLayout[1];
+
 //        LinearLayout foldersMenuView = null;
 //        int[] foldersMenu = new int[1];
 //        if (hasFolders) {
@@ -8069,6 +8064,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         final ChatActivity[] chatActivity = new ChatActivity[1];
         previewMenu[0] = new ActionBarPopupWindow.ActionBarPopupWindowLayout(getParentActivity(), R.drawable.popup_fixed_alert2, getResourceProvider(), flags);
 
+        final ProfileActivity[] profileActivity = new ProfileActivity[1];
+        previewMenu1[0] = new ActionBarPopupWindow.ActionBarPopupWindowLayout(getParentActivity(), R.drawable.popup_fixed_alert2, getResourceProvider(), flags);
+
 //        if (hasFolders) {
 //            foldersMenu[0] = previewMenu[0].addViewToSwipeBack(foldersMenuView);
 //            ActionBarMenuSubItem addToFolderItem = new ActionBarMenuSubItem(getParentActivity(), true, false);
@@ -8090,25 +8088,53 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 //            });
 //        }
 
-        /*if (!DialogObject.isChatDialog(dialogId))  {
+        if (!DialogObject.isChatDialog(dialogId) && !UserObject.isUserSelf(getMessagesController().getUser(dialogId))) {
             ActionBarMenuSubItem openProfileItem = new ActionBarMenuSubItem(getParentActivity(), false, false);
             openProfileItem.setTextAndIcon(LocaleController.getString("OpenProfile", R.string.OpenProfile), R.drawable.msg_openprofile);
-            openProfileItem.setOnClickListener(v -> {
-                //long did = -1000000000000L + dialogId; //-100id
-                //long did = dialogId; //-id
-                //long did = -dialogId; //id
-                Bundle args1 = new Bundle();
-                args1.putLong("user_id", dialogId);
-                args1.putLong("chat_id", did);
-                args1.putBoolean("expandPhoto", false);
-                ProfileActivity fragment = new ProfileActivity(args1);
-                fragment.setPlayProfileAnimation(currentUser != null && currentUser.id == dialogId ? 1 : 0);
-                AndroidUtilities.setAdjustResizeToNothing(getParentActivity(), classGuid);
-                presentFragment(fragment);
-            });
-            finishPreviewFragment();
+            openProfileItem.setOnClickListener(v -> new CountDownTimer(700, 100) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    finishPreviewFragment();
+                }
+
+                @Override
+                public void onFinish() {
+                    Bundle args1 = new Bundle();
+                    args1.putBoolean("expandPhoto", false);
+                    args1.putLong("user_id", dialogId);
+
+                    if (getMessagesController().checkCanOpenChat(args1, DialogsActivity.this)) {
+                        if (searchString != null) {
+                            getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
+                        }
+                        prepareBlurBitmap();
+                        parentLayout.setHighlightActionButtons(true);
+                        presentFragmentAsPreviewWithMenu(profileActivity[0] = new ProfileActivity(args1), previewMenu1[0]);
+                    }
+                }
+            }.start());
             previewMenu[0].addView(openProfileItem);
-        }*/
+
+            ActionBarMenuSubItem openChat = new ActionBarMenuSubItem(getParentActivity(), false, false);
+            openChat.setTextAndIcon(LocaleController.getString("SendMessage", R.string.SendMessage), R.drawable.msg_discussion);
+            openChat.setMinimumWidth(160);
+            openChat.setOnClickListener(e -> new CountDownTimer(700, 100) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    finishPreviewFragment();
+                }
+
+                @Override
+                public void onFinish() {
+                    Bundle args2 = new Bundle();
+                    args2.putLong("user_id", dialogId);
+                    if (getMessagesController().checkCanOpenChat(args2, DialogsActivity.this)) {
+                        presentFragment(new ChatActivity(args2));
+                    }
+                }
+            }.start());
+            previewMenu1[0].addView(openChat);
+        }
 
         ActionBarMenuSubItem markAsUnreadItem = new ActionBarMenuSubItem(getParentActivity(), true, false);
         if (cell.getHasUnread()) {

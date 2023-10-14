@@ -214,7 +214,6 @@ public class BackupHelper {
         mainconfig.add("SP_AppCenterAnalytics");
         mainconfig.add("EP_UseLNavigation");
         mainconfig.add("CP_LargePhotos");
-        mainconfig.add("CG_OpenProfile");
         mainconfig.add("CG_ResidentNotification");
         mainconfig.add("EP_ShowRPCError");
         mainconfig.add("EP_DownloadSpeedBoost");

@@ -189,7 +189,6 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
-    <string name="CG_OpenProfile">Abrir perfil en lugar de vista previa del chat</string>
     <string name="CG_ResidentNotification">Mostrar una notificación permanente</string>
     <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
     <string name="EP_ShowRPCError">Enviar todos los errores RPC</string>

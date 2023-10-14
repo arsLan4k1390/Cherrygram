@@ -18,6 +18,7 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
+import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -46,7 +47,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     private int experimentalHeaderRow;
     private int springAnimationRow;
     private int actionbarCrossfadeRow;
-    private int openProfileRow;
     private int residentNotificationRow;
     private int showRPCErrorRow;
     private int customChatRow;
@@ -146,12 +146,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getActionbarCrossfade());
                 }
                 AppRestartHelper.createRestartBulletin(this);
-            } else if (position == openProfileRow) {
-                CherrygramConfig.INSTANCE.toggleOpenProfile();
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getOpenProfile());
-                }
-                AppRestartHelper.createRestartBulletin(this);
             } else if (position == residentNotificationRow) {
                 CherrygramConfig.INSTANCE.toggleResidentNotification();
                 if (view instanceof TextCheckCell) {
@@ -171,7 +165,9 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 }
                 updateRowsId(false);
             } else if (position == customChatIdRow) {
-                String currentValue = MessagesController.getMainSettings(currentAccount).getString("CP_CustomChatID", "CP_CustomChatID");
+                String currentValue = MessagesController.getMainSettings(currentAccount).getString("CP_CustomChatIDSM",
+                        String.valueOf(UserConfig.getInstance(currentAccount).getClientUserId())
+                );
                 TextFieldAlert.createFieldAlert(
                         context,
                         LocaleController.getString("EP_CustomChat", R.string.EP_CustomChat),
@@ -181,7 +177,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                                 result = currentValue;
                             }
                             SharedPreferences.Editor editor = MessagesController.getMainSettings(currentAccount).edit();
-                            editor.putString("CP_CustomChatID", result).apply();
+                            editor.putString("CP_CustomChatIDSM", result).apply();
                             if (view instanceof TextSettingsCell) {
                                 ((TextSettingsCell) view).getValueTextView().setText(result);
                             }
@@ -238,7 +234,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
             }
         }
 
-        openProfileRow = rowCount++;
         residentNotificationRow = rowCount++;
         showRPCErrorRow = rowCount++;
 
@@ -305,8 +300,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     textCheckCell.setEnabled(true, null);
                     if (position == actionbarCrossfadeRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("EP_NavigationAnimationCrossfading", R.string.EP_NavigationAnimationCrossfading), CherrygramConfig.INSTANCE.getActionbarCrossfade(), true);
-                    } else if (position == openProfileRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString("CG_OpenProfile", R.string.CG_OpenProfile), CherrygramConfig.INSTANCE.getOpenProfile(), true);
                     } else if (position == residentNotificationRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("CG_ResidentNotification", R.string.CG_ResidentNotification), CherrygramConfig.INSTANCE.getResidentNotification(), true);
                     } else if (position == showRPCErrorRow) {
@@ -338,7 +331,9 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     } else if (position == customChatIdRow) {
                         String t = "ID:";
                         SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
-                        String v = preferences.getString("CP_CustomChatID", null);
+                        String v = preferences.getString("CP_CustomChatIDSM",
+                                String.valueOf(UserConfig.getInstance(currentAccount).getClientUserId())
+                        );
                         textCell.setTextAndValue(t, v, false);
                     } else if (position == downloadSpeedBoostRow) {
                         String value;
@@ -397,7 +392,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 return 1;
             } else if (position == experimentalHeaderRow || position == networkHeaderRow) {
                 return 2;
-            } else if (position == actionbarCrossfadeRow || position == openProfileRow || position == residentNotificationRow || position == showRPCErrorRow || position == customChatRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
+            } else if (position == actionbarCrossfadeRow || position == residentNotificationRow || position == showRPCErrorRow || position == customChatRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
                 return 3;
             } else if (position == springAnimationRow || position == customChatIdRow || position == downloadSpeedBoostRow) {
                 return 4;

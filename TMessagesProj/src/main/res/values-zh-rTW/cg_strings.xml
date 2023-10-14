@@ -181,7 +181,6 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">實驗功能</string>
-    <string name="CG_OpenProfile">長按對話大頭貼開啟個人檔案</string>
     <string name="CG_ResidentNotification">顯示永久通知</string>
     <string name="EP_PhotosSize">傳送大型圖片(2560 像素)</string>
     <string name="EP_ShowRPCError">透過 Toast 提示全部 RPC 錯誤</string>

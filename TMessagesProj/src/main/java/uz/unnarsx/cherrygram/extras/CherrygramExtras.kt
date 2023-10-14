@@ -19,7 +19,7 @@ import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.8.0"
+    var CG_VERSION = "7.8.1"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getDCGeo(dcId: Int): String {
@@ -170,10 +170,11 @@ object CherrygramExtras {
     @JvmStatic
     fun checkCustomChatID(currentAccount: Int) {
         val preferences = MessagesController.getMainSettings(currentAccount)
-        val empty = preferences.getString("CP_CustomChatID", null).equals(null)
+        val empty = preferences.getString("CP_CustomChatIDSM", "CP_CustomChatIDSM").equals("")
         if (empty) {
-            CherrygramConfig.putStringForUserPrefs("CP_CustomChatID", "ID")
-//            FileLog.e("changed the id")
+            CherrygramConfig.putStringForUserPrefs("CP_CustomChatIDSM",
+                UserConfig.getInstance(currentAccount).getClientUserId().toString()
+            )
         }
     }
 

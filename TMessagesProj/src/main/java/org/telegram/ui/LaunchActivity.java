@@ -618,7 +618,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     if (CherrygramConfig.INSTANCE.getCustomChatForSavedMessages()) {
                         try {
                             SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
-                            String savedMessagesChatID = preferences.getString("CP_CustomChatID", null);
+                            String savedMessagesChatID = preferences.getString("CP_CustomChatIDSM",
+                                    String.valueOf(UserConfig.getInstance(currentAccount).getClientUserId())
+                            );
                             long chatID = Long.parseLong(savedMessagesChatID.replace("-100", ""));
 
                             TLRPC.Chat chat = MessagesController.getInstance(UserConfig.selectedAccount).getChat(chatID);

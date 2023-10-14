@@ -181,7 +181,6 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">تجريبي</string>
-    <string name="CG_OpenProfile">فتح الملف الشخصي بدلاً من معاينة الدردشة</string>
     <string name="CG_ResidentNotification">إظهار إشعار دائم</string>
     <string name="EP_PhotosSize">إرسال صور كبيرة (2560 بكسل)</string>
     <string name="EP_ShowRPCError">عرض جميع أخطاء RPC</string>

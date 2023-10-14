@@ -203,7 +203,6 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">实验</string>
-    <string name="CG_OpenProfile">长按私聊头像打开个人资料</string>
     <string name="CG_ResidentNotification">显示常驻通知</string>
     <string name="EP_PhotosSize">发送大号照片（2560 像素）</string>
     <string name="EP_ShowRPCError">通过 Toast 提示全部 RPC 错误</string>

@@ -48,7 +48,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 //                Toast.makeText(ApplicationLoader.applicationContext, bundle.toString(), Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(ApplicationLoader.applicationContext, "error", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(ApplicationLoader.applicationContext, "error", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -418,12 +418,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     }
 
     var largePhotos by sharedPreferences.boolean("CP_LargePhotos", true)
-
-    var openProfile by sharedPreferences.boolean("CG_OpenProfile", false)
-    fun toggleOpenProfile() {
-        openProfile = !openProfile
-        putBoolean("CG_OpenProfile", openProfile)
-    }
 
     var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", !ApplicationLoader.checkPlayServices())
     fun toggleResidentNotification() {

@@ -1468,7 +1468,6 @@ public class FilterTabsView extends FrameLayout {
             int trueTabsWidth;
             if (!CherrygramConfig.INSTANCE.getNewTabs_hideAllChats())  {
                 Tab firstTab = findDefaultTab();
-                assert firstTab != null;
                 firstTab.setTitle(LocaleController.getString("FilterAllChats", R.string.FilterAllChats));
                 int tabWith = firstTab.getWidth(false);
                 firstTab.setTitle(allTabsWidth > width ? LocaleController.getString("FilterAllChatsShort", R.string.FilterAllChatsShort) : LocaleController.getString("FilterAllChats", R.string.FilterAllChats));

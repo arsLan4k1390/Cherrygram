@@ -3315,7 +3315,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } else if (id == OPTION_SAVE_MESSAGE) {
                     try {
                         SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
-                        String savedMessagesChatID = preferences.getString("CP_CustomChatID", null);
+                        String savedMessagesChatID = preferences.getString("CP_CustomChatIDSM",
+                                String.valueOf(UserConfig.getInstance(currentAccount).getClientUserId())
+                        );
                         long chatID = Long.parseLong(savedMessagesChatID.replace("-100", "-"));
 
                         ArrayList<MessageObject> messages = getSelectedMessages();
@@ -26929,7 +26931,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             case OPTION_SAVE_MESSAGE_CHAT: {
                 try {
                     SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
-                    String savedMessagesChatID = preferences.getString("CP_CustomChatID", null);
+                    String savedMessagesChatID = preferences.getString("CP_CustomChatIDSM",
+                            String.valueOf(UserConfig.getInstance(currentAccount).getClientUserId())
+                    );
                     long chatID = Long.parseLong(savedMessagesChatID.replace("-100", "-"));
 
                     ArrayList<MessageObject> messages = new ArrayList<>();

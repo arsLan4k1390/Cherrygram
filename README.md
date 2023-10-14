@@ -40,7 +40,8 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - "Kaboom" home screen widget.
 
 *Chats:*
-- Scrollable chat preview,
+- Scrollable and clickable chat preview,
+- Open profile from chat preview,
 - "Mark as read" support for folders,
 - Chat Blur support for all devices and themes (Blur is enabled by default),
 - Fast search (Open a search by holding dialog name),
@@ -135,7 +136,6 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
 *Cherrygram Experimental Preferences:*
 - Enable/Disable spring animations for app navigation,
-- Open profile instead of chat preview,
 - Show a resident notification,
 - Toast all RPC errors,
 - Custom chat for Saved Messages,
