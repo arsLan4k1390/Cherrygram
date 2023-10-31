@@ -19,7 +19,7 @@ import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.9.0"
+    var CG_VERSION = "7.9.1"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getDCGeo(dcId: Int): String {
@@ -102,12 +102,6 @@ object CherrygramExtras {
             spannable.setSpan(span, start, end, 0)
         }
         return spannable
-    }
-
-    fun pause(seconds: Double) {
-        try {
-            Thread.sleep((seconds * 1000).toLong())
-        } catch (ignored: InterruptedException) { }
     }
 
     private const val channelUsername = "Cherry_gram"

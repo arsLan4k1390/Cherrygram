@@ -54,7 +54,7 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.input_gif to R.drawable.picture_outline_28,*/
             R.drawable.attach_send to R.mipmap.outline_send,
             R.drawable.ic_send to R.mipmap.outline_send,
-            R.drawable.msg_panel_reply to R.drawable.share_outline_28,
+//            R.drawable.msg_panel_reply to R.drawable.share_outline_28,
             // Drawer
             R.drawable.msg_archive to R.drawable.archive_outline_28,
             R.drawable.msg_contacts to R.drawable.user_outline_28,
@@ -78,7 +78,7 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_edit to R.drawable.edit_outline_28,
             R.drawable.msg_delete to R.drawable.delete_outline_android_28,
             R.drawable.msg_forward to R.drawable.share_outline_28,
-            R.drawable.burn to R.drawable.fire_outline_28,
+//            R.drawable.burn to R.drawable.fire_outline_28,
             /*R.drawable.msg_gif to R.drawable.airplay_video_outline_28,*/
             R.drawable.msg_report to R.drawable.report_outline_28,
             R.drawable.clear_cache to R.drawable.clear_data_outline_28,
