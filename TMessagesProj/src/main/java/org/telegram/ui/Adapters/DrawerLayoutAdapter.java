@@ -264,48 +264,46 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         int newChannelIcon;
         int contactsIcon;
         int callsIcon;
+        int archiveIcon = R.drawable.msg_archive;
+        int scanQrIcon = R.drawable.msg_qrcode;;
         int savedIcon;
         int settingsIcon;
-        int scanQrIcon;
         int inviteIcon;
         int helpIcon;
         int peopleNearbyIcon;
         if (eventType == 0) {
             newGroupIcon = R.drawable.msg_groups_ny;
             newSecretIcon = R.drawable.msg_secret_ny;
-//            newChannelIcon = R.drawable.msg_channel_ny;
+            newChannelIcon = R.drawable.msg_channel_ny;
             contactsIcon = R.drawable.msg_contacts_ny;
             callsIcon = R.drawable.msg_calls_ny;
             savedIcon = R.drawable.msg_saved_ny;
             settingsIcon = R.drawable.msg_settings_ny;
-            scanQrIcon = R.drawable.msg_qrcode;
             /*inviteIcon = R.drawable.msg_invite_ny;
             helpIcon = R.drawable.msg_help_ny;*/
             peopleNearbyIcon = R.drawable.msg_nearby_ny;
         } else if (eventType == 1) {
             newGroupIcon = R.drawable.msg_groups_14;
             newSecretIcon = R.drawable.msg_secret_14;
-//            newChannelIcon = R.drawable.msg_channel_14;
+            newChannelIcon = R.drawable.msg_channel_14;
             contactsIcon = R.drawable.msg_contacts_14;
             callsIcon = R.drawable.msg_calls_14;
             savedIcon = R.drawable.msg_saved_14;
             settingsIcon = R.drawable.msg_settings_14;
-            scanQrIcon = R.drawable.msg_qrcode;
-            /*inviteIcon = R.drawable.msg_secret_ny;
-            helpIcon = R.drawable.msg_help;*/
-            peopleNearbyIcon = R.drawable.msg_secret_14;
+            /*inviteIcon = R.drawable.msg_invite_14;
+            helpIcon = R.drawable.msg_help_14;*/
+            peopleNearbyIcon = R.drawable.msg_nearby_14;
         } else if (eventType == 2) {
             newGroupIcon = R.drawable.msg_groups_hw;
             newSecretIcon = R.drawable.msg_secret_hw;
-//            newChannelIcon = R.drawable.msg_channel_hw;
+            newChannelIcon = R.drawable.msg_channel_hw;
             contactsIcon = R.drawable.msg_contacts_hw;
             callsIcon = R.drawable.msg_calls_hw;
             savedIcon = R.drawable.msg_saved_hw;
             settingsIcon = R.drawable.msg_settings_hw;
-            scanQrIcon = R.drawable.msg_qrcode;
             /*inviteIcon = R.drawable.msg_invite_hw;
             helpIcon = R.drawable.msg_help_hw;*/
-            peopleNearbyIcon = R.drawable.msg_secret_hw;
+            peopleNearbyIcon = R.drawable.msg_nearby_hw;
         } else if (eventType == 3) {
             newGroupIcon = R.drawable.menu_groups_cn;
             newSecretIcon = R.drawable.menu_secret_cn;
@@ -325,8 +323,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             contactsIcon = R.drawable.msg_contacts;
             callsIcon = R.drawable.msg_calls;
             savedIcon = R.drawable.msg_saved;
-            settingsIcon = R.drawable.msg_settings;
-            scanQrIcon = R.drawable.msg_qrcode;
+            settingsIcon = R.drawable.msg_settings_old;
             /*inviteIcon = R.drawable.msg_invite;
             helpIcon = R.drawable.msg_help;*/
             peopleNearbyIcon = R.drawable.msg_nearby;

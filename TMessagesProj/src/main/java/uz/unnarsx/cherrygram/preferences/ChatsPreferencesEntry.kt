@@ -155,7 +155,8 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                         Pair(CherrygramConfig.DOUBLE_TAP_ACTION_REACTION, LocaleController.getString("Reactions", R.string.Reactions)),
                         Pair(CherrygramConfig.DOUBLE_TAP_ACTION_REPLY, LocaleController.getString("Reply", R.string.Reply)),
                         Pair(CherrygramConfig.DOUBLE_TAP_ACTION_SAVE, LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)),
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_EDIT, LocaleController.getString("Edit", R.string.Edit))
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_EDIT, LocaleController.getString("Edit", R.string.Edit)),
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_TRANSLATE, LocaleController.getString("TranslateMessage", R.string.TranslateMessage))
                     )
                 }, {
                     return@contract when (CherrygramConfig.doubleTapAction) {
@@ -163,6 +164,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                         CherrygramConfig.DOUBLE_TAP_ACTION_REPLY -> LocaleController.getString("Reply", R.string.Reply)
                         CherrygramConfig.DOUBLE_TAP_ACTION_SAVE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
                         CherrygramConfig.DOUBLE_TAP_ACTION_EDIT -> LocaleController.getString("Edit", R.string.Edit)
+                        CherrygramConfig.DOUBLE_TAP_ACTION_TRANSLATE -> LocaleController.getString("TranslateMessage", R.string.TranslateMessage)
                         else -> LocaleController.getString("Disable", R.string.Disable)
                     }
                 }) {

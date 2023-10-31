@@ -43,6 +43,8 @@ import org.telegram.ui.FilterCreateActivity;
 
 import java.util.Set;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class DrawerActionCell extends FrameLayout {
 
     private BackupImageView imageView;
@@ -53,6 +55,9 @@ public class DrawerActionCell extends FrameLayout {
 
     public DrawerActionCell(Context context) {
         super(context);
+
+        int frameSize = 24;
+        if (CherrygramConfig.INSTANCE.getIconReplacement() == CherrygramConfig.ICON_REPLACE_VKUI) frameSize = 26;
 
         imageView = new BackupImageView(context);
         imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_menuItemIcon), PorterDuff.Mode.SRC_IN));
@@ -65,8 +70,8 @@ public class DrawerActionCell extends FrameLayout {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
         textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-        addView(imageView, LayoutHelper.createFrame(24, 24, Gravity.LEFT | Gravity.TOP, 19, 12, 0, 0));
-        addView(imageView1, LayoutHelper.createFrame(24, 24, Gravity.LEFT | Gravity.TOP, 19, 12, 0, 0));
+        addView(imageView, LayoutHelper.createFrame(frameSize, frameSize, Gravity.LEFT | Gravity.TOP, 19, 12, 0, 0));
+        addView(imageView1, LayoutHelper.createFrame(frameSize, frameSize, Gravity.LEFT | Gravity.TOP, 19, 12, 0, 0));
         addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 72, 0, 16, 0));
 
         setWillNotDraw(false);

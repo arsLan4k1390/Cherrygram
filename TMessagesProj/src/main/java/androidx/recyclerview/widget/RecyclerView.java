@@ -11283,10 +11283,6 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             }
         }
 
-        public Object getPayload() {
-            return getUnmodifiedPayloads().isEmpty() ? null : getUnmodifiedPayloads().get(0);
-        }
-
         private void createPayloadsIfNeeded() {
             if (mPayloads == null) {
                 mPayloads = new ArrayList<Object>();

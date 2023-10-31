@@ -3,8 +3,11 @@ package uz.unnarsx.cherrygram.ui.drawer
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import org.telegram.messenger.FileLoader
+import org.telegram.messenger.ImageLocation
+import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
 import org.telegram.messenger.Utilities
 import org.telegram.tgnet.TLRPC
@@ -20,6 +23,7 @@ class DrawerBitmapHelper: CoroutineScope by MainScope() {
 
         @JvmField
         var currentAccountBitmap: BitmapDrawable? = null
+        var size: TLRPC.PhotoSize? = null
 
         @JvmStatic
         fun setAccountBitmap(user: TLRPC.User) {
@@ -36,6 +40,26 @@ class DrawerBitmapHelper: CoroutineScope by MainScope() {
                         }
                     }
                 } catch (e: FileNotFoundException) {
+                    try {
+                        val userFull = MessagesController.getInstance(UserConfig.selectedAccount).getUserFull(user.id)
+
+                        try {
+                            size = FileLoader.getClosestPhotoSizeWithSize(userFull.profile_photo.sizes, Int.MAX_VALUE)
+                        } catch (ignored: Exception) {
+                            if (userFull.fallback_photo != null) {
+                                size = FileLoader.getClosestPhotoSizeWithSize(userFull.fallback_photo.sizes, Int.MAX_VALUE)
+                            }
+                        }
+
+                        FileLoader.getInstance(UserConfig.selectedAccount).loadFile(
+                            ImageLocation.getForPhoto(size, userFull.profile_photo),
+                            0,
+                            "jpg",
+                            FileLoader.PRIORITY_LOW,
+                            1
+                        )
+                    } catch (ignored: Exception) {}
+
                     e.printStackTrace()
                 }
             }

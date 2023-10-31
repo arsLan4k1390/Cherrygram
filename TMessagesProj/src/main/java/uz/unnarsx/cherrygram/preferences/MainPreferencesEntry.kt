@@ -11,7 +11,6 @@ import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextDetailRow
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
 import uz.unnarsx.cherrygram.updater.UpdaterBottomSheet
-import java.lang.String
 
 class MainPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("CGP_AdvancedSettings", R.string.CGP_AdvancedSettings)) {
@@ -60,7 +59,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
             }
             textIcon {
                 title = LocaleController.getString("DP_Donate", R.string.DP_Donate)
-                icon = R.drawable.card_send_solar
+                icon = R.drawable.heart_angle_solar
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CherrygramPreferencesNavigator.createDonate())
                 }

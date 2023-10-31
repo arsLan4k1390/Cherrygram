@@ -84,6 +84,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     //Animations and Premium Features
     var hideStories by sharedPreferences.boolean("CP_HideStories", false)
     var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
+    var disableReplyPanelBackground by sharedPreferences.boolean("CP_DisableReplyBackground", false)
     var disableReactionsOverlay by sharedPreferences.boolean("CP_DisableReactionsOverlay", false)
     var disableReactionAnim by sharedPreferences.boolean("CP_DisableReactionAnim", false)
     var disablePremiumStatuses by sharedPreferences.boolean("CP_DisablePremiumStatuses", false)
@@ -93,18 +94,17 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     // Appearance Settings
     //Redesign
-    var iconReplacement by sharedPreferences.int("AP_Icon_Replacements", getDefaultVKUI())
-    fun getIconReplacement1(): BaseIconReplace {
+    const val ICON_REPLACE_NONE = 0
+    const val ICON_REPLACE_VKUI = 1
+    const val ICON_REPLACE_SOLAR = 2
+
+    var iconReplacement by sharedPreferences.int("AP_Icon_Replacements", ICON_REPLACE_SOLAR)
+    fun getCurrentIconPack(): BaseIconReplace {
         return when (iconReplacement) {
-            0 -> VkIconReplace()
-            1 -> SolarIconReplace()
+            ICON_REPLACE_VKUI -> VkIconReplace()
+            ICON_REPLACE_SOLAR -> SolarIconReplace()
             else -> NoIconReplace()
         }
-    }
-    private fun getDefaultVKUI(): Int {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            0
-        } else 2
     }
 
     var oneUI_SwitchStyle by sharedPreferences.boolean("AP_OneUI_SwitchStyle", true)
@@ -120,7 +120,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("AP_DrawerAvatar", drawerAvatar)
     }
 
-    var drawerSmallAvatar by sharedPreferences.boolean("AP_DrawerSmallAvatar", true)
+    var drawerSmallAvatar by sharedPreferences.boolean("AP_DrawerSmallAvatar", false)
     fun toggleDrawerSmallAvatar() {
         drawerSmallAvatar = !drawerSmallAvatar
         putBoolean("AP_DrawerSmallAvatar", drawerSmallAvatar)
@@ -132,7 +132,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("AP_DrawerDarken", drawerDarken)
     }
 
-    var drawerGradient by sharedPreferences.boolean("AP_DrawerGradient", true)
+    var drawerGradient by sharedPreferences.boolean("AP_DrawerGradient", false)
     fun toggleDrawerGradient() {
         drawerGradient = !drawerGradient
         putBoolean("AP_DrawerGradient", drawerGradient)
@@ -144,7 +144,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("AP_DrawerBlur", drawerBlur)
     }
 
-    var drawerBlurIntensity by sharedPreferences.int("AP_DrawerBlur_Intensity", 40)
+    var drawerBlurIntensity by sharedPreferences.int("AP_DrawerBlur_Intensity", 50)
 
     var eventType by sharedPreferences.int("AP_DrawerEventType", 0)
 
@@ -332,6 +332,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     const val DOUBLE_TAP_ACTION_REPLY = 2
     const val DOUBLE_TAP_ACTION_SAVE = 3
     const val DOUBLE_TAP_ACTION_EDIT = 4
+    const val DOUBLE_TAP_ACTION_TRANSLATE = 5
     var doubleTapAction by sharedPreferences.int("CP_DoubleTapAction", DOUBLE_TAP_ACTION_REACTION)
 
     var hideKeyboardOnScroll by sharedPreferences.boolean("CP_HideKbdOnScroll", false)

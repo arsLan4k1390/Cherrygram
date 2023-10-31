@@ -56,8 +56,8 @@ import uz.unnarsx.cherrygram.CherrygramConfig;
 public class UserCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     public BackupImageView avatarImageView;
-    private SimpleTextView nameTextView;
-    private SimpleTextView statusTextView;
+    protected SimpleTextView nameTextView;
+    protected SimpleTextView statusTextView;
     private ImageView imageView;
     private CheckBox checkBox;
     private CheckBoxSquare checkBoxBig;
@@ -66,9 +66,9 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
     private Drawable premiumDrawable;
     private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable emojiStatus;
     private ImageView mutualView;
-    private Theme.ResourcesProvider resourcesProvider;
+    protected Theme.ResourcesProvider resourcesProvider;
 
-    private AvatarDrawable avatarDrawable;
+    protected AvatarDrawable avatarDrawable;
     private boolean storiable;
     private Object currentObject;
     private TLRPC.EncryptedChat encryptedChat;

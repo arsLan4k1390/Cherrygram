@@ -52,29 +52,5 @@ fun TGKitListPreference.contract(getOptions: () -> List<Pair<Int, String>>, getV
     }
 }
 
-fun TGKitListPreference.contractIcons(getOptions: () -> List<Triple<Int, String, Int>>, getValue: () -> String, setValue: (Int) -> Unit) {
-    contract = object : TGKitListPreference.TGTLContract {
-        override fun setValue(id: Int) {
-            setValue(id)
-        }
-
-        override fun hasIcons(): Boolean {
-            return true
-        }
-
-        override fun getOptionsIcons(): List<Triple<Int, String, Int>> {
-            return getOptions()
-        }
-
-        override fun getValue(): String {
-            return getValue()
-        }
-
-        override fun getOptions(): List<Pair<Int, String>> {
-            return mutableListOf()
-        }
-    }
-}
-
 typealias TGKitScreen = MutableList<TGKitCategory>
 typealias TGKitPreferences = MutableList<TGKitPreference>

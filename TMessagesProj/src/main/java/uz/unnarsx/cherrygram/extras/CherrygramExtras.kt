@@ -19,7 +19,7 @@ import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.8.1"
+    var CG_VERSION = "7.9.0"
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getDCGeo(dcId: Int): String {
@@ -72,15 +72,15 @@ object CherrygramExtras {
         return "LOC_ERR"
     }
 
-    private val cherrygramLogo = File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "Telegram/Stickers/cherrygram.webm")
+    private val cherrygramLogo = File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "stickers/cherrygram.webm")
     fun downloadCherrygramLogo(context: Context) {
-        if (!cherrygramLogo.exists() && CherrygramConfig.blockStickers) {
+        if (!cherrygramLogo.exists()) {
             try {
                 val request = DownloadManager.Request(Uri.parse("https://github.com/arsLan4k1390/Cherrygram/raw/main/cherrygram.webm"))
                 request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
                 request.setTitle("Cherrygram Logo")
                 request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                request.setDestinationInExternalFilesDir(context, "Telegram/Stickers/", "cherrygram.webm")
+                request.setDestinationInExternalFilesDir(context, "stickers/", "cherrygram.webm")
                 val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 manager.enqueue(request)
             } catch (e: java.lang.Exception) {
@@ -102,6 +102,12 @@ object CherrygramExtras {
             spannable.setSpan(span, start, end, 0)
         }
         return spannable
+    }
+
+    fun pause(seconds: Double) {
+        try {
+            Thread.sleep((seconds * 1000).toLong())
+        } catch (ignored: InterruptedException) { }
     }
 
     private const val channelUsername = "Cherry_gram"

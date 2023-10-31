@@ -28,6 +28,7 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -40,6 +41,8 @@ import org.telegram.messenger.voip.VideoCapturerDevice;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Components.ForegroundDetector;
+import org.telegram.ui.Components.Premium.boosts.BoostRepository;
+import org.telegram.ui.IUpdateLayout;
 import org.telegram.ui.LauncherIconController;
 
 import java.io.File;
@@ -130,8 +133,16 @@ public class ApplicationLoader extends Application {
         return applicationLoaderInstance.isHuaweiBuild();
     }
 
+    public static boolean isStandaloneBuild() {
+        return true;
+    }
+
     protected boolean isHuaweiBuild() {
         return false;
+    }
+
+    protected boolean isStandalone() {
+        return true;
     }
 
     public static File getFilesDirFixed() {
@@ -296,9 +307,9 @@ public class ApplicationLoader extends Application {
         SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
         boolean enabled;
         if (preferences.contains("pushService")) {
-            enabled = preferences.getBoolean("pushService", true);
+            enabled = MessagesController.getGlobalNotificationsSettings().getBoolean("pushService", true);
         } else {
-            enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", false);
+            enabled = MessagesController.getGlobalNotificationsSettings().getBoolean("keepAliveService", false);
         }
         if (enabled) {
             try {
@@ -579,4 +590,13 @@ public class ApplicationLoader extends Application {
     public boolean openApkInstall(Activity activity, TLRPC.Document document) {
         return false;
     }
+
+    public boolean showUpdateAppPopup(Context context, TLRPC.TL_help_appUpdate update, int account) {
+        return false;
+    }
+
+    public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenu, ViewGroup sideMenuContainer) {
+        return null;
+    }
+
 }

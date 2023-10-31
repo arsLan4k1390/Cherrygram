@@ -14,7 +14,6 @@ import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.ui.drawer.DrawerPreferencesEntry
 import uz.unnarsx.cherrygram.ui.tgkit.preference.category
 import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
-import uz.unnarsx.cherrygram.ui.tgkit.preference.contractIcons
 import uz.unnarsx.cherrygram.ui.tgkit.preference.list
 import uz.unnarsx.cherrygram.ui.tgkit.preference.switch
 import uz.unnarsx.cherrygram.ui.tgkit.preference.textIcon
@@ -26,29 +25,27 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)) {
         sharedPreferences.registerOnSharedPreferenceChangeListener(CherrygramConfig.listener)
         category(LocaleController.getString("AP_RedesignCategory", R.string.AP_RedesignCategory)) {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                list {
-                    title = LocaleController.getString("AP_IconReplacements", R.string.AP_IconReplacements)
+            list {
+                title = LocaleController.getString("AP_IconReplacements", R.string.AP_IconReplacements)
 
-                    contractIcons({
-                        return@contractIcons listOf(
-                            Triple(0, LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI), R.drawable.settings_outline_28),
-                            Triple(1, LocaleController.getString("AP_IconReplacement_Solar", R.string.AP_IconReplacement_Solar), R.drawable.msg_settings_solar),
-                            Triple(2, LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default), R.drawable.msg_settings)
-                        )
-                    }, {
-                        return@contractIcons when (CherrygramConfig.iconReplacement) {
-                            0 -> LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI)
-                            1 -> LocaleController.getString("AP_IconReplacement_Solar", R.string.AP_IconReplacement_Solar)
-                            else -> LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default)
-                        }
-                    }) {
-                        CherrygramConfig.iconReplacement = it
-                        bf.parentActivity.recreate()
-                        (bf.parentActivity as? LaunchActivity)?.reloadResources()
+                contract({
+                    return@contract listOf(
+                        Pair(CherrygramConfig.ICON_REPLACE_NONE, LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default)),
+                        Pair(CherrygramConfig.ICON_REPLACE_VKUI, LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI)),
+                        Pair(CherrygramConfig.ICON_REPLACE_SOLAR, LocaleController.getString("AP_IconReplacement_Solar", R.string.AP_IconReplacement_Solar))
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.iconReplacement) {
+                        CherrygramConfig.ICON_REPLACE_VKUI -> LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI)
+                        CherrygramConfig.ICON_REPLACE_SOLAR -> LocaleController.getString("AP_IconReplacement_Solar", R.string.AP_IconReplacement_Solar)
+                        else -> LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default)
                     }
+                }) {
+                    CherrygramConfig.iconReplacement = it
+                    bf.parentActivity.recreate()
+                    (bf.parentActivity as? LaunchActivity)?.reloadResources()
                 }
-//            }
+            }
             switch {
                 title = LocaleController.getString("AP_OneUI_Switch_Style", R.string.AP_OneUI_Switch_Style)
 

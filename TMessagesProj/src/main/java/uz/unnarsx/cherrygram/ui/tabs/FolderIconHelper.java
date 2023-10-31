@@ -13,36 +13,37 @@ public class FolderIconHelper {
     public static LinkedHashMap<String, Integer> folderIcons = new LinkedHashMap<>();
 
     static {
-        folderIcons.put("\uD83D\uDC31", R.drawable.filter_cat);
-        folderIcons.put("\uD83D\uDCD5", R.drawable.filter_book);
-        folderIcons.put("\uD83D\uDCB0", R.drawable.filter_money);
-        folderIcons.put("\uD83C\uDFAE", R.drawable.filter_game);
-        folderIcons.put("\uD83D\uDCA1", R.drawable.filter_light);
-        folderIcons.put("\uD83D\uDC4C", R.drawable.filter_like);
-        folderIcons.put("\uD83C\uDFB5", R.drawable.filter_note);
-        folderIcons.put("\uD83C\uDFA8", R.drawable.filter_palette);
-        folderIcons.put("\u2708", R.drawable.filter_travel);
-        folderIcons.put("\u26BD", R.drawable.filter_sport);
-        folderIcons.put("\u2B50", R.drawable.filter_favorite);
-        folderIcons.put("\uD83C\uDF93", R.drawable.filter_study);
-        folderIcons.put("\uD83D\uDEEB", R.drawable.filter_airplane); // to replace
-        folderIcons.put("\uD83D\uDC64", R.drawable.filter_private);
+        folderIcons.put("\uD83D\uDC31", R.drawable.filter_cat_solar);
+        folderIcons.put("\uD83D\uDCD5", R.drawable.filter_book_solar);
+        folderIcons.put("\uD83D\uDCB0", R.drawable.filter_money_solar);
+        folderIcons.put("\uD83C\uDFAE", R.drawable.filter_game_solar);
+        folderIcons.put("\uD83D\uDCA1", R.drawable.filter_light_solar);
+//        folderIcons.put("\uD83D\uDCA1", R.drawable.filter_light_solar2);
+        folderIcons.put("\uD83D\uDC4C", R.drawable.filter_like_solar);
+        folderIcons.put("\uD83C\uDFB5", R.drawable.filter_note_solar);
+        folderIcons.put("\uD83C\uDFA8", R.drawable.filter_palette_solar);
+        folderIcons.put("\u2708", R.drawable.filter_travel_solar);
+        folderIcons.put("\u26BD", R.drawable.filter_sport_solar);
+        folderIcons.put("\u2B50", R.drawable.filter_favorite_solar);
+        folderIcons.put("\uD83C\uDF93", R.drawable.filter_study_solar);
+        folderIcons.put("\uD83D\uDEEB", R.drawable.filter_airplane);
+        folderIcons.put("\uD83D\uDC64", R.drawable.filter_private_solar);
         folderIcons.put("\uD83D\uDC65", R.drawable.filter_groups);
         folderIcons.put("\uD83D\uDCAC", R.drawable.filter_all);
         folderIcons.put("\u2705", R.drawable.filter_unread);
-        folderIcons.put("\uD83E\uDD16", R.drawable.filter_bot); // to replace
+        folderIcons.put("\uD83E\uDD16", R.drawable.filter_bots_solar);
         folderIcons.put("\uD83D\uDC51", R.drawable.filter_crown);
-        folderIcons.put("\uD83C\uDF39", R.drawable.filter_flower); // to replace
-        folderIcons.put("\uD83C\uDFE0", R.drawable.filter_home);
-        folderIcons.put("\u2764", R.drawable.filter_love);
-        folderIcons.put("\uD83C\uDFAD", R.drawable.filter_mask);
-        folderIcons.put("\uD83C\uDF78", R.drawable.filter_party);
-        folderIcons.put("\uD83D\uDCC8", R.drawable.filter_trade);
-        folderIcons.put("\uD83D\uDCBC", R.drawable.filter_work);
-        folderIcons.put("\uD83D\uDD14", R.drawable.filter_unmuted);
+        folderIcons.put("\uD83C\uDF39", R.drawable.filter_flower_solar);
+        folderIcons.put("\uD83C\uDFE0", R.drawable.filter_home_solar);
+        folderIcons.put("\u2764", R.drawable.filter_love_solar);
+        folderIcons.put("\uD83C\uDFAD", R.drawable.filter_mask_solar);
+        folderIcons.put("\uD83C\uDF78", R.drawable.filter_party_solar);
+        folderIcons.put("\uD83D\uDCC8", R.drawable.filter_trade_solar);
+        folderIcons.put("\uD83D\uDCBC", R.drawable.filter_work_solar);
+        folderIcons.put("\uD83D\uDD14", R.drawable.filter_unmuted_solar);
         folderIcons.put("\uD83D\uDCE2", R.drawable.filter_channel);
-        folderIcons.put("\uD83D\uDCC1", R.drawable.filter_custom);
-        folderIcons.put("\uD83D\uDCCB", R.drawable.filter_setup);
+        folderIcons.put("\uD83D\uDCC1", R.drawable.filter_custom_solar);
+        folderIcons.put("\uD83D\uDCCB", R.drawable.filter_setup_solar);
     }
 
     public static String[] getEmoticonData(int newFilterFlags) {
@@ -131,6 +132,6 @@ public class FolderIconHelper {
                 return folderIcon;
             }
         }
-        return R.drawable.filter_custom;
+        return R.drawable.filter_custom_solar;
     }
 }

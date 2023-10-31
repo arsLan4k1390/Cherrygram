@@ -24,9 +24,6 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.LaunchActivity;
 
 import java.io.File;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.function.Function;
@@ -40,10 +37,9 @@ public class BackupHelper {
 
     public static void backupSettings(Context context) {
         try {
-            LocalDate today = LocalDate.now();
-            String formattedDate = today.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT));
+            String formattedDate = String.format(LocaleController.getInstance().formatterYear.format(System.currentTimeMillis()), LocaleController.getInstance().formatterDay.format(System.currentTimeMillis()));
 
-            File cacheFile = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), formattedDate + " settings.cherry");
+            File cacheFile = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), formattedDate + "-settings.cherry");
             FileUtil.writeUtf8String(backupSettingsJson(), cacheFile);
             ShareUtil.shareFile(context, cacheFile);
         } catch (JSONException e) {
@@ -273,7 +269,7 @@ public class BackupHelper {
             AlertDialog restart = new AlertDialog(context, 0);
             restart.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
             restart.setMessage(LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply));
-            restart.setPositiveButton(LocaleController.getString("OK", R.string.OK), (__, ___) -> {
+            restart.setPositiveButton(LocaleController.getString("BotUnblock", R.string.BotUnblock), (__, ___) -> {
                 AppRestartHelper.triggerRebirth(context, new Intent(context, LaunchActivity.class));
             });
             restart.show();

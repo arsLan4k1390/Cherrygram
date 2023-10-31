@@ -4,17 +4,17 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <path
-        android:strokeColor="#FFFFFFFF"
+        android:strokeColor="#FFF"
         android:strokeWidth="1.5"
         android:strokeLineCap="round"
         android:pathData="M20 7H4"/>
     <path
-        android:strokeColor="#FFFFFFFF"
+        android:strokeColor="#FFF"
         android:strokeWidth="1.5"
         android:strokeLineCap="round"
         android:pathData="M20 12H4"/>
     <path
-        android:strokeColor="#FFFFFFFF"
+        android:strokeColor="#FFF"
         android:strokeWidth="1.5"
         android:strokeLineCap="round"
         android:pathData="M20 17H4"/>

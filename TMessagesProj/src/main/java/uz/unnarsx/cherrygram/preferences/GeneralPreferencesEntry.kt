@@ -132,6 +132,15 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("CP_DisableReplyBackground", R.string.CP_DisableReplyBackground)
+
+                contract({
+                    return@contract CherrygramConfig.disableReplyPanelBackground
+                }) {
+                    CherrygramConfig.disableReplyPanelBackground = it
+                }
+            }
+            switch {
                 title = LocaleController.getString("CP_DisableReactionsOverlay", R.string.CP_DisableReactionsOverlay)
                 description = LocaleController.getString("CP_DisableReactionsOverlay_Desc", R.string.CP_DisableReactionsOverlay_Desc)
 

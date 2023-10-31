@@ -75,6 +75,8 @@
     <string name="CG_ExportSettings">Export settings</string>
     <string name="CG_ImportSettings">Import settings</string>
     <string name="CG_ImportSettingsAlert">Overwrite the settings\? Importing settings from unknown sources may result the app not working.</string>
+    <string name="CG_OpenStickerPack">Tap to get the sticker</string>
+    <string name="CG_OpenEmojiPack">Tap to get the emoji</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -112,6 +114,7 @@
     <string name="AP_ChangeIcon_White">White</string>
     <string name="AP_ChangeIcon_Laguna">Laguna</string>
     <string name="AP_ChangeIcon_Green">Green</string>
+    <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
@@ -132,6 +135,7 @@
     <string name="CP_PremAndAnim_Header">Animations and Premium Features</string>
     <string name="CP_HideStories">Hide Stories</string>
     <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
+    <string name="CP_DisableReplyBackground">Disable replies background</string>
     <string name="CP_DisableReactionsOverlay">Disable reactions overlay</string>
     <string name="CP_DisableReactionsOverlay_Desc">This will disable popup overlay with available reactions</string>
     <string name="CP_DisableReactionAnim">Disable reaction animation</string>

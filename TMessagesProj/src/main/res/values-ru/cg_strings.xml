@@ -73,6 +73,8 @@
     <string name="CG_ExportSettings">Экспорт настроек</string>
     <string name="CG_ImportSettings">Импорт настроек</string>
     <string name="CG_ImportSettingsAlert">Перезаписать настройки приложения\? Импорт настроек из ненадежных источников может привести к неработоспособности приложения.</string>
+    <string name="CG_OpenStickerPack">Нажмите для открытия стикера</string>
+    <string name="CG_OpenEmojiPack">Нажмите для открытия эмодзи</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -105,6 +107,7 @@
     <string name="AP_ChangeIcon_White">Белая</string>
     <string name="AP_ChangeIcon_Laguna">Лагуна</string>
     <string name="AP_ChangeIcon_Green">Зеленая</string>
+    <string name="AP_ChangeIcon_Lavanda">Лаванда</string>
     <string name="AP_ChangeIcon_Sunset">Закат</string>
     <string name="AP_ChangeIcon_Sunrise">Восход</string>
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
@@ -125,6 +128,7 @@
     <string name="CP_PremAndAnim_Header">Анимации и Premium функции</string>
     <string name="CP_HideStories">Скрыть Истории</string>
     <string name="CP_DisableAnimAvatars">Отключить активные видеоаватары</string>
+    <string name="CP_DisableReplyBackground">Отключить фон у ответов</string>
     <string name="CP_DisableReactionsOverlay">Отключить реакции</string>
     <string name="CP_DisableReactionsOverlay_Desc">Это отключит всплывающий список доступных реакций</string>
     <string name="CP_DisableReactionAnim">Отключить анимацию реакций</string>

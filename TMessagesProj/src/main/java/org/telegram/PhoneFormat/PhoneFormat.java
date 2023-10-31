@@ -24,6 +24,8 @@
 
 package org.telegram.PhoneFormat;
 
+import androidx.annotation.NonNull;
+
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 
@@ -163,6 +165,7 @@ public class PhoneFormat {
         return res;
     }
 
+    @NonNull
     public String format(String orig) {
         if (!initialzed) {
             return orig;

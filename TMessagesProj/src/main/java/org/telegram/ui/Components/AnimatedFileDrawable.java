@@ -527,7 +527,7 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable, 
             useSharedQueue = true;
             if (document != null) {
                 if (CherrygramConfig.INSTANCE.getBlockStickers() && (StickersIDsDownloader.INSTANCE.isProperSetID(document) || StickersIDsLocal.isLocalSetId(document))) {
-                    path = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "Telegram/Stickers/cherrygram.webm");
+                    path = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "stickers/cherrygram.webm");
                 }
             }
         }

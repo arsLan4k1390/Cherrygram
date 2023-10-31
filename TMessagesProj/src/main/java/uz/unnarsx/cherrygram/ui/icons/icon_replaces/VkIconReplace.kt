@@ -38,7 +38,7 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_send to R.mipmap.outline_send,
             R.drawable.msg_list to R.drawable.list_outline_28,
             R.drawable.bug_solar to R.drawable.bug_outline_28,
-            R.drawable.card_send_solar to R.drawable.money_send_outline_28,
+            R.drawable.heart_angle_solar to R.drawable.like_outline_28,
             // Messages
             R.drawable.input_bot2 to R.drawable.keyboard_bots_outline_28,
             R.drawable.input_notify_off to R.drawable.notification_disable_outline_28,
@@ -124,7 +124,7 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_clearcache to R.drawable.delete_outline_28,
             R.drawable.msg_newphone to R.drawable.cards_2_outline_28,
             R.drawable.msg_message to R.drawable.view_outline_28,
-            R.drawable.list_check_minimalistic_solar to R.drawable.list_check_outline_28,
+            R.drawable.msg_select_between_solar to R.drawable.list_check_outline_28,
             R.drawable.msg_viewchats to R.drawable.chats_outline_28,
             R.drawable.msg_sendfile to R.drawable.document_outline_28,
             R.drawable.msg_mini_qr to R.drawable.qr_code_outline_28, // active sessions QR
