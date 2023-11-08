@@ -147,7 +147,7 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.MonetHelper;
+import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
 
 public class Theme {
 
@@ -1759,9 +1759,9 @@ public class Theme {
             if (isDarkTheme && currentColors.get(key_chat_outBubbleGradient1) != 0) {
                 int outBubbleAverage = averageColor(currentColors, key_chat_outBubbleGradient1, key_chat_outBubbleGradient2, key_chat_outBubbleGradient3);
                 Color.colorToHSV(outBubbleAverage, tempHSV);
-                tempHSV[1] = Utilities.clamp(tempHSV[1] + .3f, 1, 0);
-                tempHSV[2] = Utilities.clamp(tempHSV[2] + -.4f, 1, 0);
-                currentColors.put(key_chat_outCodeBackground, Color.HSVToColor(0x70, tempHSV));
+                tempHSV[1] = Utilities.clamp(tempHSV[1] + .1f, 1, 0);
+                tempHSV[2] = Utilities.clamp(tempHSV[2] - .8f, 1, 0);
+                currentColors.put(key_chat_outCodeBackground, Color.HSVToColor(0x40, tempHSV));
             } else {
                 currentColors.put(key_chat_outCodeBackground, codeBackground(outBubble, isDarkTheme));
             }
@@ -1825,13 +1825,16 @@ public class Theme {
         private int codeBackground(int bubbleColor, boolean isDarkTheme) {
             Color.colorToHSV(bubbleColor, tempHSV);
             int alpha = 0x20;
-            if (tempHSV[1] <= 0 || tempHSV[2] >= 1 || tempHSV[2] <= 0) {
-                tempHSV[2] = Math.max(0, Math.min(1, tempHSV[2] + (isDarkTheme ? .3f : -.2f)));
+            if (isDarkTheme) {
+                alpha = 0x40;
+                tempHSV[1] = Utilities.clamp(tempHSV[1] - .08f, 1f, 0f);
+                tempHSV[2] = .03f;
             } else {
-                tempHSV[1] = Math.max(0, Math.min(1, tempHSV[1] + (isDarkTheme ? -.3f : .28f)));
-                tempHSV[2] = Math.max(0, Math.min(1, tempHSV[2] + (isDarkTheme ? +.1f : -.1f)));
-                if (isDarkTheme) {
-                    alpha = 0x60;
+                if (tempHSV[1] <= 0 || tempHSV[2] >= 1 || tempHSV[2] <= 0) {
+                    tempHSV[2] = Math.max(0, Math.min(1, tempHSV[2] + -.2f));
+                } else {
+                    tempHSV[1] = Math.max(0, Math.min(1, tempHSV[1] + .28f));
+                    tempHSV[2] = Math.max(0, Math.min(1, tempHSV[2] + -.1f));
                 }
             }
             return Color.HSVToColor(alpha, tempHSV);
@@ -3524,25 +3527,6 @@ public class Theme {
     public static int[] keys_avatar_background2 = {key_avatar_background2Red, key_avatar_background2Orange, key_avatar_background2Violet, key_avatar_background2Green, key_avatar_background2Cyan, key_avatar_background2Blue, key_avatar_background2Pink};
     public static int[] keys_avatar_nameInMessage = {key_avatar_nameInMessageRed, key_avatar_nameInMessageOrange, key_avatar_nameInMessageViolet, key_avatar_nameInMessageGreen, key_avatar_nameInMessageCyan, key_avatar_nameInMessageBlue, key_avatar_nameInMessagePink};
 
-    public static final int key_avatar_composite_nameInMessageRed = colorsCount++;
-    public static final int key_avatar_composite_nameInMessageOrange = colorsCount++;
-    public static final int key_avatar_composite_nameInMessageViolet = colorsCount++;
-    public static final int key_avatar_composite_nameInMessageGreen = colorsCount++;
-    public static final int key_avatar_composite_nameInMessageCyan = colorsCount++;
-    public static final int key_avatar_composite_nameInMessageBlue = colorsCount++;
-    public static final int key_avatar_composite_nameInMessagePink = colorsCount++;
-
-    public static final int key_avatar_composite_nameInMessageRed2 = colorsCount++;
-    public static final int key_avatar_composite_nameInMessageOrange2 = colorsCount++;
-    public static final int key_avatar_composite_nameInMessageViolet2 = colorsCount++;
-    public static final int key_avatar_composite_nameInMessageGreen2 = colorsCount++;
-    public static final int key_avatar_composite_nameInMessageCyan2 = colorsCount++;
-    public static final int key_avatar_composite_nameInMessageBlue2 = colorsCount++;
-    public static final int key_avatar_composite_nameInMessagePink2 = colorsCount++;
-
-    public static int[] keys_avatar_composite_nameInMessage = {key_avatar_composite_nameInMessageRed, key_avatar_composite_nameInMessageOrange, key_avatar_composite_nameInMessageViolet, key_avatar_composite_nameInMessageGreen, key_avatar_composite_nameInMessageCyan, key_avatar_composite_nameInMessageBlue, key_avatar_composite_nameInMessagePink};
-    public static int[] keys_avatar_composite_nameInMessage2 = {key_avatar_composite_nameInMessageRed2, key_avatar_composite_nameInMessageOrange2, key_avatar_composite_nameInMessageViolet2, key_avatar_composite_nameInMessageGreen2, key_avatar_composite_nameInMessageCyan2, key_avatar_composite_nameInMessageBlue2, key_avatar_composite_nameInMessagePink2};
-
     public static final int key_actionBarDefault = colorsCount++;
     public static final int key_actionBarDefaultSelector = colorsCount++;
     public static final int key_actionBarWhiteSelector = colorsCount++;
@@ -4414,12 +4398,6 @@ public class Theme {
         }
         for (int i = 0; i < keys_avatar_nameInMessage.length; i++) {
             themeAccentExclusionKeys.add(keys_avatar_nameInMessage[i]);
-        }
-        for (int i = 0; i < keys_avatar_composite_nameInMessage.length; i++) {
-            themeAccentExclusionKeys.add(keys_avatar_composite_nameInMessage[i]);
-        }
-        for (int i = 0; i < keys_avatar_composite_nameInMessage2.length; i++) {
-            themeAccentExclusionKeys.add(keys_avatar_composite_nameInMessage2[i]);
         }
         for (int i = 0; i < keys_colors.length; i++) {
             themeAccentExclusionKeys.add(keys_colors[i]);

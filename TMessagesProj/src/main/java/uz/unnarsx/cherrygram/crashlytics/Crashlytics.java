@@ -97,7 +97,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
     }
 
     public static String getCrashReportMessage() {
-        return getReportMessage() + "\n" +
+        return getReportMessage() + "\n\n" +
                 "Crash Date: " + LocaleController.getInstance().formatterStats.format(System.currentTimeMillis()) +
                 "\n\n#crash";
     }
@@ -105,29 +105,29 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
     public static String getReportMessage() {
         String CameraName;
         switch (CherrygramConfig.INSTANCE.getCameraType()) {
-            case 0:
-                CameraName = "Tg Camera";
+            case CherrygramConfig.TELEGRAM_CAMERA:
+                CameraName = "Telegram Camera";
                 break;
-            case 1:
+            case CherrygramConfig.CAMERA_X:
                 CameraName = "CameraX";
                 break;
-            case 2:
+            case CherrygramConfig.SYSTEM_CAMERA:
                 CameraName = "System Camera";
                 break;
             default:
                 CameraName = "Unknown";
         }
-        return  "Steps to reproduce\n" +
+        return  "Steps to reproduce:\n" +
                 "Write here the steps to reproduce\n\n" +
-                "Details\n"+
-                "App Version: " + BuildConfig.VERSION_NAME_CHERRY + " (" + CherrygramExtras.INSTANCE.getAbiCode() + ")\n" +
-                "Base Version: " + BuildVars.BUILD_VERSION_STRING + " (" + BuildVars.BUILD_VERSION + ")\n" +
-                "Device: " + AndroidUtilities.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + "\n" +
-                "OS Version: " + Build.VERSION.RELEASE + "\n" +
-                "Google Play Services: " + ApplicationLoader.hasPlayServices + "\n" +
-                "Performance Class: " + getPerformanceClassString() + "\n" +
-                "Locale: " + LocaleController.getSystemLocaleStringIso639() + "\n" +
-                "Camera: " + CameraName;
+                "Details:\n"+
+                "• Cherrygram Version: " + CherrygramExtras.INSTANCE.getCG_VERSION() + " (" + CherrygramExtras.INSTANCE.getAbiCode() + ")\n" +
+                "• Telegram Version: " + BuildVars.BUILD_VERSION_STRING + " (" + BuildVars.BUILD_VERSION + ")\n" +
+                "• Device: " + AndroidUtilities.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + "\n" +
+                "• OS Version: " + Build.VERSION.RELEASE + "\n" +
+                "• Camera: " + CameraName + "\n" +
+                "• Performance Class: " + getPerformanceClassString() + "\n" +
+                "• Google Play Services: " + ApplicationLoader.hasPlayServices + "\n" +
+                "• Locale: " + LocaleController.getSystemLocaleStringIso639();
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

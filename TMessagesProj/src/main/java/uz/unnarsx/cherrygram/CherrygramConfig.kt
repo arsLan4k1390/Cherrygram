@@ -2,10 +2,7 @@ package uz.unnarsx.cherrygram
 
 import android.app.Activity
 import android.content.SharedPreferences
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import kotlinx.coroutines.*
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
@@ -14,15 +11,14 @@ import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
 import uz.unnarsx.cherrygram.extras.CherrygramExtras
-import uz.unnarsx.cherrygram.extras.LocalVerifications
-import uz.unnarsx.cherrygram.helpers.AnalyticsHelper
+import uz.unnarsx.cherrygram.helpers.LocalVerificationsHelper
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
-import uz.unnarsx.cherrygram.stickers.StickersIDsDownloader
+import uz.unnarsx.cherrygram.helpers.StickersIDsHelper
 import uz.unnarsx.cherrygram.ui.icons.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.ui.icons.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.ui.icons.icon_replaces.SolarIconReplace
@@ -33,32 +29,11 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
-    val listener = OnSharedPreferenceChangeListener { preferences: SharedPreferences?, key: String? ->
-        val map = HashMap<String, String?>(1)
-        map["key"] = key
-        if (appcenterAnalytics) {
-            AnalyticsHelper.trackEvent("Cherry config changed", map)
-        }
-
-        if (googleAnalytics) {
-            try {
-                val bundle = Bundle()
-                bundle.putString("key", key)
-                FirebaseAnalyticsHelper.trackEvent("cherry_config_changed", bundle)
-//                Toast.makeText(ApplicationLoader.applicationContext, bundle.toString(), Toast.LENGTH_SHORT).show()
-            } catch (e: Exception) {
-                e.printStackTrace()
-//                Toast.makeText(ApplicationLoader.applicationContext, "error", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     fun putBoolean(key: String, value: Boolean) {
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
         val editor = preferences.edit()
         editor.putBoolean(key, value)
         editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
     fun putStringForUserPrefs(key: String, value: String) {
@@ -66,7 +41,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         val editor = preferences.edit()
         editor.putString(key, value)
         editor.apply()
-        preferences.registerOnSharedPreferenceChangeListener(listener)
     }
 
     // General Settings
@@ -80,7 +54,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
     var hidePhoneNumber by sharedPreferences.boolean("AP_HideUserPhone", false)
     var showId by sharedPreferences.boolean("AP_ShowID", false)
-    var showDc by sharedPreferences.boolean("AP_ShowDC", false)
     //Animations and Premium Features
     var hideStories by sharedPreferences.boolean("CP_HideStories", false)
     var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
@@ -249,6 +222,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_ShowReply", showReply)
     }
 
+    var showCopyPhoto by sharedPreferences.boolean("CP_ShowCopyPhoto", true)
+    fun toggleShowCopyPhoto() {
+        showCopyPhoto = !showCopyPhoto
+        putBoolean("CP_ShowCopyPhoto", showCopyPhoto)
+    }
+
     var showClearFromCache by sharedPreferences.boolean("CP_ShowClearFromCache", true)
     fun toggleShowClearFromCache() {
         showClearFromCache = !showClearFromCache
@@ -374,12 +353,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_CameraXOptimizedMode", useCameraXOptimizedMode)
     }
 
-    var reduceCameraXLatency by sharedPreferences.boolean("CP_ReduceCameraXLatency", false)
-    fun toggleReduceCameraXLatency() {
-        reduceCameraXLatency = !reduceCameraXLatency
-        putBoolean("CP_ReduceCameraXLatency", reduceCameraXLatency)
-    }
-
     var cameraResolution by sharedPreferences.int("CP_CameraResolution", -1)
     //Camera
     var disableAttachCamera by sharedPreferences.boolean("CP_DisableCam", false)
@@ -403,7 +376,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     // Privacy
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
-    var appcenterAnalytics by sharedPreferences.boolean("SP_AppCenterAnalytics", !ApplicationLoader.checkPlayServices())
     var googleAnalytics by sharedPreferences.boolean("SP_GoogleAnalytics", ApplicationLoader.checkPlayServices())
 
     // Experimental
@@ -501,11 +473,11 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     init {
         launch(Dispatchers.IO) {
             if (blockStickers) {
-                StickersIDsDownloader.getStickerSetIDs()
+                StickersIDsHelper.getStickerSetIDs()
                 CherrygramExtras.downloadCherrygramLogo(ApplicationLoader.applicationContext)
             }
             delay(2000)
-            if (googleAnalytics) {
+            if (googleAnalytics && ApplicationLoader.checkPlayServices()) {
                 try {
                     FirebaseAnalyticsHelper.start(ApplicationLoader.applicationContext)
                     val bundle = Bundle()
@@ -532,11 +504,11 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     }
 
     fun isCherryVerified(chat: TLRPC.Chat): Boolean {
-        return LocalVerifications.getVerify().stream().anyMatch { id: Long -> id == chat.id }
+        return LocalVerificationsHelper.getVerify().stream().anyMatch { id: Long -> id == chat.id }
     }
 
     fun isDeleteAllHidden(chat: TLRPC.Chat): Boolean {
-        return LocalVerifications.hideDeleteAll().stream().anyMatch { id: Long -> id == chat.id }
+        return LocalVerificationsHelper.hideDeleteAll().stream().anyMatch { id: Long -> id == chat.id }
     }
 
 }

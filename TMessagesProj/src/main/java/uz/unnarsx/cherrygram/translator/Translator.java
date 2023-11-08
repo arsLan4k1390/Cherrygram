@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.PopupHelper;
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class Translator {
 

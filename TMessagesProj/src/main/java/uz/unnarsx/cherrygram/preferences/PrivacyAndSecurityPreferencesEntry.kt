@@ -1,10 +1,7 @@
 package uz.unnarsx.cherrygram.preferences
 
-import android.app.Activity
-import android.content.SharedPreferences
 import android.os.Environment
 import android.widget.Toast
-import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
@@ -20,9 +17,7 @@ import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
 import java.io.File
 
 class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
-    val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("SP_Category_PrivacyAndSecurity", R.string.SP_Category_PrivacyAndSecurity)) {
-        sharedPreferences.registerOnSharedPreferenceChangeListener(CherrygramConfig.listener)
         category(LocaleController.getString("SP_Header_Privacy", R.string.SP_Header_Privacy)) {
             switch {
                 title = LocaleController.getString("AS_NoProxyPromo", R.string.SP_NoProxyPromo)
@@ -42,17 +37,6 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.googleAnalytics
                 }) {
                     CherrygramConfig.googleAnalytics = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            switch {
-                title = LocaleController.getString("SP_AppCenterAnalytics", R.string.SP_AppCenterAnalytics)
-                description = LocaleController.getString("SP_AppCenterAnalytics_Desc", R.string.SP_AppCenterAnalytics_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.appcenterAnalytics
-                }) {
-                    CherrygramConfig.appcenterAnalytics = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }

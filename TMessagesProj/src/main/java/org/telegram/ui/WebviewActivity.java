@@ -18,6 +18,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
@@ -26,6 +27,7 @@ import android.view.View;
 import android.view.ViewParent;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -219,6 +221,10 @@ public class WebviewActivity extends BaseFragment {
             webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         }
 
+        if (Build.VERSION.SDK_INT >= 17) {
+            webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        }
+
         if (Build.VERSION.SDK_INT >= 21) {
             webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
             CookieManager cookieManager = CookieManager.getInstance();
@@ -227,6 +233,13 @@ public class WebviewActivity extends BaseFragment {
                 webView.addJavascriptInterface(new TelegramWebviewProxy(), "TelegramWebviewProxy");
             }
         }
+
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public Bitmap getDefaultVideoPoster() {
+                return Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
+            }
+        });
 
         webView.setWebViewClient(new WebViewClient() {
 

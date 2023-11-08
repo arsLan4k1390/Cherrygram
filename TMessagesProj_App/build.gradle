@@ -9,7 +9,7 @@ configurations {
     compile.exclude module: 'support-v4'
 }
 
-configurations.all {
+configurations.configureEach {
     exclude group: 'com.google.firebase', module: 'firebase-core'
     exclude group: 'androidx.recyclerview', module: 'recyclerview'
 }
@@ -27,8 +27,8 @@ dependencies {
 ext.abiCodes = ['universal': 0, 'armeabi-v7a': 1, 'arm64-v8a': 5, x86: 2, x86_64: 6]
 
 android {
-    compileSdkVersion 34
-    buildToolsVersion '34.0.0'
+    compileSdk 34
+    buildToolsVersion = '34.0.0'
 
     namespace 'org.telegram.messenger.regular'
     defaultConfig.applicationId = APP_PACKAGE
@@ -89,11 +89,6 @@ android {
             multiDexEnabled true
             proguardFiles '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
-            optimization {
-                keepRules {
-                    ignoreExternalDependencies 'com.microsoft.appcenter:appcenter'
-                }
-            }
         }
     }
 
@@ -105,7 +100,7 @@ android {
         manifest.srcFile '../TMessagesProj/config/release/AndroidManifest.xml'
     }
 
-    flavorDimensions "minApi"
+    flavorDimensions = ["minApi"]
 
     productFlavors {
         bundleAfat {
@@ -149,8 +144,8 @@ android {
 
     defaultConfig.versionCode = Integer.parseInt(APP_VERSION_CODE)
 
-    applicationVariants.all { variant ->
-        variant.outputs.all { output ->
+    applicationVariants.configureEach { variant ->
+        variant.outputs.configureEach { output ->
             def abi = output.getFilter('ABI')
             if (abi == null) abi = 'universal'
             outputFileName = "Cherrygram-${APP_VERSION_CHERRY}-TG-${defaultConfig.versionName}-${abi}.apk"

@@ -49,6 +49,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Jump to the beginning of any chat,
 - Delete all OWN messages from groups,
 - "Remove file from cache" feature for files in chat,
+- Copying photos to clipboard,
 - Stickers downloader,
 - Messages history from any user and channel in any chat,
 - Select messages in chat between message A and message B,

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelTitle">Subscribe to the official channel</string>
+    <string name="CG_FollowChannelInfo">Join our channel to stay up to date with all the news and features of Cherrygram!</string>
+    <string name="CG_DoNotRemindAgain">Don\'t remind again</string>
     <!--Telegram screens-->
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Aceder com Código QR</string>
@@ -22,6 +25,8 @@
     <string name="CG_JumpToBeginning">Para o início</string>
     <string name="CG_DeleteAllFromSelf">Excluir próprias mensagens</string>
     <string name="CG_DeleteAllFromSelfAlert">Atenção! Isto irá **apagar todas as suas mensagens*** neste chat para **todos** os participantes.</string>
+    <string name="CG_DeleteAllFromSelfAlertBefore">Aviso! Isto irá **apagar todas as mensagens enviadas por ti antes de %s** neste chat para **todos** os participantes.</string>
+    <string name="CG_DeleteAllFromSelfBefore">Antes...</string>
     <string name="CG_DeleteAllFromSelfAdmin">Com direitos de administrador</string>
     <string name="CG_DeleteAllFromSelfDone">Todas as suas mensagens foram excluídas</string>
     <string name="CG_ClearFromCache">Limpar da Cache</string>
@@ -56,9 +61,16 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CG_CopyReportDetails">Copiar Detalhes do Relatório</string>
     <string name="CG_ReportDetailsCopied">Detalhes de falhas copiados para o Clipboard.</string>
     <string name="CG_TranslationLanguage">Idioma de tradução</string>
+    <string name="CG_CopyPhoto">Copy Photo</string>
+    <string name="CG_PhotoCopied">Photo copied to clipboard.</string>
     <string name="CG_SaveSticker">Guardar autocolante</string>
-    <string name="CG_FailedToSaveSticker">Falha em guardar o autocolante. O autocolante pode ainda não ter sido carregado.</string>
     <string name="CG_StickerSavedHint">Autocolante guardado em transferências</string>
+    <string name="CG_CopySetId">Copiar ID do conjunto</string>
+    <string name="CG_ExportSettings">Exportar Configurações</string>
+    <string name="CG_ImportSettings">Importar Configurações</string>
+    <string name="CG_ImportSettingsAlert">Substituir as configurações? A importação de configurações de fontes desconhecidas pode fazer com que a aplicação não funcione.</string>
+    <string name="CG_OpenStickerPack">Tap to get the sticker</string>
+    <string name="CG_OpenEmojiPack">Tap to get the emoji</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -85,21 +97,28 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_ChangeIcon_Default">Por defeito</string>
     <string name="AP_ChangeIcon_Dark">Escuro</string>
     <string name="AP_ChangeIcon_White">Branco</string>
+    <string name="AP_ChangeIcon_Laguna">Laguna</string>
     <string name="AP_ChangeIcon_Green">Verde</string>
+    <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
     <string name="AP_ChangeIcon_Sunset">Pôr do sol</string>
     <string name="AP_ChangeIcon_Sunrise">Nascer do Sol</string>
     <string name="AP_IconReplacement_VKUI">Ícones VKUI</string>
     <string name="AP_IconReplacement_Solar">Ícones solares por @Design480</string>
     <string name="AP_IconReplacement_Default">Por defeito</string>
+    <string name="AP_OneUI_Switch_Style">Estilo do interrutor OneUI</string>
     <string name="AP_SystemEmoji">Utilizar os emojis do sistema</string>
+    <string name="AP_ShowPencilIcon">Ícone de lápis para mensagens editadas</string>
     <string name="AP_CenterTitle">Centralizar título na barra de ação</string>
-    <string name="AP_OverrideHeader">Substituir cor do cabeçalho</string>
-    <string name="AP_OverrideHeader_Desc">Funciona apenas no tema escuro</string>
+    <string name="AP_OverrideHeader">Substituir a cor dos cabeçalhos</string>
+    <string name="AP_OverrideHeader_Desc">Os cabeçalhos terão a mesma cor que o fundo principal</string>
+    <string name="AP_DisableDividers">Desativar separadores</string>
     <string name="AP_ToolBarShadow">Desativar a sombra da barra de ferramentas</string>
     <string name="AP_SystemFonts">Utilizar fontes do sistema</string>
     <string name="CP_Snowflakes_Header">Flocos de neve</string>
     <string name="CP_PremAndAnim_Header">Animações e Recursos Premium</string>
+    <string name="CP_HideStories">Ocultar Stories</string>
     <string name="CP_DisableAnimAvatars">Desativar avatares animados</string>
+    <string name="CP_DisableReplyBackground">Disable replies background</string>
     <string name="CP_DisableReactionsOverlay">Desativar sobreposição de reações</string>
     <string name="CP_DisableReactionsOverlay_Desc">Isto irá desativar a sobreposição de popups com as reações disponíveis</string>
     <string name="CP_DisableReactionAnim">Desativar animação de reação</string>
@@ -119,6 +138,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_Tab_Style_Rounded">Arredondado</string>
     <string name="AP_Tab_Style_Text">Text</string>
     <string name="AP_Tab_Style_Pills">Comprimidos</string>
+    <string name="AP_Tab_Style_Stroke">Adicionar traço</string>
     <string name="AP_DrawerCategory">Gaveta</string>
     <string name="AP_DrawerPreferences">Preferências de gaveta</string>
     <string name="AP_DrawerAvatar">Foto de perfil como fundo de gaveta</string>
@@ -133,8 +153,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_HideUserPhone">Ocultar o seu número de telefone</string>
     <string name="AP_HideUserPhoneSummary">na gaveta e nas definições</string>
     <string name="AP_MutualContacts_Description">Este é um contacto mútuo.</string>
-    <string name="AP_ShowID">Mostrar ID no perfil</string>
-    <string name="AP_ShowDC">Mostrar DC no perfil</string>
+    <string name="AP_ShowID">Show ID and DC in profile</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Conversas</string>
@@ -142,6 +161,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_BlockSomeSets">Bloquear alguns autocolantes</string>
     <string name="CP_BlockSomeSets_Desc">Alguns autocolantes que forçam a colisão da aplicação serão substituídos pelo logótipo do Cherrygram. \n O ficheiro \"Logótipo do Cherrygram\" será descarregado após ativar a funcionalidade e reiniciar a aplicação.</string>
     <string name="CP_TimeOnStick">Ocultar o tempo em autocolantes no chat</string>
+    <string name="CP_MessageMenu">Menu de mensagens</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de conversas não lidas</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Ativar o contador de conversas não lidas no botão de trás no chat aberto</string>
     <string name="CP_NoRounding">Desativar arredondamento numérico</string>
@@ -149,7 +169,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_DeleteForAll_Desc">Caixa de seleção será marcada automaticamente ao excluir mensagens.</string>
     <string name="CP_ConfirmCalls">Perguntar antes de ligar</string>
     <string name="CP_ForwardMsgDate">Mostrar data da mensagem encaminhada</string>
-    <string name="CP_ShowSeconds">Mostrar segundos na data e hora</string>
+    <string name="CP_ShowSeconds">Formatar a hora com segundos</string>
     <string name="CP_LeftBottomButtonAction">Ação do botão esquerdo</string>
     <string name="CP_DoubleTapAction">Ação de duplo toque</string>
     <string name="CP_DisableSwipeToNext">Desativar transição para o próximo canal</string>
@@ -168,6 +188,9 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_AutoPauseVideo_Desc">Quando bloquear a tela ou alternar para plano de fundo</string>
     <string name="CP_DisableVibration">Desativar a vibração</string>
     <string name="CP_Header_Notification">Notificações</string>
+    <string name="CP_NotificationSound">Som de notificação</string>
+    <string name="CP_VibrateInChats">Vibração no chat</string>
+    <string name="CP_VibrateInChats_Desc">Faça uma breve vibração quando receber uma mensagem nos chats</string>
     <string name="CP_SilenceNonContacts">Silenciar não-contatos</string>
     <string name="CP_SilenceNonContacts_Desc">Se ativado, as notificações com som virão apenas dos contactos. Pode adicionar uma pessoa aos seus contactos mesmo sem um número de telefone, faça-o no seu perfil</string>
     <!--Chats Preferences-->
@@ -179,8 +202,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_CameraXDesc">CameraX só é suportado em <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, efeitos e suporte de lentes depende do seu fabricante.</string>
     <string name="CP_PerformanceMode">Modo de desempenho</string>
     <string name="CP_PerformanceModeDesc">A qualidade da CameraX será reduzida em favor do desempenho</string>
-    <string name="CP_ZeroShutterLag">Sem atraso no obturador</string>
-    <string name="CP_ZeroShutterLagDesc">Minimizar a latência ao tirar fotografias, capturando rapidamente várias molduras antes e após premir o botão do obturador.</string>
     <string name="CP_CameraQuality">Qualidade da Câmara</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Acessar diretamente a câmara do sistema (não aplicável às mensagens de vídeo).</string>
@@ -196,9 +217,16 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
+    <string name="EP_NavigationAnimation">Animação de navegação</string>
+    <string name="EP_NavigationAnimationSpring">Primavera</string>
+    <string name="EP_NavigationAnimationBezier">Clássico</string>
+    <string name="EP_NavigationAnimationCrossfading">Efeito crossfading</string>
     <string name="CG_ResidentNotification">Mostrar uma notificação persistente</string>
     <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
     <string name="EP_ShowRPCError">Torrar todos os erros RPC</string>
+    <string name="EP_CustomChat">Custom chat for Saved Messages</string>
+    <string name="EP_CustomChat_Desc">Set an ID from another chat/group/channel to forward messages there (button in action bar, message menu or double tap)</string>
+    <string name="EP_CustomChatNotFound">Chat not found!</string>
     <string name="EP_Network">Rede</string>
     <string name="EP_DownloadSpeedBoost">Otimizar velocidade de download</string>
     <string name="EP_DownloadSpeedBoostNone">Desligado</string>
@@ -208,10 +236,10 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <string name="EP_SlowNetworkMode">Mostrar modo de rede</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
+    <string name="SP_Category_PrivacyAndSecurity">Privacidade e Segurança</string>
     <string name="SP_Header_Privacy">Privacidade</string>
     <string name="SP_NoProxyPromo">Não mostrar patrocinador proxy</string>
-    <string name="SP_AppCenterAnalytics_Desc">Ao habilitar isso, todas as falhas e estatísticas do aplicativo serão relatadas para \"appcenter.ms\" para análise posterior pelo desenvolvedor.</string>
-    <string name="SP_GoogleAnalytics_Desc">Ao habilitar isso, todas as falhas e estatísticas do aplicativo serão relatadas para \"console.firebase.google.com\" para análise posterior pelo desenvolvedor.</string>
+    <string name="SP_GoogleAnalytics_Desc">Ao ativar esta opção, todas as falhas e estatísticas da aplicação serão comunicadas a \"console.firebase.google.com\" para análise posterior pelo programador.</string>
     <string name="SP_CleanOld">Remover cache antiga (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Removido com sucesso</string>
     <string name="SP_Category_Account">Conta</string>

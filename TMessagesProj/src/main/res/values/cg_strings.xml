@@ -68,8 +68,9 @@
     <string name="CG_CopyReportDetails">Copy Report Details</string>
     <string name="CG_ReportDetailsCopied">Report details copied to clipboard.</string>
     <string name="CG_TranslationLanguage">Translation Language</string>
+    <string name="CG_CopyPhoto">Copy Photo</string>
+    <string name="CG_PhotoCopied">Photo copied to clipboard.</string>
     <string name="CG_SaveSticker">Save sticker</string>
-    <string name="CG_FailedToSaveSticker">Failed to save sticker. The sticker may have not loaded yet.</string>
     <string name="CG_StickerSavedHint">Sticker saved to downloads</string>
     <string name="CG_CopySetId">Copy set ID</string>
     <string name="CG_ExportSettings">Export settings</string>
@@ -173,8 +174,7 @@
     <string name="AP_HideUserPhone">Hide your phone number</string>
     <string name="AP_HideUserPhoneSummary">in drawer and settings</string>
     <string name="AP_MutualContacts_Description">This is a mutual contact.</string>
-    <string name="AP_ShowID">Show ID in profile</string>
-    <string name="AP_ShowDC">Show DC in profile</string>
+    <string name="AP_ShowID">Show ID and DC in profile</string>
     <!--Appearance Preferences-->
 
     <!--Chats Preferences-->
@@ -232,8 +232,6 @@
     <string name="CP_CameraXDesc">CameraX is only supported on <![CDATA[<a href="https://developer.android.com/training/camerax/devices">selected devices</a>]]>, effects and lenses support depends on your manufacturer.</string>
     <string name="CP_PerformanceMode">Performance Mode</string>
     <string name="CP_PerformanceModeDesc">CameraX\'s quality will be reduced in favor of performance</string>
-    <string name="CP_ZeroShutterLag">Zero-Shutter Lag</string>
-    <string name="CP_ZeroShutterLagDesc">Minimize latency when taking photos by capturing multiple frames quickly before and after the shutter button is pressed.</string>
     <string name="CP_CameraQuality">Camera Quality</string>
     <string name="CP_CameraTypeSystem">System</string>
     <string name="CP_SystemCameraDesc">Access directly the system camera (not applicable for video messages).</string>
@@ -271,8 +269,6 @@
     <string name="SP_Category_PrivacyAndSecurity">Privacy and Security</string>
     <string name="SP_Header_Privacy">Privacy</string>
     <string name="SP_NoProxyPromo">Don\'t show proxy sponsor</string>
-    <string name="SP_AppCenterAnalytics" translatable="false">Microsoft AppCenter</string>
-    <string name="SP_AppCenterAnalytics_Desc">By enabling this, all application crashes and statistics will be reported to \"appcenter.ms\" for further review by the developer.</string>
     <string name="SP_GoogleAnalytics" translatable="false">Google Analytics</string>
     <string name="SP_GoogleAnalytics_Desc">By enabling this, all application crashes and statistics will be reported to \"console.firebase.google.com\" for further review by the developer.</string>
 

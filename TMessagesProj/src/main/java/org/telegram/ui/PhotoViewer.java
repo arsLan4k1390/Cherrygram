@@ -7696,7 +7696,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         }
 
         if (usedSurfaceView) {
-            videoPlayer.player.setVideoTextureView(null);
+            if (videoPlayer.player != null) {
+                videoPlayer.player.setVideoTextureView(null);
+            }
             videoPlayer.setSurfaceView(videoSurfaceView);
             videoSurfaceView.setVisibility(View.INVISIBLE);
             waitingForFirstTextureUpload = 2;
@@ -11155,7 +11157,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 if (location == null) {
                     return null;
                 }
-                if (videoLocation != location) {
+                if (videoLocation != null && videoLocation != location) {
                     return videoLocation.location.volume_id + "_" + videoLocation.location.local_id + ".mp4";
                 } else {
                     return location.location.volume_id + "_" + location.location.local_id + ".jpg";

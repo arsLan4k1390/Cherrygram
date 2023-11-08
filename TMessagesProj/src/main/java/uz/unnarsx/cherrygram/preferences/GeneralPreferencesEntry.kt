@@ -1,9 +1,6 @@
 package uz.unnarsx.cherrygram.preferences
 
-import android.app.Activity
-import android.content.SharedPreferences
 import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
@@ -15,9 +12,7 @@ import uz.unnarsx.cherrygram.ui.tgkit.preference.switch
 import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
 
 class GeneralPreferencesEntry : BasePreferencesEntry {
-    val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_General", R.string.AP_Header_General)) {
-        sharedPreferences.registerOnSharedPreferenceChangeListener(CherrygramConfig.listener)
         category(LocaleController.getString("AP_Header_General", R.string.AP_Header_General)) {
             switch {
                 title = LocaleController.getString("AS_NoRounding", R.string.CP_NoRounding)
@@ -97,15 +92,6 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.showId
                 }) {
                     CherrygramConfig.showId = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            switch {
-                title = LocaleController.getString("AP_ShowDC", R.string.AP_ShowDC)
-                contract({
-                    return@contract CherrygramConfig.showDc
-                }) {
-                    CherrygramConfig.showDc = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }

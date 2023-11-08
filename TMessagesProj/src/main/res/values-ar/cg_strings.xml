@@ -51,7 +51,6 @@
     <string name="CG_ReportDetailsCopied">تم نسخ تفاصيل التقرير إلى الحافظة.</string>
     <string name="CG_TranslationLanguage">لغة الترجمة</string>
     <string name="CG_SaveSticker">حفظ الملصق</string>
-    <string name="CG_FailedToSaveSticker">خطأ في حفظ الملصف. ربما لم يتم تحميل الملصق بعد.</string>
     <string name="CG_StickerSavedHint">تم حفظ الملصق في التنزيلات</string>
     <!--Misc-->
     <!--Telegram screens-->
@@ -126,7 +125,6 @@
     <string name="AP_HideUserPhoneSummary">في الشريط الجانبي والإعدادات</string>
     <string name="AP_MutualContacts_Description">هذا هو جهات الاتصال المتبادلة.</string>
     <string name="AP_ShowID">إظهار ID في الملف الشخصي</string>
-    <string name="AP_ShowDC">عرض DC في الملف الشخصي</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">المحادثات</string>
@@ -195,7 +193,6 @@
     <!--Security Preferences-->
     <string name="SP_Header_Privacy">الخصوصية</string>
     <string name="SP_NoProxyPromo">لا تظهر راعي الوكيل (البروكسي)</string>
-    <string name="SP_AppCenterAnalytics_Desc">بتمكين هذا، سيتم إبلاغ جميع تعطل التطبيق والإحصاءات إلى \"appcenter.ms\" لمزيد من المراجعة من قبل المطور.</string>
     <string name="SP_GoogleAnalytics_Desc">بتمكين هذا، سيتم إبلاغ جميع تعطل التطبيق والإحصاءات إلى \"console.firebase.google.com\" لمزيد من المراجعة من قبل المطور.</string>
     <string name="SP_CleanOld">إزالة ذاكرة التخزين المؤقت القديمة (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">تمت إزالته بنجاح</string>

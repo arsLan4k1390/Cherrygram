@@ -53,7 +53,6 @@
     <string name="CG_ReportDetailsCopied">Detalles del informe copiados al portapapeles.</string>
     <string name="CG_TranslationLanguage">Idioma de traducción</string>
     <string name="CG_SaveSticker">Guardar pegatina</string>
-    <string name="CG_FailedToSaveSticker">No se ha podido guardar la pegatina. Es posible que la pegatina no se haya cargado todavía.</string>
     <string name="CG_StickerSavedHint">Pegatina guardada en descargas</string>
     <!--Misc-->
     <!--Telegram screens-->
@@ -130,7 +129,6 @@
     <string name="AP_HideUserPhoneSummary">en cajón y ajustes</string>
     <string name="AP_MutualContacts_Description">Este es un contacto mutuo.</string>
     <string name="AP_ShowID">Mostrar ID en el perfil</string>
-    <string name="AP_ShowDC">Mostrar DC en el perfil</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
@@ -175,8 +173,6 @@
     <string name="CP_CameraXDesc">CámaraX solo está soportado en <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, el soporte de efectos y lentes depende de su fabricante.</string>
     <string name="CP_PerformanceMode">Modo de rendimiento</string>
     <string name="CP_PerformanceModeDesc">La calidad de CameraX se reducirá en favor del rendimiento</string>
-    <string name="CP_ZeroShutterLag">Cero retardo de obturación</string>
-    <string name="CP_ZeroShutterLagDesc">Minimiza la latencia al tomar fotos capturando múltiples fotogramas rápidamente antes y después de pulsar el botón de obturación.</string>
     <string name="CP_CameraQuality">Calidad de la cámara</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Accede directamente a la cámara del sistema (no aplica para videomensajes).</string>
@@ -203,7 +199,6 @@
     <!--Security Preferences-->
     <string name="SP_Header_Privacy">Privacidad</string>
     <string name="SP_NoProxyPromo">No mostrar patrocinador del proxy</string>
-    <string name="SP_AppCenterAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"appcenter.ms\" para que el desarrollador las revise.</string>
     <string name="SP_GoogleAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"console.firebase.google.com\" para que el desarrollador las revise.</string>
     <string name="SP_CleanOld">Eliminar caché antigua (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Eliminado con éxito</string>

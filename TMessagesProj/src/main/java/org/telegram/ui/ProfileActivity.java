@@ -224,6 +224,7 @@ import org.telegram.ui.Components.TypefaceSpan;
 import org.telegram.ui.Components.UndoView;
 import org.telegram.ui.Components.VectorAvatarThumbDrawable;
 import org.telegram.ui.Components.voip.VoIPHelper;
+import org.telegram.ui.Stories.ChannelBoostUtilities;
 import org.telegram.ui.Stories.ProfileStoriesView;
 import org.telegram.ui.Stories.StoriesController;
 import org.telegram.ui.Stories.StoriesListPlaceProvider;
@@ -466,6 +467,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private final static int channel_stories = 39;
 
     private final static int restart = 1000;
+    private final static int boost_channel = 1001;
 
     private Rect rect = new Rect();
 
@@ -514,9 +516,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int userInfoRow;
     private int channelInfoRow;
     private int usernameRow;
-    private int idRow;
-    private int dcRow;
-    private String userDcLine;
+    private int idDcRow;
+    private StringBuilder userDcLine;
     private int notificationsDividerRow;
     private int notificationsRow;
     private int notificationsSimpleRow;
@@ -1953,8 +1954,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     Bundle args = new Bundle();
                     args.putLong("user_id", user.id);
                     args.putBoolean("addContact", true);
-                    presentFragment(new ContactAddActivity(args, resourcesProvider));
-                    wentToAddContacts = true;
+                    openAddToContact(user, args);
                 } else if (id == share_contact) {
                     Bundle args = new Bundle();
                     args.putBoolean("onlySelect", true);
@@ -1968,7 +1968,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     Bundle args = new Bundle();
                     args.putLong("user_id", userId);
                     presentFragment(new ContactAddActivity(args, resourcesProvider));
-                    wentToAddContacts = true;
                 } else if (id == delete_contact) {
                     final TLRPC.User user = getMessagesController().getUser(userId);
                     if (user == null || getParentActivity() == null) {
@@ -2151,6 +2150,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     } catch (Exception e) {
                         FileLog.e(e);
                     }
+                } else if (id == boost_channel) {
+                    boostChannel();
                 } else if (id == add_shortcut) {
                     try {
                         long did;
@@ -3161,38 +3162,21 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (getParentActivity() == null) {
                 return;
             }
-            if (position == idRow && (userInfo != null || chatInfo != null)){
+            if (position == idDcRow && (userInfo != null || chatInfo != null)){
                 final long id;
                 if (dialogId != 0) {
-                    id = dialogId;
+                    id = Long.parseLong("-100" + dialogId);
                 } else if (userId != 0) {
                     id = userId;
                 } else {
-                    if (ChatObject.isChannel(currentChat)) {
-                        id = -1000000000000L - chatId;
-                    } else {
-                        id = -chatId;
-                    }
+                    id = Long.parseLong("-100" + chatId);
                 }
                 try {
                     android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
                     android.content.ClipData clip = android.content.ClipData.newPlainText("label", id + "");
                     clipboard.setPrimaryClip(clip);
                     BulletinFactory.of(this).createErrorBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
-                } catch (Exception e) {
-                    FileLog.e(e);
-                }
-                return;
-            }
-            if (position == dcRow && userDcLine != null) {
-                try {
-                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                    android.content.ClipData clip = android.content.ClipData.newPlainText("label", userDcLine);
-                    clipboard.setPrimaryClip(clip);
-                    BulletinFactory.of(this).createErrorBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
-                } catch (Exception e) {
-                    FileLog.e(e);
-                }
+                } catch (Exception ignored) {}
                 return;
             }
             listView.stopScroll();
@@ -3212,8 +3196,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 args.putString("phone", vcardPhone);
                 args.putString("first_name_card", vcardFirstName);
                 args.putString("last_name_card", vcardLastName);
-                presentFragment(new ContactAddActivity(args, resourcesProvider));
-                wentToAddContacts = true;
+                openAddToContact(user, args);
             } else if (position == reportReactionRow) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity(), resourcesProvider);
                 builder.setTitle(LocaleController.getString("ReportReaction", R.string.ReportReaction));
@@ -7577,8 +7560,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         locationRow = -1;
         channelInfoRow = -1;
         usernameRow = -1;
-        idRow = -1;
-        dcRow = -1;
+        idDcRow = -1;
         settingsTimerRow = -1;
         settingsKeyRow = -1;
         notificationsDividerRow = -1;
@@ -7641,9 +7623,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 setUsernameRow = rowCount++;
                 bioRow = rowCount++;
                 if (CherrygramConfig.INSTANCE.getShowId())
-                    idRow = rowCount++;
-                if (userDcLine != null && CherrygramConfig.INSTANCE.getShowDc())
-                    dcRow = rowCount++;
+                    idDcRow = rowCount++;
                 settingsSectionRow = rowCount++;
 
                 Set<String> suggestions = getMessagesController().pendingSuggestions;
@@ -7704,9 +7684,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     usernameRow = rowCount++;
                 }
                 if (CherrygramConfig.INSTANCE.getShowId())
-                    idRow = rowCount++;
-                if (userDcLine != null && CherrygramConfig.INSTANCE.getShowDc())
-                    dcRow = rowCount++;
+                    idDcRow = rowCount++;
                 if (phoneRow != -1 || userInfoRow != -1 || usernameRow != -1) {
                     notificationsDividerRow = rowCount++;
                 }
@@ -7781,9 +7759,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
             }
             if (CherrygramConfig.INSTANCE.getShowId())
-                idRow = rowCount++;
-            if (userDcLine != null && CherrygramConfig.INSTANCE.getShowDc())
-                dcRow = rowCount++;
+                idDcRow = rowCount++;
             if (infoHeaderRow != -1) {
                 notificationsDividerRow = rowCount++;
             }
@@ -8214,9 +8190,19 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
             }
 
+            StringBuilder sb = new StringBuilder();
             if (user.photo != null && user.photo.dc_id > 0) {
-                userDcLine = String.format("DC: %d, %s, %s", user.photo.dc_id, CherrygramExtras.INSTANCE.getDCName(user.photo.dc_id) , CherrygramExtras.INSTANCE.getDCGeo(user.photo.dc_id));
+                sb = new StringBuilder();
+                sb.append("DC: ");
+                sb.append(user.photo.dc_id);
+                sb.append(", ");
+                sb.append(CherrygramExtras.INSTANCE.getDCName(user.photo.dc_id));
+                sb.append(", ");
+                sb.append(CherrygramExtras.INSTANCE.getDCGeo(user.photo.dc_id));
+            } else {
+                sb.append("DC: Unknown");
             }
+            userDcLine = sb;
 
             if (userId == UserConfig.getInstance(currentAccount).clientUserId) {
                 onlineTextView[2].setText(LocaleController.getString("FallbackTooltip", R.string.FallbackTooltip));
@@ -8259,9 +8245,19 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 flagSecure.invalidate();
             }
 
+            StringBuilder sb = new StringBuilder();
             if (chat.photo != null && chat.photo.dc_id > 0) {
-                userDcLine = String.format("DC: %d, %s, %s", chat.photo.dc_id, CherrygramExtras.INSTANCE.getDCName(chat.photo.dc_id) , CherrygramExtras.INSTANCE.getDCGeo(chat.photo.dc_id));
+                sb = new StringBuilder();
+                sb.append("DC: ");
+                sb.append(chat.photo.dc_id);
+                sb.append(", ");
+                sb.append(CherrygramExtras.INSTANCE.getDCName(chat.photo.dc_id));
+                sb.append(", ");
+                sb.append(CherrygramExtras.INSTANCE.getDCGeo(chat.photo.dc_id));
+            } else {
+                sb.append("DC: Unknown");
             }
+            userDcLine = sb;
 
             if (isTopic) {
                 topic = getMessagesController().getTopicsController().findTopic(chatId, topicId);
@@ -8374,11 +8370,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (chat.scam || chat.fake) {
                         nameTextView[a].setRightDrawable(getScamDrawable(chat.scam ? 0 : 1));
                         nameTextViewRightDrawableContentDescription = LocaleController.getString("ScamMessage", R.string.ScamMessage);
-                    } else if (chat.verified) {
+                    } else if (chat.verified || CherrygramConfig.INSTANCE.isCherryVerified(chat)) {
                         nameTextView[a].setRightDrawable(getVerifiedCrossfadeDrawable());
                         nameTextViewRightDrawableContentDescription = LocaleController.getString("AccDescrVerified", R.string.AccDescrVerified);
-                    } else if (CherrygramConfig.INSTANCE.isCherryVerified(chat)) {
-                        nameTextView[a].setRightDrawable(getVerifiedCrossfadeDrawable());
                     } else {
                         nameTextView[a].setRightDrawable(null);
                         nameTextViewRightDrawableContentDescription = null;
@@ -8386,9 +8380,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 } else {
                     if (chat.scam || chat.fake) {
                         nameTextView[a].setRightDrawable(getScamDrawable(chat.scam ? 0 : 1));
-                    } else if (chat.verified) {
-                        nameTextView[a].setRightDrawable(getVerifiedCrossfadeDrawable());
-                    } else if (CherrygramConfig.INSTANCE.isCherryVerified(chat)) {
+                    } else if (chat.verified || CherrygramConfig.INSTANCE.isCherryVerified(chat)) {
                         nameTextView[a].setRightDrawable(getVerifiedCrossfadeDrawable());
                     } else if (getMessagesController().isDialogMuted(-chatId, topicId)) {
                         nameTextView[a].setRightDrawable(getThemedDrawable(Theme.key_drawable_muteIconDrawable));
@@ -8619,6 +8611,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (ChatObject.isPublic(chat)) {
                         otherItem.addSubItem(share, R.drawable.msg_share, LocaleController.getString("BotShare", R.string.BotShare));
                     }
+                    otherItem.addSubItem(boost_channel, R.drawable.boost_channel_solar, LocaleController.getString("BoostChannel", R.string.BoostChannel));
                     if (chatInfo != null && chatInfo.linked_chat_id != 0) {
                         otherItem.addSubItem(view_discussion, R.drawable.msg_discussion, LocaleController.getString("ViewDiscussion", R.string.ViewDiscussion));
                     }
@@ -9615,23 +9608,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                         isFragmentPhoneNumber = phoneNumber != null && phoneNumber.matches("888\\d{8}");
                         detailCell.setTextAndValue(text, LocaleController.getString(isFragmentPhoneNumber ? R.string.AnonymousNumber : R.string.PhoneMobile), false);
-                    } else if (position == idRow) {
-                        final long did;
+                    } else if (position == idDcRow) {
+                        final long id;
                         if (dialogId != 0) {
-                            did = dialogId;
+                            id = Long.parseLong("-100" + dialogId);
                         } else if (userId != 0) {
-                            did = userId;
+                            id = userId;
                         } else {
-                            if (ChatObject.isChannel(currentChat)) {
-                                did = -1000000000000L - chatId;
-                            } else {
-                                did = -chatId;
-                            }
+                            id = Long.parseLong("-100" + chatId);
                         }
-                        detailCell.setTextAndValue(did + "", "ID", false);
-                    } else if (position == dcRow) {
-                        String text = userDcLine;
-                        detailCell.setTextAndValue(text, "DC", false);
+                        detailCell.setTextAndValue("ID: " + id, userDcLine, false);
                     } else if (position == usernameRow) {
                         String text, username = null;
                         CharSequence value;
@@ -10127,7 +10113,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (position == infoHeaderRow || position == membersHeaderRow || position == settingsSectionRow2 ||
                     position == numberSectionRow || position == helpHeaderRow || position == debugHeaderRow) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == idRow || position == dcRow || position == phoneRow || position == locationRow || position == numberRow) {
+            } else if (position == idDcRow || position == phoneRow || position == locationRow || position == numberRow) {
                 return VIEW_TYPE_TEXT_DETAIL;
             } else if (position == usernameRow || position == setUsernameRow) {
                 return VIEW_TYPE_TEXT_DETAIL_MULTILINE;
@@ -11233,8 +11219,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
-    private boolean wentToAddContacts;
-
     @Override
     public void onBecomeFullyVisible() {
         super.onBecomeFullyVisible();
@@ -11248,11 +11232,48 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             combinedDrawable.setIconSize(AndroidUtilities.dp(56), AndroidUtilities.dp(56));
             writeButton.setBackground(combinedDrawable);
         } catch (Exception e) {}
+    }
 
-        if (wentToAddContacts) {
-            updateListAnimated(false);
-            wentToAddContacts = false;
-        }
+    @SuppressLint("NotifyDataSetChanged")
+    private void openAddToContact(TLRPC.User user, Bundle args) {
+        ContactAddActivity contactAddActivity = new ContactAddActivity(args, resourcesProvider);
+        contactAddActivity.setDelegate(() -> {
+            int currentAddToContactsRow = addToContactsRow;
+            if (currentAddToContactsRow >= 0) {
+                if (sharedMediaRow == -1) {
+                    updateRowsIds();
+                    listAdapter.notifyDataSetChanged();
+                } else {
+                    updateListAnimated(false);
+                }
+            }
+
+            if (sharedMediaRow == -1) {
+                if (isInLandscapeMode || AndroidUtilities.isTablet()) {
+                    listView.setPadding(0, AndroidUtilities.dp(88), 0, 0);
+                    expandAnimator.cancel();
+                    expandAnimatorValues[0] = 1f;
+                    expandAnimatorValues[1] = 0f;
+                    setAvatarExpandProgress(1f);
+                    extraHeight = AndroidUtilities.dp(88);
+                } else {
+                    final int actionBarHeight = ActionBar.getCurrentActionBarHeight() + (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0);
+                    int ws = View.MeasureSpec.makeMeasureSpec(listView.getMeasuredWidth(), View.MeasureSpec.EXACTLY);
+                    int hs = View.MeasureSpec.makeMeasureSpec(listView.getMeasuredHeight(), View.MeasureSpec.UNSPECIFIED);
+                    int contentHeight = 0;
+                    for (int i = 0; i < listAdapter.getItemCount(); i++) {
+                        RecyclerView.ViewHolder holder = listAdapter.createViewHolder(null, listAdapter.getItemViewType(i));
+                        listAdapter.onBindViewHolder(holder, i);
+                        holder.itemView.measure(ws, hs);
+                        contentHeight += holder.itemView.getMeasuredHeight();
+                    }
+                    int paddingBottom = Math.max(0, fragmentView.getMeasuredHeight() - (contentHeight + AndroidUtilities.dp(88) + actionBarHeight));
+                    listView.setPadding(0, listView.getPaddingTop(), 0, paddingBottom);
+                }
+            }
+            undoView.showWithAction(dialogId, UndoView.ACTION_CONTACT_ADDED, user);
+        });
+        presentFragment(contactAddActivity);
     }
 
     private boolean isQrNeedVisible() {
@@ -11355,8 +11376,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             put(++pointer, userInfoRow, sparseIntArray);
             put(++pointer, channelInfoRow, sparseIntArray);
             put(++pointer, usernameRow, sparseIntArray);
-            put(++pointer, idRow, sparseIntArray);
-            put(++pointer, dcRow, sparseIntArray);
+            put(++pointer, idDcRow, sparseIntArray);
             put(++pointer, notificationsDividerRow, sparseIntArray);
             put(++pointer, reportDividerRow, sparseIntArray);
             put(++pointer, notificationsRow, sparseIntArray);
@@ -11405,6 +11425,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             color = getThemedColor(Theme.key_actionBarDefault);
         }
         return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
+    private void boostChannel() {
+        Browser.openUrl(getContext(), ChannelBoostUtilities.createLink(currentAccount, getDialogId()));
     }
 
     public String getLink(String username, int topicId) {

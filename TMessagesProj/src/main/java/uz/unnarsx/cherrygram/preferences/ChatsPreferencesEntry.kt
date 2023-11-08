@@ -1,18 +1,15 @@
 package uz.unnarsx.cherrygram.preferences
 
-import android.app.Activity
-import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.view.HapticFeedbackConstants
 import androidx.core.util.Pair
-import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.extras.VibrateUtil
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.ui.dialogs.AlertDialogSwitchHelper
+import uz.unnarsx.cherrygram.ui.dialogs.AlertDialogSwitchers
 import uz.unnarsx.cherrygram.ui.tgkit.preference.category
 import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
 import uz.unnarsx.cherrygram.ui.tgkit.preference.hint
@@ -25,9 +22,7 @@ import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitSliderPreference.TGS
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
 
 class ChatsPreferencesEntry : BasePreferencesEntry {
-    val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {
-        sharedPreferences.registerOnSharedPreferenceChangeListener(CherrygramConfig.listener)
         category(LocaleController.getString("AccDescrStickers", R.string.AccDescrStickers)) {
             switch {
                 title = LocaleController.getString("CP_BlockSomeSets", R.string.CP_BlockSomeSets)
@@ -78,7 +73,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 title = LocaleController.getString("DirectShare", R.string.DirectShare)
                 icon = R.drawable.msg_share
                 listener = TGKitTextIconRow.TGTIListener {
-                    AlertDialogSwitchHelper.showDirectShareAlert(bf)
+                    AlertDialogSwitchers.showDirectShareAlert(bf)
                 }
                 divider = true
             }
@@ -86,7 +81,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 title = LocaleController.getString("CP_MessageMenu", R.string.CP_MessageMenu)
                 icon = R.drawable.msg_list
                 listener = TGKitTextIconRow.TGTIListener {
-                    AlertDialogSwitchHelper.showChatMenuIconsAlert(bf)
+                    AlertDialogSwitchers.showChatMenuIconsAlert(bf)
                 }
                 divider = true
             }

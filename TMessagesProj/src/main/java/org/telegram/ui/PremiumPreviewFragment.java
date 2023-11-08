@@ -922,12 +922,13 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
             }
             final boolean isPremium = UserConfig.getInstance(currentAccount).isPremium();
             final boolean isYearTier = tier.getMonths() == 12;
-            final String price = isYearTier ? tier.getFormattedPricePerYear() : tier.getFormattedPricePerMonth();
+            String price = isYearTier ? tier.getFormattedPricePerYear() : tier.getFormattedPricePerMonth();
             final int resId;
             if (isPremium) {
                 resId = isYearTier ? R.string.UpgradePremiumPerYear : R.string.UpgradePremiumPerMonth;
             } else {
-                resId = isYearTier ? R.string.SubscribeToPremiumPerYear : R.string.SubscribeToPremium;
+                price = tier.getFormattedPricePerMonth();
+                resId = R.string.SubscribeToPremium;
             }
             return LocaleController.formatString(resId, price);
         }

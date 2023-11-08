@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelTitle">Iscriviti al canale ufficiale</string>
+    <string name="CG_FollowChannelInfo">Unisciti al nostro canale per essere aggiornato su tutte le novità e funzionalità di Cherrygram!</string>
+    <string name="CG_DoNotRemindAgain">Non ricordarmelo</string>
     <!--Telegram screens-->
     <!--Sign in screen-->
+    <string name="CG_QRLoginTitle">Login con codice QR</string>
+    <string name="CG_QRLoginMessage">Scansiona QR Code con un altro dispositivo per accedere.</string>
     <string name="CG_TestBackendNumber">Numero di prova</string>
     <string name="CG_TestBackendOn">Questo account si collegherà alla test mode.</string>
     <string name="CG_TestBackendOff">Questo account si connetterà al server di produzione.</string>
@@ -20,6 +25,8 @@
     <string name="CG_JumpToBeginning">Vai all\'inizio</string>
     <string name="CG_DeleteAllFromSelf">Elimina i propri messaggi</string>
     <string name="CG_DeleteAllFromSelfAlert">Attenzione! Questo **eliminerà i tuoi messaggi** da questa chat per **tutti** i partecipanti.</string>
+    <string name="CG_DeleteAllFromSelfAlertBefore">Attenzione! Questo **eliminerà tutti i tuoi messaggi prima di %s** in questa chat per **tutti** i partecipanti.</string>
+    <string name="CG_DeleteAllFromSelfBefore">Prima...</string>
     <string name="CG_DeleteAllFromSelfAdmin">Con i diritti di amministratore</string>
     <string name="CG_DeleteAllFromSelfDone">Tutti i tuoi messaggi sono stati eliminati</string>
     <string name="CG_ClearFromCache">Svuota la cache</string>
@@ -39,7 +46,7 @@
     <string name="LS_EnterPasscode">Inserisci il tuo codice di accesso Cherrygram</string>
     <string name="CG_SwitchBackend">Passerai al server di prova. Per favore non premere OK se non sai cosa stai facendo. È possibile passare al server normale premendo nuovamente \"Cambia backend\" nel menu di debug.</string>
     <string name="CG_Restart">Riavvia l\'applicazione</string>
-    <string name="CG_RestartToApply">Riavvia l\'app per applicare le modifiche.</string>
+    <string name="CG_RestartToApply">Riavvia l\'app per applicare le modifiche</string>
     <string name="CG_PushService">Servizio Cherrygram Push.</string>
     <string name="CG_ForceClean">Svuota forzatamente la cache di Telegram</string>
     <string name="CG_ForceCleanInfo">Usa questo se ti trovi di fronte a \"Calcolare…\" quando cerchi di pulire la cache.\nQuesto eliminerà TUTTO dalla cache - fai attenzione!</string>
@@ -50,9 +57,16 @@
     <string name="CG_CopyReportDetails">Copia dettagli report</string>
     <string name="CG_ReportDetailsCopied">Dettagli report copiati negli appunti.</string>
     <string name="CG_TranslationLanguage">Lingua di traduzione</string>
+    <string name="CG_CopyPhoto">Copy Photo</string>
+    <string name="CG_PhotoCopied">Photo copied to clipboard.</string>
     <string name="CG_SaveSticker">Salva sticker</string>
-    <string name="CG_FailedToSaveSticker">Impossibile salvare l\'adesivo. L\'adesivo potrebbe non essere stato ancora caricato.</string>
     <string name="CG_StickerSavedHint">Sticker salvato nei download</string>
+    <string name="CG_CopySetId">Copia set ID</string>
+    <string name="CG_ExportSettings">Esporta impostazioni</string>
+    <string name="CG_ImportSettings">Importa impostazioni</string>
+    <string name="CG_ImportSettingsAlert">Sovrascrivere le impostazioni\? Importare le impostazioni da fonti sconosciute potrebbe non far funzionare l\'app.</string>
+    <string name="CG_OpenStickerPack">Tocca per salvare lo sticker</string>
+    <string name="CG_OpenEmojiPack">Tocca per salvare l\'emoji</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -79,19 +93,28 @@
     <string name="AP_ChangeIcon_Default">Predefinito</string>
     <string name="AP_ChangeIcon_Dark">Scuro</string>
     <string name="AP_ChangeIcon_White">Bianco</string>
+    <string name="AP_ChangeIcon_Laguna">Laguna</string>
     <string name="AP_ChangeIcon_Green">Verde</string>
+    <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
     <string name="AP_ChangeIcon_Sunset">Tramonto</string>
     <string name="AP_ChangeIcon_Sunrise">Alba</string>
     <string name="AP_IconReplacement_VKUI">Icone VKUI</string>
     <string name="AP_IconReplacement_Solar">Icone solari di @Design480</string>
     <string name="AP_IconReplacement_Default">Predefinito</string>
+    <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
     <string name="AP_SystemEmoji">Usa le emoji di sistema</string>
+    <string name="AP_ShowPencilIcon">Icona della matita per i messaggi modificati</string>
     <string name="AP_CenterTitle">Centra titolo nella barra delle azioni</string>
+    <string name="AP_OverrideHeader">Override headers color</string>
+    <string name="AP_OverrideHeader_Desc">Le intestazioni saranno dello stesso colore dello sfondo principale</string>
+    <string name="AP_DisableDividers">Disabilita divisori</string>
     <string name="AP_ToolBarShadow">Disabilita ombra barra strumenti</string>
     <string name="AP_SystemFonts">Usa il font di sistema</string>
-    <string name="CP_Snowflakes_Header">Fiocchi di neve (riavviare l\'app per applicare)</string>
-    <string name="CP_PremAndAnim_Header">Animazioni e funzionalità Premium (riavvia l\'app per applicare)</string>
+    <string name="CP_Snowflakes_Header">Fiocchi di neve</string>
+    <string name="CP_PremAndAnim_Header">Animazioni e Funzionalità Premium</string>
+    <string name="CP_HideStories">Nascondi storie</string>
     <string name="CP_DisableAnimAvatars">Disabilita avatar animati</string>
+    <string name="CP_DisableReplyBackground">Disable replies background</string>
     <string name="CP_DisableReactionsOverlay">Disabilita sovrapposizione delle reazioni</string>
     <string name="CP_DisableReactionsOverlay_Desc">Questo disabiliterà la sovrapposizione popup con le reazioni disponibili</string>
     <string name="CP_DisableReactionAnim">Disabilita l\'animazione della reazione</string>
@@ -102,7 +125,7 @@
     <string name="CP_DisablePremStickAnim_Desc">Non accadrà nulla se si tocca l\'adesivo premium</string>
     <string name="CP_DisablePremStickAutoPlay">Disabilita l\'autoplay degli adesivi premium</string>
     <string name="CP_DisablePremStickAutoPlay_Desc">L\'animazione degli adesivi Premium non verrà riprodotta automaticamente (la funzione non funzionerà se hai disabilitato i tocchi degli adesivi premium)</string>
-    <string name="CP_Filters_Header">Cartelle (riavviare l\'app per applicare)</string>
+    <string name="CP_Filters_Header">Cartelle</string>
     <string name="AP_FolderNameInHeader">Nome cartella invece di \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Questo cambierà \"Cherrygram\" nella barra delle azioni con il nome della cartella (utile se hai solo icone al posto dei nomi delle cartelle)</string>
     <string name="CP_NewTabs_RemoveAllChats">Nascondi la cartella \"Tutte le chat\"</string>
@@ -111,6 +134,7 @@
     <string name="AP_Tab_Style_Rounded">Arrotondato</string>
     <string name="AP_Tab_Style_Text">Text</string>
     <string name="AP_Tab_Style_Pills">Pillole</string>
+    <string name="AP_Tab_Style_Stroke">Aggiungi stroke</string>
     <string name="AP_DrawerCategory">Drawer</string>
     <string name="AP_DrawerPreferences">Preferenze drawer</string>
     <string name="AP_DrawerAvatar">Foto del profilo come sfondo</string>
@@ -125,8 +149,7 @@
     <string name="AP_HideUserPhone">Nascondi il tuo numero di telefono</string>
     <string name="AP_HideUserPhoneSummary">nel drawer e nelle impostazioni</string>
     <string name="AP_MutualContacts_Description">Questo contatto è reciproco.</string>
-    <string name="AP_ShowID">Mostra ID nel profilo</string>
-    <string name="AP_ShowDC">Mostra DC nel profilo</string>
+    <string name="AP_ShowID">Show ID and DC in profile</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chat</string>
@@ -134,6 +157,7 @@
     <string name="CP_BlockSomeSets">Blocca alcuni adesivi</string>
     <string name="CP_BlockSomeSets_Desc">Alcuni adesivi che forzano il crash dell\'applicazione verranno sostituiti dal logo di Cherrygram. Il file \n\"Cherrygram Logo\" verrà scaricato dopo aver attivato la funzionalità e riavviato l\'app.</string>
     <string name="CP_TimeOnStick">Nascondi orario su sticker in chat</string>
+    <string name="CP_MessageMenu">Menù dei messaggi</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostra contatore chat non lette</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Abilita il contatore delle chat non lette sul pulsante indietro nella chat aperta</string>
     <string name="CP_NoRounding">Disattiva l\'arrotondamento dei numeri</string>
@@ -141,10 +165,12 @@
     <string name="CP_DeleteForAll_Desc">La casella di controllo verrà selezionata automaticamente durante l\'eliminazione dei messaggi.</string>
     <string name="CP_ConfirmCalls">Chiedi prima di chiamare</string>
     <string name="CP_ForwardMsgDate">Mostra la data del messaggio inoltrato</string>
-    <string name="CP_ShowSeconds">Mostra i secondi nell\'orario</string>
+    <string name="CP_ShowSeconds">Formato orario con i secondi</string>
+    <string name="CP_LeftBottomButtonAction">Azione del pulsante sinistro</string>
     <string name="CP_DoubleTapAction">Azione col doppio tocco</string>
     <string name="CP_DisableSwipeToNext">Disabilita la transizione al prossimo canale</string>
     <string name="CP_DisableSwipeToNext_Desc">Disabilita il passaggio al canale successivo quando si scorre su qualsiasi canale</string>
+    <string name="CP_HideMuteUnmuteButton">Nascondere il pulsante inferiore nei canali</string>
     <string name="CP_HideKbdOnScroll">Nascondi la tastiera mentre scorri</string>
     <string name="CP_HideSendAsChannel">Nascondi \"Invia come canale\"</string>
     <string name="CP_Slider_RecentEmojisAmplifier">Contatore emoji recenti (riavvia l\'app per applicare)</string>
@@ -158,6 +184,9 @@
     <string name="CP_AutoPauseVideo_Desc">Quando si blocca lo schermo o passa allo sfondo</string>
     <string name="CP_DisableVibration">Disabilita vibrazione</string>
     <string name="CP_Header_Notification">Notifiche</string>
+    <string name="CP_NotificationSound">Suono di notifica</string>
+    <string name="CP_VibrateInChats">Vibrazione nella chat</string>
+    <string name="CP_VibrateInChats_Desc">Fai una breve vibrazione quando ricevi un messaggio nelle chat</string>
     <string name="CP_SilenceNonContacts">Silenzia i non contatti</string>
     <string name="CP_SilenceNonContacts_Desc">Se abilitata, le notifiche con suono verranno solo dai contatti. Puoi aggiungere una persona ai tuoi contatti anche senza un numero di telefono, puoi farlo nel loro profilo</string>
     <!--Chats Preferences-->
@@ -181,9 +210,16 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Sperimentale</string>
+    <string name="EP_NavigationAnimation">Animazione navigazione</string>
+    <string name="EP_NavigationAnimationSpring">Primavera</string>
+    <string name="EP_NavigationAnimationBezier">Classico</string>
+    <string name="EP_NavigationAnimationCrossfading">Effetto crossfading</string>
     <string name="CG_ResidentNotification">Mostra notifica permanente</string>
     <string name="EP_PhotosSize">Invia foto grandi (2560px)</string>
     <string name="EP_ShowRPCError">Avvisi su tutti gli errori RPC</string>
+    <string name="EP_CustomChat">Chat personalizzata per i Messaggi Salvati</string>
+    <string name="EP_CustomChat_Desc">Imposta un ID di un\'altra chat/gruppo/canale per inoltrare qui i messaggi (tasto nella barra azioni, menù messaggi o facendo doppio tap)</string>
+    <string name="EP_CustomChatNotFound">Chat non trovata!</string>
     <string name="EP_Network">Rete</string>
     <string name="EP_DownloadSpeedBoost">Aumenta velocità di download</string>
     <string name="EP_DownloadSpeedBoostNone">Spegni</string>
@@ -193,10 +229,10 @@
     <string name="EP_SlowNetworkMode">Modalità rete lenta</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
+    <string name="SP_Category_PrivacyAndSecurity">Privacy e sicurezza</string>
     <string name="SP_Header_Privacy">Privacy</string>
     <string name="SP_NoProxyPromo">Non mostrare sponsor proxy</string>
-    <string name="SP_AppCenterAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"appcenter.ms\" para que el desarrollador las revise.</string>
-    <string name="SP_GoogleAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"console.firebase.google.com\" para que el desarrollador las revise.</string>
+    <string name="SP_GoogleAnalytics_Desc">Abilitando questo, tutti i crash dell\'applicazione e le statistiche verranno segnalati a \"console.firebase.google.com\" per futuri controlli dello sviluppatore.</string>
     <string name="SP_CleanOld">Rimuovi la vecchia cache (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Rimosso con successo</string>
     <string name="SP_Category_Account">Account</string>

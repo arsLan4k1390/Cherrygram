@@ -126,9 +126,9 @@ public class BackupHelper {
         mainconfig.add("CP_ConfirmCalls");
         mainconfig.add("AP_HideUserPhone");
         mainconfig.add("AP_ShowID");
-        mainconfig.add("AP_ShowDC");
         mainconfig.add("CP_HideStories");
         mainconfig.add("CP_DisableAnimAvatars");
+        mainconfig.add("CP_DisableReplyBackground");
         mainconfig.add("CP_DisableReactionsOverlay");
         mainconfig.add("CP_DisableReactionAnim");
         mainconfig.add("CP_DisablePremiumStatuses");
@@ -172,6 +172,7 @@ public class BackupHelper {
         mainconfig.add("CP_TimeOnStick");
         mainconfig.add("CP_UsersDrawShareButton");
         mainconfig.add("CP_ShowReply");
+        mainconfig.add("CP_ShowCopyPhoto");
         mainconfig.add("CP_ShowClearFromCache");
         mainconfig.add("CP_ShowForward");
         mainconfig.add("CP_ShowForward_WO_Authorship");
@@ -202,12 +203,11 @@ public class BackupHelper {
         mainconfig.add("CP_SilenceNonContacts");
         mainconfig.add("CP_CameraType");
         mainconfig.add("CP_CameraXOptimizedMode");
-        mainconfig.add("CP_ReduceCameraXLatency");
         mainconfig.add("CP_DisableCam");
         mainconfig.add("CP_RearCam");
         mainconfig.add("CP_CameraAspectRatio");
         mainconfig.add("SP_NoProxyPromo");
-        mainconfig.add("SP_AppCenterAnalytics");
+        mainconfig.add("SP_GoogleAnalytics");
         mainconfig.add("EP_UseLNavigation");
         mainconfig.add("CP_LargePhotos");
         mainconfig.add("CG_ResidentNotification");

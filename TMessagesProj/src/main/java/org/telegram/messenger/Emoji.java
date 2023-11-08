@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.FontHelper;
+import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
 
 public class Emoji {
 

@@ -66,8 +66,9 @@
     <string name="CG_CopyReportDetails">Скопировать детали отчёта</string>
     <string name="CG_ReportDetailsCopied">Детали отчёта скопированы в буфер обмена.</string>
     <string name="CG_TranslationLanguage">Язык перевода</string>
+    <string name="CG_CopyPhoto">Копировать фото</string>
+    <string name="CG_PhotoCopied">Фото скопировано в буфер обмена.</string>
     <string name="CG_SaveSticker">Сохранить стикер</string>
-    <string name="CG_FailedToSaveSticker">Стикер не сохранен. Возможно, он еще не прогрузился.</string>
     <string name="CG_StickerSavedHint">Стикер сохранен в загрузки</string>
     <string name="CG_CopySetId">Скопировать ID набора</string>
     <string name="CG_ExportSettings">Экспорт настроек</string>
@@ -166,8 +167,7 @@
     <string name="AP_HideUserPhone">Скрыть Ваш номер телефона</string>
     <string name="AP_HideUserPhoneSummary">В боковом меню и настройках</string>
     <string name="AP_MutualContacts_Description">Этот контакт является взаимным.</string>
-    <string name="AP_ShowID">Показывать ID в профиле</string>
-    <string name="AP_ShowDC">Показывать DC в профиле</string>
+    <string name="AP_ShowID">Показывать ID и DC в профиле</string>
     <!--Appearance Preferences-->
 
     <!--Chats Preferences-->
@@ -222,8 +222,6 @@
     <string name="CP_CameraXDesc">CameraX поддерживается только на <![CDATA[<a href="https://developer.android.com/training/camerax/devices">выбранных устройствах</a>]]>, эффекты и линзы зависят от Вашего производителя.</string>
     <string name="CP_PerformanceMode">Производительный режим</string>
     <string name="CP_PerformanceModeDesc">Качество CameraX будет снижено в пользу производительности</string>
-    <string name="CP_ZeroShutterLag">Задержка с нулевым затвором</string>
-    <string name="CP_ZeroShutterLagDesc">Минимизируйте задержку при съемке фотографий, быстро снимая несколько кадров до и после нажатия кнопки затвора камеры.</string>
     <string name="CP_CameraQuality">Качество камеры</string>
     <string name="CP_CameraTypeSystem">Системная</string>
     <string name="CP_SystemCameraDesc">Позволяет получить доступ напрямую к системной камере (не применимо к видеосообщениям).</string>
@@ -261,7 +259,6 @@
     <string name="SP_Category_PrivacyAndSecurity">Конфиденциальность и безопасность</string>
     <string name="SP_Header_Privacy">Приватность</string>
     <string name="SP_NoProxyPromo">Не показывать спонсора прокси</string>
-    <string name="SP_AppCenterAnalytics_Desc">Включив это, все сбои приложений (вылеты) и статистика будут отправлены в \"appcenter.ms\" для дальнейшего изучения разработчиком.</string>
     <string name="SP_GoogleAnalytics_Desc">Включив это, все сбои приложений (вылеты) и статистика будут отправлены в \"console.firebase.google.com\" для дальнейшего изучения разработчиком.</string>
 
     <string name="SP_CleanOld">Очистить старый кэш (/sdcard/Telegram)</string>

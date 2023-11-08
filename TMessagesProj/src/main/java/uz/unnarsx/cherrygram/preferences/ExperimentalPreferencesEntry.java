@@ -35,7 +35,7 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
-import uz.unnarsx.cherrygram.helpers.PopupHelper;
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.ui.dialogs.TextFieldAlert;
 
 public class ExperimentalPreferencesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {

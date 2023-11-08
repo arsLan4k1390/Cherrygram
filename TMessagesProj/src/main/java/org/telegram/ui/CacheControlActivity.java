@@ -1648,7 +1648,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             button.setTextColor(Theme.getColor(Theme.key_text_RedRegular));
             button.setEnabled(false);
             var buttonText = button.getText();
-            new CountDownTimer(10000, 100) {
+            new CountDownTimer(5000, 100) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     button.setText(String.format(Locale.getDefault(), "%s (%d)", buttonText, millisUntilFinished / 1000 + 1));

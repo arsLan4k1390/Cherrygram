@@ -3,6 +3,7 @@ package uz.unnarsx.cherrygram.preferences
 import org.telegram.messenger.*
 import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
+import uz.unnarsx.cherrygram.extras.CherrygramExtras
 import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.ui.tgkit.preference.category
 import uz.unnarsx.cherrygram.ui.tgkit.preference.textDetail
@@ -67,8 +68,8 @@ class MainPreferencesEntry : BasePreferencesEntry {
 
             category(LocaleController.getString("AS_Header_About", R.string.CGP_Header_About)) {
                 textDetail {
-                    //title = LocaleController.getString("CG_AppName", R.string.CG_AppName) + " | " + BuildConfig.VERSION_NAME_CHERRY + " " + "("+ CherrygramExtras.getAbiCode() + ")"
-                    title = LocaleController.getString("CG_AppName", R.string.CG_AppName) + " " + BuildConfig.VERSION_NAME_CHERRY + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING + " " + "(" + BuildVars.BUILD_VERSION + ")"
+                    //title = LocaleController.getString("CG_AppName", R.string.CG_AppName) + " | " + CherrygramExtras.CG_VERSION + " " + "("+ CherrygramExtras.getAbiCode() + ")"
+                    title = LocaleController.getString("CG_AppName", R.string.CG_AppName) + " " + CherrygramExtras.CG_VERSION + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING + " " + "(" + BuildVars.BUILD_VERSION + ")"
                     detail = LocaleController.getString("UP_TapToCheckUpdates", R.string.UP_TapToCheckUpdates)
                     listener = TGKitTextDetailRow.TGTDListener {
                         UpdaterBottomSheet(bf.parentActivity, bf, false, null).show()

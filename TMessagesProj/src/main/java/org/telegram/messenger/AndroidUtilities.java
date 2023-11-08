@@ -203,7 +203,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.FontHelper;
+import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
 import uz.unnarsx.cherrygram.utils.PermissionsUtils;
 
 public class AndroidUtilities {
@@ -516,6 +516,35 @@ public class AndroidUtilities {
                     }
                 }, index, index + len, 0);
             }
+        }
+        return spannableStringBuilder;
+    }
+
+    public static SpannableStringBuilder replaceSingleLink(String str, int color) {
+        int startIndex = str.indexOf("**");
+        int endIndex = str.indexOf("**", startIndex + 1);
+        str = str.replace("**", "");
+        int index = -1;
+        int len = 0;
+        if (startIndex >= 0 && endIndex >= 0 && endIndex - startIndex > 2) {
+            len = endIndex - startIndex - 2;
+            index = startIndex;
+        }
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
+        if (index >= 0) {
+            spannableStringBuilder.setSpan(new ClickableSpan() {
+                @Override
+                public void updateDrawState(@NonNull TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(false);
+                    ds.setColor(color);
+                }
+
+                @Override
+                public void onClick(@NonNull View view) {
+
+                }
+            }, index, index + len, 0);
         }
         return spannableStringBuilder;
     }
@@ -2986,6 +3015,9 @@ public class AndroidUtilities {
     }
 
     public static void shakeViewSpring(View view, float shiftDp, Runnable endCallback) {
+        if (view == null) {
+            return;
+        }
         int shift = dp(shiftDp);
         if (view.getTag(R.id.spring_tag) != null) {
             ((SpringAnimation) view.getTag(R.id.spring_tag)).cancel();
@@ -5589,5 +5621,19 @@ public class AndroidUtilities {
             return;
         }
         context.setTheme(Theme.isCurrentThemeDark() && open ? R.style.Theme_TMessages_Dark : R.style.Theme_TMessages);
+    }
+
+    private static Boolean isHonor;
+    public static boolean isHonor() {
+        if (isHonor == null) {
+            try {
+                final String brand = Build.BRAND.toLowerCase();
+                isHonor = brand.contains("huawei") || brand.contains("honor");
+            } catch (Exception e) {
+                FileLog.e(e);
+                isHonor = false;
+            }
+        }
+        return isHonor;
     }
 }

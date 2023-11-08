@@ -49,7 +49,6 @@ import java.io.File;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
-import uz.unnarsx.cherrygram.helpers.AnalyticsHelper;
 
 public class ApplicationLoader extends Application {
 
@@ -262,11 +261,6 @@ public class ApplicationLoader extends Application {
             applicationContext = getApplicationContext();
         } catch (Throwable ignore) {
 
-        }
-
-        if (CherrygramConfig.INSTANCE.getAppcenterAnalytics()) {
-            AnalyticsHelper.start(this);
-            AnalyticsHelper.trackEvent("App start");
         }
 
         super.onCreate();

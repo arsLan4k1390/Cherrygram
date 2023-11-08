@@ -1,9 +1,6 @@
 package uz.unnarsx.cherrygram.preferences
 
-import android.app.Activity
-import android.content.SharedPreferences
 import androidx.core.util.Pair
-import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
@@ -21,9 +18,7 @@ import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
-    val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)) {
-        sharedPreferences.registerOnSharedPreferenceChangeListener(CherrygramConfig.listener)
         category(LocaleController.getString("AP_RedesignCategory", R.string.AP_RedesignCategory)) {
             list {
                 title = LocaleController.getString("AP_IconReplacements", R.string.AP_IconReplacements)

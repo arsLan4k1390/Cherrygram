@@ -99,13 +99,6 @@
 -keep class com.huawei.updatesdk.**{ *; }
 -keep class com.huawei.hms.**{ *; }
 
--keepclassmembernames class com.microsoft.appcenter.AppCenter {
-    private com.microsoft.appcenter.channel.Channel mChannel;
-    private android.os.Handler mHandler;
-}
--keepclassmembers class * implements com.microsoft.appcenter.AppCenterService {
-    public static ** getInstance();
-}
 -keep class com.fasterxml.jackson.**{ *; }
 
 -keep class org.telegram.messenger.voip.* { *; }

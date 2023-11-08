@@ -1,4 +1,4 @@
-package uz.unnarsx.cherrygram.helpers;
+package uz.unnarsx.cherrygram.helpers.ui;
 
 import android.content.Context;
 import android.widget.LinearLayout;

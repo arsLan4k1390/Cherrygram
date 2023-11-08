@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelTitle">Subscribe to the official channel</string>
+    <string name="CG_FollowChannelInfo">Join our channel to stay up to date with all the news and features of Cherrygram!</string>
+    <string name="CG_DoNotRemindAgain">Don\'t remind again</string>
     <!--Telegram screens-->
     <!--Sign in screen-->
+    <string name="CG_QRLoginTitle">掃描QR碼登入</string>
+    <string name="CG_QRLoginMessage">使用另一台裝置掃描QR碼登入</string>
     <string name="CG_TestBackendNumber">測試帳戶</string>
     <string name="CG_TestBackendOn">使用測試伺服器登入帳戶</string>
     <string name="CG_TestBackendOff">使用主用伺服器登入帳戶</string>
@@ -20,6 +25,8 @@
     <string name="CG_JumpToBeginning">回到頂端</string>
     <string name="CG_DeleteAllFromSelf">刪除自己的訊息</string>
     <string name="CG_DeleteAllFromSelfAlert">警告！這將對此對話中的 **所有人** **清空您的訊息**</string>
+    <string name="CG_DeleteAllFromSelfAlertBefore">警告：這將**刪除您 %s 之前**在此對話中的**全部**訊息。</string>
+    <string name="CG_DeleteAllFromSelfBefore">自動刪除時間</string>
     <string name="CG_DeleteAllFromSelfAdmin">使用管理員權限</string>
     <string name="CG_DeleteAllFromSelfDone">您的所有訊息都已刪除</string>
     <string name="CG_ClearFromCache">清除快取</string>
@@ -50,9 +57,16 @@
     <string name="CG_CopyReportDetails">複製崩潰錯誤訊息</string>
     <string name="CG_ReportDetailsCopied">崩潰錯誤訊息已複製至剪貼簿</string>
     <string name="CG_TranslationLanguage">翻譯語言</string>
+    <string name="CG_CopyPhoto">Copy Photo</string>
+    <string name="CG_PhotoCopied">Photo copied to clipboard.</string>
     <string name="CG_SaveSticker">儲存貼圖</string>
-    <string name="CG_FailedToSaveSticker">儲存貼圖失敗，貼圖可能尚未載入完成</string>
     <string name="CG_StickerSavedHint">貼圖已儲存至下載資料夾</string>
+    <string name="CG_CopySetId">複製使用者 ID</string>
+    <string name="CG_ExportSettings">匯出設定</string>
+    <string name="CG_ImportSettings">匯入設定</string>
+    <string name="CG_ImportSettingsAlert">是否複寫設定？匯入未知來源的設定檔可能導致應用程式無法正常執行</string>
+    <string name="CG_OpenStickerPack">Tap to get the sticker</string>
+    <string name="CG_OpenEmojiPack">Tap to get the emoji</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -79,19 +93,28 @@
     <string name="AP_ChangeIcon_Default">預設</string>
     <string name="AP_ChangeIcon_Dark">深色</string>
     <string name="AP_ChangeIcon_White">白色</string>
+    <string name="AP_ChangeIcon_Laguna">Laguna</string>
     <string name="AP_ChangeIcon_Green">綠色</string>
+    <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
     <string name="AP_ChangeIcon_Sunset">日落</string>
     <string name="AP_ChangeIcon_Sunrise">日出</string>
     <string name="AP_IconReplacement_VKUI">VKUI 圖示</string>
     <string name="AP_IconReplacement_Solar">由 @Design480 設計的 Solar 圖示</string>
     <string name="AP_IconReplacement_Default">預設</string>
+    <string name="AP_OneUI_Switch_Style">OneUI 開關風格</string>
     <string name="AP_SystemEmoji">使用系統 Emoji</string>
+    <string name="AP_ShowPencilIcon">將訊息底部的「已編輯」替換為鉛筆圖示</string>
     <string name="AP_CenterTitle">在操作列中置中標題</string>
+    <string name="AP_OverrideHeader">覆蓋頂部顏色</string>
+    <string name="AP_OverrideHeader_Desc">頂部顏色將會和背景色彩保持一致</string>
+    <string name="AP_DisableDividers">停用分隔線</string>
     <string name="AP_ToolBarShadow">停用工具列陰影</string>
     <string name="AP_SystemFonts">使用系統字型</string>
-    <string name="CP_Snowflakes_Header">雪花特效顯示 (重啟應用程式後生效)</string>
-    <string name="CP_PremAndAnim_Header">動畫和 Premium 功能 (重啟應用程式後生效)</string>
+    <string name="CP_Snowflakes_Header">雪花效果</string>
+    <string name="CP_PremAndAnim_Header">動畫和進階功能</string>
+    <string name="CP_HideStories">隱藏限時動態</string>
     <string name="CP_DisableAnimAvatars">停用動畫大頭貼</string>
+    <string name="CP_DisableReplyBackground">Disable replies background</string>
     <string name="CP_DisableReactionsOverlay">停用 Emoji 回應選項</string>
     <string name="CP_DisableReactionsOverlay_Desc">此功能將停用 Emoji 回應選項</string>
     <string name="CP_DisableReactionAnim">關閉回應動畫</string>
@@ -102,7 +125,7 @@
     <string name="CP_DisablePremStickAnim_Desc">點擊 Premium 貼圖時不會有動畫效果</string>
     <string name="CP_DisablePremStickAutoPlay">禁止自動播放 Premium 動態貼圖</string>
     <string name="CP_DisablePremStickAutoPlay_Desc">Premium 動態貼圖不會自動播放 (開啟禁止點擊 Premium 功能時，此功能為無效)</string>
-    <string name="CP_Filters_Header">資料夾 (重啟應用程式後生效)</string>
+    <string name="CP_Filters_Header">資料夾</string>
     <string name="AP_FolderNameInHeader">使用資料夾名稱而非「Cherrygram」</string>
     <string name="AP_FolderNameInHeader_Desc">這會將操作列中的「Cherrygram」變更為資料夾名稱 (開啟僅顯示圖示時效果為最佳)</string>
     <string name="CP_NewTabs_RemoveAllChats">隱藏所有對話 Tab</string>
@@ -111,6 +134,7 @@
     <string name="AP_Tab_Style_Rounded">圓形</string>
     <string name="AP_Tab_Style_Text">文字</string>
     <string name="AP_Tab_Style_Pills">藥丸</string>
+    <string name="AP_Tab_Style_Stroke">新增筆畫</string>
     <string name="AP_DrawerCategory">側邊欄</string>
     <string name="AP_DrawerPreferences">側邊欄偏好設定</string>
     <string name="AP_DrawerAvatar">側邊欄背景使用大頭貼圖片</string>
@@ -125,8 +149,7 @@
     <string name="AP_HideUserPhone">隱藏電話號碼</string>
     <string name="AP_HideUserPhoneSummary">在側邊欄 和設定中隱藏電話號碼</string>
     <string name="AP_MutualContacts_Description">該帳戶為相互聯絡人，對方同時也新增您為聯絡人</string>
-    <string name="AP_ShowID">在個人檔案頁面顯示 ID</string>
-    <string name="AP_ShowDC">在個人檔案頁面顯示 DC</string>
+    <string name="AP_ShowID">Show ID and DC in profile</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">對話</string>
@@ -134,6 +157,7 @@
     <string name="CP_BlockSomeSets">封鎖部分貼圖</string>
     <string name="CP_BlockSomeSets_Desc">一些會導致應用程式崩潰的貼圖將被Cherrygram的Logo替代。 \n「Cherrygram Logo」檔案將在您啟用該功能並重新啟動後下載</string>
     <string name="CP_TimeOnStick">隱藏貼圖時間</string>
+    <string name="CP_MessageMenu">訊息選單自訂</string>
     <string name="CP_UnreadBadgeOnBackButton">顯示未讀對話數量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已開啟的對話中顯示未讀訊息數量</string>
     <string name="CP_NoRounding">停用數字四捨五入</string>
@@ -141,10 +165,12 @@
     <string name="CP_DeleteForAll_Desc">刪除訊息時預設選擇全部刪除</string>
     <string name="CP_ConfirmCalls">撥打前先詢問我</string>
     <string name="CP_ForwardMsgDate">顯示轉寄日期時間</string>
-    <string name="CP_ShowSeconds">在時戳中顯示秒數</string>
+    <string name="CP_ShowSeconds">時間顯示到秒數</string>
+    <string name="CP_LeftBottomButtonAction">左側按鈕功能</string>
     <string name="CP_DoubleTapAction">雙擊操作</string>
     <string name="CP_DisableSwipeToNext">停用頻道切換</string>
     <string name="CP_DisableSwipeToNext_Desc">瀏覽頻道訊息時禁止切換至下一個頻道</string>
+    <string name="CP_HideMuteUnmuteButton">隱藏頻道底部按鈕</string>
     <string name="CP_HideKbdOnScroll">捲動時隱藏鍵盤</string>
     <string name="CP_HideSendAsChannel">隱藏頻道身份傳送按鈕</string>
     <string name="CP_Slider_RecentEmojisAmplifier">最近使用的 Emoji 數量 (重啟應用程式後生效)</string>
@@ -158,6 +184,9 @@
     <string name="CP_AutoPauseVideo_Desc">鎖定螢幕或切換至背景時</string>
     <string name="CP_DisableVibration">停用全局震動</string>
     <string name="CP_Header_Notification">通知</string>
+    <string name="CP_NotificationSound">通知音效</string>
+    <string name="CP_VibrateInChats">來電震動</string>
+    <string name="CP_VibrateInChats_Desc">當您正在使用應用程式時，收到新對話訊息便震動</string>
     <string name="CP_SilenceNonContacts">將非聯絡人訊息設為靜音</string>
     <string name="CP_SilenceNonContacts_Desc">啟用後僅限聯絡人的通知會發出聲效，您可以在個人檔案頁面新增聯絡人</string>
     <!--Chats Preferences-->
@@ -181,9 +210,16 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">實驗功能</string>
+    <string name="EP_NavigationAnimation">程式動畫</string>
+    <string name="EP_NavigationAnimationSpring">跳躍</string>
+    <string name="EP_NavigationAnimationBezier">經典</string>
+    <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
     <string name="CG_ResidentNotification">顯示永久通知</string>
     <string name="EP_PhotosSize">傳送大型圖片(2560 像素)</string>
     <string name="EP_ShowRPCError">透過 Toast 提示全部 RPC 錯誤</string>
+    <string name="EP_CustomChat">Custom chat for Saved Messages</string>
+    <string name="EP_CustomChat_Desc">Set an ID from another chat/group/channel to forward messages there (button in action bar, message menu or double tap)</string>
+    <string name="EP_CustomChatNotFound">Chat not found!</string>
     <string name="EP_Network">網路</string>
     <string name="EP_DownloadSpeedBoost">下載加速</string>
     <string name="EP_DownloadSpeedBoostNone">關閉</string>
@@ -193,9 +229,10 @@
     <string name="EP_SlowNetworkMode">緩慢網路模式</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
+    <string name="SP_Category_PrivacyAndSecurity">隱私與安全</string>
     <string name="SP_Header_Privacy">隱私權</string>
     <string name="SP_NoProxyPromo">移除代理伺服器廣告</string>
-    <string name="SP_AppCenterAnalytics_Desc">啟用此功能後，所有的當機日誌和統計資料都會上傳至 Microsoft AppCenter，以供開發人員分析和改善應用程式。</string>
+    <string name="SP_GoogleAnalytics_Desc">啟用此功能後，所有的當機日誌和統計資料都會上傳至「console.firebase.google.com」，以供開發人員分析和改善應用程式。</string>
     <string name="SP_CleanOld">刪除舊快取 (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">刪除成功</string>
     <string name="SP_Category_Account">帳戶</string>

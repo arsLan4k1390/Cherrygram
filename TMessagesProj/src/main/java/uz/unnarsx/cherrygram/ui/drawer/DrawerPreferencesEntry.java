@@ -29,7 +29,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.ui.dialogs.AlertDialogSwitchHelper;
+import uz.unnarsx.cherrygram.ui.dialogs.AlertDialogSwitchers;
 
 public class DrawerPreferencesEntry extends BaseFragment {
     private int rowCount;
@@ -157,7 +157,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                     updateRowsId(false);
                 }
             } else if (position == menuItemsRow) {
-                AlertDialogSwitchHelper.showDrawerIconsAlert(this);
+                AlertDialogSwitchers.showDrawerIconsAlert(this);
             }
         });
         return fragmentView;

@@ -154,15 +154,11 @@ public class UpdaterUtils {
                 Update update = new Update(version, changelog, size, downloadURL, uploadDate);
                 if (update.isNew() && fragment != null) {
                     checkDirs();
-                    try {
-                        AndroidUtilities.runOnUIThread(() -> {
-                            (new UpdaterBottomSheet(fragment.getContext(), fragment, true, update)).show();
-                            if (onUpdateFound != null)
-                                onUpdateFound.run();
-                        });
-                    } catch (Exception e) {
-                        FileLog.e(e);
-                    }
+                    AndroidUtilities.runOnUIThread(() -> {
+                        (new UpdaterBottomSheet(fragment.getContext(), fragment, true, update)).show();
+                        if (onUpdateFound != null)
+                            onUpdateFound.run();
+                    });
                 } else {
                     if (onUpdateNotFound != null)
                         AndroidUtilities.runOnUIThread(onUpdateNotFound::run);

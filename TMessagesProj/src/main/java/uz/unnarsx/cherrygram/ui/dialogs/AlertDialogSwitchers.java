@@ -14,7 +14,7 @@ import org.telegram.ui.Components.LayoutHelper;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
-public class AlertDialogSwitchHelper {
+public class AlertDialogSwitchers {
 
     public static void showDirectShareAlert(BaseFragment fragment) {
         if (fragment.getParentActivity() == null) {
@@ -236,7 +236,7 @@ public class AlertDialogSwitchHelper {
         linearLayoutInviteContainer.setOrientation(LinearLayout.VERTICAL);
         linearLayout.addView(linearLayoutInviteContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-        int count = 8;
+        int count = 9;
         for (int a = 0; a < count; a++) {
             TextCell textCell = new TextCell(context, 23, false, true, fragment.getResourceProvider());
             switch (a) {
@@ -245,30 +245,34 @@ public class AlertDialogSwitchHelper {
                     break;
                 }
                 case 1: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("CG_ClearFromCache", R.string.CG_ClearFromCache), CherrygramConfig.INSTANCE.getShowClearFromCache(), R.drawable.clear_cache, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("CG_CopyPhoto", R.string.CG_CopyPhoto), CherrygramConfig.INSTANCE.getShowCopyPhoto(), R.drawable.msg_copy, false);
                     break;
                 }
                 case 2: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("Forward", R.string.Forward), CherrygramConfig.INSTANCE.getShowForward(), R.drawable.msg_forward, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("CG_ClearFromCache", R.string.CG_ClearFromCache), CherrygramConfig.INSTANCE.getShowClearFromCache(), R.drawable.clear_cache, false);
                     break;
                 }
                 case 3: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship), CherrygramConfig.INSTANCE.getShowForwardWoAuthorship(), R.drawable.msg_forward, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("Forward", R.string.Forward), CherrygramConfig.INSTANCE.getShowForward(), R.drawable.msg_forward, false);
                     break;
                 }
                 case 4: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("CG_ViewUserHistory", R.string.CG_ViewUserHistory), CherrygramConfig.INSTANCE.getShowViewHistory(), R.drawable.msg_recent, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship), CherrygramConfig.INSTANCE.getShowForwardWoAuthorship(), R.drawable.msg_forward, false);
                     break;
                 }
                 case 5: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved), CherrygramConfig.INSTANCE.getShowSaveMessage(), R.drawable.msg_saved, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("CG_ViewUserHistory", R.string.CG_ViewUserHistory), CherrygramConfig.INSTANCE.getShowViewHistory(), R.drawable.msg_recent, false);
                     break;
                 }
                 case 6: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("ReportChat", R.string.ReportChat), CherrygramConfig.INSTANCE.getShowReport(), R.drawable.msg_report, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved), CherrygramConfig.INSTANCE.getShowSaveMessage(), R.drawable.msg_saved, false);
                     break;
                 }
                 case 7: {
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("ReportChat", R.string.ReportChat), CherrygramConfig.INSTANCE.getShowReport(), R.drawable.msg_report, false);
+                    break;
+                }
+                case 8: {
                     textCell.setTextAndCheckAndIcon("JSON", CherrygramConfig.INSTANCE.getShowJSON(), R.drawable.msg_info, false);
                     break;
                 }
@@ -285,36 +289,41 @@ public class AlertDialogSwitchHelper {
                         break;
                     }
                     case 1: {
+                        CherrygramConfig.INSTANCE.toggleShowCopyPhoto();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getShowCopyPhoto());
+                        break;
+                    }
+                    case 2: {
                         CherrygramConfig.INSTANCE.toggleShowClearFromCache();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getShowClearFromCache());
                         break;
                     }
-                    case 2: {
+                    case 3: {
                         CherrygramConfig.INSTANCE.toggleShowForward();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getShowForward());
                         break;
                     }
-                    case 3: {
+                    case 4: {
                         CherrygramConfig.INSTANCE.toggleShowForwardWoAuthorship();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getShowForwardWoAuthorship());
                         break;
                     }
-                    case 4: {
+                    case 5: {
                         CherrygramConfig.INSTANCE.toggleShowViewHistory();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getShowViewHistory());
                         break;
                     }
-                    case 5: {
+                    case 6: {
                         CherrygramConfig.INSTANCE.toggleShowSaveMessage();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getShowSaveMessage());
                         break;
                     }
-                    case 6: {
+                    case 7: {
                         CherrygramConfig.INSTANCE.toggleShowReport();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getShowReport());
                         break;
                     }
-                    case 7: {
+                    case 8: {
                         CherrygramConfig.INSTANCE.toggleShowJSON();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getShowJSON());
                         break;

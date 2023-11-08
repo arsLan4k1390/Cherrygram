@@ -4,8 +4,6 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
-import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -15,16 +13,12 @@ import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
-
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BaseController;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaDataController;
-import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
@@ -39,24 +33,16 @@ import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Bulletin;
-import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.Forum.ForumUtilities;
 import org.telegram.ui.Components.LayoutHelper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
-
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 
 public class MessageHelper extends BaseController {
 
     private static final MessageHelper[] Instance = new MessageHelper[UserConfig.MAX_ACCOUNT_COUNT];
-
-    public static SpannableStringBuilder editedSpan;
-    public static Drawable editedDrawable;
 
     public MessageHelper(int num) {
         super(num);
@@ -73,23 +59,6 @@ public class MessageHelper extends BaseController {
             }
         }
         return localInstance;
-    }
-
-    public static CharSequence createEditedString(MessageObject messageObject) {
-        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-        if (editedDrawable == null) {
-            editedDrawable = Objects.requireNonNull(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_edited)).mutate();
-        }
-        if (editedSpan == null) {
-            editedSpan = new SpannableStringBuilder("\u200B");
-            editedSpan.setSpan(new ColoredImageSpan(editedDrawable), 0, 1, 0);
-        }
-        spannableStringBuilder
-                .append(' ')
-                .append(CherrygramConfig.INSTANCE.getShowPencilIcon() ? editedSpan : LocaleController.getString("EditedMessage", R.string.EditedMessage))
-                .append(' ')
-                .append(LocaleController.getInstance().formatterDay.format((long) (messageObject.messageOwner.date) * 1000));
-        return spannableStringBuilder;
     }
 
     public void createDeleteHistoryAlert(BaseFragment fragment, TLRPC.Chat chat, TLRPC.TL_forumTopic forumTopic, long mergeDialogId, Theme.ResourcesProvider resourcesProvider) {

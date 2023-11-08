@@ -14773,6 +14773,9 @@ public class MessagesController extends BaseController implements NotificationCe
                     } else {
                         break;
                     }
+                    if (updates.updates.size() <= 0) {
+                        break;
+                    }
                     updates.updates.remove(a);
                     a--;
                 }
