@@ -194,15 +194,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
 
         category(LocaleController.getString("CP_Snowflakes_Header", R.string.CP_Snowflakes_Header)) {
             switch {
-                title = LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)
-                contract({
-                    return@contract CherrygramConfig.drawSnowInDrawer
-                }) {
-                    CherrygramConfig.drawSnowInDrawer = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            switch {
                 title = LocaleController.getString("CP_Header_Chats", R.string.CP_Header_Chats)
                 contract({
                     return@contract CherrygramConfig.drawSnowInChat

@@ -1,8 +1,6 @@
 package uz.unnarsx.cherrygram.ui.tgkit;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
@@ -15,12 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
-import org.telegram.messenger.SendMessagesHelper;
 import org.telegram.ui.ActionBar.ActionBar;
-import org.telegram.ui.ActionBar.ActionBarMenu;
-import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -33,23 +27,16 @@ import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextDetailSettingsCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
-import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
-import org.telegram.ui.LaunchActivity;
 
-import java.io.File;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.crashlytics.Crashlytics;
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
-import uz.unnarsx.cherrygram.helpers.BackupHelper;
 import uz.unnarsx.cherrygram.ui.tgkit.preference.TGKitCategory;
 import uz.unnarsx.cherrygram.ui.tgkit.preference.TGKitPreference;
 import uz.unnarsx.cherrygram.ui.tgkit.preference.TGKitSettings;
-import uz.unnarsx.cherrygram.utils.PermissionsUtils;
 import uz.unnarsx.cherrygram.preferences.BasePreferencesEntry;
-import uz.unnarsx.cherrygram.ui.cells.StickerSliderCell;
+import uz.unnarsx.cherrygram.preferences.cells.StickerSliderCell;
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitHeaderRow;
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitListPreference;
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitSectionRow;
@@ -58,7 +45,6 @@ import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitSliderPreference;
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitSwitchPreference;
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextDetailRow;
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow;
-import uz.unnarsx.cherrygram.utils.FileImportActivity;
 
 public class TGKitSettingsFragment extends BaseFragment {
     private final TGKitSettings settings;
@@ -66,11 +52,6 @@ public class TGKitSettingsFragment extends BaseFragment {
     private ListAdapter listAdapter;
     private RecyclerListView listView;
     private int rowCount;
-
-    private final static int report_details = 2;
-    private final static int restart_app = 3;
-    private final static int backup_settings = 5;
-    private final static int restore_settings = 6;
 
     public TGKitSettingsFragment(BasePreferencesEntry entry) {
         super();
@@ -124,52 +105,11 @@ public class TGKitSettingsFragment extends BaseFragment {
         actionBar.setAllowOverlayTitle(true);
         actionBar.setOccupyStatusBar(!AndroidUtilities.isTablet());
 
-        ActionBarMenu menu = actionBar.createMenu();
-        ActionBarMenuItem menuItem = menu.addItem(0, R.drawable.ic_ab_other);
-        menuItem.setContentDescription(LocaleController.getString("AccDescrMoreOptions", R.string.AccDescrMoreOptions));
-        menuItem.addSubItem(report_details, R.drawable.bug_solar, LocaleController.getString("CG_CopyReportDetails", R.string.CG_CopyReportDetails));
-        menuItem.addSubItem(restart_app, R.drawable.msg_retry, LocaleController.getString("CG_Restart", R.string.CG_Restart));
-        menuItem.addSubItem(backup_settings, R.drawable.msg_openin, LocaleController.getString("CG_ExportSettings", R.string.CG_ExportSettings));
-        menuItem.addSubItem(restore_settings, R.drawable.msg_customize, LocaleController.getString("CG_ImportSettings", R.string.CG_ImportSettings));
-
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
                     finishFragment();
-                } else if (id == report_details) {
-                    AndroidUtilities.addToClipboard(Crashlytics.getReportMessage() + "\n\n#bug");
-                    BulletinFactory.of(TGKitSettingsFragment.this).createCopyBulletin(LocaleController.getString("CG_ReportDetailsCopied", R.string.CG_ReportDetailsCopied)).show();
-                } else if (id == restart_app) {
-                    AppRestartHelper.triggerRebirth(context, new Intent(context, LaunchActivity.class));
-                } else if (id == backup_settings) {
-                    BackupHelper.backupSettings(context);
-                } else if (id == restore_settings) {
-                    try {
-                        if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isStoragePermissionGranted()) {
-                            PermissionsUtils.requestStoragePermission(getParentActivity());
-                            return;
-                        }
-                    } catch (Throwable ignore) {}
-                    FileImportActivity fragment = new FileImportActivity(false);
-                    fragment.setMaxSelectedFiles(1);
-                    fragment.setAllowPhoto(false);
-                    fragment.setDelegate(new FileImportActivity.DocumentSelectActivityDelegate() {
-                        @Override
-                        public void didSelectFiles(FileImportActivity activity, ArrayList<String> files, String caption, boolean notify, int scheduleDate) {
-                            activity.finishFragment();
-                            BackupHelper.importSettings(getContext(), new File(files.get(0)));
-                        }
-
-                        @Override
-                        public void didSelectPhotos(ArrayList<SendMessagesHelper.SendingMediaInfo> photos, boolean notify, int scheduleDate) {
-                        }
-
-                        @Override
-                        public void startDocumentSelectActivity() {
-                        }
-                    });
-                    presentFragment(fragment);
                 }
             }
         });
@@ -318,10 +258,9 @@ public class TGKitSettingsFragment extends BaseFragment {
                     break;
                 }
                 case 4: {
-                    TextDetailSettingsCell settingsCell = (TextDetailSettingsCell) holder.itemView;
-                    TGKitTextDetailRow pref = (TGKitTextDetailRow) positions.get(position);
-                    settingsCell.setMultilineDetail(true);
-                    settingsCell.setTextAndValue(pref.title, pref.detail, pref.divider);
+                    TextDetailSettingsCell textDetailCell = (TextDetailSettingsCell) holder.itemView;
+                    textDetailCell.setMultilineDetail(true);
+                    ((TGKitTextDetailRow) positions.get(position)).bindCell(textDetailCell);
                     break;
                 }
                 case 5: {
@@ -403,6 +342,7 @@ public class TGKitSettingsFragment extends BaseFragment {
                     break;
                 case 8:
                     view = new TextInfoPrivacyCell(mContext);
+                    break;
             }
             view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
             return new RecyclerListView.Holder(view);

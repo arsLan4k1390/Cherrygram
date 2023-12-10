@@ -27,6 +27,8 @@ import org.telegram.ui.Cells.UserCell;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.Premium.boosts.BoostRepository;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 @SuppressLint("ViewConstructor")
 public class GiveawayCell extends UserCell {
     private CounterDrawable counterDrawable;
@@ -54,7 +56,7 @@ public class GiveawayCell extends UserCell {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider) {
+        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(70), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(70) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
         }
     }

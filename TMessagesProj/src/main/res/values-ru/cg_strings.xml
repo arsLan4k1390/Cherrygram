@@ -15,6 +15,20 @@
     <string name="CG_TestBackendOff">Авторизация на основном сервере.</string>
     <!--Sign in screen-->
 
+    <!--Last seen status-->
+    <string name="CG_LastSeenNow">был(а) только что</string>
+
+    <string name="CG_LastSeenMinutes_one">был(а) %1$d минуту назад</string>
+    <string name="CG_LastSeenMinutes_few">был(а) %1$d минуты назад</string>
+    <string name="CG_LastSeenMinutes_many">был(а) %1$d минут назад</string>
+    <string name="CG_LastSeenMinutes_other">был(а) %1$d минут назад</string>
+
+    <string name="CG_LastSeenHours_one">был(а) %1$d час назад</string>
+    <string name="CG_LastSeenHours_few">был(а) %1$d часа назад</string>
+    <string name="CG_LastSeenHours_many">был(а) %1$d часов назад</string>
+    <string name="CG_LastSeenHours_other">был(а) %1$d часов назад</string>
+    <!--Last seen status-->
+
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">Тип иконок</string>
     <string name="CG_FoldersTypeTitles">Только названия</string>
@@ -83,8 +97,10 @@
 
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Настройки Cherrygram</string>
-    <string name="CGP_About_Desc">Экспериментальная модификация официального приложения Telegram.</string>
+    <string name="CGP_About_Desc">Экспериментальная модификация официального приложения Telegram. Нажмите здесь, чтобы получить информацию о всех функциях приложения.</string>
     <string name="CGP_Header_About">О Cherrygram</string>
+    <string name="CGP_Header_About_Desc">Обновления, исходный код и другое</string>
+    <string name="CGP_Links">Ссылки</string>
     <string name="CGP_ToChannel">Официальный канал</string>
     <string name="CGP_ToChat">Официальный чат</string>
     <string name="CGP_Source">Исходный код</string>
@@ -164,6 +180,7 @@
     <string name="AP_DrawerButtonsCategory">Кнопки меню</string>
 
     <string name="AP_ProfileCategory">Профиль и контакты</string>
+    <string name="CP_LastSeenStatus">Стиль статуса \"В сети\"</string>
     <string name="AP_HideUserPhone">Скрыть Ваш номер телефона</string>
     <string name="AP_HideUserPhoneSummary">В боковом меню и настройках</string>
     <string name="AP_MutualContacts_Description">Этот контакт является взаимным.</string>

@@ -4136,7 +4136,11 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
      * trigger animations and do any necessary cleanup.
      */
     private void dispatchLayoutStep3() {
-        mState.assertLayoutStep(State.STEP_ANIMATIONS);
+        try {
+            mState.assertLayoutStep(State.STEP_ANIMATIONS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         startInterceptRequestLayout();
         onEnterLayoutOrScroll();
         mState.mLayoutStep = State.STEP_START;

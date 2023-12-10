@@ -2,7 +2,10 @@ package uz.unnarsx.cherrygram.updater;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -36,6 +39,7 @@ import java.util.Objects;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.extras.CherrygramExtras;
+import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
 
 public class UpdaterBottomSheet extends BottomSheet {
 
@@ -50,20 +54,32 @@ public class UpdaterBottomSheet extends BottomSheet {
         FrameLayout header = new FrameLayout(context);
         linearLayout.addView(header, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 21, 10, 0, 10));
 
-        ImageView imageView = new ImageView(context);
-        imageView.setScaleType(ImageView.ScaleType.CENTER);
-        imageView.setImageResource(R.drawable.about_cherry_icon);
-        imageView.setColorFilter(Theme.getColor(Theme.key_featuredStickers_buttonText));
-        imageView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(100), Theme.getColor(Theme.key_featuredStickers_addButton), Color.BLACK));
-        header.addView(imageView, LayoutHelper.createFrame(85, 85, Gravity.CENTER | Gravity.TOP, 0, 5, 10, 0));
+        if (available) {
+            Drawable cherry = ContextCompat.getDrawable(context, R.drawable.about_cherry_icon).mutate();
+            Theme.ThemeInfo theme = Theme.getActiveTheme();
+            int color = ContextCompat.getColor(context, R.color.ic_background);
 
-        SimpleTextView nameView = new SimpleTextView(context);
-        nameView.setTextSize(20);
-        nameView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
-        nameView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-        nameView.setGravity(Gravity.CENTER | Gravity.CENTER_VERTICAL);
-        nameView.setText(LocaleController.getString("CG_AppName", R.string.CG_AppName));
-        header.addView(nameView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 30, Gravity.CENTER | Gravity.TOP, 0, 95, 10, 0));
+            if (theme.isMonet() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                color = MonetHelper.getColor(theme.isDark() ? "n1_800" : "a1_100");
+                cherry.setColorFilter(new PorterDuffColorFilter(MonetHelper.getColor(theme.isDark() ? "a1_100" : "n2_700"), PorterDuff.Mode.MULTIPLY));
+            } /*else {
+            cherry.setAlpha((int) (70 * 2.55f));
+            }*/
+
+            ImageView logo = new ImageView(context);
+            logo.setScaleType(ImageView.ScaleType.CENTER);
+            logo.setBackground(Theme.createCircleDrawable(AndroidUtilities.dp(95), color));
+            logo.setImageDrawable(cherry);
+            header.addView(logo, LayoutHelper.createFrame(95, 95, Gravity.CENTER | Gravity.TOP, 0, 5, 10, 0));
+
+            SimpleTextView nameView = new SimpleTextView(context);
+            nameView.setTextSize(20);
+            nameView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+            nameView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            nameView.setGravity(Gravity.CENTER | Gravity.CENTER_VERTICAL);
+            nameView.setText(LocaleController.getString("CG_AppName", R.string.CG_AppName));
+            header.addView(nameView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 30, Gravity.CENTER | Gravity.TOP, 0, 110, 10, 0));
+        }
 
         AnimatedTextView timeView = new AnimatedTextView(context, true, true, false);
         timeView.setAnimationProperties(0.7f, 0, 450, CubicBezierInterpolator.EASE_OUT_QUINT);
@@ -74,7 +90,7 @@ public class UpdaterBottomSheet extends BottomSheet {
         timeView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
         timeView.setGravity(Gravity.CENTER | Gravity.CENTER_VERTICAL);
         timeView.setText(available ? update.uploadDate : LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000));
-        header.addView(timeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, Gravity.CENTER | Gravity.TOP, 0, 125, 10, 0));
+        if (available) header.addView(timeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, Gravity.CENTER | Gravity.TOP, 0, 140, 10, 15));
 
         TextCell version = new TextCell(context);
         version.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));

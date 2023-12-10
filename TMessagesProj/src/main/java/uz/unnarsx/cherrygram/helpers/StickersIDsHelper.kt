@@ -24,20 +24,18 @@ object StickersIDsHelper: CoroutineScope by MainScope() {
         }
     }
 
-    @JvmStatic
-    fun isProperSet(document: Long): Boolean {
+    private fun gitFetcher(document: Long): Boolean {
         return SET_IDS.contains(document.toString())
     }
 
-    fun isProperSetID(document: TLRPC.Document): Boolean {
-        return isProperSet(MessageObject.getStickerSetId(document))
+    private fun isGitSetId(document: TLRPC.Document): Boolean {
+        return gitFetcher(MessageObject.getStickerSetId(document))
     }
 
     // Locally stored IDs
     private val iDs = ArrayList<Long>()
 
-    @JvmStatic
-    fun isLocalSetId(document: TLRPC.Document?): Boolean = iDs.stream().anyMatch { setID: Long ->
+    private fun isLocalSetId(document: TLRPC.Document): Boolean = iDs.stream().anyMatch { setID: Long ->
         setID == MessageObject.getStickerSetId(document)
     }
 
@@ -57,5 +55,11 @@ object StickersIDsHelper: CoroutineScope by MainScope() {
         iDs.add(6055278067666911216L)
         iDs.add(4331929539736240157L)
         iDs.add(5091996690789957649L)
+        iDs.add(9087292238668496936L)
+        iDs.add(6417088260173987842L)
+    }
+
+    fun setToBlock(document: TLRPC.Document): Boolean {
+        return isGitSetId(document) || isLocalSetId(document)
     }
 }

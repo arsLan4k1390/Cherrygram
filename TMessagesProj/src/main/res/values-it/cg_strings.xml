@@ -57,8 +57,8 @@
     <string name="CG_CopyReportDetails">Copia dettagli report</string>
     <string name="CG_ReportDetailsCopied">Dettagli report copiati negli appunti.</string>
     <string name="CG_TranslationLanguage">Lingua di traduzione</string>
-    <string name="CG_CopyPhoto">Copy Photo</string>
-    <string name="CG_PhotoCopied">Photo copied to clipboard.</string>
+    <string name="CG_CopyPhoto">Copia Foto</string>
+    <string name="CG_PhotoCopied">Foto copiata negli appunti.</string>
     <string name="CG_SaveSticker">Salva sticker</string>
     <string name="CG_StickerSavedHint">Sticker salvato nei download</string>
     <string name="CG_CopySetId">Copia set ID</string>
@@ -72,8 +72,10 @@
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Preferenze Cherrygram</string>
-    <string name="CGP_About_Desc">Una modifica sperimentale dell\'app Telegram.</string>
+    <string name="CGP_About_Desc">Una modifica sperimentale dell\'app Telegram. Tocca qui per leggere l\'elenco delle funzioni dell\'app.</string>
     <string name="CGP_Header_About">Informazioni Su Cherrygram</string>
+    <string name="CGP_Header_About_Desc">Aggiornamenti, codice sorgente e altro</string>
+    <string name="CGP_Links">Link</string>
     <string name="CGP_ToChannel">Canale ufficiale</string>
     <string name="CGP_ToChat">Chat ufficiale</string>
     <string name="CGP_Source">Codice sorgente</string>
@@ -114,7 +116,7 @@
     <string name="CP_PremAndAnim_Header">Animazioni e Funzionalità Premium</string>
     <string name="CP_HideStories">Nascondi storie</string>
     <string name="CP_DisableAnimAvatars">Disabilita avatar animati</string>
-    <string name="CP_DisableReplyBackground">Disable replies background</string>
+    <string name="CP_DisableReplyBackground">Disabilita sfondo delle risposte</string>
     <string name="CP_DisableReactionsOverlay">Disabilita sovrapposizione delle reazioni</string>
     <string name="CP_DisableReactionsOverlay_Desc">Questo disabiliterà la sovrapposizione popup con le reazioni disponibili</string>
     <string name="CP_DisableReactionAnim">Disabilita l\'animazione della reazione</string>
@@ -149,7 +151,7 @@
     <string name="AP_HideUserPhone">Nascondi il tuo numero di telefono</string>
     <string name="AP_HideUserPhoneSummary">nel drawer e nelle impostazioni</string>
     <string name="AP_MutualContacts_Description">Questo contatto è reciproco.</string>
-    <string name="AP_ShowID">Show ID and DC in profile</string>
+    <string name="AP_ShowID">Mostra ID e DC nel profilo</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chat</string>

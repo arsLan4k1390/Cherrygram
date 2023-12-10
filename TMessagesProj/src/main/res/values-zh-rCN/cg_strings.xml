@@ -57,8 +57,8 @@
     <string name="CG_CopyReportDetails">复制崩溃信息</string>
     <string name="CG_ReportDetailsCopied">崩溃信息已复制到剪切板</string>
     <string name="CG_TranslationLanguage">目标语言</string>
-    <string name="CG_CopyPhoto">Copy Photo</string>
-    <string name="CG_PhotoCopied">Photo copied to clipboard.</string>
+    <string name="CG_CopyPhoto">复制图片</string>
+    <string name="CG_PhotoCopied">已复制图片到剪贴板</string>
     <string name="CG_SaveSticker">保存贴纸</string>
     <string name="CG_StickerSavedHint">贴纸已保存到下载文件夹</string>
     <string name="CG_CopySetId">复制用户 ID</string>
@@ -72,8 +72,10 @@
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">自定义偏好</string>
-    <string name="CGP_About_Desc">一个实验性的 Telegram 第三方客户端</string>
+    <string name="CGP_About_Desc">实验性的 Telegram 应用程序修改。点击此处阅读应用程序的特性列表。</string>
     <string name="CGP_Header_About">关于 Cherrygram</string>
+    <string name="CGP_Header_About_Desc">更新、源代码及更多</string>
+    <string name="CGP_Links">链接</string>
     <string name="CGP_ToChannel">官方频道</string>
     <string name="CGP_ToChat">官方群组</string>
     <string name="CGP_Source">开源代码</string>
@@ -114,7 +116,7 @@
     <string name="CP_PremAndAnim_Header">动画和高级功能</string>
     <string name="CP_HideStories">隐藏动态</string>
     <string name="CP_DisableAnimAvatars">禁用动态头像</string>
-    <string name="CP_DisableReplyBackground">Disable replies background</string>
+    <string name="CP_DisableReplyBackground">禁用回复背景</string>
     <string name="CP_DisableReactionsOverlay">禁用表态弹窗</string>
     <string name="CP_DisableReactionsOverlay_Desc">禁用可使用表态的弹出窗口</string>
     <string name="CP_DisableReactionAnim">禁用表态动画</string>
@@ -149,7 +151,7 @@
     <string name="AP_HideUserPhone">隐藏手机号码</string>
     <string name="AP_HideUserPhoneSummary">在侧边栏 和设置中隐藏手机号</string>
     <string name="AP_MutualContacts_Description">该帐号为双向联系人</string>
-    <string name="AP_ShowID">Show ID and DC in profile</string>
+    <string name="AP_ShowID">在个人资料中显示 ID 和 DC</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">聊天</string>

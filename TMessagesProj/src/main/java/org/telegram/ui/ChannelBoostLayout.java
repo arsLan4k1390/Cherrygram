@@ -63,6 +63,8 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ChannelBoostLayout extends FrameLayout {
 
     private final static int OVERVIEW_TYPE = 0;
@@ -161,7 +163,7 @@ public class ChannelBoostLayout extends FrameLayout {
                         protected void dispatchDraw(Canvas canvas) {
                             super.dispatchDraw(canvas);
                             dividerPaint.setColor(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider));
-                            canvas.drawRect(0, getHeight() - 2, getWidth(), getHeight(), dividerPaint);
+                            if (!CherrygramConfig.INSTANCE.getDisableDividers()) canvas.drawRect(0, getHeight() - 2, getWidth(), getHeight(), dividerPaint);
                         }
                     };
                     boostsTabs.setDelegate(new ScrollSlidingTextTabStrip.ScrollSlidingTabStripDelegate() {

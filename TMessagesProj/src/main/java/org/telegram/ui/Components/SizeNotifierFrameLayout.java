@@ -478,6 +478,8 @@ public class SizeNotifierFrameLayout extends FrameLayout {
                 return emojiHeight;
             }
             return backgroundTranslationY;
+        } else if (backgroundDrawable instanceof ChatBackgroundDrawable) {
+            return backgroundTranslationY;
         }
         return 0;
     }
@@ -497,6 +499,8 @@ public class SizeNotifierFrameLayout extends FrameLayout {
             } else {
                 offset = backgroundTranslationY != 0 ? 0 : -keyboardHeight;
             }
+        } else if (backgroundDrawable instanceof ChatBackgroundDrawable) {
+            offset = backgroundTranslationY;
         }
         return getMeasuredHeight() - offset;
     }

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelTitle">Suscríbete al canal oficial</string>
+    <string name="CG_FollowChannelInfo">¡Únete a nuestro canal para estar al día de todas las novedades y características de Cherrygram!</string>
+    <string name="CG_DoNotRemindAgain">No volver a recordar</string>
     <!--Telegram screens-->
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Inicio de sesión con QR</string>
@@ -22,6 +25,8 @@
     <string name="CG_JumpToBeginning">Al inicio</string>
     <string name="CG_DeleteAllFromSelf">Eliminar mis mensajes</string>
     <string name="CG_DeleteAllFromSelfAlert">¡Advertencia! Esto **borrará todos los mensajes que hayas enviado** en este chat para **todos** los participantes.</string>
+    <string name="CG_DeleteAllFromSelfAlertBefore">¡Advertencia! Esto **eliminará todos los mensajes tuyos anteriores a %s** en este chat para **todos** los participantes.</string>
+    <string name="CG_DeleteAllFromSelfBefore">Antes...</string>
     <string name="CG_DeleteAllFromSelfAdmin">Con permisos de admin</string>
     <string name="CG_DeleteAllFromSelfDone">Todos tus mensajes han sido borrados</string>
     <string name="CG_ClearFromCache">Borrar del caché</string>
@@ -52,15 +57,25 @@
     <string name="CG_CopyReportDetails">Copiar detalles del informe</string>
     <string name="CG_ReportDetailsCopied">Detalles del informe copiados al portapapeles.</string>
     <string name="CG_TranslationLanguage">Idioma de traducción</string>
+    <string name="CG_CopyPhoto">Copiar foto</string>
+    <string name="CG_PhotoCopied">Foto copiada al portapapeles.</string>
     <string name="CG_SaveSticker">Guardar pegatina</string>
     <string name="CG_StickerSavedHint">Pegatina guardada en descargas</string>
+    <string name="CG_CopySetId">Copiar ID del set</string>
+    <string name="CG_ExportSettings">Exportar configuración</string>
+    <string name="CG_ImportSettings">Importar configuración</string>
+    <string name="CG_ImportSettingsAlert">¿Sobrescribir los ajustes\? Importar ajustes de fuentes desconocidas puede resultar en que la aplicación no funcione.</string>
+    <string name="CG_OpenStickerPack">Toca para obtener el sticker</string>
+    <string name="CG_OpenEmojiPack">Toca para obtener el emoji</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Preferencias de Cherrygram</string>
-    <string name="CGP_About_Desc">Una modificación experimental de la app de Telegram.</string>
+    <string name="CGP_About_Desc">An experimental Telegram app modification. Tap here to read apps\'s feature list.</string>
     <string name="CGP_Header_About">Acerca de Cherrygram</string>
+    <string name="CGP_Header_About_Desc">Updates, source code and more</string>
+    <string name="CGP_Links">Links</string>
     <string name="CGP_ToChannel">Canal oficial</string>
     <string name="CGP_ToChat">Chat oficial</string>
     <string name="CGP_Source">Código fuente</string>
@@ -80,21 +95,28 @@
     <string name="AP_ChangeIcon_Default">Por defecto</string>
     <string name="AP_ChangeIcon_Dark">Oscuro</string>
     <string name="AP_ChangeIcon_White">Blanco</string>
+    <string name="AP_ChangeIcon_Laguna">Laguna</string>
     <string name="AP_ChangeIcon_Green">Verde</string>
+    <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
     <string name="AP_ChangeIcon_Sunset">Atardecer</string>
     <string name="AP_ChangeIcon_Sunrise">Amanecer</string>
     <string name="AP_IconReplacement_VKUI">Iconos VKUI</string>
     <string name="AP_IconReplacement_Solar">Iconos solares por @Design480</string>
     <string name="AP_IconReplacement_Default">Por defecto</string>
+    <string name="AP_OneUI_Switch_Style">Estilo de interruptor OneUI</string>
     <string name="AP_SystemEmoji">Usar emojis del sistema</string>
+    <string name="AP_ShowPencilIcon">Ícono de lápiz para los mensajes editados</string>
     <string name="AP_CenterTitle">Centrar título en la barra de acción</string>
     <string name="AP_OverrideHeader">Cambiar color de cabecera</string>
-    <string name="AP_OverrideHeader_Desc">Sólo funciona en el tema oscuro</string>
+    <string name="AP_OverrideHeader_Desc">Los encabezados serán del mismo color que el fondo principal</string>
+    <string name="AP_DisableDividers">Deshabilitar divisores</string>
     <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
     <string name="AP_SystemFonts">Usar fuentes del sistema</string>
     <string name="CP_Snowflakes_Header">Copos de nieve</string>
     <string name="CP_PremAndAnim_Header">Animaciones y funciones Premium</string>
+    <string name="CP_HideStories">Ocultar historias</string>
     <string name="CP_DisableAnimAvatars">Deshabilitar avatares animados</string>
+    <string name="CP_DisableReplyBackground">Deshabilitar el fondo de respuestas</string>
     <string name="CP_DisableReactionsOverlay">Desactivar la capa de reacciones</string>
     <string name="CP_DisableReactionsOverlay_Desc">Esto desactivará la capa emergente con las reacciones disponibles</string>
     <string name="CP_DisableReactionAnim">Desactivar animación de reacción</string>
@@ -114,6 +136,7 @@
     <string name="AP_Tab_Style_Rounded">Redondeado</string>
     <string name="AP_Tab_Style_Text">Texto</string>
     <string name="AP_Tab_Style_Pills">Pastillas</string>
+    <string name="AP_Tab_Style_Stroke">Añadir trazo</string>
     <string name="AP_DrawerCategory">Cajón</string>
     <string name="AP_DrawerPreferences">Preferencias del cajón</string>
     <string name="AP_DrawerAvatar">Foto de perfil como fondo del cajón</string>
@@ -128,7 +151,7 @@
     <string name="AP_HideUserPhone">Oculta tu número de teléfono</string>
     <string name="AP_HideUserPhoneSummary">en cajón y ajustes</string>
     <string name="AP_MutualContacts_Description">Este es un contacto mutuo.</string>
-    <string name="AP_ShowID">Mostrar ID en el perfil</string>
+    <string name="AP_ShowID">Mostrar ID y DC en el perfil</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
@@ -136,6 +159,7 @@
     <string name="CP_BlockSomeSets">Bloquear algunas pegatinas</string>
     <string name="CP_BlockSomeSets_Desc">Algunas pegatinas que fuerzan el bloqueo de la aplicación serán reemplazadas por el logotipo de Cherrygram. \n El archivo \"Logotipo de cherrygram\" se descargará después de activar la función y reiniciar la aplicación.</string>
     <string name="CP_TimeOnStick">Ocultar tiempo en los stickers del chat</string>
+    <string name="CP_MessageMenu">Menú contextual</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de chats no leídos</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Activar contador de chats no leídos en el botón atrás en el chat abierto</string>
     <string name="CP_NoRounding">Desactivar redondeo numérico</string>
@@ -143,7 +167,7 @@
     <string name="CP_DeleteForAll_Desc">La casilla de verificación se marcará automáticamente al eliminar mensajes.</string>
     <string name="CP_ConfirmCalls">Preguntar antes de llamar</string>
     <string name="CP_ForwardMsgDate">Mostrar fecha del mensaje reenviado</string>
-    <string name="CP_ShowSeconds">Mostrar segundos en marcas de tiempo</string>
+    <string name="CP_ShowSeconds">Formato de tiempo con segundos</string>
     <string name="CP_LeftBottomButtonAction">Acción del botón izquierdo</string>
     <string name="CP_DoubleTapAction">Acción de doble toque</string>
     <string name="CP_DisableSwipeToNext">Desactivar la transición al siguiente canal</string>
@@ -162,6 +186,9 @@
     <string name="CP_AutoPauseVideo_Desc">Cuando se bloquea la pantalla o cambia al fondo</string>
     <string name="CP_DisableVibration">Deshabilitar vibración</string>
     <string name="CP_Header_Notification">Notificaciones</string>
+    <string name="CP_NotificationSound">Sonido de notificaciones</string>
+    <string name="CP_VibrateInChats">Vibración en chat</string>
+    <string name="CP_VibrateInChats_Desc">Hacer una pequeña vibración cuando recibas un mensaje en los chats</string>
     <string name="CP_SilenceNonContacts">Silenciar a los no contactos</string>
     <string name="CP_SilenceNonContacts_Desc">Si está activado, las notificaciones con sonido provendrán únicamente de contactos. Puedes añadir una persona a tus contactos incluso sin un número de teléfono, hazlo en su perfil</string>
     <!--Chats Preferences-->
@@ -185,9 +212,16 @@
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
+    <string name="EP_NavigationAnimation">Animación de navegación</string>
+    <string name="EP_NavigationAnimationSpring">Primavera</string>
+    <string name="EP_NavigationAnimationBezier">Clásico</string>
+    <string name="EP_NavigationAnimationCrossfading">Efecto de desplazamiento</string>
     <string name="CG_ResidentNotification">Mostrar una notificación permanente</string>
     <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
     <string name="EP_ShowRPCError">Enviar todos los errores RPC</string>
+    <string name="EP_CustomChat">Chat personalizado para mensajes guardados</string>
+    <string name="EP_CustomChat_Desc">Configure un ID de otro chat/grupo/canal para reenviar mensajes allí (botón en la barra de acciones, menú de mensajes o toque doble)</string>
+    <string name="EP_CustomChatNotFound">¡Chat no encontrado!</string>
     <string name="EP_Network">Red</string>
     <string name="EP_DownloadSpeedBoost">Aumento de velocidad de descarga</string>
     <string name="EP_DownloadSpeedBoostNone">Desactivado</string>
@@ -197,6 +231,7 @@
     <string name="EP_SlowNetworkMode">Modo de red lenta</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
+    <string name="SP_Category_PrivacyAndSecurity">Privacidad y Seguridad</string>
     <string name="SP_Header_Privacy">Privacidad</string>
     <string name="SP_NoProxyPromo">No mostrar patrocinador del proxy</string>
     <string name="SP_GoogleAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"console.firebase.google.com\" para que el desarrollador las revise.</string>

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,7 +20,9 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
+import org.telegram.messenger.SendMessagesHelper;
 import org.telegram.ui.ActionBar.AlertDialog;
+import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.LaunchActivity;
 
@@ -29,8 +32,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 import kotlin.text.StringsKt;
+import uz.unnarsx.cherrygram.utils.FileImportActivity;
 import uz.unnarsx.cherrygram.utils.FileUtil;
 import uz.unnarsx.cherrygram.utils.GsonUtil;
+import uz.unnarsx.cherrygram.utils.PermissionsUtils;
 import uz.unnarsx.cherrygram.utils.ShareUtil;
 
 public class BackupHelper {
@@ -47,6 +52,35 @@ public class BackupHelper {
             Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
+
+    public static void importSettings(BaseFragment fragment) {
+        try {
+            if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isStoragePermissionGranted()) {
+                PermissionsUtils.requestStoragePermission(fragment.getParentActivity());
+                return;
+            }
+        } catch (Throwable ignore) {}
+        FileImportActivity importActivity = new FileImportActivity(false);
+        importActivity.setMaxSelectedFiles(1);
+        importActivity.setAllowPhoto(false);
+        importActivity.setDelegate(new FileImportActivity.DocumentSelectActivityDelegate() {
+            @Override
+            public void didSelectFiles(FileImportActivity activity, ArrayList<String> files, String caption, boolean notify, int scheduleDate) {
+                activity.finishFragment();
+                BackupHelper.importSettings(fragment.getContext(), new File(files.get(0)));
+            }
+
+            @Override
+            public void didSelectPhotos(ArrayList<SendMessagesHelper.SendingMediaInfo> photos, boolean notify, int scheduleDate) {
+            }
+
+            @Override
+            public void startDocumentSelectActivity() {
+            }
+        });
+        fragment.presentFragment(importActivity);
+    }
+
 
     private static String backupSettingsJson() throws JSONException {
         JSONObject configJson = new JSONObject();
@@ -123,9 +157,10 @@ public class BackupHelper {
         mainconfig.add("AP_SystemEmoji");
         mainconfig.add("AP_SystemFonts");
         mainconfig.add("AP_Old_Notification_Icon");
+        mainconfig.add("CP_LastSeenStatus");
         mainconfig.add("CP_ConfirmCalls");
         mainconfig.add("AP_HideUserPhone");
-        mainconfig.add("AP_ShowID");
+        mainconfig.add("AP_ShowID_DC");
         mainconfig.add("CP_HideStories");
         mainconfig.add("CP_DisableAnimAvatars");
         mainconfig.add("CP_DisableReplyBackground");
@@ -142,13 +177,15 @@ public class BackupHelper {
         mainconfig.add("AP_DisableDividers");
         mainconfig.add("AP_OverrideHeaderColor");
         mainconfig.add("AP_FlatNavBar");
+        mainconfig.add("AP_DrawSnowInDrawer");
         mainconfig.add("AP_DrawerAvatar");
         mainconfig.add("AP_DrawerSmallAvatar");
         mainconfig.add("AP_DrawerDarken");
         mainconfig.add("AP_DrawerGradient");
         mainconfig.add("AP_DrawerBlur");
         mainconfig.add("AP_DrawerBlur_Intensity");
-        mainconfig.add("AP_DrawerEventType");
+        mainconfig.add("AP_ChangeStatusDrawerButton");
+        mainconfig.add("AP_MyStoriesDrawerButton");
         mainconfig.add("AP_CreateGroupDrawerButton");
         mainconfig.add("AP_SecretChatDrawerButton");
         mainconfig.add("AP_CreateChannelDrawerButton");
@@ -159,6 +196,7 @@ public class BackupHelper {
         mainconfig.add("AP_PeopleNearbyDrawerButton");
         mainconfig.add("AP_ScanQRDrawerButton");
         mainconfig.add("AP_CGPreferencesDrawerButton");
+        mainconfig.add("AP_DrawerEventType");
         mainconfig.add("AP_FolderNameInHeader");
         mainconfig.add("CP_NewTabs_RemoveAllChats");
         mainconfig.add("CP_NewTabs_NoCounter");
@@ -166,7 +204,6 @@ public class BackupHelper {
         mainconfig.add("AP_TabStyle");
         mainconfig.add("AP_TabStyleAddStroke");
         mainconfig.add("AP_DrawSnowInChat");
-        mainconfig.add("AP_DrawSnowInDrawer");
         mainconfig.add("CP_BlockStickers");
         mainconfig.add("CP_Slider_StickerAmplifier");
         mainconfig.add("CP_TimeOnStick");

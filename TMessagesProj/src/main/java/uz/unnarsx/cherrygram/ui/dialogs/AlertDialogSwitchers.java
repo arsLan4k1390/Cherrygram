@@ -6,6 +6,7 @@ import android.widget.LinearLayout;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
+import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -111,47 +112,61 @@ public class AlertDialogSwitchers {
         linearLayoutInviteContainer.setOrientation(LinearLayout.VERTICAL);
         linearLayout.addView(linearLayoutInviteContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-        int count = 10;
+        int count = 12;
         for (int a = 0; a < count; a++) {
             TextCell textCell = new TextCell(context, 23, false, true, fragment.getResourceProvider());
             switch (a) {
                 case 0: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("NewGroup", R.string.NewGroup), CherrygramConfig.INSTANCE.getCreateGroupDrawerButton(), R.drawable.msg_groups, false);
+                    UserConfig me = UserConfig.getInstance(UserConfig.selectedAccount);
+                    textCell.setTextAndCheckAndIcon(
+                            me.getEmojiStatus() != null ? LocaleController.getString("ChangeEmojiStatus", R.string.ChangeEmojiStatus) : LocaleController.getString("SetEmojiStatus", R.string.SetEmojiStatus),
+                            CherrygramConfig.INSTANCE.getChangeStatusDrawerButton(),
+                            me.getEmojiStatus() != null ? R.drawable.msg_status_edit : R.drawable.msg_status_set,
+                            false
+                    );
                     break;
                 }
                 case 1: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("NewSecretChat", R.string.NewSecretChat), CherrygramConfig.INSTANCE.getSecretChatDrawerButton(), R.drawable.msg_secret, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("ProfileMyStories", R.string.ProfileMyStories), CherrygramConfig.INSTANCE.getMyStoriesDrawerButton(), R.drawable.msg_menu_stories, true);
                     break;
                 }
                 case 2: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("NewChannel", R.string.NewChannel), CherrygramConfig.INSTANCE.getCreateChannelDrawerButton(), R.drawable.msg_channel, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("NewGroup", R.string.NewGroup), CherrygramConfig.INSTANCE.getCreateGroupDrawerButton(), R.drawable.msg_groups, false);
                     break;
                 }
                 case 3: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("Contacts", R.string.Contacts), CherrygramConfig.INSTANCE.getContactsDrawerButton(), R.drawable.msg_contacts, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("NewSecretChat", R.string.NewSecretChat), CherrygramConfig.INSTANCE.getSecretChatDrawerButton(), R.drawable.msg_secret, false);
                     break;
                 }
                 case 4: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("Calls", R.string.Calls), CherrygramConfig.INSTANCE.getCallsDrawerButton(), R.drawable.msg_calls, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("NewChannel", R.string.NewChannel), CherrygramConfig.INSTANCE.getCreateChannelDrawerButton(), R.drawable.msg_channel, false);
                     break;
                 }
                 case 5: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("SavedMessages", R.string.SavedMessages), CherrygramConfig.INSTANCE.getSavedMessagesDrawerButton(), R.drawable.msg_saved, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("Contacts", R.string.Contacts), CherrygramConfig.INSTANCE.getContactsDrawerButton(), R.drawable.msg_contacts, false);
                     break;
                 }
                 case 6: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("ArchivedChats", R.string.ArchivedChats), CherrygramConfig.INSTANCE.getArchivedChatsDrawerButton(), R.drawable.msg_archive, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("Calls", R.string.Calls), CherrygramConfig.INSTANCE.getCallsDrawerButton(), R.drawable.msg_calls, false);
                     break;
                 }
                 case 7: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("PeopleNearby", R.string.PeopleNearby), CherrygramConfig.INSTANCE.getPeopleNearbyDrawerButton(), R.drawable.msg_nearby, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("SavedMessages", R.string.SavedMessages), CherrygramConfig.INSTANCE.getSavedMessagesDrawerButton(), R.drawable.msg_saved, false);
                     break;
                 }
                 case 8: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("AuthAnotherClient", R.string.AuthAnotherClient), CherrygramConfig.INSTANCE.getScanQRDrawerButton(), R.drawable.msg_qrcode, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("ArchivedChats", R.string.ArchivedChats), CherrygramConfig.INSTANCE.getArchivedChatsDrawerButton(), R.drawable.msg_archive, false);
                     break;
                 }
                 case 9: {
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("PeopleNearby", R.string.PeopleNearby), CherrygramConfig.INSTANCE.getPeopleNearbyDrawerButton(), R.drawable.msg_nearby, false);
+                    break;
+                }
+                case 10: {
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("AuthAnotherClient", R.string.AuthAnotherClient), CherrygramConfig.INSTANCE.getScanQRDrawerButton(), R.drawable.msg_qrcode, false);
+                    break;
+                }
+                case 11: {
                     textCell.setTextAndCheckAndIcon(LocaleController.getString("CGP_AdvancedSettings", R.string.CGP_AdvancedSettings), CherrygramConfig.INSTANCE.getCGPreferencesDrawerButton(), R.drawable.msg_settings, false);
                     break;
                 }
@@ -163,51 +178,61 @@ public class AlertDialogSwitchers {
                 Integer tag = (Integer) v2.getTag();
                 switch (tag) {
                     case 0: {
+                        CherrygramConfig.INSTANCE.toggleChangeStatusDrawerButton();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getChangeStatusDrawerButton());
+                        break;
+                    }
+                    case 1: {
+                        CherrygramConfig.INSTANCE.toggleMyStoriesDrawerButton();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getMyStoriesDrawerButton());
+                        break;
+                    }
+                    case 2: {
                         CherrygramConfig.INSTANCE.toggleCreateGroupDrawerButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getCreateGroupDrawerButton());
                         break;
                     }
-                    case 1: {
+                    case 3: {
                         CherrygramConfig.INSTANCE.toggleSecretChatDrawerButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getSecretChatDrawerButton());
                         break;
                     }
-                    case 2: {
+                    case 4: {
                         CherrygramConfig.INSTANCE.toggleCreateChannelDrawerButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getCreateChannelDrawerButton());
                         break;
                     }
-                    case 3: {
+                    case 5: {
                         CherrygramConfig.INSTANCE.toggleContactsDrawerButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getContactsDrawerButton());
                         break;
                     }
-                    case 4: {
+                    case 6: {
                         CherrygramConfig.INSTANCE.toggleCallsDrawerButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getCallsDrawerButton());
                         break;
                     }
-                    case 5: {
+                    case 7: {
                         CherrygramConfig.INSTANCE.toggleSavedMessagesDrawerButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getSavedMessagesDrawerButton());
                         break;
                     }
-                    case 6: {
+                    case 8: {
                         CherrygramConfig.INSTANCE.toggleArchivedChatsDrawerButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getArchivedChatsDrawerButton());
                         break;
                     }
-                    case 7: {
+                    case 9: {
                         CherrygramConfig.INSTANCE.togglePeopleNearbyDrawerButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getPeopleNearbyDrawerButton());
                         break;
                     }
-                    case 8: {
+                    case 10: {
                         CherrygramConfig.INSTANCE.toggleScanQRDrawerButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getScanQRDrawerButton());
                         break;
                     }
-                    case 9: {
+                    case 11: {
                         CherrygramConfig.INSTANCE.toggleCGPreferencesDrawerButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getCGPreferencesDrawerButton());
                         break;
@@ -236,7 +261,7 @@ public class AlertDialogSwitchers {
         linearLayoutInviteContainer.setOrientation(LinearLayout.VERTICAL);
         linearLayout.addView(linearLayoutInviteContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-        int count = 9;
+        int count = 10;
         for (int a = 0; a < count; a++) {
             TextCell textCell = new TextCell(context, 23, false, true, fragment.getResourceProvider());
             switch (a) {
@@ -273,6 +298,10 @@ public class AlertDialogSwitchers {
                     break;
                 }
                 case 8: {
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("AddManyEmojiCount_one", R.string.AddManyEmojiCount_one), CherrygramConfig.INSTANCE.getShowEmoji(), R.drawable.msg_emoji_stickers, false);
+                    break;
+                }
+                case 9: {
                     textCell.setTextAndCheckAndIcon("JSON", CherrygramConfig.INSTANCE.getShowJSON(), R.drawable.msg_info, false);
                     break;
                 }
@@ -324,6 +353,11 @@ public class AlertDialogSwitchers {
                         break;
                     }
                     case 8: {
+                        CherrygramConfig.INSTANCE.toggleShowEmoji();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getShowEmoji());
+                        break;
+                    }
+                    case 9: {
                         CherrygramConfig.INSTANCE.toggleShowJSON();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getShowJSON());
                         break;

@@ -32,6 +32,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Support of up to 10 accounts,
 - Profile pictures (both normal and public) upload date,
 - Fetching emoji and stickers from profile pictures (both normal and public),
+- Fetching emoji from profile background,
 - Mutual contact icon in contacts list,
 - Allow to set a proxy before login,
 - Added native biometrics support,
@@ -63,6 +64,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Enable/Disable system emoji,
 - Enable/Disable system fonts,
 - Default notification icon (Telegram),
+- IOS/TDesktop style of latest activity status,
 - Ask before a call,
 - Hiding your phone number from settings and menu,
 - Showing ID in profile,
@@ -92,17 +94,17 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Hide messages counter in tabs.
 - Tab style (Default, Rounded, Text, VKUI or Pills),
 - Tab icon style (Only titles, Only icons and Icons with titles) with stroke,
-- Snow in Drawer,
 - Snow in App Header,
 - Snow in Chats.
 
 *Drawer Preferences:*
+- Snow in drawer,
 - Profile photo as drawer background,
 - Darken menu header background,
 - Gradient menu header background,
 - Blur menu header background and blur intensity,
-- Drawer icons set,
 - Enable/Disable drawer buttons.
+- Drawer icons set.
 
 *Cherrygram Chats Preferences:*
 - Blocking stickers (which cause Telegram apps crash),

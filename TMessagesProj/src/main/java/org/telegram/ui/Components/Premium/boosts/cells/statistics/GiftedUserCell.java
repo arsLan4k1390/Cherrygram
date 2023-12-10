@@ -23,6 +23,8 @@ import org.telegram.ui.Components.LayoutHelper;
 
 import java.util.Date;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 @SuppressLint("ViewConstructor")
 public class GiftedUserCell extends UserCell {
 
@@ -55,7 +57,7 @@ public class GiftedUserCell extends UserCell {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider) {
+        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
             canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(70), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(70) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
         }
     }

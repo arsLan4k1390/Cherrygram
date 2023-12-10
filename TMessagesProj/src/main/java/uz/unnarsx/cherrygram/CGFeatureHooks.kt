@@ -67,7 +67,7 @@ object CGFeatureHooks {
                 currentPopup = null
             },
             ShareAlertExtraUI.PopupItem(
-                if (CherrygramConfig.forwardWithoutCaptions)
+                if (CherrygramConfig.forwardNotify)
                     LocaleController.getString("CG_FwdMenu_NoNotify", R.string.CG_FwdMenu_NoNotify)
                 else LocaleController.getString("CG_FwdMenu_Notify", R.string.CG_FwdMenu_Notify),
                 R.drawable.input_notify_on

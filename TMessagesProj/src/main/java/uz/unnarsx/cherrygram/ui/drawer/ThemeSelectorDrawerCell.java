@@ -28,9 +28,9 @@ import uz.unnarsx.cherrygram.CherrygramConfig;
 public class ThemeSelectorDrawerCell extends FrameLayout {
     private int noTheme = 0;
     private int timedTheme = 0;
+    private int holidayTheme = 0;
     private int valentineTheme = 0;
     private int halloweenTheme = 0;
-    private int holidayTheme = 0;
     private int lunarNewYearTheme = 0;
     private final Map<Integer, Integer> map;
 
@@ -111,12 +111,12 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
         map.put(5, noTheme);
         timedTheme = rowCount++;
         map.put(0, timedTheme);
+        holidayTheme = rowCount++;
+        map.put(1, holidayTheme);
         valentineTheme = rowCount++;
         map.put(2, valentineTheme);
         halloweenTheme = rowCount++;
         map.put(3, halloweenTheme);
-        holidayTheme = rowCount++;
-        map.put(1, holidayTheme);
         lunarNewYearTheme = rowCount++;
         map.put(4, lunarNewYearTheme);
         if (listAdapter != null) {
@@ -169,6 +169,18 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
                                 R.drawable.msg_settings,
                         }
                 );
+            } else if (position == holidayTheme) {
+                drawerCell2.setEvent(
+                        1,
+                        R.raw.christmas,
+                        new int[]{
+                                R.drawable.msg_groups_ny,
+                                R.drawable.msg_contacts_ny,
+                                R.drawable.msg_calls_ny,
+                                R.drawable.msg_saved_ny,
+                                R.drawable.msg_settings_ny,
+                        }
+                );
             } else if (position == valentineTheme) {
                 drawerCell2.setEvent(
                         2,
@@ -191,18 +203,6 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
                                 R.drawable.msg_calls_hw,
                                 R.drawable.msg_saved_hw,
                                 R.drawable.msg_settings_hw,
-                        }
-                );
-            } else if (position == holidayTheme) {
-                drawerCell2.setEvent(
-                        1,
-                        R.raw.christmas,
-                        new int[]{
-                                R.drawable.msg_groups_ny,
-                                R.drawable.msg_contacts_ny,
-                                R.drawable.msg_calls_ny,
-                                R.drawable.msg_saved_ny,
-                                R.drawable.msg_settings_ny,
                         }
                 );
             } else if (position == lunarNewYearTheme) {

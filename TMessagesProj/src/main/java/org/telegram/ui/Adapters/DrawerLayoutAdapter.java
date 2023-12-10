@@ -330,7 +330,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         }
         UserConfig me = UserConfig.getInstance(UserConfig.selectedAccount);
         boolean showDivider = false;
-        if (me != null && me.isPremium()) {
+        if (me != null && me.isPremium() && CherrygramConfig.INSTANCE.getChangeStatusDrawerButton()) {
             if (me.getEmojiStatus() != null) {
                 items.add(new Item(15, LocaleController.getString("ChangeEmojiStatus", R.string.ChangeEmojiStatus), R.drawable.msg_status_edit));
             } else {
@@ -338,7 +338,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             }
             showDivider = true;
         }
-        if (MessagesController.getInstance(UserConfig.selectedAccount).storiesEnabled()) {
+        if (MessagesController.getInstance(UserConfig.selectedAccount).storiesEnabled() && CherrygramConfig.INSTANCE.getMyStoriesDrawerButton()) {
             items.add(new Item(16, LocaleController.getString("ProfileMyStories", R.string.ProfileMyStories), R.drawable.msg_menu_stories));
             showDivider = true;
         }

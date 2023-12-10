@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
-    <string name="CG_FollowChannelTitle">Subscribe to the official channel</string>
-    <string name="CG_FollowChannelInfo">Join our channel to stay up to date with all the news and features of Cherrygram!</string>
-    <string name="CG_DoNotRemindAgain">Don\'t remind again</string>
+    <string name="CG_FollowChannelTitle">訂閱官方頻道</string>
+    <string name="CG_FollowChannelInfo">加入我們的頻道以隨時了解 Cherrygram 的所有新聞和功能！</string>
+    <string name="CG_DoNotRemindAgain">下次不要顯示</string>
     <!--Telegram screens-->
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">掃描QR碼登入</string>
@@ -57,23 +57,25 @@
     <string name="CG_CopyReportDetails">複製崩潰錯誤訊息</string>
     <string name="CG_ReportDetailsCopied">崩潰錯誤訊息已複製至剪貼簿</string>
     <string name="CG_TranslationLanguage">翻譯語言</string>
-    <string name="CG_CopyPhoto">Copy Photo</string>
-    <string name="CG_PhotoCopied">Photo copied to clipboard.</string>
+    <string name="CG_CopyPhoto">複製圖片</string>
+    <string name="CG_PhotoCopied">圖片已複製至剪貼簿</string>
     <string name="CG_SaveSticker">儲存貼圖</string>
     <string name="CG_StickerSavedHint">貼圖已儲存至下載資料夾</string>
     <string name="CG_CopySetId">複製使用者 ID</string>
     <string name="CG_ExportSettings">匯出設定</string>
     <string name="CG_ImportSettings">匯入設定</string>
     <string name="CG_ImportSettingsAlert">是否複寫設定？匯入未知來源的設定檔可能導致應用程式無法正常執行</string>
-    <string name="CG_OpenStickerPack">Tap to get the sticker</string>
-    <string name="CG_OpenEmojiPack">Tap to get the emoji</string>
+    <string name="CG_OpenStickerPack">按一下以取得貼圖</string>
+    <string name="CG_OpenEmojiPack">按一下以取得 Emoji</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">偏好設定</string>
-    <string name="CGP_About_Desc">一個實驗性的 Telegram 第三方用戶端</string>
+    <string name="CGP_About_Desc">此應用程式是對 Telegram 新增實驗性功能。按一下這裡以閱讀新功能清單。</string>
     <string name="CGP_Header_About">關於 Cherrygram</string>
+    <string name="CGP_Header_About_Desc">更新、原始碼和更多</string>
+    <string name="CGP_Links">連結</string>
     <string name="CGP_ToChannel">官方頻道</string>
     <string name="CGP_ToChat">官方群組</string>
     <string name="CGP_Source">開放原始碼</string>
@@ -95,7 +97,7 @@
     <string name="AP_ChangeIcon_White">白色</string>
     <string name="AP_ChangeIcon_Laguna">Laguna</string>
     <string name="AP_ChangeIcon_Green">綠色</string>
-    <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
+    <string name="AP_ChangeIcon_Lavanda">薰衣草</string>
     <string name="AP_ChangeIcon_Sunset">日落</string>
     <string name="AP_ChangeIcon_Sunrise">日出</string>
     <string name="AP_IconReplacement_VKUI">VKUI 圖示</string>
@@ -114,7 +116,7 @@
     <string name="CP_PremAndAnim_Header">動畫和進階功能</string>
     <string name="CP_HideStories">隱藏限時動態</string>
     <string name="CP_DisableAnimAvatars">停用動畫大頭貼</string>
-    <string name="CP_DisableReplyBackground">Disable replies background</string>
+    <string name="CP_DisableReplyBackground">停用回覆背景</string>
     <string name="CP_DisableReactionsOverlay">停用 Emoji 回應選項</string>
     <string name="CP_DisableReactionsOverlay_Desc">此功能將停用 Emoji 回應選項</string>
     <string name="CP_DisableReactionAnim">關閉回應動畫</string>
@@ -149,7 +151,7 @@
     <string name="AP_HideUserPhone">隱藏電話號碼</string>
     <string name="AP_HideUserPhoneSummary">在側邊欄 和設定中隱藏電話號碼</string>
     <string name="AP_MutualContacts_Description">該帳戶為相互聯絡人，對方同時也新增您為聯絡人</string>
-    <string name="AP_ShowID">Show ID and DC in profile</string>
+    <string name="AP_ShowID">在個人檔案中顯示 ID 和 DC</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">對話</string>
@@ -217,9 +219,9 @@
     <string name="CG_ResidentNotification">顯示永久通知</string>
     <string name="EP_PhotosSize">傳送大型圖片(2560 像素)</string>
     <string name="EP_ShowRPCError">透過 Toast 提示全部 RPC 錯誤</string>
-    <string name="EP_CustomChat">Custom chat for Saved Messages</string>
-    <string name="EP_CustomChat_Desc">Set an ID from another chat/group/channel to forward messages there (button in action bar, message menu or double tap)</string>
-    <string name="EP_CustomChatNotFound">Chat not found!</string>
+    <string name="EP_CustomChat">自訂已儲存訊息的對話</string>
+    <string name="EP_CustomChat_Desc">為來自另一個對話/群組/頻道的 ID 設定轉寄訊息 (操作列中的按鈕、訊息選單或按兩下)</string>
+    <string name="EP_CustomChatNotFound">找不到對話紀錄！</string>
     <string name="EP_Network">網路</string>
     <string name="EP_DownloadSpeedBoost">下載加速</string>
     <string name="EP_DownloadSpeedBoostNone">關閉</string>

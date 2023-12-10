@@ -17,6 +17,20 @@
     <string name="CG_TestBackendOff">This account will connect to the production backend.</string>
     <!--Sign in screen-->
 
+    <!--Last seen status-->
+    <string name="CG_LastSeenNow">last seen just now</string>
+
+    <string name="CG_LastSeenMinutes_one">last seen %1$d minute ago</string>
+    <string name="CG_LastSeenMinutes_few">last seen %1$d minutes ago</string>
+    <string name="CG_LastSeenMinutes_many">last seen %1$d minutes ago</string>
+    <string name="CG_LastSeenMinutes_other">last seen %1$d minutes ago</string>
+
+    <string name="CG_LastSeenHours_one">last seen %1$d hour ago</string>
+    <string name="CG_LastSeenHours_few">last seen %1$d hours ago</string>
+    <string name="CG_LastSeenHours_many">last seen %1$d hours ago</string>
+    <string name="CG_LastSeenHours_other">last seen %1$d hours ago</string>
+    <!--Last seen status-->
+
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">Tab icon type</string>
     <string name="CG_FoldersTypeTitles">Only titles</string>
@@ -85,8 +99,10 @@
 
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Cherrygram Preferences</string>
-    <string name="CGP_About_Desc">An experimental Telegram app modification.</string>
+    <string name="CGP_About_Desc">An experimental Telegram app modification. Tap here to read apps\'s feature list.</string>
     <string name="CGP_Header_About">About Cherrygram</string>
+    <string name="CGP_Header_About_Desc">Updates, source code and more</string>
+    <string name="CGP_Links">Links</string>
     <string name="CGP_ToChannel">Official channel</string>
     <string name="CGP_ToChannelLink" translatable="false">Cherry_gram</string>
     <string name="CGP_ToChat">Official chat</string>
@@ -171,6 +187,7 @@
     <string name="AP_DrawerButtonsCategory">Drawer buttons</string>
 
     <string name="AP_ProfileCategory">Profile and Contacts</string>
+    <string name="CP_LastSeenStatus">\"Last seen\" status style</string>
     <string name="AP_HideUserPhone">Hide your phone number</string>
     <string name="AP_HideUserPhoneSummary">in drawer and settings</string>
     <string name="AP_MutualContacts_Description">This is a mutual contact.</string>

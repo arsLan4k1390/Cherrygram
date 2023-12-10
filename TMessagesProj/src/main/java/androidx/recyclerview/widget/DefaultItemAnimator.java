@@ -455,7 +455,7 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
             resetAnimation(newHolder);
             newHolder.itemView.setTranslationX(-deltaX);
             newHolder.itemView.setTranslationY(-deltaY);
-            newHolder.itemView.setAlpha(0.5f); ///
+            newHolder.itemView.setAlpha(0);
             if (animateByScale(newHolder.itemView) > 0) {
                 newHolder.itemView.setScaleX(1f - animateByScale(newHolder.itemView));
                 newHolder.itemView.setScaleY(1f - animateByScale(newHolder.itemView));

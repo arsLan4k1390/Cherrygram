@@ -1,4 +1,4 @@
-package uz.unnarsx.cherrygram.ui.cells;
+package uz.unnarsx.cherrygram.preferences.cells;
 
 import android.content.Context;
 import android.graphics.Canvas;

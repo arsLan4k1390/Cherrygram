@@ -51,9 +51,18 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
     //Profile and Contacts
+//    const val LAST_SEEN_STATUS_NONE = 0
+    const val LAST_SEEN_STATUS_ANDROID = 1
+    const val LAST_SEEN_STATUS_IOS = 2
+    var lastSeenStatus by sharedPreferences.int("CP_LastSeenStatus", LAST_SEEN_STATUS_IOS)
+
     var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
     var hidePhoneNumber by sharedPreferences.boolean("AP_HideUserPhone", false)
-    var showId by sharedPreferences.boolean("AP_ShowID", false)
+
+    const val ID_DC_NONE = 0
+    const val ID_ONLY = 1
+    const val ID_DC = 2
+    var showIDDC by sharedPreferences.int("AP_ShowID_DC", ID_DC_NONE)
     //Animations and Premium Features
     var hideStories by sharedPreferences.boolean("CP_HideStories", false)
     var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
@@ -87,6 +96,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var overrideHeaderColor by sharedPreferences.boolean("AP_OverrideHeaderColor", true)
     var flatNavbar by sharedPreferences.boolean("AP_FlatNavBar", true)
     //Drawer
+    var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", false)
+    fun toggleDrawerSnow() {
+        drawSnowInDrawer = !drawSnowInDrawer
+        putBoolean("AP_DrawSnowInDrawer", drawSnowInDrawer)
+    }
+
     var drawerAvatar by sharedPreferences.boolean("AP_DrawerAvatar", true)
     fun toggleDrawerAvatar() {
         drawerAvatar = !drawerAvatar
@@ -122,6 +137,18 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var eventType by sharedPreferences.int("AP_DrawerEventType", 0)
 
     //Drawer buttons
+    var changeStatusDrawerButton by sharedPreferences.boolean("AP_ChangeStatusDrawerButton", true)
+    fun toggleChangeStatusDrawerButton() {
+        changeStatusDrawerButton = !changeStatusDrawerButton
+        putBoolean("AP_ChangeStatusDrawerButton", changeStatusDrawerButton)
+    }
+
+    var myStoriesDrawerButton by sharedPreferences.boolean("AP_MyStoriesDrawerButton", true)
+    fun toggleMyStoriesDrawerButton() {
+        myStoriesDrawerButton = !myStoriesDrawerButton
+        putBoolean("AP_MyStoriesDrawerButton", myStoriesDrawerButton)
+    }
+
     var createGroupDrawerButton by sharedPreferences.boolean("AP_CreateGroupDrawerButton", false)
     fun toggleCreateGroupDrawerButton() {
         createGroupDrawerButton = !createGroupDrawerButton
@@ -201,7 +228,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     //Snowflakes
     var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false)
-    var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", false)
 
     // Chats Settings
     //Stickers
@@ -262,6 +288,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     fun toggleShowReport() {
         showReport = !showReport
         putBoolean("CP_ShowSaveMessage", showReport)
+    }
+
+    var showEmoji by sharedPreferences.boolean("CP_ShowEmoji", false)
+    fun toggleShowEmoji() {
+        showEmoji = !showEmoji
+        putBoolean("CP_ShowEmoji", showEmoji)
     }
 
     var showJSON by sharedPreferences.boolean("CP_ShowJSON", false)

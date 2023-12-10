@@ -432,7 +432,5 @@ class SolarIconReplace : BaseIconReplace() {
         R.drawable.msg_brightness_low to R.drawable.msg_brightness_low_solar,
         R.drawable.msg_header_share to R.drawable.msg_share_filled_solar,
         R.drawable.msg_header_draw to R.drawable.msg_header_draw_solar,
-
-        R.mipmap.outline_source_white_28 to R.drawable.bug_solar,
     )
 }

@@ -166,7 +166,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 updateRowsId(false);
             } else if (position == customChatIdRow) {
                 String currentValue = MessagesController.getMainSettings(currentAccount).getString("CP_CustomChatIDSM",
-                        String.valueOf(UserConfig.getInstance(currentAccount).getClientUserId())
+                        String.valueOf(getUserConfig().getClientUserId())
                 );
                 TextFieldAlert.createFieldAlert(
                         context,
@@ -332,7 +332,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                         String t = "ID:";
                         SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
                         String v = preferences.getString("CP_CustomChatIDSM",
-                                String.valueOf(UserConfig.getInstance(currentAccount).getClientUserId())
+                                String.valueOf(getUserConfig().getClientUserId())
                         );
                         textCell.setTextAndValue(t, v, false);
                     } else if (position == downloadSpeedBoostRow) {

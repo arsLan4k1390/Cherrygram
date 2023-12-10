@@ -1,5 +1,6 @@
 package uz.unnarsx.cherrygram.preferences
 
+import androidx.core.util.Pair
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
@@ -8,6 +9,7 @@ import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.ui.tgkit.preference.category
 import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
+import uz.unnarsx.cherrygram.ui.tgkit.preference.list
 import uz.unnarsx.cherrygram.ui.tgkit.preference.switch
 import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
 
@@ -66,6 +68,25 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
         }
 
         category(LocaleController.getString("AP_ProfileCategory", R.string.AP_ProfileCategory)) {
+            list {
+                title = LocaleController.getString("CP_LastSeenStatus", R.string.CP_LastSeenStatus)
+
+                contract({
+                    return@contract listOf(
+//                        Pair(CherrygramConfig.LAST_SEEN_STATUS_NONE, LocaleController.getString("Disable", R.string.Disable)),
+                        Pair(CherrygramConfig.LAST_SEEN_STATUS_ANDROID, LocaleController.getString("Default", R.string.Default)),
+                        Pair(CherrygramConfig.LAST_SEEN_STATUS_IOS, "IOS/TDesktop")
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.lastSeenStatus) {
+                        CherrygramConfig.LAST_SEEN_STATUS_ANDROID -> LocaleController.getString("Default", R.string.Default)
+                        CherrygramConfig.LAST_SEEN_STATUS_IOS -> "IOS/TDesktop"
+                        else -> LocaleController.getString("Disable", R.string.Disable)
+                    }
+                }) {
+                    CherrygramConfig.lastSeenStatus = it
+                }
+            }
             switch {
                 title = LocaleController.getString("CP_ConfirmCalls", R.string.CP_ConfirmCalls)
 
@@ -86,13 +107,24 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
-            switch {
+
+            list {
                 title = LocaleController.getString("AP_ShowID", R.string.AP_ShowID)
+
                 contract({
-                    return@contract CherrygramConfig.showId
+                    return@contract listOf(
+                        Pair(CherrygramConfig.ID_DC_NONE, LocaleController.getString("Disable", R.string.Disable)),
+                        Pair(CherrygramConfig.ID_ONLY, "ID"),
+                        Pair(CherrygramConfig.ID_DC, "ID + DC")
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.showIDDC) {
+                        CherrygramConfig.ID_ONLY -> "ID"
+                        CherrygramConfig.ID_DC -> "ID + DC"
+                        else -> LocaleController.getString("Disable", R.string.Disable)
+                    }
                 }) {
-                    CherrygramConfig.showId = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CherrygramConfig.showIDDC = it
                 }
             }
         }

@@ -121,7 +121,7 @@ public class FileLog {
         try {
             checkGson();
             getInstance().dateFormat.format(System.currentTimeMillis());
-            String messageStr = "receive message -> " + message.getClass().getSimpleName() + " : " + gson.toJson(message);
+            String messageStr = "receive message -> " + message.getClass().getSimpleName() + " : " + (gsonDisabled ? message : gson.toJson(message));
             String res = "null";
             long time = System.currentTimeMillis();
             FileLog.getInstance().logQueue.postRunnable(() -> {
@@ -143,9 +143,14 @@ public class FileLog {
             });
         } catch (Throwable e) {
         }
+    }*/
+
+    private static boolean gsonDisabled;
+    public static void disableGson(boolean disable) {
+        gsonDisabled = disable;
     }
 
-    private static void checkGson() {
+    /*private static void checkGson() {
         if (gson == null) {
             HashSet<String> privateFields = new HashSet<>();
             privateFields.add("message");

@@ -38,6 +38,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
     private DrawerProfilePreviewCell profilePreviewCell;
 
     private int drawerRow;
+    private int drawerSnowRow;
     private int drawerAvatarAsBackgroundRow;
     private int showAvatarRow;
     private int drawerDarkenBackgroundRow;
@@ -47,10 +48,11 @@ public class DrawerPreferencesEntry extends BaseFragment {
     private int editBlurHeaderRow;
     private int editBlurRow;
     private int editBlurDividerRow;
+    private int menuItemsRow;
+    private int menuItemsDividerRow;
     private int themeDrawerHeader;
     private int themeDrawerRow;
     private int themeDrawerDividerRow;
-    private int menuItemsRow;
 
     @Override
     public boolean onFragmentCreate() {
@@ -107,7 +109,28 @@ public class DrawerPreferencesEntry extends BaseFragment {
         }
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
-            if (position == showAvatarRow) {
+            if (position == drawerSnowRow) {
+                CherrygramConfig.INSTANCE.toggleDrawerSnow();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDrawSnowInDrawer());
+                }
+                getParentActivity().recreate();
+            } else if (position == drawerAvatarAsBackgroundRow) {
+                CherrygramConfig.INSTANCE.toggleDrawerAvatar();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDrawerAvatar());
+                }
+                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+                TransitionManager.beginDelayedTransition(profilePreviewCell);
+                listAdapter.notifyItemChanged(drawerRow, new Object());
+                if (CherrygramConfig.INSTANCE.getDrawerAvatar()) {
+                    updateRowsId(false);
+                    listAdapter.notifyItemRangeInserted(showGradientRow, 4 + (CherrygramConfig.INSTANCE.getDrawerBlur() ? 3:0));
+                } else {
+                    listAdapter.notifyItemRangeRemoved(showGradientRow, 4 + (CherrygramConfig.INSTANCE.getDrawerBlur() ? 3:0));
+                    updateRowsId(false);
+                }
+            } else if (position == showAvatarRow) {
                 CherrygramConfig.INSTANCE.toggleDrawerSmallAvatar();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDrawerSmallAvatar());
@@ -128,7 +151,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                 }
                 getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
-            }  else if (position == drawerBlurBackgroundRow) {
+            } else if (position == drawerBlurBackgroundRow) {
                 CherrygramConfig.INSTANCE.toggleDrawerBlur();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDrawerBlur());
@@ -141,21 +164,6 @@ public class DrawerPreferencesEntry extends BaseFragment {
                     listAdapter.notifyItemRangeRemoved(drawerDividerRow, 3);
                 }
                 updateRowsId(false);
-            } else if (position == drawerAvatarAsBackgroundRow) {
-                CherrygramConfig.INSTANCE.toggleDrawerAvatar();
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDrawerAvatar());
-                }
-                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
-                TransitionManager.beginDelayedTransition(profilePreviewCell);
-                listAdapter.notifyItemChanged(drawerRow, new Object());
-                if (CherrygramConfig.INSTANCE.getDrawerAvatar()) {
-                    updateRowsId(false);
-                    listAdapter.notifyItemRangeInserted(showGradientRow, 4 + (CherrygramConfig.INSTANCE.getDrawerBlur() ? 3:0));
-                } else {
-                    listAdapter.notifyItemRangeRemoved(showGradientRow, 4 + (CherrygramConfig.INSTANCE.getDrawerBlur() ? 3:0));
-                    updateRowsId(false);
-                }
             } else if (position == menuItemsRow) {
                 AlertDialogSwitchers.showDrawerIconsAlert(this);
             }
@@ -175,6 +183,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
         editBlurDividerRow = -1;
 
         drawerRow = rowCount++;
+        drawerSnowRow = rowCount++;
         drawerAvatarAsBackgroundRow = rowCount++;
         if (CherrygramConfig.INSTANCE.getDrawerAvatar()) {
             showAvatarRow = rowCount++;
@@ -189,9 +198,11 @@ public class DrawerPreferencesEntry extends BaseFragment {
             editBlurDividerRow = rowCount++;
         }
 
+        menuItemsRow = rowCount++;
+        menuItemsDividerRow = rowCount++;
+
         themeDrawerHeader = rowCount++;
         themeDrawerRow = rowCount++;
-        menuItemsRow = rowCount++;
         themeDrawerDividerRow = rowCount++;
 
         if (listAdapter != null && notify) {
@@ -236,7 +247,9 @@ public class DrawerPreferencesEntry extends BaseFragment {
                     break;
                 case 3:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
-                    if (position == drawerAvatarAsBackgroundRow) {
+                    if (position == drawerSnowRow) {
+                        textCheckCell.setTextAndCheck(LocaleController.getString("CP_Snowflakes_Header", R.string.CP_Snowflakes_Header), CherrygramConfig.INSTANCE.getDrawSnowInDrawer(), !CherrygramConfig.INSTANCE.getDrawerBlur());
+                    } else if (position == drawerAvatarAsBackgroundRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("AP_DrawerAvatar", R.string.AP_DrawerAvatar), CherrygramConfig.INSTANCE.getDrawerAvatar(), CherrygramConfig.INSTANCE.getDrawerAvatar());
                     } else if (position == showAvatarRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("AP_DrawerShowAvatar", R.string.AP_DrawerShowAvatar), CherrygramConfig.INSTANCE.getDrawerSmallAvatar(), drawerBlurBackgroundRow != -1);
@@ -335,11 +348,11 @@ public class DrawerPreferencesEntry extends BaseFragment {
 
         @Override
         public int getItemViewType(int position) {
-            if (position == drawerDividerRow || position == editBlurDividerRow || position == themeDrawerDividerRow){
+            if (position == drawerDividerRow || position == editBlurDividerRow || position== menuItemsDividerRow ||position == themeDrawerDividerRow){
                 return 1;
             } else if (position == editBlurHeaderRow || position == themeDrawerHeader) {
                 return 2;
-            } else if (position == drawerAvatarAsBackgroundRow || position == showAvatarRow || position == drawerDarkenBackgroundRow || position == showGradientRow || position == drawerBlurBackgroundRow) {
+            } else if (position == drawerSnowRow || position == drawerAvatarAsBackgroundRow || position == showAvatarRow || position == drawerDarkenBackgroundRow || position == showGradientRow || position == drawerBlurBackgroundRow) {
                 return 3;
             } else if (position == drawerRow) {
                 return 4;

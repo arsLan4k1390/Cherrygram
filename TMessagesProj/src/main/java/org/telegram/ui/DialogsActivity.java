@@ -164,6 +164,7 @@ import org.telegram.ui.Components.ArchiveHelp;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.BlurredRecyclerView;
+import org.telegram.ui.Components.BotWebViewSheet;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.ChatActivityEnterView;
@@ -222,7 +223,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry;
 import uz.unnarsx.cherrygram.crashlytics.CrashReportBottomSheet;
 import uz.unnarsx.cherrygram.crashlytics.Crashlytics;
 
@@ -2866,6 +2866,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     @Override
+    public boolean dismissDialogOnPause(Dialog dialog) {
+        return !(dialog instanceof BotWebViewSheet) && super.dismissDialogOnPause(dialog);
+    }
+
+    @Override
     public ActionBar createActionBar(Context context) {
         ActionBar actionBar = new ActionBar(context) {
 
@@ -3532,7 +3537,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             switchItem.addView(imageView, LayoutHelper.createFrame(36, 36, Gravity.CENTER));
 
             TLRPC.User user = getUserConfig().getCurrentUser();
-            avatarDrawable.setInfo(user);
+            avatarDrawable.setInfo(currentAccount, user);
             imageView.getImageReceiver().setCurrentAccount(currentAccount);
             Drawable thumb = user != null && user.photo != null && user.photo.strippedBitmap != null ? user.photo.strippedBitmap : avatarDrawable;
             imageView.setImage(ImageLocation.getForUserOrChat(user, ImageLocation.TYPE_SMALL), "50_50", ImageLocation.getForUserOrChat(user, ImageLocation.TYPE_STRIPPED), "50_50", thumb, user);
@@ -7529,7 +7534,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         boolean loadArchivedFromCache = false;
         boolean load = false;
         boolean loadFromCache = false;
-        if (viewPage.dialogsType == 7 || viewPage.dialogsType == 8) {
+        if (viewPage.dialogsType == DIALOGS_TYPE_7 || viewPage.dialogsType == DIALOGS_TYPE_8) {
             ArrayList<MessagesController.DialogFilter> dialogFilters = getMessagesController().getDialogFilters();
             if (viewPage.selectedType >= 0 && viewPage.selectedType < dialogFilters.size()) {
                 MessagesController.DialogFilter filter = dialogFilters.get(viewPage.selectedType);
@@ -7791,22 +7796,36 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 slowedReloadAfterDialogClick = true;
                 if (getMessagesController().checkCanOpenChat(args, DialogsActivity.this)) {
                     TLRPC.Chat chat = getMessagesController().getChat(-dialogId);
+                    TLRPC.Dialog dialog = getMessagesController().getDialog(dialogId);
+                    boolean needOpenChatActivity = dialog != null && dialog.view_forum_as_messages;
                     if (chat != null && chat.forum && topicId == 0) {
                         if (!LiteMode.isEnabled(LiteMode.FLAG_CHAT_FORUM_TWOCOLUMN)) {
-                            presentFragment(new TopicsFragment(args));
+                            if (needOpenChatActivity) {
+                                presentFragment(new ChatActivity(args));
+                            } else {
+                                presentFragment(new TopicsFragment(args));
+                            }
                         } else {
                             if (!canOpenInRightSlidingView) {
-                                presentFragment(new TopicsFragment(args));
-                            } else if (!searching) {
-                                if (rightSlidingDialogContainer.currentFragment != null && ((TopicsFragment) rightSlidingDialogContainer.currentFragment).getDialogId() == dialogId) {
-                                    rightSlidingDialogContainer.finishPreview();
+                                if (needOpenChatActivity) {
+                                    presentFragment(new ChatActivity(args));
                                 } else {
-                                    viewPages[0].listView.prepareSelectorForAnimation();
-                                    TopicsFragment topicsFragment = new TopicsFragment(args);
-                                    topicsFragment.parentDialogsActivity = this;
-                                    rightSlidingDialogContainer.presentFragment(getParentLayout(), topicsFragment);
+                                    presentFragment(new TopicsFragment(args));
                                 }
-                                searchViewPager.updateTabs();
+                            } else if (!searching) {
+                                if (needOpenChatActivity) {
+                                    presentFragment(new ChatActivity(args));
+                                } else {
+                                    if (rightSlidingDialogContainer.currentFragment != null && ((TopicsFragment) rightSlidingDialogContainer.currentFragment).getDialogId() == dialogId) {
+                                        rightSlidingDialogContainer.finishPreview();
+                                    } else {
+                                        viewPages[0].listView.prepareSelectorForAnimation();
+                                        TopicsFragment topicsFragment = new TopicsFragment(args);
+                                        topicsFragment.parentDialogsActivity = this;
+                                        rightSlidingDialogContainer.presentFragment(getParentLayout(), topicsFragment);
+                                    }
+                                    searchViewPager.updateTabs();
+                                }
                             }
                         }
                     } else {
@@ -8145,7 +8164,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 //            });
 //        }
 
-        if (!DialogObject.isChatDialog(dialogId) && !UserObject.isUserSelf(getMessagesController().getUser(dialogId))) {
+        if (!UserObject.isUserSelf(getMessagesController().getUser(dialogId))) {
             ActionBarMenuSubItem openProfileItem = new ActionBarMenuSubItem(getParentActivity(), false, false);
             openProfileItem.setTextAndIcon(LocaleController.getString("OpenProfile", R.string.OpenProfile), R.drawable.msg_openprofile);
             openProfileItem.setOnClickListener(v -> new CountDownTimer(700, 100) {
@@ -8158,7 +8177,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 public void onFinish() {
                     Bundle args1 = new Bundle();
                     args1.putBoolean("expandPhoto", false);
-                    args1.putLong("user_id", dialogId);
+                    if (DialogObject.isChatDialog(dialogId)) {
+                        args1.putLong("chat_id", -dialogId);
+                    } else {
+                        args1.putLong("user_id", dialogId);
+                    }
 
                     if (getMessagesController().checkCanOpenChat(args1, DialogsActivity.this)) {
                         if (searchString != null) {
@@ -8173,7 +8196,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             previewMenu[0].addView(openProfileItem);
 
             ActionBarMenuSubItem openChat = new ActionBarMenuSubItem(getParentActivity(), false, false);
-            openChat.setTextAndIcon(LocaleController.getString("SendMessage", R.string.SendMessage), R.drawable.msg_discussion);
+            openChat.setTextAndIcon(LocaleController.getString("AccDescrOpenChat", R.string.AccDescrOpenChat), R.drawable.msg_discussion);
             openChat.setMinimumWidth(160);
             openChat.setOnClickListener(e -> new CountDownTimer(700, 100) {
                 @Override
@@ -8184,7 +8207,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 @Override
                 public void onFinish() {
                     Bundle args2 = new Bundle();
-                    args2.putLong("user_id", dialogId);
+                    if (DialogObject.isChatDialog(dialogId)) {
+                        args2.putLong("chat_id", -dialogId);
+                    } else {
+                        args2.putLong("user_id", dialogId);
+                    }
+
                     if (getMessagesController().checkCanOpenChat(args2, DialogsActivity.this)) {
                         presentFragment(new ChatActivity(args2));
                     }

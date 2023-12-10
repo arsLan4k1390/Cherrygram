@@ -10,4 +10,5 @@ public class TGKitCategory {
         this.name = name;
         this.preferences = preferences;
     }
+
 }
