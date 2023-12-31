@@ -286,7 +286,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_ShowSaveMessage", showReport)
     }
 
-    var showGetReplyBackground by sharedPreferences.boolean("CP_ShowGetReplyBackground", false)
+    var showGetReplyBackground by sharedPreferences.boolean("CP_ShowGetReplyBackground", true)
     fun toggleShowGetReplyBackground() {
         showGetReplyBackground = !showGetReplyBackground
         putBoolean("CP_ShowGetReplyBackground", showGetReplyBackground)

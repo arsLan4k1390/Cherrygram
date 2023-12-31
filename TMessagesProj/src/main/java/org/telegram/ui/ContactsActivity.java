@@ -53,8 +53,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.collection.LongSparseArray;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.core.graphics.ColorUtils;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -1094,7 +1094,9 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
     @Override
     public void didReceivedNotification(int id, int account, Object... args) {
         if (id == NotificationCenter.storiesUpdated) {
-            listViewAdapter.setStories(getMessagesController().getStoriesController().getHiddenList(), true);
+            if (listViewAdapter != null) {
+                listViewAdapter.setStories(getMessagesController().getStoriesController().getHiddenList(), true);
+            }
             MessagesController.getInstance(currentAccount).getStoriesController().loadHiddenStories();
         } else if (id == NotificationCenter.contactsDidLoad) {
             if (listViewAdapter != null) {

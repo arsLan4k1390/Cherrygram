@@ -23,7 +23,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("CGP_Header_About", R.string.CGP_Header_About)) {
         category(LocaleController.getString("Info", R.string.Info)) {
             textDetail {
-                title = LocaleController.getString("CG_AppName", R.string.CG_AppName) + " " + CherrygramExtras.CG_VERSION + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING + " " + "(" + BuildVars.BUILD_VERSION + ")"
+                title = LocaleController.getString("CG_AppName", R.string.CG_AppName) + " " + CherrygramExtras.CG_VERSION + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING
                 detail = LocaleController.getString("CGP_About_Desc", R.string.CGP_About_Desc)
 
                 listener = TGKitTextDetailRow.TGTDListener {

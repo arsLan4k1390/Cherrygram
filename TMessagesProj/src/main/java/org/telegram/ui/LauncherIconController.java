@@ -67,7 +67,7 @@ public class LauncherIconController {
         SUNSET_CHERRY("CG_Icon_Sunset", R.drawable.icon_background_sunset, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunset),
         SUNRISE_CHERRY("CG_Icon_Sunrise", R.drawable.icon_background_sunrise, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunrise),
         TURBO_CHERRY("CG_Icon_Turbo", R.drawable.icon_background_turbo, R.drawable.icon_foreground_cherry, R.string.AppIconTurbo),
-        NOX_CHERRY("CG_Icon_Night", R.drawable.icon_background_nox, R.drawable.icon_foreground_cherry, R.string.AppIconNox),
+        NOX_CHERRY("CG_Icon_Night", R.mipmap.icon_background_nox, R.drawable.icon_foreground_cherry, R.string.AppIconNox),
 
         OLD("Old_Icon", R.drawable.icon_background_default, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Default),
         MONET_SAMSUNG("Monet_Icon_Samsung", R.color.icon_background_samsung, R.drawable.icon_foreground_samsung, R.string.AP_ChangeIcon_Monet_Samsung),
@@ -82,7 +82,7 @@ public class LauncherIconController {
         SUNRISE("SunriseIcon", R.drawable.icon_background_sunrise, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Sunrise),
         PREMIUM("PremiumIcon", R.drawable.icon_background_premium, R.mipmap.icon_foreground_premium, R.string.AppIconPremium, true),
         TURBO("TurboIcon", R.drawable.icon_background_turbo, R.mipmap.icon_foreground_turbo, R.string.AppIconTurbo, true),
-        NOX("NoxIcon", R.drawable.icon_background_nox, R.drawable.icon_foreground, R.string.AppIconNox, true);
+        NOX("NoxIcon", R.mipmap.icon_background_nox, R.drawable.icon_foreground, R.string.AppIconNox, true);
 
         public final String key;
         public final int background;

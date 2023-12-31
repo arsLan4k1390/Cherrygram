@@ -121,7 +121,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
                 "Write here the steps to reproduce\n\n" +
                 "Details:\n"+
                 "• Cherrygram Version: " + CherrygramExtras.INSTANCE.getCG_VERSION() + " (" + CherrygramExtras.INSTANCE.getAbiCode() + ")\n" +
-                "• Telegram Version: " + BuildVars.BUILD_VERSION_STRING + " (" + BuildVars.BUILD_VERSION + ")\n" +
+                "• Telegram Version: " + BuildVars.BUILD_VERSION_STRING + "\n" +
                 "• Device: " + AndroidUtilities.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + "\n" +
                 "• OS Version: " + Build.VERSION.RELEASE + "\n" +
                 "• Camera: " + CameraName + "\n" +
