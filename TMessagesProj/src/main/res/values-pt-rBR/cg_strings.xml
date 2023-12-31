@@ -115,6 +115,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_ToolBarShadow">Desativar a sombra da barra de ferramentas</string>
     <string name="AP_SystemFonts">Utilizar fontes do sistema</string>
     <string name="CP_Snowflakes_Header">Flocos de neve</string>
+    <string name="CP_Snowflakes_AH">Cabeçalho da aplicação</string>
     <string name="CP_PremAndAnim_Header">Animações e Recursos Premium</string>
     <string name="CP_HideStories">Ocultar Stories</string>
     <string name="CP_DisableAnimAvatars">Desativar avatares animados</string>

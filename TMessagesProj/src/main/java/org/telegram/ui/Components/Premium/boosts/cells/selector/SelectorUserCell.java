@@ -88,7 +88,7 @@ public class SelectorUserCell extends BaseCell {
         imageView.setForUserOrChat(user, avatarDrawable);
         titleTextView.setText(UserObject.getUserName(user));
         isOnline[0] = false;
-        setSubtitle(LocaleController.formatUserStatus(UserConfig.selectedAccount, user, isOnline));
+        setSubtitle(LocaleController.formatUserStatusIOS(UserConfig.selectedAccount, user, isOnline));
         subtitleTextView.setTextColor(Theme.getColor(isOnline[0] ? Theme.key_dialogTextBlue2 : Theme.key_dialogTextGray3, resourcesProvider));
         checkBox.setAlpha(1f);
     }

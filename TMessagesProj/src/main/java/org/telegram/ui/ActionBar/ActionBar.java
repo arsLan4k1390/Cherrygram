@@ -308,17 +308,17 @@ public class ActionBar extends FrameLayout {
             canvas.clipRect(0, -getTranslationY() + (occupyStatusBar ? AndroidUtilities.statusBarHeight : 0), getMeasuredWidth(), getMeasuredHeight());
         }
         boolean result = super.drawChild(canvas, child, drawingTime);
-        if (supportsHolidayImage && !titleOverlayShown && !LocaleController.isRTL && (child == titleTextView[0] || child == titleTextView[1])) {
+        if (supportsHolidayImage && !titleOverlayShown && !LocaleController.isRTL) {
             Drawable drawable = Theme.getCurrentHolidayDrawable();
-            if (drawable != null) {
+            if ((child == titleTextView[0] || child == titleTextView[1] || (child == titlesContainer && useContainerForTitles)) && drawable != null) {
 
-                SimpleTextView titleView = (SimpleTextView) child;
+                SimpleTextView titleView = child == titlesContainer ? titleTextView[0] : (SimpleTextView) child;
                 if (titleView.getVisibility() == View.VISIBLE && titleView.getText() instanceof String) {
                     TextPaint textPaint = titleView.getTextPaint();
                     textPaint.getFontMetricsInt(fontMetricsInt);
                     textPaint.getTextBounds((String) titleView.getText(), 0, 1, rect);
                     int x = titleView.getTextStartX() + Theme.getCurrentHolidayDrawableXOffset() + (rect.width() - (drawable.getIntrinsicWidth() + Theme.getCurrentHolidayDrawableXOffset())) / 2;
-                    int y = titleView.getTextStartY() + Theme.getCurrentHolidayDrawableYOffset() + (int) Math.ceil((titleView.getTextHeight() - rect.height()) / 2.0f);
+                    int y = titleView.getTextStartY() + Theme.getCurrentHolidayDrawableYOffset() + (int) Math.ceil((titleView.getTextHeight() - rect.height()) / 2.0f) + (int) (AndroidUtilities.dp(8.0f) * (1.0f - titlesContainer.getScaleY()));
                     drawable.setBounds(x, y - drawable.getIntrinsicHeight(), x + drawable.getIntrinsicWidth(), y);
                     drawable.setAlpha((int) (255 * titleView.getAlpha()));
                     drawable.draw(canvas);
@@ -328,7 +328,7 @@ public class ActionBar extends FrameLayout {
                     }
                 }
 
-                if (Theme.canStartHolidayAnimation()) {
+                if (Theme.canStartHolidayAnimation() || CherrygramConfig.INSTANCE.getDrawSnowInActionBar()) {
                     if (snowflakesEffect == null) {
                         snowflakesEffect = new SnowflakesEffect(0);
                     }

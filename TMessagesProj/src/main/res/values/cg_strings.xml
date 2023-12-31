@@ -92,6 +92,11 @@
     <string name="CG_ImportSettingsAlert">Overwrite the settings\? Importing settings from unknown sources may result the app not working.</string>
     <string name="CG_OpenStickerPack">Tap to get the sticker</string>
     <string name="CG_OpenEmojiPack">Tap to get the emoji</string>
+
+    <string name="CG_ReplyContainsEmojiPack">This reply contains **%s** emoji</string>
+    <string name="CG_GetEmojiPack">Get emoji</string>
+    <string name="CG_ReplyBackground">Reply background</string>
+    <string name="CG_ProfileBackground">Apply profile background</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -124,6 +129,7 @@
     <string name="AP_ChangeIconFilter">Use Telegram icons</string>
     <string name="AP_ChangeIconFilter_Desc">You have to re-enter this section to see the new icons</string>
     <string name="AP_ChangeIcon_Cherry" translatable="false">Cherry</string>
+    <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
     <string name="AP_ChangeIcon_Default">Default</string>
     <string name="AP_ChangeIcon_Monet_Samsung" translatable="false">Monet (OneUI &amp; MIUI)</string>
     <string name="AP_ChangeIcon_Monet_Pixel" translatable="false">Monet (Pixel)</string>
@@ -148,6 +154,7 @@
     <string name="AP_SystemFonts">Use system fonts</string>
 
     <string name="CP_Snowflakes_Header">Snowflakes</string>
+    <string name="CP_Snowflakes_AH">App header</string>
 
     <string name="CP_PremAndAnim_Header">Animations and Premium Features</string>
     <string name="CP_HideStories">Hide Stories</string>
@@ -187,7 +194,6 @@
     <string name="AP_DrawerButtonsCategory">Drawer buttons</string>
 
     <string name="AP_ProfileCategory">Profile and Contacts</string>
-    <string name="CP_LastSeenStatus">\"Last seen\" status style</string>
     <string name="AP_HideUserPhone">Hide your phone number</string>
     <string name="AP_HideUserPhoneSummary">in drawer and settings</string>
     <string name="AP_MutualContacts_Description">This is a mutual contact.</string>
@@ -231,6 +237,7 @@
     <string name="CP_AutoPauseVideo">Auto pause video</string>
     <string name="CP_AutoPauseVideo_Desc">When lock screen or switch to background</string>
     <string name="CP_DisableVibration">Disable vibration</string>
+    <string name="CP_VideoSeekDuration">Double-tap to seek video (seconds)</string>
 
     <string name="CP_Header_Notification">Notifications</string>
     <string name="CP_NotificationSound">Notification sound</string>

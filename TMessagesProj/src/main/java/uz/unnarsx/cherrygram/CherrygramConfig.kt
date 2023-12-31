@@ -51,11 +51,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
     //Profile and Contacts
-//    const val LAST_SEEN_STATUS_NONE = 0
-    const val LAST_SEEN_STATUS_ANDROID = 1
-    const val LAST_SEEN_STATUS_IOS = 2
-    var lastSeenStatus by sharedPreferences.int("CP_LastSeenStatus", LAST_SEEN_STATUS_IOS)
-
     var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
     var hidePhoneNumber by sharedPreferences.boolean("AP_HideUserPhone", false)
 
@@ -96,7 +91,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var overrideHeaderColor by sharedPreferences.boolean("AP_OverrideHeaderColor", true)
     var flatNavbar by sharedPreferences.boolean("AP_FlatNavBar", true)
     //Drawer
-    var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", false)
+    var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", true)
     fun toggleDrawerSnow() {
         drawSnowInDrawer = !drawSnowInDrawer
         putBoolean("AP_DrawSnowInDrawer", drawSnowInDrawer)
@@ -227,7 +222,8 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var tabStyleStroke by sharedPreferences.boolean("AP_TabStyleAddStroke", false)
 
     //Snowflakes
-    var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false)
+    var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false)
+    var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", true)
 
     // Chats Settings
     //Stickers
@@ -290,10 +286,10 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_ShowSaveMessage", showReport)
     }
 
-    var showEmoji by sharedPreferences.boolean("CP_ShowEmoji", false)
-    fun toggleShowEmoji() {
-        showEmoji = !showEmoji
-        putBoolean("CP_ShowEmoji", showEmoji)
+    var showGetReplyBackground by sharedPreferences.boolean("CP_ShowGetReplyBackground", false)
+    fun toggleShowGetReplyBackground() {
+        showGetReplyBackground = !showGetReplyBackground
+        putBoolean("CP_ShowGetReplyBackground", showGetReplyBackground)
     }
 
     var showJSON by sharedPreferences.boolean("CP_ShowJSON", false)
@@ -357,6 +353,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
     var disableVibration by sharedPreferences.boolean("CP_DisableVibration", false)
+    var videoSeekDuration by sharedPreferences.int("CP_VideoSeekDuration", 10)
     //Notifications
     const val NOTIF_SOUND_DISABLE = 0
     const val NOTIF_SOUND_DEFAULT = 1
@@ -491,10 +488,10 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")
     var translationTarget by sharedPreferences.string("translationTarget", "app")
     //Telegram Debug Menu
-    var openSearch by sharedPreferences.boolean("CP_OpenSearch", true)
-    fun toggleOpenSearch() {
-        openSearch = !openSearch
-        putBoolean("CP_OpenSearch", openSearch)
+    var oldTimeStyle by sharedPreferences.boolean("CP_OldTimeStyle", false)
+    fun toggleOldTimeStyle() {
+        oldTimeStyle = !oldTimeStyle
+        putBoolean("CP_OldTimeStyle", oldTimeStyle)
     }
 
     init {

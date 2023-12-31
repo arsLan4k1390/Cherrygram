@@ -1925,17 +1925,58 @@ public class LocaleController {
             int dateHour = rightNow.get(Calendar.HOUR_OF_DAY);
 
             if (dateDay == day && year == dateYear) {
-                if (CherrygramConfig.INSTANCE.getLastSeenStatus() == CherrygramConfig.LAST_SEEN_STATUS_IOS) {
-                    int diff = (int) (ConnectionsManager.getInstance(UserConfig.selectedAccount).getCurrentTime() - date / 1000) / 60;
-                    if (diff < 1) {
-                        return LocaleController.getString("CG_LastSeenNow", R.string.CG_LastSeenNow);
-                    } else if (diff < 60) {
-                        return LocaleController.formatPluralString("CG_LastSeenMinutes", diff);
-                    } else {
-                        return LocaleController.formatPluralString("CG_LastSeenHours", (int) Math.ceil(diff / 60.0f));
-                    }
+                return LocaleController.formatString("LastSeenFormatted", R.string.LastSeenFormatted, LocaleController.formatString("TodayAtFormatted", R.string.TodayAtFormatted, getInstance().formatterDay.format(new Date(date))));
+                /*int diff = (int) (ConnectionsManager.getInstance().getCurrentTime() - date) / 60;
+                if (diff < 1) {
+                    return LocaleController.getString("LastSeenNow", R.string.LastSeenNow);
+                } else if (diff < 60) {
+                    return LocaleController.formatPluralString("LastSeenMinutes", diff);
                 } else {
-                    return LocaleController.formatString("LastSeenFormatted", R.string.LastSeenFormatted, LocaleController.formatString("TodayAtFormatted", R.string.TodayAtFormatted, getInstance().formatterDay.format(new Date(date))));
+                    return LocaleController.formatPluralString("LastSeenHours", (int) Math.ceil(diff / 60.0f));
+                }*/
+            } else if (dateDay + 1 == day && year == dateYear) {
+                if (madeShorter != null) {
+                    madeShorter[0] = true;
+                    if (hour <= 6 && dateHour > 18 && is24HourFormat) {
+                        return LocaleController.formatString("LastSeenFormatted", R.string.LastSeenFormatted, getInstance().formatterDay.format(new Date(date)));
+                    }
+                    return LocaleController.formatString("YesterdayAtFormatted", R.string.YesterdayAtFormatted, getInstance().formatterDay.format(new Date(date)));
+                } else {
+                    return LocaleController.formatString("LastSeenFormatted", R.string.LastSeenFormatted, LocaleController.formatString("YesterdayAtFormatted", R.string.YesterdayAtFormatted, getInstance().formatterDay.format(new Date(date))));
+                }
+            } else if (Math.abs(System.currentTimeMillis() - date) < 31536000000L) {
+                String format = LocaleController.formatString("formatDateAtTime", R.string.formatDateAtTime, getInstance().formatterDayMonth.format(new Date(date)), getInstance().formatterDay.format(new Date(date)));
+                return LocaleController.formatString("LastSeenDateFormatted", R.string.LastSeenDateFormatted, format);
+            } else {
+                String format = LocaleController.formatString("formatDateAtTime", R.string.formatDateAtTime, getInstance().formatterYear.format(new Date(date)), getInstance().formatterDay.format(new Date(date)));
+                return LocaleController.formatString("LastSeenDateFormatted", R.string.LastSeenDateFormatted, format);
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        return "LOC_ERR";
+    }
+
+    public static String formatDateOnlineIOS(long date, boolean[] madeShorter) {
+        try {
+            date *= 1000;
+            Calendar rightNow = Calendar.getInstance();
+            int day = rightNow.get(Calendar.DAY_OF_YEAR);
+            int year = rightNow.get(Calendar.YEAR);
+            int hour = rightNow.get(Calendar.HOUR_OF_DAY);
+            rightNow.setTimeInMillis(date);
+            int dateDay = rightNow.get(Calendar.DAY_OF_YEAR);
+            int dateYear = rightNow.get(Calendar.YEAR);
+            int dateHour = rightNow.get(Calendar.HOUR_OF_DAY);
+
+            if (dateDay == day && year == dateYear) {
+                int diff = (int) (ConnectionsManager.getInstance(UserConfig.selectedAccount).getCurrentTime() - date / 1000) / 60;
+                if (diff < 1) {
+                    return LocaleController.getString("CG_LastSeenNow", R.string.CG_LastSeenNow);
+                } else if (diff < 60) {
+                    return LocaleController.formatPluralString("CG_LastSeenMinutes", diff);
+                } else {
+                    return LocaleController.formatPluralString("CG_LastSeenHours", (int) Math.ceil(diff / 60.0f));
                 }
             } else if (dateDay + 1 == day && year == dateYear) {
                 if (madeShorter != null) {
@@ -2193,6 +2234,10 @@ public class LocaleController {
         return formatUserStatus(currentAccount, user, null);
     }
 
+    public static String formatUserStatusIOS(int currentAccount, TLRPC.User user) {
+        return formatUserStatusIOS(currentAccount, user, null);
+    }
+
     public static String formatJoined(long date) {
         try {
             date *= 1000;
@@ -2222,6 +2267,10 @@ public class LocaleController {
 
     public static String formatUserStatus(int currentAccount, TLRPC.User user, boolean[] isOnline) {
         return formatUserStatus(currentAccount, user, isOnline, null);
+    }
+
+    public static String formatUserStatusIOS(int currentAccount, TLRPC.User user, boolean[] isOnline) {
+        return formatUserStatusIOS(currentAccount, user, isOnline, null);
     }
 
     public static String formatUserStatus(int currentAccount, TLRPC.User user, boolean[] isOnline, boolean[] madeShorter) {
@@ -2262,6 +2311,49 @@ public class LocaleController {
                     return getString("WithinAMonth", R.string.WithinAMonth);
                 } else {
                     return formatDateOnline(user.status.expires, madeShorter);
+                }
+            }
+        }
+    }
+
+    public static String formatUserStatusIOS(int currentAccount, TLRPC.User user, boolean[] isOnline, boolean[] madeShorter) {
+        if (user != null && user.status != null && user.status.expires == 0) {
+            if (user.status instanceof TLRPC.TL_userStatusRecently) {
+                user.status.expires = -100;
+            } else if (user.status instanceof TLRPC.TL_userStatusLastWeek) {
+                user.status.expires = -101;
+            } else if (user.status instanceof TLRPC.TL_userStatusLastMonth) {
+                user.status.expires = -102;
+            }
+        }
+        if (user != null && user.status != null && user.status.expires <= 0) {
+            if (MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(user.id)) {
+                if (isOnline != null) {
+                    isOnline[0] = true;
+                }
+                return getString("Online", R.string.Online);
+            }
+        }
+        if (user == null || user.status == null || user.status.expires == 0 || UserObject.isDeleted(user) || user instanceof TLRPC.TL_userEmpty) {
+            return getString("ALongTimeAgo", R.string.ALongTimeAgo);
+        } else {
+            int currentTime = ConnectionsManager.getInstance(currentAccount).getCurrentTime();
+            if (user.status.expires > currentTime) {
+                if (isOnline != null) {
+                    isOnline[0] = true;
+                }
+                return getString("Online", R.string.Online);
+            } else {
+                if (user.status.expires == -1) {
+                    return getString("Invisible", R.string.Invisible);
+                } else if (user.status.expires == -100) {
+                    return getString("Lately", R.string.Lately);
+                } else if (user.status.expires == -101) {
+                    return getString("WithinAWeek", R.string.WithinAWeek);
+                } else if (user.status.expires == -102) {
+                    return getString("WithinAMonth", R.string.WithinAMonth);
+                } else {
+                    return formatDateOnlineIOS(user.status.expires, madeShorter);
                 }
             }
         }

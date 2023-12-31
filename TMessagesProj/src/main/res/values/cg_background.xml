@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="cg_splash_background">#FFFFFF</color>
+    <color name="cg_splash_navigation_bar">#FFF</color>
+    <color name="cg_background">#A33654</color>
+    <color name="cg_foreground">#FFFFFF</color>
+</resources>

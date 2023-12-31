@@ -113,6 +113,7 @@
     <string name="AP_ToolBarShadow">禁用工具栏阴影</string>
     <string name="AP_SystemFonts">使用系统字体</string>
     <string name="CP_Snowflakes_Header">雪花效果</string>
+    <string name="CP_Snowflakes_AH">应用顶栏</string>
     <string name="CP_PremAndAnim_Header">动画和高级功能</string>
     <string name="CP_HideStories">隐藏动态</string>
     <string name="CP_DisableAnimAvatars">禁用动态头像</string>

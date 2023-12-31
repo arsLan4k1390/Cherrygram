@@ -113,6 +113,7 @@
     <string name="AP_ToolBarShadow">停用工具列陰影</string>
     <string name="AP_SystemFonts">使用系統字型</string>
     <string name="CP_Snowflakes_Header">雪花效果</string>
+    <string name="CP_Snowflakes_AH">程式頂部</string>
     <string name="CP_PremAndAnim_Header">動畫和進階功能</string>
     <string name="CP_HideStories">隱藏限時動態</string>
     <string name="CP_DisableAnimAvatars">停用動畫大頭貼</string>

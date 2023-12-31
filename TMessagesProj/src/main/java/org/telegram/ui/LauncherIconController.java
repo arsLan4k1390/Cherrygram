@@ -54,6 +54,8 @@ public class LauncherIconController {
 
     public enum LauncherIcon {
         CHERRY("CG_Icon_Cherry", R.drawable.icon_background_default, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Cherry),
+        CHERRY_NY("CG_Icon_Cherry_NY", R.drawable.icon_background_cherry_ny, R.drawable.icon_foreground_cherry_ny, R.string.AP_ChangeIcon_Cherry_NY),
+        DARK_NY("CG_Icon_Dark_NY", R.drawable.icon_background_dark_ny, R.drawable.icon_foreground_cherry_ny, R.string.AP_ChangeIcon_Cherry_NY),
         MONET_CHERRY_SAMSUNG("CG_Icon_Monet_Samsung", R.color.icon_background_cherry_samsung, R.drawable.icon_foreground_cherry_samsung, R.string.AP_ChangeIcon_Monet_Samsung),
         MONET_CHERRY_PIXEL("CG_Icon_Monet_Pixel", R.color.icon_background_cherry_pixel, R.drawable.icon_foreground_cherry_pixel, R.string.AP_ChangeIcon_Monet_Pixel),
         DARK_CHERRY("CG_Icon_Dark", R.drawable.icon_background_dark, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Dark),

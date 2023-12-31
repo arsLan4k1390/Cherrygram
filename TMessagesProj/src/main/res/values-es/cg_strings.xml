@@ -113,6 +113,7 @@
     <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
     <string name="AP_SystemFonts">Usar fuentes del sistema</string>
     <string name="CP_Snowflakes_Header">Copos de nieve</string>
+    <string name="CP_Snowflakes_AH">Encabezado de aplicaciones</string>
     <string name="CP_PremAndAnim_Header">Animaciones y funciones Premium</string>
     <string name="CP_HideStories">Ocultar historias</string>
     <string name="CP_DisableAnimAvatars">Deshabilitar avatares animados</string>

@@ -294,6 +294,28 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
             }
         }
 
+        category(LocaleController.getString("CP_VideoSeekDuration", R.string.CP_VideoSeekDuration)) {
+            slider {
+                contract = object : TGSLContract {
+                    override fun setValue(value: Int) {
+                        CherrygramConfig.videoSeekDuration = value
+                    }
+
+                    override fun getPreferenceValue(): Int {
+                        return CherrygramConfig.videoSeekDuration
+                    }
+
+                    override fun getMin(): Int {
+                        return 0
+                    }
+
+                    override fun getMax(): Int {
+                        return 25
+                    }
+                }
+            }
+        }
+
         category(LocaleController.getString("AS_Header_Notification", R.string.CP_Header_Notification)) {
             list {
                 title = LocaleController.getString("CP_NotificationSound", R.string.CP_NotificationSound)

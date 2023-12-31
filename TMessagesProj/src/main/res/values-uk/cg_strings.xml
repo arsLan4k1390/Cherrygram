@@ -111,6 +111,7 @@
     <string name="AP_ToolBarShadow">Відключити тінь у тулбару</string>
     <string name="AP_SystemFonts">Використовувати системний шрифт</string>
     <string name="CP_Snowflakes_Header">Сніжинки</string>
+    <string name="CP_Snowflakes_AH">Заголовок</string>
     <string name="CP_PremAndAnim_Header">Анімації та Преміум можливості</string>
     <string name="CP_HideStories">Приховати історії</string>
     <string name="CP_DisableAnimAvatars">Вимкнути анімовані аватарки</string>

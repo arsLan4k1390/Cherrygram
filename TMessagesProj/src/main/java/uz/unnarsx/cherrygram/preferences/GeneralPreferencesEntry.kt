@@ -68,25 +68,6 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
         }
 
         category(LocaleController.getString("AP_ProfileCategory", R.string.AP_ProfileCategory)) {
-            list {
-                title = LocaleController.getString("CP_LastSeenStatus", R.string.CP_LastSeenStatus)
-
-                contract({
-                    return@contract listOf(
-//                        Pair(CherrygramConfig.LAST_SEEN_STATUS_NONE, LocaleController.getString("Disable", R.string.Disable)),
-                        Pair(CherrygramConfig.LAST_SEEN_STATUS_ANDROID, LocaleController.getString("Default", R.string.Default)),
-                        Pair(CherrygramConfig.LAST_SEEN_STATUS_IOS, "IOS/TDesktop")
-                    )
-                }, {
-                    return@contract when (CherrygramConfig.lastSeenStatus) {
-                        CherrygramConfig.LAST_SEEN_STATUS_ANDROID -> LocaleController.getString("Default", R.string.Default)
-                        CherrygramConfig.LAST_SEEN_STATUS_IOS -> "IOS/TDesktop"
-                        else -> LocaleController.getString("Disable", R.string.Disable)
-                    }
-                }) {
-                    CherrygramConfig.lastSeenStatus = it
-                }
-            }
             switch {
                 title = LocaleController.getString("CP_ConfirmCalls", R.string.CP_ConfirmCalls)
 

@@ -90,6 +90,11 @@
     <string name="CG_ImportSettingsAlert">Перезаписать настройки приложения\? Импорт настроек из ненадежных источников может привести к неработоспособности приложения.</string>
     <string name="CG_OpenStickerPack">Нажмите для открытия стикера</string>
     <string name="CG_OpenEmojiPack">Нажмите для открытия эмодзи</string>
+
+    <string name="CG_ReplyContainsEmojiPack">В этом реплае эмодзи из набора **%s**</string>
+    <string name="CG_GetEmojiPack">Получить эмодзи</string>
+    <string name="CG_ReplyBackground">Фон ответа</string>
+    <string name="CG_ProfileBackground">Применить фон профиля</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -119,6 +124,7 @@
     <string name="AP_Old_Notification_Icon">Стандартная иконка уведомлений (Telegram)</string>
     <string name="AP_ChangeIconFilter">Использовать иконки Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Вам нужно перезайти в этот раздел, чтобы увидеть новые иконки</string>
+    <string name="AP_ChangeIcon_Cherry_NY">Новогодняя</string>
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
     <string name="AP_ChangeIcon_Dark">Тёмная</string>
     <string name="AP_ChangeIcon_White">Белая</string>
@@ -141,6 +147,7 @@
     <string name="AP_SystemFonts">Использовать системный шрифт</string>
 
     <string name="CP_Snowflakes_Header">Снежинки</string>
+    <string name="CP_Snowflakes_AH">Заголовок приложения</string>
 
     <string name="CP_PremAndAnim_Header">Анимации и Premium функции</string>
     <string name="CP_HideStories">Скрыть Истории</string>
@@ -180,7 +187,6 @@
     <string name="AP_DrawerButtonsCategory">Кнопки меню</string>
 
     <string name="AP_ProfileCategory">Профиль и контакты</string>
-    <string name="CP_LastSeenStatus">Стиль статуса \"В сети\"</string>
     <string name="AP_HideUserPhone">Скрыть Ваш номер телефона</string>
     <string name="AP_HideUserPhoneSummary">В боковом меню и настройках</string>
     <string name="AP_MutualContacts_Description">Этот контакт является взаимным.</string>
@@ -222,6 +228,7 @@
     <string name="CP_AutoPauseVideo">Останавливать видео</string>
     <string name="CP_AutoPauseVideo_Desc">При блокировке экрана или сворачивании приложения</string>
     <string name="CP_DisableVibration">Отключить вибрацию</string>
+    <string name="CP_VideoSeekDuration">Дабл-тап для перемотки видео (секунды)</string>
 
     <string name="CP_Header_Notification">Уведомления</string>
     <string name="CP_NotificationSound">Звук уведомления</string>

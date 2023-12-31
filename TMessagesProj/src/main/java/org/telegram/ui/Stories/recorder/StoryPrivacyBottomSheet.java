@@ -2735,7 +2735,7 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
                 setSubtitle(LocaleController.getString(R.string.VoipGroupPersonalAccount));
                 subtitleTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray3, resourcesProvider));
             } else {
-                setSubtitle(LocaleController.formatUserStatus(UserConfig.selectedAccount, user, isOnline));
+                setSubtitle(LocaleController.formatUserStatusIOS(UserConfig.selectedAccount, user, isOnline));
                 subtitleTextView.setTextColor(Theme.getColor(isOnline[0] ? Theme.key_dialogTextBlue2 : Theme.key_dialogTextGray3, resourcesProvider));
             }
 

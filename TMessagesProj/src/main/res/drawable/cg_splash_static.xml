@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/cg_splash_static_background"/>
+    <item android:gravity="center" android:drawable="@drawable/cg_splash_static_foreground"/>
+</layer-list>

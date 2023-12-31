@@ -29,7 +29,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ConfigurationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.DataSetObserver;
@@ -479,7 +478,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     private final static int restart = 1000;
     private final static int boost_channel = 1001;
-    private final static int background_emoji = 1002;
+    private final static int get_profile_background = 1002;
+    private final static int apply_profile_background = 1003;
 
     private Rect rect = new Rect();
 
@@ -2108,8 +2108,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (button != null) {
                         button.setTextColor(getThemedColor(Theme.key_text_RedBold));
                     }
-                } else if (id == background_emoji) {
-                    getBackgroundEmoji();
+                } else if (id == get_profile_background) {
+                    getProfileBackground();
+                } else if (id == apply_profile_background) {
+                    applyProfileBackground();
                 } else if (id == leave_group) {
                     leaveChatPressed();
                 } else if (id == delete_topic) {
@@ -3663,7 +3665,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 LocaleController.getString("DebugMenuCallSettings", R.string.DebugMenuCallSettings),
                                 null,
 //                                BuildVars.DEBUG_PRIVATE_VERSION || ApplicationLoader.isStandaloneBuild() ? LocaleController.getString("DebugMenuCheckAppUpdate", R.string.DebugMenuCheckAppUpdate) : null,
-                                CherrygramConfig.INSTANCE.getOpenSearch() ? "Disable long click to open search" : "Enable long click to open search",
+                                CherrygramConfig.INSTANCE.getOldTimeStyle() ? "Enable IOS time style in chats" : "Disable IOS time style in chats",
                                 LocaleController.getString("DebugMenuReadAllDialogs", R.string.DebugMenuReadAllDialogs),
                                 BuildVars.DEBUG_PRIVATE_VERSION ? (SharedConfig.disableVoiceAudioEffects ? "Enable voip audio effects" : "Disable voip audio effects") : null,
                                 BuildVars.DEBUG_PRIVATE_VERSION ? "Clean app update" : null,
@@ -3732,7 +3734,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 SharedConfig.toggleRoundCamera16to9();
                             } else if (which == 9) {
 //                                ((LaunchActivity) getParentActivity()).checkAppUpdate(true);
-                                CherrygramConfig.INSTANCE.toggleOpenSearch();
+                                CherrygramConfig.INSTANCE.toggleOldTimeStyle();
                             } else if (which == 10) {
                                 getMessagesStorage().readAllDialogs(-1);
                             } else if (which == 11) {
@@ -8886,8 +8888,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     otherItem.addSubItem(delete_contact, R.drawable.msg_delete, LocaleController.getString("DeleteContact", R.string.DeleteContact));
                 }
                 long emojiDocumentId = UserObject.getProfileEmojiId(getMessagesController().getUser(userId));
-                if (!UserObject.isUserSelf(user) && currentEncryptedChat == null && !isBot && emojiDocumentId != 0) {
-                    otherItem.addSubItem(background_emoji, R.drawable.msg_emoji_stickers, LocaleController.getString("AddManyEmojiCount_one", R.string.AddManyEmojiCount_one));
+                if (getUserConfig().isPremium() && !UserObject.isUserSelf(user) && currentEncryptedChat == null && !isBot && emojiDocumentId != 0) {
+                    otherItem.addSubItem(get_profile_background, R.drawable.msg_emoji_stickers, LocaleController.getString("CG_GetEmojiPack", R.string.CG_GetEmojiPack));
+                    if (UserObject.getProfileEmojiId(getUserConfig().getCurrentUser()) != emojiDocumentId) {
+                        otherItem.addSubItem(apply_profile_background, R.drawable.msg_emoji_stickers, LocaleController.getString("CG_ProfileBackground", R.string.CG_ProfileBackground));
+                    }
                 }
                 if (!UserObject.isDeleted(user) && !isBot && currentEncryptedChat == null && !userBlocked && userId != 333000 && userId != 777000 && userId != 42777) {
                     if (!user.premium && !BuildVars.IS_BILLING_UNAVAILABLE && !user.self && userInfo != null && !getMessagesController().premiumLocked && !userInfo.premium_gifts.isEmpty()) {
@@ -11814,14 +11819,46 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         Browser.openUrl(getContext(), ChannelBoostUtilities.createLink(currentAccount, getDialogId()));
     }
 
-    private void getBackgroundEmoji() {
+    private void getProfileBackground() {
         long emojiDocumentId = UserObject.getProfileEmojiId(getMessagesController().getUser(getDialogId()));
+
         AnimatedEmojiDrawable.getDocumentFetcher(currentAccount).fetchDocument(emojiDocumentId, document -> AndroidUtilities.runOnUIThread(() -> {
             ArrayList<TLRPC.InputStickerSet> inputSets = new ArrayList<>(1);
             inputSets.add(MessageObject.getInputStickerSet(document));
             EmojiPacksAlert alert = new EmojiPacksAlert(this, getParentActivity(), getResourceProvider(), inputSets);
             alert.show();
         }));
+    }
+
+    private void applyProfileBackground() {
+        long emojiDocumentId = UserObject.getProfileEmojiId(getMessagesController().getUser(getDialogId()));
+        int colorId = UserObject.getProfileColorId(getMessagesController().getUser(getDialogId()));
+        TLRPC.User me = getUserConfig().getCurrentUser();
+
+        if (me.profile_color == null) {
+            me.profile_color = new TLRPC.TL_peerColor();
+        }
+        TLRPC.TL_account_updateColor req = new TLRPC.TL_account_updateColor();
+        req.for_profile = true;
+        me.flags2 |= 512;
+        if (colorId < 0) {
+            me.profile_color.flags &=~ 1;
+        } else {
+            me.profile_color.flags |= 1;
+            req.flags |= 4;
+            req.color = me.profile_color.color = colorId;
+        }
+        if (emojiDocumentId != 0) {
+            req.flags |= 1;
+            me.profile_color.flags |= 2;
+            req.background_emoji_id = me.profile_color.background_emoji_id = emojiDocumentId;
+        } else {
+            me.profile_color.flags &=~ 2;
+            me.profile_color.background_emoji_id = 0;
+        }
+        getConnectionsManager().sendRequest(req, null);
+
+        presentFragment(new PeerColorActivity(0).startOnProfile().setOnApplied(this));
     }
 
     public String getLink(String username, int topicId) {

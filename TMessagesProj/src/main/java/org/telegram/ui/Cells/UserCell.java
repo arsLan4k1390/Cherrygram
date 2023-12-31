@@ -605,7 +605,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                     statusTextView.setText(LocaleController.getString("Online", R.string.Online));
                 } else {
                     statusTextView.setTextColor(statusColor);
-                    statusTextView.setText(LocaleController.formatUserStatus(currentAccount, currentUser));
+                    statusTextView.setText(LocaleController.formatUserStatusIOS(currentAccount, currentUser));
                 }
             }
         }

@@ -298,7 +298,7 @@ public class AlertDialogSwitchers {
                     break;
                 }
                 case 8: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("AddManyEmojiCount_one", R.string.AddManyEmojiCount_one), CherrygramConfig.INSTANCE.getShowEmoji(), R.drawable.msg_emoji_stickers, false);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("CG_ReplyBackground", R.string.CG_ReplyBackground), CherrygramConfig.INSTANCE.getShowGetReplyBackground(), R.drawable.msg_emoji_stickers, false);
                     break;
                 }
                 case 9: {
@@ -353,8 +353,8 @@ public class AlertDialogSwitchers {
                         break;
                     }
                     case 8: {
-                        CherrygramConfig.INSTANCE.toggleShowEmoji();
-                        textCell.setChecked(CherrygramConfig.INSTANCE.getShowEmoji());
+                        CherrygramConfig.INSTANCE.toggleShowGetReplyBackground();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getShowGetReplyBackground());
                         break;
                     }
                     case 9: {

@@ -1043,7 +1043,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private final static int OPTION_VIEW_HISTORY = 2010;
     private final static int OPTION_DOWNLOAD_STICKER = 2011;
     private final static int OPTION_FORWARD_WO_AUTHOR = 2012;
-    private final static int OPTION_GET_BACKGROUND_EMOJI = 2013;
+    private final static int OPTION_GET_REPLY_BACKGROUND = 2013;
     private final static int OPTION_DETAILS = 2014;
     private final static int OPTION_TRANSLATE_DOUBLE_TAP = 2015;
 
@@ -3553,12 +3553,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         avatarContainer.allowDrawStories = dialog_id < 0;
         avatarContainer.setClipChildren(false);
         avatarContainer.setOnLongClickListener(v -> { //Open search after long tap on chat title
-            if (CherrygramConfig.INSTANCE.getOpenSearch()) {
-                if (isComments) {
-                    if (searchItem != null) searchItem.openSearch(true);
-                } else {
-                    openSearchWithText(null);
-                }
+            if (isComments) {
+                if (searchItem != null) searchItem.openSearch(true);
+            } else {
+                openSearchWithText(null);
             }
             return true;
         });
@@ -25676,15 +25674,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     }
                 }
 
-                if (CherrygramConfig.INSTANCE.getShowEmoji()) {
-                    try {
-                        long emojiDocumentId = UserObject.getEmojiId(getMessagesController().getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
-                        if (emojiDocumentId != 0) {
-                            items.add(LocaleController.getString("AddManyEmojiCount_one", R.string.AddManyEmojiCount_one));
-                            options.add(OPTION_GET_BACKGROUND_EMOJI);
-                            icons.add(R.drawable.msg_emoji_stickers);
-                        }
-                    } catch (Exception ignored) {}
+                if (CherrygramConfig.INSTANCE.getShowGetReplyBackground() && getUserConfig().isPremium() && selectedObject.replyMessageObject != null) {
+                    long emojiDocumentId = UserObject.getEmojiId(getMessagesController().getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
+                    if (emojiDocumentId != 0 && UserObject.getEmojiId(getUserConfig().getCurrentUser()) != emojiDocumentId) {
+                        items.add(LocaleController.getString("CG_ReplyBackground", R.string.CG_ReplyBackground));
+                        options.add(OPTION_GET_REPLY_BACKGROUND);
+                        icons.add(R.drawable.msg_emoji_stickers);
+                    }
                 }
 
                 if (CherrygramConfig.INSTANCE.getShowJSON()) {
@@ -27993,14 +27989,20 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 presentFragment(new JsonHelper(selectedObject));
                 break;
             }
-            case OPTION_GET_BACKGROUND_EMOJI: {
+            case OPTION_GET_REPLY_BACKGROUND: {
                 long emojiDocumentId = UserObject.getEmojiId(getMessagesController().getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
-                AnimatedEmojiDrawable.getDocumentFetcher(currentAccount).fetchDocument(emojiDocumentId, document -> AndroidUtilities.runOnUIThread(() -> {
+                TLRPC.Document document = AnimatedEmojiDrawable.findDocument(currentAccount, emojiDocumentId);
+
+                Bulletin bulletin = BulletinFactory.of(ChatActivity.this).createReplyContainsEmojiBulletin(document, selectedObject, set -> {
                     ArrayList<TLRPC.InputStickerSet> inputSets = new ArrayList<>(1);
-                    inputSets.add(MessageObject.getInputStickerSet(document));
-                    EmojiPacksAlert alert = new EmojiPacksAlert(this, getParentActivity(), getResourceProvider(), inputSets);
-                    alert.show();
-                }));
+                    inputSets.add(set);
+                    EmojiPacksAlert alert = new EmojiPacksAlert(ChatActivity.this, getParentActivity(), themeDelegate, inputSets);
+                    alert.setCalcMandatoryInsets(isKeyboardVisible());
+                    showDialog(alert);
+                });
+                if (bulletin != null) {
+                    bulletin.show();
+                }
                 break;
             }
             case OPTION_VIEW_HISTORY: {
@@ -34851,5 +34853,40 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
             }
         }
+    }
+
+    public static void applyReplyBackground(MessageObject selectedObject, BaseFragment fragment) {
+        long emojiDocumentId = UserObject.getEmojiId(MessagesController.getInstance(UserConfig.selectedAccount).getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
+        int colorId = UserObject.getColorId(MessagesController.getInstance(UserConfig.selectedAccount).getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
+        TLRPC.User me = UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser();
+
+        TLRPC.TL_account_updateColor req = new TLRPC.TL_account_updateColor();
+        me.flags2 |= 256;
+        me.color.flags |= 1;
+        req.flags |= 4;
+        req.color = me.color.color = colorId;
+        if (emojiDocumentId != 0) {
+            req.flags |= 1;
+            me.color.flags |= 2;
+            req.background_emoji_id = me.color.background_emoji_id = emojiDocumentId;
+        } else {
+            me.color.flags &=~ 2;
+            me.color.background_emoji_id = 0;
+        }
+        ConnectionsManager.getInstance(UserConfig.selectedAccount).sendRequest(req, null);
+
+        fragment.presentFragment(new PeerColorActivity(0).setOnApplied(fragment));
+    }
+
+    public static void openEmojiPack(MessageObject selectedObject, BaseFragment fragment) {
+        long emojiDocumentId = UserObject.getEmojiId(MessagesController.getInstance(UserConfig.selectedAccount).getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
+
+        AnimatedEmojiDrawable.getDocumentFetcher(UserConfig.selectedAccount).fetchDocument(emojiDocumentId, document -> AndroidUtilities.runOnUIThread(() -> {
+            ArrayList<TLRPC.InputStickerSet> inputSets = new ArrayList<>(1);
+            inputSets.add(MessageObject.getInputStickerSet(document));
+            EmojiPacksAlert alert = new EmojiPacksAlert(fragment, fragment.getParentActivity(), fragment.getResourceProvider(), inputSets);
+            alert.setDimBehindAlpha(100);
+            alert.show();
+        }));
     }
 }

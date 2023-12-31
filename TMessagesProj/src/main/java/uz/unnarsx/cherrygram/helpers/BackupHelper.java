@@ -157,7 +157,6 @@ public class BackupHelper {
         mainconfig.add("AP_SystemEmoji");
         mainconfig.add("AP_SystemFonts");
         mainconfig.add("AP_Old_Notification_Icon");
-        mainconfig.add("CP_LastSeenStatus");
         mainconfig.add("CP_ConfirmCalls");
         mainconfig.add("AP_HideUserPhone");
         mainconfig.add("AP_ShowID_DC");
@@ -203,6 +202,7 @@ public class BackupHelper {
         mainconfig.add("AP_TabMode");
         mainconfig.add("AP_TabStyle");
         mainconfig.add("AP_TabStyleAddStroke");
+        mainconfig.add("AP_DrawSnowInActionBar");
         mainconfig.add("AP_DrawSnowInChat");
         mainconfig.add("CP_BlockStickers");
         mainconfig.add("CP_Slider_StickerAmplifier");
@@ -235,6 +235,7 @@ public class BackupHelper {
         mainconfig.add("CP_PlayVideo");
         mainconfig.add("CP_AutoPauseVideo");
         mainconfig.add("CP_DisableVibration");
+        mainconfig.add("CP_VideoSeekDuration");
         mainconfig.add("CP_Notification_Sound");
         mainconfig.add("CP_VibrationInChats");
         mainconfig.add("CP_SilenceNonContacts");
@@ -253,7 +254,7 @@ public class BackupHelper {
         mainconfig.add("EP_UploadSpeedBoost");
         mainconfig.add("EP_SlowNetworkMode");
         mainconfig.add("AP_Filter_Launcher_Icon");
-        mainconfig.add("CP_OpenSearch");
+        mainconfig.add("CP_OldTimeStyle");
         //cherry
 
         spToJSON("mainconfig", configJson, mainconfig::contains);

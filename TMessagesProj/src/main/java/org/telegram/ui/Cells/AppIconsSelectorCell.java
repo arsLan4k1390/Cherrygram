@@ -81,49 +81,30 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                 IconHolderView holderView = (IconHolderView) holder.itemView;
                 LauncherIconController.LauncherIcon icon = availableIcons.get(position);
-                if (icon == LauncherIconController.LauncherIcon.MONET_SAMSUNG && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
+                if ((icon == LauncherIconController.LauncherIcon.MONET_SAMSUNG ||
+                        icon == LauncherIconController.LauncherIcon.MONET_PIXEL ||
+                        icon == LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG ||
+                        icon == LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL) && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
                     return;
-                } else if (icon == LauncherIconController.LauncherIcon.MONET_PIXEL && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.DARK && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.WHITE && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.LAGUNA && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.AQUA && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.GREEN && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.LAVANDA && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.SUNSET && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.SUNRISE && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.DARK_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.WHITE_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.LAGUNA_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.AQUA_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.GREEN_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.LAVANDA_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.SUNSET_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.SUNRISE_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.TURBO_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
-                    return;
-                } else if (icon == LauncherIconController.LauncherIcon.NOX_CHERRY && !(Build.VERSION.SDK_INT >= 26)) {
+                } else if ((icon == LauncherIconController.LauncherIcon.DARK_NY ||
+                        icon == LauncherIconController.LauncherIcon.DARK ||
+                        icon == LauncherIconController.LauncherIcon.WHITE ||
+                        icon == LauncherIconController.LauncherIcon.LAGUNA ||
+                        icon == LauncherIconController.LauncherIcon.AQUA ||
+                        icon == LauncherIconController.LauncherIcon.GREEN ||
+                        icon == LauncherIconController.LauncherIcon.LAVANDA ||
+                        icon == LauncherIconController.LauncherIcon.SUNSET ||
+                        icon == LauncherIconController.LauncherIcon.SUNRISE ||
+                        icon == LauncherIconController.LauncherIcon.DARK_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.WHITE_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.LAGUNA_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.AQUA_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.GREEN_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.LAVANDA_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.SUNSET_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.SUNRISE_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.TURBO_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.NOX_CHERRY) && !(Build.VERSION.SDK_INT >= 26)) {
                     return;
                 }
                 holderView.bind(icon);
@@ -207,6 +188,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
         }
         if (!(Build.VERSION.SDK_INT >= 26)) {
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_NY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.WHITE));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.LAGUNA));
@@ -252,6 +234,8 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
         }
         if (CherrygramConfig.INSTANCE.getFilterLauncherIcon()) {
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.CHERRY_NY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_NY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY));
