@@ -12,6 +12,17 @@
     <string name="CG_TestBackendOn">Гэты аккаўнт ужо падключыцеся да тэставаму серверу.</string>
     <string name="CG_TestBackendOff">Гэта аккаўнт ужо падключыцеся да тэставаму серверу.</string>
     <!--Sign in screen-->
+    <!--Last seen status-->
+    <string name="CG_LastSeenNow">apošni raz tolki što</string>
+    <string name="CG_LastSeenMinutes_one">apošni raz  %1$d chvilinu tamu</string>
+    <string name="CG_LastSeenMinutes_few">apošni raz %1$d chvilinaŭ tamu</string>
+    <string name="CG_LastSeenMinutes_many">apošni raz %1$d chvilinaŭ tamu</string>
+    <string name="CG_LastSeenMinutes_other">apošni raz %1$d chvilinaŭ tamu</string>
+    <string name="CG_LastSeenHours_one">apošni raz %1$d hadzinu tamu</string>
+    <string name="CG_LastSeenHours_few">apošni raz %1$d hadzin tamu</string>
+    <string name="CG_LastSeenHours_many">apošni raz %1$d hadzin tamu</string>
+    <string name="CG_LastSeenHours_other">apošni raz %1$d hadzin tamu</string>
+    <!--Last seen status-->
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">Тып значка ўкладкі</string>
     <string name="CG_FoldersTypeTitles">Толькі загалозагаловак</string>
@@ -67,6 +78,10 @@
     <string name="CG_ImportSettingsAlert">Перазапісаць налады дадатку\? Імпарт налад з ненадзейных крыніц можа прывесці да непрацаздольнасці дадатку.</string>
     <string name="CG_OpenStickerPack">Націсніце для адкрыцця стыкеру</string>
     <string name="CG_OpenEmojiPack">Націсніце для адкрыцця эмодзі</string>
+    <string name="CG_ReplyContainsEmojiPack">Hety adkaz utrymvaje **%s** emodzi</string>
+    <string name="CG_GetEmojiPack">Atrymać emodzi</string>
+    <string name="CG_ReplyBackground">Fon adkazu</string>
+    <string name="CG_ProfileBackground">Užyć fon profilu</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -92,6 +107,7 @@
     <string name="AP_Old_Notification_Icon">Стандартна іконка паведамленняў (Telegram)</string>
     <string name="AP_ChangeIconFilter">Карыстацца іконкамі Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Вам трэба перазайсці ў гэты радзел, каб убачыць новыя іконкі</string>
+    <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
     <string name="AP_ChangeIcon_Default">Па ўмаўчанні</string>
     <string name="AP_ChangeIcon_Dark">Цёмны</string>
     <string name="AP_ChangeIcon_White">Белая</string>
@@ -113,6 +129,7 @@
     <string name="AP_ToolBarShadow">Адключыць цень у тулбара</string>
     <string name="AP_SystemFonts">Выкарыстоўваць сістэмны шрыфт</string>
     <string name="CP_Snowflakes_Header">Сняжынкі</string>
+    <string name="CP_Snowflakes_AH">App header</string>
     <string name="CP_PremAndAnim_Header">Анімацыі і Premium функцыі</string>
     <string name="CP_HideStories">Схаваць гісторыі</string>
     <string name="CP_DisableAnimAvatars">Адключыць анімаваныя аватары</string>
@@ -185,20 +202,20 @@
     <string name="CP_AutoPauseVideo">Запыніць відэа</string>
     <string name="CP_AutoPauseVideo_Desc">Пры блакаванні экрана ці згортванні дадатку</string>
     <string name="CP_DisableVibration">Адключыць вібрацыю</string>
+    <string name="CP_VideoSeekDuration">Naciśnicie dvojčy, kab znajści videa (dva razy)</string>
     <string name="CP_Header_Notification">Апавяшчэнні</string>
     <string name="CP_NotificationSound">Гук паведамлення</string>
     <string name="CP_VibrateInChats">Вібрацыя чату</string>
     <string name="CP_VibrateInChats_Desc">Выдаваць кароткую вібрацыю пры атрыманні паведамлення ў чатах</string>
     <string name="CP_SilenceNonContacts">Заглушыць не-кантакты</string>
-    <string name="CP_SilenceNonContacts_Desc">If enabled, notifications with sound will come only from contacts. You can add a person to your contacts even without a phone number, do it in their profile</string>
+    <string name="CP_SilenceNonContacts_Desc">Kali ŭklučana, paviedamleńni z hukam buduć prychodzić tolki ad kantaktaŭ. Vy možacie dadać čałavieka ŭ kantakty navat biez numara telefona, zrabicie heta ŭ jaho profili</string>
     <!--Chats Preferences-->
     <!--Camera Preferences-->
-    <string name="CP_Category_Camera">Camera</string>
-    <string name="CP_CameraType">Camera Type</string>
-    <string name="CP_CameraTypeDefault">Default</string>
-    <string name="CP_DefaultCameraDesc">Use the Telegram\'s built-in camera.</string>
-    <string name="CP_CameraXDesc">CameraX is only supported on <![CDATA[<a href="https://developer.android.com/training/camerax/devices">selected devices</a>]]>, effects and lenses support depends on your manufacturer.</string>
-    <string name="CP_PerformanceMode">Performance Mode</string>
+    <string name="CP_Category_Camera">Kamera</string>
+    <string name="CP_CameraType">Typ kamery</string>
+    <string name="CP_DefaultCameraDesc">Vykarystoŭvajcie ŭbudavanuju kameru Telegram.</string>
+    <string name="CP_CameraXDesc">CameraX padtrymvajecca tolki na <![CDATA[<a href="https://developer.android.com/training/camerax/devices">abranych pryładach</a>]]>, padtrymka efektaŭ i linzaŭ zaležyć ad vašaha vytvorcy.</string>
+    <string name="CP_PerformanceMode">Režym pradukcyjnaści</string>
     <string name="CP_PerformanceModeDesc">CameraX\'s quality will be reduced in favor of performance</string>
     <string name="CP_CameraQuality">Camera Quality</string>
     <string name="CP_CameraTypeSystem">System</string>

@@ -12,6 +12,17 @@
     <string name="CG_TestBackendOn">Esta cuenta se conectará con el backend de prueba.</string>
     <string name="CG_TestBackendOff">Esta cuenta se conectará con el backend de producción.</string>
     <!--Sign in screen-->
+    <!--Last seen status-->
+    <string name="CG_LastSeenNow">última vez visto justo ahora</string>
+    <string name="CG_LastSeenMinutes_one">última vez visto hace %1$d minuto</string>
+    <string name="CG_LastSeenMinutes_few">última vez visto hace %1$d minutos</string>
+    <string name="CG_LastSeenMinutes_many">última vez visto hace %1$d minutos</string>
+    <string name="CG_LastSeenMinutes_other">última vez visto hace %1$d minutos</string>
+    <string name="CG_LastSeenHours_one">última vez visto hace %1$d hora</string>
+    <string name="CG_LastSeenHours_few">última vez visto hace %1$d horas</string>
+    <string name="CG_LastSeenHours_many">última vez visto hace %1$d horas</string>
+    <string name="CG_LastSeenHours_other">última vez visto hace %1$d horas</string>
+    <!--Last seen status-->
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">Tipo de icono de pestaña</string>
     <string name="CG_FoldersTypeTitles">Solo títulos</string>
@@ -67,15 +78,19 @@
     <string name="CG_ImportSettingsAlert">¿Sobrescribir los ajustes\? Importar ajustes de fuentes desconocidas puede resultar en que la aplicación no funcione.</string>
     <string name="CG_OpenStickerPack">Toca para obtener el sticker</string>
     <string name="CG_OpenEmojiPack">Toca para obtener el emoji</string>
+    <string name="CG_ReplyContainsEmojiPack">Esta respuesta contiene **%s** emoji</string>
+    <string name="CG_GetEmojiPack">Obtener emoji</string>
+    <string name="CG_ReplyBackground">Fondo de respuestas</string>
+    <string name="CG_ProfileBackground">Aplicar fondo de perfil</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Preferencias de Cherrygram</string>
-    <string name="CGP_About_Desc">An experimental Telegram app modification. Tap here to read apps\'s feature list.</string>
+    <string name="CGP_About_Desc">Una modificación experimental de Telegram. Pulse aquí para leer la lista de características de la app.</string>
     <string name="CGP_Header_About">Acerca de Cherrygram</string>
-    <string name="CGP_Header_About_Desc">Updates, source code and more</string>
-    <string name="CGP_Links">Links</string>
+    <string name="CGP_Header_About_Desc">Actualizaciones, código fuente y más</string>
+    <string name="CGP_Links">Enlaces</string>
     <string name="CGP_ToChannel">Canal oficial</string>
     <string name="CGP_ToChat">Chat oficial</string>
     <string name="CGP_Source">Código fuente</string>
@@ -92,6 +107,7 @@
     <string name="AP_Old_Notification_Icon">Icono de notificación por defecto (Telegram)</string>
     <string name="AP_ChangeIconFilter">Usar iconos de Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Tienes que volver a entrar en esta sección para ver los nuevos iconos</string>
+    <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
     <string name="AP_ChangeIcon_Default">Por defecto</string>
     <string name="AP_ChangeIcon_Dark">Oscuro</string>
     <string name="AP_ChangeIcon_White">Blanco</string>
@@ -113,7 +129,7 @@
     <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
     <string name="AP_SystemFonts">Usar fuentes del sistema</string>
     <string name="CP_Snowflakes_Header">Copos de nieve</string>
-    <string name="CP_Snowflakes_AH">Encabezado de aplicaciones</string>
+    <string name="CP_Snowflakes_AH">App header</string>
     <string name="CP_PremAndAnim_Header">Animaciones y funciones Premium</string>
     <string name="CP_HideStories">Ocultar historias</string>
     <string name="CP_DisableAnimAvatars">Deshabilitar avatares animados</string>
@@ -186,6 +202,7 @@
     <string name="CP_AutoPauseVideo">Pausar video automáticamente</string>
     <string name="CP_AutoPauseVideo_Desc">Cuando se bloquea la pantalla o cambia al fondo</string>
     <string name="CP_DisableVibration">Deshabilitar vibración</string>
+    <string name="CP_VideoSeekDuration">Doble toque para buscar en vídeo (segundos)</string>
     <string name="CP_Header_Notification">Notificaciones</string>
     <string name="CP_NotificationSound">Sonido de notificaciones</string>
     <string name="CP_VibrateInChats">Vibración en chat</string>
@@ -196,7 +213,6 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Cámara</string>
     <string name="CP_CameraType">Tipo de cámara</string>
-    <string name="CP_CameraTypeDefault">Por defecto</string>
     <string name="CP_DefaultCameraDesc">Usa la cámara integrada de Telegram.</string>
     <string name="CP_CameraXDesc">CámaraX solo está soportado en <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, el soporte de efectos y lentes depende de su fabricante.</string>
     <string name="CP_PerformanceMode">Modo de rendimiento</string>

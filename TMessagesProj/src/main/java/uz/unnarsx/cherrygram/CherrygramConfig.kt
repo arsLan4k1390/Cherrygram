@@ -91,7 +91,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var overrideHeaderColor by sharedPreferences.boolean("AP_OverrideHeaderColor", true)
     var flatNavbar by sharedPreferences.boolean("AP_FlatNavBar", true)
     //Drawer
-    var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", true)
+    var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", false)
     fun toggleDrawerSnow() {
         drawSnowInDrawer = !drawSnowInDrawer
         putBoolean("AP_DrawSnowInDrawer", drawSnowInDrawer)
@@ -223,7 +223,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     //Snowflakes
     var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false)
-    var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", true)
+    var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false)
 
     // Chats Settings
     //Stickers
@@ -496,7 +496,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     init {
         CherrygramToasts.init(sharedPreferences)
-//        fuckOff()
+        fuckOff()
     }
 
     init {

@@ -12,6 +12,17 @@
     <string name="CG_TestBackendOn">Questo account si collegherà alla test mode.</string>
     <string name="CG_TestBackendOff">Questo account si connetterà al server di produzione.</string>
     <!--Sign in screen-->
+    <!--Last seen status-->
+    <string name="CG_LastSeenNow">ultimo accesso ora</string>
+    <string name="CG_LastSeenMinutes_one">ultimo accesso %1$d minuto fa</string>
+    <string name="CG_LastSeenMinutes_few">ultimo accesso %1$d minuti fa</string>
+    <string name="CG_LastSeenMinutes_many">ultimo accesso %1$d minuti fa</string>
+    <string name="CG_LastSeenMinutes_other">ultimo accesso %1$d minuti fa</string>
+    <string name="CG_LastSeenHours_one">ultimo accesso %1$d ora fa</string>
+    <string name="CG_LastSeenHours_few">ultimo accesso %1$d ore fa</string>
+    <string name="CG_LastSeenHours_many">ultimo accesso %1$d ore fa</string>
+    <string name="CG_LastSeenHours_other">ultimo accesso %1$d ore fa</string>
+    <!--Last seen status-->
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">Tipo di icona sulla Tab</string>
     <string name="CG_FoldersTypeTitles">Solo titolo</string>
@@ -67,6 +78,10 @@
     <string name="CG_ImportSettingsAlert">Sovrascrivere le impostazioni\? Importare le impostazioni da fonti sconosciute potrebbe non far funzionare l\'app.</string>
     <string name="CG_OpenStickerPack">Tocca per salvare lo sticker</string>
     <string name="CG_OpenEmojiPack">Tocca per salvare l\'emoji</string>
+    <string name="CG_ReplyContainsEmojiPack">Questa risposta contiene le emoji **%s**</string>
+    <string name="CG_GetEmojiPack">Aggiungi emoji</string>
+    <string name="CG_ReplyBackground">Sfondo risposta</string>
+    <string name="CG_ProfileBackground">Applica sfondo profilo</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -92,6 +107,7 @@
     <string name="AP_Old_Notification_Icon">Icona di notifica predefinita (Telegram)</string>
     <string name="AP_ChangeIconFilter">Usa icone Telegram</string>
     <string name="AP_ChangeIconFilter_Desc">Devi reinserire questa sezione per vedere le nuove icone</string>
+    <string name="AP_ChangeIcon_Cherry_NY">Anno Nuovo</string>
     <string name="AP_ChangeIcon_Default">Predefinito</string>
     <string name="AP_ChangeIcon_Dark">Scuro</string>
     <string name="AP_ChangeIcon_White">Bianco</string>
@@ -103,7 +119,7 @@
     <string name="AP_IconReplacement_VKUI">Icone VKUI</string>
     <string name="AP_IconReplacement_Solar">Icone solari di @Design480</string>
     <string name="AP_IconReplacement_Default">Predefinito</string>
-    <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
+    <string name="AP_OneUI_Switch_Style">Stile Switch OneUI</string>
     <string name="AP_SystemEmoji">Usa le emoji di sistema</string>
     <string name="AP_ShowPencilIcon">Icona della matita per i messaggi modificati</string>
     <string name="AP_CenterTitle">Centra titolo nella barra delle azioni</string>
@@ -113,7 +129,7 @@
     <string name="AP_ToolBarShadow">Disabilita ombra barra strumenti</string>
     <string name="AP_SystemFonts">Usa il font di sistema</string>
     <string name="CP_Snowflakes_Header">Fiocchi di neve</string>
-    <string name="CP_Snowflakes_AH">Titolo dell\'applicazione</string>
+    <string name="CP_Snowflakes_AH">Intestazione app</string>
     <string name="CP_PremAndAnim_Header">Animazioni e Funzionalità Premium</string>
     <string name="CP_HideStories">Nascondi storie</string>
     <string name="CP_DisableAnimAvatars">Disabilita avatar animati</string>
@@ -186,6 +202,7 @@
     <string name="CP_AutoPauseVideo">Pausa automatica video</string>
     <string name="CP_AutoPauseVideo_Desc">Quando si blocca lo schermo o passa allo sfondo</string>
     <string name="CP_DisableVibration">Disabilita vibrazione</string>
+    <string name="CP_VideoSeekDuration">Doppio tap per avanzamento video (secondi)</string>
     <string name="CP_Header_Notification">Notifiche</string>
     <string name="CP_NotificationSound">Suono di notifica</string>
     <string name="CP_VibrateInChats">Vibrazione nella chat</string>
@@ -196,7 +213,6 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Fotocamera</string>
     <string name="CP_CameraType">Tipo di fotocamera</string>
-    <string name="CP_CameraTypeDefault">Predefinito</string>
     <string name="CP_DefaultCameraDesc">Usa la fotocamera integrata di Telegram.</string>
     <string name="CP_CameraXDesc">CameraX è supportata solo su <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivi selezionati</a>]]>, il supporto agli effetti e alle lenti dipende dal produttore.</string>
     <string name="CP_PerformanceMode">Modalità prestazioni</string>

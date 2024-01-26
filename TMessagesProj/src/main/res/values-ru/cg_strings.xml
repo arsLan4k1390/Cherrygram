@@ -241,7 +241,6 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Камера</string>
     <string name="CP_CameraType">Тип камеры</string>
-    <string name="CP_CameraTypeDefault">По умолчанию</string>
     <string name="CP_DefaultCameraDesc">Встроенная камера Telegram.</string>
     <string name="CP_CameraXDesc">CameraX поддерживается только на <![CDATA[<a href="https://developer.android.com/training/camerax/devices">выбранных устройствах</a>]]>, эффекты и линзы зависят от Вашего производителя.</string>
     <string name="CP_PerformanceMode">Производительный режим</string>

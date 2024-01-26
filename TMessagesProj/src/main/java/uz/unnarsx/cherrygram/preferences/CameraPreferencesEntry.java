@@ -2,10 +2,6 @@ package uz.unnarsx.cherrygram.preferences;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Build;
-import android.text.Html;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,10 +35,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.camera.CameraTypeSelector;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
-import uz.unnarsx.cherrygram.extras.CherrygramExtras;
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
@@ -253,26 +249,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 case 6:
                     TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
                     if (position == cameraAdviseRow) {
-                        String advise;
-                        switch (CherrygramConfig.INSTANCE.getCameraType()) {
-                            case CherrygramConfig.TELEGRAM_CAMERA:
-                                advise = LocaleController.getString("CP_DefaultCameraDesc", R.string.CP_DefaultCameraDesc);
-                                break;
-                            case CherrygramConfig.CAMERA_X:
-                                advise = LocaleController.getString("CP_CameraXDesc", R.string.CP_CameraXDesc);
-                                break;
-                            case CherrygramConfig.SYSTEM_CAMERA:
-                            default:
-                                advise = LocaleController.getString("CP_SystemCameraDesc", R.string.CP_SystemCameraDesc);
-                                break;
-                        }
-                        Spannable htmlParsed;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            htmlParsed = new SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY));
-                        }else{
-                            htmlParsed = new SpannableString(Html.fromHtml(advise));
-                        }
-                        textInfoPrivacyCell.setText(CherrygramExtras.INSTANCE.getUrlNoUnderlineText(htmlParsed));
+                        textInfoPrivacyCell.setText(CGFeatureHooks.getCameraAdvise());
                     } else if (position == cameraAspectRatioAdviseRow) {
                         TextInfoPrivacyCell textCell = (TextInfoPrivacyCell) holder.itemView;
                         textCell.setText(LocaleController.getString("CP_CameraAspectRatio_Desc", R.string.CP_CameraAspectRatio_Desc));
@@ -286,20 +263,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                     if (position == cameraXQualityRow) {
                         textSettingsCell.setTextAndValue(LocaleController.getString("CP_CameraQuality", R.string.CP_CameraQuality), CherrygramConfig.INSTANCE.getCameraResolution() + "p", false);
                     } else if (position == cameraAspectRatioRow) {
-                        String value;
-                        switch (CherrygramConfig.INSTANCE.getCameraAspectRatio()) {
-                            case CherrygramConfig.Camera1to1:
-                                value = "1:1";
-                                break;
-                            case CherrygramConfig.Camera4to3:
-                                value = "4:3";
-                                break;
-                            default:
-                            case CherrygramConfig.Camera16to9:
-                                value = "16:9";
-                                break;
-                        }
-                        textCell.setTextAndValue(LocaleController.getString("CP_CameraAspectRatio", R.string.CP_CameraAspectRatio), value, true);
+                        textCell.setTextAndValue(LocaleController.getString("CP_CameraAspectRatio", R.string.CP_CameraAspectRatio), CGFeatureHooks.getCameraAspectRatio(), true);
                     }
                     break;
             }

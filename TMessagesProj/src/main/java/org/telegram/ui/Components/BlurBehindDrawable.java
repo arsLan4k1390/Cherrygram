@@ -127,6 +127,7 @@ public class BlurBehindDrawable {
             canvas.drawBitmap(bitmap[0], 0, 0, emptyPaint);
             canvas.restore();
             wasDraw = true;
+
             canvas.drawColor(0x1a000000);
             if (CherrygramConfig.INSTANCE.getWhiteBackground()) {
                 canvas.drawColor(ColorUtils.setAlphaComponent(Color.WHITE, (int) (Color.alpha(Color.WHITE) * alpha / 2f)));

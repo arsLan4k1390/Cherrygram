@@ -14,21 +14,32 @@ import android.text.TextUtils;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
+import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BaseController;
+import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
 import org.telegram.messenger.MessageObject;
+import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
+import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
+import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ChatActivity;
+import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.ColoredImageSpan;
+import org.telegram.ui.Components.EmojiPacksAlert;
+import org.telegram.ui.PeerColorActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
@@ -53,6 +64,8 @@ public class ChatsHelper extends BaseController {
         }
         return localInstance;
     }
+
+    public ChatActivity.ThemeDelegate themeDelegate;
 
     public static SpannableStringBuilder editedSpan;
     public static Drawable editedDrawable;
@@ -79,6 +92,21 @@ public class ChatsHelper extends BaseController {
         if (!TextUtils.isEmpty(path)) {
             addFileToClipboard(new File(path), callback);
         }
+    }
+
+    public static void addMessageToClipboardAsSticker(MessageObject selectedObject, Runnable callback) {
+        String path = getPathToMessage(selectedObject);
+
+        try {
+            Bitmap image = BitmapFactory.decodeFile(path);
+            if (image != null && !TextUtils.isEmpty(path)) {
+                File file = new File(path.endsWith(".jpg") ? path.replace(".jpg", ".webp") : path + ".webp");
+                FileOutputStream stream = new FileOutputStream(file);
+                image.compress(Bitmap.CompressFormat.WEBP, 100, stream);
+                stream.close();
+                addFileToClipboard(file, callback);
+            }
+        } catch (Exception ignored) {}
     }
 
     public static String getPathToMessage(MessageObject messageObject) {
@@ -151,6 +179,63 @@ public class ChatsHelper extends BaseController {
                 FileLog.e(e);
             }
         });
+    }
+
+    public long getEmojiIdFromReply(MessageObject messageObject, TLRPC.User user) {
+        if (messageObject == null || messageObject.messageOwner == null || messageObject.replyMessageObject == null || messageObject.messageOwner.from_id == null) {
+            return 0;
+        }
+        if (messageObject.replyMessageObject.isFromUser() && user != null) {
+            return UserObject.getEmojiId(user);
+        } else {
+            return ChatObject.getEmojiId(MessagesController.getInstance(messageObject.currentAccount).getChat(messageObject.replyMessageObject.messageOwner.from_id.channel_id));
+        }
+    }
+
+    private int getEmojiBackgroundFromReply(MessageObject messageObject, TLRPC.User user) {
+        if (messageObject == null || messageObject.messageOwner == null || messageObject.replyMessageObject == null || messageObject.messageOwner.from_id == null) {
+            return 0;
+        }
+        if (messageObject.replyMessageObject.isFromUser() && user != null) {
+            return UserObject.getColorId(user);
+        } else {
+            return ChatObject.getColorId(MessagesController.getInstance(messageObject.currentAccount).getChat(messageObject.replyMessageObject.messageOwner.from_id.channel_id));
+        }
+    }
+
+    public void applyReplyBackground(MessageObject selectedObject, BaseFragment fragment) {
+        long emojiDocumentId = getEmojiIdFromReply(selectedObject, MessagesController.getInstance(UserConfig.selectedAccount).getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
+        int colorId = getEmojiBackgroundFromReply(selectedObject, MessagesController.getInstance(UserConfig.selectedAccount).getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
+        TLRPC.User me = UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser();
+
+        TLRPC.TL_account_updateColor req = new TLRPC.TL_account_updateColor();
+        me.flags2 |= 256;
+        me.color.flags |= 1;
+        req.flags |= 4;
+        req.color = me.color.color = colorId;
+        if (emojiDocumentId != 0) {
+            req.flags |= 1;
+            me.color.flags |= 2;
+            req.background_emoji_id = me.color.background_emoji_id = emojiDocumentId;
+        } else {
+            me.color.flags &=~ 2;
+            me.color.background_emoji_id = 0;
+        }
+        ConnectionsManager.getInstance(UserConfig.selectedAccount).sendRequest(req, null);
+
+        fragment.presentFragment(new PeerColorActivity(0).setOnApplied(fragment));
+    }
+
+    public void openEmojiPack(MessageObject selectedObject, BaseFragment fragment) {
+        long emojiDocumentId = getEmojiIdFromReply(selectedObject, MessagesController.getInstance(UserConfig.selectedAccount).getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
+
+        AnimatedEmojiDrawable.getDocumentFetcher(UserConfig.selectedAccount).fetchDocument(emojiDocumentId, document -> AndroidUtilities.runOnUIThread(() -> {
+            ArrayList<TLRPC.InputStickerSet> inputSets = new ArrayList<>(1);
+            inputSets.add(MessageObject.getInputStickerSet(document));
+            EmojiPacksAlert alert = new EmojiPacksAlert(fragment, fragment.getParentActivity(), themeDelegate, inputSets);
+            alert.setDimBehindAlpha(100);
+            alert.show();
+        }));
     }
 
 }

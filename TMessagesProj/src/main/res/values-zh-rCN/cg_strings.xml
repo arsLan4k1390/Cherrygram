@@ -12,6 +12,17 @@
     <string name="CG_TestBackendOn">使用测试服务器登录账号</string>
     <string name="CG_TestBackendOff">使用主用服务器登录账号</string>
     <!--Sign in screen-->
+    <!--Last seen status-->
+    <string name="CG_LastSeenNow">最后一次上线是刚才</string>
+    <string name="CG_LastSeenMinutes_one">%1$d 分钟前曾上线</string>
+    <string name="CG_LastSeenMinutes_few">%1$d 分钟前曾上线</string>
+    <string name="CG_LastSeenMinutes_many">%1$d 分钟前曾上线</string>
+    <string name="CG_LastSeenMinutes_other">%1$d 分钟前曾上线</string>
+    <string name="CG_LastSeenHours_one">%1$d 小时前曾上线</string>
+    <string name="CG_LastSeenHours_few">%1$d 小时前曾上线</string>
+    <string name="CG_LastSeenHours_many">%1$d 小时前曾上线</string>
+    <string name="CG_LastSeenHours_other">%1$d 小时前曾上线</string>
+    <!--Last seen status-->
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">Tab 图标类型</string>
     <string name="CG_FoldersTypeTitles">仅显示文本</string>
@@ -67,6 +78,10 @@
     <string name="CG_ImportSettingsAlert">是否复写设置？未知来源的配置文件可能导致APP无法正常工作</string>
     <string name="CG_OpenStickerPack">点击获取贴纸</string>
     <string name="CG_OpenEmojiPack">点击获取 Emoji</string>
+    <string name="CG_ReplyContainsEmojiPack">此回复包含**%s* 表情符号</string>
+    <string name="CG_GetEmojiPack">获得emoji</string>
+    <string name="CG_ReplyBackground">回复背景</string>
+    <string name="CG_ProfileBackground">应用个人资料背景</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -92,6 +107,7 @@
     <string name="AP_Old_Notification_Icon">默认通知图标 (Telegram)</string>
     <string name="AP_ChangeIconFilter">使用 Telegram 原始图标</string>
     <string name="AP_ChangeIconFilter_Desc">您必须重新进入此部分才可以看到新图标</string>
+    <string name="AP_ChangeIcon_Cherry_NY">新年</string>
     <string name="AP_ChangeIcon_Default">默认</string>
     <string name="AP_ChangeIcon_Dark">深色</string>
     <string name="AP_ChangeIcon_White">白色</string>
@@ -113,7 +129,7 @@
     <string name="AP_ToolBarShadow">禁用工具栏阴影</string>
     <string name="AP_SystemFonts">使用系统字体</string>
     <string name="CP_Snowflakes_Header">雪花效果</string>
-    <string name="CP_Snowflakes_AH">应用顶栏</string>
+    <string name="CP_Snowflakes_AH">应用标题栏</string>
     <string name="CP_PremAndAnim_Header">动画和高级功能</string>
     <string name="CP_HideStories">隐藏动态</string>
     <string name="CP_DisableAnimAvatars">禁用动态头像</string>
@@ -186,6 +202,7 @@
     <string name="CP_AutoPauseVideo">自动暂停视频</string>
     <string name="CP_AutoPauseVideo_Desc">锁屏或切换到后台时</string>
     <string name="CP_DisableVibration">禁用全局震动</string>
+    <string name="CP_VideoSeekDuration">双击搜索视频 (秒)</string>
     <string name="CP_Header_Notification">通知</string>
     <string name="CP_NotificationSound">通知声音</string>
     <string name="CP_VibrateInChats">来电振动</string>
@@ -196,7 +213,6 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">相机</string>
     <string name="CP_CameraType">相机类型</string>
-    <string name="CP_CameraTypeDefault">默认</string>
     <string name="CP_DefaultCameraDesc">使用 Telegram 内置相机</string>
     <string name="CP_CameraXDesc">CameraX 仅支持 <![CDATA[<a href="https://developer.android.com/training/camerax/devices">下述设备</a>]]>，效果和镜头支持取决于您的硬件</string>
     <string name="CP_PerformanceMode">高性能模式</string>

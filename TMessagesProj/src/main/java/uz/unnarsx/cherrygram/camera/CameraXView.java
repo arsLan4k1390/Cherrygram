@@ -113,7 +113,6 @@ public class CameraXView extends BaseCameraView {
         void onFinishVideoRecording(String thumbPath, long duration);
     }
 
-
     public CameraXView(Context context, boolean frontface, boolean lazy) {
         super(context, null);
         this.frontface = frontface;
@@ -150,6 +149,9 @@ public class CameraXView extends BaseCameraView {
 
     @Override
     public boolean isFrontface() {
+        if (controller == null) {
+            return frontface;
+        }
         return controller.isFrontface();
     }
 
@@ -316,6 +318,7 @@ public class CameraXView extends BaseCameraView {
     }
 
     private ValueAnimator textureViewAnimator;
+
     @Override
     public void showTexture(boolean show, boolean animated) {
         if (previewView == null) {

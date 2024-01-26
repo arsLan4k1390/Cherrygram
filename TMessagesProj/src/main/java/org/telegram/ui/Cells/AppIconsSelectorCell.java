@@ -86,8 +86,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
                         icon == LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG ||
                         icon == LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL) && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
                     return;
-                } else if ((icon == LauncherIconController.LauncherIcon.DARK_NY ||
-                        icon == LauncherIconController.LauncherIcon.DARK ||
+                } else if ((icon == LauncherIconController.LauncherIcon.DARK ||
                         icon == LauncherIconController.LauncherIcon.WHITE ||
                         icon == LauncherIconController.LauncherIcon.LAGUNA ||
                         icon == LauncherIconController.LauncherIcon.AQUA ||
@@ -104,7 +103,8 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
                         icon == LauncherIconController.LauncherIcon.SUNSET_CHERRY ||
                         icon == LauncherIconController.LauncherIcon.SUNRISE_CHERRY ||
                         icon == LauncherIconController.LauncherIcon.TURBO_CHERRY ||
-                        icon == LauncherIconController.LauncherIcon.NOX_CHERRY) && !(Build.VERSION.SDK_INT >= 26)) {
+                        icon == LauncherIconController.LauncherIcon.NOX_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.DARK_NY) && !(Build.VERSION.SDK_INT >= 26)) {
                     return;
                 }
                 holderView.bind(icon);
@@ -188,7 +188,6 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
         }
         if (!(Build.VERSION.SDK_INT >= 26)) {
-            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_NY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.WHITE));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.LAGUNA));
@@ -207,6 +206,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNRISE_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_NY));
         }
         if (MessagesController.getInstance(currentAccount).premiumFeaturesBlocked()) {
             for (int i = 0; i < availableIcons.size(); i++) {
@@ -234,8 +234,6 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
         }
         if (CherrygramConfig.INSTANCE.getFilterLauncherIcon()) {
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.CHERRY));
-            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.CHERRY_NY));
-            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_NY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY));
@@ -248,6 +246,8 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNRISE_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.CHERRY_NY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_NY));
         }
         getAdapter().notifyDataSetChanged();
         invalidateItemDecorations();

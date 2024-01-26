@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.LocaleController;
@@ -22,7 +21,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.extras.CherrygramExtras;
 
 public class Crashlytics implements Thread.UncaughtExceptionHandler {
@@ -103,20 +102,6 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
     }
 
     public static String getReportMessage() {
-        String CameraName;
-        switch (CherrygramConfig.INSTANCE.getCameraType()) {
-            case CherrygramConfig.TELEGRAM_CAMERA:
-                CameraName = "Telegram Camera";
-                break;
-            case CherrygramConfig.CAMERA_X:
-                CameraName = "CameraX";
-                break;
-            case CherrygramConfig.SYSTEM_CAMERA:
-                CameraName = "System Camera";
-                break;
-            default:
-                CameraName = "Unknown";
-        }
         return  "Steps to reproduce:\n" +
                 "Write here the steps to reproduce\n\n" +
                 "Details:\n"+
@@ -124,7 +109,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
                 "• Telegram Version: " + BuildVars.BUILD_VERSION_STRING + "\n" +
                 "• Device: " + AndroidUtilities.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + "\n" +
                 "• OS Version: " + Build.VERSION.RELEASE + "\n" +
-                "• Camera: " + CameraName + "\n" +
+                "• Camera: " + CGFeatureHooks.getCameraName() + "\n" +
                 "• Performance Class: " + getPerformanceClassString() + "\n" +
                 "• Google Play Services: " + ApplicationLoader.hasPlayServices + "\n" +
                 "• Locale: " + LocaleController.getSystemLocaleStringIso639();

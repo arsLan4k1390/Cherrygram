@@ -245,7 +245,12 @@ public class CameraXController {
 
     public boolean isAvailableHdrMode() {
         if (extensionsManager != null) {
-            return extensionsManager.isExtensionAvailable(cameraSelector, ExtensionMode.HDR);
+            try {
+                return extensionsManager.isExtensionAvailable(cameraSelector, ExtensionMode.HDR);
+            } catch (Exception e) {
+                FileLog.e(e);
+                return false;
+            }
         } else {
             return false;
         }
@@ -253,7 +258,12 @@ public class CameraXController {
 
     public boolean isAvailableNightMode() {
         if (extensionsManager != null) {
-            return extensionsManager.isExtensionAvailable(cameraSelector, ExtensionMode.NIGHT);
+            try {
+                return extensionsManager.isExtensionAvailable(cameraSelector, ExtensionMode.NIGHT);
+            } catch (Exception e) {
+                FileLog.e(e);
+                return false;
+            }
         } else {
             return false;
         }
@@ -269,7 +279,12 @@ public class CameraXController {
 
     public boolean isAvailableAutoMode() {
         if (extensionsManager != null) {
-            return extensionsManager.isExtensionAvailable(cameraSelector, ExtensionMode.AUTO);
+            try {
+                return extensionsManager.isExtensionAvailable(cameraSelector, ExtensionMode.AUTO);
+            } catch (Exception e) {
+                FileLog.e(e);
+                return false;
+            }
         } else {
             return false;
         }
@@ -310,6 +325,7 @@ public class CameraXController {
                 case CAMERA_AUTO:
                     cameraSelector = extensionsManager.getExtensionEnabledCameraSelector(cameraSelector, ExtensionMode.AUTO);
                     break;
+                case CAMERA_NONE:
                 default:
                     cameraSelector = extensionsManager.getExtensionEnabledCameraSelector(cameraSelector, ExtensionMode.NONE);
                     break;
@@ -376,6 +392,7 @@ public class CameraXController {
 
     @SuppressLint("UnsafeExperimentalUsageError")
     public void setExposureCompensation(float value) {
+        if (camera == null) return;
         if (!camera.getCameraInfo().getExposureState().isExposureCompensationSupported()) return;
         Range<Integer> evRange = camera.getCameraInfo().getExposureState().getExposureCompensationRange();
         int index = (int) (mix(evRange.getLower().floatValue(), evRange.getUpper().floatValue(), value) + 0.5f);

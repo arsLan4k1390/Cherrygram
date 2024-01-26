@@ -18,7 +18,6 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -33,6 +32,7 @@ import org.telegram.ui.DialogsActivity;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
@@ -336,20 +336,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                         );
                         textCell.setTextAndValue(t, v, false);
                     } else if (position == downloadSpeedBoostRow) {
-                        String value;
-                        switch (CherrygramConfig.INSTANCE.getDownloadSpeedBoost()) {
-                            case CherrygramConfig.BOOST_NONE:
-                                value = LocaleController.getString("EP_DownloadSpeedBoostNone", R.string.EP_DownloadSpeedBoostNone);
-                                break;
-                            case CherrygramConfig.BOOST_EXTREME:
-                                value = LocaleController.getString("EP_DownloadSpeedBoostExtreme", R.string.EP_DownloadSpeedBoostExtreme);
-                                break;
-                            default:
-                            case CherrygramConfig.BOOST_AVERAGE:
-                                value = LocaleController.getString("EP_DownloadSpeedBoostAverage", R.string.EP_DownloadSpeedBoostAverage);
-                                break;
-                        }
-                        textCell.setTextAndValue(LocaleController.getString("EP_DownloadSpeedBoost", R.string.EP_DownloadSpeedBoost), value, true);
+                        textCell.setTextAndValue(LocaleController.getString("EP_DownloadSpeedBoost", R.string.EP_DownloadSpeedBoost), CGFeatureHooks.getDownloadSpeedBoostText(), true);
                     }
                     break;
             }

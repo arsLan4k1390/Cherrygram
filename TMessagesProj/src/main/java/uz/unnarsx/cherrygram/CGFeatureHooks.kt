@@ -1,30 +1,25 @@
 package uz.unnarsx.cherrygram
 
-import android.content.Context
-import android.content.DialogInterface
-import android.util.TypedValue
-import android.view.Gravity
-import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
+import android.os.Build
+import android.text.Html
+import android.text.Spannable
+import android.text.SpannableString
 import android.widget.FrameLayout
-import android.widget.LinearLayout
-import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.ActionBarPopupWindow
-import org.telegram.ui.ActionBar.AlertDialog
-import org.telegram.ui.ActionBar.Theme
-import org.telegram.ui.Components.EditTextBoldCursor
-import org.telegram.ui.Components.LayoutHelper
 import org.telegram.ui.Components.ShareAlert
+import uz.unnarsx.cherrygram.extras.CherrygramExtras
 import uz.unnarsx.cherrygram.ui.dialogs.ShareAlertExtraUI
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
 // Because manual editing of drklo's sources harms your mental health.
 object CGFeatureHooks {
+
     @JvmStatic
-    fun getProperNotificationIcon(): Int {
-        return if (CherrygramConfig.oldNotificationIcon) R.drawable.notification else R.drawable.cg_notification
+    fun setFlashLight(b: Boolean) {
+        // ...
+        CherrygramConfig.whiteBackground = b
     }
 
     @JvmStatic
@@ -33,14 +28,7 @@ object CGFeatureHooks {
         CherrygramConfig.noAuthorship = b
     }
 
-    @JvmStatic
-    fun setFlashLight(b: Boolean) {
-        // ...
-        CherrygramConfig.whiteBackground = b
-    }
-
     private var currentPopup: ActionBarPopupWindow? = null
-
     @JvmStatic
     fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {
         currentPopup = ShareAlertExtraUI.createPopupWindow(sa.container, field, sa.context, listOf(
@@ -78,6 +66,63 @@ object CGFeatureHooks {
                 currentPopup = null
             },
         ))
+    }
+
+    @JvmStatic
+    fun getProperNotificationIcon(): Int { //App notification icon
+        return if (CherrygramConfig.oldNotificationIcon) R.drawable.notification else R.drawable.cg_notification
+    }
+
+    @JvmStatic
+    fun getLeftButtonText(): String { //ChatActivity.java:\Left button action
+        return when (CherrygramConfig.leftBottomButton) {
+            CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP -> LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)
+            CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> LocaleController.getString("DirectShare", R.string.DirectShare)
+            else -> LocaleController.getString("Reply", R.string.Reply)
+        }
+    }
+
+    @JvmStatic
+    fun getCameraAdvise(): CharSequence { //CameraPreferences.java:\CameraX advise
+        val advise: String = when (CherrygramConfig.cameraType) {
+            CherrygramConfig.TELEGRAM_CAMERA -> LocaleController.getString("CP_DefaultCameraDesc", R.string.CP_DefaultCameraDesc)
+            CherrygramConfig.CAMERA_X -> LocaleController.getString("CP_CameraXDesc", R.string.CP_CameraXDesc)
+            else -> LocaleController.getString("CP_SystemCameraDesc", R.string.CP_SystemCameraDesc)
+        }
+
+        val htmlParsed: Spannable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY))
+        } else {
+            SpannableString(Html.fromHtml(advise))
+        }
+        return CherrygramExtras.getUrlNoUnderlineText(htmlParsed)
+    }
+
+    @JvmStatic
+    fun getCameraAspectRatio(): String { //CameraPreferences.java:\Camera aspect ratio
+        return when (CherrygramConfig.cameraAspectRatio) {
+            CherrygramConfig.Camera1to1 -> "1:1"
+            CherrygramConfig.Camera4to3 -> "4:3"
+            else -> "16:9"
+        }
+    }
+
+    @JvmStatic
+    fun getCameraName(): String { //Crashlytics.java
+        return when (CherrygramConfig.cameraType) {
+            CherrygramConfig.TELEGRAM_CAMERA -> LocaleController.getString("CP_CameraTypeDefault", R.string.CP_CameraTypeDefault)
+            CherrygramConfig.CAMERA_X -> "CameraX"
+            else -> LocaleController.getString("CP_CameraTypeSystem", R.string.CP_CameraTypeSystem)
+        }
+    }
+
+    @JvmStatic
+    fun getDownloadSpeedBoostText(): String { //ExperimentalPreferences.java:\Download speed boost
+        return when (CherrygramConfig.downloadSpeedBoost) {
+            CherrygramConfig.BOOST_NONE -> LocaleController.getString("EP_DownloadSpeedBoostNone", R.string.EP_DownloadSpeedBoostNone)
+            CherrygramConfig.BOOST_AVERAGE -> LocaleController.getString("EP_DownloadSpeedBoostAverage", R.string.EP_DownloadSpeedBoostAverage)
+            else -> LocaleController.getString("EP_DownloadSpeedBoostExtreme", R.string.EP_DownloadSpeedBoostExtreme)
+        }
     }
 
 }

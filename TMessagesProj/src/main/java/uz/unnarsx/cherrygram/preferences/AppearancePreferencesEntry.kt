@@ -91,27 +91,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             }
         }
 
-        category(LocaleController.getString("CP_Snowflakes_Header", R.string.CP_Snowflakes_Header)) {
-            switch {
-                title = LocaleController.getString("CP_Snowflakes_AH", R.string.CP_Snowflakes_AH)
-                contract({
-                    return@contract CherrygramConfig.drawSnowInActionBar
-                }) {
-                    CherrygramConfig.drawSnowInActionBar = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_Header_Chats", R.string.CP_Header_Chats)
-                contract({
-                    return@contract CherrygramConfig.drawSnowInChat
-                }) {
-                    CherrygramConfig.drawSnowInChat = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-        }
-
         category(LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)) {
             textIcon {
                 title = LocaleController.getString("AP_DrawerPreferences", R.string.AP_DrawerPreferences)
@@ -210,6 +189,27 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     CherrygramConfig.tabStyleStroke = it
                 }
                 AppRestartHelper.createRestartBulletin(bf)
+            }
+        }
+
+        category(LocaleController.getString("CP_Snowflakes_Header", R.string.CP_Snowflakes_Header)) {
+            switch {
+                title = LocaleController.getString("CP_Snowflakes_AH", R.string.CP_Snowflakes_AH)
+                contract({
+                    return@contract CherrygramConfig.drawSnowInActionBar
+                }) {
+                    CherrygramConfig.drawSnowInActionBar = it
+                    AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_Header_Chats", R.string.CP_Header_Chats)
+                contract({
+                    return@contract CherrygramConfig.drawSnowInChat
+                }) {
+                    CherrygramConfig.drawSnowInChat = it
+                    AppRestartHelper.createRestartBulletin(bf)
+                }
             }
         }
     }

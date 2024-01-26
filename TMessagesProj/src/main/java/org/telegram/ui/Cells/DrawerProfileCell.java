@@ -622,24 +622,26 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
                 darkBackColor = Theme.getColor(Theme.key_listSelector);
             } else if (backgroundDrawable instanceof BitmapDrawable) {
                 Bitmap bitmap = ((BitmapDrawable) backgroundDrawable).getBitmap().copy(Bitmap.Config.ARGB_8888, true);
-                if (CherrygramConfig.INSTANCE.getDrawerDarken() && bitmap != null) {
-                    DrawerBitmapHelper.darkenBitmap(bitmap);
+                if (bitmap != null) {
+                    if (CherrygramConfig.INSTANCE.getDrawerDarken()) {
+                        DrawerBitmapHelper.darkenBitmap(bitmap);
+                    }
+                    float scaleX = (float) getMeasuredWidth() / (float) bitmap.getWidth();
+                    float scaleY = (float) getMeasuredHeight() / (float) bitmap.getHeight();
+                    float scale = Math.max(scaleX, scaleY);
+                    int width = (int) (getMeasuredWidth() / scale);
+                    int height = (int) (getMeasuredHeight() / scale);
+                    int x = (bitmap.getWidth() - width) / 2;
+                    int y = (bitmap.getHeight() - height) / 2;
+                    srcRect.set(x, y, x + width, y + height);
+                    destRect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+                    try {
+                        canvas.drawBitmap(bitmap, srcRect, destRect, paint);
+                    } catch (Throwable e) {
+                        FileLog.e(e);
+                    }
+                    darkBackColor = (Theme.getServiceMessageColor() & 0x00ffffff) | 0x50000000;
                 }
-                float scaleX = (float) getMeasuredWidth() / (float) bitmap.getWidth();
-                float scaleY = (float) getMeasuredHeight() / (float) bitmap.getHeight();
-                float scale = Math.max(scaleX, scaleY);
-                int width = (int) (getMeasuredWidth() / scale);
-                int height = (int) (getMeasuredHeight() / scale);
-                int x = (bitmap.getWidth() - width) / 2;
-                int y = (bitmap.getHeight() - height) / 2;
-                srcRect.set(x, y, x + width, y + height);
-                destRect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
-                try {
-                    canvas.drawBitmap(bitmap, srcRect, destRect, paint);
-                } catch (Throwable e) {
-                    FileLog.e(e);
-                }
-                darkBackColor = (Theme.getServiceMessageColor() & 0x00ffffff) | 0x50000000;
             }
         } else {
             int visibility = drawCatsShadow? VISIBLE : INVISIBLE;

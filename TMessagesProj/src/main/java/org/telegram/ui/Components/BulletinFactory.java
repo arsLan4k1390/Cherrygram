@@ -32,10 +32,10 @@ import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationsController;
 import org.telegram.messenger.R;
+import org.telegram.messenger.SavedMessagesController;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
-import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -47,6 +47,8 @@ import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import uz.unnarsx.cherrygram.helpers.ChatsHelper;
 
 public final class BulletinFactory {
 
@@ -68,20 +70,16 @@ public final class BulletinFactory {
     public static BulletinFactory global() {
         BaseFragment baseFragment = LaunchActivity.getLastFragment();
         if (baseFragment == null) {
-            return null;
+            return BulletinFactory.of(Bulletin.BulletinWindow.make(ApplicationLoader.applicationContext), null);
         }
         return BulletinFactory.of(baseFragment);
     }
 
-    public static void showForError(TLRPC.TL_error error) {
-        BulletinFactory bulletinFactory = BulletinFactory.global();
-        if (bulletinFactory == null) {
-            return;
-        }
+    public void showForError(TLRPC.TL_error error) {
         if (BuildVars.DEBUG_VERSION) {
-            bulletinFactory.createErrorBulletin(error.code + " " + error.text).show();
+            createErrorBulletin(error.code + " " + error.text).show();
         } else {
-            bulletinFactory.createErrorBulletin(LocaleController.getString("UnknownError", R.string.UnknownError)).show();
+            createErrorBulletin(LocaleController.getString("UnknownError", R.string.UnknownError)).show();
         }
     }
 
@@ -600,7 +598,7 @@ public final class BulletinFactory {
         return create(layout, Bulletin.DURATION_LONG);
     }
 
-    public Bulletin createEmojiBulletin2(TLRPC.Document document, CharSequence text, CharSequence button, MessageObject selectedObject, BaseFragment fragment, Runnable onButtonClick) {
+    public Bulletin createEmojiBulletin2(TLRPC.Document document, CharSequence text, CharSequence button, MessageObject selectedObject, Runnable onButtonClick) {
         final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
         if (MessageObject.isTextColorEmoji(document)) {
             layout.imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_undo_infoColor), PorterDuff.Mode.SRC_IN));
@@ -610,7 +608,7 @@ public final class BulletinFactory {
             layout.imageView.getImageReceiver().setRoundRadius(AndroidUtilities.dp(4));
         }
         layout.imageView.setOnClickListener(v -> {
-            ChatActivity.openEmojiPack(selectedObject, fragment);
+            ChatsHelper.getInstance(UserConfig.selectedAccount).openEmojiPack(selectedObject, fragment);
         });
         layout.textView.setText(text);
         layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
@@ -620,14 +618,14 @@ public final class BulletinFactory {
         return create(layout, Bulletin.DURATION_LONG);
     }
 
-    public Bulletin createEmojiLoadingBulletin2(TLRPC.Document document, CharSequence text, CharSequence button, MessageObject selectedObject, BaseFragment fragment,  Runnable onButtonClick) {
+    public Bulletin createEmojiLoadingBulletin2(TLRPC.Document document, CharSequence text, CharSequence button, MessageObject selectedObject, Runnable onButtonClick) {
         final Bulletin.LoadingLottieLayout layout = new Bulletin.LoadingLottieLayout(getContext(), resourcesProvider);
         if (MessageObject.isTextColorEmoji(document)) {
             layout.imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_undo_infoColor), PorterDuff.Mode.SRC_IN));
         }
         layout.setAnimation(document, 36, 36);
         layout.imageView.setOnClickListener(v -> {
-            ChatActivity.openEmojiPack(selectedObject, fragment);
+            ChatsHelper.getInstance(UserConfig.selectedAccount).openEmojiPack(selectedObject, fragment);
         });
         layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         layout.textView.setSingleLine(false);
@@ -706,7 +704,7 @@ public final class BulletinFactory {
         }
     }
 
-    public Bulletin createReplyContainsEmojiBulletin(TLRPC.Document document, MessageObject selectedObject, Utilities.Callback<TLRPC.InputStickerSet> openSet) {
+    public Bulletin createReplyContainsEmojiBulletin(TLRPC.Document document, MessageObject selectedObject) {
         TLRPC.InputStickerSet inputStickerSet = MessageObject.getInputStickerSet(document);
         if (inputStickerSet == null) {
             return null;
@@ -729,7 +727,7 @@ public final class BulletinFactory {
             }
             final long startTime = System.currentTimeMillis();
             final long minDuration = 750;
-            Bulletin bulletin = createEmojiLoadingBulletin2(document, stringBuilder, LocaleController.getString("ApplyTheme", R.string.ApplyTheme), selectedObject, fragment, () -> ChatActivity.applyReplyBackground(selectedObject, fragment));
+            Bulletin bulletin = createEmojiLoadingBulletin2(document, stringBuilder, LocaleController.getString("ApplyTheme", R.string.ApplyTheme), selectedObject, () -> ChatsHelper.getInstance(UserConfig.selectedAccount).applyReplyBackground(selectedObject, fragment));
             if (loadingSpan != null && bulletin.getLayout() instanceof Bulletin.LoadingLottieLayout) {
                 loadingSpan.setView(((Bulletin.LoadingLottieLayout) bulletin.getLayout()).textLoadingView);
             }
@@ -748,7 +746,7 @@ public final class BulletinFactory {
         } else {
             CharSequence message;
             message = AndroidUtilities.replaceTags(LocaleController.formatString("CG_ReplyContainsEmojiPack", R.string.CG_ReplyContainsEmojiPack, cachedSet.set.title));
-            return createEmojiBulletin2(document, message, LocaleController.getString("ApplyTheme", R.string.ApplyTheme), selectedObject, fragment, () -> ChatActivity.applyReplyBackground(selectedObject, fragment));
+            return createEmojiBulletin2(document, message, LocaleController.getString("ApplyTheme", R.string.ApplyTheme), selectedObject, () -> ChatsHelper.getInstance(UserConfig.selectedAccount).applyReplyBackground(selectedObject, fragment));
         }
     }
 
@@ -1145,9 +1143,9 @@ public final class BulletinFactory {
         if (dialogsCount <= 1) {
             if (did == UserConfig.getInstance(UserConfig.selectedAccount).clientUserId) {
                 if (messagesCount <= 1) {
-                    text = AndroidUtilities.replaceTags(LocaleController.getString("FwdMessageToSavedMessages", R.string.FwdMessageToSavedMessages));
+                    text = AndroidUtilities.replaceSingleTag(LocaleController.getString(R.string.FwdMessageToSavedMessages), SavedMessagesController::openSavedMessages);
                 } else {
-                    text = AndroidUtilities.replaceTags(LocaleController.getString("FwdMessagesToSavedMessages", R.string.FwdMessagesToSavedMessages));
+                    text = AndroidUtilities.replaceSingleTag(LocaleController.getString(R.string.FwdMessagesToSavedMessages), SavedMessagesController::openSavedMessages);
                 }
                 layout.setAnimation(R.raw.saved_messages, 30, 30);
             } else {

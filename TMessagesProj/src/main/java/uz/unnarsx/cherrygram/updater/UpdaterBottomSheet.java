@@ -57,7 +57,7 @@ public class UpdaterBottomSheet extends BottomSheet {
         if (available) {
             Drawable cherry = ContextCompat.getDrawable(context, R.drawable.about_cherry_icon).mutate();
             Theme.ThemeInfo theme = Theme.getActiveTheme();
-            int color = ContextCompat.getColor(context, R.color.ic_background);
+            int color = ContextCompat.getColor(context, R.color.cg_background);
 
             if (theme.isMonet() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 color = MonetHelper.getColor(theme.isDark() ? "n1_800" : "a1_100");
