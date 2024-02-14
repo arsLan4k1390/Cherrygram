@@ -6,7 +6,10 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -102,7 +105,7 @@ public class ChatsHelper extends BaseController {
             if (image != null && !TextUtils.isEmpty(path)) {
                 File file = new File(path.endsWith(".jpg") ? path.replace(".jpg", ".webp") : path + ".webp");
                 FileOutputStream stream = new FileOutputStream(file);
-                image.compress(Bitmap.CompressFormat.WEBP, 100, stream);
+                image.compress(Bitmap.CompressFormat.WEBP, 50, stream);
                 stream.close();
                 addFileToClipboard(file, callback);
             }
@@ -209,8 +212,11 @@ public class ChatsHelper extends BaseController {
         TLRPC.User me = UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser();
 
         TLRPC.TL_account_updateColor req = new TLRPC.TL_account_updateColor();
-        me.flags2 |= 256;
-        me.color.flags |= 1;
+        if (me.color == null) {
+            me.color = new TLRPC.TL_peerColor();
+            me.flags2 |= 256;
+            me.color.flags |= 1;
+        }
         req.flags |= 4;
         req.color = me.color.color = colorId;
         if (emojiDocumentId != 0) {
@@ -238,4 +244,36 @@ public class ChatsHelper extends BaseController {
         }));
     }
 
+    private Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap;
+
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if (bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+
+        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
+    private Bitmap cropCenter(Bitmap bmp) {
+        int dimension = Math.min(bmp.getWidth(), bmp.getHeight());
+        return ThumbnailUtils.extractThumbnail(bmp, dimension, dimension);
+    }
+
+    public Drawable getBackgroundDrawable(Drawable drawable) {
+        Drawable d = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), cropCenter(drawableToBitmap(drawable)));
+
+        return d;
+    }
 }

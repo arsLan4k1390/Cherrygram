@@ -82,7 +82,8 @@
     <string name="CG_CopyReportDetails">Copy Report Details</string>
     <string name="CG_ReportDetailsCopied">Report details copied to clipboard.</string>
     <string name="CG_TranslationLanguage">Translation Language</string>
-    <string name="CG_CopyPhoto">Copy Photo</string>
+    <string name="CG_CopyPhoto">Copy photo</string>
+    <string name="CG_CopyPhotoAsSticker">Copy photo as sticker</string>
     <string name="CG_PhotoCopied">Photo copied to clipboard.</string>
     <string name="CG_SaveSticker">Save sticker</string>
     <string name="CG_StickerSavedHint">Sticker saved to downloads</string>
@@ -127,7 +128,7 @@
     <string name="AP_IconReplacements">Icon replacements</string>
     <string name="AP_Old_Notification_Icon">Default notification icon (Telegram)</string>
     <string name="AP_ChangeIconFilter">Use Telegram icons</string>
-    <string name="AP_ChangeIconFilter_Desc">You have to re-enter this section to see the new icons</string>
+    <string name="AP_HoldToShowWallpaper">Hold any icon to show your desktop wallpaper</string>
     <string name="AP_ChangeIcon_Cherry" translatable="false">Cherry</string>
     <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
     <string name="AP_ChangeIcon_Default">Default</string>
@@ -140,6 +141,7 @@
     <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
+    <string name="AP_ChangeIcon_Dark_Bra" translatable="false">Bra</string>
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
     <string name="AP_IconReplacement_Default">Default</string>
@@ -157,9 +159,18 @@
     <string name="CP_Snowflakes_AH">App header</string>
 
     <string name="CP_PremAndAnim_Header">Animations and Premium Features</string>
+    <string name="CP_ProfileReplyBackground">Messages and profiles</string>
+    <string name="CP_CustomizeProfile">Customize profile</string>
+    <string name="CP_ProfileBackgroundColor">Background in profile</string>
+    <string name="CP_ProfileBackgroundEmoji">Emoji in profile background</string>
+    <string name="CP_CustomizeMessage">Customize a message</string>
+    <string name="CP_ReplyBackground">Background in replies</string>
+    <string name="CP_ReplyCustomColors">Custom colors in replies and links preview</string>
+    <string name="CP_ReplyBackgroundEmoji">Emoji in replies and links preview</string>
     <string name="CP_HideStories">Hide Stories</string>
+    <string name="CP_CustomWallpapers">Custom background in chats</string>
+    <string name="CP_CustomWallpapers_Desc">Configure custom wallpapers in chats/groups/channels set by premium users/boosted channels</string>
     <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
-    <string name="CP_DisableReplyBackground">Disable replies background</string>
     <string name="CP_DisableReactionsOverlay">Disable reactions overlay</string>
     <string name="CP_DisableReactionsOverlay_Desc">This will disable popup overlay with available reactions</string>
     <string name="CP_DisableReactionAnim">Disable reaction animation</string>
@@ -183,7 +194,6 @@
     <string name="AP_Tab_Style_Stroke">Add stroke</string>
 
     <string name="AP_DrawerCategory">Drawer</string>
-    <string name="AP_DrawerPreferences">Drawer preferences</string>
     <string name="AP_DrawerAvatar">Profile photo as drawer background</string>
     <string name="AP_DrawerShowAvatar">Show avatar</string>
     <string name="AP_DrawerDarken">Darken background</string>
@@ -218,6 +228,8 @@
     <string name="CP_ForwardMsgDate">Show forwarded message date</string>
     <string name="CP_ShowSeconds">Format time with seconds</string>
     <string name="CP_ShowSeconds_Desc" translatable="false">12:34 -> 12:34:56</string>
+    <string name="CP_FormatterDay24HSec" translatable="false">HH:mm:ss</string>
+    <string name="CP_FormatterDay12HSec" translatable="false">h:mm:ss a</string>
     <string name="CP_LeftBottomButtonAction">Left button action</string>
     <string name="CP_DoubleTapAction">Double tap action</string>
     <string name="CP_DisableSwipeToNext">Disable transition to the next channel</string>

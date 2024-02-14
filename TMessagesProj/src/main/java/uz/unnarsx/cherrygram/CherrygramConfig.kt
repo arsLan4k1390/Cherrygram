@@ -46,7 +46,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     // General Settings
     //General
     var noRounding by sharedPreferences.boolean("CP_NoRounding", false)
-    var showSeconds by sharedPreferences.boolean("CP_ShowSeconds", false)
     var systemEmoji by sharedPreferences.boolean("AP_SystemEmoji", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
@@ -54,17 +53,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
     var hidePhoneNumber by sharedPreferences.boolean("AP_HideUserPhone", false)
 
-    const val ID_DC_NONE = 0
-    const val ID_ONLY = 1
-    const val ID_DC = 2
-    var showIDDC by sharedPreferences.int("AP_ShowID_DC", ID_DC_NONE)
     //Animations and Premium Features
     var hideStories by sharedPreferences.boolean("CP_HideStories", false)
+    var customWallpapers by sharedPreferences.boolean("CP_CustomWallpapers", true)
     var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
-    var disableReplyPanelBackground by sharedPreferences.boolean("CP_DisableReplyBackground", false)
     var disableReactionsOverlay by sharedPreferences.boolean("CP_DisableReactionsOverlay", false)
     var disableReactionAnim by sharedPreferences.boolean("CP_DisableReactionAnim", false)
-    var disablePremiumStatuses by sharedPreferences.boolean("CP_DisablePremiumStatuses", false)
     var disablePremStickAnim by sharedPreferences.boolean("CP_DisablePremStickAnim", false)
     var disablePremStickAutoPlay by sharedPreferences.boolean("CP_DisablePremStickAutoPlay", false)
     var hideSendAsChannel by sharedPreferences.boolean("CP_HideSendAsChannel", false)
@@ -90,6 +84,92 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var disableDividers by sharedPreferences.boolean("AP_DisableDividers", true)
     var overrideHeaderColor by sharedPreferences.boolean("AP_OverrideHeaderColor", true)
     var flatNavbar by sharedPreferences.boolean("AP_FlatNavBar", true)
+
+    //Messages and profiles
+    var showSeconds by sharedPreferences.boolean("CP_ShowSeconds", false)
+    fun toggleShowSeconds() {
+        showSeconds = !showSeconds
+        putBoolean("CP_ShowSeconds", showSeconds)
+    }
+
+    var disablePremiumStatuses by sharedPreferences.boolean("CP_DisablePremiumStatuses", false)
+    fun toggleDisablePremiumStatuses() {
+        disablePremiumStatuses = !disablePremiumStatuses
+        putBoolean("CP_DisablePremiumStatuses", disablePremiumStatuses)
+    }
+
+    var replyBackground by sharedPreferences.boolean("CP_ReplyBackground", true)
+    fun toggleReplyBackground() {
+        replyBackground = !replyBackground
+        putBoolean("CP_ReplyBackground", replyBackground)
+    }
+
+    var replyCustomColors by sharedPreferences.boolean("CP_ReplyCustomColors", true)
+    fun toggleReplyCustomColors() {
+        replyCustomColors = !replyCustomColors
+        putBoolean("CP_ReplyCustomColors", replyCustomColors)
+    }
+
+    var replyBackgroundEmoji by sharedPreferences.boolean("CP_ReplyBackgroundEmoji", true)
+    fun toggleReplyBackgroundEmoji() {
+        replyBackgroundEmoji = !replyBackgroundEmoji
+        putBoolean("CP_ReplyBackgroundEmoji", replyBackgroundEmoji)
+    }
+
+    const val ID_DC_NONE = 0
+    const val ID_ONLY = 1
+    const val ID_DC = 2
+    var showIDDC by sharedPreferences.int("AP_ShowID_DC", ID_DC_NONE)
+
+    var profileBackgroundColor by sharedPreferences.boolean("CP_ProfileBackgroundColor", true)
+    fun toggleProfileBackgroundColor() {
+        profileBackgroundColor = !profileBackgroundColor
+        putBoolean("CP_ProfileBackgroundColor", profileBackgroundColor)
+    }
+
+    var profileBackgroundEmoji by sharedPreferences.boolean("CP_ProfileBackgroundEmoji", true)
+    fun toggleProfileBackgroundEmoji() {
+        profileBackgroundEmoji = !profileBackgroundEmoji
+        putBoolean("CP_ProfileBackgroundEmoji", profileBackgroundEmoji)
+    }
+
+    //Folders
+    var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
+    fun toggleFolderNameInHeader() {
+        folderNameInHeader = !folderNameInHeader
+        putBoolean("AP_FolderNameInHeader", folderNameInHeader)
+    }
+
+    var tabsHideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
+    fun toggleTabsHideAllChats() {
+        tabsHideAllChats = !tabsHideAllChats
+        putBoolean("CP_NewTabs_RemoveAllChats", tabsHideAllChats)
+    }
+
+    var tabsNoUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
+    fun toggleTabsNoUnread() {
+        tabsNoUnread = !tabsNoUnread
+        putBoolean("CP_NewTabs_NoCounter", tabsNoUnread)
+    }
+
+    const val TAB_TYPE_MIX = 0
+    const val TAB_TYPE_TEXT = 1
+    const val TAB_TYPE_ICON = 2
+    var tabMode by sharedPreferences.int("AP_TabMode", 1)
+
+    const val TAB_STYLE_DEFAULT = 0
+    const val TAB_STYLE_ROUNDED = 1
+    const val TAB_STYLE_TEXT = 2
+    const val TAB_STYLE_VKUI = 3
+    const val TAB_STYLE_PILLS = 4
+    var tabStyle by sharedPreferences.int("AP_TabStyle", TAB_STYLE_ROUNDED)
+
+    var tabStyleStroke by sharedPreferences.boolean("AP_TabStyleAddStroke", false)
+    fun toggleTabStyleStroke() {
+        tabStyleStroke = !tabStyleStroke
+        putBoolean("AP_TabStyleAddStroke", tabStyleStroke)
+    }
+
     //Drawer
     var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", false)
     fun toggleDrawerSnow() {
@@ -128,7 +208,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     }
 
     var drawerBlurIntensity by sharedPreferences.int("AP_DrawerBlur_Intensity", 50)
-
     var eventType by sharedPreferences.int("AP_DrawerEventType", 0)
 
     //Drawer buttons
@@ -203,23 +282,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         cGPreferencesDrawerButton = !cGPreferencesDrawerButton
         putBoolean("AP_CGPreferencesDrawerButton", cGPreferencesDrawerButton)
     }
-    //Folders
-    var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
-    var newTabs_hideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
-    var newTabs_noUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
-
-    const val TAB_TYPE_MIX = 0
-    const val TAB_TYPE_TEXT = 1
-    const val TAB_TYPE_ICON = 2
-    var tabMode by sharedPreferences.int("AP_TabMode", 1)
-
-    const val TAB_STYLE_DEFAULT = 0
-    const val TAB_STYLE_ROUNDED = 1
-    const val TAB_STYLE_TEXT = 2
-    const val TAB_STYLE_VKUI = 3
-    const val TAB_STYLE_PILLS = 4
-    var tabStyle by sharedPreferences.int("AP_TabStyle", TAB_STYLE_ROUNDED)
-    var tabStyleStroke by sharedPreferences.boolean("AP_TabStyleAddStroke", false)
 
     //Snowflakes
     var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false)
@@ -228,13 +290,37 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     // Chats Settings
     //Stickers
     var blockStickers by sharedPreferences.boolean("CP_BlockStickers", false)
-    var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
+    var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
     //Direct Share
     var usersDrawShareButton by sharedPreferences.boolean("CP_UsersDrawShareButton", false)
     fun toggleUsersDrawShareButton() {
         usersDrawShareButton = !usersDrawShareButton
         putBoolean("CP_UsersDrawShareButton", usersDrawShareButton)
+    }
+
+    var supergroupsDrawShareButton by sharedPreferences.boolean("CP_SupergroupsDrawShareButton", false)
+    fun toggleSupergroupsDrawShareButton() {
+        supergroupsDrawShareButton = !supergroupsDrawShareButton
+        putBoolean("CP_SupergroupsDrawShareButton", supergroupsDrawShareButton)
+    }
+
+    var channelsDrawShareButton by sharedPreferences.boolean("CP_ChannelsDrawShareButton", true)
+    fun toggleChannelsDrawShareButton() {
+        channelsDrawShareButton = !channelsDrawShareButton
+        putBoolean("CP_ChannelsDrawShareButton", channelsDrawShareButton)
+    }
+
+    var botsDrawShareButton by sharedPreferences.boolean("CP_BotsDrawShareButton", true)
+    fun toggleBotsDrawShareButton() {
+        botsDrawShareButton = !botsDrawShareButton
+        putBoolean("CP_BotsDrawShareButton", botsDrawShareButton)
+    }
+
+    var stickersDrawShareButton by sharedPreferences.boolean("CP_StickersDrawShareButton", false)
+    fun toggleStickersDrawShareButton() {
+        stickersDrawShareButton = !stickersDrawShareButton
+        putBoolean("CP_StickersDrawShareButton", stickersDrawShareButton)
     }
 
     //Message menu
@@ -248,6 +334,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     fun toggleShowCopyPhoto() {
         showCopyPhoto = !showCopyPhoto
         putBoolean("CP_ShowCopyPhoto", showCopyPhoto)
+    }
+
+    var showCopyPhotoAsSticker by sharedPreferences.boolean("CP_ShowCopyPhotoAsSticker", true)
+    fun toggleShowCopyPhotoAsSticker() {
+        showCopyPhotoAsSticker = !showCopyPhotoAsSticker
+        putBoolean("CP_ShowCopyPhotoAsSticker", showCopyPhotoAsSticker)
     }
 
     var showClearFromCache by sharedPreferences.boolean("CP_ShowClearFromCache", true)
@@ -298,31 +390,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_ShowJSON", showJSON)
     }
 
-    //Direct Share
-    var supergroupsDrawShareButton by sharedPreferences.boolean("CP_SupergroupsDrawShareButton", false)
-    fun toggleSupergroupsDrawShareButton() {
-        supergroupsDrawShareButton = !supergroupsDrawShareButton
-        putBoolean("CP_SupergroupsDrawShareButton", supergroupsDrawShareButton)
-    }
-
-    var channelsDrawShareButton by sharedPreferences.boolean("CP_ChannelsDrawShareButton", true)
-    fun toggleChannelsDrawShareButton() {
-        channelsDrawShareButton = !channelsDrawShareButton
-        putBoolean("CP_ChannelsDrawShareButton", channelsDrawShareButton)
-    }
-
-    var botsDrawShareButton by sharedPreferences.boolean("CP_BotsDrawShareButton", true)
-    fun toggleBotsDrawShareButton() {
-        botsDrawShareButton = !botsDrawShareButton
-        putBoolean("CP_BotsDrawShareButton", botsDrawShareButton)
-    }
-
-    var stickersDrawShareButton by sharedPreferences.boolean("CP_StickersDrawShareButton", false)
-    fun toggleStickersDrawShareButton() {
-        stickersDrawShareButton = !stickersDrawShareButton
-        putBoolean("CP_StickersDrawShareButton", stickersDrawShareButton)
-    }
-
     //Chats
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
     var deleteForAll by sharedPreferences.boolean("CP_DeleteForAll", false)
@@ -348,8 +415,8 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
     var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
     //Media
+    var largePhotos by sharedPreferences.boolean("CP_LargePhotos", true)
     var voicesAgc by sharedPreferences.boolean("CP_VoicesAGC", false)
-    var playGIFasVideo by sharedPreferences.boolean("CP_PlayGIFasVideo", true)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
     var disableVibration by sharedPreferences.boolean("CP_DisableVibration", false)
@@ -418,8 +485,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         actionbarCrossfade = !actionbarCrossfade
         putBoolean("EP_ActionbarCrossfade", actionbarCrossfade)
     }
-
-    var largePhotos by sharedPreferences.boolean("CP_LargePhotos", true)
 
     var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", !ApplicationLoader.checkPlayServices())
     fun toggleResidentNotification() {

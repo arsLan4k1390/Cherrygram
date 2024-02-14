@@ -280,7 +280,11 @@ public class ApplicationLoader extends Application {
         }
 
         NativeLoader.initNativeLibs(ApplicationLoader.applicationContext);
-        ConnectionsManager.native_setJava(false);
+        try {
+            ConnectionsManager.native_setJava(false);
+        } catch (UnsatisfiedLinkError error) {
+            throw new RuntimeException("can't load native libraries " +  Build.CPU_ABI + " lookup folder " + NativeLoader.getAbiFolder());
+        }
         new ForegroundDetector(this) {
             @Override
             public void onActivityStarted(Activity activity) {
@@ -439,11 +443,6 @@ public class ApplicationLoader extends Application {
         }
         return false;
     }*/
-
-    public static boolean useLessData() {
-        ensureCurrentNetworkGet();
-        return BuildVars.DEBUG_PRIVATE_VERSION && (SharedConfig.forceLessData || isConnectionSlow());
-    }
 
     public static boolean isConnectionSlow() {
         try {

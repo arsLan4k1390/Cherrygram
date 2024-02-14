@@ -1725,7 +1725,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     break;
                 case DO_SHUTDOWN_MESSAGE:
                     finish();
-                    if (recording && inputMessage.arg2 != -2) {
+                    if (recording && inputMessage.arg2 != -2 && videoEncoder != null) {
                         videoEncoder.stopRecording(inputMessage.arg1, inputMessage.arg2);
                     }
                     Looper looper = Looper.myLooper();
@@ -3596,9 +3596,9 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
 
         CGFeatureHooks.setFlashLight(true);
         AndroidUtilities.setLightStatusBar(((Activity) getContext()).getWindow(), true);
-        flashlightButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
-        switchCameraDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
-        switchCameraButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
+        if (flashlightButton != null) flashlightButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
+        if (switchCameraDrawable!= null) switchCameraDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
+        if (switchCameraButton != null) switchCameraButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
     }
 
     public void setOldBrightness() {
@@ -3615,9 +3615,9 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 CGFeatureHooks.setFlashLight(false);
                 AndroidUtilities.setLightStatusBar(((Activity) getContext()).getWindow(), false);
                 invalidateBlur();
-                flashlightButton.clearColorFilter();
-                switchCameraDrawable.clearColorFilter();
-                switchCameraButton.clearColorFilter();
+                if (flashlightButton != null) flashlightButton.clearColorFilter();
+                if (switchCameraDrawable!= null) switchCameraDrawable.clearColorFilter();
+                if (switchCameraButton != null) switchCameraButton.clearColorFilter();
             }
         }.start();
     }

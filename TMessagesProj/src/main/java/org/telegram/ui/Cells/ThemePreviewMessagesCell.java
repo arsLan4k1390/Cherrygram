@@ -26,6 +26,7 @@ import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
+import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.INavigationLayout;
@@ -43,10 +44,13 @@ import org.telegram.ui.Components.Reactions.ReactionsEffectOverlay;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
 import org.telegram.ui.Stories.recorder.StoryEntry;
 
+import uz.unnarsx.cherrygram.preferences.MessagesAndProfilesPreferencesEntry;
+
 public class ThemePreviewMessagesCell extends LinearLayout {
 
     public final static int TYPE_REACTIONS_DOUBLE_TAP = 2;
     public final static int TYPE_PEER_COLOR = 3;
+    public final static int TYPE_PEER_COLOR_CHERRY = 4;
 
     private final Runnable invalidateRunnable = this::invalidate;
 
@@ -158,6 +162,49 @@ public class ThemePreviewMessagesCell extends LinearLayout {
             message1.forceAvatar = true;
             message1.resetLayout();
             message1.eventId = 1;
+        } else if (type == TYPE_PEER_COLOR_CHERRY) {
+            TLRPC.Message message = new TLRPC.TL_message();
+            message.message = LocaleController.getString(R.string.UserColorPreview);
+            message.reply_to = new TLRPC.TL_messageReplyHeader();
+            message.reply_to.flags |= 1;
+            message.reply_to.reply_to_peer_id = new TLRPC.TL_peerUser();
+            message.reply_to.reply_to_peer_id.user_id = UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
+            message.replyMessage = new TLRPC.Message();
+            message.replyMessage.media = new TLRPC.TL_messageMediaEmpty();
+            message.replyMessage.from_id = new TLRPC.TL_peerUser();
+            message.replyMessage.from_id.user_id = UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
+            message.replyMessage.peer_id = new TLRPC.TL_peerUser();
+            message.replyMessage.peer_id.user_id = UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
+            message.replyMessage.message = LocaleController.getString(R.string.UserColorPreviewReply);
+            message.media = new TLRPC.TL_messageMediaWebPage();
+            message.media.webpage = new TLRPC.TL_webPage();
+            message.media.webpage.embed_url = "https://telegram.org/";
+            message.media.webpage.flags |= 2;
+            message.media.webpage.site_name = LocaleController.getString(R.string.AppName);
+            message.media.webpage.flags |= 4;
+            message.media.webpage.title = LocaleController.getString(R.string.UserColorPreviewLinkTitle);
+            message.media.webpage.flags |= 8;
+            message.media.webpage.description = LocaleController.getString(R.string.UserColorPreviewLinkDescription);
+            message.date = date + 60;
+            message.dialog_id = 1;
+            message.flags = 259;
+            message.from_id = new TLRPC.TL_peerUser();
+            message.from_id.user_id = UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
+            message.id = 1;
+            message.out = false;
+            message.peer_id = new TLRPC.TL_peerUser();
+            message.peer_id.user_id = 0;
+
+            message1 = new MessageObject(UserConfig.selectedAccount, message, true, false);
+            message1.forceAvatar = true;
+            message1.resetLayout();
+            message1.eventId = 1;
+            if (!UserConfig.getInstance(UserConfig.selectedAccount).isPremium()) {
+                message1.overrideLinkColor = MessagesAndProfilesPreferencesEntry.REPLY_BACKGROUND_COLOR_ID;
+            }
+            if (UserObject.getEmojiId(UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser()) == 0) {
+                message1.overrideLinkEmoji = MessagesAndProfilesPreferencesEntry.CHERRY_EMOJI_ID;
+            }
         } else if (type == TYPE_REACTIONS_DOUBLE_TAP)  {
             TLRPC.Message message = new TLRPC.TL_message();
             message.message = LocaleController.getString("DoubleTapPreviewMessage", R.string.DoubleTapPreviewMessage);

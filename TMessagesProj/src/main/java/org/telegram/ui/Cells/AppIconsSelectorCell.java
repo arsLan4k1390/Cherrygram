@@ -2,6 +2,7 @@ package org.telegram.ui.Cells;
 
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,6 +16,7 @@ import android.text.SpannableString;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -39,6 +41,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.Easings;
+import org.telegram.ui.Components.ExtendedGridLayoutManager;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Premium.PremiumFeatureBottomSheet;
 import org.telegram.ui.Components.RecyclerListView;
@@ -50,6 +53,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.helpers.ChatsHelper;
 
 public class AppIconsSelectorCell extends RecyclerListView implements NotificationCenter.NotificationCenterDelegate {
     public final static float ICONS_ROUND_RADIUS = 100;
@@ -61,14 +65,14 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
     public AppIconsSelectorCell(Context context, BaseFragment fragment, int currentAccount) {
         super(context);
         this.currentAccount = currentAccount;
-        setPadding(0, AndroidUtilities.dp(12), 0, AndroidUtilities.dp(12));
+        setPadding(6, AndroidUtilities.dp(12), 6, AndroidUtilities.dp(12));
 
         setFocusable(false);
         setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
         setItemAnimator(null);
         setLayoutAnimation(null);
 
-        setLayoutManager(linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        setLayoutManager(linearLayoutManager = new ExtendedGridLayoutManager(getContext(), 4));
         setAdapter(new Adapter() {
 
             @NonNull
@@ -81,6 +85,15 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                 IconHolderView holderView = (IconHolderView) holder.itemView;
                 LauncherIconController.LauncherIcon icon = availableIcons.get(position);
+
+//                if (CherrygramConfig.INSTANCE.getShowPhoneWallpaper()) {
+//                    WallpaperManager wallpaperManager = WallpaperManager.getInstance(getContext());
+//                    Drawable wallpaperDrawable = wallpaperManager.getDrawable();
+//                    setBackground(ChatsHelper.getInstance(UserConfig.selectedAccount).getBackgroundDrawable(wallpaperDrawable));
+//                } else {
+//                    setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+//                }
+
                 if ((icon == LauncherIconController.LauncherIcon.MONET_SAMSUNG ||
                         icon == LauncherIconController.LauncherIcon.MONET_PIXEL ||
                         icon == LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG ||
@@ -104,6 +117,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
                         icon == LauncherIconController.LauncherIcon.SUNRISE_CHERRY ||
                         icon == LauncherIconController.LauncherIcon.TURBO_CHERRY ||
                         icon == LauncherIconController.LauncherIcon.NOX_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.DARK_CHERRY_BRA ||
                         icon == LauncherIconController.LauncherIcon.DARK_NY) && !(Build.VERSION.SDK_INT >= 26)) {
                     return;
                 }
@@ -120,7 +134,8 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
         addItemDecoration(new ItemDecoration() {
             @Override
             public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull State state) {
-                int pos = parent.getChildViewHolder(view).getAdapterPosition();
+                outRect.bottom = AndroidUtilities.dp(10);
+                /*int pos = parent.getChildViewHolder(view).getAdapterPosition();
                 if (pos == 0) {
                     outRect.left = AndroidUtilities.dp(18);
                 }
@@ -133,7 +148,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
                     } else {
                         outRect.right = AndroidUtilities.dp(24);
                     }
-                }
+                }*/
             }
         });
         setOnItemClickListener((view, position) -> {
@@ -174,6 +189,22 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
 
             NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_APP_ICON, icon);
         });
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            setOnItemLongClickListener((view, position) -> {
+                WallpaperManager wallpaperManager = WallpaperManager.getInstance(getContext());
+                Drawable wallpaperDrawable = wallpaperManager.getDrawable();
+                if (wallpaperDrawable != null) {
+                    try {
+                        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                    } catch (Exception ignore) {
+                    }
+                    setBackground(ChatsHelper.getInstance(UserConfig.selectedAccount).getBackgroundDrawable(wallpaperDrawable));
+                } else {
+                    setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                }
+                return false;
+            });
+        }
         updateIconsVisibility();
     }
 
@@ -206,6 +237,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNRISE_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY_BRA));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_NY));
         }
         if (MessagesController.getInstance(currentAccount).premiumFeaturesBlocked()) {
@@ -246,6 +278,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNRISE_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY_BRA));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.CHERRY_NY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_NY));
         }
@@ -311,10 +344,11 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             setWillNotDraw(false);
             iconView = new AdaptiveIconImageView(context);
             iconView.setPadding(AndroidUtilities.dp(8), AndroidUtilities.dp(8), AndroidUtilities.dp(8), AndroidUtilities.dp(8));
-            addView(iconView, LayoutHelper.createLinear(58, 58, Gravity.CENTER_HORIZONTAL));
+            addView(iconView, LayoutHelper.createLinear(65, 65, Gravity.CENTER_HORIZONTAL));
 
             titleView = new TextView(context);
-            titleView.setSingleLine();
+            titleView.setGravity(Gravity.CENTER_HORIZONTAL);
+            titleView.setLineSpacing(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5.0f,  getResources().getDisplayMetrics()), 1.0f);
             titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
             titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             addView(titleView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 4, 0, 0));
@@ -322,7 +356,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             outlinePaint.setStyle(Paint.Style.STROKE);
             outlinePaint.setStrokeWidth(Math.max(2, AndroidUtilities.dp(0.5f)));
 
-            fillPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+            fillPaint.setColor(Color.TRANSPARENT);
         }
 
         @Override

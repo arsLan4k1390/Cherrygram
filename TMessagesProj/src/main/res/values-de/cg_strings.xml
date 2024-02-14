@@ -106,7 +106,6 @@
     <string name="AP_IconReplacements">Icon replacements</string>
     <string name="AP_Old_Notification_Icon">Default notification icon (Telegram)</string>
     <string name="AP_ChangeIconFilter">Use Telegram icons</string>
-    <string name="AP_ChangeIconFilter_Desc">You have to re-enter this section to see the new icons</string>
     <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
     <string name="AP_ChangeIcon_Default">Default</string>
     <string name="AP_ChangeIcon_Dark">Dark</string>
@@ -133,7 +132,6 @@
     <string name="CP_PremAndAnim_Header">Animations and Premium Features</string>
     <string name="CP_HideStories">Hide Stories</string>
     <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
-    <string name="CP_DisableReplyBackground">Disable replies background</string>
     <string name="CP_DisableReactionsOverlay">Disable reactions overlay</string>
     <string name="CP_DisableReactionsOverlay_Desc">This will disable popup overlay with available reactions</string>
     <string name="CP_DisableReactionAnim">Disable reaction animation</string>
@@ -155,7 +153,6 @@
     <string name="AP_Tab_Style_Pills">Pills</string>
     <string name="AP_Tab_Style_Stroke">Add stroke</string>
     <string name="AP_DrawerCategory">Drawer</string>
-    <string name="AP_DrawerPreferences">Drawer preferences</string>
     <string name="AP_DrawerAvatar">Profile photo as drawer background</string>
     <string name="AP_DrawerShowAvatar">Show avatar</string>
     <string name="AP_DrawerDarken">Darken background</string>
@@ -236,7 +233,6 @@
     <string name="CG_ResidentNotification">Show a resident notification</string>
     <string name="EP_PhotosSize">Send large photos (2560px)</string>
     <string name="EP_ShowRPCError">Toast all RPC errors</string>
-    <string name="EP_CustomAppTitle">App Title</string>
     <string name="EP_CustomChat">Custom chat for Saved Messages</string>
     <string name="EP_CustomChat_Desc">Set an ID from another chat/group/channel to forward messages there (button in action bar, message menu or double tap)</string>
     <string name="EP_CustomChatNotFound">Chat not found!</string>

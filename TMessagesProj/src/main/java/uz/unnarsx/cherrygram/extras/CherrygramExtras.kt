@@ -19,7 +19,7 @@ import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = "7.9.6"
+    var CG_VERSION = BuildConfig.BUILD_VERSION_STRING_CHERRY
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getDCGeo(dcId: Int): String {
@@ -38,7 +38,7 @@ object CherrygramExtras {
             3 -> "Aurora"
             4 -> "Vesta"
             5 -> "Flora"
-            else -> "Unknown"
+            else -> LocaleController.getString("NumberUnknown", R.string.NumberUnknown)
         }
     }
 

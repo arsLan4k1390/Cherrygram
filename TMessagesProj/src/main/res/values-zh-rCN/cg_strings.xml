@@ -69,6 +69,7 @@
     <string name="CG_ReportDetailsCopied">崩溃信息已复制到剪切板</string>
     <string name="CG_TranslationLanguage">目标语言</string>
     <string name="CG_CopyPhoto">复制图片</string>
+    <string name="CG_CopyPhotoAsSticker">将图片复制为贴纸</string>
     <string name="CG_PhotoCopied">已复制图片到剪贴板</string>
     <string name="CG_SaveSticker">保存贴纸</string>
     <string name="CG_StickerSavedHint">贴纸已保存到下载文件夹</string>
@@ -106,7 +107,7 @@
     <string name="AP_IconReplacements">替换图标</string>
     <string name="AP_Old_Notification_Icon">默认通知图标 (Telegram)</string>
     <string name="AP_ChangeIconFilter">使用 Telegram 原始图标</string>
-    <string name="AP_ChangeIconFilter_Desc">您必须重新进入此部分才可以看到新图标</string>
+    <string name="AP_HoldToShowWallpaper">按住任何图标即可显示您的桌面壁纸</string>
     <string name="AP_ChangeIcon_Cherry_NY">新年</string>
     <string name="AP_ChangeIcon_Default">默认</string>
     <string name="AP_ChangeIcon_Dark">深色</string>
@@ -131,9 +132,16 @@
     <string name="CP_Snowflakes_Header">雪花效果</string>
     <string name="CP_Snowflakes_AH">应用标题栏</string>
     <string name="CP_PremAndAnim_Header">动画和高级功能</string>
+    <string name="CP_ProfileReplyBackground">消息和个人资料</string>
+    <string name="CP_CustomizeProfile">自定义个人资料</string>
+    <string name="CP_ProfileBackgroundColor">个人资料背景</string>
+    <string name="CP_ProfileBackgroundEmoji">个人资料中的表情背景</string>
+    <string name="CP_CustomizeMessage">自定义消息</string>
+    <string name="CP_ReplyBackground">回复中的背景</string>
+    <string name="CP_ReplyCustomColors">自定义回复和链接预览的颜色</string>
+    <string name="CP_ReplyBackgroundEmoji">回复和链接预览中的表情</string>
     <string name="CP_HideStories">隐藏动态</string>
     <string name="CP_DisableAnimAvatars">禁用动态头像</string>
-    <string name="CP_DisableReplyBackground">禁用回复背景</string>
     <string name="CP_DisableReactionsOverlay">禁用表态弹窗</string>
     <string name="CP_DisableReactionsOverlay_Desc">禁用可使用表态的弹出窗口</string>
     <string name="CP_DisableReactionAnim">禁用表态动画</string>

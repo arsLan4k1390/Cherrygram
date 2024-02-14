@@ -1,6 +1,5 @@
 package uz.unnarsx.cherrygram.preferences
 
-import androidx.core.util.Pair
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
@@ -9,7 +8,6 @@ import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.ui.tgkit.preference.category
 import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
-import uz.unnarsx.cherrygram.ui.tgkit.preference.list
 import uz.unnarsx.cherrygram.ui.tgkit.preference.switch
 import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
 
@@ -24,17 +22,6 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.noRounding
                 }) {
                     CherrygramConfig.noRounding = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_ShowSeconds", R.string.CP_ShowSeconds)
-                description = LocaleController.getString("CP_ShowSeconds_Desc", R.string.CP_ShowSeconds_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.showSeconds
-                }) {
-                    CherrygramConfig.showSeconds = it
-                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -85,27 +72,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.hidePhoneNumber
                 }) {
                     CherrygramConfig.hidePhoneNumber = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-
-            list {
-                title = LocaleController.getString("AP_ShowID", R.string.AP_ShowID)
-
-                contract({
-                    return@contract listOf(
-                        Pair(CherrygramConfig.ID_DC_NONE, LocaleController.getString("Disable", R.string.Disable)),
-                        Pair(CherrygramConfig.ID_ONLY, "ID"),
-                        Pair(CherrygramConfig.ID_DC, "ID + DC")
-                    )
-                }, {
-                    return@contract when (CherrygramConfig.showIDDC) {
-                        CherrygramConfig.ID_ONLY -> "ID"
-                        CherrygramConfig.ID_DC -> "ID + DC"
-                        else -> LocaleController.getString("Disable", R.string.Disable)
-                    }
-                }) {
-                    CherrygramConfig.showIDDC = it
+                    bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
             }
         }
@@ -121,6 +88,16 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("CP_CustomWallpapers", R.string.CP_CustomWallpapers)
+                description = LocaleController.getString("CP_CustomWallpapers_Desc", R.string.CP_CustomWallpapers_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.customWallpapers
+                }) {
+                    CherrygramConfig.customWallpapers = it
+                }
+            }
+            switch {
                 title = LocaleController.getString("CP_DisableAnimAvatars", R.string.CP_DisableAnimAvatars)
 
                 contract({
@@ -128,15 +105,6 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                 }) {
                     CherrygramConfig.disableAnimatedAvatars = it
                     AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DisableReplyBackground", R.string.CP_DisableReplyBackground)
-
-                contract({
-                    return@contract CherrygramConfig.disableReplyPanelBackground
-                }) {
-                    CherrygramConfig.disableReplyPanelBackground = it
                 }
             }
             switch {
@@ -158,17 +126,6 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disableReactionAnim
                 }) {
                     CherrygramConfig.disableReactionAnim = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DisablePremiumStatuses", R.string.CP_DisablePremiumStatuses)
-                description = LocaleController.getString("CP_DisablePremiumStatuses_Desc", R.string.CP_DisablePremiumStatuses_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.disablePremiumStatuses
-                }) {
-                    CherrygramConfig.disablePremiumStatuses = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }

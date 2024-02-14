@@ -73,6 +73,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CG_ReportDetailsCopied">Detalhes de falhas copiados para o Clipboard.</string>
     <string name="CG_TranslationLanguage">Idioma de tradução</string>
     <string name="CG_CopyPhoto">Copiar fotografia</string>
+    <string name="CG_CopyPhotoAsSticker">Copiar fotografia como autocolante</string>
     <string name="CG_PhotoCopied">Fotografia copiada para a área de transferência.</string>
     <string name="CG_SaveSticker">Guardar autocolante</string>
     <string name="CG_StickerSavedHint">Autocolante guardado em transferências</string>
@@ -110,7 +111,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_IconReplacements">Substituição de ícones</string>
     <string name="AP_Old_Notification_Icon">Ícone de notificação padrão (Telegram)</string>
     <string name="AP_ChangeIconFilter">Usar ícones do Telegram</string>
-    <string name="AP_ChangeIconFilter_Desc">Tem de voltar a entrar nesta secção para ver os novos ícones</string>
+    <string name="AP_HoldToShowWallpaper">Mantenha qualquer ícone premido para mostrar o papel de parede do seu ambiente de trabalho</string>
     <string name="AP_ChangeIcon_Cherry_NY">Ano Novo</string>
     <string name="AP_ChangeIcon_Default">Por defeito</string>
     <string name="AP_ChangeIcon_Dark">Escuro</string>
@@ -135,9 +136,16 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_Snowflakes_Header">Flocos de neve</string>
     <string name="CP_Snowflakes_AH">Cabeçalho da aplicação</string>
     <string name="CP_PremAndAnim_Header">Animações e Recursos Premium</string>
+    <string name="CP_ProfileReplyBackground">Mensagens e perfis</string>
+    <string name="CP_CustomizeProfile">Personalizar perfil</string>
+    <string name="CP_ProfileBackgroundColor">Fundo no perfil</string>
+    <string name="CP_ProfileBackgroundEmoji">Emoji no fundo do perfil</string>
+    <string name="CP_CustomizeMessage">Personalizar uma mensagem</string>
+    <string name="CP_ReplyBackground">Segundo plano em respostas</string>
+    <string name="CP_ReplyCustomColors">Cores personalizadas na pré-visualização de respostas e ligações</string>
+    <string name="CP_ReplyBackgroundEmoji">Emoji nas respostas e pré-visualização de ligações</string>
     <string name="CP_HideStories">Ocultar Stories</string>
     <string name="CP_DisableAnimAvatars">Desativar avatares animados</string>
-    <string name="CP_DisableReplyBackground">Desativar o fundo das respostas</string>
     <string name="CP_DisableReactionsOverlay">Desativar sobreposição de reações</string>
     <string name="CP_DisableReactionsOverlay_Desc">Isto irá desativar a sobreposição de popups com as reações disponíveis</string>
     <string name="CP_DisableReactionAnim">Desativar animação de reação</string>

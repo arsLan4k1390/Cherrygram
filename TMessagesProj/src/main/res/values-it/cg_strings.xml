@@ -106,7 +106,6 @@
     <string name="AP_IconReplacements">Sostituzioni icone</string>
     <string name="AP_Old_Notification_Icon">Icona di notifica predefinita (Telegram)</string>
     <string name="AP_ChangeIconFilter">Usa icone Telegram</string>
-    <string name="AP_ChangeIconFilter_Desc">Devi reinserire questa sezione per vedere le nuove icone</string>
     <string name="AP_ChangeIcon_Cherry_NY">Anno Nuovo</string>
     <string name="AP_ChangeIcon_Default">Predefinito</string>
     <string name="AP_ChangeIcon_Dark">Scuro</string>
@@ -133,7 +132,6 @@
     <string name="CP_PremAndAnim_Header">Animazioni e Funzionalità Premium</string>
     <string name="CP_HideStories">Nascondi storie</string>
     <string name="CP_DisableAnimAvatars">Disabilita avatar animati</string>
-    <string name="CP_DisableReplyBackground">Disabilita sfondo delle risposte</string>
     <string name="CP_DisableReactionsOverlay">Disabilita sovrapposizione delle reazioni</string>
     <string name="CP_DisableReactionsOverlay_Desc">Questo disabiliterà la sovrapposizione popup con le reazioni disponibili</string>
     <string name="CP_DisableReactionAnim">Disabilita l\'animazione della reazione</string>
@@ -155,7 +153,6 @@
     <string name="AP_Tab_Style_Pills">Pillole</string>
     <string name="AP_Tab_Style_Stroke">Aggiungi stroke</string>
     <string name="AP_DrawerCategory">Drawer</string>
-    <string name="AP_DrawerPreferences">Preferenze drawer</string>
     <string name="AP_DrawerAvatar">Foto del profilo come sfondo</string>
     <string name="AP_DrawerShowAvatar">Mostra avatar</string>
     <string name="AP_DrawerDarken">Sfondo scuro</string>

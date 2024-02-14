@@ -50,6 +50,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.util.Base64;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.ActionMode;
@@ -173,6 +174,7 @@ import org.telegram.ui.Components.Premium.boosts.UserSelectorBottomSheet;
 import org.telegram.ui.Components.RLottieDrawable;
 import org.telegram.ui.Components.RLottieImageView;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.Components.SearchTagsList;
 import org.telegram.ui.Components.SharingLocationsAlert;
 import org.telegram.ui.Components.SideMenultItemAnimator;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
@@ -209,6 +211,7 @@ import java.util.regex.Pattern;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.extras.CherrygramExtras;
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.preferences.FoldersPreferencesEntry;
 import uz.unnarsx.cherrygram.ui.drawer.DrawerPreferencesEntry;
 import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator;
 import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
@@ -229,16 +232,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     private CGUIResources res = null;
     @Override
     public Resources getResources() {
-        if (CherrygramConfig.INSTANCE.getIconReplacement() != CherrygramConfig.ICON_REPLACE_NONE) {
-            return res == null ? res = new CGUIResources(super.getResources()) : res;
-        } else {
-            return super.getResources();
-        }
+        return res == null ? res = new CGUIResources(getApplicationContext().getResources()) : res;
     }
     public void reloadResources() {
-        try {
-            res.reloadReplacements();
-        } catch (Exception ignored) {}
+        res.reloadReplacements();
     }
 
     private static final String EXTRA_ACTION_TOKEN = "actions.fulfillment.extra.ACTION_TOKEN";
@@ -1412,6 +1409,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         return frameLayout;
     }
 
+    private boolean switchingAccount;
     public void switchToAccount(int account, boolean removeAll) {
         switchToAccount(account, removeAll, obj -> new DialogsActivity(null));
     }
@@ -1420,6 +1418,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         if (account == UserConfig.selectedAccount || !UserConfig.isValidAccount(account)) {
             return;
         }
+        switchingAccount = true;
 
         ConnectionsManager.getInstance(currentAccount).setAppPaused(true, false);
         UserConfig.selectedAccount = account;
@@ -1459,6 +1458,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             showTosActivity(account, UserConfig.getInstance(account).unacceptedTermsOfService);
         }
         updateCurrentConnectionState(currentAccount);
+
+        switchingAccount = false;
+
         new CountDownTimer(200, 100) {
             @Override
             public void onTick(long millisUntilFinished) {}
@@ -1808,7 +1810,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         long profile_user_id = 0;
         long[] push_story_dids = null;
         int push_story_id = 0;
-        int push_topic_id = 0;
+        long push_topic_id = 0;
         int push_enc_id = 0;
         int push_msg_id = 0;
         int open_settings = 0;
@@ -2439,6 +2441,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                         presentFragment(new DrawerPreferencesEntry());
                                     } else if (url.startsWith("tg:cg_appearance") || url.startsWith("tg://cg_appearance")) {
                                         fragment.presentFragment(CherrygramPreferencesNavigator.INSTANCE.createAppearance());
+                                    } else if (url.startsWith("tg:cg_folders") || url.startsWith("tg://cg_folders")) {
+                                        presentFragment(new FoldersPreferencesEntry());
                                     } else if (url.startsWith("tg:cg_chats") || url.startsWith("tg://cg_chats")) {
                                         fragment.presentFragment(CherrygramPreferencesNavigator.INSTANCE.createChats());
                                     } else if (url.startsWith("tg:cg_camera") || url.startsWith("tg://cg_camera")) {
@@ -2725,7 +2729,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                         data = Uri.parse(url);
                                         theme = data.getQueryParameter("slug");
                                     } else if (url.startsWith("tg:settings") || url.startsWith("tg://settings")) {
-                                        if (url.contains("themes")) {
+                                        if (url.contains("themes") || url.contains("theme")) {
                                             open_settings = 2;
                                         } else if (url.contains("devices")) {
                                             open_settings = 3;
@@ -2733,14 +2737,18 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                             open_settings = 4;
                                         } else if (url.contains("change_number")) {
                                             open_settings = 5;
+                                        } else if (url.contains("language")) {
+                                            open_settings = 10;
+                                        } else if (url.contains("auto_delete")) {
+                                            open_settings = 11;
+                                        } else if (url.contains("privacy")) {
+                                            open_settings = 12;
                                         } else if (url.contains("?enablelogs")) {
                                             open_settings = 7;
                                         } else if (url.contains("?sendlogs")) {
                                             open_settings = 8;
                                         } else if (url.contains("?disablelogs")) {
                                             open_settings = 9;
-                                        } else if (url.contains("notifications")) {
-                                            open_settings = 10;
                                         } else {
                                             open_settings = 1;
                                         }
@@ -2908,7 +2916,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     long userId = intent.getLongExtra("userId", 0);
                     int encId = intent.getIntExtra("encId", 0);
                     int widgetId = intent.getIntExtra("appWidgetId", 0);
-                    int topicId = intent.getIntExtra("topicId", 0);
+                    long topicId = intent.getLongExtra("topicId", 0);
                     if (widgetId != 0) {
                         open_settings = 6;
                         open_widget_edit = widgetId;
@@ -3006,7 +3014,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         } else {
                             boolean finalIsNew = isNew;
                             long finalPush_chat_id = push_chat_id;
-                            int finalPush_topic_id = push_topic_id;
+                            long finalPush_topic_id = push_topic_id;
                             MessagesController.getInstance(currentAccount).getTopicsController().loadTopic(push_chat_id, push_topic_id, () -> {
                                 TLRPC.TL_forumTopic loadedTopic = MessagesController.getInstance(currentAccount).getTopicsController().findTopic(finalPush_chat_id, finalPush_topic_id);
                                 FileLog.d("LaunchActivity openForum after load " + finalPush_chat_id + " " + finalPush_topic_id + " TL_forumTopic " + loadedTopic);
@@ -3140,7 +3148,11 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 } else if (open_settings == 6) {
                     fragment = new EditWidgetActivity(open_widget_edit_type, open_widget_edit);
                 } else if (open_settings == 10) {
-                    fragment = new NotificationsSettingsActivity();
+                    fragment = new LanguageSelectActivity();
+                } else if (open_settings == 11) {
+                    fragment = new AutoDeleteMessagesActivity();
+                } else if (open_settings == 12) {
+                    fragment = new PrivacySettingsActivity();
                 } else {
                     fragment = null;
                 }
@@ -5382,175 +5394,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         return foundContacts;
     }
 
-    /*private void createUpdateUI() {
-        if (sideMenuContainer == null) {
-            return;
-        }
-        updateLayout = new FrameLayout(this) {
-
-            private Paint paint = new Paint();
-            private Matrix matrix = new Matrix();
-            private LinearGradient updateGradient;
-            private int lastGradientWidth;
-
-            @Override
-            public void draw(Canvas canvas) {
-                if (updateGradient != null) {
-                    paint.setColor(0xffffffff);
-                    paint.setShader(updateGradient);
-                    updateGradient.setLocalMatrix(matrix);
-                    canvas.drawRect(0, 0, getMeasuredWidth(), getMeasuredHeight(), paint);
-                    updateLayoutIcon.setBackgroundGradientDrawable(updateGradient);
-                    updateLayoutIcon.draw(canvas);
-                }
-                super.draw(canvas);
-            }
-
-            @Override
-            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-                int width = MeasureSpec.getSize(widthMeasureSpec);
-                if (lastGradientWidth != width) {
-                    updateGradient = new LinearGradient(0, 0, width, 0, new int[]{0xff69BF72, 0xff53B3AD}, new float[]{0.0f, 1.0f}, Shader.TileMode.CLAMP);
-                    lastGradientWidth = width;
-                }
-            }
-        };
-        updateLayout.setWillNotDraw(false);
-        updateLayout.setVisibility(View.INVISIBLE);
-        updateLayout.setTranslationY(AndroidUtilities.dp(44));
-        updateLayout.setBackground(Theme.getSelectorDrawable(0x40ffffff, false));
-        sideMenuContainer.addView(updateLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 44, Gravity.LEFT | Gravity.BOTTOM));
-        updateLayout.setOnClickListener(v -> {
-            if (!SharedConfig.isAppUpdateAvailable()) {
-                return;
-            }
-            if (updateLayoutIcon.getIcon() == MediaActionDrawable.ICON_DOWNLOAD) {
-                FileLoader.getInstance(currentAccount).loadFile(SharedConfig.pendingAppUpdate.document, "update", FileLoader.PRIORITY_NORMAL, 1);
-                updateAppUpdateViews(true);
-            } else if (updateLayoutIcon.getIcon() == MediaActionDrawable.ICON_CANCEL) {
-                FileLoader.getInstance(currentAccount).cancelLoadFile(SharedConfig.pendingAppUpdate.document);
-                updateAppUpdateViews(true);
-            } else {
-                AndroidUtilities.openForView(SharedConfig.pendingAppUpdate.document, true, this);
-            }
-        });
-        updateLayoutIcon = new RadialProgress2(updateLayout);
-        updateLayoutIcon.setColors(0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff);
-        updateLayoutIcon.setProgressRect(AndroidUtilities.dp(22), AndroidUtilities.dp(11), AndroidUtilities.dp(22 + 22), AndroidUtilities.dp(11 + 22));
-        updateLayoutIcon.setCircleRadius(AndroidUtilities.dp(11));
-        updateLayoutIcon.setAsMini();
-
-        updateTextView = new SimpleTextView(this);
-        updateTextView.setTextSize(15);
-        updateTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
-        updateTextView.setText(LocaleController.getString("AppUpdate", R.string.AppUpdate));
-        updateTextView.setTextColor(0xffffffff);
-        updateTextView.setGravity(Gravity.LEFT);
-        updateLayout.addView(updateTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 74, 0, 0, 0));
-
-        updateSizeTextView = new TextView(this);
-        updateSizeTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        updateSizeTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
-        updateSizeTextView.setGravity(Gravity.RIGHT);
-        updateSizeTextView.setTextColor(0xffffffff);
-        updateLayout.addView(updateSizeTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL | Gravity.RIGHT, 0, 0, 17, 0));
-    }
-
-    private void updateAppUpdateViews(boolean animated) {
-        if (sideMenuContainer == null) {
-            return;
-        }
-        if (SharedConfig.isAppUpdateAvailable()) {
-            View prevUpdateLayout = updateLayout;
-            createUpdateUI();
-            updateSizeTextView.setText(AndroidUtilities.formatFileSize(SharedConfig.pendingAppUpdate.document.size));
-            String fileName = FileLoader.getAttachFileName(SharedConfig.pendingAppUpdate.document);
-            File path = FileLoader.getInstance(currentAccount).getPathToAttach(SharedConfig.pendingAppUpdate.document, true);
-            boolean showSize;
-            if (path.exists()) {
-                updateLayoutIcon.setIcon(MediaActionDrawable.ICON_UPDATE, true, false);
-                updateTextView.setText(LocaleController.getString("AppUpdateNow", R.string.AppUpdateNow));
-                showSize = false;
-            } else {
-                if (FileLoader.getInstance(currentAccount).isLoadingFile(fileName)) {
-                    updateLayoutIcon.setIcon(MediaActionDrawable.ICON_CANCEL, true, false);
-                    updateLayoutIcon.setProgress(0, false);
-                    Float p = ImageLoader.getInstance().getFileProgress(fileName);
-                    updateTextView.setText(LocaleController.formatString("AppUpdateDownloading", R.string.AppUpdateDownloading, (int) ((p != null ? p : 0.0f) * 100)));
-                    showSize = false;
-                } else {
-                    updateLayoutIcon.setIcon(MediaActionDrawable.ICON_DOWNLOAD, true, false);
-                    updateTextView.setText(LocaleController.getString("AppUpdate", R.string.AppUpdate));
-                    showSize = true;
-                }
-            }
-            if (showSize) {
-                if (updateSizeTextView.getTag() != null) {
-                    if (animated) {
-                        updateSizeTextView.setTag(null);
-                        updateSizeTextView.animate().alpha(1.0f).scaleX(1.0f).scaleY(1.0f).setDuration(180).start();
-                    } else {
-                        updateSizeTextView.setAlpha(1.0f);
-                        updateSizeTextView.setScaleX(1.0f);
-                        updateSizeTextView.setScaleY(1.0f);
-                    }
-                }
-            } else {
-                if (updateSizeTextView.getTag() == null) {
-                    if (animated) {
-                        updateSizeTextView.setTag(1);
-                        updateSizeTextView.animate().alpha(0.0f).scaleX(0.0f).scaleY(0.0f).setDuration(180).start();
-                    } else {
-                        updateSizeTextView.setAlpha(0.0f);
-                        updateSizeTextView.setScaleX(0.0f);
-                        updateSizeTextView.setScaleY(0.0f);
-                    }
-                }
-            }
-            if (updateLayout.getTag() != null) {
-                return;
-            }
-            updateLayout.setVisibility(View.VISIBLE);
-            updateLayout.setTag(1);
-            if (animated) {
-                updateLayout.animate().translationY(0).setInterpolator(CubicBezierInterpolator.EASE_OUT).setListener(null).setDuration(180).withEndAction(() -> {
-                    if (prevUpdateLayout != null) {
-                        ViewGroup parent = (ViewGroup) prevUpdateLayout.getParent();
-                        parent.removeView(prevUpdateLayout);
-                    }
-                }).start();
-            } else {
-                updateLayout.setTranslationY(0);
-                if (prevUpdateLayout != null) {
-                    ViewGroup parent = (ViewGroup) prevUpdateLayout.getParent();
-                    parent.removeView(prevUpdateLayout);
-                }
-            }
-            sideMenu.setPadding(0, 0, 0, AndroidUtilities.dp(44));
-        } else {
-            if (updateLayout == null || updateLayout.getTag() == null) {
-                return;
-            }
-            updateLayout.setTag(null);
-            if (animated) {
-                updateLayout.animate().translationY(AndroidUtilities.dp(44)).setInterpolator(CubicBezierInterpolator.EASE_OUT).setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (updateLayout.getTag() == null) {
-                            updateLayout.setVisibility(View.INVISIBLE);
-                        }
-                    }
-                }).setDuration(180).start();
-            } else {
-                updateLayout.setTranslationY(AndroidUtilities.dp(44));
-                updateLayout.setVisibility(View.INVISIBLE);
-            }
-            sideMenu.setPadding(0, 0, 0, 0);
-        }
-    }*/
-
-    public void checkAppUpdate(boolean force) {
+    public void checkAppUpdate(boolean force, Browser.Progress progress) {
         if (!force && BuildVars.DEBUG_VERSION || !force && !BuildVars.CHECK_UPDATES) {
             return;
         }
@@ -5567,7 +5411,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             req.source = "";
         }
         final int accountNum = currentAccount;
-        ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> {
+        int reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> {
             SharedConfig.lastUpdateCheckTime = System.currentTimeMillis();
             SharedConfig.saveConfig();
             if (response instanceof TLRPC.TL_help_appUpdate) {
@@ -5576,7 +5420,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     if (SharedConfig.pendingAppUpdate != null && SharedConfig.pendingAppUpdate.version.equals(res.version)) {
                         return;
                     }
-                    if (SharedConfig.setNewAppVersionAvailable(res)) {
+                    final boolean newVersionAvailable = SharedConfig.setNewAppVersionAvailable(res);
+                    if (newVersionAvailable) {
                         if (res.can_not_skip) {
                             showUpdateActivity(accountNum, res, false);
                         } else if (ApplicationLoader.isStandaloneBuild() || BuildVars.DEBUG_VERSION) {
@@ -5585,9 +5430,42 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         }
                         //NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
                     }
+                    if (progress != null) {
+                        progress.end();
+                        if (!newVersionAvailable) {
+                            BaseFragment fragment = getLastFragment();
+                            if (fragment != null) {
+                                BulletinFactory.of(fragment).createSimpleBulletin(R.raw.chats_infotip, LocaleController.getString(R.string.YourVersionIsLatest)).show();
+                            }
+                        }
+                    }
+                });
+            } else if (response instanceof TLRPC.TL_help_noAppUpdate) {
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (progress != null) {
+                        progress.end();
+                        BaseFragment fragment = getLastFragment();
+                        if (fragment != null) {
+                            BulletinFactory.of(fragment).createSimpleBulletin(R.raw.chats_infotip, LocaleController.getString(R.string.YourVersionIsLatest)).show();
+                        }
+                    }
+                });
+            } else if (error != null) {
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (progress != null) {
+                        progress.end();
+                        BaseFragment fragment = getLastFragment();
+                        if (fragment != null) {
+                            BulletinFactory.of(fragment).showForError(error);
+                        }
+                    }
                 });
             }
         });
+        if (progress != null) {
+            progress.init();
+            progress.onCancel(() -> ConnectionsManager.getInstance(currentAccount).cancelRequest(reqId, true));
+        }
     }
 
     public Dialog showAlertDialog(AlertDialog.Builder builder) {
@@ -6315,7 +6193,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         } else if (SharedConfig.pendingAppUpdate != null && SharedConfig.pendingAppUpdate.can_not_skip) {
             showUpdateActivity(UserConfig.selectedAccount, SharedConfig.pendingAppUpdate, true);
         }
-        checkAppUpdate(false);
+        checkAppUpdate(false, null);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ApplicationLoader.canDrawOverlays = Settings.canDrawOverlays(this);
@@ -7505,9 +7383,11 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             finish();
             return;
         }
-        if (ContentPreviewViewer.hasInstance() && ContentPreviewViewer.getInstance().isVisible()) {
+        if (SearchTagsList.onBackPressedRenameTagAlert()) {
+            return;
+        } else if (ContentPreviewViewer.hasInstance() && ContentPreviewViewer.getInstance().isVisible()) {
             ContentPreviewViewer.getInstance().closeWithMenu();
-        } if (SecretMediaViewer.hasInstance() && SecretMediaViewer.getInstance().isVisible()) {
+        } else if (SecretMediaViewer.hasInstance() && SecretMediaViewer.getInstance().isVisible()) {
             SecretMediaViewer.getInstance().closePhoto(true, false);
         } else if (PhotoViewer.hasInstance() && PhotoViewer.getInstance().isVisible()) {
             PhotoViewer.getInstance().closePhoto(true, false);
@@ -7736,7 +7616,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     }
                     return result;
                 } else if (!tabletFullSize && layout != rightActionBarLayout) {
-                    rightActionBarLayout.getView().setVisibility(View.VISIBLE);
+                    if (rightActionBarLayout.getView() != null) {
+                        rightActionBarLayout.getView().setVisibility(View.VISIBLE);
+                    }
                     backgroundTablet.setVisibility(View.GONE);
                     rightActionBarLayout.removeAllFragments();
                     rightActionBarLayout.presentFragment(params.setNoAnimation(true).setRemoveLast(removeLast).setCheckPresentFromDelegate(false));
@@ -7893,7 +7775,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     @Override
     public boolean needCloseLastFragment(INavigationLayout layout) {
         if (AndroidUtilities.isTablet()) {
-            if (layout == actionBarLayout && layout.getFragmentStack().size() <= 1) {
+            if (layout == actionBarLayout && layout.getFragmentStack().size() <= 1 && !switchingAccount) {
                 onFinish();
                 finish();
                 return false;

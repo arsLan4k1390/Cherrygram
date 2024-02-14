@@ -1390,7 +1390,7 @@ public class SecretMediaViewer implements NotificationCenter.NotificationCenterD
         secretHint.setIconTranslate(0, 0);
         secretHint.setIcon(R.raw.fire_on);
         secretHint.show();
-        MessagesController.getGlobalMainSettings().edit().putInt("viewoncehint", MessagesController.getGlobalMainSettings().getInt("viewoncehint", 0) + 1).commit();
+        MessagesController.getGlobalMainSettings().edit().putInt("viewoncehint", MessagesController.getGlobalMainSettings().getInt("viewoncehint", 0) + 1).apply();
     }
 
     private int wasNavigationBarColor;

@@ -152,7 +152,7 @@ public class IconSelectorAlert extends BottomSheet {
         titleView.setLines(1);
         titleView.setText(LocaleController.getString("CG_ChooseFolderIcon", R.string.CG_ChooseFolderIcon));
         titleView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
-        titleView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        titleView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
         titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
         titleView.setTextSize(TypedValue.COMPLEX_UNIT_PX, dp(19));
         header.addView(titleView, LayoutHelper.createLinear(

@@ -40,7 +40,11 @@ import uz.unnarsx.cherrygram.utils.ShareUtil;
 
 public class BackupHelper {
 
-    public static void backupSettings(Context context) {
+    public static void backupSettings(BaseFragment fragment, Context context) {
+        if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isStoragePermissionGranted()) {
+            PermissionsUtils.requestStoragePermission(fragment.getParentActivity());
+            return;
+        }
         try {
             String formattedDate = String.format(LocaleController.getInstance().formatterYear.format(System.currentTimeMillis()), LocaleController.getInstance().formatterDay.format(System.currentTimeMillis()));
 
@@ -54,12 +58,10 @@ public class BackupHelper {
     }
 
     public static void importSettings(BaseFragment fragment) {
-        try {
-            if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isStoragePermissionGranted()) {
-                PermissionsUtils.requestStoragePermission(fragment.getParentActivity());
-                return;
-            }
-        } catch (Throwable ignore) {}
+        if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isStoragePermissionGranted()) {
+            PermissionsUtils.requestStoragePermission(fragment.getParentActivity());
+            return;
+        }
         FileImportActivity importActivity = new FileImportActivity(false);
         importActivity.setMaxSelectedFiles(1);
         importActivity.setAllowPhoto(false);
@@ -160,9 +162,13 @@ public class BackupHelper {
         mainconfig.add("CP_ConfirmCalls");
         mainconfig.add("AP_HideUserPhone");
         mainconfig.add("AP_ShowID_DC");
+        mainconfig.add("CP_ProfileBackgroundColor");
+        mainconfig.add("CP_ProfileBackgroundEmoji");
+        mainconfig.add("CP_ReplyBackground");
+        mainconfig.add("CP_ReplyCustomColors");
+        mainconfig.add("CP_ReplyBackgroundEmoji");
         mainconfig.add("CP_HideStories");
         mainconfig.add("CP_DisableAnimAvatars");
-        mainconfig.add("CP_DisableReplyBackground");
         mainconfig.add("CP_DisableReactionsOverlay");
         mainconfig.add("CP_DisableReactionAnim");
         mainconfig.add("CP_DisablePremiumStatuses");

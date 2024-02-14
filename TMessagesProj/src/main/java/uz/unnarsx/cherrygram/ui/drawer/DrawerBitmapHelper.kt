@@ -30,6 +30,7 @@ class DrawerBitmapHelper: CoroutineScope by MainScope() {
             if (user.photo != null) {
                 try {
                     val photo = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(user.photo.photo_big, true)
+                    photo.mkdirs()
                     FileInputStream(photo).use { photoIn ->
                         DataInputStream(photoIn).use { data ->
                             val photoData = ByteArray(photo.length().toInt())

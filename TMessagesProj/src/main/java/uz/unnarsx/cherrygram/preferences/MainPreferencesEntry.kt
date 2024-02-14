@@ -73,7 +73,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 title = LocaleController.getString("CG_ExportSettings", R.string.CG_ExportSettings)
                 icon = R.drawable.msg_instant_link_solar
                 listener = TGKitTextIconRow.TGTIListener {
-                    BackupHelper.backupSettings(bf.context)
+                    BackupHelper.backupSettings(bf, bf.context)
                 }
             }
             textIcon {

@@ -89,7 +89,6 @@
     <string name="AP_IconReplacements">Заміна іконок</string>
     <string name="AP_Old_Notification_Icon">Стандартна іконка повідомлень (Telegram)</string>
     <string name="AP_ChangeIconFilter">Використовувати іконки Telegram</string>
-    <string name="AP_ChangeIconFilter_Desc">Вам потрібно перейти в цей розділ, щоб побачити нові іконки</string>
     <string name="AP_ChangeIcon_Default">По замовчуванню</string>
     <string name="AP_ChangeIcon_Dark">Темнота</string>
     <string name="AP_ChangeIcon_White">Біла іконка</string>
@@ -115,7 +114,6 @@
     <string name="CP_PremAndAnim_Header">Анімації та Преміум можливості</string>
     <string name="CP_HideStories">Приховати історії</string>
     <string name="CP_DisableAnimAvatars">Вимкнути анімовані аватарки</string>
-    <string name="CP_DisableReplyBackground">Disable replies background</string>
     <string name="CP_DisableReactionsOverlay">Вимкнути накладання реакцій</string>
     <string name="CP_DisableReactionsOverlay_Desc">Це вимкне накладання що спливає з доступними реакціями</string>
     <string name="CP_DisableReactionAnim">Вимкнути анімацію реакцій</string>
@@ -137,7 +135,6 @@
     <string name="AP_Tab_Style_Pills">Таблетки</string>
     <string name="AP_Tab_Style_Stroke">Додати обведення</string>
     <string name="AP_DrawerCategory">Бічне меню</string>
-    <string name="AP_DrawerPreferences">Налаштування бічного меню</string>
     <string name="AP_DrawerAvatar">Аватар як фон меню</string>
     <string name="AP_DrawerShowAvatar">Показувати аватар</string>
     <string name="AP_DrawerDarken">Затемнити фон меню</string>

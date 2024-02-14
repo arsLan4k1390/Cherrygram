@@ -81,6 +81,7 @@
     <string name="CG_ReportDetailsCopied">Детали отчёта скопированы в буфер обмена.</string>
     <string name="CG_TranslationLanguage">Язык перевода</string>
     <string name="CG_CopyPhoto">Копировать фото</string>
+    <string name="CG_CopyPhotoAsSticker">Копировать фото как стикер</string>
     <string name="CG_PhotoCopied">Фото скопировано в буфер обмена.</string>
     <string name="CG_SaveSticker">Сохранить стикер</string>
     <string name="CG_StickerSavedHint">Стикер сохранен в загрузки</string>
@@ -123,7 +124,7 @@
     <string name="AP_IconReplacements">Замена иконок</string>
     <string name="AP_Old_Notification_Icon">Стандартная иконка уведомлений (Telegram)</string>
     <string name="AP_ChangeIconFilter">Использовать иконки Telegram</string>
-    <string name="AP_ChangeIconFilter_Desc">Вам нужно перезайти в этот раздел, чтобы увидеть новые иконки</string>
+    <string name="AP_HoldToShowWallpaper">Удерживайте любую иконку чтобы показать обои вашего рабочего стола</string>
     <string name="AP_ChangeIcon_Cherry_NY">Новогодняя</string>
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
     <string name="AP_ChangeIcon_Dark">Тёмная</string>
@@ -150,9 +151,18 @@
     <string name="CP_Snowflakes_AH">Заголовок приложения</string>
 
     <string name="CP_PremAndAnim_Header">Анимации и Premium функции</string>
+    <string name="CP_ProfileReplyBackground">Сообщения и профили</string>
+    <string name="CP_CustomizeProfile">Настроить профиль</string>
+    <string name="CP_ProfileBackgroundColor">Фон в профиле</string>
+    <string name="CP_ProfileBackgroundEmoji">Эмодзи в фоне профиля</string>
+    <string name="CP_CustomizeMessage">Настроить сообщение</string>
+    <string name="CP_ReplyBackground">Фон в ответах</string>
+    <string name="CP_ReplyCustomColors">Кастомные цвета в ответах и превью ссылок</string>
+    <string name="CP_ReplyBackgroundEmoji">Эмодзи в ответах и превью ссылок</string>
     <string name="CP_HideStories">Скрыть Истории</string>
+    <string name="CP_CustomWallpapers">Кастомный фон в чатах</string>
+    <string name="CP_CustomWallpapers_Desc">Настройка кастомных обоев в чатах/группах/каналах, установленных премиум-пользователями или забущенными каналами</string>
     <string name="CP_DisableAnimAvatars">Отключить активные видеоаватары</string>
-    <string name="CP_DisableReplyBackground">Отключить фон у ответов</string>
     <string name="CP_DisableReactionsOverlay">Отключить реакции</string>
     <string name="CP_DisableReactionsOverlay_Desc">Это отключит всплывающий список доступных реакций</string>
     <string name="CP_DisableReactionAnim">Отключить анимацию реакций</string>
@@ -176,7 +186,6 @@
     <string name="AP_Tab_Style_Stroke">Добавить обводку</string>
 
     <string name="AP_DrawerCategory">Боковое меню</string>
-    <string name="AP_DrawerPreferences">Настройки бокового меню</string>
     <string name="AP_DrawerAvatar">Аватар как фон меню</string>
     <string name="AP_DrawerShowAvatar">Показывать аватар</string>
     <string name="AP_DrawerDarken">Затемнить фон меню</string>

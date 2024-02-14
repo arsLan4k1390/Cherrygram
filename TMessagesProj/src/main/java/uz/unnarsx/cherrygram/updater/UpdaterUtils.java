@@ -152,7 +152,7 @@ public class UpdaterUtils {
                 uploadDate = obj.getString("published_at").replaceAll("[TZ]", " ");
                 uploadDate = LocaleController.formatDateTime(getMillisFromDate(uploadDate, "yyyy-M-dd hh:mm:ss") / 1000);
                 Update update = new Update(version, changelog, size, downloadURL, uploadDate);
-                if (update.isNew() && fragment != null) {
+                if (update.isNew() && fragment != null && fragment.getContext() != null) {
                     checkDirs();
                     AndroidUtilities.runOnUIThread(() -> {
                         (new UpdaterBottomSheet(fragment.getContext(), fragment, true, update)).show();
@@ -203,7 +203,7 @@ public class UpdaterUtils {
         var install = new Intent(Intent.ACTION_VIEW);
         Uri fileUri;
         if (Build.VERSION.SDK_INT >= 24) {
-            fileUri = FileProvider.getUriForFile(context, ApplicationLoader.getApplicationId() + ".provider", file);
+            fileUri = FileProvider.getUriForFile(context, "uz.unnarsx.cherrygram" + ".provider", file);
         } else {
             fileUri = Uri.fromFile(file);
         }

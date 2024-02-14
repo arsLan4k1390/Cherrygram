@@ -114,7 +114,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDrawSnowInDrawer());
                 }
-                getParentActivity().recreate();
+                parentLayout.rebuildAllFragmentViews(true, true);
             } else if (position == drawerAvatarAsBackgroundRow) {
                 CherrygramConfig.INSTANCE.toggleDrawerAvatar();
                 if (view instanceof TextCheckCell) {

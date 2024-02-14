@@ -125,4 +125,13 @@ object CGFeatureHooks {
         }
     }
 
+    @JvmStatic
+    fun getShowDcIdText(): String { //MessagesAndProfilesPreferencesEntry.java:\Show dc id
+        return when (CherrygramConfig.showIDDC) {
+            CherrygramConfig.ID_ONLY -> "ID"
+            CherrygramConfig.ID_DC -> "ID + DC"
+            else -> LocaleController.getString("Disable", R.string.Disable)
+        }
+    }
+
 }

@@ -106,7 +106,6 @@
     <string name="AP_IconReplacements">Reemplazo de icono</string>
     <string name="AP_Old_Notification_Icon">Icono de notificación por defecto (Telegram)</string>
     <string name="AP_ChangeIconFilter">Usar iconos de Telegram</string>
-    <string name="AP_ChangeIconFilter_Desc">Tienes que volver a entrar en esta sección para ver los nuevos iconos</string>
     <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
     <string name="AP_ChangeIcon_Default">Por defecto</string>
     <string name="AP_ChangeIcon_Dark">Oscuro</string>
@@ -133,7 +132,6 @@
     <string name="CP_PremAndAnim_Header">Animaciones y funciones Premium</string>
     <string name="CP_HideStories">Ocultar historias</string>
     <string name="CP_DisableAnimAvatars">Deshabilitar avatares animados</string>
-    <string name="CP_DisableReplyBackground">Deshabilitar el fondo de respuestas</string>
     <string name="CP_DisableReactionsOverlay">Desactivar la capa de reacciones</string>
     <string name="CP_DisableReactionsOverlay_Desc">Esto desactivará la capa emergente con las reacciones disponibles</string>
     <string name="CP_DisableReactionAnim">Desactivar animación de reacción</string>
@@ -155,7 +153,6 @@
     <string name="AP_Tab_Style_Pills">Pastillas</string>
     <string name="AP_Tab_Style_Stroke">Añadir trazo</string>
     <string name="AP_DrawerCategory">Cajón</string>
-    <string name="AP_DrawerPreferences">Preferencias del cajón</string>
     <string name="AP_DrawerAvatar">Foto de perfil como fondo del cajón</string>
     <string name="AP_DrawerShowAvatar">Mostrar avatar</string>
     <string name="AP_DrawerDarken">Oscurecer el fondo</string>

@@ -66,6 +66,7 @@ public class LauncherIconController {
         SUNRISE_CHERRY("CG_Icon_Sunrise", R.drawable.icon_background_sunrise, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunrise),
         TURBO_CHERRY("CG_Icon_Turbo", R.drawable.icon_background_turbo, R.drawable.icon_foreground_cherry, R.string.AppIconTurbo),
         NOX_CHERRY("CG_Icon_Night", R.mipmap.icon_background_nox, R.drawable.icon_foreground_cherry, R.string.AppIconNox),
+        DARK_CHERRY_BRA("CG_Icon_Dark_Bra", R.drawable.icon_background_dark, R.drawable.icon_foreground_cherry_bra, R.string.AP_ChangeIcon_Dark_Bra),
         CHERRY_NY("CG_Icon_Cherry_NY", R.drawable.icon_background_cherry_ny, R.drawable.icon_foreground_cherry_ny, R.string.AP_ChangeIcon_Cherry_NY),
         DARK_NY("CG_Icon_Dark_NY", R.drawable.icon_background_dark_ny, R.drawable.icon_foreground_cherry_ny, R.string.AP_ChangeIcon_Cherry_NY),
 

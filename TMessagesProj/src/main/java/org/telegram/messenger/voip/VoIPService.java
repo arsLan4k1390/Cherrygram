@@ -2975,7 +2975,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 		endIntent.setAction(getPackageName() + ".END_CALL");
 		Person caller = new Person.Builder()
 				.setIcon(IconCompat.createWithAdaptiveBitmap(MediaDataController.convertBitmapToAdaptive(photo)))
-				.setName(name)
+				.setName(name != null ? name : "_")
 				.build();
 		NotificationCompat.CallStyle callStyle = NotificationCompat.CallStyle.forOngoingCall(caller, PendingIntent.getBroadcast(this, 0, endIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
 		callStyle.setIsVideo(videoCall);

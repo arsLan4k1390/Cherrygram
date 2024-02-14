@@ -28,6 +28,8 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ChatMessageCell;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ReplyMessageLine {
 
     private final RectF rectF = new RectF();
@@ -202,36 +204,36 @@ public class ReplyMessageLine {
                 if (dialogId < 0) {
                     TLRPC.Chat chat = MessagesController.getInstance(messageObject.currentAccount).getChat(-dialogId);
                     if (chat != null) {
-                        colorId = ChatObject.getColorId(chat);
+                        colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(currentChat) : 0;
                     }
                     if (type == TYPE_LINK) {
-                        emojiDocumentId = ChatObject.getEmojiId(chat);
+                        emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(chat) : 0;
                     }
                 } else {
                     TLRPC.User user = MessagesController.getInstance(messageObject.currentAccount).getUser(dialogId);
                     if (user != null) {
-                        colorId = UserObject.getColorId(user);
+                        colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
                     }
                     if (type == TYPE_LINK) {
-                        emojiDocumentId = UserObject.getEmojiId(user);
+                        emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
                     }
                 }
             } else if (DialogObject.isEncryptedDialog(messageObject.getDialogId()) && currentUser != null) {
                 TLRPC.User user = messageObject.isOutOwner() ? UserConfig.getInstance(messageObject.currentAccount).getCurrentUser() : currentUser;
                 if (user == null) user = currentUser;
-                colorId = UserObject.getColorId(user);
+                colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
                 if (type == TYPE_LINK) {
-                    emojiDocumentId = UserObject.getEmojiId(user);
+                    emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
                 }
             } else if (messageObject.isFromUser() && currentUser != null) {
-                colorId = UserObject.getColorId(currentUser);
+                colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(currentUser) : 0;
                 if (type == TYPE_LINK) {
-                    emojiDocumentId = UserObject.getEmojiId(currentUser);
+                    emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(currentUser) : 0;
                 }
             } else if (messageObject.isFromChannel() && currentChat != null) {
-                colorId = ChatObject.getColorId(currentChat);
+                colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(currentChat) : 0;
                 if (type == TYPE_LINK) {
-                    emojiDocumentId = ChatObject.getEmojiId(currentChat);
+                    emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(currentChat) : 0;
                 }
             } else {
                 colorId = 0;
@@ -256,24 +258,24 @@ public class ReplyMessageLine {
             } else if (DialogObject.isEncryptedDialog(messageObject.replyMessageObject.getDialogId())) {
                 TLRPC.User user = messageObject.replyMessageObject.isOutOwner() ? UserConfig.getInstance(messageObject.replyMessageObject.currentAccount).getCurrentUser() : currentUser;
                 if (user != null) {
-                    colorId = UserObject.getColorId(user);
-                    emojiDocumentId = UserObject.getEmojiId(user);
+                    colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
+                    emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
                 } else {
                     colorId = 0;
                 }
             } else if (messageObject.replyMessageObject.isFromUser()) {
                 TLRPC.User user = MessagesController.getInstance(messageObject.currentAccount).getUser(messageObject.replyMessageObject.messageOwner.from_id.user_id);
                 if (user != null) {
-                    colorId = UserObject.getColorId(user);
-                    emojiDocumentId = UserObject.getEmojiId(user);
+                    colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
+                    emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
                 } else {
                     colorId = 0;
                 }
             } else if (messageObject.replyMessageObject.isFromChannel()) {
                 TLRPC.Chat chat = MessagesController.getInstance(messageObject.currentAccount).getChat(messageObject.replyMessageObject.messageOwner.from_id.channel_id);
                 if (chat != null) {
-                    colorId = ChatObject.getColorId(chat);
-                    emojiDocumentId = ChatObject.getEmojiId(chat);
+                    colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(chat) : 0;
+                    emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(chat) : 0;
                 } else {
                     colorId = 0;
                 }
@@ -281,7 +283,7 @@ public class ReplyMessageLine {
                 colorId = 0;
             }
             resolveColor(messageObject.replyMessageObject, colorId, resourcesProvider);
-            backgroundColor = Theme.multAlpha(color1, 0.10f);
+            backgroundColor = CherrygramConfig.INSTANCE.getReplyBackground() ? Theme.multAlpha(color1, 0.10f) : Color.TRANSPARENT;
             nameColor = color1;
         } else {
             hasColor2 = false;
