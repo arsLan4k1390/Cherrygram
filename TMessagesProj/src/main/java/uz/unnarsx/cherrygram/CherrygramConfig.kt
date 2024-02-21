@@ -87,14 +87,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     //Messages and profiles
     var showSeconds by sharedPreferences.boolean("CP_ShowSeconds", false)
-
     fun toggleShowSeconds() {
         showSeconds = !showSeconds
         putBoolean("CP_ShowSeconds", showSeconds)
     }
 
     var showIdMessage by sharedPreferences.boolean("CP_ShowIdMessage", false)
-
     fun toggleshowIdMessage() {
         showIdMessage = !showIdMessage
         putBoolean("CP_ShowIdMessage", showIdMessage)
