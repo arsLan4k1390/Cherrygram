@@ -158,13 +158,8 @@ public class EditTextCaption extends EditTextBoldCursor {
     }
 
     public void makeSelectedCode() {
-        AlertDialog.Builder builder;
-        if (adaptiveCreateLinkDialog) {
-            builder = new AlertDialogDecor.Builder(getContext(), resourcesProvider);
-        } else {
-            builder = new AlertDialog.Builder(getContext(), resourcesProvider);
-        }
-        builder.setTitle(LocaleController.getString("CreateCode", R.string.CreateCode));
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(LocaleController.getString("CG_CreateCode", R.string.CG_CreateCode));
 
         final EditTextBoldCursor editText = new EditTextBoldCursor(getContext()) {
             @Override
@@ -173,13 +168,13 @@ public class EditTextCaption extends EditTextBoldCursor {
             }
         };
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-        editText.setTextColor(getThemedColor(Theme.key_dialogTextBlack));
-        editText.setHintText(LocaleController.getString("CreateCodeLanguage", R.string.CreateCodeLanguage));
-        editText.setHeaderHintColor(getThemedColor(Theme.key_windowBackgroundWhiteBlueHeader));
+        editText.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+        editText.setHintText(LocaleController.getString("CG_CreateCodeLanguage", R.string.CG_CreateCodeLanguage));
+        editText.setHeaderHintColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader));
         editText.setSingleLine(true);
         editText.setFocusable(true);
         editText.setTransformHintToHeader(true);
-        editText.setLineColors(getThemedColor(Theme.key_windowBackgroundWhiteInputField), getThemedColor(Theme.key_windowBackgroundWhiteInputFieldActivated), getThemedColor(Theme.key_text_RedRegular));
+        editText.setLineColors(Theme.getColor(Theme.key_windowBackgroundWhiteInputField), Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated), Theme.getColor(Theme.key_fill_RedNormal));
         editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
         editText.setBackgroundDrawable(null);
         editText.requestFocus();
@@ -234,23 +229,10 @@ public class EditTextCaption extends EditTextBoldCursor {
             }
         });
         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-        if (adaptiveCreateLinkDialog) {
-            creationLinkDialog = builder.create();
-            creationLinkDialog.setOnDismissListener(dialog -> {
-                creationLinkDialog = null;
-                requestFocus();
-            });
-            creationLinkDialog.setOnShowListener(dialog -> {
-                editText.requestFocus();
-                AndroidUtilities.showKeyboard(editText);
-            });
-            creationLinkDialog.showDelayed(250);
-        } else {
-            builder.show().setOnShowListener(dialog -> {
-                editText.requestFocus();
-                AndroidUtilities.showKeyboard(editText);
-            });
-        }
+        builder.show().setOnShowListener(dialog -> {
+            editText.requestFocus();
+            AndroidUtilities.showKeyboard(editText);
+        });
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) editText.getLayoutParams();
         if (layoutParams != null) {
             if (layoutParams instanceof FrameLayout.LayoutParams) {
@@ -276,12 +258,7 @@ public class EditTextCaption extends EditTextBoldCursor {
     }
 
     public void makeSelectedMention() {
-        AlertDialog.Builder builder;
-        if (adaptiveCreateLinkDialog) {
-            builder = new AlertDialogDecor.Builder(getContext(), resourcesProvider);
-        } else {
-            builder = new AlertDialog.Builder(getContext(), resourcesProvider);
-        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle(LocaleController.getString("CG_CreateMention", R.string.CG_CreateMention));
 
         final EditTextBoldCursor editText = new EditTextBoldCursor(getContext()) {
@@ -333,7 +310,7 @@ public class EditTextCaption extends EditTextBoldCursor {
                 }
             }
             try {
-                editable.setSpan(new URLSpanUserMention(editText.getText().toString(), 3), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                editable.setSpan(new URLSpanUserMention(editText.getText().toString(), 1), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             } catch (Exception ignore) {
 
             }
@@ -370,18 +347,6 @@ public class EditTextCaption extends EditTextBoldCursor {
             start = getSelectionStart();
             end = getSelectionEnd();
         }
-
-        var urlSpans = getText().getSpans(start, end, URLSpanReplacement.class);
-        if (urlSpans != null) {
-            for (var span : urlSpans) {
-                var url = span.getURL();
-                if (!TextUtils.isEmpty(url)) {
-                    editText.setText(url);
-                    break;
-                }
-            }
-        }
-
         final int setSelection = QuoteSpan.putQuoteToEditable(getText(), start, end);
         if (setSelection >= 0) {
             setSelection(setSelection);
@@ -777,10 +742,8 @@ public class EditTextCaption extends EditTextBoldCursor {
             infoCompat.addAction(new AccessibilityNodeInfoCompat.AccessibilityActionCompat(R.id.menu_bold, LocaleController.getString("Bold", R.string.Bold)));
             infoCompat.addAction(new AccessibilityNodeInfoCompat.AccessibilityActionCompat(R.id.menu_italic, LocaleController.getString("Italic", R.string.Italic)));
             infoCompat.addAction(new AccessibilityNodeInfoCompat.AccessibilityActionCompat(R.id.menu_mono, LocaleController.getString("Mono", R.string.Mono)));
-            infoCompat.addAction(new AccessibilityNodeInfoCompat.AccessibilityActionCompat(R.id.menu_code, LocaleController.getString("MonoCode", R.string.MonoCode)));
             infoCompat.addAction(new AccessibilityNodeInfoCompat.AccessibilityActionCompat(R.id.menu_strike, LocaleController.getString("Strike", R.string.Strike)));
             infoCompat.addAction(new AccessibilityNodeInfoCompat.AccessibilityActionCompat(R.id.menu_underline, LocaleController.getString("Underline", R.string.Underline)));
-            infoCompat.addAction(new AccessibilityNodeInfoCompat.AccessibilityActionCompat(R.id.menu_mention, LocaleController.getString("CreateMention", R.string.CreateMention)));
             infoCompat.addAction(new AccessibilityNodeInfoCompat.AccessibilityActionCompat(R.id.menu_link, LocaleController.getString("CreateLink", R.string.CreateLink)));
             infoCompat.addAction(new AccessibilityNodeInfoCompat.AccessibilityActionCompat(R.id.menu_regular, LocaleController.getString("Regular", R.string.Regular)));
         }

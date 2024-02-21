@@ -56,6 +56,8 @@
     <string name="CG_ToSaved">Save message</string>
 
     <string name="CG_CreateMention">Create Mention</string>
+    <string name="CG_CreateCode">Create Code</string>
+    <string name="CG_CreateCodeLanguage">Language</string>
 
     <string name="CG_FwdMenu_EnableNoForward">Disable forward authorship</string>
     <string name="CG_FwdMenu_DisableNoForward">Enable forward authorship</string>

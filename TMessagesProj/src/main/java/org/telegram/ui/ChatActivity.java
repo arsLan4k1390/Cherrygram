@@ -997,6 +997,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private final static int OPTION_GET_REPLY_BACKGROUND = 2014;
     private final static int OPTION_DETAILS = 2015;
     private final static int OPTION_TRANSLATE_DOUBLE_TAP = 2016;
+    private final static int OPTION_TEXT_CODE = 2017;
 
     private final static int[] allowedNotificationsDuringChatListAnimations = new int[]{
             NotificationCenter.messagesRead,
@@ -1349,8 +1350,6 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private final static int text_strike = 55;
     private final static int text_underline = 56;
     private final static int text_spoiler = 57;
-    private final static int text_mention = 102;
-    private final static int text_code = 101;
     private final static int text_quote = 58;
 
     private final static int view_as_topics = 59;
@@ -3441,11 +3440,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         chatActivityEnterView.getEditField().setSelectionOverride(editTextStart, editTextEnd);
                         chatActivityEnterView.getEditField().makeSelectedMono();
                     }
-                } else if (id == text_code) {
+                } else if (id == OPTION_TEXT_CODE) {
                     if (chatActivityEnterView != null && chatActivityEnterView.getEditField() != null) {
                         chatActivityEnterView.getEditField().setSelectionOverride(editTextStart, editTextEnd);
                         chatActivityEnterView.getEditField().makeSelectedCode();
-                    } 
+                    }
                 } else if (id == text_strike) {
                     if (chatActivityEnterView != null && chatActivityEnterView.getEditField() != null) {
                         chatActivityEnterView.getEditField().setSelectionOverride(editTextStart, editTextEnd);
@@ -9372,9 +9371,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         stringBuilder = new SpannableStringBuilder(LocaleController.getString("Mono", R.string.Mono));
         stringBuilder.setSpan(new TypefaceSpan(Typeface.MONOSPACE), 0, stringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         item.addSubItem(text_mono, stringBuilder);
-        stringBuilder = new SpannableStringBuilder(LocaleController.getString("MonoCode", R.string.MonoCode));
+        stringBuilder = new SpannableStringBuilder(LocaleController.getString("CG_CreateCode", R.string.CG_CreateCode));
         stringBuilder.setSpan(new TypefaceSpan(Typeface.MONOSPACE), 0, stringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        item.addSubItem(text_code, stringBuilder);
+        item.addSubItem(OPTION_TEXT_CODE, stringBuilder);
         if (currentEncryptedChat == null || AndroidUtilities.getPeerLayerVersion(currentEncryptedChat.layer) >= 101) {
             stringBuilder = new SpannableStringBuilder(LocaleController.getString("Strike", R.string.Strike));
             TextStyleSpan.TextStyleRun run = new TextStyleSpan.TextStyleRun();
@@ -9389,6 +9388,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             item.addSubItem(text_underline, stringBuilder);
         }
         item.addSubItem(text_link, LocaleController.getString("CreateLink", R.string.CreateLink));
+        item.addSubItem(OPTION_TEXT_MENTION, LocaleController.getString("CG_CreateMention", R.string.CG_CreateMention));
         item.addSubItem(text_regular, LocaleController.getString("Regular", R.string.Regular));
 
         filledEditTextItemMenu = true;
@@ -23607,10 +23607,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         menu.add(R.id.menu_groupbolditalic, R.id.menu_italic, order++, stringBuilder);
         stringBuilder = new SpannableStringBuilder(LocaleController.getString("Mono", R.string.Mono));
         stringBuilder.setSpan(new TypefaceSpan(Typeface.MONOSPACE), 0, stringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        stringBuilder = new SpannableStringBuilder(LocaleController.getString("MonoCode", R.string.MonoCode));
+        menu.add(R.id.menu_groupbolditalic, R.id.menu_mono, order++, stringBuilder);
+        stringBuilder = new SpannableStringBuilder(LocaleController.getString("CG_CreateCode", R.string.CG_CreateCode));
         stringBuilder.setSpan(new TypefaceSpan(Typeface.MONOSPACE), 0, stringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         menu.add(R.id.menu_groupbolditalic, R.id.menu_code, order++, stringBuilder);
-        menu.add(R.id.menu_groupbolditalic, R.id.menu_mono, order++, stringBuilder);
         if (encryptedChat == null || AndroidUtilities.getPeerLayerVersion(encryptedChat.layer) >= 101) {
             stringBuilder = new SpannableStringBuilder(LocaleController.getString("Strike", R.string.Strike));
             TextStyleSpan.TextStyleRun run = new TextStyleSpan.TextStyleRun();

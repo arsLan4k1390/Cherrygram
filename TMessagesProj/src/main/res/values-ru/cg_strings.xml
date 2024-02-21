@@ -54,6 +54,8 @@
     <string name="CG_ToSaved">Сохранить сообщение</string>
 
     <string name="CG_CreateMention">Упомянуть</string>
+    <string name="CG_CreateCode">Создать код</string>
+    <string name="CG_CreateCodeLanguage">Язык</string>
 
     <string name="CG_FwdMenu_EnableNoForward">Удалять автора сообщений</string>
     <string name="CG_FwdMenu_DisableNoForward">Не удалять автора сообщений</string>

@@ -34,6 +34,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Size;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -70,6 +71,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.Components.CubicBezierInterpolator;
+import org.telegram.ui.Components.LayoutHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -265,9 +267,9 @@ public final class FloatingToolbar {
             R.id.menu_strike,
             R.id.menu_link,
             R.id.menu_mono,
+            R.id.menu_code,
             R.id.menu_underline,
             R.id.menu_spoiler,
-            R.id.menu_code,
             R.id.menu_quote
     );
 
