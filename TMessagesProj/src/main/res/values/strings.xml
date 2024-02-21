@@ -309,6 +309,9 @@
     <string name="NotificationsPermissionAlert3">Mute specific chats and types of chats</string>
     <string name="NotificationsPermissionContinue">Continue</string>
     <string name="YourContacts">Your contacts on Telegram</string>
+    <string name="MonoCode">Code</string>
+    <string name="CreateCode">Create Code</string>
+    <string name="CreateCodeLanguage">Language</string>
     <string name="ConnectingYourContacts">Connecting your contacts...</string>
     <string name="ArchiveHintHeader1">This is your Archive</string>
     <string name="ArchiveHintText1">Chats with enabled notifications get unarchived when new messages arrive.</string>

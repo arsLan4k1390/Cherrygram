@@ -8,6 +8,7 @@
     <item name="menu_link" type="id"/>
     <item name="menu_mono" type="id"/>
     <item name="menu_strike" type="id"/>
+    <item name="menu_code" type="id"/>
     <item name="menu_underline" type="id"/>
     <item name="menu_groupbolditalic" type="id"/>
     <item name="menu_delete" type="id"/>
