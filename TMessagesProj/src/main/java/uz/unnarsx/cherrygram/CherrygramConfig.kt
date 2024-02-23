@@ -46,6 +46,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     // General Settings
     //General
     var noRounding by sharedPreferences.boolean("CP_NoRounding", false)
+    var messageID by sharedPreferences.boolean("CP_MessageID", false)
     var systemEmoji by sharedPreferences.boolean("AP_SystemEmoji", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)

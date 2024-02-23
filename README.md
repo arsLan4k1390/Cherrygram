@@ -14,6 +14,7 @@ This repo contains the official source code for [Telegram App for Android](https
 ## Contributors
 
 - [arsLan4k1390](https://github.com/arsLan4k1390)
+- [CodWiz](https://github.com/Codwizer)
 
 
 ## Discussion

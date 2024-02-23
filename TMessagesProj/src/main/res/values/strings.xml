@@ -5,6 +5,7 @@
     <string name="English">English</string>
     <string name="LanguageNameInEnglish">English</string>
     <string name="LanguageCode">en</string>
+    <string name="CherryLink">ahh cherrygram!</string>
     <string name="ContinueOnThisLanguage">Continue in English</string>
     <!--signin view-->
     <string name="YourPhone">Your Phone</string>

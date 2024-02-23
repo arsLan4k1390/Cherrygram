@@ -155,6 +155,7 @@ public class BackupHelper {
 
         //cherry
         mainconfig.add("CP_NoRounding");
+        mainconfig.add("CP_MessageID");
         mainconfig.add("CP_ShowSeconds");
         mainconfig.add("AP_SystemEmoji");
         mainconfig.add("AP_SystemFonts");

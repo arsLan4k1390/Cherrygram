@@ -215,6 +215,7 @@
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включить счетчик непрочитанных чатов на кнопке «Назад» в открытом чате</string>
     <string name="CP_NoRounding">Отключить округление чисел</string>
+    <string name="CP_MessageID">Отключить id у сообщения</string>
     <string name="CP_DeleteForAll">Использовать \"Удалить для всех\" по умолчанию</string>
     <string name="CP_DeleteForAll_Desc">При удалении сообщений галочка будет ставиться автоматически.</string>
     <string name="CP_ConfirmCalls">Спрашивать перед звонком</string>

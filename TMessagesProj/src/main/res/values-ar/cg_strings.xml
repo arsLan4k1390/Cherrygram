@@ -177,6 +177,7 @@
     <string name="CP_UnreadBadgeOnBackButton">إظهار عداد المحادثات غير المقروءة</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">تمكين عداد المحادثات غير المقروءة على زر الرجوع في المحادثات المفتوحة</string>
     <string name="CP_NoRounding">تعطيل تقريب الأرقام</string>
+    
     <string name="CP_DeleteForAll">استخدم\" حذف للجميع \" افتراضيا</string>
     <string name="CP_DeleteForAll_Desc">سيتم تحديد خانة الاختيار تلقائيا أثناء حذف الرسائل.</string>
     <string name="CP_ConfirmCalls">اسأل قبل الاتصال</string>

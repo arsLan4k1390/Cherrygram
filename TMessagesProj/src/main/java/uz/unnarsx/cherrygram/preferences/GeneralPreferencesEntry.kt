@@ -25,6 +25,15 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("AS_MessageID", R.string.CP_MessageID)
+
+                contract({
+                    return@contract CherrygramConfig.messageID
+                }) {
+                    CherrygramConfig.messageID = it
+                }
+            }
+            switch {
                 title = LocaleController.getString("AP_SystemEmoji", R.string.AP_SystemEmoji)
                 contract({
                     return@contract CherrygramConfig.systemEmoji

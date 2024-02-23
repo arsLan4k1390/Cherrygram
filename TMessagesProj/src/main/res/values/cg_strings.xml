@@ -223,6 +223,7 @@
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
     <string name="CP_NoRounding">Disable number rounding</string>
+    <string name="CP_MessageID">Disable message id</string>
     <string name="CP_NoRoundingSummary" translatable="false">1.2K -> 1,234</string>
     <string name="CP_DeleteForAll">Use \"Delete for all\" by default</string>
     <string name="CP_DeleteForAll_Desc">Checkbox will be automatically checked while deleting messages.</string>

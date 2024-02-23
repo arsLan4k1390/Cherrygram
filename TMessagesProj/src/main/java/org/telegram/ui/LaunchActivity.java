@@ -75,6 +75,7 @@ import androidx.arch.core.util.Function;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
+import uz.unnarsx.cherrygram.helpers.LinkCherry;
 import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -2515,6 +2516,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                         url = url.replace("tg:invoice", "tg://invoice");
                                         data = Uri.parse(url);
                                         inputInvoiceSlug = data.getQueryParameter("slug");
+                                    }  else if (LinkCherry.isсherryTgLink(url)) {
+                                        LinkCherry.сherry();
                                     } else if (url.startsWith("tg:contact") || url.startsWith("tg://contact")) {
                                         url = url.replace("tg:contact", "tg://contact");
                                         data = Uri.parse(url);
