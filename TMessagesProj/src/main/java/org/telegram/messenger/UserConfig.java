@@ -29,7 +29,7 @@ public class UserConfig extends BaseController {
 
     public static int selectedAccount;
     public final static int MAX_ACCOUNT_DEFAULT_COUNT = 10; //Was 3
-    public final static int MAX_ACCOUNT_COUNT = 20; //Was 4
+    public final static int MAX_ACCOUNT_COUNT = 10; //Was 4
 
     private final Object sync = new Object();
     private volatile boolean configLoaded;
