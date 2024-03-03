@@ -33,10 +33,8 @@ import java.util.function.Function;
 
 import kotlin.text.StringsKt;
 import uz.unnarsx.cherrygram.utils.FileImportActivity;
-import uz.unnarsx.cherrygram.utils.FileUtil;
-import uz.unnarsx.cherrygram.utils.GsonUtil;
+import uz.unnarsx.cherrygram.utils.BackupUtil;
 import uz.unnarsx.cherrygram.utils.PermissionsUtils;
-import uz.unnarsx.cherrygram.utils.ShareUtil;
 
 public class BackupHelper {
 
@@ -49,8 +47,8 @@ public class BackupHelper {
             String formattedDate = String.format(LocaleController.getInstance().formatterYear.format(System.currentTimeMillis()), LocaleController.getInstance().formatterDay.format(System.currentTimeMillis()));
 
             File cacheFile = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), formattedDate + "-settings.cherry");
-            FileUtil.writeUtf8String(backupSettingsJson(), cacheFile);
-            ShareUtil.shareFile(context, cacheFile);
+            BackupUtil.writeUtf8String(backupSettingsJson(), cacheFile);
+            BackupUtil.shareFile(context, cacheFile);
         } catch (JSONException e) {
             AndroidUtilities.addToClipboard(e.toString());
             Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
@@ -62,9 +60,8 @@ public class BackupHelper {
             PermissionsUtils.requestStoragePermission(fragment.getParentActivity());
             return;
         }
-        FileImportActivity importActivity = new FileImportActivity(false);
+        FileImportActivity importActivity = new FileImportActivity();
         importActivity.setMaxSelectedFiles(1);
-        importActivity.setAllowPhoto(false);
         importActivity.setDelegate(new FileImportActivity.DocumentSelectActivityDelegate() {
             @Override
             public void didSelectFiles(FileImportActivity activity, ArrayList<String> files, String caption, boolean notify, int scheduleDate) {
@@ -307,7 +304,7 @@ public class BackupHelper {
 
     public static void importSettingsConfirmed(Context context, File settingsFile) {
         try {
-            JsonObject configJson = GsonUtil.toJsonObject(FileUtil.readUtf8String(settingsFile));
+            JsonObject configJson = BackupUtil.toJsonObject(BackupUtil.readUtf8String(settingsFile));
             importSettings(configJson);
 
             AlertDialog restart = new AlertDialog(context, 0);

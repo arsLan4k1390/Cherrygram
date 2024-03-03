@@ -344,7 +344,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             updateStatus(false, null, null, false);
         } else if (chat != null) {
             dialog_id = -chat.id;
-            drawCheck = chat.verified || CherrygramConfig.INSTANCE.isCherryVerified(chat);
+            drawCheck = chat.verified;
             if (!LocaleController.isRTL) {
                 nameLeft = AndroidUtilities.dp(AndroidUtilities.leftBaseline);
             } else {

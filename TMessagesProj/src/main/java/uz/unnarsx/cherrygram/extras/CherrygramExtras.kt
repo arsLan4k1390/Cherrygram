@@ -19,9 +19,6 @@ import java.util.*
 
 object CherrygramExtras {
 
-    var CG_VERSION = BuildConfig.BUILD_VERSION_STRING_CHERRY
-    var CG_AUTHOR = "Updates: @CherrygramAPKs"
-
     fun getDCGeo(dcId: Int): String {
         return when (dcId) {
             1, 3 -> "USA (Miami)"

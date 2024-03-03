@@ -96,4 +96,14 @@ public class PermissionsUtils {
             return true;
         }
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    public static boolean isBluetoothPermissionGranted() {
+        return isPermissionGranted(Manifest.permission.BLUETOOTH_CONNECT);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    public static void requestBluetoothPermission(Activity activity, int requestCode) {
+        requestPermissions(activity, requestCode, Manifest.permission.BLUETOOTH_CONNECT);
+    }
 }

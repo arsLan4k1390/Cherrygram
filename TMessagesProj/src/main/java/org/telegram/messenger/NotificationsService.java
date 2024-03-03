@@ -42,7 +42,7 @@ public class NotificationsService extends Service {
             notificationManager.createNotificationChannel(channel);
             startForeground(7777,
                     new NotificationCompat.Builder(this, "cherrygramPush")
-                            .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
+                            .setSmallIcon(getResidentNotificationIcon())
                             .setShowWhen(false)
                             .setOngoing(true)
                             .setContentText(LocaleController.getString("CG_PushService", R.string.CG_PushService))
@@ -50,6 +50,10 @@ public class NotificationsService extends Service {
                             .build());
             //Log.d("cherryPush2", "Started foreground");
         }
+    }
+
+    private int getResidentNotificationIcon() {
+        return CherrygramConfig.INSTANCE.getOldNotificationIcon() ? R.drawable.cg_notification : R.drawable.notification;
     }
 
     @Override

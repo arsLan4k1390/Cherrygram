@@ -39,10 +39,10 @@ public class CrashReportBottomSheet extends OnceBottomSheet {
         frameLayout.addView(linearLayout);
 
         StickerImageView imageView = new StickerImageView(activity, currentAccount);
-        imageView.setStickerPackName("UtyaDuck");
-        imageView.setStickerNum(5);
+        imageView.setStickerPackName("HotCherry");
+        imageView.setStickerNum(30);
         imageView.getImageReceiver().setAutoRepeat(1);
-        linearLayout.addView(imageView, LayoutHelper.createLinear(144, 144, Gravity.CENTER_HORIZONTAL, 0, 16, 0, 0));
+        linearLayout.addView(imageView, LayoutHelper.createLinear(200, 200, Gravity.CENTER_HORIZONTAL, 0, 16, 0, 0));
 
         TextView title = new TextView(activity);
         title.setGravity(Gravity.CENTER_HORIZONTAL);

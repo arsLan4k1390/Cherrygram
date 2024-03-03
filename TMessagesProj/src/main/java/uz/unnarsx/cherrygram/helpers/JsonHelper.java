@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
+import android.text.SpannableString;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -22,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.CodeHighlighting;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.R;
@@ -172,7 +175,6 @@ public class JsonHelper extends BaseFragment {
                     jsonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                     jsonTextView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
                     jsonTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                    jsonTextView.setTextIsSelectable(true);
                     jsonTextView.setPadding(100, 20, 20, 50);
 
                     if (position == jsonTextRow) {
@@ -181,7 +183,18 @@ public class JsonHelper extends BaseFragment {
                             mapper.enable(SerializationFeature.INDENT_OUTPUT);
                             String jsonString = mapper.writeValueAsString(messageObject.messageOwner);
 
-                            jsonTextView.setText(jsonString);
+                            final SpannableString[] sb = new SpannableString[1];
+                            new CountDownTimer(300, 100) {
+                                @Override
+                                public void onTick(long millisUntilFinished) {
+                                    sb[0] = CodeHighlighting.getHighlighted(jsonString, "json");
+                                }
+
+                                @Override
+                                public void onFinish() {
+                                    jsonTextView.setText(sb[0]);
+                                }
+                            }.start();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -208,7 +221,7 @@ public class JsonHelper extends BaseFragment {
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int type = holder.getItemViewType();
-            return type == 2 || type == 4;
+            return type == 4;
         }
 
         @NonNull

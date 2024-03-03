@@ -63,9 +63,9 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
     private CheckBoxSquare checkBoxBig;
     private TextView adminTextView;
     private TextView addButton;
+    private ImageView mutualView;
     private Drawable premiumDrawable;
     private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable emojiStatus;
-    private ImageView mutualView;
     protected Theme.ResourcesProvider resourcesProvider;
 
     protected AvatarDrawable avatarDrawable;
@@ -211,9 +211,9 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         if (needMutualIcon) {
             mutualView = new ImageView(context);
             mutualView.setImageResource(R.drawable.ic_round_swap_horiz_24);
-            mutualView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_player_actionBarSelector)));
+            mutualView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_player_actionBarSelector, resourcesProvider)));
             mutualView.setScaleType(ImageView.ScaleType.CENTER);
-            mutualView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.MULTIPLY));
+            mutualView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
             mutualView.setVisibility(GONE);
             mutualView.setOnClickListener(v -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_ERROR, LocaleController.getString("AP_MutualContactsDescription", R.string.AP_MutualContacts_Description)));
             mutualView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);

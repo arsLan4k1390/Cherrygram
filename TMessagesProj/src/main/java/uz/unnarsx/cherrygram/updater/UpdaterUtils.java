@@ -22,6 +22,7 @@ import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.Utilities;
+import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.TypefaceSpan;
@@ -39,6 +40,7 @@ import java.util.Objects;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.extras.CherrygramExtras;
+import uz.unnarsx.cherrygram.extras.Constants;
 
 public class UpdaterUtils {
 
@@ -88,7 +90,7 @@ public class UpdaterUtils {
     }
 
     public static void checkUpdates(BaseFragment fragment, boolean manual) {
-        checkUpdates(fragment, manual, null, null);
+        checkUpdates(fragment, manual, null, null, null);
     }
 
     public interface OnUpdateNotFound {
@@ -99,7 +101,8 @@ public class UpdaterUtils {
         void run();
     }
 
-    public static void checkUpdates(BaseFragment fragment, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound) {
+    public static void checkUpdates(BaseFragment fragment, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound, Browser.Progress progress) {
+        if (CherrygramConfig.INSTANCE.isPremium()) return;
 
         if (checkingForUpdates || id != 1L || (System.currentTimeMillis() - CherrygramConfig.INSTANCE.getUpdateScheduleTimestamp() < updateCheckInterval && !manual))
             return;
@@ -158,13 +161,16 @@ public class UpdaterUtils {
                         (new UpdaterBottomSheet(fragment.getContext(), fragment, true, update)).show();
                         if (onUpdateFound != null)
                             onUpdateFound.run();
+                        if (progress != null) progress.end();
                     });
                 } else {
                     if (onUpdateNotFound != null)
                         AndroidUtilities.runOnUIThread(onUpdateNotFound::run);
+                    if (progress != null) progress.end();
                 }
             } catch (Exception e) {
                 FileLog.e(e);
+                if (progress != null) progress.end();
             }
             checkingForUpdates = false;
         }, 200);
@@ -341,7 +347,7 @@ public class UpdaterUtils {
 
         // todo: compare by version code, not version
         public boolean isNew() {
-            String[] current = CherrygramExtras.INSTANCE.getCG_VERSION().split("\\.");
+            String[] current = Constants.INSTANCE.getCG_VERSION().split("\\.");
             String[] latest = version.split("\\.");
 
             int length = Math.max(current.length, latest.length);

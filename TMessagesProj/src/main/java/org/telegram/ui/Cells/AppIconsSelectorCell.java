@@ -54,6 +54,7 @@ import java.util.List;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.ChatsHelper;
+import uz.unnarsx.cherrygram.utils.PermissionsUtils;
 
 public class AppIconsSelectorCell extends RecyclerListView implements NotificationCenter.NotificationCenterDelegate {
     public final static float ICONS_ROUND_RADIUS = 100;
@@ -190,6 +191,10 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_APP_ICON, icon);
         });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            if (!PermissionsUtils.isStoragePermissionGranted()) {
+                PermissionsUtils.requestStoragePermission(fragment.getParentActivity());
+                return;
+            }
             setOnItemLongClickListener((view, position) -> {
                 WallpaperManager wallpaperManager = WallpaperManager.getInstance(getContext());
                 Drawable wallpaperDrawable = wallpaperManager.getDrawable();

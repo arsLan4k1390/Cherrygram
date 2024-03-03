@@ -336,6 +336,7 @@
     <string name="UP_Version">Version</string>
     <string name="UP_UpdateSize">Update size</string>
     <string name="UP_Changelog">Changelog:</string>
+    <string name="UP_ChangelogRead">Tap to read</string>
     <string name="UP_Download">Download</string>
     <!--Updates Preferences-->
 

@@ -321,6 +321,7 @@
     <string name="UP_Version">Версия</string>
     <string name="UP_UpdateSize">Размер обновления</string>
     <string name="UP_Changelog">Список изменений:</string>
+    <string name="UP_ChangelogRead">Прочитать</string>
     <string name="UP_Download">Загрузить</string>
     <!--Updates Preferences-->
 

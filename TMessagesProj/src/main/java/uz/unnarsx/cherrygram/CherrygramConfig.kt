@@ -6,7 +6,6 @@ import android.os.Bundle
 import kotlinx.coroutines.*
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.BuildVars
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
@@ -522,13 +521,13 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     }
 
     // OTA
-    var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", BuildVars.isBetaApp())
+    var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isBeta())
     fun toggleInstallBetas() {
         installBetas = !installBetas
         putBoolean("CG_Install_Beta_Ver", installBetas)
     }
 
-    var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", true)
+    var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", !isPremium())
     fun toggleAutoOTA() {
         autoOTA = !autoOTA
         putBoolean("CG_Auto_OTA", autoOTA)
@@ -597,9 +596,25 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         }
     }
 
-    fun isCherryVerified(chat: TLRPC.Chat): Boolean {
-        return LocalVerificationsHelper.getVerify().stream().anyMatch { id: Long -> id == chat.id }
+    fun isStable(): Boolean {
+        return true
     }
+
+    fun isBeta(): Boolean {
+        return false
+    }
+
+    fun isDev(): Boolean {
+        return false
+    }
+
+    fun isPremium(): Boolean {
+        return false
+    }
+
+    /*fun isCherryVerified(chat: TLRPC.Chat): Boolean {
+        return LocalVerificationsHelper.getVerify().stream().anyMatch { id: Long -> id == chat.id }
+    }*/
 
     fun isDeleteAllHidden(chat: TLRPC.Chat): Boolean {
         return LocalVerificationsHelper.hideDeleteAll().stream().anyMatch { id: Long -> id == chat.id }

@@ -1,5 +1,6 @@
 package uz.unnarsx.cherrygram.preferences
 
+import android.os.Bundle
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.BuildConfig
 import org.telegram.messenger.BuildVars
@@ -11,6 +12,7 @@ import org.telegram.ui.Components.BulletinFactory
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.crashlytics.Crashlytics
 import uz.unnarsx.cherrygram.extras.CherrygramExtras
+import uz.unnarsx.cherrygram.extras.Constants
 import uz.unnarsx.cherrygram.ui.tgkit.preference.category
 import uz.unnarsx.cherrygram.ui.tgkit.preference.textDetail
 import uz.unnarsx.cherrygram.ui.tgkit.preference.textIcon
@@ -23,7 +25,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("CGP_Header_About", R.string.CGP_Header_About)) {
         category(LocaleController.getString("Info", R.string.Info)) {
             textDetail {
-                title = LocaleController.getString("CG_AppName", R.string.CG_AppName) + " " + CherrygramExtras.CG_VERSION + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING
+                title = Constants.getAppName() + " " + Constants.CG_VERSION + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING
                 detail = LocaleController.getString("CGP_About_Desc", R.string.CGP_About_Desc)
 
                 listener = TGKitTextDetailRow.TGTDListener {
@@ -31,14 +33,24 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                 }
             }
 
-            textDetail {
-                icon = R.drawable.sync_outline_28
-                title = LocaleController.getString("UP_Category_Updates", R.string.UP_Category_Updates)
-                detail = LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.lastUpdateCheckTime / 1000);
+            if (!CherrygramConfig.isPremium()) {
+                textDetail {
+                    icon = R.drawable.sync_outline_28
+                    title = LocaleController.getString(
+                        "UP_Category_Updates",
+                        R.string.UP_Category_Updates
+                    )
+                    detail = LocaleController.getString(
+                        "UP_LastCheck",
+                        R.string.UP_LastCheck
+                    ) + ": " + LocaleController.formatDateTime(CherrygramConfig.lastUpdateCheckTime / 1000);
 
-                listener = TGKitTextDetailRow.TGTDListener {
-                    UpdaterBottomSheet(bf.parentActivity, bf, false, null).show()
+                    listener = TGKitTextDetailRow.TGTDListener {
+                        UpdaterBottomSheet(bf.parentActivity, bf, false, null).show()
+                    }
                 }
+            } else {
+                // Fuckoff :)
             }
 
             textIcon {
@@ -71,18 +83,23 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                     Browser.openUrl(bf.parentActivity, "https://t.me/CherrygramSupport")
                 }
             }
-            textIcon {
-                val commitInfo = "commit " + BuildConfig.GIT_COMMIT_HASH.substring(0, 8)
+            if (!CherrygramConfig.isPremium()) {
+                textIcon {
+                    icon = R.drawable.github_logo_white
+                    title = LocaleController.getString("CGP_Source", R.string.CGP_Source)
 
-                icon = R.drawable.github_logo_white
-                title = LocaleController.getString("CGP_Source", R.string.CGP_Source)
-                if (!BuildVars.isBetaApp()) value = commitInfo
-
-                listener = TGKitTextIconRow.TGTIListener {
-                    if (!BuildVars.isBetaApp()) {
-                        Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/commit/" + BuildConfig.GIT_COMMIT_HASH)
+                    value = if (CherrygramConfig.isBeta() || CherrygramConfig.isDev()) {
+                        "GitHub"
                     } else {
-                        Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/")
+                        "commit " + BuildConfig.GIT_COMMIT_HASH.substring(0, 8)
+                    }
+
+                    listener = TGKitTextIconRow.TGTIListener {
+                        if (CherrygramConfig.isBeta() || CherrygramConfig.isDev()) {
+                            Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/")
+                        } else {
+                            Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/commit/" + BuildConfig.GIT_COMMIT_HASH)
+                        }
                     }
                 }
             }

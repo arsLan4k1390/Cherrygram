@@ -147,9 +147,16 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     public boolean destroyed;
     public boolean allowEnterCaption;
     private ChatAttachAlertDocumentLayout.DocumentSelectActivityDelegate documentsDelegate;
-    private long dialogId;
+    public long dialogId;
     private boolean overrideBackgroundColor;
 
+    public TLRPC.Chat getChat() {
+        if (baseFragment instanceof ChatActivity) {
+            return ((ChatActivity) baseFragment).getCurrentChat();
+        } else {
+            return MessagesController.getInstance(currentAccount).getChat(-dialogId);
+        }
+    }
     public void setCanOpenPreview(boolean canOpenPreview) {
         this.canOpenPreview = canOpenPreview;
         selectedArrowImageView.setVisibility(canOpenPreview && avatarPicker != 2 ? View.VISIBLE : View.GONE);
@@ -2189,23 +2196,35 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 final Activity activity = lastFragment.getParentActivity();
                 int num = (Integer) view.getTag();
                 if (num == 1) {
+                    if (!photosEnabled && !videosEnabled && checkCanRemoveRestrictionsByBoosts()) {
+                        return;
+                    }
                     if (!photosEnabled && !videosEnabled) {
                         showLayout(restrictedLayout = new ChatAttachRestrictedLayout(1, this, getContext(), resourcesProvider));
                     }
                     showLayout(photoLayout);
                 } else if (num == 3) {
+                    if (!musicEnabled && checkCanRemoveRestrictionsByBoosts()) {
+                        return;
+                    }
                     if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isAudioPermissionGranted()) {
                         PermissionsUtils.requestAudioPermission(activity);
                         return;
                     }
                     openAudioLayout(true);
                 } else if (num == 4) {
+                    if (!documentsEnabled && checkCanRemoveRestrictionsByBoosts()) {
+                        return;
+                    }
                     if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isStoragePermissionGranted()) {
                         PermissionsUtils.requestStoragePermission(activity);
                         return;
                     }
                     openDocumentsLayout(true);
                 } else if (num == 5) {
+                    if (!plainTextEnabled && checkCanRemoveRestrictionsByBoosts()) {
+                        return;
+                    }
                     if (Build.VERSION.SDK_INT >= 23 && plainTextEnabled) {
                         if (getContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
                             AndroidUtilities.findActivity(getContext()).requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, BasePermissionsActivity.REQUEST_CODE_ATTACH_CONTACT);
@@ -2214,6 +2233,9 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     }
                     openContactsLayout();
                 } else if (num == 6) {
+                    if (!plainTextEnabled && checkCanRemoveRestrictionsByBoosts()) {
+                        return;
+                    }
                     if (!AndroidUtilities.isMapsInstalled(baseFragment)) {
                         return;
                     }
@@ -2228,6 +2250,9 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         showLayout(locationLayout);
                     }
                 } else if (num == 9) {
+                    if (!pollsEnabled && checkCanRemoveRestrictionsByBoosts()) {
+                        return;
+                    }
                     if (!pollsEnabled) {
                         restrictedLayout = new ChatAttachRestrictedLayout(9, this, getContext(), resourcesProvider);
                         showLayout(restrictedLayout);
@@ -3226,6 +3251,10 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         showLayout(contactsLayout);
     }
 
+    public boolean checkCanRemoveRestrictionsByBoosts() {
+        return (baseFragment instanceof ChatActivity) && ((ChatActivity) baseFragment).checkCanRemoveRestrictionsByBoosts();
+    }
+
     private void openAudioLayout(boolean show) {
         if (!musicEnabled) {
             if (show) {
@@ -4118,9 +4147,20 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         shadow.setAlpha(1f);
         shadow.setTranslationY(0);
 
-        if (baseFragment instanceof ChatActivity && avatarPicker != 2) {
-            TLRPC.Chat chat = ((ChatActivity) baseFragment).getCurrentChat();
-            TLRPC.User user = ((ChatActivity) baseFragment).getCurrentUser();
+        TLRPC.Chat chat = null;
+        TLRPC.User user = null;
+        if (avatarPicker != 2) {
+            if (baseFragment instanceof ChatActivity) {
+                chat = ((ChatActivity) baseFragment).getCurrentChat();
+                user = ((ChatActivity) baseFragment).getCurrentUser();
+            } else if (dialogId >= 0) {
+                user = MessagesController.getInstance(currentAccount).getUser(dialogId);
+            } else if (dialogId < 0) {
+                chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
+            }
+        }
+
+        if (baseFragment instanceof ChatActivity && avatarPicker != 2 || (chat != null || user != null)) {
             if (chat != null) {
                 // mediaEnabled = ChatObject.canSendMedia(chat);
                 photosEnabled = ChatObject.canSendPhoto(chat);
@@ -4132,12 +4172,9 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             } else {
                 pollsEnabled = user != null && user.bot;
             }
-        } else {
-            if (allowEnterCaption) {
-                commentTextView.setVisibility(View.VISIBLE);
-            } else {
-                commentTextView.setVisibility(View.INVISIBLE);
-            }
+        }
+        if (!(baseFragment instanceof ChatActivity && avatarPicker != 2)) {
+            commentTextView.setVisibility(allowEnterCaption ? View.VISIBLE : View.INVISIBLE);
         }
         photoLayout.onInit(videosEnabled, photosEnabled, documentsEnabled);
         commentTextView.hidePopup(true);
@@ -4237,6 +4274,9 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         currentAttachLayout.onOpenAnimationEnd();
         AndroidUtilities.makeAccessibilityAnnouncement(LocaleController.getString("AccDescrAttachButton", R.string.AccDescrAttachButton));
         openTransitionFinished = true;
+        if (!videosEnabled && !photosEnabled) {
+            checkCanRemoveRestrictionsByBoosts();
+        }
     }
 
     @Override

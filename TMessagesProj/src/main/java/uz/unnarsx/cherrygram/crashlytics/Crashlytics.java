@@ -23,6 +23,7 @@ import java.io.Writer;
 
 import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.extras.CherrygramExtras;
+import uz.unnarsx.cherrygram.extras.Constants;
 
 public class Crashlytics implements Thread.UncaughtExceptionHandler {
     private final Thread.UncaughtExceptionHandler defaultUEH;
@@ -105,7 +106,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
         return  "Steps to reproduce:\n" +
                 "Write here the steps to reproduce\n\n" +
                 "Details:\n"+
-                "• Cherrygram Version: " + CherrygramExtras.INSTANCE.getCG_VERSION() + " (" + CherrygramExtras.INSTANCE.getAbiCode() + ")\n" +
+                "• Cherrygram Version: " + Constants.INSTANCE.getCG_VERSION() + " (" + CherrygramExtras.INSTANCE.getAbiCode() + ")\n" +
                 "• Telegram Version: " + BuildVars.BUILD_VERSION_STRING + "\n" +
                 "• Device: " + AndroidUtilities.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + "\n" +
                 "• OS Version: " + Build.VERSION.RELEASE + "\n" +

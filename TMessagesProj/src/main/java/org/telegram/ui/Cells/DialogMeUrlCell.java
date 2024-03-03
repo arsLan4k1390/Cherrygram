@@ -106,7 +106,7 @@ public class DialogMeUrlCell extends BaseCell {
 
         if (recentMeUrl instanceof TLRPC.TL_recentMeUrlChat) {
             TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(recentMeUrl.chat_id);
-            drawVerified = chat.verified || CherrygramConfig.INSTANCE.isCherryVerified(chat);
+            drawVerified = chat.verified;
 
             if (!LocaleController.isRTL) {
                 nameLockLeft = AndroidUtilities.dp(AndroidUtilities.leftBaseline);

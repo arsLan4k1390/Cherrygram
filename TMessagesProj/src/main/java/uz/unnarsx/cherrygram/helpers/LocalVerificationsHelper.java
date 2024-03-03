@@ -2,19 +2,21 @@ package uz.unnarsx.cherrygram.helpers;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.extras.Constants;
+
 public class LocalVerificationsHelper {
     private static final ArrayList<Long> DEFAULT_VERIFY_LIST = new ArrayList<>();
     private static final ArrayList<Long> HIDE_DELETE_ALL_BUTTON = new ArrayList<>();
 
     static {
-        DEFAULT_VERIFY_LIST.add(1776033848L); // Cherrygram Channel
-        DEFAULT_VERIFY_LIST.add(1554776538L); // Cherrygram Support Group
-        DEFAULT_VERIFY_LIST.add(1557718915L); // Cherrygram APKs
-        DEFAULT_VERIFY_LIST.add(1544768810L); // Cherrygram Beta APKs
-        DEFAULT_VERIFY_LIST.add(1633574643L); // Cherrygram Premium APKs
-        DEFAULT_VERIFY_LIST.add(1719103382L); // Cherrygram Archive
+        DEFAULT_VERIFY_LIST.add(Constants.Cherrygram_Channel);
+        DEFAULT_VERIFY_LIST.add(Constants.Cherrygram_Support);
+        DEFAULT_VERIFY_LIST.add(Constants.Cherrygram_APKs);
+        DEFAULT_VERIFY_LIST.add(Constants.Cherrygram_Beta);
+        DEFAULT_VERIFY_LIST.add(Constants.Cherrygram_Premium);
+        DEFAULT_VERIFY_LIST.add(Constants.Cherrygram_Archive);
 
-        HIDE_DELETE_ALL_BUTTON.add(1554776538L); // Cherrygram Support Group
+        HIDE_DELETE_ALL_BUTTON.add(Constants.Cherrygram_Support);
         HIDE_DELETE_ALL_BUTTON.add(1201287079L); // Abitur
     }
 

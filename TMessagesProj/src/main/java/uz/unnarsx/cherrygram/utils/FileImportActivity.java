@@ -17,12 +17,9 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Environment;
-import android.os.StatFs;
 import android.text.InputFilter;
 import android.text.TextPaint;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
@@ -34,12 +31,12 @@ import android.view.ViewOutlineProvider;
 import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -49,13 +46,10 @@ import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
-import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SendMessagesHelper;
 import org.telegram.messenger.SharedConfig;
-import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
-import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
@@ -73,7 +67,6 @@ import org.telegram.ui.Cells.SharedDocumentCell;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.CombinedDrawable;
-import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.EditTextEmoji;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
@@ -100,14 +93,12 @@ public class FileImportActivity extends BaseFragment {
 
         void startDocumentSelectActivity();
 
-        default void startMusicSelectActivity(BaseFragment parentFragment) {
+        default void startMusicSelectActivity() {
         }
     }
 
     private RecyclerListView listView;
     private ListAdapter listAdapter;
-    private SearchAdapter searchAdapter;
-    private ActionBarMenuItem searchItem;
     private ActionBarMenuItem sortItem;
     private LinearLayoutManager layoutManager;
     private ChatActivity chatActivity;
@@ -124,9 +115,9 @@ public class FileImportActivity extends BaseFragment {
     private EditTextEmoji commentTextView;
     private ImageView writeButton;
     private SizeNotifierFrameLayout sizeNotifierFrameLayout;
-    private TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-    private RectF rect = new RectF();
-    private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF rect = new RectF();
+    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private AnimatorSet animatorSet;
 
     private boolean sendPressed;
@@ -138,33 +129,18 @@ public class FileImportActivity extends BaseFragment {
     private boolean hasFiles;
 
     private File currentDir;
-    private ArrayList<ListItem> items = new ArrayList<>();
     private boolean receiverRegistered = false;
-    private ArrayList<HistoryEntry> history = new ArrayList<>();
     private static final long sizeLimit = 1024 * 1024 * 1536;
     private DocumentSelectActivityDelegate delegate;
     private HashMap<String, ListItem> selectedFiles = new HashMap<>();
     private boolean scrolling;
-    private ArrayList<ListItem> recentItems = new ArrayList<>();
     private int maxSelectedFiles = -1;
-    private boolean canSelectOnlyImageFiles;
-    private boolean allowMusic;
-
-    public void setAllowPhoto(boolean allowPhoto) {
-        this.allowPhoto = allowPhoto;
-    }
-
-    private boolean allowPhoto = true;
-
-    private boolean searching;
-    private boolean searchWas;
 
     private boolean sortByName;
 
-    private final static int search_button = 0;
-    private final static int sort_button = 1;
+    private final static int sort_button = 0;
 
-    private class ListItem {
+    private static class ListItem {
         public int icon;
         public String title;
         public String subtitle = "";
@@ -173,7 +149,7 @@ public class FileImportActivity extends BaseFragment {
         public File file;
     }
 
-    private class HistoryEntry {
+    private static class HistoryEntry {
         int scrollItem, scrollOffset;
         File dir;
         String title;
@@ -189,7 +165,6 @@ public class FileImportActivity extends BaseFragment {
                     } else {
                         listFiles(currentDir);
                     }
-                    updateSearchButton();
                 } catch (Exception e) {
                     FileLog.e(e);
                 }
@@ -202,9 +177,8 @@ public class FileImportActivity extends BaseFragment {
         }
     };
 
-    public FileImportActivity(boolean music) {
+    public FileImportActivity() {
         super();
-        allowMusic = music;
     }
 
     @Override
@@ -231,9 +205,6 @@ public class FileImportActivity extends BaseFragment {
 
     @Override
     public View createView(Context context) {
-        searching = false;
-        searchWas = false;
-
         if (!receiverRegistered) {
             receiverRegistered = true;
             IntentFilter filter = new IntentFilter();
@@ -247,7 +218,7 @@ public class FileImportActivity extends BaseFragment {
             filter.addAction(Intent.ACTION_MEDIA_UNMOUNTABLE);
             filter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
             filter.addDataScheme("file");
-            ApplicationLoader.applicationContext.registerReceiver(receiver, filter);
+            ContextCompat.registerReceiver(ApplicationLoader.applicationContext, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
         }
 
         actionBar.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground));
@@ -276,36 +247,6 @@ public class FileImportActivity extends BaseFragment {
         });
 
         final ActionBarMenu menu = actionBar.createMenu();
-        searchItem = menu.addItem(search_button, R.drawable.ic_ab_search).setIsSearchField(true).setActionBarMenuItemSearchListener(new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
-            @Override
-            public void onSearchExpand() {
-                searching = true;
-                sortItem.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onSearchCollapse() {
-                searching = false;
-                searchWas = false;
-                sortItem.setVisibility(View.VISIBLE);
-                if (listView.getAdapter() != listAdapter) {
-                    listView.setAdapter(listAdapter);
-                }
-                updateEmptyView();
-                searchAdapter.search(null);
-            }
-
-            @Override
-            public void onTextChanged(EditText editText) {
-                searchAdapter.search(editText.getText().toString());
-            }
-        });
-        searchItem.setSearchFieldHint(LocaleController.getString("Search", R.string.Search));
-        searchItem.setContentDescription(LocaleController.getString("Search", R.string.Search));
-        EditTextBoldCursor editText = searchItem.getSearchField();
-        editText.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-        editText.setCursorColor(Theme.getColor(Theme.key_dialogTextBlack));
-        editText.setHintTextColor(Theme.getColor(Theme.key_chat_messagePanelHint));
 
         sortItem = menu.addItem(sort_button, sortByName ? R.drawable.msg_contacts_time : R.drawable.msg_contacts_name);
         sortItem.setContentDescription(LocaleController.getString("AccDescrContactSorting", R.string.AccDescrContactSorting));
@@ -316,7 +257,6 @@ public class FileImportActivity extends BaseFragment {
 
             private int lastNotifyWidth;
             private boolean ignoreLayout;
-            private int lastItemSize;
 
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -326,8 +266,7 @@ public class FileImportActivity extends BaseFragment {
                 setMeasuredDimension(widthSize, heightSize);
 
                 int kbHeight = getKeyboardHeight();
-                int keyboardSize = kbHeight;
-                if (keyboardSize <= AndroidUtilities.dp(20)) {
+                if (kbHeight <= AndroidUtilities.dp(20)) {
                     if (!AndroidUtilities.isInMultiwindow && commentTextView != null && frameLayout2.getParent() == this) {
                         heightSize -= commentTextView.getEmojiPadding();
                         heightMeasureSpec = MeasureSpec.makeMeasureSpec(heightSize, MeasureSpec.EXACTLY);
@@ -481,7 +420,6 @@ public class FileImportActivity extends BaseFragment {
         listView.setAdapter(listAdapter = new ListAdapter(context));
         listView.setPadding(0, 0, 0, AndroidUtilities.dp(48));
         sizeNotifierFrameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-        searchAdapter = new SearchAdapter(context);
 
         listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -495,11 +433,7 @@ public class FileImportActivity extends BaseFragment {
 
         listView.setOnItemClickListener((view, position) -> {
             ListItem item;
-            if (listView.getAdapter() == listAdapter) {
-                item = listAdapter.getItem(position);
-            } else {
-                item = searchAdapter.getItem(position);
-            }
+            item = listAdapter.getItem(position);
             if (item == null) {
                 return;
             }
@@ -540,17 +474,16 @@ public class FileImportActivity extends BaseFragment {
                     presentFragment(fragment);
                 } else if (item.icon == R.drawable.files_music) {
                     if (delegate != null) {
-                        delegate.startMusicSelectActivity(this);
+                        delegate.startMusicSelectActivity();
                     }
                 } else {
-                    HistoryEntry he = history.remove(history.size() - 1);
+                    HistoryEntry he = listAdapter.history.remove(listAdapter.history.size() - 1);
                     actionBar.setTitle(he.title);
                     if (he.dir != null) {
                         listFiles(he.dir);
                     } else {
                         listRoots();
                     }
-                    updateSearchButton();
                     layoutManager.scrollToPositionWithOffset(he.scrollItem, he.scrollOffset);
                 }
             } else if (file.isDirectory()) {
@@ -562,9 +495,9 @@ public class FileImportActivity extends BaseFragment {
                 }
                 he.dir = currentDir;
                 he.title = actionBar.getTitle();
-                history.add(he);
+                listAdapter.history.add(he);
                 if (!listFiles(file)) {
-                    history.remove(he);
+                    listAdapter.history.remove(he);
                     return;
                 }
                 actionBar.setTitle(item.title);
@@ -575,11 +508,7 @@ public class FileImportActivity extends BaseFragment {
 
         listView.setOnItemLongClickListener((view, position) -> {
             ListItem item;
-            if (listView.getAdapter() == listAdapter) {
-                item = listAdapter.getItem(position);
-            } else {
-                item = searchAdapter.getItem(position);
-            }
+            item = listAdapter.getItem(position);
             return onItemClick(view, item);
         });
 
@@ -604,9 +533,7 @@ public class FileImportActivity extends BaseFragment {
         commentTextView.setFilters(inputFilters);
         commentTextView.setHint(LocaleController.getString("AddCaption", R.string.AddCaption));
         commentTextView.onResume();
-        editText = commentTextView.getEditText();
-        editText.setMaxLines(1);
-        editText.setSingleLine(true);
+
         frameLayout2.addView(commentTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, 0, 0, 84, 0));
         if (chatActivity == null) {
             commentTextView.setVisibility(View.GONE);
@@ -621,38 +548,20 @@ public class FileImportActivity extends BaseFragment {
         sizeNotifierFrameLayout.addView(writeButtonContainer, LayoutHelper.createFrame(60, 60, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 12, 10));
 
         writeButton = new ImageView(context);
-        Drawable writeButtonDrawable = Theme.createSimpleSelectorCircleDrawable(AndroidUtilities.dp(56), Theme.getColor(Theme.key_dialogFloatingButton), Theme.getColor(Build.VERSION.SDK_INT >= 21 ? Theme.key_dialogFloatingButtonPressed : Theme.key_dialogFloatingButton));
-        if (Build.VERSION.SDK_INT < 21) {
-            Drawable shadowDrawable = context.getResources().getDrawable(R.drawable.floating_shadow_profile).mutate();
-            shadowDrawable.setColorFilter(new PorterDuffColorFilter(0xff000000, PorterDuff.Mode.SRC_IN));
-            CombinedDrawable combinedDrawable = new CombinedDrawable(shadowDrawable, writeButtonDrawable, 0, 0);
-            combinedDrawable.setIconSize(AndroidUtilities.dp(56), AndroidUtilities.dp(56));
-            writeButtonDrawable = combinedDrawable;
-        }
+        Drawable writeButtonDrawable = Theme.createSimpleSelectorCircleDrawable(AndroidUtilities.dp(56), Theme.getColor(Theme.key_dialogFloatingButton), Theme.getColor(Theme.key_dialogFloatingButtonPressed));
         writeButton.setBackgroundDrawable(writeButtonDrawable);
-
-        if (allowPhoto) {
-
-            writeButton.setImageResource(R.drawable.attach_send);
-
-        } else {
-
-            writeButton.setImageResource(R.drawable.list_check);
-
-        }
+        writeButton.setImageResource(R.drawable.list_check);
 
         writeButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogFloatingIcon), PorterDuff.Mode.SRC_IN));
         writeButton.setScaleType(ImageView.ScaleType.CENTER);
-        if (Build.VERSION.SDK_INT >= 21) {
-            writeButton.setOutlineProvider(new ViewOutlineProvider() {
-                @SuppressLint("NewApi")
-                @Override
-                public void getOutline(View view, Outline outline) {
-                    outline.setOval(0, 0, AndroidUtilities.dp(56), AndroidUtilities.dp(56));
-                }
-            });
-        }
-        writeButtonContainer.addView(writeButton, LayoutHelper.createFrame(Build.VERSION.SDK_INT >= 21 ? 56 : 60, Build.VERSION.SDK_INT >= 21 ? 56 : 60, Gravity.LEFT | Gravity.TOP, Build.VERSION.SDK_INT >= 21 ? 2 : 0, 0, 0, 0));
+        writeButton.setOutlineProvider(new ViewOutlineProvider() {
+            @SuppressLint("NewApi")
+            @Override
+            public void getOutline(View view, Outline outline) {
+                outline.setOval(0, 0, AndroidUtilities.dp(56), AndroidUtilities.dp(56));
+            }
+        });
+        writeButtonContainer.addView(writeButton, LayoutHelper.createFrame(56, 56, Gravity.LEFT | Gravity.TOP, 2, 0, 0, 0));
         writeButton.setOnClickListener(v -> {
             if (chatActivity != null && chatActivity.isInScheduleMode()) {
                 AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), chatActivity.getDialogId(), this::sendSelectedFiles);
@@ -664,7 +573,6 @@ public class FileImportActivity extends BaseFragment {
             if (chatActivity == null) {
                 return false;
             }
-            TLRPC.Chat chat = chatActivity.getCurrentChat();
             TLRPC.User user = chatActivity.getCurrentUser();
             if (chatActivity.getCurrentEncryptedChat() != null) {
                 return false;
@@ -675,7 +583,7 @@ public class FileImportActivity extends BaseFragment {
                 sendPopupLayout.setAnimationEnabled(false);
                 sendPopupLayout.setOnTouchListener(new View.OnTouchListener() {
 
-                    private android.graphics.Rect popupRect = new android.graphics.Rect();
+                    private final android.graphics.Rect popupRect = new android.graphics.Rect();
 
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
@@ -701,58 +609,16 @@ public class FileImportActivity extends BaseFragment {
                     if (a == 2 && UserObject.isUserSelf(user)) {
                         continue;
                     }
-                    int num = a;
                     itemCells[a] = new ActionBarMenuSubItem(getParentActivity(), a == 0, a == 2);
-                    /*if (num == 0) {
-                        itemCells[a].setTextAndIcon(LocaleController.getString("Translate", R.string.Translate), R.drawable.ic_translate);
-                    } else if (num == 1) {
-                        if (UserObject.isUserSelf(user)) {
-                            itemCells[a].setTextAndIcon(LocaleController.getString("SetReminder", R.string.SetReminder), R.drawable.baseline_date_range_24);
-                        } else {
-                            itemCells[a].setTextAndIcon(LocaleController.getString("ScheduleMessage", R.string.ScheduleMessage), R.drawable.baseline_date_range_24);
-                        }
-                    } else if (num == 2) {
-                        itemCells[a].setTextAndIcon(LocaleController.getString("SendWithoutSound", R.string.SendWithoutSound), R.drawable.baseline_notifications_off_24);
-                    }*/
                     itemCells[a].setMinimumWidth(AndroidUtilities.dp(196));
 
                     sendPopupLayout.addView(itemCells[a], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 0, 48 * a, 0, 0));
-
-                    long chatId;
-                    if (chat != null) {
-                        chatId = chat.id;
-                    } else if (user != null) {
-                        chatId = user.id;
-                    } else {
-                        chatId = -1;
-                    }
 
                     itemCells[a].setOnClickListener(v -> {
                         if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
                             sendPopupWindow.dismiss();
                         }
-                        /*if (num == 0) {
-                            translateComment(TranslateDb.getChatLanguage(chatId, TranslatorKt.getCode2Locale(NekoConfig.translateInputLang.String())));
-                        } else if (num == 1) {
-                            AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), chatActivity.getDialogId(), this::sendSelectedFiles);
-                        } else if (num == 2) {
-                            sendSelectedFiles(true, 0);
-                        }*/
                     });
-                    /*itemCells[a].setOnLongClickListener(v -> {
-                        if (num == 0) {
-                            Translator.showTargetLangSelect(itemCells[num], true, (locale) -> {
-                                if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
-                                    sendPopupWindow.dismiss();
-                                }
-                                translateComment(locale);
-                                TranslateDb.saveChatLanguage(chatId, locale);
-                                return Unit.INSTANCE;
-                            });
-                            return true;
-                        }
-                        return false;
-                    });*/
                 }
 
                 sendPopupWindow = new ActionBarPopupWindow(sendPopupLayout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT);
@@ -788,7 +654,6 @@ public class FileImportActivity extends BaseFragment {
                 int textSize = (int) Math.ceil(textPaint.measureText(text));
                 int size = Math.max(AndroidUtilities.dp(16) + textSize, AndroidUtilities.dp(24));
                 int cx = getMeasuredWidth() / 2;
-                int cy = getMeasuredHeight() / 2;
 
                 textPaint.setColor(Theme.getColor(Theme.key_dialogRoundCheckBoxCheck));
                 paint.setColor(Theme.getColor(Theme.key_dialogBackground));
@@ -808,62 +673,11 @@ public class FileImportActivity extends BaseFragment {
         sizeNotifierFrameLayout.addView(selectedCountView, LayoutHelper.createFrame(42, 24, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, -2, 9));
 
         listRoots();
-        updateSearchButton();
         updateEmptyView();
         updateCountButton(0);
 
         return fragmentView;
     }
-
-
-//    private void translateComment(Locale target) {
-//
-//        TranslateDb db = TranslateDb.forLocale(target);
-//        String origin = commentTextView.getText().toString();
-//
-//        if (db.contains(origin)) {
-//
-//            String translated = db.query(origin);
-//            commentTextView.getEditText().setText(translated);
-//
-//            return;
-//
-//        }
-//
-//        Translator.translate(target, origin, new Translator.Companion.TranslateCallBack() {
-//
-//            final AtomicBoolean cancel = new AtomicBoolean();
-//            AlertDialog status = AlertUtil.showProgress(getParentActivity());
-//
-//            {
-//
-//                status.setOnCancelListener((__) -> {
-//                    cancel.set(true);
-//                });
-//
-//                status.show();
-//
-//            }
-//
-//            @Override
-//            public void onSuccess(@NotNull String translation) {
-//                status.dismiss();
-//                commentTextView.getEditText().setText(translation);
-//            }
-//
-//            @Override
-//            public void onFailed(boolean unsupported, @NotNull String message) {
-//                status.dismiss();
-//                AlertUtil.showTransFailedDialog(getParentActivity(), unsupported, message, () -> {
-//                    status = AlertUtil.showProgress(getParentActivity());
-//                    status.show();
-//                    Translator.translate(origin, this);
-//                });
-//            }
-//
-//        });
-//
-//    }
 
     private boolean onItemClick(View view, ListItem item) {
         if (item == null || item.file == null || item.file.isDirectory()) {
@@ -877,10 +691,6 @@ public class FileImportActivity extends BaseFragment {
         } else {
             if (!item.file.canRead()) {
                 showErrorBox(LocaleController.getString("AccessError", R.string.AccessError));
-                return false;
-            }
-            if (canSelectOnlyImageFiles && item.thumb == null) {
-                showErrorBox(LocaleController.formatString("PassportUploadNotImage", R.string.PassportUploadNotImage));
                 return false;
             }
             if (sizeLimit != 0) {
@@ -913,10 +723,6 @@ public class FileImportActivity extends BaseFragment {
 
     public void setMaxSelectedFiles(int value) {
         maxSelectedFiles = value;
-    }
-
-    public void setCanSelectOnlyImageFiles(boolean value) {
-        canSelectOnlyImageFiles = true;
     }
 
     private boolean showCommentTextView(boolean show, boolean animated) {
@@ -1075,7 +881,7 @@ public class FileImportActivity extends BaseFragment {
                 if (fname.endsWith(".jpg") || fname.endsWith(".png") || fname.endsWith(".gif") || fname.endsWith(".jpeg")) {
                     item.thumb = file.getAbsolutePath();
                 }
-                recentItems.add(item);
+                listAdapter.recentItems.add(item);
             }
             sortRecentItems();
         } catch (Exception e) {
@@ -1084,7 +890,7 @@ public class FileImportActivity extends BaseFragment {
     }
 
     private void sortRecentItems() {
-        Collections.sort(recentItems, (o1, o2) -> {
+        Collections.sort(listAdapter.recentItems, (o1, o2) -> {
             if (sortByName) {
                 String lm = o1.file.getName();
                 String rm = o2.file.getName();
@@ -1092,13 +898,7 @@ public class FileImportActivity extends BaseFragment {
             } else {
                 long lm = o1.file.lastModified();
                 long rm = o2.file.lastModified();
-                if (lm == rm) {
-                    return 0;
-                } else if (lm > rm) {
-                    return -1;
-                } else {
-                    return 1;
-                }
+                return Long.compare(rm, lm);
             }
         });
     }
@@ -1107,30 +907,22 @@ public class FileImportActivity extends BaseFragment {
         if (currentDir == null) {
             return;
         }
-        Collections.sort(items, (lhs, rhs) -> {
+        Collections.sort(listAdapter.items, (lhs, rhs) -> {
             if (lhs.file == null) {
                 return -1;
             } else if (rhs.file == null) {
                 return 1;
-            } else if (lhs.file == null && rhs.file == null) {
-                return 0;
             }
             boolean isDir1 = lhs.file.isDirectory();
             boolean isDir2 = rhs.file.isDirectory();
             if (isDir1 != isDir2) {
                 return isDir1 ? -1 : 1;
-            } else if (isDir1 && isDir2 || sortByName) {
+            } else if (isDir1 || sortByName) {
                 return lhs.file.getName().compareToIgnoreCase(rhs.file.getName());
             } else {
                 long lm = lhs.file.lastModified();
                 long rm = rhs.file.lastModified();
-                if (lm == rm) {
-                    return 0;
-                } else if (lm > rm) {
-                    return -1;
-                } else {
-                    return 1;
-                }
+                return Long.compare(rm, lm);
             }
         });
     }
@@ -1144,49 +936,26 @@ public class FileImportActivity extends BaseFragment {
         if (listAdapter != null) {
             listAdapter.notifyDataSetChanged();
         }
-        if (searchAdapter != null) {
-            searchAdapter.notifyDataSetChanged();
-        }
     }
 
     private void updateEmptyView() {
-        if (searching) {
-            emptyTitleTextView.setText(LocaleController.getString("NoFilesFound", R.string.NoFilesFound));
-            emptyView.setGravity(Gravity.CENTER_HORIZONTAL);
-            emptyView.setPadding(0, AndroidUtilities.dp(60), 0, 0);
-            emptySubtitleTextView.setPadding(AndroidUtilities.dp(40), 0, AndroidUtilities.dp(40), 0);
-        } else {
-            emptyTitleTextView.setText(LocaleController.getString("NoFilesFound", R.string.NoFilesFound));
-            emptySubtitleTextView.setText(LocaleController.getString("NoFilesInfo", R.string.NoFilesInfo));
-            emptyView.setGravity(Gravity.CENTER);
-            emptyView.setPadding(0, 0, 0, 0);
-            emptySubtitleTextView.setPadding(AndroidUtilities.dp(40), 0, AndroidUtilities.dp(40), AndroidUtilities.dp(128));
-        }
+        emptyTitleTextView.setText(LocaleController.getString("NoFilesFound", R.string.NoFilesFound));
+        emptySubtitleTextView.setText(LocaleController.getString("NoFilesInfo", R.string.NoFilesInfo));
+        emptyView.setGravity(Gravity.CENTER);
+        emptyView.setPadding(0, 0, 0, 0);
+        emptySubtitleTextView.setPadding(AndroidUtilities.dp(40), 0, AndroidUtilities.dp(40), AndroidUtilities.dp(128));
         listView.setEmptyView(emptyView);
     }
 
-    private void updateSearchButton() {
-        if (searchItem == null) {
-            return;
-        }
-        searchItem.setVisibility(hasFiles ? View.VISIBLE : View.GONE);
-        if (history.isEmpty()) {
-            searchItem.setSearchFieldHint(LocaleController.getString("SearchRecentFiles", R.string.SearchRecentFiles));
-        } else {
-            searchItem.setSearchFieldHint(LocaleController.getString("Search", R.string.Search));
-        }
-    }
-
     private boolean canClosePicker() {
-        if (history.size() > 0) {
-            HistoryEntry he = history.remove(history.size() - 1);
+        if (listAdapter.history.size() > 0) {
+            HistoryEntry he = listAdapter.history.remove(listAdapter.history.size() - 1);
             actionBar.setTitle(he.title);
             if (he.dir != null) {
                 listFiles(he.dir);
             } else {
                 listRoots();
             }
-            updateSearchButton();
             layoutManager.scrollToPositionWithOffset(he.scrollItem, he.scrollOffset);
             return false;
         }
@@ -1218,8 +987,7 @@ public class FileImportActivity extends BaseFragment {
                 if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)
                         && !Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
                     currentDir = dir;
-                    items.clear();
-                    String state = Environment.getExternalStorageState();
+                    listAdapter.items.clear();
                     AndroidUtilities.clearDrawableAnimation(listView);
                     scrolling = true;
                     listAdapter.notifyDataSetChanged();
@@ -1241,7 +1009,7 @@ public class FileImportActivity extends BaseFragment {
             return false;
         }
         currentDir = dir;
-        items.clear();
+        listAdapter.items.clear();
         for (int a = 0; a < files.length; a++) {
             File file = files[a];
             if (file.getName().indexOf('.') == 0) {
@@ -1264,12 +1032,12 @@ public class FileImportActivity extends BaseFragment {
                     item.thumb = file.getAbsolutePath();
                 }
             }
-            items.add(item);
+            listAdapter.items.add(item);
         }
         ListItem item = new ListItem();
         item.title = "..";
-        if (history.size() > 0) {
-            HistoryEntry entry = history.get(history.size() - 1);
+        if (listAdapter.history.size() > 0) {
+            HistoryEntry entry = listAdapter.history.get(listAdapter.history.size() - 1);
             if (entry.dir == null) {
                 item.subtitle = LocaleController.getString("Folder", R.string.Folder);
             } else {
@@ -1280,9 +1048,8 @@ public class FileImportActivity extends BaseFragment {
         }
         item.icon = R.drawable.files_folder;
         item.file = null;
-        items.add(0, item);
+        listAdapter.items.add(0, item);
         sortFileItems();
-        updateSearchButton();
         AndroidUtilities.clearDrawableAnimation(listView);
         scrolling = true;
         listAdapter.notifyDataSetChanged();
@@ -1300,25 +1067,18 @@ public class FileImportActivity extends BaseFragment {
     private void listRoots() {
         currentDir = null;
         hasFiles = false;
-        items.clear();
+        listAdapter.items.clear();
 
         HashSet<String> paths = new HashSet<>();
         String defaultPath = Environment.getExternalStorageDirectory().getPath();
-        boolean isDefaultPathRemovable = Environment.isExternalStorageRemovable();
         String defaultPathState = Environment.getExternalStorageState();
         if (defaultPathState.equals(Environment.MEDIA_MOUNTED) || defaultPathState.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
             ListItem ext = new ListItem();
-            if (Environment.isExternalStorageRemovable()) {
-                ext.title = LocaleController.getString("SdCard", R.string.SdCard);
-                ext.icon = R.drawable.files_internal;
-                ext.subtitle = LocaleController.getString("ExternalFolderInfo", R.string.ExternalFolderInfo);
-            } else {
-                ext.title = LocaleController.getString("InternalStorage", R.string.InternalStorage);
-                ext.icon = R.drawable.files_storage;
-                ext.subtitle = LocaleController.getString("InternalFolderInfo", R.string.InternalFolderInfo);
-            }
+            ext.title = LocaleController.getString("InternalStorage", R.string.InternalStorage);
+            ext.icon = R.drawable.files_storage;
+            ext.subtitle = LocaleController.getString("InternalFolderInfo", R.string.InternalFolderInfo);
             ext.file = Environment.getExternalStorageDirectory();
-            items.add(ext);
+            listAdapter.items.add(ext);
             paths.add(defaultPath);
         }
 
@@ -1332,7 +1092,6 @@ public class FileImportActivity extends BaseFragment {
                         FileLog.d(line);
                     }
                     StringTokenizer tokens = new StringTokenizer(line, " ");
-                    String unused = tokens.nextToken();
                     String path = tokens.nextToken();
                     if (paths.contains(path)) {
                         continue;
@@ -1349,20 +1108,6 @@ public class FileImportActivity extends BaseFragment {
                                 }
                             }
                             paths.add(path);
-                            try {
-                                ListItem item = new ListItem();
-                                if (path.toLowerCase().contains("sd")) {
-                                    item.title = LocaleController.getString("SdCard", R.string.SdCard);
-                                } else {
-                                    item.title = LocaleController.getString("ExternalStorage", R.string.ExternalStorage);
-                                }
-                                item.subtitle = LocaleController.getString("ExternalFolderInfo", R.string.ExternalFolderInfo);
-                                item.icon = R.drawable.files_internal;
-                                item.file = new File(path);
-                                items.add(item);
-                            } catch (Exception e) {
-                                FileLog.e(e);
-                            }
                         }
                     }
                 }
@@ -1379,18 +1124,7 @@ public class FileImportActivity extends BaseFragment {
             }
         }
 
-        /*
-
-        fs.title = "/";
-        fs.subtitle = LocaleController.getString("SystemRoot", R.string.SystemRoot);
-        fs.icon = R.drawable.files_folder;
-        fs.file = new File("/");
-        items.add(fs);
-
-         */
-
-        ListItem fs = new ListItem();
-
+        ListItem fs;
         try {
             File telegramPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "Telegram");
             if (telegramPath.exists()) {
@@ -1399,32 +1133,13 @@ public class FileImportActivity extends BaseFragment {
                 fs.subtitle = LocaleController.getString("AppFolderInfo", R.string.AppFolderInfo);
                 fs.icon = R.drawable.files_folder;
                 fs.file = telegramPath;
-                items.add(fs);
+                listAdapter.items.add(fs);
             }
         } catch (Exception e) {
             FileLog.e(e);
         }
 
-        if (allowPhoto) {
-
-            fs = new ListItem();
-            fs.title = LocaleController.getString("Gallery", R.string.Gallery);
-            fs.subtitle = LocaleController.getString("GalleryInfo", R.string.GalleryInfo);
-            fs.icon = R.drawable.files_gallery;
-            fs.file = null;
-            items.add(fs);
-
-        }
-
-        if (allowMusic) {
-            fs = new ListItem();
-            fs.title = LocaleController.getString("AttachMusic", R.string.AttachMusic);
-            fs.subtitle = LocaleController.getString("MusicInfo", R.string.MusicInfo);
-            fs.icon = R.drawable.files_music;
-            fs.file = null;
-            items.add(fs);
-        }
-        if (!recentItems.isEmpty()) {
+        if (!listAdapter.recentItems.isEmpty()) {
             hasFiles = true;
         }
 
@@ -1433,22 +1148,12 @@ public class FileImportActivity extends BaseFragment {
         listAdapter.notifyDataSetChanged();
     }
 
-    private String getRootSubtitle(String path) {
-        try {
-            StatFs stat = new StatFs(path);
-            long total = (long) stat.getBlockCount() * (long) stat.getBlockSize();
-            long free = (long) stat.getAvailableBlocks() * (long) stat.getBlockSize();
-            if (total == 0) {
-                return "";
-            }
-            return LocaleController.formatString("FreeOfTotal", R.string.FreeOfTotal, AndroidUtilities.formatFileSize(free), AndroidUtilities.formatFileSize(total));
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
-        return path;
-    }
-
     private class ListAdapter extends RecyclerListView.SelectionAdapter {
+
+        private ArrayList<ListItem> items = new ArrayList<>();
+        private ArrayList<HistoryEntry> history = new ArrayList<>();
+        private ArrayList<ListItem> recentItems = new ArrayList<>();
+
 
         private Context mContext;
 
@@ -1499,20 +1204,21 @@ public class FileImportActivity extends BaseFragment {
             View view;
             switch (viewType) {
                 case 0:
-                    HeaderCell headerCell = new HeaderCell(mContext);
-                    headerCell.setText(LocaleController.getString("RecentFiles", R.string.RecentFiles));
-                    view = headerCell;
+                    view = new HeaderCell(mContext);
                     break;
                 case 1:
                     view = new SharedDocumentCell(mContext, SharedDocumentCell.VIEW_TYPE_PICKER);
                     break;
                 case 2:
-                default:
                     view = new ShadowSectionCell(mContext);
-                    Drawable drawable = Theme.getThemedDrawable(getParentActivity(), R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow);
-                    CombinedDrawable combinedDrawable = new CombinedDrawable(new ColorDrawable(Theme.getColor(Theme.key_windowBackgroundGray)), drawable);
+                    Drawable drawable = Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow);
+                    CombinedDrawable combinedDrawable = new CombinedDrawable(new ColorDrawable(getThemedColor(Theme.key_windowBackgroundGray)), drawable);
                     combinedDrawable.setFullsize(true);
                     view.setBackgroundDrawable(combinedDrawable);
+                    break;
+                case 3:
+                default:
+                    view = new View(mContext);
                     break;
             }
             return new RecyclerListView.Holder(view);
@@ -1538,142 +1244,6 @@ public class FileImportActivity extends BaseFragment {
         }
     }
 
-    public class SearchAdapter extends RecyclerListView.SelectionAdapter {
-
-        private Context mContext;
-        private ArrayList<ListItem> searchResult = new ArrayList<>();
-        private Runnable searchRunnable;
-        private int reqId = 0;
-        private int lastReqId;
-
-        public SearchAdapter(Context context) {
-            mContext = context;
-        }
-
-        public void search(final String query) {
-            if (searchRunnable != null) {
-                AndroidUtilities.cancelRunOnUIThread(searchRunnable);
-                searchRunnable = null;
-            }
-            if (TextUtils.isEmpty(query)) {
-                if (!searchResult.isEmpty()) {
-                    searchResult.clear();
-                }
-                if (listView.getAdapter() != listAdapter) {
-                    listView.setAdapter(listAdapter);
-                }
-                notifyDataSetChanged();
-            } else {
-                AndroidUtilities.runOnUIThread(searchRunnable = () -> {
-                    final ArrayList<ListItem> copy = new ArrayList<>(items);
-                    if (history.isEmpty()) {
-                        copy.addAll(0, recentItems);
-                    }
-                    Utilities.searchQueue.postRunnable(() -> {
-                        String search1 = query.trim().toLowerCase();
-                        if (search1.length() == 0) {
-                            updateSearchResults(new ArrayList<>(), query);
-                            return;
-                        }
-                        String search2 = LocaleController.getInstance().getTranslitString(search1);
-                        if (search1.equals(search2) || search2.length() == 0) {
-                            search2 = null;
-                        }
-                        String[] search = new String[1 + (search2 != null ? 1 : 0)];
-                        search[0] = search1;
-                        if (search2 != null) {
-                            search[1] = search2;
-                        }
-
-                        ArrayList<ListItem> resultArray = new ArrayList<>();
-
-                        for (int a = 0; a < copy.size(); a++) {
-                            ListItem entry = copy.get(a);
-                            if (entry.file == null || entry.file.isDirectory()) {
-                                continue;
-                            }
-                            for (int b = 0; b < search.length; b++) {
-                                String q = search[b];
-
-                                boolean ok = false;
-                                if (entry.title != null) {
-                                    ok = entry.title.toLowerCase().contains(q);
-                                }
-                                if (ok) {
-                                    resultArray.add(entry);
-                                    break;
-                                }
-                            }
-                        }
-
-                        updateSearchResults(resultArray, query);
-                    });
-                }, 300);
-            }
-        }
-
-        private void updateSearchResults(final ArrayList<ListItem> result, String query) {
-            AndroidUtilities.runOnUIThread(() -> {
-                if (searching) {
-                    if (listView.getAdapter() != searchAdapter) {
-                        listView.setAdapter(searchAdapter);
-                        updateEmptyView();
-                    }
-                    emptySubtitleTextView.setText(AndroidUtilities.replaceTags(LocaleController.formatString("NoFilesFoundInfo", R.string.NoFilesFoundInfo, query)));
-                }
-                searchWas = true;
-                searchResult = result;
-                notifyDataSetChanged();
-            });
-        }
-
-        @Override
-        public boolean isEnabled(RecyclerView.ViewHolder holder) {
-            return true;
-        }
-
-        @Override
-        public int getItemCount() {
-            return searchResult.size();
-        }
-
-        public ListItem getItem(int position) {
-            if (position < searchResult.size()) {
-                return searchResult.get(position);
-            }
-            return null;
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = new SharedDocumentCell(mContext, SharedDocumentCell.VIEW_TYPE_PICKER);
-            return new RecyclerListView.Holder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ListItem item = getItem(position);
-            SharedDocumentCell documentCell = (SharedDocumentCell) holder.itemView;
-
-            if (item.icon != 0) {
-                documentCell.setTextAndValueAndTypeAndThumb(item.title, item.subtitle, null, null, item.icon, false);
-            } else {
-                String type = item.ext.toUpperCase().substring(0, Math.min(item.ext.length(), 4));
-                documentCell.setTextAndValueAndTypeAndThumb(item.title, item.subtitle, type, item.thumb, 0, false);
-            }
-            if (item.file != null) {
-                documentCell.setChecked(selectedFiles.containsKey(item.file.toString()), !scrolling);
-            } else {
-                documentCell.setChecked(false, !scrolling);
-            }
-        }
-
-        @Override
-        public int getItemViewType(int i) {
-            return 0;
-        }
-    }
-
     @Override
     public ArrayList<ThemeDescription> getThemeDescriptions() {
         ArrayList<ThemeDescription> themeDescriptions = new ArrayList<>();
@@ -1684,7 +1254,6 @@ public class FileImportActivity extends BaseFragment {
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_dialogButtonSelector));
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SEARCH, null, null, null, null, Theme.key_dialogTextBlack));
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SEARCHPLACEHOLDER, null, null, null, null, Theme.key_chat_messagePanelHint));
-        themeDescriptions.add(new ThemeDescription((searchItem.getSearchField()), ThemeDescription.FLAG_CURSORCOLOR, null, null, null, null, Theme.key_dialogTextBlack));
 
         themeDescriptions.add(new ThemeDescription(emptyImageView, ThemeDescription.FLAG_IMAGECOLOR, null, null, null, null, Theme.key_dialogEmptyImage));
         themeDescriptions.add(new ThemeDescription(emptyTitleTextView, ThemeDescription.FLAG_IMAGECOLOR, null, null, null, null, Theme.key_dialogEmptyText));
@@ -1708,7 +1277,7 @@ public class FileImportActivity extends BaseFragment {
 
         themeDescriptions.add(new ThemeDescription(writeButton, ThemeDescription.FLAG_IMAGECOLOR, null, null, null, null, Theme.key_dialogFloatingIcon));
         themeDescriptions.add(new ThemeDescription(writeButton, ThemeDescription.FLAG_BACKGROUNDFILTER, null, null, null, null, Theme.key_dialogFloatingButton));
-        themeDescriptions.add(new ThemeDescription(writeButton, ThemeDescription.FLAG_BACKGROUNDFILTER | ThemeDescription.FLAG_DRAWABLESELECTEDSTATE, null, null, null, null, Build.VERSION.SDK_INT >= 21 ? Theme.key_dialogFloatingButtonPressed : Theme.key_dialogFloatingButton));
+        themeDescriptions.add(new ThemeDescription(writeButton, ThemeDescription.FLAG_BACKGROUNDFILTER | ThemeDescription.FLAG_DRAWABLESELECTEDSTATE, null, null, null, null, Theme.key_dialogFloatingButtonPressed));
 
         return themeDescriptions;
     }

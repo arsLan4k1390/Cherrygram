@@ -75,8 +75,7 @@ import java.util.ArrayList;
 import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.extras.CherrygramExtras;
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
-import uz.unnarsx.cherrygram.helpers.ChatsHelper;
+import uz.unnarsx.cherrygram.extras.Constants;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
@@ -93,10 +92,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
     public Page getCurrentPage() {
         return viewPager.getCurrentPosition() == 0 ? messagePage : profilePage;
     }
-
-    public final static long CHERRY_EMOJI_ID = 5203934494985307875L;
-    public final static int PROFILE_BACKGROUND_COLOR_ID = 14;
-    public final static int REPLY_BACKGROUND_COLOR_ID = 13;
 
     private class Page extends FrameLayout {
 
@@ -148,25 +143,25 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 if (user.premium && UserObject.getProfileColorId(user) != -1) {
                     selectedColor = CherrygramConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(user) : -1;
                 } else {
-                    selectedColor = CherrygramConfig.INSTANCE.getProfileBackgroundColor() ? PROFILE_BACKGROUND_COLOR_ID : -1;
+                    selectedColor = CherrygramConfig.INSTANCE.getProfileBackgroundColor() ? Constants.PROFILE_BACKGROUND_COLOR_ID_RED : -1;
                 }
 
                 if (user.premium && UserObject.getProfileEmojiId(user) != 0) {
                     selectedEmoji = CherrygramConfig.INSTANCE.getProfileBackgroundEmoji() ? UserObject.getProfileEmojiId(user) : 0;
                 } else {
-                    selectedEmoji = CherrygramConfig.INSTANCE.getProfileBackgroundEmoji() ? CHERRY_EMOJI_ID : 0;
+                    selectedEmoji = CherrygramConfig.INSTANCE.getProfileBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
                 }
             } else {
                 if (user.premium && UserObject.getColorId(user) != -1) {
                     selectedColor = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : -1;
                 } else {
-                    selectedColor = CherrygramConfig.INSTANCE.getReplyCustomColors() ? REPLY_BACKGROUND_COLOR_ID : -1;
+                    selectedColor = CherrygramConfig.INSTANCE.getReplyCustomColors() ? Constants.REPLY_BACKGROUND_COLOR_ID : -1;
                 }
 
                 if (user.premium && UserObject.getEmojiId(user) != 0) {
                     selectedEmoji = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
                 } else {
-                    selectedEmoji = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? CHERRY_EMOJI_ID : 0;
+                    selectedEmoji = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
                 }
             }
 
@@ -376,7 +371,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     if (me.premium && UserObject.getColorId(me) != -1) {
                         selectedColor = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(me) : -1;
                     } else {
-                        selectedColor = CherrygramConfig.INSTANCE.getReplyCustomColors() ? REPLY_BACKGROUND_COLOR_ID : -1;
+                        selectedColor = CherrygramConfig.INSTANCE.getReplyCustomColors() ? Constants.REPLY_BACKGROUND_COLOR_ID : -1;
                     }
 
                     updateMessages();
@@ -389,7 +384,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     if (me.premium && UserObject.getEmojiId(me) != 0) {
                         selectedEmoji = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(me) : 0;
                     } else {
-                        selectedEmoji = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? CHERRY_EMOJI_ID : 0;
+                        selectedEmoji = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
                     }
 
                     updateMessages();
@@ -419,7 +414,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     if (me.premium && UserObject.getProfileColorId(me) != -1) {
                         selectedColor = CherrygramConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(me) : -1;
                     } else {
-                        selectedColor = CherrygramConfig.INSTANCE.getProfileBackgroundColor() ? PROFILE_BACKGROUND_COLOR_ID : -1;
+                        selectedColor = CherrygramConfig.INSTANCE.getProfileBackgroundColor() ? Constants.PROFILE_BACKGROUND_COLOR_ID_RED : -1;
                     }
 
                     updateMessages();
@@ -444,7 +439,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     if (me.premium && UserObject.getProfileEmojiId(me) != 0) {
                         selectedEmoji = CherrygramConfig.INSTANCE.getProfileBackgroundEmoji() ? UserObject.getProfileEmojiId(me) : 0;
                     } else {
-                        selectedEmoji = CherrygramConfig.INSTANCE.getProfileBackgroundEmoji() ? CHERRY_EMOJI_ID : 0;
+                        selectedEmoji = CherrygramConfig.INSTANCE.getProfileBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
                     }
 
                     updateMessages();

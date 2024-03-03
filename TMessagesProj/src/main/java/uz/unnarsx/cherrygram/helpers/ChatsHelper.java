@@ -70,11 +70,36 @@ public class ChatsHelper extends BaseController {
 
     public ChatActivity.ThemeDelegate themeDelegate;
 
+    public static SpannableStringBuilder forwardsSpan;
+    public static Drawable forwardsDrawable;
+
     public static SpannableStringBuilder editedSpan;
     public static Drawable editedDrawable;
 
+    public static CharSequence createForwardedString(MessageObject messageObject) {
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+
+        if (forwardsDrawable == null) {
+            forwardsDrawable = Objects.requireNonNull(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.forwards_solar)).mutate();
+        }
+        if (forwardsSpan == null) {
+            forwardsSpan = new SpannableStringBuilder("\u200B");
+            forwardsSpan.setSpan(new ColoredImageSpan(forwardsDrawable), 0, 1, 0);
+        }
+        spannableStringBuilder
+                .append(' ')
+                .append(forwardsSpan)
+                .append(' ')
+                .append(String.format("%d", messageObject.messageOwner.forwards))
+                .append( " | ")
+                .append(LocaleController.getInstance().formatterDay.format((long) (messageObject.messageOwner.date) * 1000));
+        return spannableStringBuilder;
+    }
+
     public static CharSequence createEditedString(MessageObject messageObject) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+        boolean hasForwards = messageObject.messageOwner.forwards > 0;
+
         if (editedDrawable == null) {
             editedDrawable = Objects.requireNonNull(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_edited)).mutate();
         }
@@ -82,10 +107,22 @@ public class ChatsHelper extends BaseController {
             editedSpan = new SpannableStringBuilder("\u200B");
             editedSpan.setSpan(new ColoredImageSpan(editedDrawable), 0, 1, 0);
         }
+        if (forwardsDrawable == null) {
+            forwardsDrawable = Objects.requireNonNull(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.forwards_solar)).mutate();
+        }
+        if (forwardsSpan == null) {
+            forwardsSpan = new SpannableStringBuilder("\u200B");
+            forwardsSpan.setSpan(new ColoredImageSpan(forwardsDrawable), 0, 1, 0);
+        }
         spannableStringBuilder
                 .append(' ')
-                .append(CherrygramConfig.INSTANCE.getShowPencilIcon() ? editedSpan : LocaleController.getString("EditedMessage", R.string.EditedMessage))
+                .append(hasForwards ? forwardsSpan : "")
+                .append(hasForwards ? " " : "")
+                .append(hasForwards ? String.format("%d", messageObject.messageOwner.forwards) : "")
                 .append(' ')
+                .append(hasForwards ? "| " : "")
+                .append(CherrygramConfig.INSTANCE.getShowPencilIcon() ? editedSpan : LocaleController.getString("EditedMessage", R.string.EditedMessage))
+                .append(hasForwards ? " | " : " ")
                 .append(LocaleController.getInstance().formatterDay.format((long) (messageObject.messageOwner.date) * 1000));
         return spannableStringBuilder;
     }

@@ -729,7 +729,7 @@ public class FilterTabsView extends FrameLayout {
                     changed = true;
                 }
 
-                if (lastEmoticon != null && !currentTab.emoticon.equals(lastEmoticon)) {
+                if (currentTab != null && lastEmoticon != null && !currentTab.emoticon.equals(lastEmoticon)) {
                     int emoticonWidth = FolderIconHelper.getIconWidth();
                     android.graphics.Rect bounds = new android.graphics.Rect(0, 0, emoticonWidth, emoticonWidth);
                     iconAnimateOutDrawable = getResources().getDrawable(FolderIconHelper.getTabIcon(lastEmoticon)).mutate();

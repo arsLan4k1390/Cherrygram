@@ -1646,6 +1646,9 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
                     svgDrawable = (SvgHelper.SvgDrawable) drawable;
                     svgDrawable.setParent(this);
                 }
+                if (colorFilter != null && drawable != null) {
+                    drawable.setColorFilter(colorFilter);
+                }
                 try {
                     drawable.setAlpha(alpha);
                     if (backgroundThreadDrawHolder != null) {

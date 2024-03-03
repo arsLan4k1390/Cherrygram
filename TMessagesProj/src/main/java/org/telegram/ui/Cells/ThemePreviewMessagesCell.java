@@ -44,13 +44,14 @@ import org.telegram.ui.Components.Reactions.ReactionsEffectOverlay;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
 import org.telegram.ui.Stories.recorder.StoryEntry;
 
-import uz.unnarsx.cherrygram.preferences.MessagesAndProfilesPreferencesEntry;
+import uz.unnarsx.cherrygram.extras.Constants;
 
 public class ThemePreviewMessagesCell extends LinearLayout {
 
     public final static int TYPE_REACTIONS_DOUBLE_TAP = 2;
     public final static int TYPE_PEER_COLOR = 3;
-    public final static int TYPE_PEER_COLOR_CHERRY = 4;
+    public final static int TYPE_GROUP_PEER_COLOR = 4;
+    public final static int TYPE_PEER_COLOR_CHERRY = 1390;
 
     private final Runnable invalidateRunnable = this::invalidate;
 
@@ -185,7 +186,7 @@ public class ThemePreviewMessagesCell extends LinearLayout {
             message.media.webpage.title = LocaleController.getString(R.string.UserColorPreviewLinkTitle);
             message.media.webpage.flags |= 8;
             message.media.webpage.description = LocaleController.getString(R.string.UserColorPreviewLinkDescription);
-            message.date = date + 60;
+            message.date = (int) (System.currentTimeMillis() / 1000);
             message.dialog_id = 1;
             message.flags = 259;
             message.from_id = new TLRPC.TL_peerUser();
@@ -200,10 +201,10 @@ public class ThemePreviewMessagesCell extends LinearLayout {
             message1.resetLayout();
             message1.eventId = 1;
             if (!UserConfig.getInstance(UserConfig.selectedAccount).isPremium()) {
-                message1.overrideLinkColor = MessagesAndProfilesPreferencesEntry.REPLY_BACKGROUND_COLOR_ID;
+                message1.overrideLinkColor = Constants.REPLY_BACKGROUND_COLOR_ID;
             }
             if (UserObject.getEmojiId(UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser()) == 0) {
-                message1.overrideLinkEmoji = MessagesAndProfilesPreferencesEntry.CHERRY_EMOJI_ID;
+                message1.overrideLinkEmoji = Constants.CHERRY_EMOJI_ID;
             }
         } else if (type == TYPE_REACTIONS_DOUBLE_TAP)  {
             TLRPC.Message message = new TLRPC.TL_message();
@@ -325,6 +326,12 @@ public class ThemePreviewMessagesCell extends LinearLayout {
             message2.eventId = 1;
             message2.resetLayout();
             message2.replyMessageObject = replyMessageObject;
+            if (type == TYPE_GROUP_PEER_COLOR) {
+                TLRPC.User user = new TLRPC.TL_user();
+                user.first_name = LocaleController.getString(R.string.GroupThemePreviewSenderName);
+                message2.customName = user.first_name;
+                message2.customAvatarDrawable = new AvatarDrawable(user, false);
+            }
         }
 
         for (int a = 0; a < cells.length; a++) {
@@ -465,7 +472,7 @@ public class ThemePreviewMessagesCell extends LinearLayout {
                     return type == progress;
                 }
             });
-            cells[a].isChat = type == TYPE_REACTIONS_DOUBLE_TAP;
+            cells[a].isChat = type == TYPE_REACTIONS_DOUBLE_TAP || type == TYPE_GROUP_PEER_COLOR;
             cells[a].setFullyDraw(true);
             MessageObject messageObject = a == 0 ? message2 : message1;
             if (messageObject == null) {
