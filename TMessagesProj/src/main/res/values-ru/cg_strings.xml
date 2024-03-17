@@ -98,6 +98,8 @@
     <string name="CG_GetEmojiPack">Получить эмодзи</string>
     <string name="CG_ReplyBackground">Фон ответа</string>
     <string name="CG_ProfileBackground">Применить фон профиля</string>
+    <string name="CG_MessageContainsCustomReactions_one">Реакции содержат кастомный эмодзи \nиз %1$d набора.</string>
+    <string name="CG_MessageContainsCustomReactions_other">Реакции содержат кастомные эмодзи \nиз %1$d наборов.</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -227,6 +229,7 @@
     <string name="CP_HideMuteUnmuteButton">Скрыть нижнюю кнопку в каналах</string>
     <string name="CP_HideKbdOnScroll">Скрыть клавиатуру при прокрутке</string>
     <string name="CP_HideSendAsChannel">Скрыть \"Отправить как канал\"</string>
+    <string name="CP_HideSendAsChannelDesc">Вы сможете попасть в это меню путем зажатия кнопки Эмодзи/Стикеры/GIFки</string>
 
     <string name="CP_Slider_RecentEmojisAmplifier">Счетчик недавних эмодзи (требуется перезапуск приложения)</string>
     <string name="CP_Slider_RecentStickersAmplifier">Счетчик недавних стикеров (требуется перезапуск приложения)</string>
@@ -252,6 +255,9 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Камера</string>
     <string name="CP_CameraType">Тип камеры</string>
+    <string name="CP_Camera2Desc">С Camera2 не будут работать все функции, которые скрываются при включении Camera2.</string>
+    <string name="CP_CameraDualCamera">Двойная камера</string>
+    <string name="CP_CameraDualCamera_Desc">Записывает видеосообщение на обеих камерах для более быстрого переключения между камерами во время записи. Использует больше батареи.</string>
     <string name="CP_DefaultCameraDesc">Встроенная камера Telegram.</string>
     <string name="CP_CameraXDesc">CameraX поддерживается только на <![CDATA[<a href="https://developer.android.com/training/camerax/devices">выбранных устройствах</a>]]>, эффекты и линзы зависят от Вашего производителя.</string>
     <string name="CP_PerformanceMode">Производительный режим</string>
@@ -265,7 +271,7 @@
     <string name="CP_RearCam">Использовать заднюю камеру</string>
     <string name="CP_RearCam_Desc">Вместо фронтальной камеры при записи видеосообщений</string>
     <string name="CP_DisableCam">Отключить камеру в меню выбора фото</string>
-    <string name="CP_DisableCam_Desc">Включите это если меню тормозит</string>
+    <string name="CP_DisableCam_Desc">Кнопка камеры будет доступна рядом с скнопкой галереи. \nНажатие на кнопку откроет камеру Telegram, а зажатие запустит системную камеру.</string>
     <!--Camera Preferences-->
 
     <!--Experimental Preferences-->
@@ -277,6 +283,7 @@
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
     <string name="EP_PhotosSize">Отправлять большие фото (2560px)</string>
     <string name="EP_ShowRPCError">Всплывающие уведомления обо всех ошибках RPC</string>
+    <string name="EP_CustomAppTitle">Название приложения</string>
     <string name="EP_CustomChat">Пользовательский чат для Избранного</string>
     <string name="EP_CustomChat_Desc">Установите ID другого чата/группы/канала, чтобы пересылать туда сообщения (через кнопку в панели действий, в меню сообщения или при двойном тапе)</string>
     <string name="EP_CustomChatNotFound">Чат не найден!</string>

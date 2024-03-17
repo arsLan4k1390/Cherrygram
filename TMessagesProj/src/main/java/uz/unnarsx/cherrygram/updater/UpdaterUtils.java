@@ -153,7 +153,7 @@ public class UpdaterUtils {
                 version = obj.getString("tag_name");
                 changelog = obj.getString("body");
                 uploadDate = obj.getString("published_at").replaceAll("[TZ]", " ");
-                uploadDate = LocaleController.formatDateTime(getMillisFromDate(uploadDate, "yyyy-M-dd hh:mm:ss") / 1000);
+                uploadDate = LocaleController.formatDateTime(getMillisFromDate(uploadDate, "yyyy-M-dd hh:mm:ss") / 1000, true);
                 Update update = new Update(version, changelog, size, downloadURL, uploadDate);
                 if (update.isNew() && fragment != null && fragment.getContext() != null) {
                     checkDirs();

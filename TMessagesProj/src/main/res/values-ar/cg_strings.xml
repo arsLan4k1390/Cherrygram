@@ -233,6 +233,7 @@
     <string name="CG_ResidentNotification">إظهار إشعار دائم</string>
     <string name="EP_PhotosSize">إرسال صور كبيرة (2560 بكسل)</string>
     <string name="EP_ShowRPCError">عرض جميع أخطاء RPC</string>
+    <string name="EP_CustomAppTitle">عنوان التطبيق</string>
     <string name="EP_CustomChat">دردشة مخصصة للرسائل المحفوظة</string>
     <string name="EP_CustomChat_Desc">قم بتعيين معرف من دردشة/مجموعة/قناة أُخرى لإعادة توجيه الرسائل هناك (زر في شريط الإجراءات أو قائمة الرسائل أو أُنقر نقرًا مزدوجًا)</string>
     <string name="EP_CustomChatNotFound">لم يتم العثور على المحادثة!</string>

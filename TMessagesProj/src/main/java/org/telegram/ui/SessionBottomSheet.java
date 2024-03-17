@@ -84,7 +84,7 @@ public class SessionBottomSheet extends BottomSheet {
         if ((session.flags & 1) != 0) {
             timeText = LocaleController.getString("Online", R.string.Online);
         } else {
-            timeText = LocaleController.formatDateTime(session.date_active);
+            timeText = LocaleController.formatDateTime(session.date_active, true);
         }
         timeView.setText(timeText);
 

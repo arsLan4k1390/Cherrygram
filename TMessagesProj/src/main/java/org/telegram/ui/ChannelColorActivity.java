@@ -100,6 +100,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class ChannelColorActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     public final long dialogId;
@@ -143,11 +145,7 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
             lvl = Math.max(lvl, getEmojiStatusLevelMin());
         }
         if (!ChatThemeController.wallpaperEquals(currentWallpaper, selectedWallpaper)) {
-            if (!TextUtils.isEmpty(ChatThemeController.getWallpaperEmoticon(selectedWallpaper))) {
-                lvl = Math.max(lvl, getWallpaperLevelMin());
-            } else {
-                lvl = Math.max(lvl, getCustomWallpaperLevelMin());
-            }
+            lvl = Math.max(lvl, getWallpaperLevelMin());
         }
         return lvl;
     }
@@ -316,6 +314,10 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
         listView = new RecyclerListView(getContext(), resourceProvider);
     }
 
+    protected void openBoostDialog(int type) {
+
+    }
+
     @Override
     public View createView(Context context) {
         TLRPC.Chat chat = getMessagesController().getChat(-dialogId);
@@ -389,10 +391,7 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
                 if (position == packEmojiRow) {
                     final int requiredLvl = getEmojiStickersLevelMin();
                     if (boostsStatus != null && boostsStatus.level < requiredLvl) {
-                        LimitReachedBottomSheet limitReachedBottomSheet = new LimitReachedBottomSheet(this, getContext(), TYPE_BOOSTS_FOR_CUSTOM_EMOJI_PACK, currentAccount, getResourceProvider());
-                        limitReachedBottomSheet.setBoostsStats(boostsStatus, true);
-                        limitReachedBottomSheet.setDialogId(dialogId);
-                        showDialog(limitReachedBottomSheet);
+                        openBoostDialog(TYPE_BOOSTS_FOR_CUSTOM_EMOJI_PACK);
                         return;
                     }
                     GroupStickersActivity fragment = new GroupStickersActivity(-dialogId, true);
@@ -1336,7 +1335,7 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
                 addView(title, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM,72,0,0,16));
                 infoLayout = new LinearLayout(context);
                 infoLayout.setOrientation(LinearLayout.HORIZONTAL);
-                infoLayout.setBackground(Theme.createSelectorWithBackgroundDrawable(Theme.multAlpha(Color.BLACK, 0.15f), Theme.multAlpha(Color.BLACK, 0.35f)));
+                infoLayout.setBackground(Theme.createSelectorWithBackgroundDrawable(Theme.multAlpha(Color.BLACK, 0.065f), Color.BLACK));
                 infoLayout.setGravity(Gravity.CENTER);
                 infoLayout.setPadding(dp(4), dp(4), dp(4), dp(4));
                 textInfo1 = new TextView(context);
@@ -1466,7 +1465,7 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
                 imageDrawable.draw(canvas);
             }
 
-            if (needDivider) {
+            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
                 Paint dividerPaint = resourcesProvider != null ? resourcesProvider.getPaint(Theme.key_paint_divider) : Theme.dividerPaint;
                 if (dividerPaint != null) {
                     canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(23), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(23) : 0), getMeasuredHeight() - 1, dividerPaint);

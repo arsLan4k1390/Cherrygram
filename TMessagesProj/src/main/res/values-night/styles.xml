@@ -24,7 +24,7 @@
         <item name="android:forceDarkAllowed">false</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/cherry_icon_anim</item>
         <item name="android:windowSplashScreenAnimationDuration">@integer/splash_screen_duration</item>
-        <item name="android:windowSplashScreenBackground">?android:windowBackground</item>
+        <item name="android:windowSplashScreenBackground">#1f2732</item>
 
         <item name="android:navigationBarColor">@color/cg_splash_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>

@@ -2,11 +2,14 @@ package uz.unnarsx.cherrygram.preferences
 
 import androidx.core.util.Pair
 import org.telegram.messenger.LocaleController
+import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
+import org.telegram.messenger.UserConfig
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.DialogsActivity
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.ui.dialogs.TextFieldAlert
 import uz.unnarsx.cherrygram.ui.drawer.DrawerPreferencesEntry
 import uz.unnarsx.cherrygram.ui.tgkit.preference.category
 import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
@@ -51,6 +54,47 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("AP_DisableDividers", R.string.AP_DisableDividers)
+                contract({
+                    return@contract CherrygramConfig.disableDividers
+                }) {
+                    CherrygramConfig.disableDividers = it
+                    bf.parentLayout.rebuildAllFragmentViews(true, true)
+                }
+            }
+        }
+
+        category(LocaleController.getString("CP_Snowflakes_AH", R.string.CP_Snowflakes_AH)) {
+            textIcon {
+                title = LocaleController.getString("EP_CustomAppTitle", R.string.EP_CustomAppTitle)
+                value = MessagesController.getMainSettings(UserConfig.selectedAccount).getString("CG_AppName", LocaleController.getString("CG_AppName", R.string.CG_AppName))
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    val defaultValue = LocaleController.getString("CG_AppName", R.string.CG_AppName)
+                    TextFieldAlert.createFieldAlertForAppName(
+                        bf.context,
+                        LocaleController.getString("EP_CustomAppTitle", R.string.EP_CustomAppTitle),
+                        MessagesController.getMainSettings(UserConfig.selectedAccount).getString("CG_AppName", defaultValue)!!
+                    ) { result: String ->
+                        var result = result
+                        if (result.isEmpty()) {
+                            result = defaultValue
+                        }
+                        val editor =
+                            MessagesController.getMainSettings(UserConfig.selectedAccount).edit()
+                        editor.putString("CG_AppName", result)
+                        editor.apply()
+                        bf.parentLayout.rebuildAllFragmentViews(true, true)
+                        val previousFragment: BaseFragment? =
+                            if (bf.parentLayout.fragmentStack.size > 2) bf.parentLayout.fragmentStack[bf.parentLayout.fragmentStack.size - 3] else null
+                        (previousFragment as? DialogsActivity)?.actionBar?.setTitle(result)
+
+                        value = result
+                    }
+                }
+            }
+
+            switch {
                 title = LocaleController.getString("AP_CenterTitle", R.string.AP_CenterTitle)
                 contract({
                     return@contract CherrygramConfig.centerTitle
@@ -70,15 +114,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                         if (CherrygramConfig.disableToolBarShadow) null else bf.parentLayout.parentActivity.getDrawable(R.drawable.header_shadow)?.mutate()
                     )
                     bf.parentLayout.rebuildAllFragmentViews(false, false)
-                }
-            }
-            switch {
-                title = LocaleController.getString("AP_DisableDividers", R.string.AP_DisableDividers)
-                contract({
-                    return@contract CherrygramConfig.disableDividers
-                }) {
-                    CherrygramConfig.disableDividers = it
-                    bf.parentLayout.rebuildAllFragmentViews(true, true)
                 }
             }
             switch {

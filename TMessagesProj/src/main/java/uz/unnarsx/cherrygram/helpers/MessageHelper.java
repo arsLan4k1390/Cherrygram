@@ -145,7 +145,7 @@ public class MessageHelper extends BaseController {
             if (cell != null && cell.isChecked()) {
                 showDeleteHistoryBulletin(fragment, 0, false, () -> getMessagesController().deleteUserChannelHistory(chat, getUserConfig().getCurrentUser(), null, 0), resourcesProvider);
             } else {
-                deleteUserHistoryWithSearch(fragment, -chat.id, forumTopic != null ? forumTopic.id : 0, mergeDialogId, before == -1 ? getConnectionsManager().getCurrentTime() : before, (count, deleteAction) -> showDeleteHistoryBulletin(fragment, count, true, deleteAction, resourcesProvider));
+                deleteUserHistoryWithSearch(fragment, -chat.id, forumTopic != null ? forumTopic.id : 0, forumTopic != null ? forumTopic.id : 0, mergeDialogId, before == -1 ? getConnectionsManager().getCurrentTime() : before, (count, deleteAction) -> showDeleteHistoryBulletin(fragment, count, true, deleteAction, resourcesProvider));
             }
         });
         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
@@ -256,11 +256,11 @@ public class MessageHelper extends BaseController {
         Bulletin.make(fragment, buttonLayout, Bulletin.DURATION_PROLONG).show();
     }
 
-    public void deleteUserHistoryWithSearch(BaseFragment fragment, final long dialogId) {
-        deleteUserHistoryWithSearch(fragment, dialogId, 0, 0, -1, null);
+    public void deleteUserHistoryWithSearch(BaseFragment fragment, final long dialogId, final int topicId) {
+        deleteUserHistoryWithSearch(fragment, dialogId, topicId, 0, 0, -1, null);
     }
 
-    private void deleteUserHistoryWithSearch(BaseFragment fragment, final long dialogId, int replyMessageId, final long mergeDialogId, int before, SearchMessagesResultCallback callback) {
+    private void deleteUserHistoryWithSearch(BaseFragment fragment, final long dialogId, final int topicId, int replyMessageId, final long mergeDialogId, int before, SearchMessagesResultCallback callback) {
         Utilities.globalQueue.postRunnable(() -> {
             ArrayList<Integer> messageIds = new ArrayList<>();
             var latch = new CountDownLatch(1);
@@ -280,13 +280,13 @@ public class MessageHelper extends BaseController {
                 }
                 Runnable deleteAction = () -> {
                     for (ArrayList<Integer> list : lists) {
-                        getMessagesController().deleteMessages(list, null, null, dialogId, true, false);
+                        getMessagesController().deleteMessages(list, null, null, dialogId, topicId, true, 0);
                     }
                 };
                 AndroidUtilities.runOnUIThread(callback != null ? () -> callback.run(messageIds.size(), deleteAction) : deleteAction);
             }
             if (mergeDialogId != 0) {
-                deleteUserHistoryWithSearch(fragment, mergeDialogId, 0, 0, before, null);
+                deleteUserHistoryWithSearch(fragment, mergeDialogId, topicId, 0, 0, before, null);
             }
         });
     }

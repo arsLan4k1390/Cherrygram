@@ -20,8 +20,6 @@ import android.text.Layout;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.StaticLayout;
-import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
@@ -62,6 +60,7 @@ import org.telegram.ui.ActionBar.FloatingToolbar;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ArticleViewer;
 import org.telegram.ui.Components.AnimatedEmojiSpan;
+import org.telegram.ui.Components.CornerPath;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.TranslateAlert2;
@@ -96,7 +95,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
     protected float cornerRadius;
     protected Paint selectionPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     protected Paint selectionHandlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    protected Path selectionPath = new Path();
+    protected CornerPath selectionPath = new CornerPath();
     protected Path selectionHandlePath = new Path();
     protected PathCopyTo selectionPathMirror = new PathCopyTo(selectionPath);
 
@@ -317,6 +316,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
         longpressDelay = ViewConfiguration.getLongPressTimeout();
         touchSlop = ViewConfiguration.get(ApplicationLoader.applicationContext).getScaledTouchSlop();
         selectionPaint.setPathEffect(new CornerPathEffect(cornerRadius = dp(6)));
+        selectionPath.setRectsUnionDiffDelta(1f);
     }
 
     public void setInvalidateParent() {
@@ -1745,7 +1745,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                 }
             }
         }
-
+        selectionPath.closeRects();
         canvas.drawPath(selectionPath, selectionPaint);
         if (restore) {
             canvas.restore();

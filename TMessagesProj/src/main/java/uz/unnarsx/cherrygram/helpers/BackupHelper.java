@@ -165,6 +165,7 @@ public class BackupHelper {
         mainconfig.add("CP_ReplyCustomColors");
         mainconfig.add("CP_ReplyBackgroundEmoji");
         mainconfig.add("CP_HideStories");
+        mainconfig.add("CP_CustomWallpapers");
         mainconfig.add("CP_DisableAnimAvatars");
         mainconfig.add("CP_DisableReactionsOverlay");
         mainconfig.add("CP_DisableReactionAnim");
@@ -213,12 +214,15 @@ public class BackupHelper {
         mainconfig.add("CP_UsersDrawShareButton");
         mainconfig.add("CP_ShowReply");
         mainconfig.add("CP_ShowCopyPhoto");
+        mainconfig.add("CP_ShowCopyPhotoAsSticker");
         mainconfig.add("CP_ShowClearFromCache");
         mainconfig.add("CP_ShowForward");
         mainconfig.add("CP_ShowForward_WO_Authorship");
         mainconfig.add("CP_ShowViewHistory");
         mainconfig.add("CP_ShowSaveMessage");
         mainconfig.add("CP_ShowReport");
+        mainconfig.add("CP_ShowGetReplyBackground");
+        mainconfig.add("CP_ShowJSON");
         mainconfig.add("CP_SupergroupsDrawShareButton");
         mainconfig.add("CP_ChannelsDrawShareButton");
         mainconfig.add("CP_BotsDrawShareButton");

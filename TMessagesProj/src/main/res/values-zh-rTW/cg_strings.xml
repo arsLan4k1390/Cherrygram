@@ -244,6 +244,7 @@
     <string name="CG_ResidentNotification">顯示永久通知</string>
     <string name="EP_PhotosSize">傳送大型圖片(2560 像素)</string>
     <string name="EP_ShowRPCError">透過 Toast 提示全部 RPC 錯誤</string>
+    <string name="EP_CustomAppTitle">應用程式標題</string>
     <string name="EP_CustomChat">自訂已儲存訊息的對話</string>
     <string name="EP_CustomChat_Desc">為來自另一個對話/群組/頻道的 ID 設定轉寄訊息 (操作列中的按鈕、訊息選單或按兩下)</string>
     <string name="EP_CustomChatNotFound">找不到對話紀錄！</string>

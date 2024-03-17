@@ -233,6 +233,7 @@
     <string name="CG_ResidentNotification">Mostrar una notificación permanente</string>
     <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
     <string name="EP_ShowRPCError">Enviar todos los errores RPC</string>
+    <string name="EP_CustomAppTitle">Título de la app</string>
     <string name="EP_CustomChat">Chat personalizado para mensajes guardados</string>
     <string name="EP_CustomChat_Desc">Configure un ID de otro chat/grupo/canal para reenviar mensajes allí (botón en la barra de acciones, menú de mensajes o toque doble)</string>
     <string name="EP_CustomChatNotFound">¡Chat no encontrado!</string>

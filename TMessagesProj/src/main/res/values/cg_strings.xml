@@ -100,6 +100,8 @@
     <string name="CG_GetEmojiPack">Get emoji</string>
     <string name="CG_ReplyBackground">Reply background</string>
     <string name="CG_ProfileBackground">Apply profile background</string>
+    <string name="CG_MessageContainsCustomReactions_one">Reactions contain custom emoji \nfrom %1$d pack.</string>
+    <string name="CG_MessageContainsCustomReactions_other">Reactions contain custom emojis \nfrom %1$d packs.</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -239,6 +241,7 @@
     <string name="CP_HideMuteUnmuteButton">Hide bottom button in channels</string>
     <string name="CP_HideKbdOnScroll">Hide keyboard on scroll</string>
     <string name="CP_HideSendAsChannel">Hide \"Send as channel\"</string>
+    <string name="CP_HideSendAsChannelDesc">You can access the menu by long click on Emoji/Stickers/GIFs button</string>
 
     <string name="CP_Slider_RecentEmojisAmplifier">Recent emojis counter (restart app to apply)</string>
     <string name="CP_Slider_RecentStickersAmplifier">Recent stickers counter (restart app to apply)</string>
@@ -265,6 +268,10 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Camera</string>
     <string name="CP_CameraType">Camera Type</string>
+    <string name="CP_Camera2" translatable="false">Camera 2</string>
+    <string name="CP_Camera2Desc">All features that are hidden when Camera2 is turned on will not work with Camera2 enabled.</string>
+    <string name="CP_CameraDualCamera">Dual camera</string>
+    <string name="CP_CameraDualCamera_Desc">Captures video message on both cameras for faster switching between cameras while recording. Uses more battery.</string>
     <string name="CP_CameraTypeDefault" translatable="false">Telegram</string>
     <string name="CP_DefaultCameraDesc">Use the Telegram\'s built-in camera.</string>
     <string name="CP_CameraXDesc">CameraX is only supported on <![CDATA[<a href="https://developer.android.com/training/camerax/devices">selected devices</a>]]>, effects and lenses support depends on your manufacturer.</string>
@@ -279,7 +286,7 @@
     <string name="CP_RearCam">Use rear camera</string>
     <string name="CP_RearCam_Desc">Instead of front camera for video messages</string>
     <string name="CP_DisableCam">Disable cam in media attach menu</string>
-    <string name="CP_DisableCam_Desc">Enable if media attach menu lags</string>
+    <string name="CP_DisableCam_Desc">The camera button will be available next to the gallery button. \nPressing the button will open the Telegram camera, and holding it will launch the system camera.</string>
     <!--Camera Preferences-->
 
     <!--Experimental Preferences-->
@@ -291,6 +298,7 @@
     <string name="CG_ResidentNotification">Show a resident notification</string>
     <string name="EP_PhotosSize">Send large photos (2560px)</string>
     <string name="EP_ShowRPCError">Toast all RPC errors</string>
+    <string name="EP_CustomAppTitle">App Title</string>
     <string name="EP_CustomChat">Custom chat for Saved Messages</string>
     <string name="EP_CustomChat_Desc">Set an ID from another chat/group/channel to forward messages there (button in action bar, message menu or double tap)</string>
     <string name="EP_CustomChatNotFound">Chat not found!</string>

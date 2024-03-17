@@ -42,7 +42,7 @@ public class DeleteAccountDialog extends BaseFragment {
                 if (peer.channel_id != 0) {
                     TLRPC.Chat chat = fragment.getMessagesController().getChat(peer.channel_id);
                     if (!chat.broadcast) {
-                        fragment.getMessageHelper().deleteUserHistoryWithSearch(fragment, TLdialog.id);
+                        fragment.getMessageHelper().deleteUserHistoryWithSearch(fragment, TLdialog.id, 0);
                     }
                 }
                 if (peer.user_id != 0) {

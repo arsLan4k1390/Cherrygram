@@ -153,6 +153,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
             }
             switch {
                 title = LocaleController.getString("CP_HideSendAsChannel", R.string.CP_HideSendAsChannel)
+                description = LocaleController.getString("CP_HideSendAsChannelDesc", R.string.CP_HideSendAsChannelDesc)
 
                 contract({
                     return@contract CherrygramConfig.hideSendAsChannel

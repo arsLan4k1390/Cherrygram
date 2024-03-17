@@ -87,6 +87,7 @@ object CGFeatureHooks {
         val advise: String = when (CherrygramConfig.cameraType) {
             CherrygramConfig.TELEGRAM_CAMERA -> LocaleController.getString("CP_DefaultCameraDesc", R.string.CP_DefaultCameraDesc)
             CherrygramConfig.CAMERA_X -> LocaleController.getString("CP_CameraXDesc", R.string.CP_CameraXDesc)
+            CherrygramConfig.CAMERA_2 -> LocaleController.getString("CP_Camera2Desc", R.string.CP_Camera2Desc)
             else -> LocaleController.getString("CP_SystemCameraDesc", R.string.CP_SystemCameraDesc)
         }
 
@@ -103,7 +104,8 @@ object CGFeatureHooks {
         return when (CherrygramConfig.cameraAspectRatio) {
             CherrygramConfig.Camera1to1 -> "1:1"
             CherrygramConfig.Camera4to3 -> "4:3"
-            else -> "16:9"
+            CherrygramConfig.Camera16to9 -> "16:9"
+            else -> LocaleController.getString("Default", R.string.Default)
         }
     }
 

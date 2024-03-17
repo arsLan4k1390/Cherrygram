@@ -451,6 +451,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         public int id;
         TLRPC.TL_attachMenuBot bot;
         View.OnClickListener listener;
+        public boolean error;
 
         public Item(int id, CharSequence text, int icon) {
             this.icon = icon;
@@ -469,10 +470,16 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             } else {
                 actionCell.setTextAndIcon(id, text, icon);
             }
+            actionCell.setError(error);
         }
 
         public Item onClick(View.OnClickListener listener) {
             this.listener = listener;
+            return this;
+        }
+
+        public Item withError() {
+            this.error = true;
             return this;
         }
     }

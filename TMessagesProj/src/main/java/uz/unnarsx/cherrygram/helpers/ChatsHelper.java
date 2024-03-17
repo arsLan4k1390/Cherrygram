@@ -38,11 +38,13 @@ import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.EmojiPacksAlert;
+import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
 import org.telegram.ui.PeerColorActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
@@ -91,7 +93,7 @@ public class ChatsHelper extends BaseController {
                 .append(forwardsSpan)
                 .append(' ')
                 .append(String.format("%d", messageObject.messageOwner.forwards))
-                .append( " | ")
+                .append( " • ")
                 .append(LocaleController.getInstance().formatterDay.format((long) (messageObject.messageOwner.date) * 1000));
         return spannableStringBuilder;
     }
@@ -120,9 +122,9 @@ public class ChatsHelper extends BaseController {
                 .append(hasForwards ? " " : "")
                 .append(hasForwards ? String.format("%d", messageObject.messageOwner.forwards) : "")
                 .append(' ')
-                .append(hasForwards ? "| " : "")
+                .append(hasForwards ? "• " : "")
                 .append(CherrygramConfig.INSTANCE.getShowPencilIcon() ? editedSpan : LocaleController.getString("EditedMessage", R.string.EditedMessage))
-                .append(hasForwards ? " | " : " ")
+                .append(hasForwards ? " • " : " ")
                 .append(LocaleController.getInstance().formatterDay.format((long) (messageObject.messageOwner.date) * 1000));
         return spannableStringBuilder;
     }
@@ -312,5 +314,28 @@ public class ChatsHelper extends BaseController {
         Drawable d = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), cropCenter(drawableToBitmap(drawable)));
 
         return d;
+    }
+
+    public int getCustomReactionsCount(MessageObject selectedObject) {
+        ArrayList<ReactionsLayoutInBubble.VisibleReaction> visibleCustomReactions = new ArrayList<>(selectedObject.getCustomReactions());
+        ArrayList<TLRPC.InputStickerSet> customEmojiStickerSets = new ArrayList<>();
+
+        if (selectedObject.messageOwner != null && selectedObject.messageOwner.reactions != null) {
+            for (int i = 0; i < visibleCustomReactions.size(); i++) {
+                customEmojiStickerSets.clear();
+                ArrayList<TLRPC.InputStickerSet> stickerSets = new ArrayList<>();
+                HashSet<Long> setIds = new HashSet<>();
+                for (int j = 0; j < visibleCustomReactions.size(); j++) {
+                    TLRPC.InputStickerSet stickerSet = MessageObject.getInputStickerSet(AnimatedEmojiDrawable.findDocument(currentAccount, visibleCustomReactions.get(j).documentId));
+                    if (stickerSet != null && !setIds.contains(stickerSet.id)) {
+                        stickerSets.add(stickerSet);
+                        setIds.add(stickerSet.id);
+                    }
+                }
+                customEmojiStickerSets.addAll(stickerSets);
+            }
+        }
+
+        return customEmojiStickerSets.size();
     }
 }

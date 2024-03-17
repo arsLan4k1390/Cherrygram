@@ -374,7 +374,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var showReport by sharedPreferences.boolean("CP_ShowReport", true)
     fun toggleShowReport() {
         showReport = !showReport
-        putBoolean("CP_ShowSaveMessage", showReport)
+        putBoolean("CP_ShowReport", showReport)
     }
 
     var showGetReplyBackground by sharedPreferences.boolean("CP_ShowGetReplyBackground", true)
@@ -439,7 +439,8 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     //Camera type
     const val TELEGRAM_CAMERA = 0
     const val CAMERA_X = 1
-    const val SYSTEM_CAMERA = 2
+    const val CAMERA_2 = 2
+    const val SYSTEM_CAMERA = 3
     var cameraType by sharedPreferences.int("CP_CameraType", TELEGRAM_CAMERA)
 
     var useCameraXOptimizedMode by sharedPreferences.boolean("CP_CameraXOptimizedMode", false)
@@ -456,6 +457,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_DisableCam", disableAttachCamera)
     }
 
+    var useDualCamera by sharedPreferences.boolean("CP_UseDualCamera", false)
+    fun toggleUseDualCamera() {
+        useDualCamera = !useDualCamera
+        putBoolean("CP_UseDualCamera", useDualCamera)
+    }
+
     var rearCam by sharedPreferences.boolean("CP_RearCam", false)
     fun toggleRearCam() {
         rearCam = !rearCam
@@ -465,7 +472,8 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     const val Camera16to9 = 0
     const val Camera4to3 = 1
     const val Camera1to1 = 2
-    var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", Camera16to9)
+    const val CameraAspectDefault = 3
+    var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", CameraAspectDefault)
 
     var whiteBackground by sharedPreferences.boolean("CG_WhiteBG", false)
 

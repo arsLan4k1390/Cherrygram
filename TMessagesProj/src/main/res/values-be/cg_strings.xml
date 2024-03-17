@@ -244,6 +244,7 @@
     <string name="CG_ResidentNotification">Уключыць сталае паведамленне</string>
     <string name="EP_PhotosSize">Адпраўляць вялікія фота (2560px)</string>
     <string name="EP_ShowRPCError">Усплыўныя паведамленні пра ўсе памылкі RPC</string>
+    <string name="EP_CustomAppTitle">Назва дадатку</string>
     <string name="EP_CustomChat">Карыстацкі чат для Захаванага</string>
     <string name="EP_CustomChat_Desc">Усталюйце ID іншага чату/групы/канала, каб перасылаць туды паведамленні (праз кнопку ў панэлі дзеянняў, у меню паведамлення ці пры падвойным націску)</string>
     <string name="EP_CustomChatNotFound">Чат не знойдзены!</string>

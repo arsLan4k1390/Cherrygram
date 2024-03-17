@@ -74,7 +74,7 @@ public class UpdaterBottomSheet extends BottomSheet {
         timeView.setTextSize(AndroidUtilities.dp(13));
         timeView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
         timeView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-        timeView.setText(available ? update.uploadDate + " UTC" : LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000));
+        timeView.setText(available ? update.uploadDate + " UTC" : LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true));
         if (available) header.addView(timeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, Gravity.LEFT, available ? 75 : 0, 35, 0, 0));
 
         TextCell version = new TextCell(context);
@@ -219,7 +219,7 @@ public class UpdaterBottomSheet extends BottomSheet {
                 checkUpdates.setText(spannableStringBuilder);
 
                 UpdaterUtils.checkUpdates(fragment, true, () -> {
-                    timeView.setText(LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000));
+                    timeView.setText(LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true));
                     checkUpdates.setText(LocaleController.getString("UP_CheckForUpdates", R.string.UP_CheckForUpdates));
                     BulletinFactory.of(getContainer(), null).createErrorBulletin(LocaleController.getString("UP_Not_Found", R.string.UP_Not_Found)).show();
                 }, this::dismiss, null);

@@ -60,11 +60,12 @@ import org.telegram.ui.Stories.StoryViewer;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.helpers.ChatsHelper;
 import uz.unnarsx.cherrygram.helpers.MessageHelper;
 
 public abstract class BaseFragment {
 
-    private boolean isFinished;
+    protected boolean isFinished;
     protected boolean finishing;
     protected Dialog visibleDialog;
     protected int currentAccount = UserConfig.selectedAccount;
@@ -794,6 +795,10 @@ public abstract class BaseFragment {
 
     public MessageHelper getMessageHelper() {
         return MessageHelper.getInstance(currentAccount);
+    }
+
+    public ChatsHelper getChatsHelper() {
+        return ChatsHelper.getInstance(currentAccount);
     }
 
     public void saveKeyboardPositionBeforeTransition() {

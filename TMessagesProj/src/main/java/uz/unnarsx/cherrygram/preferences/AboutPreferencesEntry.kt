@@ -43,7 +43,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                     detail = LocaleController.getString(
                         "UP_LastCheck",
                         R.string.UP_LastCheck
-                    ) + ": " + LocaleController.formatDateTime(CherrygramConfig.lastUpdateCheckTime / 1000);
+                    ) + ": " + LocaleController.formatDateTime(CherrygramConfig.lastUpdateCheckTime / 1000, true);
 
                     listener = TGKitTextDetailRow.TGTDListener {
                         UpdaterBottomSheet(bf.parentActivity, bf, false, null).show()

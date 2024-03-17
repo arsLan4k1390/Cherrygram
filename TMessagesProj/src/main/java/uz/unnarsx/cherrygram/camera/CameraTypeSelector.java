@@ -38,10 +38,12 @@ public class CameraTypeSelector extends LinearLayout {
     String[] strings = new String[]{
             LocaleController.getString("CP_CameraTypeDefault", R.string.CP_CameraTypeDefault),
             "CameraX",
+            "Camera2",
             LocaleController.getString("CP_CameraTypeSystem", R.string.CP_CameraTypeSystem),
     };
     int[] icons = new int[]{
             R.drawable.telegram_camera_icon,
+            R.drawable.cherry_camera_icon,
             R.drawable.camerax_icon,
             R.drawable.android_camera_icon
     };

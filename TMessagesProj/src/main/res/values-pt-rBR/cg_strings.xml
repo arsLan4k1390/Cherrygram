@@ -251,6 +251,7 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <string name="CG_ResidentNotification">Mostrar uma notificação persistente</string>
     <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
     <string name="EP_ShowRPCError">Torrar todos os erros RPC</string>
+    <string name="EP_CustomAppTitle">Título do aplicativo</string>
     <string name="EP_CustomChat">Conversa personalizada para mensagens guardadas</string>
     <string name="EP_CustomChat_Desc">Definir uma ID de outro chat/grupo/canal para reencaminhar mensagens para lá (botão na barra de ação, menu de mensagens ou duplo toque)</string>
     <string name="EP_CustomChatNotFound">Conversa não encontrada!</string>

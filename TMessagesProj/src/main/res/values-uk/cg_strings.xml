@@ -214,6 +214,7 @@
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
     <string name="EP_PhotosSize">Відправляти великі фотографії (2560px)</string>
     <string name="EP_ShowRPCError">Всплывающие уведомления обо всех ошибках RPC</string>
+    <string name="EP_CustomAppTitle">Название приложения</string>
     <string name="EP_CustomChat">Custom chat for Saved Messages</string>
     <string name="EP_CustomChat_Desc">Set an ID from another chat/group/channel to forward messages there (button in action bar, message menu or double tap)</string>
     <string name="EP_CustomChatNotFound">Chat not found!</string>
