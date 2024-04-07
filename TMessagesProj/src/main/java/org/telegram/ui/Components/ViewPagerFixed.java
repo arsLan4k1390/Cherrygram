@@ -130,6 +130,10 @@ public class ViewPagerFixed extends FrameLayout {
         return true;
     }
 
+    protected boolean canScrollForward(MotionEvent e) {
+        return canScroll(e);
+    }
+
     protected void onScrollEnd() {}
 
     public ViewPagerFixed(@NonNull Context context) {
@@ -384,6 +388,9 @@ public class ViewPagerFixed extends FrameLayout {
             return false;
         }
         if (!canScroll(ev)) {
+            return false;
+        }
+        if (forward && !canScrollForward(ev)) {
             return false;
         }
 

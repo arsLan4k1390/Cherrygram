@@ -67,6 +67,7 @@ import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.LocaleController;
@@ -508,7 +509,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                         if (o instanceof MediaController.PhotoEntry) {
                             MediaController.PhotoEntry photoEntry1 = (MediaController.PhotoEntry) o;
                             if (a == 0) {
-                                CharSequence[] caption = new CharSequence[] { PhotoViewer.getInstance().captionForAllMedia };
+                                CharSequence[] caption = new CharSequence[]{PhotoViewer.getInstance().captionForAllMedia};
                                 photoEntry1.entities = MediaDataController.getInstance(UserConfig.selectedAccount).getEntities(caption, false);
                                 photoEntry1.caption = caption[0];
                                 if (parentAlert.checkCaption(photoEntry1.caption)) {
@@ -816,7 +817,10 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 PhotoViewer.getInstance().setMaxSelectedPhotos(parentAlert.maxSelectedPhotos, parentAlert.allowOrder);
                 ChatActivity chatActivity;
                 int type;
-                if (parentAlert.avatarPicker != 0) {
+                if (parentAlert.isPhotoPicker && parentAlert.isStickerMode) {
+                    type = PhotoViewer.SELECT_TYPE_STICKER;
+                    chatActivity = (ChatActivity) parentAlert.baseFragment;
+                } else if (parentAlert.avatarPicker != 0) {
                     chatActivity = null;
                     type = PhotoViewer.SELECT_TYPE_AVATAR;
                 } else if (parentAlert.baseFragment instanceof ChatActivity) {
@@ -867,15 +871,18 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 BaseFragment finalFragment = fragment;
                 AndroidUtilities.runOnUIThread(() -> {
                     int avatarType = type;
-                    if (parentAlert.isPhotoPicker) {
+                    if (parentAlert.isPhotoPicker && !parentAlert.isStickerMode) {
                         PhotoViewer.getInstance().setParentActivity(finalFragment);
                         PhotoViewer.getInstance().setMaxSelectedPhotos(0, false);
-                        avatarType = PhotoViewer.SELECT_TYPE_WALLPAPER;;
+                        avatarType = PhotoViewer.SELECT_TYPE_WALLPAPER;
                     }
                     PhotoViewer.getInstance().openPhotoForSelect(arrayList, finalPosition, avatarType, false, photoViewerProvider, chatActivity);
                     PhotoViewer.getInstance().setAvatarFor(parentAlert.getAvatarFor());
-                    if (parentAlert.isPhotoPicker) {
+                    if (parentAlert.isPhotoPicker && !parentAlert.isStickerMode) {
                         PhotoViewer.getInstance().closePhotoAfterSelect = false;
+                    }
+                    if (parentAlert.isStickerMode) {
+                        PhotoViewer.getInstance().enableStickerMode(null);
                     }
                     if (captionForAllMedia()) {
                         PhotoViewer.getInstance().setCaption(parentAlert.getCommentTextView().getText());
@@ -2004,7 +2011,10 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
 
         ChatActivity chatActivity;
         int type;
-        if (parentAlert.avatarPicker != 0) {
+        if (parentAlert.isPhotoPicker && parentAlert.isStickerMode) {
+            type = PhotoViewer.SELECT_TYPE_STICKER;
+            chatActivity = (ChatActivity) parentAlert.baseFragment;
+        } else if (parentAlert.avatarPicker != 0) {
             type = PhotoViewer.SELECT_TYPE_AVATAR;
             chatActivity = null;
         } else if (parentAlert.baseFragment instanceof ChatActivity) {
@@ -2057,7 +2067,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                         }
                     }, 1000);
                     evControlView.setSliderValue(0.5f, true);
-                    cameraZoom = cameraView.resetZoom();
+                    if (!disableAttachCamera) cameraZoom = cameraView.resetZoom();
                     zoomControlView.setSliderValue(cameraZoom, false);
                     if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
                         CameraController.getInstance().startPreview(((CameraView) cameraView).getCameraSession());
@@ -2169,6 +2179,10 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             }
         }, chatActivity);
         PhotoViewer.getInstance().setAvatarFor(parentAlert.getAvatarFor());
+        if (parentAlert.isStickerMode) {
+            PhotoViewer.getInstance().enableStickerMode(null);
+            PhotoViewer.getInstance().prepareSegmentImage();
+        }
     }
 
     private void showZoomControls(boolean show, boolean animated) {
@@ -3871,6 +3885,9 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     }
 
     private void onPhotoEditModeChanged(boolean isEditMode) {
+        if (disableAttachCamera) {
+            return;
+        }
         if (needCamera && !noCameraPermissions) {
             if (isEditMode) {
                 if (cameraView != null) {
@@ -4394,6 +4411,8 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                     }
                     if (parentAlert.avatarPicker != 0) {
                         cell.getCheckBox().setVisibility(GONE);
+                    } else {
+                        cell.getCheckBox().setVisibility(VISIBLE);
                     }
 
                     MediaController.PhotoEntry photoEntry = getPhotoEntryAtPosition(position);

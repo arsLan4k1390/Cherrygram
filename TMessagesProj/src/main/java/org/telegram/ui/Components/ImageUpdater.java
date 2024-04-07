@@ -26,6 +26,7 @@ import android.util.Pair;
 import android.view.View;
 
 import androidx.core.content.FileProvider;
+import androidx.exifinterface.media.ExifInterface;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;

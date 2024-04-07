@@ -59,9 +59,7 @@ public abstract class BaseCell extends ViewGroup {
         super(context);
         setWillNotDraw(false);
         setFocusable(true);
-        if (CherrygramConfig.INSTANCE.getDisableVibration()){
-            setHapticFeedbackEnabled(true);
-        }
+        setHapticFeedbackEnabled(!CherrygramConfig.INSTANCE.getDisableVibration());
     }
 
     public static void setDrawableBounds(Drawable drawable, int x, int y) {

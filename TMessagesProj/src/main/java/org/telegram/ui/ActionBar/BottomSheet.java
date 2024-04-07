@@ -68,7 +68,6 @@ import org.telegram.ui.Components.LayoutHelper;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.camera.CameraXView;
 
 public class BottomSheet extends Dialog {
@@ -85,6 +84,7 @@ public class BottomSheet extends Dialog {
     public boolean scrollNavBar;
     public boolean occupyNavigationBar;
     protected boolean waitingKeyboard;
+    public FrameLayout topBulletinContainer;
 
     protected boolean useSmoothKeyboard;
 
@@ -1827,7 +1827,7 @@ public class BottomSheet extends Dialog {
             super.dismiss();
         } catch (Exception e) {
             //ignore: not attached to window manager
-            FileLog.e(e);
+            FileLog.e(e, false);
         }
     }
 

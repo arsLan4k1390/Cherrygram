@@ -170,7 +170,7 @@ public class CameraXUtils {
                 break;
             case SharedConfig.PERFORMANCE_CLASS_HIGH:
             default:
-                suggestedRes = CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode() && isPreview ? 1080 : 2160;
+                suggestedRes = isPreview ? 1080 : 2160;
                 break;
         }
         return suggestedRes;

@@ -333,7 +333,7 @@ public class TGKitSettingsFragment extends BaseFragment {
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 5:
-                    view = new TextCell(mContext);
+                    view = new TextCell(mContext, 21, false);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 6:

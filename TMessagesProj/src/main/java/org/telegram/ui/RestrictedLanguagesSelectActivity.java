@@ -556,8 +556,9 @@ public class RestrictedLanguagesSelectActivity extends BaseFragment implements N
                 invalidateRestrictedLanguages();
 
                 for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; ++i) {
+                    final int account = i;
                     try {
-                        MessagesController.getInstance(i).getTranslateController().checkRestrictedLanguagesUpdate();
+                        MessagesController.getInstance(account).getTranslateController().checkRestrictedLanguagesUpdate();
                     } catch (Exception ignore) {}
                 }
             });

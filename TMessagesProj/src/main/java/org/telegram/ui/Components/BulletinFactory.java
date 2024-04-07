@@ -169,10 +169,10 @@ public final class BulletinFactory {
     private final Theme.ResourcesProvider resourcesProvider;
 
     private BulletinFactory(BaseFragment fragment) {
-        if (fragment != null && fragment.storyViewer != null && fragment.storyViewer.attachedToParent()) {
+        if (fragment != null && fragment.getLastStoryViewer() != null && fragment.getLastStoryViewer().attachedToParent()) {
             this.fragment = null;
-            this.containerLayout = fragment.storyViewer.getContainerForBulletin();
-            this.resourcesProvider = fragment.storyViewer.getResourceProvider();
+            this.containerLayout = fragment.getLastStoryViewer().getContainerForBulletin();
+            this.resourcesProvider = fragment.getLastStoryViewer().getResourceProvider();
         } else {
             this.fragment = fragment;
             this.containerLayout = null;
@@ -208,6 +208,7 @@ public final class BulletinFactory {
         layout.textView.setLines(2);
         layout.textView.setMaxLines(4);
         layout.textView.setMaxWidth(HintView2.cutInFancyHalf(layout.textView.getText(), layout.textView.getPaint()));
+        layout.textView.setLineSpacing(AndroidUtilities.dp(1.33f), 1f);
         ((ViewGroup.MarginLayoutParams) layout.textView.getLayoutParams()).rightMargin = AndroidUtilities.dp(12);
         layout.setWrapWidth();
         return create(layout, Bulletin.DURATION_PROLONG);
@@ -269,22 +270,6 @@ public final class BulletinFactory {
         layout.titleTextView.setText(text);
         layout.subtitleTextView.setText(subtext);
         return create(layout, (text.length() + subtext.length()) < 20 ? Bulletin.DURATION_SHORT : Bulletin.DURATION_LONG);
-    }
-
-    public Bulletin createRestartBulletin(int iconRawId, CharSequence text, CharSequence button, Runnable onButtonClick) {
-        return createRestartBulletin(iconRawId, text, button, text.length() < 20 ? Bulletin.DURATION_SHORT : Bulletin.DURATION_LONG, onButtonClick);
-    }
-
-    public Bulletin createRestartBulletin(int iconRawId, CharSequence text, CharSequence button, int duration, Runnable onButtonClick) {
-        final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
-        layout.setAnimation(iconRawId, 36, 36);
-        layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        layout.textView.setTextDirection(View.TEXT_DIRECTION_LOCALE);
-        layout.textView.setSingleLine(false);
-        layout.textView.setMaxLines(3);
-        layout.textView.setText(text);
-        layout.setButton(new Bulletin.RestartButton(getContext(), true, resourcesProvider).setText(button).setUndoAction(onButtonClick));
-        return create(layout, duration);
     }
 
     public Bulletin createSimpleBulletin(int iconRawId, CharSequence text, CharSequence button, Runnable onButtonClick) {
@@ -371,12 +356,16 @@ public final class BulletinFactory {
     }
 
     public Bulletin createUndoBulletin(CharSequence text, Runnable onUndo, Runnable onAction) {
+        return this.createUndoBulletin(text, false, onUndo, onAction);
+    }
+
+    public Bulletin createUndoBulletin(CharSequence text, boolean textAndIcon, Runnable onUndo, Runnable onAction) {
         final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
         layout.textView.setText(text);
         layout.textView.setSingleLine(false);
         layout.textView.setMaxLines(2);
         layout.setTimer();
-        layout.setButton(new Bulletin.UndoButton(getContext(), true, resourcesProvider).setText(LocaleController.getString("Undo", R.string.Undo)).setUndoAction(onUndo).setDelayedAction(onAction));
+        layout.setButton(new Bulletin.UndoButton(getContext(), true, textAndIcon, resourcesProvider).setText(LocaleController.getString("Undo", R.string.Undo)).setUndoAction(onUndo).setDelayedAction(onAction));
         return create(layout, Bulletin.DURATION_PROLONG);
     }
 
@@ -605,46 +594,6 @@ public final class BulletinFactory {
         return create(layout, Bulletin.DURATION_LONG);
     }
 
-    public Bulletin createEmojiBulletin2(TLRPC.Document document, CharSequence text, CharSequence button, MessageObject selectedObject, Runnable onButtonClick) {
-        final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
-        if (MessageObject.isTextColorEmoji(document)) {
-            layout.imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_undo_infoColor), PorterDuff.Mode.SRC_IN));
-        }
-        layout.setAnimation(document, 36, 36);
-        if (layout.imageView.getImageReceiver() != null) {
-            layout.imageView.getImageReceiver().setRoundRadius(AndroidUtilities.dp(4));
-        }
-        layout.imageView.setOnClickListener(v -> {
-            ChatsHelper.getInstance(UserConfig.selectedAccount).openEmojiPack(selectedObject, fragment);
-        });
-        layout.textView.setText(text);
-        layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        layout.textView.setSingleLine(false);
-        layout.textView.setMaxLines(3);
-        layout.setButton(new Bulletin.UndoButton(getContext(), true, resourcesProvider).setText(button).setUndoAction(onButtonClick));
-        return create(layout, Bulletin.DURATION_LONG);
-    }
-
-    public Bulletin createEmojiLoadingBulletin2(TLRPC.Document document, CharSequence text, CharSequence button, MessageObject selectedObject, Runnable onButtonClick) {
-        final Bulletin.LoadingLottieLayout layout = new Bulletin.LoadingLottieLayout(getContext(), resourcesProvider);
-        if (MessageObject.isTextColorEmoji(document)) {
-            layout.imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_undo_infoColor), PorterDuff.Mode.SRC_IN));
-        }
-        layout.setAnimation(document, 36, 36);
-        layout.imageView.setOnClickListener(v -> {
-            ChatsHelper.getInstance(UserConfig.selectedAccount).openEmojiPack(selectedObject, fragment);
-        });
-        layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        layout.textView.setSingleLine(false);
-        layout.textView.setMaxLines(3);
-        layout.textLoadingView.setText(text);
-        layout.textLoadingView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        layout.textLoadingView.setSingleLine(false);
-        layout.textLoadingView.setMaxLines(3);
-        layout.setButton(new Bulletin.UndoButton(getContext(), true, resourcesProvider).setText(button).setUndoAction(onButtonClick));
-        return create(layout, Bulletin.DURATION_LONG);
-    }
-
     public static final int CONTAINS_EMOJI_IN_MESSAGE = 0;
     public static final int CONTAINS_EMOJI_IN_TOPIC = 1;
     public static final int CONTAINS_EMOJI_IN_STORY = 2;
@@ -708,52 +657,6 @@ public final class BulletinFactory {
                 message = AndroidUtilities.replaceTags(LocaleController.formatString("MessageContainsEmojiPackSingle", R.string.MessageContainsEmojiPackSingle, cachedSet.set.title));
             }
             return createEmojiBulletin(document, message, LocaleController.getString("ViewAction", R.string.ViewAction), () -> openSet.run(inputStickerSet));
-        }
-    }
-
-    public Bulletin createReplyContainsEmojiBulletin(TLRPC.Document document, MessageObject selectedObject) {
-        TLRPC.InputStickerSet inputStickerSet = MessageObject.getInputStickerSet(document);
-        if (inputStickerSet == null) {
-            return null;
-        }
-        TLRPC.TL_messages_stickerSet cachedSet = MediaDataController.getInstance(UserConfig.selectedAccount).getStickerSet(inputStickerSet, true);
-        if (cachedSet == null || cachedSet.set == null) {
-            final String loadingPlaceholder = "<{LOADING}>";
-
-            SpannableStringBuilder stringBuilder;
-            stringBuilder = new SpannableStringBuilder(AndroidUtilities.replaceTags(LocaleController.formatString("CG_ReplyContainsEmojiPack", R.string.CG_ReplyContainsEmojiPack, loadingPlaceholder)));
-
-            LoadingSpan loadingSpan = null;
-            int index;
-            if ((index = stringBuilder.toString().indexOf(loadingPlaceholder)) >= 0) {
-                stringBuilder.setSpan(loadingSpan = new LoadingSpan(null, AndroidUtilities.dp(100), AndroidUtilities.dp(2), resourcesProvider), index, index + loadingPlaceholder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                loadingSpan.setColors(
-                        ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_undo_infoColor, resourcesProvider), 0x20),
-                        ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_undo_infoColor, resourcesProvider), 0x48)
-                );
-            }
-            final long startTime = System.currentTimeMillis();
-            final long minDuration = 750;
-            Bulletin bulletin = createEmojiLoadingBulletin2(document, stringBuilder, LocaleController.getString("ApplyTheme", R.string.ApplyTheme), selectedObject, () -> ChatsHelper.getInstance(UserConfig.selectedAccount).applyReplyBackground(selectedObject, fragment));
-            if (loadingSpan != null && bulletin.getLayout() instanceof Bulletin.LoadingLottieLayout) {
-                loadingSpan.setView(((Bulletin.LoadingLottieLayout) bulletin.getLayout()).textLoadingView);
-            }
-            MediaDataController.getInstance(UserConfig.selectedAccount).getStickerSet(inputStickerSet, null, false, set -> {
-                CharSequence message;
-                if (set != null && set.set != null) {
-                    message = AndroidUtilities.replaceTags(LocaleController.formatString("CG_ReplyContainsEmojiPack", R.string.CG_ReplyContainsEmojiPack, set.set.title));
-                } else {
-                    message = LocaleController.getString("AddEmojiNotFound", R.string.AddEmojiNotFound);
-                }
-                AndroidUtilities.runOnUIThread(() -> {
-                    bulletin.onLoaded(message);
-                }, Math.max(1, minDuration - (System.currentTimeMillis() - startTime)));
-            });
-            return bulletin;
-        } else {
-            CharSequence message;
-            message = AndroidUtilities.replaceTags(LocaleController.formatString("CG_ReplyContainsEmojiPack", R.string.CG_ReplyContainsEmojiPack, cachedSet.set.title));
-            return createEmojiBulletin2(document, message, LocaleController.getString("ApplyTheme", R.string.ApplyTheme), selectedObject, () -> ChatsHelper.getInstance(UserConfig.selectedAccount).applyReplyBackground(selectedObject, fragment));
         }
     }
 
@@ -1142,6 +1045,15 @@ public final class BulletinFactory {
         return Bulletin.make(containerLayout, layout, Bulletin.DURATION_SHORT);
     }
 
+    public Bulletin createAdReportedBulletin(CharSequence text) {
+        final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(fragment.getParentActivity(), fragment.getResourceProvider());
+        layout.setAnimation(R.raw.ic_admin, "Shield");
+        layout.textView.setSingleLine(false);
+        layout.textView.setMaxLines(3);
+        layout.textView.setText(text);
+        return Bulletin.make(fragment, layout, Bulletin.DURATION_LONG);
+    }
+
     public boolean showForwardedBulletinWithTag(long did, int messagesCount) {
         if (!UserConfig.getInstance(UserConfig.selectedAccount).isPremium()) {
             return false;
@@ -1362,4 +1274,108 @@ public final class BulletinFactory {
         public Runnable onUndo;
         public Runnable onAction;
     }
+
+    //Cherrygram
+    public Bulletin createRestartBulletin(int iconRawId, CharSequence text, CharSequence button, Runnable onButtonClick) {
+        return createRestartBulletin(iconRawId, text, button, text.length() < 20 ? Bulletin.DURATION_SHORT : Bulletin.DURATION_LONG, onButtonClick);
+    }
+
+    public Bulletin createRestartBulletin(int iconRawId, CharSequence text, CharSequence button, int duration, Runnable onButtonClick) {
+        final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
+        layout.setAnimation(iconRawId, 36, 36);
+        layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        layout.textView.setTextDirection(View.TEXT_DIRECTION_LOCALE);
+        layout.textView.setSingleLine(false);
+        layout.textView.setMaxLines(3);
+        layout.textView.setText(text);
+        layout.setButton(new Bulletin.RestartButton(getContext(), true, resourcesProvider).setText(button).setUndoAction(onButtonClick));
+        return create(layout, duration);
+    }
+
+    public Bulletin createEmojiBulletin2(TLRPC.Document document, CharSequence text, CharSequence button, MessageObject selectedObject, Runnable onButtonClick) {
+        final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
+        if (MessageObject.isTextColorEmoji(document)) {
+            layout.imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_undo_infoColor), PorterDuff.Mode.SRC_IN));
+        }
+        layout.setAnimation(document, 36, 36);
+        if (layout.imageView.getImageReceiver() != null) {
+            layout.imageView.getImageReceiver().setRoundRadius(AndroidUtilities.dp(4));
+        }
+        layout.imageView.setOnClickListener(v -> {
+            ChatsHelper.getInstance(UserConfig.selectedAccount).openEmojiPack(selectedObject, fragment);
+        });
+        layout.textView.setText(text);
+        layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        layout.textView.setSingleLine(false);
+        layout.textView.setMaxLines(3);
+        layout.setButton(new Bulletin.UndoButton(getContext(), true, resourcesProvider).setText(button).setUndoAction(onButtonClick));
+        return create(layout, Bulletin.DURATION_LONG);
+    }
+
+    public Bulletin createEmojiLoadingBulletin2(TLRPC.Document document, CharSequence text, CharSequence button, MessageObject selectedObject, Runnable onButtonClick) {
+        final Bulletin.LoadingLottieLayout layout = new Bulletin.LoadingLottieLayout(getContext(), resourcesProvider);
+        if (MessageObject.isTextColorEmoji(document)) {
+            layout.imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_undo_infoColor), PorterDuff.Mode.SRC_IN));
+        }
+        layout.setAnimation(document, 36, 36);
+        layout.imageView.setOnClickListener(v -> {
+            ChatsHelper.getInstance(UserConfig.selectedAccount).openEmojiPack(selectedObject, fragment);
+        });
+        layout.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        layout.textView.setSingleLine(false);
+        layout.textView.setMaxLines(3);
+        layout.textLoadingView.setText(text);
+        layout.textLoadingView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        layout.textLoadingView.setSingleLine(false);
+        layout.textLoadingView.setMaxLines(3);
+        layout.setButton(new Bulletin.UndoButton(getContext(), true, resourcesProvider).setText(button).setUndoAction(onButtonClick));
+        return create(layout, Bulletin.DURATION_LONG);
+    }
+
+    public Bulletin createReplyContainsEmojiBulletin(TLRPC.Document document, MessageObject selectedObject) {
+        TLRPC.InputStickerSet inputStickerSet = MessageObject.getInputStickerSet(document);
+        if (inputStickerSet == null) {
+            return null;
+        }
+        TLRPC.TL_messages_stickerSet cachedSet = MediaDataController.getInstance(UserConfig.selectedAccount).getStickerSet(inputStickerSet, true);
+        if (cachedSet == null || cachedSet.set == null) {
+            final String loadingPlaceholder = "<{LOADING}>";
+
+            SpannableStringBuilder stringBuilder;
+            stringBuilder = new SpannableStringBuilder(AndroidUtilities.replaceTags(LocaleController.formatString("CG_ReplyContainsEmojiPack", R.string.CG_ReplyContainsEmojiPack, loadingPlaceholder)));
+
+            LoadingSpan loadingSpan = null;
+            int index;
+            if ((index = stringBuilder.toString().indexOf(loadingPlaceholder)) >= 0) {
+                stringBuilder.setSpan(loadingSpan = new LoadingSpan(null, AndroidUtilities.dp(100), AndroidUtilities.dp(2), resourcesProvider), index, index + loadingPlaceholder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                loadingSpan.setColors(
+                        ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_undo_infoColor, resourcesProvider), 0x20),
+                        ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_undo_infoColor, resourcesProvider), 0x48)
+                );
+            }
+            final long startTime = System.currentTimeMillis();
+            final long minDuration = 750;
+            Bulletin bulletin = createEmojiLoadingBulletin2(document, stringBuilder, LocaleController.getString("ApplyTheme", R.string.ApplyTheme), selectedObject, () -> ChatsHelper.getInstance(UserConfig.selectedAccount).applyReplyBackground(selectedObject, fragment));
+            if (loadingSpan != null && bulletin.getLayout() instanceof Bulletin.LoadingLottieLayout) {
+                loadingSpan.setView(((Bulletin.LoadingLottieLayout) bulletin.getLayout()).textLoadingView);
+            }
+            MediaDataController.getInstance(UserConfig.selectedAccount).getStickerSet(inputStickerSet, null, false, set -> {
+                CharSequence message;
+                if (set != null && set.set != null) {
+                    message = AndroidUtilities.replaceTags(LocaleController.formatString("CG_ReplyContainsEmojiPack", R.string.CG_ReplyContainsEmojiPack, set.set.title));
+                } else {
+                    message = LocaleController.getString("AddEmojiNotFound", R.string.AddEmojiNotFound);
+                }
+                AndroidUtilities.runOnUIThread(() -> {
+                    bulletin.onLoaded(message);
+                }, Math.max(1, minDuration - (System.currentTimeMillis() - startTime)));
+            });
+            return bulletin;
+        } else {
+            CharSequence message;
+            message = AndroidUtilities.replaceTags(LocaleController.formatString("CG_ReplyContainsEmojiPack", R.string.CG_ReplyContainsEmojiPack, cachedSet.set.title));
+            return createEmojiBulletin2(document, message, LocaleController.getString("ApplyTheme", R.string.ApplyTheme), selectedObject, () -> ChatsHelper.getInstance(UserConfig.selectedAccount).applyReplyBackground(selectedObject, fragment));
+        }
+    }
+    //Cherrygram
 }

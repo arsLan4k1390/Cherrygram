@@ -383,8 +383,7 @@ public class NotificationsController extends BaseController {
                 FileLog.e(e);
             }
             dismissNotification();
-            //setBadge(getTotalAllUnreadCount());
-            setBadge(getMessagesStorage().getMainUnreadCount());
+            setBadge(getTotalAllUnreadCount());
             SharedPreferences preferences = getAccountInstance().getNotificationsSettings();
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear();
@@ -581,8 +580,7 @@ public class NotificationsController extends BaseController {
             }
             notifyCheck = false;
             if (showBadgeNumber) {
-                //setBadge(getTotalAllUnreadCount());
-                setBadge(getMessagesStorage().getMainUnreadCount());
+                setBadge(getTotalAllUnreadCount());
             }
         });
     }
@@ -666,8 +664,7 @@ public class NotificationsController extends BaseController {
             }
             notifyCheck = false;
             if (showBadgeNumber) {
-                //setBadge(getTotalAllUnreadCount());
-                setBadge(getMessagesStorage().getMainUnreadCount());
+                setBadge(getTotalAllUnreadCount());
             }
         });
     }
@@ -1174,8 +1171,7 @@ public class NotificationsController extends BaseController {
                     }
                     notifyCheck = false;
                     if (showBadgeNumber) {
-                        //setBadge(getTotalAllUnreadCount());
-                        setBadge(getMessagesStorage().getMainUnreadCount());
+                        setBadge(getTotalAllUnreadCount());
                     }
                 }
             }
@@ -1325,8 +1321,7 @@ public class NotificationsController extends BaseController {
             }
             notifyCheck = false;
             if (showBadgeNumber) {
-                //setBadge(getTotalAllUnreadCount());
-                setBadge(getMessagesStorage().getMainUnreadCount());
+                setBadge(getTotalAllUnreadCount());
             }
         });
     }
@@ -1533,8 +1528,7 @@ public class NotificationsController extends BaseController {
             showOrUpdateNotification(SystemClock.elapsedRealtime() / 1000 < 60);
 
             if (showBadgeNumber) {
-                //setBadge(getTotalAllUnreadCount());
-                setBadge(getMessagesStorage().getMainUnreadCount());
+                setBadge(getTotalAllUnreadCount());
             }
         });
     }
@@ -1597,8 +1591,7 @@ public class NotificationsController extends BaseController {
     }
 
     public void updateBadge() {
-        //notificationsQueue.postRunnable(() -> setBadge(getTotalAllUnreadCount()));
-        notificationsQueue.postRunnable(() -> setBadge(getMessagesStorage().getMainUnreadCount()));
+        notificationsQueue.postRunnable(() -> setBadge(getTotalAllUnreadCount()));
     }
 
     private void setBadge(int count) {
@@ -5798,10 +5791,10 @@ public class NotificationsController extends BaseController {
                 minChangeTime = Math.min(minChangeTime, d.second);
             }
         }
-        AndroidUtilities.cancelRunOnUIThread(checkStoryPushesRunnable);
+        notificationsQueue.cancelRunnable(checkStoryPushesRunnable);
         long delay = minChangeTime - System.currentTimeMillis();
         if (minChangeTime != Long.MAX_VALUE) {
-            AndroidUtilities.runOnUIThread(checkStoryPushesRunnable, Math.max(0, delay));
+            notificationsQueue.postRunnable(checkStoryPushesRunnable, Math.max(0, delay));
         }
     }
 }

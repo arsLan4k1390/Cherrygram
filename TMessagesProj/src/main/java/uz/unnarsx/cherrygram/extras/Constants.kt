@@ -23,11 +23,11 @@ object Constants {
         return LocaleController.getString("CG_AppName", R.string.CG_AppName)
     }
 
+    const val Cherrygram_Owner = 282287840L // Cherrygram Owner (Arslan)
     const val Cherrygram_Channel = 1776033848L // Cherrygram Channel
     const val Cherrygram_Support = 1554776538L // Cherrygram Support Group
     const val Cherrygram_APKs = 1557718915L // Cherrygram APKs
     const val Cherrygram_Beta = 1544768810L // Cherrygram Beta APKs
-    const val Cherrygram_Premium = 1633574643L // Cherrygram Premium APKs
     const val Cherrygram_Archive = 1719103382L // Cherrygram Archive
 
     const val CHERRY_EMOJI_ID = 5203934494985307875L // Cherrygram logo

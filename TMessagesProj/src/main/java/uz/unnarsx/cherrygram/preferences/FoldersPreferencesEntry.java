@@ -171,22 +171,26 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
                     getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
                 });
             } else if (position == tabStyleRow) {
-                ArrayList<String> arrayList = new ArrayList<>();
-                ArrayList<Integer> types = new ArrayList<>();
+                ArrayList<String> configStringKeys = new ArrayList<>();
+                ArrayList<Integer> configValues = new ArrayList<>();
 
-                arrayList.add(LocaleController.getString("AP_Tab_Style_Default", R.string.AP_Tab_Style_Default));
-                types.add(CherrygramConfig.TAB_STYLE_DEFAULT);
-                arrayList.add(LocaleController.getString("AP_Tab_Style_Rounded", R.string.AP_Tab_Style_Rounded));
-                types.add(CherrygramConfig.TAB_STYLE_ROUNDED);
-                arrayList.add(LocaleController.getString("AP_Tab_Style_Text", R.string.AP_Tab_Style_Text));
-                types.add(CherrygramConfig.TAB_STYLE_TEXT);
-                arrayList.add("VKUI");
-                types.add(CherrygramConfig.TAB_STYLE_VKUI);
-                arrayList.add(LocaleController.getString("AP_Tab_Style_Pills", R.string.AP_Tab_Style_Pills));
-                types.add(CherrygramConfig.TAB_STYLE_PILLS);
+                configStringKeys.add(LocaleController.getString("AP_Tab_Style_Default", R.string.AP_Tab_Style_Default));
+                configValues.add(CherrygramConfig.TAB_STYLE_DEFAULT);
 
-                PopupHelper.show(arrayList, LocaleController.getString("AP_Tab_Style", R.string.AP_Tab_Style), types.indexOf(CherrygramConfig.INSTANCE.getTabStyle()), context, i -> {
-                    CherrygramConfig.INSTANCE.setTabStyle(types.get(i));
+                configStringKeys.add(LocaleController.getString("AP_Tab_Style_Rounded", R.string.AP_Tab_Style_Rounded));
+                configValues.add(CherrygramConfig.TAB_STYLE_ROUNDED);
+
+                configStringKeys.add(LocaleController.getString("AP_Tab_Style_Text", R.string.AP_Tab_Style_Text));
+                configValues.add(CherrygramConfig.TAB_STYLE_TEXT);
+
+                configStringKeys.add("VKUI");
+                configValues.add(CherrygramConfig.TAB_STYLE_VKUI);
+
+                configStringKeys.add(LocaleController.getString("AP_Tab_Style_Pills", R.string.AP_Tab_Style_Pills));
+                configValues.add(CherrygramConfig.TAB_STYLE_PILLS);
+
+                PopupHelper.show(configStringKeys, LocaleController.getString("AP_Tab_Style", R.string.AP_Tab_Style), configValues.indexOf(CherrygramConfig.INSTANCE.getTabStyle()), context, i -> {
+                    CherrygramConfig.INSTANCE.setTabStyle(configValues.get(i));
 
                     foldersPreviewCell.updateTabStyle(true);
                     listAdapter.notifyItemChanged(tabStyleRow);

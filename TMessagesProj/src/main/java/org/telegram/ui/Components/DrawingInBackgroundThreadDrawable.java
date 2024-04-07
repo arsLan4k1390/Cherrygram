@@ -163,11 +163,7 @@ public class DrawingInBackgroundThreadDrawable implements NotificationCenter.Not
     }
 
     protected void drawBitmap(Canvas canvas, Bitmap bitmap, Paint paint) {
-        try {
-            canvas.drawBitmap(bitmap, 0, 0, paint);
-        } catch (Throwable error /*Exception e*/) {
-//            FileLog.e(e);
-        }
+        canvas.drawBitmap(bitmap, 0, 0, paint);
     }
 
     protected void drawInUiThread(Canvas nextRenderingCanvas, float alpha) {

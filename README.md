@@ -64,8 +64,6 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Enable/Disable system emoji,
 - Enable/Disable system fonts,
 - Default notification icon (Telegram),
-- Ask before a call,
-- Hiding your phone number from settings and menu,
 - Enable/Disable Telegram Stories in app header,
 - Enable/Disable animated avatars,
 - Enable/Disable reactions overlay,
@@ -88,7 +86,10 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Show seconds in timestamps,
 - Enable/Disable premium statuses,
 - Customize reply and profile background,
-- Showing DC/ID in profile.
+- Show/Hide Personal channel in profile,
+- Show/Hide DC/ID in profile,
+- Show/Hide Birth Date in profile,
+- Show/Hide Business hours and location in profile.
 
 *Folders Preferences:*
 - Show folder name instead of app name,
@@ -113,6 +114,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Direct Share button (Select where to show the button),
 - Configure message menu,
 - Showing unread chats counter on "Back" button like on IOS,
+- Ask before a call,
 - Use "Delete for all" by default,
 - Show forwarded message date,
 - Pencil icon for edited messages instead of "edited",
@@ -125,6 +127,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Recent stickers counter (amplifier),
 - Double tap to seek videos,
 - Large photos (2560px),
+- Spoiler effect,
 - Voice enhancements,
 - Enable/Disable playing video on volume button click,
 - Auto pause video while switching to the background,

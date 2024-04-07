@@ -58,7 +58,7 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.Components.BackButtonMenu;
-import org.telegram.ui.Components.BotWebViewSheet;
+import org.telegram.ui.bots.BotWebViewSheet;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.ChatAttachAlert;
 import org.telegram.ui.Components.CubicBezierInterpolator;
@@ -67,7 +67,6 @@ import org.telegram.ui.Components.FloatingDebug.FloatingDebugProvider;
 import org.telegram.ui.Components.GroupCallPip;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.LaunchActivity;
-import org.telegram.ui.LogoutActivity;
 import org.telegram.ui.Stories.StoryViewer;
 
 import java.util.ArrayList;
@@ -95,7 +94,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         if (!fragmentsStack.isEmpty()) {
             lastFragment = fragmentsStack.get(fragmentsStack.size() - 1);
         }
-        return lastFragment != null && lastFragment.storyViewer != null && lastFragment.storyViewer.attachedToParent();
+        return lastFragment != null && lastFragment.getLastStoryViewer() != null && lastFragment.getLastStoryViewer().attachedToParent();
     }
 
     public class LayoutContainer extends FrameLayout {
@@ -120,7 +119,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             if (!fragmentsStack.isEmpty()) {
                 lastFragment = fragmentsStack.get(fragmentsStack.size() - 1);
             }
-            if (storyViewerAttached() && lastFragment.storyViewer.isFullyVisible() && !lastFragment.isStoryViewer(child)) {
+            if (storyViewerAttached() && lastFragment != null && lastFragment.getLastStoryViewer() != null && lastFragment.getLastStoryViewer().isFullyVisible() && lastFragment.getLastStoryViewer().windowView != child) {
                 return true;
             }
             if (child instanceof ActionBar) {
@@ -303,9 +302,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                                         ripple.setState(shouldBeEnabled ? new int[]{android.R.attr.state_pressed, android.R.attr.state_enabled} : new int[]{});
                                         if (shouldBeEnabled) {
                                             if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
-                                                try {
-                                                    button.performHapticFeedback(HapticFeedbackConstants.TEXT_HANDLE_MOVE, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-                                                } catch (Exception ignore) {}
+                                                AndroidUtilities.vibrateCursor(button);
                                             }
                                         }
                                     }
@@ -659,98 +656,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             return delegate != null && delegate.onPreIme() || super.dispatchKeyEventPreIme(event);
         }
         return super.dispatchKeyEventPreIme(event);
-    }
-
-    private static boolean USE_ACTIONBAR_CROSSFADE = CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING && CherrygramConfig.INSTANCE.getActionbarCrossfade();
-    private float swipeProgress;
-    private MenuDrawable menuDrawable;
-
-    @Override
-    public boolean isActionBarInCrossfade() {
-        boolean crossfadeNoFragments = SharedConfig.animationsEnabled() && USE_ACTIONBAR_CROSSFADE && !isInPreviewMode() && (isSwipeInProgress() || isTransitionAnimationInProgress()) && currentAnimation == null;
-        return crossfadeNoFragments && getLastFragment() != null && getLastFragment().isActionBarCrossfadeEnabled() && getBackgroundFragment() != null && getBackgroundFragment().isActionBarCrossfadeEnabled();
-    }
-
-    @Override
-    public void draw(Canvas canvas) {
-        super.draw(canvas);
-
-        if (isActionBarInCrossfade()) {
-            if (containerView == null || containerViewBack == null) {
-                return;
-            }
-
-            BaseFragment foregroundFragment = getLastFragment();
-            BaseFragment backgroundFragment = getBackgroundFragment();
-
-            if (foregroundFragment == null || backgroundFragment == null) {
-                return;
-            }
-
-            ActionBar fgActionBar = foregroundFragment.getActionBar();
-            ActionBar bgActionBar = backgroundFragment.getActionBar();
-
-            if (fgActionBar == null || bgActionBar == null) {
-                return;
-            }
-
-            boolean useBackDrawable = false;
-            boolean backDrawableReverse = false;
-            Float backDrawableForcedProgress = null;
-
-            if (!AndroidUtilities.isTablet()) {
-                if (backgroundFragment.getBackButtonState() == BackButtonState.MENU && foregroundFragment.getBackButtonState() == BackButtonState.BACK) {
-                    useBackDrawable = true;
-                    backDrawableReverse = false;
-                } else if (backgroundFragment.getBackButtonState() == BackButtonState.BACK && foregroundFragment.getBackButtonState() == BackButtonState.MENU) {
-                    useBackDrawable = true;
-                    backDrawableReverse = true;
-                } else if (backgroundFragment.getBackButtonState() == BackButtonState.BACK && foregroundFragment.getBackButtonState() == BackButtonState.BACK) {
-                    useBackDrawable = true;
-                    backDrawableForcedProgress = 0f;
-                } else if (backgroundFragment.getBackButtonState() == BackButtonState.MENU && foregroundFragment.getBackButtonState() == BackButtonState.MENU) {
-                    useBackDrawable = true;
-                    backDrawableForcedProgress = 1f;
-                }
-            }
-
-            AndroidUtilities.rectTmp.set(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingLeft(), bgActionBar.getY() + getPaddingTop() + bgActionBar.getHeight());
-            canvas.saveLayerAlpha(AndroidUtilities.rectTmp, (int) (swipeProgress * 0xFF), Canvas.ALL_SAVE_FLAG);
-            canvas.translate(getPaddingLeft(), getPaddingTop());
-            bgActionBar.onDrawCrossfadeBackground(canvas);
-            canvas.restore();
-
-            canvas.saveLayerAlpha(AndroidUtilities.rectTmp, (int) ((1 - swipeProgress) * 0xFF), Canvas.ALL_SAVE_FLAG);
-            canvas.translate(getPaddingLeft(), getPaddingTop());
-            fgActionBar.onDrawCrossfadeBackground(canvas);
-            canvas.restore();
-
-            if (useBackDrawable) {
-                AndroidUtilities.rectTmp.set(0, 0, getWidth(), bgActionBar.getY() + bgActionBar.getHeight());
-                float progress = backDrawableForcedProgress != null ? backDrawableForcedProgress : swipeProgress;
-                float bgAlpha = 1f - (bgActionBar.getY() / -(bgActionBar.getHeight() - AndroidUtilities.statusBarHeight));
-                float fgAlpha = 1f - (fgActionBar.getY() / -(fgActionBar.getHeight() - AndroidUtilities.statusBarHeight));
-                canvas.saveLayerAlpha(AndroidUtilities.rectTmp, (int) (AndroidUtilities.lerp(bgAlpha, fgAlpha, 1f - swipeProgress) * 0xFF), Canvas.ALL_SAVE_FLAG);
-                canvas.translate(AndroidUtilities.dp(16 - 0.5f), AndroidUtilities.dp(16) + (fgActionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0));
-                int color = ColorUtils.blendARGB(bgActionBar.getItemsColor(), fgActionBar.getItemsColor(), backDrawableReverse ? swipeProgress : 1f - swipeProgress);
-                menuDrawable.setIconColor(color);
-                menuDrawable.setRotation(backDrawableReverse ? progress : 1f - progress, false);
-                menuDrawable.draw(canvas);
-                canvas.restore();
-            }
-
-            AndroidUtilities.rectTmp.set(getPaddingLeft(), !AndroidUtilities.isTablet() ? AndroidUtilities.statusBarHeight : getPaddingTop(), getWidth() - getPaddingLeft(),  bgActionBar.getY() + getPaddingTop() + bgActionBar.getHeight() - containerViewBack.fragmentPanTranslationOffset);
-            canvas.saveLayerAlpha(AndroidUtilities.rectTmp, (int) (swipeProgress * 0xFF), Canvas.ALL_SAVE_FLAG);
-            canvas.translate(getPaddingLeft(), bgActionBar.getY() + getPaddingTop() - containerViewBack.fragmentPanTranslationOffset);
-            bgActionBar.onDrawCrossfadeContent(canvas, false, useBackDrawable, swipeProgress);
-            canvas.restore();
-
-            AndroidUtilities.rectTmp.set(getPaddingLeft(), !AndroidUtilities.isTablet() ? AndroidUtilities.statusBarHeight : getPaddingTop(), getWidth() - getPaddingLeft(),  fgActionBar.getY() + getPaddingTop() + fgActionBar.getHeight() - containerView.fragmentPanTranslationOffset);
-            canvas.saveLayerAlpha(AndroidUtilities.rectTmp, (int) ((1 - swipeProgress) * 0xFF), Canvas.ALL_SAVE_FLAG);
-            canvas.translate(getPaddingLeft(), fgActionBar.getY() + getPaddingTop() - containerView.fragmentPanTranslationOffset);
-            fgActionBar.onDrawCrossfadeContent(canvas, true, useBackDrawable, swipeProgress);
-            canvas.restore();
-        }
     }
 
     @Override
@@ -1307,14 +1212,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         }
         containerViewBack.setVisibility(View.INVISIBLE);
     }
-
-    private static boolean USE_SPRING_ANIMATION = CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING;
-    private static final float SPRING_STIFFNESS = 1000f;
-    private static final float SPRING_STIFFNESS_PREVIEW = 650f;
-    private static final float SPRING_STIFFNESS_PREVIEW_OUT = 800f;
-    private static final float SPRING_STIFFNESS_PREVIEW_EXPAND = 750f;
-    private static final float SPRING_MULTIPLIER = 1000f;
-    private SpringAnimation currentSpringAnimation;
 
     private void startLayoutAnimation(final boolean open, final boolean first, final boolean preview) {
         if (first) {
@@ -2952,6 +2849,106 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         return Math.max(0, usableViewHeight - (rect.bottom - rect.top));
     }
 
+    private static boolean USE_ACTIONBAR_CROSSFADE = CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING && CherrygramConfig.INSTANCE.getActionbarCrossfade();
+    private float swipeProgress;
+    private MenuDrawable menuDrawable;
+
+    @Override
+    public boolean isActionBarInCrossfade() {
+        boolean crossfadeNoFragments = SharedConfig.animationsEnabled() && USE_ACTIONBAR_CROSSFADE && !isInPreviewMode() && (isSwipeInProgress() || isTransitionAnimationInProgress()) && currentAnimation == null;
+        return crossfadeNoFragments && getLastFragment() != null && getLastFragment().isActionBarCrossfadeEnabled() && getBackgroundFragment() != null && getBackgroundFragment().isActionBarCrossfadeEnabled();
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+
+        if (isActionBarInCrossfade()) {
+            if (containerView == null || containerViewBack == null) {
+                return;
+            }
+
+            BaseFragment foregroundFragment = getLastFragment();
+            BaseFragment backgroundFragment = getBackgroundFragment();
+
+            if (foregroundFragment == null || backgroundFragment == null) {
+                return;
+            }
+
+            ActionBar fgActionBar = foregroundFragment.getActionBar();
+            ActionBar bgActionBar = backgroundFragment.getActionBar();
+
+            if (fgActionBar == null || bgActionBar == null) {
+                return;
+            }
+
+            boolean useBackDrawable = false;
+            boolean backDrawableReverse = false;
+            Float backDrawableForcedProgress = null;
+
+            if (!AndroidUtilities.isTablet()) {
+                if (backgroundFragment.getBackButtonState() == BackButtonState.MENU && foregroundFragment.getBackButtonState() == BackButtonState.BACK) {
+                    useBackDrawable = true;
+                    backDrawableReverse = false;
+                } else if (backgroundFragment.getBackButtonState() == BackButtonState.BACK && foregroundFragment.getBackButtonState() == BackButtonState.MENU) {
+                    useBackDrawable = true;
+                    backDrawableReverse = true;
+                } else if (backgroundFragment.getBackButtonState() == BackButtonState.BACK && foregroundFragment.getBackButtonState() == BackButtonState.BACK) {
+                    useBackDrawable = true;
+                    backDrawableForcedProgress = 0f;
+                } else if (backgroundFragment.getBackButtonState() == BackButtonState.MENU && foregroundFragment.getBackButtonState() == BackButtonState.MENU) {
+                    useBackDrawable = true;
+                    backDrawableForcedProgress = 1f;
+                }
+            }
+
+            AndroidUtilities.rectTmp.set(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingLeft(), bgActionBar.getY() + getPaddingTop() + bgActionBar.getHeight());
+            canvas.saveLayerAlpha(AndroidUtilities.rectTmp, (int) (swipeProgress * 0xFF), Canvas.ALL_SAVE_FLAG);
+            canvas.translate(getPaddingLeft(), getPaddingTop());
+            bgActionBar.onDrawCrossfadeBackground(canvas);
+            canvas.restore();
+
+            canvas.saveLayerAlpha(AndroidUtilities.rectTmp, (int) ((1 - swipeProgress) * 0xFF), Canvas.ALL_SAVE_FLAG);
+            canvas.translate(getPaddingLeft(), getPaddingTop());
+            fgActionBar.onDrawCrossfadeBackground(canvas);
+            canvas.restore();
+
+            if (useBackDrawable) {
+                AndroidUtilities.rectTmp.set(0, 0, getWidth(), bgActionBar.getY() + bgActionBar.getHeight());
+                float progress = backDrawableForcedProgress != null ? backDrawableForcedProgress : swipeProgress;
+                float bgAlpha = 1f - (bgActionBar.getY() / -(bgActionBar.getHeight() - AndroidUtilities.statusBarHeight));
+                float fgAlpha = 1f - (fgActionBar.getY() / -(fgActionBar.getHeight() - AndroidUtilities.statusBarHeight));
+                canvas.saveLayerAlpha(AndroidUtilities.rectTmp, (int) (AndroidUtilities.lerp(bgAlpha, fgAlpha, 1f - swipeProgress) * 0xFF), Canvas.ALL_SAVE_FLAG);
+                canvas.translate(AndroidUtilities.dp(16 - 0.5f), AndroidUtilities.dp(16) + (fgActionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0));
+                int color = ColorUtils.blendARGB(bgActionBar.getItemsColor(), fgActionBar.getItemsColor(), backDrawableReverse ? swipeProgress : 1f - swipeProgress);
+                menuDrawable.setIconColor(color);
+                menuDrawable.setRotation(backDrawableReverse ? progress : 1f - progress, false);
+                menuDrawable.draw(canvas);
+                canvas.restore();
+            }
+
+            AndroidUtilities.rectTmp.set(getPaddingLeft(), !AndroidUtilities.isTablet() ? AndroidUtilities.statusBarHeight : getPaddingTop(), getWidth() - getPaddingLeft(),  bgActionBar.getY() + getPaddingTop() + bgActionBar.getHeight() - containerViewBack.fragmentPanTranslationOffset);
+            canvas.saveLayerAlpha(AndroidUtilities.rectTmp, (int) (swipeProgress * 0xFF), Canvas.ALL_SAVE_FLAG);
+            canvas.translate(getPaddingLeft(), bgActionBar.getY() + getPaddingTop() - containerViewBack.fragmentPanTranslationOffset);
+            bgActionBar.onDrawCrossfadeContent(canvas, false, useBackDrawable, swipeProgress);
+            canvas.restore();
+
+            AndroidUtilities.rectTmp.set(getPaddingLeft(), !AndroidUtilities.isTablet() ? AndroidUtilities.statusBarHeight : getPaddingTop(), getWidth() - getPaddingLeft(),  fgActionBar.getY() + getPaddingTop() + fgActionBar.getHeight() - containerView.fragmentPanTranslationOffset);
+            canvas.saveLayerAlpha(AndroidUtilities.rectTmp, (int) ((1 - swipeProgress) * 0xFF), Canvas.ALL_SAVE_FLAG);
+            canvas.translate(getPaddingLeft(), fgActionBar.getY() + getPaddingTop() - containerView.fragmentPanTranslationOffset);
+            fgActionBar.onDrawCrossfadeContent(canvas, true, useBackDrawable, swipeProgress);
+            canvas.restore();
+        }
+    }
+
+    private static boolean USE_SPRING_ANIMATION = CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING;
+    private static final float SPRING_STIFFNESS = 1000f;
+    private static final float SPRING_STIFFNESS_PREVIEW = 650f;
+    private static final float SPRING_STIFFNESS_PREVIEW_OUT = 800f;
+    private static final float SPRING_STIFFNESS_PREVIEW_EXPAND = 750f;
+    private static final float SPRING_MULTIPLIER = 1000f;
+    private SpringAnimation currentSpringAnimation;
+
     private void resetViewProperties(View v) {
         if (v == null) {
             return;
@@ -2975,11 +2972,8 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (getLastFragment() != null && getLastFragment().overlayStoryViewer != null && getLastFragment().overlayStoryViewer.attachedToParent()) {
-            return getLastFragment().overlayStoryViewer.windowView.dispatchTouchEvent(ev);
-        }
-        if (getLastFragment() != null && getLastFragment().storyViewer != null && getLastFragment().storyViewer.attachedToParent()) {
-            return getLastFragment().storyViewer.windowView.dispatchTouchEvent(ev);
+        if (getLastFragment() != null && getLastFragment().getLastStoryViewer() != null && getLastFragment().getLastStoryViewer().attachedToParent()) {
+            return getLastFragment().getLastStoryViewer().windowView.dispatchTouchEvent(ev);
         }
         return super.dispatchTouchEvent(ev);
     }

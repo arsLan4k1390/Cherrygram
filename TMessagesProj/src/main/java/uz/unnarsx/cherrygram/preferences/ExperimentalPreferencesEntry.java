@@ -126,17 +126,19 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
             if (position == springAnimationRow) {
-                ArrayList<String> arrayList = new ArrayList<>();
-                ArrayList<Integer> types = new ArrayList<>();
-                arrayList.add(LocaleController.getString("EP_NavigationAnimationSpring", R.string.EP_NavigationAnimationSpring));
-                types.add(CherrygramConfig.ANIMATION_SPRING);
-                arrayList.add(LocaleController.getString("EP_NavigationAnimationBezier", R.string.EP_NavigationAnimationBezier));
-                types.add(CherrygramConfig.ANIMATION_CLASSIC);
+                ArrayList<String> configStringKeys = new ArrayList<>();
+                ArrayList<Integer> configValues = new ArrayList<>();
 
-                PopupHelper.show(arrayList, LocaleController.getString("EP_NavigationAnimation", R.string.EP_NavigationAnimation), types.indexOf(CherrygramConfig.INSTANCE.getSpringAnimation()), context, i -> {
-                    CherrygramConfig.INSTANCE.setSpringAnimation(types.get(i));
+                configStringKeys.add(LocaleController.getString("EP_NavigationAnimationSpring", R.string.EP_NavigationAnimationSpring));
+                configValues.add(CherrygramConfig.ANIMATION_SPRING);
+
+                configStringKeys.add(LocaleController.getString("EP_NavigationAnimationBezier", R.string.EP_NavigationAnimationBezier));
+                configValues.add(CherrygramConfig.ANIMATION_CLASSIC);
+
+                PopupHelper.show(configStringKeys, LocaleController.getString("EP_NavigationAnimation", R.string.EP_NavigationAnimation), configValues.indexOf(CherrygramConfig.INSTANCE.getSpringAnimation()), context, i -> {
+                    CherrygramConfig.INSTANCE.setSpringAnimation(configValues.get(i));
+
                     listAdapter.notifyItemChanged(springAnimationRow);
-
                     updateRowsId(false);
                     AppRestartHelper.createRestartBulletin(this);
                 });
@@ -185,16 +187,21 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                         }
                 );
             } else if (position == downloadSpeedBoostRow) {
-                ArrayList<String> arrayList = new ArrayList<>();
-                ArrayList<Integer> types = new ArrayList<>();
-                arrayList.add(LocaleController.getString("EP_DownloadSpeedBoostNone", R.string.EP_DownloadSpeedBoostNone));
-                types.add(CherrygramConfig.BOOST_NONE);
-                arrayList.add(LocaleController.getString("EP_DownloadSpeedBoostAverage", R.string.EP_DownloadSpeedBoostAverage));
-                types.add(CherrygramConfig.BOOST_AVERAGE);
-                arrayList.add(LocaleController.getString("EP_DownloadSpeedBoostExtreme", R.string.EP_DownloadSpeedBoostExtreme));
-                types.add(CherrygramConfig.BOOST_EXTREME);
-                PopupHelper.show(arrayList, LocaleController.getString("EP_DownloadSpeedBoost", R.string.EP_DownloadSpeedBoost), types.indexOf(CherrygramConfig.INSTANCE.getDownloadSpeedBoost()), context, i -> {
-                    CherrygramConfig.INSTANCE.setDownloadSpeedBoost(types.get(i));
+                ArrayList<String> configStringKeys = new ArrayList<>();
+                ArrayList<Integer> configValues = new ArrayList<>();
+
+                configStringKeys.add(LocaleController.getString("EP_DownloadSpeedBoostNone", R.string.EP_DownloadSpeedBoostNone));
+                configValues.add(CherrygramConfig.BOOST_NONE);
+
+                configStringKeys.add(LocaleController.getString("EP_DownloadSpeedBoostAverage", R.string.EP_DownloadSpeedBoostAverage));
+                configValues.add(CherrygramConfig.BOOST_AVERAGE);
+
+                configStringKeys.add(LocaleController.getString("EP_DownloadSpeedBoostExtreme", R.string.EP_DownloadSpeedBoostExtreme));
+                configValues.add(CherrygramConfig.BOOST_EXTREME);
+
+                PopupHelper.show(configStringKeys, LocaleController.getString("EP_DownloadSpeedBoost", R.string.EP_DownloadSpeedBoost), configValues.indexOf(CherrygramConfig.INSTANCE.getDownloadSpeedBoost()), context, i -> {
+                    CherrygramConfig.INSTANCE.setDownloadSpeedBoost(configValues.get(i));
+
                     listAdapter.notifyItemChanged(downloadSpeedBoostRow);
                     AppRestartHelper.createRestartBulletin(this);
                 });

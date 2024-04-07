@@ -108,6 +108,13 @@ public class Bulletin {
         return new Bulletin(null, containerLayout, contentLayout, duration);
     }
 
+    public Bulletin setOnClickListener(View.OnClickListener onClickListener) {
+        if (layout != null) {
+            layout.setOnClickListener(onClickListener);
+        }
+        return this;
+    }
+
     @SuppressLint("RtlHardcoded")
     public static Bulletin make(@NonNull BaseFragment fragment, @NonNull Layout contentLayout, int duration) {
         if (fragment instanceof ChatActivity) {
@@ -665,7 +672,7 @@ public class Bulletin {
 
         protected Bulletin bulletin;
         Drawable background;
-        private boolean top;
+        public boolean top;
 
         public boolean isTransitionRunning() {
             return transitionRunningEnter || transitionRunningExit;
@@ -685,6 +692,12 @@ public class Bulletin {
             updateSize();
             setPadding(AndroidUtilities.dp(8), AndroidUtilities.dp(8), AndroidUtilities.dp(8), AndroidUtilities.dp(8));
             setWillNotDraw(false);
+            ScaleStateListAnimator.apply(this, .02f, 1.5f);
+        }
+
+        @Override
+        protected boolean verifyDrawable(@NonNull Drawable who) {
+            return background == who || super.verifyDrawable(who);
         }
 
         protected void setBackground(int color) {
@@ -726,7 +739,7 @@ public class Bulletin {
             updateSize();
         }
 
-        private void setTop(boolean top) {
+        public void setTop(boolean top) {
             this.top = top;
             updateSize();
         }

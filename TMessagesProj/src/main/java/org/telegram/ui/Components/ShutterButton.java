@@ -33,7 +33,7 @@ public class ShutterButton extends View {
     public enum State {
         DEFAULT,
         RECORDING,
-        RECORDING_LOCKED,
+        RECORDING_LOCKED
     }
 
     private final static int LONG_PRESS_TIME = 800;

@@ -13,7 +13,6 @@ public class LocalVerificationsHelper {
         DEFAULT_VERIFY_LIST.add(Constants.Cherrygram_Support);
         DEFAULT_VERIFY_LIST.add(Constants.Cherrygram_APKs);
         DEFAULT_VERIFY_LIST.add(Constants.Cherrygram_Beta);
-        DEFAULT_VERIFY_LIST.add(Constants.Cherrygram_Premium);
         DEFAULT_VERIFY_LIST.add(Constants.Cherrygram_Archive);
 
         HIDE_DELETE_ALL_BUTTON.add(Constants.Cherrygram_Support);

@@ -101,6 +101,7 @@ public class ChatsHelper extends BaseController {
     public static CharSequence createEditedString(MessageObject messageObject) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
         boolean hasForwards = messageObject.messageOwner.forwards > 0;
+        boolean isMusic = messageObject.isMusic();
 
         if (editedDrawable == null) {
             editedDrawable = Objects.requireNonNull(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_edited)).mutate();
@@ -117,14 +118,14 @@ public class ChatsHelper extends BaseController {
             forwardsSpan.setSpan(new ColoredImageSpan(forwardsDrawable), 0, 1, 0);
         }
         spannableStringBuilder
-                .append(' ')
-                .append(hasForwards ? forwardsSpan : "")
-                .append(hasForwards ? " " : "")
-                .append(hasForwards ? String.format("%d", messageObject.messageOwner.forwards) : "")
-                .append(' ')
-                .append(hasForwards ? "• " : "")
+                .append(isMusic ? "" : " ")
+                .append(hasForwards && !isMusic ? forwardsSpan : "")
+                .append(hasForwards && !isMusic ? " " : "")
+                .append(hasForwards && !isMusic ? String.format("%d", messageObject.messageOwner.forwards) : "")
+                .append(isMusic ? "" : " ")
+                .append(hasForwards && !isMusic ? "• " : "")
                 .append(CherrygramConfig.INSTANCE.getShowPencilIcon() ? editedSpan : LocaleController.getString("EditedMessage", R.string.EditedMessage))
-                .append(hasForwards ? " • " : " ")
+                .append(hasForwards && !isMusic ? " • " : " ")
                 .append(LocaleController.getInstance().formatterDay.format((long) (messageObject.messageOwner.date) * 1000));
         return spannableStringBuilder;
     }

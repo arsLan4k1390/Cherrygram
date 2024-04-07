@@ -172,9 +172,6 @@
     <string name="AP_DrawerBlurIntensity">模糊程度</string>
     <string name="AP_DrawerIconPack_Header">侧边栏图标设置</string>
     <string name="AP_DrawerButtonsCategory">侧边栏按钮</string>
-    <string name="AP_ProfileCategory">个人资料和联系人</string>
-    <string name="AP_HideUserPhone">隐藏手机号码</string>
-    <string name="AP_HideUserPhoneSummary">在侧边栏 和设置中隐藏手机号</string>
     <string name="AP_MutualContacts_Description">该帐号为双向联系人</string>
     <string name="AP_ShowID">在个人资料中显示 ID 和 DC</string>
     <!--Appearance Preferences-->
@@ -223,13 +220,10 @@
     <string name="CP_CameraType">相机类型</string>
     <string name="CP_DefaultCameraDesc">使用 Telegram 内置相机</string>
     <string name="CP_CameraXDesc">CameraX 仅支持 <![CDATA[<a href="https://developer.android.com/training/camerax/devices">下述设备</a>]]>，效果和镜头支持取决于您的硬件</string>
-    <string name="CP_PerformanceMode">高性能模式</string>
-    <string name="CP_PerformanceModeDesc">CameraX的质量会有所降低，提高性能</string>
     <string name="CP_CameraQuality">相机质量</string>
     <string name="CP_CameraTypeSystem">系统相机</string>
     <string name="CP_SystemCameraDesc">使用系统相机（视频消息不可用）</string>
     <string name="CP_CameraAspectRatio">相机宽高比</string>
-    <string name="CP_CameraAspectRatio_Desc">选择合适的宽高比可以更高质量地录制视频。大部分设备使用16：9的宽高比，而部分设备使用4：3或1：1。建议自行测试并选择最佳的比率</string>
     <string name="CP_RearCam">使用后置相机</string>
     <string name="CP_RearCam_Desc">视频消息不使用前置相机</string>
     <string name="CP_DisableCam">在媒体菜单中禁用相机</string>
@@ -238,7 +232,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">实验</string>
     <string name="EP_NavigationAnimation">应用动画</string>
-    <string name="EP_NavigationAnimationSpring">跃动</string>
     <string name="EP_NavigationAnimationBezier">经典</string>
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
     <string name="CG_ResidentNotification">显示常驻通知</string>

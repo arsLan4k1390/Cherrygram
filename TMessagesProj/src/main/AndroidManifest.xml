@@ -105,7 +105,7 @@
     </queries>
 
     <application
-        android:name=".ApplicationLoader"
+        android:name="org.telegram.messenger.ApplicationLoader"
         android:allowBackup="true"
         android:restoreAnyVersion="true"
         android:backupAgent=".BackupAgent"
@@ -181,11 +181,42 @@
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity-alias>
 
+
+        <activity-alias
+            android:enabled="false"
+            android:name="uz.unnarsx.cherrygram.CG_Icon_Dark_Bra"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher_cherry_dark_bra"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+        </activity-alias>
+
         <activity-alias
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.CG_Icon_White_Cherry"
             android:targetActivity="org.telegram.ui.LaunchActivity"
             android:icon="@mipmap/icon_launcher_cherry_white"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="uz.unnarsx.cherrygram.CG_Icon_White_Cherry_Bra"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher_cherry_white_bra"
             android:exported="true">
 
             <intent-filter>
@@ -306,21 +337,6 @@
             android:name="uz.unnarsx.cherrygram.CG_Icon_Night"
             android:targetActivity="org.telegram.ui.LaunchActivity"
             android:icon="@mipmap/icon_launcher_cherry_nox"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.CG_Icon_Dark_Bra"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_cherry_dark_bra"
             android:exported="true">
 
             <intent-filter>
@@ -614,11 +630,11 @@
                 <data android:mimeType="*/*"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="vnd.android.cursor.item/vnd.uz.unnarsx.cherrygram.android.profile" />
             </intent-filter>
-            <intent-filter android:autoVerify="true">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -629,27 +645,12 @@
                 <data android:host="t.me" android:scheme="http" />
                 <data android:host="t.me" android:scheme="https" />
             </intent-filter>
-            <intent-filter
-                android:icon="@mipmap/icon_launcher_cherry"
-                android:priority="1">
+            <intent-filter android:icon="@mipmap/icon_launcher_cherry" android:priority="1">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="tg" />
             </intent-filter>
-
-            <intent-filter
-                android:icon="@mipmap/icon_launcher_cherry"
-                android:priority="1">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.BROWSABLE" />
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:scheme="ton" />
-
-            </intent-filter>
-
             <intent-filter>
                 <action android:name="org.telegram.messenger.CREATE_STICKER_PACK"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -661,9 +662,6 @@
                 android:name="com.google.mlkit.vision.DEPENDENCIES"
                 android:value="subject_segment" />
         </activity>
-        <service
-            android:name="androidx.sharetarget.ChooserTargetServiceCompat"
-            android:exported="true"/>
         <activity-alias
             android:name="org.telegram.ui.CallsActivity"
             android:targetActivity="org.telegram.ui.LaunchActivity"
@@ -693,9 +691,7 @@
             android:stateNotNeeded="true"
             android:theme="@style/Theme.TMessages.Transparent"
             android:exported="true">
-            <intent-filter
-                android:icon="@mipmap/icon_launcher_cherry"
-                android:priority="1">
+            <intent-filter android:icon="@mipmap/icon_launcher_cherry" android:priority="1">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -771,20 +767,17 @@
             android:taskAffinity=""
             android:theme="@style/Theme.TMessages.PopupNotification"
             android:resizeableActivity="false"
-            android:exported="false"
             android:windowSoftInputMode="adjustResize|stateHidden">
         </activity>
         <activity android:name="org.telegram.ui.VoIPPermissionActivity"
                   android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
                   android:taskAffinity="${applicationId}.voip"
                   android:excludeFromRecents="true"
-                  android:exported="true"
                 android:theme="@style/Theme.TMessages.Transparent"/>
         <activity android:name="org.telegram.ui.VoIPFeedbackActivity"
                   android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
 				  android:taskAffinity="${applicationId}.voip_feedback"
                   android:excludeFromRecents="true"
-                  android:exported="true"
                 android:theme="@style/Theme.TMessages.TransparentWithAlerts"/>
         <activity
             android:name="uz.unnarsx.cherrygram.helpers.AppRestartHelper"
@@ -852,18 +845,18 @@
         <service android:name=".KeepAliveJob"
                  android:exported="false"
                  android:permission="android.permission.BIND_JOB_SERVICE"/>
-        <service android:name=".BringAppForegroundService" android:enabled="true" android:exported="false"/>
-        <service android:name=".NotificationsService" android:foregroundServiceType="remoteMessaging" android:enabled="true" android:exported="false"/>
+        <service android:name=".BringAppForegroundService" android:enabled="true"  android:exported="true"/>
+        <service android:name=".NotificationsService" android:foregroundServiceType="remoteMessaging" android:enabled="true"  android:exported="true"/>
         <service android:name=".NotificationRepeat" android:exported="false"/>
         <service android:name=".VideoEncodingService" android:foregroundServiceType="dataSync" android:enabled="true" android:exported="true"/>
         <service android:name="org.telegram.ui.Stories.recorder.StoryUploadingService" android:foregroundServiceType="dataSync" android:enabled="true" android:exported="true"/>
         <service android:name=".ImportingService" android:foregroundServiceType="dataSync" android:enabled="true" android:exported="true"/>
         <service android:name=".LocationSharingService"
             android:foregroundServiceType="location"
-            android:exported="false"
-            android:enabled="true"/>
-        <service android:name=".voip.VoIPService" android:enabled="true" android:foregroundServiceType="mediaProjection|camera|microphone|mediaPlayback" android:exported="false"/>
-        <service android:name=".MusicPlayerService" android:exported="false" android:foregroundServiceType="mediaPlayback"/>
+            android:enabled="true"
+            android:exported="true"/>
+        <service android:name=".voip.VoIPService" android:enabled="true" android:foregroundServiceType="mediaProjection|camera|microphone|mediaPlayback"/>
+        <service android:name=".MusicPlayerService" android:exported="true" android:enabled="true" android:foregroundServiceType="mediaPlayback"/>
         <service android:name=".MusicBrowserService" android:exported="true">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService"/>
@@ -892,7 +885,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".AppStartReceiver" android:enabled="true" android:exported="true">
+        <receiver android:name=".AppStartReceiver" android:enabled="true" android:exported="false">
             <intent-filter>
                 <action android:name="org.telegram.start" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -905,17 +898,17 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".WearReplyReceiver" android:enabled="true" android:exported="false"/>
+        <receiver android:name=".WearReplyReceiver" android:enabled="true"/>
 
-        <receiver android:name=".StopLiveLocationReceiver" android:enabled="true" android:exported="false"/>
+        <receiver android:name=".StopLiveLocationReceiver" android:enabled="true"/>
 
-        <receiver android:name=".PopupReplyReceiver" android:enabled="true" android:exported="false"/>
+        <receiver android:name=".PopupReplyReceiver" android:enabled="true"/>
 
         <receiver android:name=".NotificationCallbackReceiver" android:enabled="true" android:exported="false"/>
 
-        <receiver android:name=".ShareBroadcastReceiver" android:enabled="true" android:exported="false"/>
+        <receiver android:name=".ShareBroadcastReceiver" android:enabled="true"/>
 
-        <receiver android:name=".CustomTabsCopyReceiver" android:enabled="true" android:exported="false"/>
+        <receiver android:name=".CustomTabsCopyReceiver" android:enabled="true"/>
 
         <receiver android:name=".NotificationDismissReceiver" android:exported="false"/>
 
@@ -1002,14 +995,7 @@
 <!--        <service android:name=".FeedWidgetService"-->
 <!--            android:permission="android.permission.BIND_REMOTEVIEWS"-->
 <!--            android:exported="false" />-->
-        <service android:name=".FilesMigrationService" android:foregroundServiceType="dataSync" android:exported="false"/>
-
-        <service
-            android:name=".GcmPushListenerService" android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
+        <service android:name=".FilesMigrationService" android:exported="false"/>
 
         <uses-library android:name="com.sec.android.app.multiwindow" android:required="false" />
         <meta-data android:name="com.sec.android.support.multiwindow" android:value="true" />
@@ -1026,8 +1012,6 @@
         <meta-data android:name="com.google.android.gms.vision.DEPENDENCIES" android:value="face,barcode" />
 
         <meta-data android:name="android.max_aspect" android:value="2.5" />
-
-        <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/cg_notification" />
 
     </application>
 

@@ -19,6 +19,7 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -192,7 +193,6 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     private TextureView textureView;
     private BackupImageView textureOverlayView;
     private final boolean useCamera2 = CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_2;
-    private final boolean supportHotSwap = useCamera2 && DualCameraView.dualAvailableStatic(ApplicationLoader.applicationContext) && CherrygramConfig.INSTANCE.getUseDualCamera();
     private CameraSession cameraSession;
     private boolean bothCameras;
     private Camera2Session[] camera2Sessions = new Camera2Session[2];
@@ -699,7 +699,11 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             try {
                 performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
             } catch (Exception ignore) {}
-            AndroidUtilities.lockOrientation(delegate.getParentActivity());
+            if (!AndroidUtilities.isTablet() && CherrygramConfig.INSTANCE.getIconReplacement() != CherrygramConfig.ICON_REPLACE_NONE) {
+                AndroidUtilities.lockOrientation(delegate.getParentActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else {
+                AndroidUtilities.lockOrientation(delegate.getParentActivity());
+            }
             invalidate();
             NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.recordResumed);
         }
@@ -782,7 +786,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         }
 
         if (useCamera2) {
-            bothCameras = DualCameraView.dualAvailableStatic(getContext()) && CherrygramConfig.INSTANCE.getUseDualCamera();
+            bothCameras = DualCameraView.roundDualAvailableStatic(getContext()) && CherrygramConfig.INSTANCE.getUseDualCamera();
             if (bothCameras) {
                 for (int a = 0; a < 2; ++a) {
                     if (camera2Sessions[a] == null) {
@@ -3333,7 +3337,11 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
 
                         }
                     }
-                    AndroidUtilities.lockOrientation(delegate.getParentActivity());
+                    if (!AndroidUtilities.isTablet() && CherrygramConfig.INSTANCE.getIconReplacement() != CherrygramConfig.ICON_REPLACE_NONE) {
+                        AndroidUtilities.lockOrientation(delegate.getParentActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                    } else {
+                        AndroidUtilities.lockOrientation(delegate.getParentActivity());
+                    }
                     recordPlusTime = fromPause ? recordedTime : 0;
                     recordStartTime = System.currentTimeMillis();
                     recording = true;

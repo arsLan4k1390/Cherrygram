@@ -592,6 +592,7 @@ public class FiltersView extends RecyclerListView {
                 }
             }
         }
+
         return false;
     }
 

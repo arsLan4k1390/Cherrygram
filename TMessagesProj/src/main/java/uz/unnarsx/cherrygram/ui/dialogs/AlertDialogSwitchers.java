@@ -13,6 +13,8 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Components.LayoutHelper;
 
+import java.util.Random;
+
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class AlertDialogSwitchers {
@@ -32,27 +34,34 @@ public class AlertDialogSwitchers {
         linearLayoutInviteContainer.setOrientation(LinearLayout.VERTICAL);
         linearLayout.addView(linearLayoutInviteContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-        int count = 5;
+        int count = 6;
         for (int a = 0; a < count; a++) {
             TextCell textCell = new TextCell(context, 23, false, true, fragment.getResourceProvider());
             switch (a) {
                 case 0: {
-                    textCell.setTextAndCheck(LocaleController.getString("FilterChats", R.string.FilterChats), CherrygramConfig.INSTANCE.getUsersDrawShareButton(), false);
+                    int[] drawableIDs = {R.drawable.msg_replace_solar, R.drawable.large_repost_story, R.drawable.msg_forward_replace_solar, R.drawable.msg_menu_stories};
+                    int storyIcon = drawableIDs[new Random().nextInt(4)];
+
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("RepostToStory", R.string.RepostToStory), CherrygramConfig.INSTANCE.getShareDrawStoryButton(), storyIcon, true);
                     break;
                 }
                 case 1: {
-                    textCell.setTextAndCheck(LocaleController.getString("FilterGroups", R.string.FilterGroups), CherrygramConfig.INSTANCE.getSupergroupsDrawShareButton(), false);
+                    textCell.setTextAndCheck(LocaleController.getString("FilterChats", R.string.FilterChats), CherrygramConfig.INSTANCE.getUsersDrawShareButton(), false);
                     break;
                 }
                 case 2: {
-                    textCell.setTextAndCheck(LocaleController.getString("FilterChannels", R.string.FilterChannels), CherrygramConfig.INSTANCE.getChannelsDrawShareButton(), false);
+                    textCell.setTextAndCheck(LocaleController.getString("FilterGroups", R.string.FilterGroups), CherrygramConfig.INSTANCE.getSupergroupsDrawShareButton(), false);
                     break;
                 }
                 case 3: {
-                    textCell.setTextAndCheck(LocaleController.getString("FilterBots", R.string.FilterBots), CherrygramConfig.INSTANCE.getBotsDrawShareButton(), false);
+                    textCell.setTextAndCheck(LocaleController.getString("FilterChannels", R.string.FilterChannels), CherrygramConfig.INSTANCE.getChannelsDrawShareButton(), false);
                     break;
                 }
                 case 4: {
+                    textCell.setTextAndCheck(LocaleController.getString("FilterBots", R.string.FilterBots), CherrygramConfig.INSTANCE.getBotsDrawShareButton(), false);
+                    break;
+                }
+                case 5: {
                     textCell.setTextAndCheck(LocaleController.getString("StickersName", R.string.StickersName), CherrygramConfig.INSTANCE.getStickersDrawShareButton(), false);
                     break;
                 }
@@ -64,26 +73,31 @@ public class AlertDialogSwitchers {
                 Integer tag = (Integer) v2.getTag();
                 switch (tag) {
                     case 0: {
+                        CherrygramConfig.INSTANCE.toggleShareDrawStoryButton();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getShareDrawStoryButton());
+                        break;
+                    }
+                    case 1: {
                         CherrygramConfig.INSTANCE.toggleUsersDrawShareButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getUsersDrawShareButton());
                         break;
                     }
-                    case 1: {
+                    case 2: {
                         CherrygramConfig.INSTANCE.toggleSupergroupsDrawShareButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getSupergroupsDrawShareButton());
                         break;
                     }
-                    case 2: {
+                    case 3: {
                         CherrygramConfig.INSTANCE.toggleChannelsDrawShareButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getChannelsDrawShareButton());
                         break;
                     }
-                    case 3: {
+                    case 4: {
                         CherrygramConfig.INSTANCE.toggleBotsDrawShareButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getBotsDrawShareButton());
                         break;
                     }
-                    case 4: {
+                    case 5: {
                         CherrygramConfig.INSTANCE.toggleStickersDrawShareButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getStickersDrawShareButton());
                         break;

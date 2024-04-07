@@ -721,7 +721,9 @@ public class PhotoViewerWebView extends FrameLayout {
             if (currentYoutubeId != null) {
                 progressBarBlackBackground.setVisibility(View.VISIBLE);
                 isYouTube = true;
-                webView.addJavascriptInterface(new YoutubeProxy(), "YoutubeProxy");
+                if (Build.VERSION.SDK_INT >= 17) {
+                    webView.addJavascriptInterface(new YoutubeProxy(), "YoutubeProxy");
+                }
                 int seekToTime = 0;
                 if (originalUrl != null) {
                     try {

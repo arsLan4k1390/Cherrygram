@@ -235,7 +235,8 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
      * recursively traverses itemView and invalidates display list for each ViewGroup that matches
      * this criteria.
      */
-    static final boolean FORCE_INVALIDATE_DISPLAY_LIST = false;
+    static final boolean FORCE_INVALIDATE_DISPLAY_LIST = Build.VERSION.SDK_INT == 18
+            || Build.VERSION.SDK_INT == 19 || Build.VERSION.SDK_INT == 20;
     /**
      * On M+, an unspecified measure spec may include a hint which we can use. On older platforms,
      * this value might be garbage. To save LayoutManagers from it, RecyclerView sets the size to
@@ -243,19 +244,19 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
      */
     static final boolean ALLOW_SIZE_IN_UNSPECIFIED_SPEC = Build.VERSION.SDK_INT >= 23;
 
-    static final boolean POST_UPDATES_ON_ANIMATION = true;
+    static final boolean POST_UPDATES_ON_ANIMATION = Build.VERSION.SDK_INT >= 16;
 
     /**
      * On L+, with RenderThread, the UI thread has idle time after it has passed a frame off to
      * RenderThread but before the next frame begins. We schedule prefetch work in this window.
      */
-    static final boolean ALLOW_THREAD_GAP_WORK = true;
+    static final boolean ALLOW_THREAD_GAP_WORK = Build.VERSION.SDK_INT >= 21;
 
     /**
      * FocusFinder#findNextFocus is broken on ICS MR1 and older for View.FOCUS_BACKWARD direction.
      * We convert it to an absolute direction such as FOCUS_DOWN or FOCUS_LEFT.
      */
-    private static final boolean FORCE_ABS_FOCUS_SEARCH_DIRECTION = false;
+    private static final boolean FORCE_ABS_FOCUS_SEARCH_DIRECTION = Build.VERSION.SDK_INT <= 15;
 
     /**
      * on API 15-, a focused child can still be considered a focused child of RV even after
@@ -265,7 +266,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
      * to request focus on a new child, which will clear the focus on the old (detached) child as a
      * side-effect.
      */
-    private static final boolean IGNORE_DETACHED_FOCUSED_CHILD = false;
+    private static final boolean IGNORE_DETACHED_FOCUSED_CHILD = Build.VERSION.SDK_INT <= 15;
 
     static final boolean DISPATCH_TEMP_DETACH = false;
 
@@ -646,7 +647,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
     }
 
     void applyEdgeEffectColor(EdgeEffect edgeEffect) {
-        if (edgeEffect != null && glowColor != null) {
+        if (edgeEffect != null && Build.VERSION.SDK_INT >= 21 && glowColor != null) {
             edgeEffect.setColor(glowColor);
         }
     }
@@ -4136,11 +4137,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
      * trigger animations and do any necessary cleanup.
      */
     private void dispatchLayoutStep3() {
-        try {
-            mState.assertLayoutStep(State.STEP_ANIMATIONS);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mState.assertLayoutStep(State.STEP_ANIMATIONS);
         startInterceptRequestLayout();
         onEnterLayoutOrScroll();
         mState.mLayoutStep = State.STEP_START;

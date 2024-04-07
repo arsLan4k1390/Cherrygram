@@ -769,9 +769,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         }
         animatedStatus.setColor(Theme.getColor(Theme.isCurrentThemeDark() ? Theme.key_chats_verifiedBackground : Theme.key_chats_menuPhoneCats));
         status.setColor(Theme.getColor(Theme.isCurrentThemeDark() ? Theme.key_chats_verifiedBackground : Theme.key_chats_menuPhoneCats));
-        if (!CherrygramConfig.INSTANCE.getHidePhoneNumber()) {
-            phoneTextView.setText(PhoneFormat.getInstance().format("+" + user.phone));
-        } else if (!TextUtils.isEmpty(user.username)) {
+        if (!TextUtils.isEmpty(user.username)) {
             phoneTextView.setText("@" + user.username);
         } else {
             phoneTextView.setText(LocaleController.getString("MobileHidden",R.string.MobileHidden));
@@ -857,5 +855,18 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
 
     public View getEmojiStatusDrawableParent() {
         return nameTextView;
+    }
+
+    public void updateSunDrawable(boolean toDark) {
+        if (sunDrawable != null) {
+            if (toDark) {
+                sunDrawable.setCustomEndFrame(36);
+            } else {
+                sunDrawable.setCustomEndFrame(0);
+            }
+        }
+        if (darkThemeView != null) {
+            darkThemeView.playAnimation();
+        }
     }
 }

@@ -96,6 +96,15 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = LocaleController.getString("CP_ConfirmCalls", R.string.CP_ConfirmCalls)
+
+                contract({
+                    return@contract CherrygramConfig.confirmCalls
+                }) {
+                    CherrygramConfig.confirmCalls = it
+                }
+            }
+            switch {
                 title = LocaleController.getString("CP_DeleteForAll", R.string.CP_DeleteForAll)
                 description = LocaleController.getString("CP_DeleteForAll_Desc", R.string.CP_DeleteForAll_Desc)
 
@@ -129,11 +138,13 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract listOf(
                         Pair(CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP, LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)),
                         Pair(CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE, LocaleController.getString("DirectShare", R.string.DirectShare)),
+                        Pair(CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE, LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)),
                         Pair(CherrygramConfig.LEFT_BUTTON_REPLY, LocaleController.getString("Reply", R.string.Reply))
                     )
                 }, {
                     return@contract when (CherrygramConfig.leftBottomButton) {
                         CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> LocaleController.getString("DirectShare", R.string.DirectShare)
+                        CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
                         CherrygramConfig.LEFT_BUTTON_REPLY -> LocaleController.getString("Reply", R.string.Reply)
                         else -> LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)
                     }
@@ -250,6 +261,15 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }) {
                     CherrygramConfig.largePhotos = it
                     AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_SpoilersOnMedia", R.string.CP_SpoilersOnMedia)
+
+                contract({
+                    return@contract CherrygramConfig.spoilersOnMedia
+                }) {
+                    CherrygramConfig.spoilersOnMedia = it
                 }
             }
             switch {

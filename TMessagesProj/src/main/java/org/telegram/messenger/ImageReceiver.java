@@ -97,6 +97,10 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
 
         default void onAnimationReady(ImageReceiver imageReceiver) {
         }
+
+        default void didSetImageBitmap(int type, String key, Drawable drawable) {
+
+        }
     }
 
     public static class BitmapHolder {
@@ -438,7 +442,7 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
                         }
                     }
                 }
-                if (vectorImageMarkup == null && !CherrygramConfig.INSTANCE.getDisableAnimatedAvatars() && animationEnabled && MessagesController.getInstance(currentAccount).isPremiumUser(user) && user.photo.has_video && LiteMode.isEnabled(LiteMode.FLAG_AUTOPLAY_VIDEOS)) {
+                if (!CherrygramConfig.INSTANCE.getDisableAnimatedAvatars() && vectorImageMarkup == null && animationEnabled && MessagesController.getInstance(currentAccount).isPremiumUser(user) && user.photo.has_video && LiteMode.isEnabled(LiteMode.FLAG_AUTOPLAY_VIDEOS)) {
                     final TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(user.id);
                     if (userFull == null) {
                         MessagesController.getInstance(currentAccount).loadFullUser(user, currentGuid, false);
@@ -2251,6 +2255,10 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
         return currentImageDrawable != null || currentMediaDrawable != null || currentThumbDrawable != null || staticThumbDrawable != null || currentImageKey != null || currentMediaKey != null;
     }
 
+    public boolean hasMediaSet() {
+        return currentMediaDrawable != null;
+    }
+
     public boolean hasBitmapImage() {
         return currentImageDrawable != null || currentThumbDrawable != null || staticThumbDrawable != null || currentMediaDrawable != null;
     }
@@ -2682,6 +2690,9 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
             if (!key.equals(currentImageKey)) {
                 return false;
             }
+            if (delegate != null) {
+                delegate.didSetImageBitmap(type, key, drawable);
+            }
             boolean allowCrossFade = true;
             if (!(drawable instanceof AnimatedFileDrawable)) {
                 ImageLoader.getInstance().incrementUseCount(currentImageKey);
@@ -2732,6 +2743,9 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
         } else if (type == TYPE_MEDIA) {
             if (!key.equals(currentMediaKey)) {
                 return false;
+            }
+            if (delegate != null) {
+                delegate.didSetImageBitmap(type, key, drawable);
             }
             if (!(drawable instanceof AnimatedFileDrawable)) {
                 ImageLoader.getInstance().incrementUseCount(currentMediaKey);
@@ -2785,6 +2799,9 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
             }
             if (!key.equals(currentThumbKey)) {
                 return false;
+            }
+            if (delegate != null) {
+                delegate.didSetImageBitmap(type, key, drawable);
             }
             ImageLoader.getInstance().incrementUseCount(currentThumbKey);
 

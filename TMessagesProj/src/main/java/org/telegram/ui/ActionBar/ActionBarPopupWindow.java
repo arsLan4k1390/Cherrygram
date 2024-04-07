@@ -55,7 +55,7 @@ public class ActionBarPopupWindow extends PopupWindow {
 
     private static Method layoutInScreenMethod;
     private static final Field superListenerField;
-    private static final boolean allowAnimation = true;
+    private static final boolean allowAnimation = Build.VERSION.SDK_INT >= 18;
     private static DecelerateInterpolator decelerateInterpolator = new DecelerateInterpolator();
     private AnimatorSet windowAnimatorSet;
     private boolean animationEnabled = allowAnimation;

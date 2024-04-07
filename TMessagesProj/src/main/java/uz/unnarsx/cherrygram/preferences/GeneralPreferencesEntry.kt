@@ -54,29 +54,6 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
             }
         }
 
-        category(LocaleController.getString("AP_ProfileCategory", R.string.AP_ProfileCategory)) {
-            switch {
-                title = LocaleController.getString("CP_ConfirmCalls", R.string.CP_ConfirmCalls)
-
-                contract({
-                    return@contract CherrygramConfig.confirmCalls
-                }) {
-                    CherrygramConfig.confirmCalls = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("AP_HideUserPhone", R.string.AP_HideUserPhone)
-                description = LocaleController.getString("AP_HideUserPhoneSummary", R.string.AP_HideUserPhoneSummary)
-
-                contract({
-                    return@contract CherrygramConfig.hidePhoneNumber
-                }) {
-                    CherrygramConfig.hidePhoneNumber = it
-                    bf.parentLayout.rebuildAllFragmentViews(false, false)
-                }
-            }
-        }
-
         category(LocaleController.getString("CP_PremAndAnim_Header", R.string.CP_PremAndAnim_Header)) {
             switch {
                 title = LocaleController.getString("CP_HideStories", R.string.CP_HideStories)

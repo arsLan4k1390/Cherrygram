@@ -394,7 +394,9 @@ public class DefaultItemAnimator extends SimpleItemAnimator {
         // need listener functionality in VPACompat for this. Ick.
         final ViewPropertyAnimator animation = view.animate();
         mMoveAnimations.add(holder);
-        animation.setUpdateListener(animation1 -> onMoveAnimationUpdate(holder));
+        if (Build.VERSION.SDK_INT >= 19) {
+            animation.setUpdateListener(animation1 -> onMoveAnimationUpdate(holder));
+        }
         if (translationInterpolator != null) {
             animation.setInterpolator(translationInterpolator);
         } else {

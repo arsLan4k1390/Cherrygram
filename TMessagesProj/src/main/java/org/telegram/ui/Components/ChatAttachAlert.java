@@ -72,13 +72,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimationNotificationsLocker;
-import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.DocumentObject;
 import org.telegram.messenger.Emoji;
+import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
@@ -116,6 +117,9 @@ import org.telegram.ui.PhotoPickerActivity;
 import org.telegram.ui.PhotoPickerSearchActivity;
 import org.telegram.ui.PremiumPreviewFragment;
 import org.telegram.ui.WebAppDisclaimerAlert;
+import org.telegram.ui.bots.BotWebViewContainer;
+import org.telegram.ui.bots.BotWebViewMenuContainer;
+import org.telegram.ui.bots.ChatAttachAlertBotWebViewLayout;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -134,6 +138,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     private final NumberTextView captionLimitView;
     public boolean forUser;
     public boolean isPhotoPicker;
+    public boolean isStickerMode;
     private int currentLimit;
     private int codepointCount;
 
@@ -307,7 +312,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                                 } else {
                                     args1.putLong("chat_id", -did);
                                 }
-                                args1.putString("inline_query_input", "@" + UserObject.getPublicUsername(botUser) + " " + query);
+                                args1.putString("start_text", "@" + UserObject.getPublicUsername(botUser) + " " + query);
 
                                 BaseFragment lastFragment = baseFragment;
                                 if (MessagesController.getInstance(currentAccount).checkCanOpenChat(args1, lastFragment)) {
@@ -814,7 +819,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
     protected float cornerRadius = 1.0f;
 
-    protected ActionBar actionBar;
+    public ActionBar actionBar;
     private View actionBarShadow;
     private AnimatorSet actionBarAnimation;
     private AnimatorSet menuAnimator;
@@ -3020,6 +3025,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         }
         applyCaption();
         buttonPressed = true;
+
         delegate.didPressedButton(7, true, notify, scheduleDate, false);
     }
 
@@ -3174,7 +3180,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             int width = Math.max(nextAttachLayout.getWidth(), currentAttachLayout.getWidth());
             if (nextAttachLayout instanceof ChatAttachAlertPhotoLayoutPreview) {
                 nextAttachLayout.setTranslationX(width);
-                if (currentAttachLayout instanceof ChatAttachAlertPhotoLayout) {
+                if (currentAttachLayout instanceof ChatAttachAlertPhotoLayout && !CherrygramConfig.INSTANCE.getDisableAttachCamera()) {
                     ChatAttachAlertPhotoLayout photoLayout = (ChatAttachAlertPhotoLayout) currentAttachLayout;
                     if (photoLayout.cameraView != null) {
                         photoLayout.cameraView.setVisibility(View.INVISIBLE);
@@ -3184,7 +3190,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 }
             } else {
                 currentAttachLayout.setTranslationX(-width);
-                if (nextAttachLayout == photoLayout) {
+                if (nextAttachLayout == photoLayout && !CherrygramConfig.INSTANCE.getDisableAttachCamera()) {
                     ChatAttachAlertPhotoLayout photoLayout = (ChatAttachAlertPhotoLayout) nextAttachLayout;
                     if (photoLayout.cameraView != null) {
                         photoLayout.cameraView.setVisibility(View.VISIBLE);
@@ -4394,6 +4400,25 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         if (photoLayout != null) {
             photoLayout.updateAvatarPicker();
         }
+    }
+
+    public void enableStickerMode() {
+        selectedTextView.setText(LocaleController.getString("ChoosePhoto", R.string.ChoosePhoto));
+        typeButtonsAvailable = false;
+        buttonsRecyclerView.setVisibility(View.GONE);
+        shadow.setVisibility(View.GONE);
+        avatarPicker = 1;
+        isPhotoPicker = true;
+        isStickerMode = true;
+    }
+
+    public void enableDefaultMode() {
+        typeButtonsAvailable = true;
+        buttonsRecyclerView.setVisibility(View.VISIBLE);
+        shadow.setVisibility(View.VISIBLE);
+        avatarPicker = 0;
+        isPhotoPicker = false;
+        isStickerMode = false;
     }
 
     public TextView getSelectedTextView() {

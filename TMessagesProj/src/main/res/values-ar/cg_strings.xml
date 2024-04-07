@@ -161,9 +161,6 @@
     <string name="AP_DrawerBlurIntensity">شدة الضبابية</string>
     <string name="AP_DrawerIconPack_Header">مجموعة أيقونات الشريط الجانبي</string>
     <string name="AP_DrawerButtonsCategory">أزرار الشريط الجانبي</string>
-    <string name="AP_ProfileCategory">الملف الشخصي وجهات الاتصال</string>
-    <string name="AP_HideUserPhone">إخفاء رقم هاتفي</string>
-    <string name="AP_HideUserPhoneSummary">في الشريط الجانبي والإعدادات</string>
     <string name="AP_MutualContacts_Description">هذا هو جهات الاتصال المتبادلة.</string>
     <string name="AP_ShowID">إظهار ID وDC في الملف الشخصي</string>
     <!--Appearance Preferences-->
@@ -212,13 +209,10 @@
     <string name="CP_CameraType">نوع الكاميرا</string>
     <string name="CP_DefaultCameraDesc">استخدام الكاميرا تيليجرام المدمجة</string>
     <string name="CP_CameraXDesc">CameraX مدعوم فقط على <![CDATA[<a href="https://developer.android.com/training/camerax/devices">الأجهزة المحددة</a>]]>، يعتمد دعم المؤثرات وعدسات على الشركة المصنعة الخاصة بك.</string>
-    <string name="CP_PerformanceMode">وضع الأداء</string>
-    <string name="CP_PerformanceModeDesc">سيتم خفض جودة CameraX لصالح الأداء</string>
     <string name="CP_CameraQuality">جودة الكاميرا</string>
     <string name="CP_CameraTypeSystem">النظام</string>
     <string name="CP_SystemCameraDesc">الوصول مباشرة إلى كاميرا النظام (لا تنطبق على رسائل الفيديو).</string>
     <string name="CP_CameraAspectRatio">نسبة عرض الكاميرا</string>
-    <string name="CP_CameraAspectRatio_Desc">إن اختيار نسبة العرض للكاميرا ضروري لتسجيل رسائل الفيديو بجودة جيدة. تستخدم معظم الهواتف عادة نسبة جانب 16:9 بينما تستخدم الأجهزة الرئيسية 4:3 أو 1:1. اختبار كل منها، مقارنة جودة التسجيل واستخدام أفضل النسبة.</string>
     <string name="CP_RearCam">استخدام الكاميرا الخلفية</string>
     <string name="CP_RearCam_Desc">بدلاً من الكاميرا الأمامية لرسائل الفيديو</string>
     <string name="CP_DisableCam">تعطيل الكاميرا في قائمة إرفاق الوسائط</string>
@@ -227,7 +221,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">تجريبي</string>
     <string name="EP_NavigationAnimation">الرسوم المتحركة للتنقل</string>
-    <string name="EP_NavigationAnimationSpring">ربيع</string>
     <string name="EP_NavigationAnimationBezier">كلاسيكي</string>
     <string name="EP_NavigationAnimationCrossfading">التأثير المتلاشي</string>
     <string name="CG_ResidentNotification">إظهار إشعار دائم</string>

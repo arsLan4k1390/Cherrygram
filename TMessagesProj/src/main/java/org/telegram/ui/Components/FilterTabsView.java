@@ -22,6 +22,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.SystemClock;
 import android.text.Layout;
 import android.text.SpannableStringBuilder;
@@ -280,8 +281,8 @@ public class FilterTabsView extends FrameLayout {
                 float s = (float) Math.sin((p + (currentPosition % 2)) * Math.PI * 2.5f);
                 float a = (float) (SystemClock.elapsedRealtime() / 400f * Math.PI * (currentPosition % 2 == 0 ? 1.0f : -1.0f));
                 canvas.translate(
-                        (float) (Math.cos(a) * AndroidUtilities.dp(0.33f) * (currentPosition % 2 == 0 ? 1.0f : -1.0f)),
-                        (float) (Math.sin(a) * -AndroidUtilities.dp(0.33f))
+                    (float) (Math.cos(a) * AndroidUtilities.dp(0.33f) * (currentPosition % 2 == 0 ? 1.0f : -1.0f)),
+                    (float) (Math.sin(a) * -AndroidUtilities.dp(0.33f))
                 );
                 canvas.rotate(1.4f * s, getMeasuredWidth() / 2f, getMeasuredHeight() / 2f);
             }
@@ -377,6 +378,7 @@ public class FilterTabsView extends FrameLayout {
                 textHeight = textLayout.getHeight();
                 textOffsetX = (int) -textLayout.getLineLeft(0);
             }
+
 
             float titleOffsetX = 0;
             if (animateTextChange) {
@@ -758,7 +760,11 @@ public class FilterTabsView extends FrameLayout {
             super.onInitializeAccessibilityNodeInfo(info);
             info.setSelected(currentTab != null && selectedTabId != -1 && currentTab.id == selectedTabId);
             info.addAction(AccessibilityNodeInfo.ACTION_CLICK);
-            info.addAction(new AccessibilityNodeInfo.AccessibilityAction(AccessibilityNodeInfo.ACTION_LONG_CLICK, LocaleController.getString("AccDescrOpenMenu2", R.string.AccDescrOpenMenu2)));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                info.addAction(new AccessibilityNodeInfo.AccessibilityAction(AccessibilityNodeInfo.ACTION_LONG_CLICK, LocaleController.getString("AccDescrOpenMenu2", R.string.AccDescrOpenMenu2)));
+            } else {
+                info.addAction(AccessibilityNodeInfo.ACTION_LONG_CLICK);
+            }
             if (currentTab != null) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(currentTab.title);

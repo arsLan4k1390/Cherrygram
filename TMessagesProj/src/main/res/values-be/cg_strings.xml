@@ -172,9 +172,6 @@
     <string name="AP_DrawerBlurIntensity">Інтэнсіўнасць размыцця</string>
     <string name="AP_DrawerIconPack_Header">Набор іконкаў меню</string>
     <string name="AP_DrawerButtonsCategory">Кнопкі меню</string>
-    <string name="AP_ProfileCategory">Профіль і кантакты</string>
-    <string name="AP_HideUserPhone">Схаваць ваш нумар тэлефона</string>
-    <string name="AP_HideUserPhoneSummary">у бакавым меню і наладах</string>
     <string name="AP_MutualContacts_Description">Гэты кантакт з\'яўляецца ўзаемным.</string>
     <string name="AP_ShowID">Паказаць ID і DC у профілях</string>
     <!--Appearance Preferences-->
@@ -223,13 +220,10 @@
     <string name="CP_CameraType">Typ kamery</string>
     <string name="CP_DefaultCameraDesc">Vykarystoŭvajcie ŭbudavanuju kameru Telegram.</string>
     <string name="CP_CameraXDesc">CameraX padtrymvajecca tolki na <![CDATA[<a href="https://developer.android.com/training/camerax/devices">abranych pryładach</a>]]>, padtrymka efektaŭ i linzaŭ zaležyć ad vašaha vytvorcy.</string>
-    <string name="CP_PerformanceMode">Režym pradukcyjnaści</string>
-    <string name="CP_PerformanceModeDesc">Якасць CameraX будзе зніжана на карысць прадукцыйнасці</string>
     <string name="CP_CameraQuality">Якасць камеры</string>
     <string name="CP_CameraTypeSystem">Сістэмная</string>
     <string name="CP_SystemCameraDesc">Дазваляе атрымаць доступ наўпрост да сістэмнай камеры (не ўжываецца да відэапаведамленняў).</string>
     <string name="CP_CameraAspectRatio">Суадносіны бакоў камеры</string>
-    <string name="CP_CameraAspectRatio_Desc">Выбар суадносін бакоў камеры патрэбен для таго, каб запісваць відэапаведамленні ў добрай якасці. У большасці тэлефонаў, звычайна, выкарыстоўваюцца суадносіны 16:9, а ў флагманскіх прыладах 4:3 або 1:1. Тэстуйце кожнае, параўноўвайце якасць запісу і выкарыстоўвайце найлепшыя суадносіны.</string>
     <string name="CP_RearCam">Выкарыстоўваць заднюю камеру</string>
     <string name="CP_RearCam_Desc">Заміж франтальнай камеры пры запісе відэапаведамленняў</string>
     <string name="CP_DisableCam">Адключыць камеру ў меню выбару фота</string>
@@ -238,7 +232,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Эксперыментальны</string>
     <string name="EP_NavigationAnimation">Навігацыйная анімацыя</string>
-    <string name="EP_NavigationAnimationSpring">Вясна</string>
     <string name="EP_NavigationAnimationBezier">Класічны</string>
     <string name="EP_NavigationAnimationCrossfading">Эфект плаўнага згасання</string>
     <string name="CG_ResidentNotification">Уключыць сталае паведамленне</string>

@@ -50,6 +50,7 @@ import androidx.annotation.IdRes;
 import androidx.dynamicanimation.animation.FloatValueHolder;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
+import androidx.fragment.app.FragmentActivity;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -59,7 +60,6 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
-import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.LaunchActivity;
 
@@ -68,6 +68,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Executor;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.BiometricPromptHelper;
@@ -86,9 +87,8 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         } else if (id == NotificationCenter.passcodeDismissed) {
             if (args[0] != this) {
                 setVisibility(GONE);
-
-                if (fingerprintDialog != null) {
-                    fingerprintDialog.dismiss();
+                if (Build.VERSION.SDK_INT >= 23 && biometricPromptHelper != null) {
+                    biometricPromptHelper.dismiss();
                 }
             }
         }
@@ -442,7 +442,6 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
     private int keyboardHeight = 0;
 
     private BiometricPromptHelper biometricPromptHelper;
-    private AlertDialog fingerprintDialog;
 
     private int imageY;
 
@@ -451,9 +450,6 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
     private Rect rect = new Rect();
 
     private PasscodeViewDelegate delegate;
-
-    private final static int id_fingerprint_textview = 1000;
-    private final static int id_fingerprint_imageview = 1001;
 
     private SpringAnimation backgroundAnimationSpring;
     private LinkedList<Runnable> backgroundSpringQueue = new LinkedList<>();
@@ -1132,7 +1128,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         Activity parentActivity = (Activity) getContext();
         if (Build.VERSION.SDK_INT >= 23 && parentActivity != null && SharedConfig.useFingerprint) {
             try {
-                if (BiometricPromptHelper.hasBiometricEnrolled()) {
+                if (BiometricPromptHelper.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()) {
                     fingerprintView.setVisibility(VISIBLE);
                 } else {
                     fingerprintView.setVisibility(GONE);

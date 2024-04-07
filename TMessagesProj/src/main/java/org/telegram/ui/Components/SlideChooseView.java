@@ -187,9 +187,7 @@ public class SlideChooseView extends View {
 
     private void setOption(int index) {
         if (selectedIndex != index) {
-            try {
-                performHapticFeedback(HapticFeedbackConstants.TEXT_HANDLE_MOVE, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-            } catch (Exception ignore) {}
+            AndroidUtilities.vibrateCursor(this);
         }
         selectedIndex = index;
         if (callback != null) {
@@ -303,6 +301,7 @@ public class SlideChooseView extends View {
     private int getThemedColor(int key) {
         return Theme.getColor(key, resourcesProvider);
     }
+
 
     public interface Callback {
         void onOptionSelected(int index);

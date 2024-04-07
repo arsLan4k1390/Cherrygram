@@ -109,7 +109,9 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
                         icon == LauncherIconController.LauncherIcon.SUNSET ||
                         icon == LauncherIconController.LauncherIcon.SUNRISE ||
                         icon == LauncherIconController.LauncherIcon.DARK_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.DARK_CHERRY_BRA ||
                         icon == LauncherIconController.LauncherIcon.WHITE_CHERRY ||
+                        icon == LauncherIconController.LauncherIcon.WHITE_CHERRY_BRA ||
                         icon == LauncherIconController.LauncherIcon.LAGUNA_CHERRY ||
                         icon == LauncherIconController.LauncherIcon.AQUA_CHERRY ||
                         icon == LauncherIconController.LauncherIcon.GREEN_CHERRY ||
@@ -118,7 +120,6 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
                         icon == LauncherIconController.LauncherIcon.SUNRISE_CHERRY ||
                         icon == LauncherIconController.LauncherIcon.TURBO_CHERRY ||
                         icon == LauncherIconController.LauncherIcon.NOX_CHERRY ||
-                        icon == LauncherIconController.LauncherIcon.DARK_CHERRY_BRA ||
                         icon == LauncherIconController.LauncherIcon.DARK_NY) && !(Build.VERSION.SDK_INT >= 26)) {
                     return;
                 }
@@ -233,7 +234,9 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNSET));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNRISE));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY_BRA));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.WHITE_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.WHITE_CHERRY_BRA));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.LAGUNA_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.AQUA_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.GREEN_CHERRY));
@@ -242,7 +245,6 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNRISE_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX_CHERRY));
-            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY_BRA));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_NY));
         }
         if (MessagesController.getInstance(currentAccount).premiumFeaturesBlocked()) {
@@ -274,7 +276,9 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY_BRA));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.WHITE_CHERRY));
+            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.WHITE_CHERRY_BRA));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.LAGUNA_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.AQUA_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.GREEN_CHERRY));
@@ -283,7 +287,6 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.SUNRISE_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.TURBO_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX_CHERRY));
-            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY_BRA));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.CHERRY_NY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_NY));
         }

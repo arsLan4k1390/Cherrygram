@@ -176,9 +176,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_DrawerBlurIntensity">Intensidade do desfoque</string>
     <string name="AP_DrawerIconPack_Header">Conjunto de ícones de gaveta</string>
     <string name="AP_DrawerButtonsCategory">Botões de gaveta</string>
-    <string name="AP_ProfileCategory">Perfil e Contactos</string>
-    <string name="AP_HideUserPhone">Ocultar o seu número de telefone</string>
-    <string name="AP_HideUserPhoneSummary">na gaveta e nas definições</string>
     <string name="AP_MutualContacts_Description">Este é um contacto mútuo.</string>
     <string name="AP_ShowID">Mostrar ID e DC no perfil</string>
     <!--Appearance Preferences-->
@@ -227,16 +224,10 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_CameraType">Tipo de câmera</string>
     <string name="CP_DefaultCameraDesc">Use a câmara interna do Telegram.</string>
     <string name="CP_CameraXDesc">CameraX só é suportado em <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, efeitos e suporte de lentes depende do seu fabricante.</string>
-    <string name="CP_PerformanceMode">Modo de desempenho</string>
-    <string name="CP_PerformanceModeDesc">A qualidade da CameraX será reduzida em favor do desempenho</string>
     <string name="CP_CameraQuality">Qualidade da Câmara</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Acessar diretamente a câmara do sistema (não aplicável às mensagens de vídeo).</string>
     <string name="CP_CameraAspectRatio">Razão de aspeto da câmara</string>
-    <string name="CP_CameraAspectRatio_Desc">A selecção da relação de aspecto da câmara é necessária para gravar
- mensagens em vídeo de boa qualidade. A maioria dos telefones usa normalmente o aspecto 16:9 
-enquanto os dispositivos de bandeira utilizam uma relação 4:3 ou 1:1. Testar cada um deles, comparar 
-qualidade de gravação e utilizar a melhor relação.</string>
     <string name="CP_RearCam">Use a câmara traseira</string>
     <string name="CP_RearCam_Desc">Em vez de câmara frontal para mensagens de vídeo</string>
     <string name="CP_DisableCam">Desativar câmara no menu de anexação de mídia</string>
@@ -245,7 +236,6 @@ qualidade de gravação e utilizar a melhor relação.</string>
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
     <string name="EP_NavigationAnimation">Animação de navegação</string>
-    <string name="EP_NavigationAnimationSpring">Primavera</string>
     <string name="EP_NavigationAnimationBezier">Clássico</string>
     <string name="EP_NavigationAnimationCrossfading">Efeito crossfading</string>
     <string name="CG_ResidentNotification">Mostrar uma notificação persistente</string>

@@ -156,9 +156,9 @@ public class BackupHelper {
         mainconfig.add("AP_SystemEmoji");
         mainconfig.add("AP_SystemFonts");
         mainconfig.add("AP_Old_Notification_Icon");
-        mainconfig.add("CP_ConfirmCalls");
-        mainconfig.add("AP_HideUserPhone");
+        mainconfig.add("CP_ProfileChannelPreview");
         mainconfig.add("AP_ShowID_DC");
+        mainconfig.add("CP_ProfileBirthDatePreview");
         mainconfig.add("CP_ProfileBackgroundColor");
         mainconfig.add("CP_ProfileBackgroundEmoji");
         mainconfig.add("CP_ReplyBackground");
@@ -211,6 +211,7 @@ public class BackupHelper {
         mainconfig.add("CP_BlockStickers");
         mainconfig.add("CP_Slider_StickerAmplifier");
         mainconfig.add("CP_TimeOnStick");
+        mainconfig.add("CP_ShareDrawStoryButton");
         mainconfig.add("CP_UsersDrawShareButton");
         mainconfig.add("CP_ShowReply");
         mainconfig.add("CP_ShowCopyPhoto");
@@ -228,6 +229,7 @@ public class BackupHelper {
         mainconfig.add("CP_BotsDrawShareButton");
         mainconfig.add("CP_StickersDrawShareButton");
         mainconfig.add("CP_UnreadBadgeOnBackButton");
+        mainconfig.add("CP_ConfirmCalls");
         mainconfig.add("CP_DeleteForAll");
         mainconfig.add("CP_ForwardMsgDate");
         mainconfig.add("AP_PencilIcon");
@@ -238,6 +240,7 @@ public class BackupHelper {
         mainconfig.add("CP_HideMuteUnmuteButton");
         mainconfig.add("CP_Slider_RecentEmojisAmplifier");
         mainconfig.add("CP_Slider_RecentStickersAmplifier");
+        mainconfig.add("CP_SpoilersOnMedia");
         mainconfig.add("CP_VoicesAGC");
         mainconfig.add("CP_PlayVideo");
         mainconfig.add("CP_AutoPauseVideo");

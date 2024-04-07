@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelLink">عضو @Cherry_Gram شوید!</string>
+    <string name="CG_FollowChannelTitle">عضو کانال رسمی شوید</string>
+    <string name="CG_FollowChannelInfo">برای در جریان بودن از تمام اخبار و ویژگی‌های Cherrygram، به کانال ما بپیوندید!</string>
+    <string name="CG_DoNotRemindAgain">دوباره یادآوری نکن</string>
+    <!--Telegram screens-->
+    <!--Sign in screen-->
+    <string name="CG_QRLoginTitle">ورود با QR</string>
+    <string name="CG_QRLoginMessage">برای ورود، کد QR را با دستگاه دیگری اسکن کنید.</string>
+    <string name="CG_TestBackendNumber">شماره‌ی تستی</string>
+    <string name="CG_TestBackendOn">این حساب کاربری به سرورهای تستی متصل خواهد شد.</string>
+    <string name="CG_TestBackendOff">این حساب کاربری به سرورهای اصلی متصل خواهد شد.</string>
+    <!--Sign in screen-->
+    <!--Last seen status-->
+    <string name="CG_LastSeenNow">آخرین بازدید به تازگی</string>
+    <string name="CG_LastSeenMinutes_one">آخرین بازدید %1$d دقیقه قبل</string>
+    <string name="CG_LastSeenMinutes_few">آخرین بازدید %1$d دقیقه قبل</string>
+    <string name="CG_LastSeenMinutes_many">آخرین بازدید %1$d دقیقه قبل</string>
+    <string name="CG_LastSeenMinutes_other">آخرین بازدید %1$d دقیقه قبل</string>
+    <string name="CG_LastSeenHours_one">آخرین بازدید %1$d ساعت قبل</string>
+    <string name="CG_LastSeenHours_few">آخرین بازدید %1$d ساعت قبل</string>
+    <string name="CG_LastSeenHours_many">آخرین بازدید %1$d ساعت قبل</string>
+    <string name="CG_LastSeenHours_other">آخرین بازدید %1$d ساعت قبل</string>
+    <!--Last seen status-->
+    <!--Telegram Folders Settings-->
+    <string name="CG_FoldersType_Header">نوع آیکون زبانه‌ها</string>
+    <string name="CG_FoldersTypeTitles">فقط عناوین</string>
+    <string name="CG_FoldersTypeIcons">فقط آیکون‌ها</string>
+    <string name="CG_FoldersTypeIconsTitles">آیکون‌ها به همراه عناوین</string>
+    <string name="CG_ChooseFolderIcon">آیکونی انتخاب کنید</string>
+    <string name="CP_NewTabs_NoCounter">پنهان‌سازی شمارنده در زبانه‌ها</string>
+    <string name="CP_NewTabs_NoCounter_Desc">این گزینه شمارنده‌ی پیام‌های خوانده نشده را پنهان خواهد کرد</string>
+    <!--Telegram Folders Settings-->
+    <!--Chats screen-->
+    <string name="CG_JumpToBeginning">به ابتدا</string>
+    <string name="CG_DeleteAllFromSelf">حذف پیام‌های خود</string>
+    <string name="CG_DeleteAllFromSelfAlert">هشدار! با این کار **همه‌ی پیام‌های شما** در این چت برای **همه‌ی** شرکت کنندگان حذف می‌شود.</string>
+    <string name="CG_DeleteAllFromSelfAlertBefore">هشدار! این کار **همه پیام‌های شما را قبل از %s** در این گپ برای **همه** شرکت‌کنندگان حذف می‌کند.</string>
+    <string name="CG_DeleteAllFromSelfBefore">قبل از...</string>
+    <string name="CG_DeleteAllFromSelfAdmin">با دسترسی مدیر</string>
+    <string name="CG_DeleteAllFromSelfDone">تمامی پیام‌های شما حذف شدند</string>
+    <string name="CG_ClearFromCache">پاک‌سازی از حافظه پنهان</string>
+    <string name="CG_ClearedFromCache">از حافظه‌ی پنهان پاک‌سازی شد</string>
+    <string name="CG_ViewUserHistory">تاریخچهٔ پیام‌ها</string>
+    <string name="CG_ToSaved">ذخیره</string>
+    <string name="CG_CreateMention">تگ کردن</string>
+    <string name="CG_CreateCode">ایجاد کد</string>
+    <string name="CG_CreateCodeLanguage">زبان</string>
+    <string name="CG_FwdMenu_EnableNoForward">غیرفعال‌سازی نقل‌قول</string>
+    <string name="CG_FwdMenu_DisableNoForward">فعال‌سازی نقل‌قول</string>
+    <string name="CG_Without_Authorship">بدون نقل‌قول</string>
+    <string name="CG_FwdMenu_NoNotify">بدون صدا</string>
+    <string name="CG_FwdMenu_Notify">با صدا</string>
+    <string name="CG_FwdMenu_EnableCaptions">فعال‌سازی زیرنویس</string>
+    <string name="CG_FwdMenu_DisableCaptions">پنهان‌سازی زیرنویس</string>
+    <!--Search filter-->
+    <string name="CG_SearchFilter">فیلتر کردن نتایج جستجو</string>
+    <string name="CG_SearchFilter_None">هیچ کدام</string>
+    <string name="CG_SearchFilter_Photos">عکس‌ها</string>
+    <string name="CG_SearchFilter_Videos">ویدئوها</string>
+    <string name="CG_SearchFilter_VoiceMessages">پیام های صوتی</string>
+    <string name="CG_SearchFilter_VideoMessages">پیام‌های ویدئویی</string>
+    <string name="CG_SearchFilter_Files">فایل‌ها/اسناد</string>
+    <string name="CG_SearchFilter_Music">موسیقی</string>
+    <string name="CG_SearchFilter_GIFs">گیف‌‌ها</string>
+    <string name="CG_SearchFilter_Geolocation">موقعیت مکانی</string>
+    <string name="CG_SearchFilter_Contacts">مخاطب‌ها</string>
+    <string name="CG_SearchFilter_MyMentions">منشن‌های من</string>
+    <!--Search filter-->
+    <!--Chats screen-->
+    <!--Misc-->
+    <string name="LS_EnterPasscode">گذرواژه Cherrygram خود را وارد کنید</string>
+    <string name="CG_SwitchBackend">شما در حال تغییر به سرور آزمایشی هستید. لطفاً تنها در صورتی که مطمئن هستید در حال انجام چه کاری هستید دکمه‌ی تائید را بفشارید. شما هر لحظه می‌توانید از منوی رفع اشکال به سرور عادی برگردید.</string>
+    <string name="CG_Restart">راه‌اندازی مجدد برنامه</string>
+    <string name="CG_RestartToApply">برای اعمال تغییرات برنامه را مجدداً راه‌اندازی کنید</string>
+    <string name="CG_PushService">خدمات پوش Cherrygram.</string>
+    <string name="CG_ForceClean">پاک‌سازی اجباری حافظه نهان تلگرام</string>
+    <string name="CG_ForceCleanInfo">تنها زمانی از این دکمه استفاده کنید که حین پاک‌سازی حافظه پنهان با پیغام «در حال محاسبه...» طولانی مواجه هستید.\n این گزینه باعث حذف همه‌چیز از حافظه پنهان شما خواهد شد - مراقب باشید!</string>
+    <string name="CG_ForceCleanInfo1">آیا واقعاً می خواهید همه چیز را از کش تلگرام خود حذف کنید؟</string>
+    <string name="CG_Kaboom">این قابلیت بدون رمز Cherrygram از طریق تنظیمات سیستم قابل دسترسی است. این ویژگی تمام داده های محلی (Cherrygram) شما را به طور کامل پاک می کند. می توان از آن در مواقع اضطراری استفاده کرد.</string>
+    <string name="CG_AppCrashed">مشکلی پیش آمد</string>
+    <string name="CG_AppCrashedDesc">Cherrygram از کار افتاده است. لطفا گزارش‌ها را برای توسعه‌دهندگان ارسال کنید تا بتوانند در اسرع وقت این اشکال را برطرف کنند.</string>
+    <string name="CG_CopyReportDetails">رونوشت جزئیات گزارش</string>
+    <string name="CG_ReportDetailsCopied">گزارش جزئیات به بریده‌دان رونوشت شد.</string>
+    <string name="CG_TranslationLanguage">زبان ترجمه</string>
+    <string name="CG_CopyPhoto">رونوشت کردن عکس</string>
+    <string name="CG_CopyPhotoAsSticker">رونوشت عکس به عنوان استیکر</string>
+    <string name="CG_PhotoCopied">عکس در بریده‌دان رونوشت شد.</string>
+    <string name="CG_SaveSticker">ذخیره‌ی استیکر</string>
+    <string name="CG_StickerSavedHint">استیکر در دانلود‌ها ذخیره شد</string>
+    <string name="CG_CopySetId">کپی شناسه‌ی ست</string>
+    <string name="CG_ExportSettings">خروجی گرفتن از تنظیمات</string>
+    <string name="CG_ImportSettings">وارد کردن تنظیمات</string>
+    <string name="CG_ImportSettingsAlert">بازنویسی تنظیمات\؟ وارد کردن تنظیمات از منابع ناشناس ممکن است باعث شود برنامه کار نکند.</string>
+    <string name="CG_OpenStickerPack">ضربه برای گرفتن استیکر</string>
+    <string name="CG_OpenEmojiPack">ضربه برای گرفتن ایموجی</string>
+    <string name="CG_ReplyContainsEmojiPack">این پاسخ حاوی ایموجی **%s** است</string>
+    <string name="CG_GetEmojiPack">دریافت ایموجی</string>
+    <string name="CG_ReplyBackground">پس زمینه پاسخ</string>
+    <string name="CG_ProfileBackground">تنظیم پس‌زمینه نمایه</string>
+    <string name="CG_MessageContainsCustomReactions_one">واکنش‌ها شامل ایموجی‌های سفارشی\nاز بسته %1$d.</string>
+    <string name="CG_MessageContainsCustomReactions_other">واکنش‌ها شامل ایموجی‌های سفارشی\nاز بسته %1$d.</string>
+    <!--Misc-->
+    <!--Telegram screens-->
+    <!--Cherrygram screens-->
+    <!--Cherrygram Preferences-->
+    <string name="CGP_AdvancedSettings">تنظیمات Cherrygram</string>
+    <string name="CGP_About_Desc">یک کلاینت با تغییرات آزمایشی در اپلیکیشن تلگرام. برای مشاهده لیست ویژگی‌های این اپلیکیشن، اینجا را لمس کنید.</string>
+    <string name="CGP_Header_About">درباره Cherrygram</string>
+    <string name="CGP_Header_About_Desc">بروزرسانی‌ها، کدمنبع و بیشتر</string>
+    <string name="CGP_Links">لینک‌ها</string>
+    <string name="CGP_ToChannel">کانال رسمی</string>
+    <string name="CGP_ToChat">چت رسمی</string>
+    <string name="CGP_Source">کدمنبع</string>
+    <string name="CGP_Crowdin">کمک‌کردن به ترجمه</string>
+    <string name="CGP_Header_Categories">دسته‌بندی‌ها</string>
+    <!--Cherrygram Preferences-->
+    <!--General Preferences-->
+    <string name="AP_Header_General">عمومی</string>
+    <!--General Preferences-->
+    <!--Appearance Preferences-->
+    <string name="AP_Header_Appearance">بصری</string>
+    <string name="AP_RedesignCategory">بازطراحی</string>
+    <string name="AP_IconReplacements">جایگزینی آیکون‌ها</string>
+    <string name="AP_Old_Notification_Icon">آیکون اعلان پیشفرض (تلگرام)</string>
+    <string name="AP_ChangeIconFilter">استفاده از آیکون‌های تلگرام</string>
+    <string name="AP_HoldToShowWallpaper">نگه‌داشتن هر آیکون برای نمایش تصویر پس‌زمینه دسکتاپ</string>
+    <string name="AP_ChangeIcon_Cherry_NY">سال نو</string>
+    <string name="AP_ChangeIcon_Default">پیش‌فرض</string>
+    <string name="AP_ChangeIcon_Dark">تیره</string>
+    <string name="AP_ChangeIcon_White">سفید</string>
+    <string name="AP_ChangeIcon_Laguna">دریاچه</string>
+    <string name="AP_ChangeIcon_Green">سبز</string>
+    <string name="AP_ChangeIcon_Lavanda">لاواندر</string>
+    <string name="AP_ChangeIcon_Sunset">غروب آفتاب</string>
+    <string name="AP_ChangeIcon_Sunrise">طلوع آفتاب</string>
+    <string name="AP_IconReplacement_VKUI">آیکون‌های VKUI</string>
+    <string name="AP_IconReplacement_Solar">آیکون‌های Solar توسط @Design480</string>
+    <string name="AP_IconReplacement_Default">پیش‌فرض</string>
+    <string name="AP_OneUI_Switch_Style">سبک سوییچ OneUI</string>
+    <string name="AP_SystemEmoji">استفاده از ایموجی سیستم</string>
+    <string name="AP_ShowPencilIcon">آیکون مداد برای پیام‌های ویرایش شده</string>
+    <string name="AP_CenterTitle">نمایش عنوان در وسط اکشن‌بار</string>
+    <string name="AP_OverrideHeader">تغییر رنگ سربرگ‌ها</string>
+    <string name="AP_OverrideHeader_Desc">سربرگ‌ها همان رنگ پس‌زمینه اصلی خواهند بود</string>
+    <string name="AP_DisableDividers">غیرفعال‌سازی جداکننده‌ها</string>
+    <string name="AP_ToolBarShadow">غیرفعال‌سازی سایه نوارابزار</string>
+    <string name="AP_SystemFonts">استفاده از قلم سیستم</string>
+    <string name="CP_Snowflakes_Header">دانه‌های برف</string>
+    <string name="CP_Snowflakes_AH">هدر برنامه</string>
+    <string name="CP_PremAndAnim_Header">قابلیت‌های پریمیوم و انیمیشن‌ها</string>
+    <string name="CP_ProfileReplyBackground">نمایه‌ها و پیام‌ها</string>
+    <string name="CP_CustomizeProfile">سفارشی کردن نمایه</string>
+    <string name="CP_ProfileChannelPreview">کانال شخصی</string>
+    <string name="CP_ProfileBirthDatePreview">تاریخ تولد</string>
+    <string name="CP_ProfileBusinessPreview">مکان و ساعت‌های کاری</string>
+    <string name="CP_ProfileBackgroundColor">پس زمینه پروفایل</string>
+    <string name="CP_ProfileBackgroundEmoji">ایموجی در پس زمینه پروفایل</string>
+    <string name="CP_CustomizeMessage">ویرایش یک پیام</string>
+    <string name="CP_ReplyBackground">پس‌زمینه در پاسخ‌ها</string>
+    <string name="CP_ReplyCustomColors">رنگ‌های سفارشی در پیام‌های پاسخ داده شده و پیش‌نمایش لینک‌ها</string>
+    <string name="CP_ReplyBackgroundEmoji">ایموجی در پاسخ‌ها و پیش‌نمایش لینک‌ها</string>
+    <string name="CP_HideStories">مخفی‌کردن استوری‌ها</string>
+    <string name="CP_CustomWallpapers">پس‌زمینه سفارشی در گفتگوها</string>
+    <string name="CP_CustomWallpapers_Desc">تنظیم پس‌زمینه‌های سفارشی در چت‌ها/گروه‌ها/کانال‌ها توسط کاربران پریمیوم/کانال‌های تقویت‌شده</string>
+    <string name="CP_DisableAnimAvatars">غیرفعال‌سازی تصویر پروفایل متحرک</string>
+    <string name="CP_DisableReactionsOverlay">غیرفعال‌سازی نمایش واکنش‌ها</string>
+    <string name="CP_DisableReactionsOverlay_Desc">این عمل باعث غیرفعال شدن پنجره بازشویی با واکنش‌های موجود می‌شود</string>
+    <string name="CP_DisableReactionAnim">غیرفعال‌سازی تحرک واکنش‌ها</string>
+    <string name="CP_DisableReactionAnim_Desc">(حین واکنش‌دادن به یک پیام)</string>
+    <string name="CP_DisablePremiumStatuses">غیرفعال‌سازی وضعیت‌های پریمیوم</string>
+    <string name="CP_DisablePremiumStatuses_Desc">این عمل باعث غیرفعال شدن وضعیت‌های پریمیوم در همه جا به جز دراور می‌شود</string>
+    <string name="CP_DisablePremStickAnim">غیرفعال‌سازی لمس بر روی استیکرهای پریمیوم</string>
+    <string name="CP_DisablePremStickAnim_Desc">هیچ اتفاقی نخواهد افتاد اگر بر روی استیکر پریمیوم لمس کنید</string>
+    <string name="CP_DisablePremStickAutoPlay">غیرفعال‌سازی پخش خودکار استیکر پریمیوم</string>
+    <string name="CP_DisablePremStickAutoPlay_Desc">انیمیشن استیکرهای پریمیوم به صورت خودکار پخش نخواهد شد (این ویژگی کار نخواهد کرد اگر لمس روی استیکرهای پریمیوم را غیرفعال کرده باشید)</string>
+    <string name="CP_Filters_Header">پوشه‌ها</string>
+    <string name="AP_FolderNameInHeader">نام پوشه به جای «Cherrygram»</string>
+    <string name="AP_FolderNameInHeader_Desc">این باعث تغییر \"Cherrygram\" در نوار اقدام به نام پوشه‌ی شما می‌شود (قابلیت مفید در صورتی که فقط آیکون‌ها به جای نام‌های پوشه داشته باشید)</string>
+    <string name="CP_NewTabs_RemoveAllChats">پنهان‌سازی سربرگ همه گفتگوها</string>
+    <string name="AP_Tab_Style">نوع سربرگ</string>
+    <string name="AP_Tab_Style_Default">پیش‌فرض</string>
+    <string name="AP_Tab_Style_Rounded">گردشده</string>
+    <string name="AP_Tab_Style_Text">متنی</string>
+    <string name="AP_Tab_Style_Pills">کپسولی</string>
+    <string name="AP_Tab_Style_Stroke">خط‌دار</string>
+    <string name="AP_DrawerCategory">کشو</string>
+    <string name="AP_DrawerAvatar">تصویر پروفایل به جای پس‌زمینه کشو</string>
+    <string name="AP_DrawerShowAvatar">نمایش تصویر پروفایل</string>
+    <string name="AP_DrawerDarken">پس‌زمینه تاریک</string>
+    <string name="AP_ShadeBackground">پس‌زمینه چندرنگی</string>
+    <string name="AP_DrawerBlur">پس‌زمینه تار</string>
+    <string name="AP_DrawerBlurIntensity">شدت تار بودن</string>
+    <string name="AP_DrawerIconPack_Header">مجموعه آیکون‌های کشو</string>
+    <string name="AP_DrawerButtonsCategory">دکمه‌های کشو</string>
+    <string name="AP_HideUserPhone_Show">نمایش با ضربه</string>
+    <string name="AP_HideUserPhone_Copy">لمس طولانی برای رونوشت</string>
+    <string name="AP_MutualContacts_Description">این یک مخاطب متقابل است.</string>
+    <string name="AP_ShowID">نمایش شناسه و دیتاسنتر در پروفایل</string>
+    <!--Appearance Preferences-->
+    <!--Chats Preferences-->
+    <string name="CP_Header_Chats">گفتگوها</string>
+    <string name="CP_Slider_StickerAmplifier">تنظیم‌کننده اندازه استیکر</string>
+    <string name="CP_BlockSomeSets">مسدود کردن بعضی استیکرها</string>
+    <string name="CP_BlockSomeSets_Desc">برخی استیکرهایی که باعث خرابی برنامه می شوند، با لوگوی Cherrygram جایگزین می شوند. \n پس از فعال کردن این ویژگی و راه‌اندازی مجدد برنامه، فایل «Cherrygram Logo» دانلود خواهد شد.</string>
+    <string name="CP_TimeOnStick">پنهان‌سازی ساعت روی استیکرها در چت</string>
+    <string name="CP_MessageMenu">منوی پیام</string>
+    <string name="CP_UnreadBadgeOnBackButton">نمایش شمارنده چت های خوانده نشده</string>
+    <string name="CP_UnreadBadgeOnBackButton_Desc">فعال کردن شمارنده چت های خوانده نشده روی دکمه برگشت در گپ باز</string>
+    <string name="CP_NoRounding">غیرفعال کردن رند کردن اعضا</string>
+    <string name="CP_DeleteForAll">تیک خوردن «حذف برای همه» بصورت پیش‌فرض</string>
+    <string name="CP_DeleteForAll_Desc">تیک گزینه‌ی «حذف برای همه» به‌طور خودکار علامت گذاری خواهد شد.</string>
+    <string name="CP_ConfirmCalls">پرسیدن قبل از برقراری تماس</string>
+    <string name="CP_ForwardMsgDate">نمایش تاریخ پیام فوروارد شده</string>
+    <string name="CP_ShowSeconds">فرمت زمان با ثانیه</string>
+    <string name="CP_LeftBottomButtonAction">عملکرد دکمه‌ی چپ</string>
+    <string name="CP_DoubleTapAction">عملکرد ضربه زدن</string>
+    <string name="CP_DisableSwipeToNext">غیرفعال‌سازی انتقال به کانال بعدی</string>
+    <string name="CP_DisableSwipeToNext_Desc">انتقال به کانال بعدی هنگام پیمایش کانال‌ها را غیرفعال می‌کند</string>
+    <string name="CP_HideMuteUnmuteButton">مخفی کردن دکمه پایین کانال ها</string>
+    <string name="CP_HideKbdOnScroll">مخفی کردن کیبورد حین اسکرول در چت</string>
+    <string name="CP_HideSendAsChannel">مخفی کردن دکمه «ارسال به عنوان کانال»</string>
+    <string name="CP_HideSendAsChannelDesc">شما می‌توانید با نگه داشتن بر روی دکمه اموجی/استیکرها/گیف‌ها به منو دسترسی پیدا کنید</string>
+    <string name="CP_Slider_RecentEmojisAmplifier">شمارنده‌ی ایموجی‌های اخیر (برای اعمال تغییرات، برنامه را دوباره راه‌اندازی کنید)</string>
+    <string name="CP_Slider_RecentStickersAmplifier">شمارنده‌ی استیکرهای اخیر (برای اعمال تغییرات، برنامه را دوباره راه‌اندازی کنید)</string>
+    <string name="CP_Header_Record">رسانه</string>
+    <string name="CP_SpoilersOnMedia">افکت اسپویلر</string>
+    <string name="CP_SpoilersOnMedia_Desc">در صورت غیرفعال بودن این گزینه، تأثیر مخفی‌کننده بر روی عکس‌ها و ویدیوها نمایش داده نخواهد شد.</string>
+    <string name="CP_VoiceEnhancements">بهبود صدا</string>
+    <string name="CP_VoiceEnhancements_Desc">سرکوب نویز و نرمال‌سازی صدا</string>
+    <string name="CP_PlayVideo">پخش ویدئو هنگام زدن دکمه‌ی ولوم</string>
+    <string name="CP_PlayVideo_Desc">وقتی دکمه میزان صدا را فشار می‌دهید، هر ویدیویی که در چت روی صفحه نماییش است، شروع به پخش می‌کند</string>
+    <string name="CP_AutoPauseVideo">توقف خودکار ویدئو</string>
+    <string name="CP_AutoPauseVideo_Desc">وقتی قفل شدن صفحه یا انتقال برنامه به پس‌زمینه</string>
+    <string name="CP_DisableVibration">غیرفعال‌سازی لرزش</string>
+    <string name="CP_VideoSeekDuration">عقب و جلو بردن ویدئو با دابل-تپ (ثانیه)</string>
+    <string name="CP_Header_Notification">اعلان‌ها</string>
+    <string name="CP_NotificationSound">صدای اعلان</string>
+    <string name="CP_VibrateInChats">لرزش در چت</string>
+    <string name="CP_VibrateInChats_Desc">ایجاد لرزش کوتاه هنگام دریافت پیام در چت‌ها</string>
+    <string name="CP_SilenceNonContacts">سکوت افراد نامخاطب</string>
+    <string name="CP_SilenceNonContacts_Desc">اگر فعال باشد، اعلان‌های دارای صدا فقط از مخاطبین دریافت می‌شود. می‌توانید شخص را به مخاطبین خود اضافه کنید حتی بدون اینکه شماره تلفن داشته باشند، این کار را در پروفایل آن‌ها انجام دهید</string>
+    <!--Chats Preferences-->
+    <!--Camera Preferences-->
+    <string name="CP_Category_Camera">دوربین</string>
+    <string name="CP_CameraType">نوع دوربین</string>
+    <string name="CP_Camera2Desc">تمام ویژگی‌هایی که هنگام فعال‌سازی Camera2 مخفی می‌شوند، با فعال بودن Camera2 کار نخواهند کرد.</string>
+    <string name="CP_CameraDualCamera">دو دوربینه</string>
+    <string name="CP_CameraDualCamera_Desc">ضبط پیام ویدیویی با استفاده از هر دو دوربین برای انتقال سریع‌تر بین دوربین‌ها در حین ضبط. باعث مصرف بیشتر باتری می‌شود.</string>
+    <string name="CP_DefaultCameraDesc">استفاده از دوربین داخلی تلگرام.</string>
+    <string name="CP_CameraXDesc">درحال حاضر CameraX تنها در <![CDATA[<a href="https://developer.android.com/training/camerax/devices">دستگاه های انتخاب‌شده</a>]]> دسترس است. پشتیبانی از افکت‌ها و لنز‌ها به پشتیبانی سازنده گوشی بستگی دارد.</string>
+    <string name="CP_CameraQuality">کیفیت دوربین</string>
+    <string name="CP_CameraTypeSystem">سیستم</string>
+    <string name="CP_SystemCameraDesc">به طور مستقیم از دوربین اصلی گوشی استفاده میکند (در پیام هی ویدیویی در دسترس نیست).</string>
+    <string name="CP_CameraAspectRatio">نسبت ابعاد دوربین</string>
+    <string name="CP_RearCam">استفاده از دوربین عقب</string>
+    <string name="CP_RearCam_Desc">بجای دوربین جلو برای پیام‌های ویدئویی</string>
+    <string name="CP_DisableCam">غیرفعال‌سازی دوربین در منوی ضمیمه کردن رسانه</string>
+    <string name="CP_DisableCam_Desc">دکمه دوربین در کنار دکمه گالری در دسترس خواهد بود.\nفشار دادن دکمه دوربین دوربین تلگرام را باز می‌کند و نگه داشتن آن دوربین سیستم را راه‌اندازی می‌کند.</string>
+    <!--Camera Preferences-->
+    <!--Experimental Preferences-->
+    <string name="EP_Category_Experimental">آزمایشی</string>
+    <string name="EP_NavigationAnimation">انیمیشن جابجا شدن</string>
+    <string name="EP_NavigationAnimationBezier">کلاسیک</string>
+    <string name="EP_NavigationAnimationCrossfading">افکت نرم</string>
+    <string name="CG_ResidentNotification">نمایش اعلان‌های همیشگی</string>
+    <string name="EP_PhotosSize">ارسال تصاویر بزرگ (۲۵۶۰ پیکسلی)</string>
+    <string name="EP_ShowRPCError">نمایش پیغام خطا برای تمامی اشکال‌ها</string>
+    <string name="EP_CustomAppTitle">عنوان برنامه</string>
+    <string name="EP_CustomChat">چت سفارشی برای پیام‌های ذخیره‌شده</string>
+    <string name="EP_CustomChat_Desc">تنظیم کردن شناسه یک چت/گروه/کانال دیگر برای انتقال پیام‌ها به آن (دکمه در نوار ابزار، منوی پیام یا دوبار کلیک)</string>
+    <string name="EP_CustomChatNotFound">گفتگو پیدا نشد!</string>
+    <string name="EP_Network">شبکه</string>
+    <string name="EP_DownloadSpeedBoost">افزایش سرعت دانلود</string>
+    <string name="EP_DownloadSpeedBoostNone">خاموش</string>
+    <string name="EP_DownloadSpeedBoostAverage">روشن</string>
+    <string name="EP_DownloadSpeedBoostExtreme">حداکثر</string>
+    <string name="EP_UploadloadSpeedBoost">افزایش سرعت آپلود</string>
+    <string name="EP_SlowNetworkMode">حالت شبکه ضعیف</string>
+    <!--Experimental Preferences-->
+    <!--Security Preferences-->
+    <string name="SP_Category_PrivacyAndSecurity">حریم خصوصی و امنیت</string>
+    <string name="SP_Header_Privacy">حریم خصوصی</string>
+    <string name="SP_NoProxyPromo">عدم نمایش حامی پروکسی</string>
+    <string name="SP_GoogleAnalytics_Desc">با فعال کردن این گزینه، تمامی خطاها و آمارهای برنامه به \"console.firebase.google.com\" گزارش داده خواهند شد تا توسط توسعه‌دهنده بررسی بیشتری صورت گیرد.</string>
+    <string name="SP_CleanOld">حذف حافظه پنهان قدیمی (/sdcard/Telegram)</string>
+    <string name="SP_RemovedS">با موفقیت حذف شد</string>
+    <string name="SP_Category_Account">حساب کاربری</string>
+    <string name="SP_DeleteAccount">حذف حساب تلگرام</string>
+    <!--Security Preferences-->
+    <!--Updates Preferences-->
+    <string name="UP_Category_Updates">به‌روزرسانی‌ها</string>
+    <string name="UP_TapToCheckUpdates">برای گرفتن اطلاعات در مورد بروزرسانی‌ها اینجا لمس کنید</string>
+    <string name="UP_LastCheck">آخرین بررسی</string>
+    <string name="UP_CurrentVersion">نسخه فعلی</string>
+    <string name="UP_BuildType">نوع ساخت</string>
+    <string name="UP_BTRelease">پایدار</string>
+    <string name="UP_BTBeta">آزمایشی</string>
+    <string name="UP_InstallBetas">نصب نسخه‌های بتا</string>
+    <string name="UP_Auto_OTA">بررسی حین اجرا برنامه</string>
+    <string name="UP_ClearUpdatesCache">حذف حافظه پنهان بروزرسانی‌ها</string>
+    <string name="UP_ClearedUpdatesCache">%1$s از حافظه پنهان پاکسازی شد.</string>
+    <string name="UP_NothingToClear">چیزی برای پاکسازی نبود.</string>
+    <string name="UP_CheckForUpdates">بررسی به‌روزرسانی</string>
+    <string name="UP_Not_Found">نرم‌افزار Cherrygram بروز است.</string>
+    <string name="UP_UpdateAvailable">بروزرسانی موجود است!</string>
+    <string name="UP_Version">نسخه</string>
+    <string name="UP_UpdateSize">اندازه بروزرسانی</string>
+    <string name="UP_Changelog">لیست تغییرات:</string>
+    <string name="UP_ChangelogRead">برای خواندن ضربه بزنید</string>
+    <string name="UP_Download">دانلود</string>
+    <!--Updates Preferences-->
+    <!--Donations-->
+    <string name="DP_Donate">کمک مالی</string>
+    <string name="DP_Donate_Method">انتخاب نوع پرداخت</string>
+    <!--Donations-->
+    <!--Cherrygram screens-->
+</resources>

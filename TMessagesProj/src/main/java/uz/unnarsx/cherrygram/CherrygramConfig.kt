@@ -48,9 +48,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var systemEmoji by sharedPreferences.boolean("AP_SystemEmoji", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
-    //Profile and Contacts
-    var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
-    var hidePhoneNumber by sharedPreferences.boolean("AP_HideUserPhone", false)
 
     //Animations and Premium Features
     var hideStories by sharedPreferences.boolean("CP_HideStories", false)
@@ -115,10 +112,28 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_ReplyBackgroundEmoji", replyBackgroundEmoji)
     }
 
+    var profileChannelPreview by sharedPreferences.boolean("CP_ProfileChannelPreview", true)
+    fun toggleProfileChannelPreview() {
+        profileChannelPreview = !profileChannelPreview
+        putBoolean("CP_ProfileChannelPreview", profileChannelPreview)
+    }
+
     const val ID_DC_NONE = 0
     const val ID_ONLY = 1
     const val ID_DC = 2
     var showIDDC by sharedPreferences.int("AP_ShowID_DC", ID_DC_NONE)
+
+    var profileBirthDatePreview by sharedPreferences.boolean("CP_ProfileBirthDatePreview", true)
+    fun toggleProfileBirthDatePreview() {
+        profileBirthDatePreview = !profileBirthDatePreview
+        putBoolean("CP_ProfileBirthDatePreview", profileBirthDatePreview)
+    }
+
+    var profileBusinessPreview by sharedPreferences.boolean("CP_ProfileBusinessPreview", true)
+    fun toggleProfileBusinessPreview() {
+        profileBusinessPreview = !profileBusinessPreview
+        putBoolean("CP_ProfileBusinessPreview", profileBusinessPreview)
+    }
 
     var profileBackgroundColor by sharedPreferences.boolean("CP_ProfileBackgroundColor", true)
     fun toggleProfileBackgroundColor() {
@@ -292,6 +307,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
     var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
     //Direct Share
+    var shareDrawStoryButton by sharedPreferences.boolean("CP_ShareDrawStoryButton", true)
+    fun toggleShareDrawStoryButton() {
+        shareDrawStoryButton = !shareDrawStoryButton
+        putBoolean("CP_ShareDrawStoryButton", shareDrawStoryButton)
+    }
+
     var usersDrawShareButton by sharedPreferences.boolean("CP_UsersDrawShareButton", false)
     fun toggleUsersDrawShareButton() {
         usersDrawShareButton = !usersDrawShareButton
@@ -391,6 +412,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     //Chats
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
+    var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
     var deleteForAll by sharedPreferences.boolean("CP_DeleteForAll", false)
     var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", false)
     var showPencilIcon by sharedPreferences.boolean("AP_PencilIcon", false)
@@ -398,6 +420,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     const val LEFT_BUTTON_FORWARD_WO_AUTHORSHIP = 0
     const val LEFT_BUTTON_DIRECT_SHARE = 1
     const val LEFT_BUTTON_REPLY = 2
+    const val LEFT_BUTTON_SAVE_MESSAGE= 3
     var leftBottomButton by sharedPreferences.int("CP_LeftBottomButton", LEFT_BUTTON_FORWARD_WO_AUTHORSHIP)
 
     const val DOUBLE_TAP_ACTION_NONE = 0
@@ -415,6 +438,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
     //Media
     var largePhotos by sharedPreferences.boolean("CP_LargePhotos", true)
+    var spoilersOnMedia by sharedPreferences.boolean("CP_SpoilersOnMedia", true)
     var voicesAgc by sharedPreferences.boolean("CP_VoicesAGC", false)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
@@ -442,12 +466,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     const val CAMERA_2 = 2
     const val SYSTEM_CAMERA = 3
     var cameraType by sharedPreferences.int("CP_CameraType", TELEGRAM_CAMERA)
-
-    var useCameraXOptimizedMode by sharedPreferences.boolean("CP_CameraXOptimizedMode", false)
-    fun toggleCameraXOptimizedMode() {
-        useCameraXOptimizedMode = !useCameraXOptimizedMode
-        putBoolean("CP_CameraXOptimizedMode", useCameraXOptimizedMode)
-    }
 
     var cameraResolution by sharedPreferences.int("CP_CameraResolution", -1)
     //Camera
@@ -565,6 +583,20 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         oldTimeStyle = !oldTimeStyle
         putBoolean("CP_OldTimeStyle", oldTimeStyle)
     }
+
+    //Search Filter
+    const val FILTER_NONE = 0
+    const val FILTER_PHOTOS = 1
+    const val FILTER_VIDEOS = 2
+    const val FILTER_VOICE_MESSAGES = 3
+    const val FILTER_VIDEO_MESSAGES = 4
+    const val FILTER_FILES = 5
+    const val FILTER_MUSIC = 6
+    const val FILTER_GIFS = 7
+    const val FILTER_GEO = 8
+    const val FILTER_CONTACTS = 9
+    const val FILTER_MENTIONS = 10
+    var messagesSearchFilter by sharedPreferences.int("messagesSearchFilter", FILTER_NONE)
 
     init {
         CherrygramToasts.init(sharedPreferences)

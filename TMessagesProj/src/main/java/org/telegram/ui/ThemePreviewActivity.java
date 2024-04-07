@@ -4749,7 +4749,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             DialogCell.CustomDialog customDialog = new DialogCell.CustomDialog();
             customDialog.name = "unn::ars X";
             customDialog.message = "\uD83C\uDF52";
-            customDialog.id = 0;
+            customDialog.id = 2003;
             customDialog.unread_count = 0;
             customDialog.pinned = true;
             customDialog.muted = false;
@@ -4763,8 +4763,22 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             customDialog = new DialogCell.CustomDialog();
             customDialog.name = LocaleController.getString("CG_AppName", R.string.CG_AppName) + " \uD83C\uDF52";
             customDialog.message = LocaleController.getString("ThemePreviewDialogMessage2", R.string.ThemePreviewDialogMessage2);
-            customDialog.id = 1;
+            customDialog.id = 1390;
             customDialog.unread_count = 2;
+            customDialog.pinned = false;
+            customDialog.muted = false;
+            customDialog.type = 0;
+            customDialog.date = date - 60 * 60;
+            customDialog.verified = false;
+            customDialog.isMedia = false;
+            customDialog.sent = DialogCell.SENT_STATE_NOTHING;
+            dialogs.add(customDialog);
+
+            customDialog = new DialogCell.CustomDialog();
+            customDialog.name = "exteraGram";
+            customDialog.message = LocaleController.getString("CG_FollowChannelLink", R.string.CG_FollowChannelLink);
+            customDialog.id = 1391;
+            customDialog.unread_count = 1;
             customDialog.pinned = false;
             customDialog.muted = false;
             customDialog.type = 0;

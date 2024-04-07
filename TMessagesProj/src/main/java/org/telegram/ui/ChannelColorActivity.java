@@ -40,6 +40,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -319,6 +320,13 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
     }
 
     @Override
+    public boolean isLightStatusBar() {
+        if (!CherrygramConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
+        int color = getThemedColor(Theme.key_windowBackgroundWhite);
+        return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
+    @Override
     public View createView(Context context) {
         TLRPC.Chat chat = getMessagesController().getChat(-dialogId);
         if (chat != null) {
@@ -352,6 +360,16 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
                 }
             }
         });
+
+        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
+            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
+            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
+            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
+            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+            //actionBar.setCastShadows(false);
+        }
 
         sunDrawable = new RLottieDrawable(R.raw.sun, "" + R.raw.sun, dp(28), dp(28), true, null);
         sunDrawable.setPlayInDirectionOfCustomEndFrame(true);

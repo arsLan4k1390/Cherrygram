@@ -175,4 +175,44 @@ object CherrygramExtras {
         }
     }
 
+    @JvmStatic
+    fun getSearchFilterType(): TLRPC.MessagesFilter {
+        val filter: TLRPC.MessagesFilter = when (CherrygramConfig.messagesSearchFilter) {
+            CherrygramConfig.FILTER_PHOTOS -> {
+                TLRPC.TL_inputMessagesFilterPhotos()
+            }
+            CherrygramConfig.FILTER_VIDEOS -> {
+                TLRPC.TL_inputMessagesFilterVideo()
+            }
+            CherrygramConfig.FILTER_VOICE_MESSAGES -> {
+                TLRPC.TL_inputMessagesFilterVoice()
+            }
+            CherrygramConfig.FILTER_VIDEO_MESSAGES -> {
+                TLRPC.TL_inputMessagesFilterRoundVideo()
+            }
+            CherrygramConfig.FILTER_FILES -> {
+                TLRPC.TL_inputMessagesFilterDocument()
+            }
+            CherrygramConfig.FILTER_MUSIC -> {
+                TLRPC.TL_inputMessagesFilterMusic()
+            }
+            CherrygramConfig.FILTER_GIFS -> {
+                TLRPC.TL_inputMessagesFilterGif()
+            }
+            CherrygramConfig.FILTER_GEO -> {
+                TLRPC.TL_inputMessagesFilterGeo()
+            }
+            CherrygramConfig.FILTER_CONTACTS -> {
+                TLRPC.TL_inputMessagesFilterContacts()
+            }
+            CherrygramConfig.FILTER_MENTIONS -> {
+                TLRPC.TL_inputMessagesFilterMyMentions()
+            }
+            else -> {
+                TLRPC.TL_inputMessagesFilterEmpty()
+            }
+        }
+        return filter
+    }
+
 }

@@ -2474,6 +2474,10 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         });
     }
 
+    public boolean hasNoNextVoiceOrRoundVideoMessage() {
+        return playingMessageObject == null || (!playingMessageObject.isVoice() && !playingMessageObject.isRoundVideo()) || voiceMessagesPlaylist == null || voiceMessagesPlaylist.size() <= 1 || !voiceMessagesPlaylist.contains(playingMessageObject) || voiceMessagesPlaylist.indexOf(playingMessageObject) >= (voiceMessagesPlaylist.size() - 1);
+    }
+
     public void playNextMessage() {
         playNextMessageWithoutOrder(false);
     }
@@ -2691,7 +2695,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
 
     private void checkAudioFocus(MessageObject messageObject) {
         int neededAudioFocus;
-        if (messageObject.isVoice() || messageObject.isVideo() || messageObject.isRoundVideo()) {
+        if (messageObject.isVoice() || messageObject.isRoundVideo()) {
             if (useFrontSpeaker) {
                 neededAudioFocus = 3;
             } else {
@@ -2896,7 +2900,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                     playCount[0]++;
                 }
             } else {
-                cleanupPlayer(true, true, true, false);
+                cleanupPlayer(true, hasNoNextVoiceOrRoundVideoMessage(), true, false);
             }
         }
     }
@@ -3219,7 +3223,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
             lastProgress = 0;
             audioInfo = null;
             playingMessageObject = messageObject;
-            if (playingMessageObject.isMusic()) {
+            if (canStartMusicPlayerService()) {
                 Intent intent = new Intent(ApplicationLoader.applicationContext, MusicPlayerService.class);
                 try {
                     /*if (Build.VERSION.SDK_INT >= 26) {
@@ -3424,7 +3428,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                             if (!playlist.isEmpty() && (playlist.size() > 1 || !messageObject.isVoice())) {
                                 playNextMessageWithoutOrder(true);
                             } else {
-                                cleanupPlayer(true, true, messageObject.isVoice(), false);
+                                cleanupPlayer(true, hasNoNextVoiceOrRoundVideoMessage(), messageObject.isVoice(), false);
                             }
                         } else if (audioPlayer != null && seekToProgressPending != 0 && (playbackState == ExoPlayer.STATE_READY || playbackState == ExoPlayer.STATE_IDLE)) {
                             int seekTo = (int) (audioPlayer.getDuration() * seekToProgressPending);
@@ -3611,8 +3615,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 FileLog.e(e2);
             }
         }
-
-        if (playingMessageObject != null && playingMessageObject.isMusic()) {
+        if (canStartMusicPlayerService()) {
             Intent intent = new Intent(ApplicationLoader.applicationContext, MusicPlayerService.class);
             try {
                 /*if (Build.VERSION.SDK_INT >= 26) {
@@ -3629,6 +3632,10 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         }
 
         return true;
+    }
+
+    private boolean canStartMusicPlayerService() {
+        return playingMessageObject != null && (playingMessageObject.isMusic() || playingMessageObject.isVoice() || playingMessageObject.isRoundVideo()) && !playingMessageObject.isVoiceOnce() && !playingMessageObject.isRoundOnce();
     }
     
     public void updateSilent(boolean value) {
@@ -3815,8 +3822,8 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         }
     }
 
-    public void prepareResumedRecording(int currentAccount, MediaDataController.DraftVoice draft, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem replyStory, int guid, boolean manual, String query_shortcut, int query_shortcut_id) {
-        manualRecording = manual;
+    public void prepareResumedRecording(int currentAccount, MediaDataController.DraftVoice draft, long dialogId, MessageObject replyToMsg, MessageObject replyToTopMsg, TL_stories.StoryItem replyStory, int guid, String query_shortcut, int query_shortcut_id) {
+        manualRecording = false;
         requestAudioFocus(true);
         recordQueue.cancelRunnable(recordStartRunnable);
         recordQueue.postRunnable(() -> {
@@ -4134,6 +4141,22 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         });
     }
 
+    public void cleanRecording(boolean delete) {
+        recordingAudio = null;
+        AutoDeleteMediaTask.unlockFile(recordingAudioFile);
+        if (delete && recordingAudioFile != null) {
+            try {
+                recordingAudioFile.delete();
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+        }
+        recordingAudioFile = null;
+        manualRecording = false;
+        raiseToEarRecord = false;
+        ignoreOnPause = false;
+    }
+
     private void stopRecordingInternal(final int send, boolean notify, int scheduleDate, boolean once) {
         if (send != 0) {
             final TLRPC.TL_document audioToSend = recordingAudio;
@@ -4305,7 +4328,18 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                                 }
                             }
                             if (path == null || path.length() == 0) {
-                                path = FileLoader.getInstance(currentAccount.getCurrentAccount()).getPathToMessage(message.messageOwner).toString();
+                                path = null;
+                                TLRPC.Document document = message.getDocument();
+                                if (!TextUtils.isEmpty(FileLoader.getDocumentFileName(document)) && !(message.messageOwner instanceof TLRPC.TL_message_secret) && FileLoader.canSaveAsFile(message)) {
+                                    String filename = FileLoader.getDocumentFileName(document);
+                                    File newDir = FileLoader.getDirectory(FileLoader.MEDIA_DIR_FILES);
+                                    if (newDir != null) {
+                                        path = new File(newDir, filename).getAbsolutePath();
+                                    }
+                                }
+                                if (path == null) {
+                                    path = FileLoader.getInstance(currentAccount.getCurrentAccount()).getPathToMessage(message.messageOwner).toString();
+                                }
                             }
                             File sourceFile = new File(path);
                             if (!sourceFile.exists()) {
@@ -4359,18 +4393,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                                 }
                             }
                             if (path == null || path.length() == 0) {
-                                path = null;
-                                TLRPC.Document document = message.getDocument();
-                                if (!TextUtils.isEmpty(FileLoader.getDocumentFileName(document)) && !(message.messageOwner instanceof TLRPC.TL_message_secret) && FileLoader.canSaveAsFile(message)) {
-                                    String filename = FileLoader.getDocumentFileName(document);
-                                    File newDir = FileLoader.getDirectory(FileLoader.MEDIA_DIR_FILES);
-                                    if (newDir != null) {
-                                        path = new File(newDir, filename).getAbsolutePath();
-                                    }
-                                }
-                                if (path == null) {
-                                    path = FileLoader.getInstance(currentAccount.getCurrentAccount()).getPathToMessage(message.messageOwner).toString();
-                                }
+                                path = FileLoader.getInstance(currentAccount.getCurrentAccount()).getPathToMessage(message.messageOwner).toString();
                             }
                             File sourceFile = new File(path);
                             if (!sourceFile.exists()) {

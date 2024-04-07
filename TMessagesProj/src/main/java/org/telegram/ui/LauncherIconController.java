@@ -18,25 +18,6 @@ public class LauncherIconController {
         setIcon(LauncherIcon.CHERRY);
     }
 
-    public static void updateMonetIcon() {
-        if (isEnabled(LauncherIcon.MONET_CHERRY_SAMSUNG)) {
-            setIcon(LauncherIcon.CHERRY);
-            setIcon(LauncherIcon.MONET_CHERRY_SAMSUNG);
-        }
-        if (isEnabled(LauncherIcon.MONET_CHERRY_PIXEL)) {
-            setIcon(LauncherIcon.CHERRY);
-            setIcon(LauncherIcon.MONET_CHERRY_PIXEL);
-        }
-        if (isEnabled(LauncherIcon.MONET_SAMSUNG)) {
-            setIcon(LauncherIcon.CHERRY);
-            setIcon(LauncherIcon.MONET_SAMSUNG);
-        }
-        if (isEnabled(LauncherIcon.MONET_PIXEL)) {
-            setIcon(LauncherIcon.CHERRY);
-            setIcon(LauncherIcon.MONET_PIXEL);
-        }
-    }
-
     public static boolean isEnabled(LauncherIcon icon) {
         Context ctx = ApplicationLoader.applicationContext;
         int i = ctx.getPackageManager().getComponentEnabledSetting(icon.getComponentName(ctx));
@@ -57,7 +38,9 @@ public class LauncherIconController {
         MONET_CHERRY_SAMSUNG("CG_Icon_Monet_Samsung", R.color.icon_background_cherry_samsung, R.drawable.icon_foreground_cherry_samsung, R.string.AP_ChangeIcon_Monet_Samsung),
         MONET_CHERRY_PIXEL("CG_Icon_Monet_Pixel", R.color.icon_background_cherry_pixel, R.drawable.icon_foreground_cherry_pixel, R.string.AP_ChangeIcon_Monet_Pixel),
         DARK_CHERRY("CG_Icon_Dark", R.drawable.icon_background_dark, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Dark),
-        WHITE_CHERRY("CG_Icon_White_Cherry", R.drawable.icon_background_white, R.drawable.ic_launcher_foreground_white, R.string.AP_ChangeIcon_White),
+        DARK_CHERRY_BRA("CG_Icon_Dark_Bra", R.drawable.icon_background_dark, R.drawable.icon_foreground_cherry_bra, R.string.AP_ChangeIcon_Bra),
+        WHITE_CHERRY("CG_Icon_White_Cherry", R.drawable.icon_background_white, R.drawable.icon_foreground_cherry_white, R.string.AP_ChangeIcon_White),
+        WHITE_CHERRY_BRA("CG_Icon_White_Cherry_Bra", R.drawable.icon_background_white, R.drawable.icon_foreground_cherry_white_bra, R.string.AP_ChangeIcon_Bra),
         LAGUNA_CHERRY("CG_Icon_Laguna", R.drawable.icon_background_laguna, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Laguna),
         AQUA_CHERRY("CG_Icon_Aqua", R.drawable.icon_background_aqua, R.drawable.icon_foreground_cherry, R.string.AppIconAqua),
         GREEN_CHERRY("CG_Icon_Green", R.drawable.icon_background_green, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Green),
@@ -66,7 +49,6 @@ public class LauncherIconController {
         SUNRISE_CHERRY("CG_Icon_Sunrise", R.drawable.icon_background_sunrise, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunrise),
         TURBO_CHERRY("CG_Icon_Turbo", R.drawable.icon_background_turbo, R.drawable.icon_foreground_cherry, R.string.AppIconTurbo),
         NOX_CHERRY("CG_Icon_Night", R.mipmap.icon_background_nox, R.drawable.icon_foreground_cherry, R.string.AppIconNox),
-        DARK_CHERRY_BRA("CG_Icon_Dark_Bra", R.drawable.icon_background_dark, R.drawable.icon_foreground_cherry_bra, R.string.AP_ChangeIcon_Dark_Bra),
         CHERRY_NY("CG_Icon_Cherry_NY", R.drawable.icon_background_cherry_ny, R.drawable.icon_foreground_cherry_ny, R.string.AP_ChangeIcon_Cherry_NY),
         DARK_NY("CG_Icon_Dark_NY", R.drawable.icon_background_dark_ny, R.drawable.icon_foreground_cherry_ny, R.string.AP_ChangeIcon_Cherry_NY),
 
@@ -110,6 +92,25 @@ public class LauncherIconController {
             this.foreground = foreground;
             this.title = title;
             this.premium = premium;
+        }
+    }
+
+    public static void updateMonetIcon() {
+        if (isEnabled(LauncherIcon.MONET_CHERRY_SAMSUNG)) {
+            setIcon(LauncherIcon.CHERRY);
+            setIcon(LauncherIcon.MONET_CHERRY_SAMSUNG);
+        }
+        if (isEnabled(LauncherIcon.MONET_CHERRY_PIXEL)) {
+            setIcon(LauncherIcon.CHERRY);
+            setIcon(LauncherIcon.MONET_CHERRY_PIXEL);
+        }
+        if (isEnabled(LauncherIcon.MONET_SAMSUNG)) {
+            setIcon(LauncherIcon.CHERRY);
+            setIcon(LauncherIcon.MONET_SAMSUNG);
+        }
+        if (isEnabled(LauncherIcon.MONET_PIXEL)) {
+            setIcon(LauncherIcon.CHERRY);
+            setIcon(LauncherIcon.MONET_PIXEL);
         }
     }
 }

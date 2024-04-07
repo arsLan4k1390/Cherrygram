@@ -1599,7 +1599,9 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             listView[0].setVisibility(View.VISIBLE);
             int index = order == 1 ? 0 : 1;
             listView[index].setBackgroundColor(backgroundPaint.getColor());
-            listView[index].setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            if (Build.VERSION.SDK_INT >= 18) {
+                listView[index].setLayerType(View.LAYER_TYPE_HARDWARE, null);
+            }
             if (order == 1) {
                 pageSwitchAnimation.playTogether(ObjectAnimator.ofFloat(listView[0], View.TRANSLATION_X, AndroidUtilities.dp(56), 0),
                         ObjectAnimator.ofFloat(listView[0], View.ALPHA, 0.0f, 1.0f));
@@ -1618,7 +1620,9 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                     textSelectionHelper.setParentView(listView[0]);
                     textSelectionHelper.layoutManager = layoutManager[0];
                     listView[index].setBackgroundDrawable(null);
-                    listView[index].setLayerType(View.LAYER_TYPE_NONE, null);
+                    if (Build.VERSION.SDK_INT >= 18) {
+                        listView[index].setLayerType(View.LAYER_TYPE_NONE, null);
+                    }
                     pageSwitchAnimation = null;
                 }
             });

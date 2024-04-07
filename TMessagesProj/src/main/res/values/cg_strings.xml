@@ -3,6 +3,7 @@
     <!-- by t.me/arsLan-->
     <string name="CG_AppName" translatable="false">Cherrygram</string>
     <string name="CG_AppNameBeta" translatable="false">Cherrygram</string>
+    <string name="CG_FollowChannelLink">Subscribe to @Cherry_Gram!</string>
     <string name="CG_FollowChannelTitle">Subscribe to the official channel</string>
     <string name="CG_FollowChannelInfo">Join our channel to stay up to date with all the news and features of Cherrygram!</string>
     <string name="CG_DoNotRemindAgain">Don\'t remind again</string>
@@ -53,7 +54,7 @@
     <string name="CG_ClearFromCache">Clear from cache</string>
     <string name="CG_ClearedFromCache">Cleared from cache</string>
     <string name="CG_ViewUserHistory">Messages history</string>
-    <string name="CG_ToSaved">Save message</string>
+    <string name="CG_ToSaved">Save</string>
 
     <string name="CG_CreateMention">Create Mention</string>
     <string name="CG_CreateCode">Create Code</string>
@@ -61,12 +62,27 @@
 
     <string name="CG_FwdMenu_EnableNoForward">Disable forward authorship</string>
     <string name="CG_FwdMenu_DisableNoForward">Enable forward authorship</string>
-    <string name="CG_Without_Authorship">Without authorship</string>
+    <string name="CG_Without_Authorship">without authorship</string>
 
     <string name="CG_FwdMenu_NoNotify">Don\'t notify</string>
     <string name="CG_FwdMenu_Notify">Notify</string>
     <string name="CG_FwdMenu_EnableCaptions">Enable captions</string>
     <string name="CG_FwdMenu_DisableCaptions">Hide captions</string>
+
+    <!--Search filter-->
+    <string name="CG_SearchFilter">Filter search results</string>
+    <string name="CG_SearchFilter_None">None</string>
+    <string name="CG_SearchFilter_Photos">Photos</string>
+    <string name="CG_SearchFilter_Videos">Videos</string>
+    <string name="CG_SearchFilter_VoiceMessages">Voice messages</string>
+    <string name="CG_SearchFilter_VideoMessages">Video messages</string>
+    <string name="CG_SearchFilter_Files">Files/Documents</string>
+    <string name="CG_SearchFilter_Music">Music</string>
+    <string name="CG_SearchFilter_GIFs">GIFs</string>
+    <string name="CG_SearchFilter_Geolocation">Geolocation</string>
+    <string name="CG_SearchFilter_Contacts">Contacts</string>
+    <string name="CG_SearchFilter_MyMentions">My mentions</string>
+    <!--Search filter-->
     <!--Chats screen-->
 
     <!--Misc-->
@@ -140,12 +156,12 @@
     <string name="AP_ChangeIcon_Monet_Pixel" translatable="false">Monet (Pixel)</string>
     <string name="AP_ChangeIcon_Dark">Dark</string>
     <string name="AP_ChangeIcon_White">White</string>
+    <string name="AP_ChangeIcon_Bra" translatable="false">Bra</string>
     <string name="AP_ChangeIcon_Laguna">Laguna</string>
     <string name="AP_ChangeIcon_Green">Green</string>
     <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
-    <string name="AP_ChangeIcon_Dark_Bra" translatable="false">Bra</string>
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
     <string name="AP_IconReplacement_Default">Default</string>
@@ -165,6 +181,9 @@
     <string name="CP_PremAndAnim_Header">Animations and Premium Features</string>
     <string name="CP_ProfileReplyBackground">Messages and profiles</string>
     <string name="CP_CustomizeProfile">Customize profile</string>
+    <string name="CP_ProfileChannelPreview">Personal channel</string>
+    <string name="CP_ProfileBirthDatePreview">Date of Birth</string>
+    <string name="CP_ProfileBusinessPreview">Business hours and location</string>
     <string name="CP_ProfileBackgroundColor">Background in profile</string>
     <string name="CP_ProfileBackgroundEmoji">Emoji in profile background</string>
     <string name="CP_CustomizeMessage">Customize a message</string>
@@ -207,9 +226,8 @@
     <string name="AP_DrawerIconPack_Header">Drawer icons set</string>
     <string name="AP_DrawerButtonsCategory">Drawer buttons</string>
 
-    <string name="AP_ProfileCategory">Profile and Contacts</string>
-    <string name="AP_HideUserPhone">Hide your phone number</string>
-    <string name="AP_HideUserPhoneSummary">in drawer and settings</string>
+    <string name="AP_HideUserPhone_Show">Tap to show</string>
+    <string name="AP_HideUserPhone_Copy">Hold to copy</string>
     <string name="AP_MutualContacts_Description">This is a mutual contact.</string>
     <string name="AP_ShowID">Show ID and DC in profile</string>
     <!--Appearance Preferences-->
@@ -247,6 +265,8 @@
     <string name="CP_Slider_RecentStickersAmplifier">Recent stickers counter (restart app to apply)</string>
 
     <string name="CP_Header_Record">Media</string>
+    <string name="CP_SpoilersOnMedia">Spoiler effect</string>
+    <string name="CP_SpoilersOnMedia_Desc">Spoiler effect on photos and videos will not be shown if the feature is disabled.</string>
     <string name="CP_VoiceEnhancements">Voice Enhancements</string>
     <string name="CP_VoiceEnhancements_Desc">Noise Suppression and Voice Normalization</string>
     <string name="CP_PlayVideo">Play video on volume button click</string>
@@ -275,14 +295,11 @@
     <string name="CP_CameraTypeDefault" translatable="false">Telegram</string>
     <string name="CP_DefaultCameraDesc">Use the Telegram\'s built-in camera.</string>
     <string name="CP_CameraXDesc">CameraX is only supported on <![CDATA[<a href="https://developer.android.com/training/camerax/devices">selected devices</a>]]>, effects and lenses support depends on your manufacturer.</string>
-    <string name="CP_PerformanceMode">Performance Mode</string>
-    <string name="CP_PerformanceModeDesc">CameraX\'s quality will be reduced in favor of performance</string>
     <string name="CP_CameraQuality">Camera Quality</string>
     <string name="CP_CameraTypeSystem">System</string>
     <string name="CP_SystemCameraDesc">Access directly the system camera (not applicable for video messages).</string>
 
     <string name="CP_CameraAspectRatio">Camera aspect ratio</string>
-    <string name="CP_CameraAspectRatio_Desc">Selecting the aspect ratio of the camera is necessary in order to record video messages in good quality. Most phones usually use 16:9 aspect ratio, while flagship devices use 4:3 or 1:1. Test each one, compare recording quality and use the best ratio.</string>
     <string name="CP_RearCam">Use rear camera</string>
     <string name="CP_RearCam_Desc">Instead of front camera for video messages</string>
     <string name="CP_DisableCam">Disable cam in media attach menu</string>
@@ -292,7 +309,7 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
     <string name="EP_NavigationAnimation">Navigation animation</string>
-    <string name="EP_NavigationAnimationSpring">Spring</string>
+    <string name="EP_NavigationAnimationSpring" translatable="false">Spring</string>
     <string name="EP_NavigationAnimationBezier">Classic</string>
     <string name="EP_NavigationAnimationCrossfading">Crossfading effect</string>
     <string name="CG_ResidentNotification">Show a resident notification</string>

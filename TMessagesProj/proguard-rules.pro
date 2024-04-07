@@ -148,6 +148,12 @@
      public static ** valueOf(java.lang.String);
 }
 
+-keepnames class androidx.recyclerview.widget.RecyclerView
+-keepclassmembers class androidx.recyclerview.widget.RecyclerView {
+    public void suppressLayout(boolean);
+    public boolean isLayoutSuppressed();
+}
+
 -dontwarn org.jetbrains.annotations.NotNull
 -dontwarn org.jetbrains.annotations.Nullable
 -dontwarn androidx.camera.extensions.**

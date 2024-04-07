@@ -172,9 +172,6 @@
     <string name="AP_DrawerBlurIntensity">模糊程度</string>
     <string name="AP_DrawerIconPack_Header">側邊欄圖示設定</string>
     <string name="AP_DrawerButtonsCategory">側邊欄按鈕</string>
-    <string name="AP_ProfileCategory">個人檔案和聯絡人</string>
-    <string name="AP_HideUserPhone">隱藏電話號碼</string>
-    <string name="AP_HideUserPhoneSummary">在側邊欄 和設定中隱藏電話號碼</string>
     <string name="AP_MutualContacts_Description">該帳戶為相互聯絡人，對方同時也新增您為聯絡人</string>
     <string name="AP_ShowID">在個人檔案中顯示 ID 和 DC</string>
     <!--Appearance Preferences-->
@@ -223,13 +220,10 @@
     <string name="CP_CameraType">相機類型</string>
     <string name="CP_DefaultCameraDesc">使用 Telegram 內建相機</string>
     <string name="CP_CameraXDesc">CameraX 僅支援 <![CDATA[<a href="https://developer.android.com/training/camerax/devices">下列裝置</a>]]>，效果和鏡頭支援取決於您的硬體</string>
-    <string name="CP_PerformanceMode">高效能模式</string>
-    <string name="CP_PerformanceModeDesc">CameraX的品質會有所降低，以提高效能</string>
     <string name="CP_CameraQuality">相機品質</string>
     <string name="CP_CameraTypeSystem">系統相機</string>
     <string name="CP_SystemCameraDesc">使用系統相機 (在視訊訊息中不可用)</string>
     <string name="CP_CameraAspectRatio">相機縱橫比</string>
-    <string name="CP_CameraAspectRatio_Desc">選擇合適的縱橫比可以錄製更高品質的影片。現時大多數手機通常使用 16:9 的縱橫比，而旗艦裝置使用 4:3 或 1:1。建議使用者自行測試並選擇最佳的縱橫比。</string>
     <string name="CP_RearCam">使用後置鏡頭</string>
     <string name="CP_RearCam_Desc">視訊訊息不使用前置鏡頭</string>
     <string name="CP_DisableCam">在多媒體選單中停用相機</string>
@@ -238,7 +232,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">實驗功能</string>
     <string name="EP_NavigationAnimation">程式動畫</string>
-    <string name="EP_NavigationAnimationSpring">跳躍</string>
     <string name="EP_NavigationAnimationBezier">經典</string>
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
     <string name="CG_ResidentNotification">顯示永久通知</string>

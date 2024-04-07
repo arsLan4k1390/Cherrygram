@@ -67,12 +67,12 @@ import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AnimatedEmojiSpan;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
-import org.telegram.ui.Components.BotWebViewSheet;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.ChatThemeBottomSheet;
 import org.telegram.ui.Components.QuoteSpan;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
 import org.telegram.ui.Components.StickerSetBulletinLayout;
+import org.telegram.ui.Components.StickersAlert;
 import org.telegram.ui.Components.StickersArchiveAlert;
 import org.telegram.ui.Components.TextStyleSpan;
 import org.telegram.ui.Components.URLSpanReplacement;
@@ -100,6 +100,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.extras.CherrygramExtras;
 
 @SuppressWarnings("unchecked")
 public class MediaDataController extends BaseController {
@@ -881,11 +882,19 @@ public class MediaDataController extends BaseController {
     }
 
     public ArrayList<TLRPC.Document> getRecentStickers(int type) {
+        return getRecentStickers(type, false);
+    }
+
+    public ArrayList<TLRPC.Document> getRecentStickers(int type, boolean firstEmpty) {
         ArrayList<TLRPC.Document> arrayList = recentStickers[type];
         if (type == TYPE_PREMIUM_STICKERS) {
             return new ArrayList<>(recentStickers[type]);
         }
-        return new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), CherrygramConfig.INSTANCE.getSlider_RecentStickersAmplifier()))); //Show more then 20 recent stickers
+        ArrayList<TLRPC.Document> result = new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), CherrygramConfig.INSTANCE.getSlider_RecentStickersAmplifier())));
+        if (firstEmpty && !result.isEmpty() && !StickersAlert.DISABLE_STICKER_EDITOR) {
+            result.add(0, new TLRPC.TL_documentEmpty());
+        }
+        return result;
     }
 
     public ArrayList<TLRPC.Document> getRecentStickersNoCopy(int type) {
@@ -1210,6 +1219,16 @@ public class MediaDataController extends BaseController {
         return null;
     }
 
+    public static TLRPC.TL_inputStickerSetItem getInputStickerSetItem(TLRPC.Document document, String emoji) {
+        TLRPC.TL_inputStickerSetItem item = new TLRPC.TL_inputStickerSetItem();
+        item.document = new TLRPC.TL_inputDocument();
+        item.document.id = document.id;
+        item.document.access_hash = document.access_hash;
+        item.document.file_reference = document.file_reference;
+        item.emoji = emoji;
+        return item;
+    }
+
     public void setPlaceholderImage(BackupImageView imageView, String setName, String emoji, String filter) {
         TLRPC.InputStickerSet inputStickerSet = new TLRPC.TL_inputStickerSetShortName();
         inputStickerSet.short_name = setName;
@@ -1245,6 +1264,10 @@ public class MediaDataController extends BaseController {
     }
 
     public TLRPC.TL_messages_stickerSet getStickerSet(TLRPC.InputStickerSet inputStickerSet, Integer hash, boolean cacheOnly, Utilities.Callback<TLRPC.TL_messages_stickerSet> onResponse) {
+        return getStickerSet(inputStickerSet, hash, cacheOnly, false, onResponse);
+    }
+
+    public TLRPC.TL_messages_stickerSet getStickerSet(TLRPC.InputStickerSet inputStickerSet, Integer hash, boolean cacheOnly, boolean runWhenRemote, Utilities.Callback<TLRPC.TL_messages_stickerSet> onResponse) {
         if (inputStickerSet == null) {
             return null;
         }
@@ -1259,7 +1282,7 @@ public class MediaDataController extends BaseController {
             cacheSet = stickerSetDefaultChannelStatuses;
         }
         if (cacheSet != null) {
-            if (onResponse != null) {
+            if (!runWhenRemote && onResponse != null) {
                 onResponse.run(cacheSet);
             }
             return cacheSet;
@@ -1267,6 +1290,34 @@ public class MediaDataController extends BaseController {
         if (inputStickerSet instanceof TLRPC.TL_inputStickerSetID) {
             getMessagesStorage().getStorageQueue().postRunnable(() -> {
                 TLRPC.TL_messages_stickerSet cachedSet = getCachedStickerSetInternal(inputStickerSet.id, hash);
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (cachedSet != null) {
+                        if (onResponse != null) {
+                            onResponse.run(cachedSet);
+                        }
+                        if (cachedSet.set != null) {
+                            stickerSetsById.put(cachedSet.set.id, cachedSet);
+                            stickerSetsByName.put(cachedSet.set.short_name.toLowerCase(), cachedSet);
+                        }
+                        getNotificationCenter().postNotificationName(NotificationCenter.groupStickersDidLoad, cachedSet.set.id, cachedSet);
+                    } else {
+                        fetchStickerSetInternal(inputStickerSet, (ok, set) -> {
+                            if (onResponse != null) {
+                                onResponse.run(set);
+                            }
+                            if (set != null && set.set != null) {
+                                stickerSetsById.put(set.set.id, set);
+                                stickerSetsByName.put(set.set.short_name.toLowerCase(), set);
+                                saveStickerSetIntoCache(set);
+                                getNotificationCenter().postNotificationName(NotificationCenter.groupStickersDidLoad, set.set.id, set);
+                            }
+                        });
+                    }
+                });
+            });
+        } else if (inputStickerSet instanceof TLRPC.TL_inputStickerSetShortName) {
+            getMessagesStorage().getStorageQueue().postRunnable(() -> {
+                TLRPC.TL_messages_stickerSet cachedSet = getCachedStickerSetInternal(inputStickerSet.short_name.toLowerCase(), hash);
                 AndroidUtilities.runOnUIThread(() -> {
                     if (cachedSet != null) {
                         if (onResponse != null) {
@@ -1338,7 +1389,7 @@ public class MediaDataController extends BaseController {
         }
         getMessagesStorage().getStorageQueue().postRunnable(() -> {
             try {
-                SQLitePreparedStatement state = getMessagesStorage().getDatabase().executeFast("REPLACE INTO stickersets2 VALUES(?, ?, ?, ?)");
+                SQLitePreparedStatement state = getMessagesStorage().getDatabase().executeFast("REPLACE INTO stickersets2 VALUES(?, ?, ?, ?, ?)");
                 state.requery();
                 NativeByteBuffer data = new NativeByteBuffer(set.getObjectSize());
                 set.serializeToStream(data);
@@ -1346,6 +1397,7 @@ public class MediaDataController extends BaseController {
                 state.bindByteBuffer(2, data);
                 state.bindInteger(3, set.set.hash);
                 state.bindLong(4, System.currentTimeMillis());
+                state.bindString(5, set.set.short_name == null ? "" : set.set.short_name.toLowerCase());
                 state.step();
                 data.reuse();
                 state.dispose();
@@ -1361,7 +1413,37 @@ public class MediaDataController extends BaseController {
         SQLiteCursor cursor = null;
         NativeByteBuffer data = null;
         try {
-            cursor = getMessagesStorage().getDatabase().queryFinalized("SELECT data, hash FROM stickersets2 WHERE id = " + id + " LIMIT 1");
+            cursor = getMessagesStorage().getDatabase().queryFinalized("SELECT data, hash FROM stickersets2 WHERE id = ? LIMIT 1", id);
+            if (cursor.next() && !cursor.isNull(0)) {
+                data = cursor.byteBufferValue(0);
+                if (data != null) {
+                    set = TLRPC.TL_messages_stickerSet.TLdeserialize(data, data.readInt32(false), false);
+                    int cachedHash = cursor.intValue(1);
+                    if (hash != null && hash != 0 && hash != cachedHash) {
+                        return null;
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            FileLog.e(e);
+        } finally {
+            if (data != null) {
+                data.reuse();
+            }
+            if (cursor != null) {
+                cursor.dispose();
+            }
+        }
+        return set;
+    }
+
+
+    private TLRPC.TL_messages_stickerSet getCachedStickerSetInternal(String short_name, Integer hash) {
+        TLRPC.TL_messages_stickerSet set = null;
+        SQLiteCursor cursor = null;
+        NativeByteBuffer data = null;
+        try {
+            cursor = getMessagesStorage().getDatabase().queryFinalized("SELECT data, hash FROM stickersets2 WHERE short_name = ? LIMIT 1", short_name);
             if (cursor.next() && !cursor.isNull(0)) {
                 data = cursor.byteBufferValue(0);
                 if (data != null) {
@@ -2591,7 +2673,7 @@ public class MediaDataController extends BaseController {
     private void processLoadedDiceStickers(String name, boolean isEmoji, TLRPC.TL_messages_stickerSet res, boolean cache, int date) {
         AndroidUtilities.runOnUIThread(() -> loadingDiceStickerSets.remove(name));
         Utilities.stageQueue.postRunnable(() -> {
-            if (cache && (res == null || Math.abs(System.currentTimeMillis() / 1000 - date) >= 60 * 60 * 24) || !cache && res == null) {
+            if (cache && (res == null || Math.abs(System.currentTimeMillis() / 1000 - date) >= 60 * 60 * 24)) {
                 AndroidUtilities.runOnUIThread(() -> loadStickersByEmojiOrName(name, isEmoji, false), res == null && !cache ? 1000 : 0);
                 if (res == null) {
                     return;
@@ -3122,6 +3204,7 @@ public class MediaDataController extends BaseController {
                 currentIndex = a;
                 stickerSets[type].remove(a);
                 if (toggle == 2) {
+                    set.set.title = stickerSet.title;
                     stickerSets[type].add(0, set);
                 } else if (forget) {
                     stickerSetsById.remove(set.set.id);
@@ -3662,7 +3745,7 @@ public class MediaDataController extends BaseController {
                     req.saved_reaction.add(reaction.toTLReaction());
                     req.flags |= 8;
                 }
-                req.filter = new TLRPC.TL_inputMessagesFilterEmpty();
+                req.filter = CherrygramExtras.getSearchFilterType();
                 mergeReqId = getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                     if (lastMergeDialogId == mergeDialogId) {
                         mergeReqId = 0;
@@ -3747,7 +3830,7 @@ public class MediaDataController extends BaseController {
             req.saved_reaction.add(reaction.toTLReaction());
             req.flags |= 8;
         }
-        req.filter = new TLRPC.TL_inputMessagesFilterEmpty();
+        req.filter = CherrygramExtras.getSearchFilterType();
         lastSearchQuery = query;
         long queryWithDialogFinal = queryWithDialog;
         String finalQuery = query;
@@ -4691,18 +4774,6 @@ public class MediaDataController extends BaseController {
     private static RectF bitmapRect;
     private static Path roundPath;
 
-    private static final int ADAPTIVE_SIZE = AndroidUtilities.dp(108);
-    private static final int ADAPTIVE_SIDE_SIZE = AndroidUtilities.dp(18);
-
-    public static Bitmap convertBitmapToAdaptive(Bitmap bitmap) {
-        Drawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), bitmap);
-        Bitmap result = Bitmap.createBitmap(ADAPTIVE_SIZE, ADAPTIVE_SIZE, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(result);
-        bitmapDrawable.setBounds(ADAPTIVE_SIDE_SIZE, ADAPTIVE_SIDE_SIZE, ADAPTIVE_SIZE - ADAPTIVE_SIDE_SIZE, ADAPTIVE_SIZE - ADAPTIVE_SIDE_SIZE);
-        bitmapDrawable.draw(canvas);
-        return result;
-    }
-
     public void buildShortcuts() {
         if (Build.VERSION.SDK_INT < 23) {
             return;
@@ -5257,8 +5328,8 @@ public class MediaDataController extends BaseController {
         return shortcutIntent;
     }
 
-    private Intent createIntrnalAttachedBotShortcutIntent(long botId, int botType) {
-        if (botId == 0 || botType != BotWebViewSheet.TYPE_WEB_VIEW_BOT_APP) {
+    private Intent createIntrnalAttachedBotShortcutIntent(long botId) {
+        if (botId == 0 || !canCreateAttachedMenuBotShortcut(botId)) {
             return null;
         }
         Intent shortcutIntent = new Intent(ApplicationLoader.applicationContext, OpenAttachedMenuBotReceiver.class);
@@ -5275,7 +5346,7 @@ public class MediaDataController extends BaseController {
 
     public void installShortcut(long dialogId, int type) {
         try {
-            Intent shortcutIntent = type == SHORTCUT_TYPE_USER_OR_CHAT ? createIntrnalShortcutIntent(dialogId) : createIntrnalAttachedBotShortcutIntent(dialogId, BotWebViewSheet.TYPE_WEB_VIEW_BOT_APP);
+            Intent shortcutIntent = type == SHORTCUT_TYPE_USER_OR_CHAT ? createIntrnalShortcutIntent(dialogId) : createIntrnalAttachedBotShortcutIntent(dialogId);
             if (shortcutIntent == null) {
                 return;
             }
@@ -5489,7 +5560,7 @@ public class MediaDataController extends BaseController {
                     name = chat.title;
                 }
 
-                Intent shortcutIntent = type == SHORTCUT_TYPE_USER_OR_CHAT ? createIntrnalShortcutIntent(dialogId) : createIntrnalAttachedBotShortcutIntent(dialogId, BotWebViewSheet.TYPE_WEB_VIEW_BOT_APP);
+                Intent shortcutIntent = type == SHORTCUT_TYPE_USER_OR_CHAT ? createIntrnalShortcutIntent(dialogId) : createIntrnalAttachedBotShortcutIntent(dialogId);
                 Intent addIntent = new Intent();
                 addIntent.putExtra(Intent.EXTRA_SHORTCUT_INTENT, shortcutIntent);
                 addIntent.putExtra(Intent.EXTRA_SHORTCUT_NAME, name);
@@ -5512,6 +5583,15 @@ public class MediaDataController extends BaseController {
                 if (shortcuts.get(i).getId().equals(id)) {
                     return true;
                 }
+            }
+        }
+        return false;
+    }
+
+    public boolean canCreateAttachedMenuBotShortcut(long botId) {
+        for (int i = 0; i < attachMenuBots.bots.size(); i++) {
+            if (attachMenuBots.bots.get(i).bot_id == botId) {
+                return attachMenuBots.bots.get(i).show_in_side_menu && !isShortcutAdded(botId, MediaDataController.SHORTCUT_TYPE_ATTACHED_BOT);
             }
         }
         return false;
@@ -6746,7 +6826,9 @@ public class MediaDataController extends BaseController {
                     if (endMessage.length() > 0 && endMessage.charAt(0) != '\n') {
                         endMessage = AndroidUtilities.concat("\n", endMessage);
                     }
+                    boolean contentWasTruncated = false;
                     if (content.length() > 0 && content.charAt(content.length() - 1) == '\n') {
+                        contentWasTruncated = true;
                         content = substring(content, 0, content.length() - 1);
                     }
                     if (!TextUtils.isEmpty(content)) {
@@ -6757,7 +6839,7 @@ public class MediaDataController extends BaseController {
                         message[0] = AndroidUtilities.concat(startMessage, content, endMessage);
                         TLRPC.TL_messageEntityPre entity = new TLRPC.TL_messageEntityPre();
                         entity.offset = start + (replacedFirst ? 0 : 1);
-                        entity.length = index - start - 3 - (language.length() + (!language.isEmpty() ? 1 : 0)) + (replacedFirst ? 0 : 1);
+                        entity.length = index - start - 3 - (language.length() + (!language.isEmpty() ? 1 : 0)) + (replacedFirst ? 0 : 1) - (contentWasTruncated ? 1 : 0);
                         entity.language = TextUtils.isEmpty(language) || language.trim().length() == 0 ? "" : language;
                         entities.add(entity);
                         lastIndex -= 6;
@@ -6960,6 +7042,44 @@ public class MediaDataController extends BaseController {
         message[0] = cs;
 
         return entities;
+    }
+
+    public static boolean entitiesEqual(TLRPC.MessageEntity entity1, TLRPC.MessageEntity entity2) {
+        if (entity1.getClass() != entity2.getClass() ||
+                entity1.offset != entity2.offset ||
+                entity1.length != entity2.length ||
+                !TextUtils.equals(entity1.url, entity2.url) ||
+                !TextUtils.equals(entity1.language, entity2.language)) {
+            return false;
+        }
+        if (entity1 instanceof TLRPC.TL_inputMessageEntityMentionName && ((TLRPC.TL_inputMessageEntityMentionName) entity1).user_id != ((TLRPC.TL_inputMessageEntityMentionName) entity2).user_id) {
+            return false;
+        }
+        if (entity1 instanceof TLRPC.TL_messageEntityMentionName && ((TLRPC.TL_messageEntityMentionName) entity1).user_id != ((TLRPC.TL_messageEntityMentionName) entity2).user_id) {
+            return false;
+        }
+        if (entity1 instanceof TLRPC.TL_messageEntityCustomEmoji && ((TLRPC.TL_messageEntityCustomEmoji) entity1).document_id != ((TLRPC.TL_messageEntityCustomEmoji) entity2).document_id) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean entitiesEqual(ArrayList<TLRPC.MessageEntity> entities1, ArrayList<TLRPC.MessageEntity> entities2) {
+        if (entities1.size() != entities2.size()) {
+            return false;
+        }
+
+        for (int i = 0; i < entities1.size(); i++) {
+            TLRPC.MessageEntity entity1 = entities1.get(i);
+            TLRPC.MessageEntity entity2 = entities2.get(i);
+
+            if (!MediaDataController.entitiesEqual(entity1, entity2)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private CharSequence parsePattern(CharSequence cs, Pattern pattern, ArrayList<TLRPC.MessageEntity> entities, GenericProvider<Void, TLRPC.MessageEntity> entityProvider) {
@@ -9107,7 +9227,7 @@ public class MediaDataController extends BaseController {
     public LongSparseArray<DraftVoice> draftVoices = new LongSparseArray<>();
     private void loadDraftVoiceMessages() {
         if (draftVoicesLoaded) return;
-        SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("voicedrafts_" + currentAccount, Context.MODE_PRIVATE);
+        SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("2voicedrafts_" + currentAccount, Context.MODE_PRIVATE);
         Set<? extends Map.Entry<String, ?>> entries = prefs.getAll().entrySet();
         draftVoices.clear();
         for (Map.Entry<String, ?> entry : entries) {
@@ -9123,12 +9243,12 @@ public class MediaDataController extends BaseController {
         DraftVoice draft = getDraftVoice(dialog_id, topic_id);
         if (draft != null && draft.once != once) {
             draft.once = once;
-            SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("voicedrafts_" + currentAccount, Context.MODE_PRIVATE);
+            SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("2voicedrafts_" + currentAccount, Context.MODE_PRIVATE);
             prefs.edit().putString(Objects.hash(dialog_id, topic_id) + "", draft.toString()).apply();
         }
     }
     public void pushDraftVoiceMessage(long dialog_id, long topic_id, DraftVoice draft) {
-        SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("voicedrafts_" + currentAccount, Context.MODE_PRIVATE);
+        SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("2voicedrafts_" + currentAccount, Context.MODE_PRIVATE);
         final long hash = Objects.hash(dialog_id, topic_id);
         final String key = hash + "";
         if (draft == null) {
@@ -9204,5 +9324,17 @@ public class MediaDataController extends BaseController {
                 return null;
             }
         }
+    }
+
+    private static final int ADAPTIVE_SIZE = AndroidUtilities.dp(108);
+    private static final int ADAPTIVE_SIDE_SIZE = AndroidUtilities.dp(18);
+
+    public static Bitmap convertBitmapToAdaptive(Bitmap bitmap) {
+        Drawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), bitmap);
+        Bitmap result = Bitmap.createBitmap(ADAPTIVE_SIZE, ADAPTIVE_SIZE, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(result);
+        bitmapDrawable.setBounds(ADAPTIVE_SIDE_SIZE, ADAPTIVE_SIDE_SIZE, ADAPTIVE_SIZE - ADAPTIVE_SIDE_SIZE, ADAPTIVE_SIZE - ADAPTIVE_SIDE_SIZE);
+        bitmapDrawable.draw(canvas);
+        return result;
     }
 }

@@ -5,10 +5,13 @@ import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
 import android.widget.FrameLayout
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.ActionBarPopupWindow
 import org.telegram.ui.Components.ShareAlert
+import org.telegram.ui.LauncherIconController
+import org.telegram.ui.LauncherIconController.LauncherIcon
 import uz.unnarsx.cherrygram.extras.CherrygramExtras
 import uz.unnarsx.cherrygram.ui.dialogs.ShareAlertExtraUI
 
@@ -70,15 +73,30 @@ object CGFeatureHooks {
 
     @JvmStatic
     fun getProperNotificationIcon(): Int { //App notification icon
-        return if (CherrygramConfig.oldNotificationIcon) R.drawable.notification else R.drawable.cg_notification
+        return if (CherrygramConfig.oldNotificationIcon) {
+            R.drawable.notification
+        } else {
+            return if (LauncherIconController.isEnabled(LauncherIcon.DARK_CHERRY_BRA) || LauncherIconController.isEnabled(LauncherIcon.WHITE_CHERRY_BRA))
+                R.drawable.cg_notification_bra else R.drawable.cg_notification
+        }
     }
 
     @JvmStatic
     fun getLeftButtonText(): String { //ChatActivity.java:\Left button action
         return when (CherrygramConfig.leftBottomButton) {
-            CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP -> LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)
+            CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP -> AndroidUtilities.capitalize(LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship))
             CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> LocaleController.getString("DirectShare", R.string.DirectShare)
+            CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
             else -> LocaleController.getString("Reply", R.string.Reply)
+        }
+    }
+    @JvmStatic
+    fun getLeftButtonDrawable(): Int { //ChatActivity.java:\Left button action
+        return when (CherrygramConfig.leftBottomButton) {
+            CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP -> R.drawable.input_reply
+            CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> R.drawable.msg_share
+            CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE -> R.drawable.msg_saved
+            else -> R.drawable.input_reply
         }
     }
 

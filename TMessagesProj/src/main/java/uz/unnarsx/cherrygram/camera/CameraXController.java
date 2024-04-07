@@ -339,9 +339,20 @@ public class CameraXController {
                 .build();
         vCapture = VideoCapture.withOutput(recorder);
 
+        int aspectRatio;
+        if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera4to3) {
+            aspectRatio = AspectRatio.RATIO_4_3;
+        } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera16to9) {
+            aspectRatio = AspectRatio.RATIO_16_9;
+        } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.CameraAspectDefault) {
+            aspectRatio = AspectRatio.RATIO_DEFAULT;
+        } else {
+            aspectRatio = AspectRatio.RATIO_16_9;
+        }
+
         ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder()
-                .setCaptureMode(CherrygramConfig.INSTANCE.getUseCameraXOptimizedMode() ? ImageCapture.CAPTURE_MODE_ZERO_SHUTTER_LAG : ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
-                .setTargetAspectRatio(AspectRatio.RATIO_16_9);
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .setTargetAspectRatio(aspectRatio);
 
         provider.unbindAll();
         previewUseCase = previewBuilder.build();

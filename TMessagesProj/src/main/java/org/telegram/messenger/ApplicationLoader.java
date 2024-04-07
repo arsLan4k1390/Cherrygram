@@ -436,7 +436,7 @@ public class ApplicationLoader extends Application {
         return false;
     }
 
-    /*public static boolean isConnectedToWiFi() {
+    public static boolean isConnectedToWiFi() {
         try {
             ensureCurrentNetworkGet(false);
             if (currentNetworkInfo != null && (currentNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI || currentNetworkInfo.getType() == ConnectivityManager.TYPE_ETHERNET) && currentNetworkInfo.getState() == NetworkInfo.State.CONNECTED) {
@@ -446,7 +446,7 @@ public class ApplicationLoader extends Application {
             FileLog.e(e);
         }
         return false;
-    }*/
+    }
 
     public static boolean isConnectionSlow() {
         try {

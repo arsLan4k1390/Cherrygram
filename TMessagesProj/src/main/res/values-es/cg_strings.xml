@@ -161,9 +161,6 @@
     <string name="AP_DrawerBlurIntensity">Intensidad de desenfoque</string>
     <string name="AP_DrawerIconPack_Header">Conjunto de iconos del cajón</string>
     <string name="AP_DrawerButtonsCategory">Botones del cajón</string>
-    <string name="AP_ProfileCategory">Perfil y Contactos</string>
-    <string name="AP_HideUserPhone">Oculta tu número de teléfono</string>
-    <string name="AP_HideUserPhoneSummary">en cajón y ajustes</string>
     <string name="AP_MutualContacts_Description">Este es un contacto mutuo.</string>
     <string name="AP_ShowID">Mostrar ID y DC en el perfil</string>
     <!--Appearance Preferences-->
@@ -212,13 +209,10 @@
     <string name="CP_CameraType">Tipo de cámara</string>
     <string name="CP_DefaultCameraDesc">Usa la cámara integrada de Telegram.</string>
     <string name="CP_CameraXDesc">CámaraX solo está soportado en <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, el soporte de efectos y lentes depende de su fabricante.</string>
-    <string name="CP_PerformanceMode">Modo de rendimiento</string>
-    <string name="CP_PerformanceModeDesc">La calidad de CameraX se reducirá en favor del rendimiento</string>
     <string name="CP_CameraQuality">Calidad de la cámara</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Accede directamente a la cámara del sistema (no aplica para videomensajes).</string>
     <string name="CP_CameraAspectRatio">Relación de aspecto de cámara</string>
-    <string name="CP_CameraAspectRatio_Desc">La selección de la relación de aspecto de la cámara es necesaria para grabar mensajes de vídeo con buena calidad. La mayoría de los teléfonos suelen usar una relación de aspecto de 16:9, mientras que los dispositivos flagship utilizan 4:3 o 1:1. Pruebe cada uno, compare la calidad de la grabación y utilice la mejor relación.</string>
     <string name="CP_RearCam">Usar cámara trasera</string>
     <string name="CP_RearCam_Desc">En lugar de cámara frontal para videomensajes</string>
     <string name="CP_DisableCam">Desactivar la cámara en el menú de adjuntar medios</string>
@@ -227,7 +221,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
     <string name="EP_NavigationAnimation">Animación de navegación</string>
-    <string name="EP_NavigationAnimationSpring">Primavera</string>
     <string name="EP_NavigationAnimationBezier">Clásico</string>
     <string name="EP_NavigationAnimationCrossfading">Efecto de desplazamiento</string>
     <string name="CG_ResidentNotification">Mostrar una notificación permanente</string>

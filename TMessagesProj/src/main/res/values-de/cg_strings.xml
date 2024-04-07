@@ -161,9 +161,6 @@
     <string name="AP_DrawerBlurIntensity">Blur intensity</string>
     <string name="AP_DrawerIconPack_Header">Drawer icons set</string>
     <string name="AP_DrawerButtonsCategory">Drawer buttons</string>
-    <string name="AP_ProfileCategory">Profile and Contacts</string>
-    <string name="AP_HideUserPhone">Hide your phone number</string>
-    <string name="AP_HideUserPhoneSummary">in drawer and settings</string>
     <string name="AP_MutualContacts_Description">This is a mutual contact.</string>
     <string name="AP_ShowID">Show ID and DC in profile</string>
     <!--Appearance Preferences-->
@@ -212,13 +209,10 @@
     <string name="CP_CameraType">Camera Type</string>
     <string name="CP_DefaultCameraDesc">Use the Telegram\'s built-in camera.</string>
     <string name="CP_CameraXDesc">CameraX is only supported on <![CDATA[<a href="https://developer.android.com/training/camerax/devices">selected devices</a>]]>, effects and lenses support depends on your manufacturer.</string>
-    <string name="CP_PerformanceMode">Performance Mode</string>
-    <string name="CP_PerformanceModeDesc">CameraX\'s quality will be reduced in favor of performance</string>
     <string name="CP_CameraQuality">Camera Quality</string>
     <string name="CP_CameraTypeSystem">System</string>
     <string name="CP_SystemCameraDesc">Access directly the system camera (not applicable for video messages).</string>
     <string name="CP_CameraAspectRatio">Camera aspect ratio</string>
-    <string name="CP_CameraAspectRatio_Desc">Selecting the aspect ratio of the camera is necessary in order to record video messages in good quality. Most phones usually use 16:9 aspect ratio, while flagship devices use 4:3 or 1:1. Test each one, compare recording quality and use the best ratio.</string>
     <string name="CP_RearCam">Use rear camera</string>
     <string name="CP_RearCam_Desc">Instead of front camera for video messages</string>
     <string name="CP_DisableCam">Disable cam in media attach menu</string>
@@ -227,7 +221,6 @@
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
     <string name="EP_NavigationAnimation">Navigation animation</string>
-    <string name="EP_NavigationAnimationSpring">Spring</string>
     <string name="EP_NavigationAnimationBezier">Classic</string>
     <string name="EP_NavigationAnimationCrossfading">Crossfading effect</string>
     <string name="CG_ResidentNotification">Show a resident notification</string>

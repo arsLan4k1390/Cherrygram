@@ -40,6 +40,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
@@ -100,6 +102,7 @@ import uz.unnarsx.cherrygram.camera.BaseCameraView;
 public class CameraView extends BaseCameraView implements TextureView.SurfaceTextureListener, CameraController.ICameraView, CameraController.ErrorCallback  {
 
     public boolean WRITE_TO_FILE_IN_BACKGROUND = false;
+    private boolean largePhotos = CherrygramConfig.INSTANCE.getLargePhotos();
 
     public boolean isStory;
     private float scaleX, scaleY;
@@ -722,7 +725,22 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             photoMaxWidth = wantedWidth = 1280;
             photoMaxHeight = wantedHeight = 720;
         } else {
-            if (Math.abs(screenSize - size4to3) < 0.1f) {
+            if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera1to1 && !isStory) {
+                aspectRatio = new Size(1, 1);
+                wantedWidth = 1080;
+                wantedHeight = 1080;
+
+                if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
+                    photoMaxWidth = 720;
+                    photoMaxHeight = 720;
+                } else if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH && largePhotos) {
+                    photoMaxWidth = 2560;
+                    photoMaxHeight = 2560;
+                } else {
+                    photoMaxWidth = 1080;
+                    photoMaxHeight = 1080;
+                }
+            } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera4to3 && !isStory) {
                 aspectRatio = new Size(4, 3);
                 wantedWidth = 1280;
                 wantedHeight = 960;
@@ -730,11 +748,14 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
                     photoMaxWidth = 1280;
                     photoMaxHeight = 960;
+                } else if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH && largePhotos) {
+                    photoMaxWidth = 2560;
+                    photoMaxHeight = 1920;
                 } else {
                     photoMaxWidth = 1920;
                     photoMaxHeight = 1440;
                 }
-            } else {
+            } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera16to9) {
                 aspectRatio = new Size(16, 9);
                 wantedWidth = 1280;
                 wantedHeight = 720;
@@ -742,9 +763,44 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
                     photoMaxWidth = 1280;
                     photoMaxHeight = 960;
+                } else if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH && largePhotos) {
+                    photoMaxWidth = 2560;
+                    photoMaxHeight = 1440;
                 } else {
                     photoMaxWidth = isStory ? 1280 : 1920;
                     photoMaxHeight = isStory ? 720 : 1080;
+                }
+            } else {
+                if (Math.abs(screenSize - size4to3) < 0.1f) {
+                    aspectRatio = new Size(4, 3);
+                    wantedWidth = 1280;
+                    wantedHeight = 960;
+
+                    if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
+                        photoMaxWidth = 1280;
+                        photoMaxHeight = 960;
+                    } else if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH && largePhotos) {
+                        photoMaxWidth = 2560;
+                        photoMaxHeight = 1920;
+                    } else {
+                        photoMaxWidth = 1920;
+                        photoMaxHeight = 1440;
+                    }
+                } else {
+                    aspectRatio = new Size(16, 9);
+                    wantedWidth = 1280;
+                    wantedHeight = 720;
+
+                    if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
+                        photoMaxWidth = 1280;
+                        photoMaxHeight = 960;
+                    } else if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH && largePhotos) {
+                        photoMaxWidth = 2560;
+                        photoMaxHeight = 1440;
+                    } else {
+                        photoMaxWidth = isStory ? 1280 : 1920;
+                        photoMaxHeight = isStory ? 720 : 1080;
+                    }
                 }
             }
         }
@@ -1014,7 +1070,15 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
     }
 
     public void runHaptic() {
-        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+        long[] vibrationWaveFormDurationPattern = {0, 1};
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            final Vibrator vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+            VibrationEffect vibrationEffect = VibrationEffect.createWaveform(vibrationWaveFormDurationPattern, -1);
+            vibrator.cancel();
+            vibrator.vibrate(vibrationEffect);
+        } else {
+            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+        }
     }
 
 
@@ -2367,7 +2431,13 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     int inputBufferIndex = audioEncoder.dequeueInputBuffer(0);
                     if (inputBufferIndex >= 0) {
                         ByteBuffer inputBuffer;
-                        inputBuffer = audioEncoder.getInputBuffer(inputBufferIndex);
+                        if (Build.VERSION.SDK_INT >= 21) {
+                            inputBuffer = audioEncoder.getInputBuffer(inputBufferIndex);
+                        } else {
+                            ByteBuffer[] inputBuffers = audioEncoder.getInputBuffers();
+                            inputBuffer = inputBuffers[inputBufferIndex];
+                            inputBuffer.clear();
+                        }
                         long startWriteTime = input.offset[input.lastWroteBuffer];
                         for (int a = input.lastWroteBuffer; a <= input.results; a++) {
                             if (a < input.results) {
@@ -2851,6 +2921,9 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             }
 
             ByteBuffer[] encoderOutputBuffers = null;
+            if (Build.VERSION.SDK_INT < 21) {
+                encoderOutputBuffers = videoEncoder.getOutputBuffers();
+            }
             while (true) {
                 int encoderStatus = videoEncoder.dequeueOutputBuffer(videoBufferInfo, 10000);
                 if (encoderStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
@@ -2858,6 +2931,9 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                         break;
                     }
                 } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                    if (Build.VERSION.SDK_INT < 21) {
+                        encoderOutputBuffers = videoEncoder.getOutputBuffers();
+                    }
                 } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     MediaFormat newFormat = videoEncoder.getOutputFormat();
                     if (videoTrackIndex == -5) {
@@ -2870,7 +2946,11 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     }
                 } else if (encoderStatus >= 0) {
                     ByteBuffer encodedData;
-                    encodedData = videoEncoder.getOutputBuffer(encoderStatus);
+                    if (Build.VERSION.SDK_INT < 21) {
+                        encodedData = encoderOutputBuffers[encoderStatus];
+                    } else {
+                        encodedData = videoEncoder.getOutputBuffer(encoderStatus);
+                    }
                     if (encodedData == null) {
                         throw new RuntimeException("encoderOutputBuffer " + encoderStatus + " was null");
                     }
@@ -2936,6 +3016,9 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 }
             }
 
+            if (Build.VERSION.SDK_INT < 21) {
+                encoderOutputBuffers = audioEncoder.getOutputBuffers();
+            }
             boolean encoderOutputAvailable = true;
             while (true) {
                 int encoderStatus = audioEncoder.dequeueOutputBuffer(audioBufferInfo, 0);
@@ -2944,6 +3027,9 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                         break;
                     }
                 } else if (encoderStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
+                    if (Build.VERSION.SDK_INT < 21) {
+                        encoderOutputBuffers = audioEncoder.getOutputBuffers();
+                    }
                 } else if (encoderStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     MediaFormat newFormat = audioEncoder.getOutputFormat();
                     if (audioTrackIndex == -5) {
@@ -2951,7 +3037,11 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     }
                 } else if (encoderStatus >= 0) {
                     ByteBuffer encodedData;
-                    encodedData = audioEncoder.getOutputBuffer(encoderStatus);
+                    if (Build.VERSION.SDK_INT < 21) {
+                        encodedData = encoderOutputBuffers[encoderStatus];
+                    } else {
+                        encodedData = audioEncoder.getOutputBuffer(encoderStatus);
+                    }
                     if (encodedData == null) {
                         throw new RuntimeException("encoderOutputBuffer " + encoderStatus + " was null");
                     }

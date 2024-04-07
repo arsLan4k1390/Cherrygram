@@ -29,6 +29,7 @@ import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.util.StateSet;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -111,9 +112,7 @@ public class Switch extends View {
         paint2.setStrokeCap(Paint.Cap.ROUND);
         paint2.setStrokeWidth(AndroidUtilities.dp(2));
 
-        if (CherrygramConfig.INSTANCE.getDisableVibration()){
-            setHapticFeedbackEnabled(true);
-        }
+        setHapticFeedbackEnabled(!CherrygramConfig.INSTANCE.getDisableVibration());
     }
 
     @Keep
@@ -608,12 +607,7 @@ public class Switch extends View {
 
     private void vibrateChecked() {
         try {
-            if (isHapticFeedbackEnabled() && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                Vibrator vibrator = AndroidUtilities.getVibrator();
-                VibrationEffect vibrationEffect = VibrationEffect.createWaveform(new long[]{75,10,5,10}, new int[] {5,20,110,20}, -1);
-                vibrator.cancel();
-                vibrator.vibrate(vibrationEffect);
-            }
+            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
         } catch (Exception ignore) {}
     }
 }

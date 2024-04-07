@@ -1216,7 +1216,9 @@ public class RecyclerListView extends RecyclerView {
                                     ((TransitionDrawable) d).resetTransition();
                                 }
                             }
-                            selectorDrawable.setHotspot(event.getX(), event.getY());
+                            if (Build.VERSION.SDK_INT >= 21) {
+                                selectorDrawable.setHotspot(event.getX(), event.getY());
+                            }
                         }
                         updateSelectorState();
                     } else {
@@ -1315,7 +1317,7 @@ public class RecyclerListView extends RecyclerView {
                 if (d instanceof TransitionDrawable) {
                     ((TransitionDrawable) d).resetTransition();
                 }
-                if (event != null) {
+                if (event != null && Build.VERSION.SDK_INT >= 21) {
                     selectorDrawable.setHotspot(event.getX(), event.getY());
                 }
             }
@@ -2059,7 +2061,9 @@ public class RecyclerListView extends RecyclerView {
                         ((TransitionDrawable) d).resetTransition();
                     }
                 }
-                selectorDrawable.setHotspot(holder.itemView.getMeasuredWidth() / 2, holder.itemView.getMeasuredHeight() / 2);
+                if (Build.VERSION.SDK_INT >= 21) {
+                    selectorDrawable.setHotspot(holder.itemView.getMeasuredWidth() / 2, holder.itemView.getMeasuredHeight() / 2);
+                }
             }
             if (selectorDrawable != null && selectorDrawable.isStateful()) {
                 if (selectorDrawable.setState(getDrawableStateForSelector())) {
@@ -2326,7 +2330,7 @@ public class RecyclerListView extends RecyclerView {
                 selectorDrawable.setVisible(true, false);
             }
         }
-        if (manageHotspot) {
+        if (Build.VERSION.SDK_INT >= 21 && manageHotspot) {
             selectorDrawable.setHotspot(x, y);
         }
     }

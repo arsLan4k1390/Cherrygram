@@ -11,6 +11,7 @@ package org.telegram.ui;
 import static androidx.core.view.ViewCompat.TYPE_TOUCH;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.ContactsController.PRIVACY_RULES_TYPE_ADDED_BY_PHONE;
+import static org.telegram.messenger.LocaleController.formatString;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -63,6 +64,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.TextUtils;
+import android.text.style.CharacterStyle;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.util.Property;
@@ -108,12 +110,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import com.google.android.exoplayer2.util.Log;
-
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.BillingController;
+import org.telegram.messenger.BirthdayController;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ChatThemeController;
@@ -149,7 +151,7 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.tl.TL_stories;
+import org.telegram.tgnet.tl.TL_fragment;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
@@ -174,9 +176,11 @@ import org.telegram.ui.Cells.DrawerProfileCell;
 import org.telegram.ui.Cells.GraySectionCell;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.NotificationsCheckCell;
+import org.telegram.ui.Cells.ProfileChannelCell;
 import org.telegram.ui.Cells.SettingsSearchCell;
 import org.telegram.ui.Cells.SettingsSuggestionCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
+import org.telegram.ui.Cells.ShareDialogCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextDetailCell;
@@ -227,6 +231,8 @@ import org.telegram.ui.Components.Premium.PremiumFeatureBottomSheet;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 import org.telegram.ui.Components.Premium.PremiumPreviewBottomSheet;
 import org.telegram.ui.Components.Premium.ProfilePremiumCell;
+import org.telegram.ui.Components.Premium.boosts.BoostRepository;
+import org.telegram.ui.Components.Premium.boosts.PremiumPreviewGiftToUsersBottomSheet;
 import org.telegram.ui.Components.Premium.boosts.UserSelectorBottomSheet;
 import org.telegram.ui.Components.ProfileGalleryView;
 import org.telegram.ui.Components.RLottieDrawable;
@@ -253,6 +259,7 @@ import org.telegram.ui.Stories.StoriesListPlaceProvider;
 import org.telegram.ui.Stories.StoryViewer;
 import org.telegram.ui.Stories.recorder.DualCameraView;
 import org.telegram.ui.Stories.recorder.StoryRecorder;
+import org.telegram.ui.bots.BotBiometry;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -260,12 +267,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -452,6 +462,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private TLRPC.ChatFull chatInfo;
     private TLRPC.UserFull userInfo;
 
+    public ProfileChannelCell.ChannelMessageFetcher profileChannelMessageFetcher;
+    public boolean createdBirthdayFetcher;
+    public ProfileBirthdayEffect.BirthdayEffectFetcher birthdayFetcher;
+
     private CharSequence currentBio;
 
     private long selectedUser;
@@ -488,7 +502,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private final static int view_discussion = 22;
     private final static int delete_topic = 23;
 
-    private final static int edit_name = 30;
+    private final static int edit_info = 30;
     private final static int logout = 31;
     private final static int search_button = 32;
     private final static int set_as_main = 33;
@@ -513,8 +527,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     private int setAvatarRow;
     private int setAvatarSectionRow;
+    private int channelRow;
+    private int channelDividerRow;
     private int numberSectionRow;
     private int numberRow;
+    public int birthdayRow;
     private int setUsernameRow;
     private int bioRow;
     private int phoneSuggestionSectionRow;
@@ -625,6 +642,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     ChatActivityInterface previousTransitionFragment;
 
     HashSet<Integer> notificationsExceptionTopics = new HashSet<>();
+
+    private CharacterStyle loadingSpan;
 
     private final Property<ProfileActivity, Float> HEADER_SHADOW = new AnimationProperties.FloatProperty<ProfileActivity>("headerShadow") {
         @Override
@@ -1852,6 +1871,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         getNotificationCenter().addObserver(this, NotificationCenter.reloadDialogPhotos);
         getNotificationCenter().addObserver(this, NotificationCenter.storiesUpdated);
         getNotificationCenter().addObserver(this, NotificationCenter.storiesReadUpdated);
+        getNotificationCenter().addObserver(this, NotificationCenter.userIsPremiumBlockedUpadted);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
         updateRowsIds();
         if (listAdapter != null) {
@@ -1923,6 +1943,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         getNotificationCenter().removeObserver(this, NotificationCenter.reloadDialogPhotos);
         getNotificationCenter().removeObserver(this, NotificationCenter.storiesUpdated);
         getNotificationCenter().removeObserver(this, NotificationCenter.storiesReadUpdated);
+        getNotificationCenter().removeObserver(this, NotificationCenter.userIsPremiumBlockedUpadted);
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
         if (avatarsViewPager != null) {
             avatarsViewPager.onDestroy();
@@ -1954,6 +1975,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
         if (pinchToZoomHelper != null) {
             pinchToZoomHelper.clear();
+        }
+        if (birthdayFetcher != null && createdBirthdayFetcher) {
+            birthdayFetcher.detach(true);
+            birthdayFetcher = null;
         }
     }
 
@@ -2074,7 +2099,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             } else {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity(), resourcesProvider);
                                 builder.setTitle(LocaleController.getString("BlockUser", R.string.BlockUser));
-                                builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("AreYouSureBlockContact2", R.string.AreYouSureBlockContact2, ContactsController.formatName(user.first_name, user.last_name))));
+                                builder.setMessage(AndroidUtilities.replaceTags(formatString("AreYouSureBlockContact2", R.string.AreYouSureBlockContact2, ContactsController.formatName(user.first_name, user.last_name))));
                                 builder.setPositiveButton(LocaleController.getString("BlockContact", R.string.BlockContact), (dialogInterface, i) -> {
                                     getMessagesController().blockPeer(userId);
                                     if (BulletinFactory.canShowBulletin(ProfileActivity.this)) {
@@ -2159,7 +2184,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle(LocaleController.getPluralString("DeleteTopics", 1));
                     TLRPC.TL_forumTopic topic = MessagesController.getInstance(currentAccount).getTopicsController().findTopic(chatId, topicId);
-                    builder.setMessage(LocaleController.formatString("DeleteSelectedTopic", R.string.DeleteSelectedTopic, topic == null ? "topic" : topic.title));
+                    builder.setMessage(formatString("DeleteSelectedTopic", R.string.DeleteSelectedTopic, topic == null ? "topic" : topic.title));
                     builder.setPositiveButton(LocaleController.getString("Delete", R.string.Delete), new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -2255,7 +2280,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity(), resourcesProvider);
                             builder.setTitle(LocaleController.getString("AddBot", R.string.AddBot));
                             String chatName = chat == null ? "" : chat.title;
-                            builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("AddMembersAlertNamesText", R.string.AddMembersAlertNamesText, UserObject.getUserName(user), chatName)));
+                            builder.setMessage(AndroidUtilities.replaceTags(formatString("AddMembersAlertNamesText", R.string.AddMembersAlertNamesText, UserObject.getUserName(user), chatName)));
                             builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                             builder.setPositiveButton(LocaleController.getString("AddBot", R.string.AddBot), (di, i) -> {
                                 disableProfileAnimation = true;
@@ -2391,6 +2416,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                     final boolean isVideo = location.imageType == FileLoader.IMAGE_TYPE_ANIMATION;
                     File f = FileLoader.getInstance(currentAccount).getPathToAttach(location.location, isVideo ? "mp4" : null, true);
+                    if (isVideo && !f.exists()) {
+                        f = new File(FileLoader.getDirectory(FileLoader.MEDIA_DIR_IMAGE), FileLoader.getAttachFileName(location.location, "mp4"));
+                    }
                     if (f.exists()) {
                         MediaController.saveFile(f.toString(), getParentActivity(), 0, null, null, uri -> {
                             if (getParentActivity() == null) {
@@ -2399,15 +2427,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             BulletinFactory.createSaveToGalleryBulletin(ProfileActivity.this, isVideo, null).show();
                         });
                     }
-                } else if (id == edit_name) {
-                    presentFragment(new ChangeNameActivity(resourcesProvider));
+                } else if (id == edit_info) {
+                    presentFragment(new UserInfoActivity());
                 } else if (id == edit_color) {
                     presentFragment(new PeerColorActivity(0).startOnProfile().setOnApplied(ProfileActivity.this));
                 } else if (id == logout) {
                     presentFragment(new LogoutActivity());
                 } else if (id == restart) {
                     AppRestartHelper.triggerRebirth(context, new Intent(context, LaunchActivity.class));
-//                    AppRestartHelper.triggerRebirth(getParentActivity(), new Intent(getParentActivity(), LaunchActivity.class));
                 } else if (id == set_as_main) {
                     int position = avatarsViewPager.getRealPosition();
                     TLRPC.Photo photo = avatarsViewPager.getPhoto(position);
@@ -2478,10 +2505,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                     if (location.imageType == FileLoader.IMAGE_TYPE_ANIMATION) {
                         builder.setTitle(LocaleController.getString("AreYouSureDeleteVideoTitle", R.string.AreYouSureDeleteVideoTitle));
-                        builder.setMessage(LocaleController.formatString("AreYouSureDeleteVideo", R.string.AreYouSureDeleteVideo));
+                        builder.setMessage(formatString("AreYouSureDeleteVideo", R.string.AreYouSureDeleteVideo));
                     } else {
                         builder.setTitle(LocaleController.getString("AreYouSureDeletePhotoTitle", R.string.AreYouSureDeletePhotoTitle));
-                        builder.setMessage(LocaleController.formatString("AreYouSureDeletePhoto", R.string.AreYouSureDeletePhoto));
+                        builder.setMessage(formatString("AreYouSureDeletePhoto", R.string.AreYouSureDeletePhoto));
                     }
                     builder.setPositiveButton(LocaleController.getString("Delete", R.string.Delete), (dialogInterface, i) -> {
                         int position = avatarsViewPager.getRealPosition();
@@ -3694,19 +3721,17 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else if (position == setUsernameRow) {
                 presentFragment(new ChangeUsernameActivity());
             } else if (position == bioRow) {
-                if (userInfo != null) {
-                    presentFragment(new ChangeBioActivity());
-                }
-            } else if (position == numberRow) {
+                presentFragment(new UserInfoActivity());
+            } /*else if (position == numberRow) {
                 presentFragment(new ActionIntroActivity(ActionIntroActivity.ACTION_TYPE_CHANGE_PHONE_NUMBER));
-            } else if (position == setAvatarRow) {
+            }*/ else if (position == setAvatarRow) {
                 onWriteButtonClick();
             } else if (position == premiumRow) {
                 presentFragment(new PremiumPreviewFragment("settings"));
             } else if (position == businessRow) {
                 presentFragment(new PremiumPreviewFragment(PremiumPreviewFragment.FEATURES_BUSINESS, "settings"));
             } else if (position == premiumGiftingRow) {
-                UserSelectorBottomSheet.open();
+                UserSelectorBottomSheet.open(0, BirthdayController.getInstance(currentAccount).getState());
             } else if (position == bizHoursRow) {
                 hoursExpanded = !hoursExpanded;
                 saveScrollPosition();
@@ -3757,6 +3782,19 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             FileLog.e(e);
                         }
 //                    }
+                }
+            } else if (position == channelRow) {
+                if (userInfo == null) return;
+                Bundle args = new Bundle();
+                args.putLong("chat_id", userInfo.personal_channel_id);
+                presentFragment(new ChatActivity(args));
+            } else if (position == birthdayRow) {
+                if (birthdayEffect != null && birthdayEffect.start()) {
+                    return;
+                }
+                TextDetailCell cell = (TextDetailCell) view;
+                if (cell.hasImage()) {
+                    onTextDetailCellImageClicked(cell.getImageView());
                 }
             } else {
                 processOnClickOrPress(position, view, x, y);
@@ -3818,7 +3856,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 BuildVars.DEBUG_PRIVATE_VERSION ? (SharedConfig.photoViewerBlur ? "do not blur in photoviewer" : "blur in photoviewer") : null,
                                 !SharedConfig.payByInvoice ? "Enable Invoice Payment" : "Disable Invoice Payment",
                                 BuildVars.DEBUG_PRIVATE_VERSION ? "Update Attach Bots" : null,
-                                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? (!SharedConfig.useCamera2 ? "Use Camera 2 API" : "Use old Camera 1 API") : null
+                                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? (!SharedConfig.useCamera2 ? "Use Camera 2 API" : "Use old Camera 1 API") : null,
+                                BuildVars.DEBUG_VERSION ? "Clear bot biometry data" : null
                         };
 
                         builder.setItems(items, (dialog, which) -> {
@@ -3852,7 +3891,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 getMessagesStorage().clearSentMedia();
                                 SharedConfig.setNoSoundHintShowed(false);
                                 SharedPreferences.Editor editor = MessagesController.getGlobalMainSettings().edit();
-                                editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("speedhint").remove("gifhint").remove("reminderhint").remove("soundHint").remove("themehint").remove("bganimationhint").remove("filterhint").remove("n_0").remove("storyprvhint").remove("storyhint").remove("storyhint2").remove("storydualhint").remove("storysvddualhint").remove("stories_camera").remove("dualcam").remove("dualmatrix").remove("dual_available").remove("archivehint").remove("askNotificationsAfter").remove("askNotificationsDuration").remove("viewoncehint").remove("taptostorysoundhint").remove("nothanos").remove("voiceoncehint").remove("savedhint").remove("savedsearchhint").remove("savedsearchtaghint").remove("groupEmojiPackHintShown").remove("newppsms").apply();
+                                editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("speedhint").remove("gifhint").remove("reminderhint").remove("soundHint").remove("themehint").remove("bganimationhint").remove("filterhint").remove("n_0").remove("storyprvhint").remove("storyhint").remove("storyhint2").remove("storydualhint").remove("storysvddualhint").remove("stories_camera").remove("dualcam").remove("dualmatrix").remove("dual_available").remove("archivehint").remove("askNotificationsAfter").remove("askNotificationsDuration").remove("viewoncehint").remove("taptostorysoundhint").remove("nothanos").remove("voiceoncehint").remove("savedhint").remove("savedsearchhint").remove("savedsearchtaghint").remove("groupEmojiPackHintShown").remove("newppsms").remove("monetizationadshint").apply();
                                 MessagesController.getEmojiSettings(currentAccount).edit().remove("featured_hidden").remove("emoji_featured_hidden").apply();
                                 SharedConfig.textSelectionHintShows = 0;
                                 SharedConfig.lockRecordAudioVideoHint = 0;
@@ -3872,7 +3911,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 getNotificationCenter().postNotificationName(NotificationCenter.newSuggestionsAvailable);
                                 RestrictedLanguagesSelectActivity.cleanup();
                                 PersistColorPalette.getInstance(currentAccount).cleanup();
-                                getMessagesController().getMainSettings().edit().remove("peerColors").remove("profilePeerColors").remove("boostingappearance").apply();
+                                SharedPreferences prefs = getMessagesController().getMainSettings();
+                                editor = prefs.edit();
+                                editor.remove("peerColors").remove("profilePeerColors").remove("boostingappearance").remove("bizbothint");
+                                for (String key : prefs.getAll().keySet()) {
+                                    if (key.contains("show_gift_for_") || key.contains("bdayhint_") || key.contains("bdayanim_")) {
+                                        editor.remove(key);
+                                    }
+                                }
+                                editor.apply();
                             } else if (which == 7) {
                                 VoIPHelper.showCallDebugSettings(getParentActivity());
                             } else if (which == 8) {
@@ -4015,6 +4062,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
                                 listCodecs("video/avc", info);
                                 listCodecs("video/hevc", info);
+                                listCodecs("video/x-vnd.on2.vp8", info);
+                                listCodecs("video/x-vnd.on2.vp9", info);
 
                                 showDialog(new ShareAlert(getParentActivity(), null, info.toString(), false, null, false) {
                                     @Override
@@ -4054,7 +4103,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             } else if (which == 23) {
                                 SharedConfig.toggleSurfaceInStories();
                                 for (int i = 0; i < getParentLayout().getFragmentStack().size(); i++) {
-                                    getParentLayout().getFragmentStack().get(i).storyViewer = null;
+                                    getParentLayout().getFragmentStack().get(i).clearStoryViewers();
                                 }
                             } else if (which == 24) {
                                 SharedConfig.togglePhotoViewerBlur();
@@ -4064,6 +4113,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 getMediaDataController().loadAttachMenuBots(false, true);
                             } else if (which == 27) {
                                 SharedConfig.toggleUseCamera2();
+                            } else if (which == 28) {
+                                BotBiometry.clear();
                             }
                         });
                         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
@@ -4084,6 +4135,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         participant = visibleChatParticipants.get(position - membersStartRow);
                     }
                     return onMemberClick(participant, true, view);
+                } else if (position == birthdayRow) {
+                    if (userInfo == null) return false;
+                    try {
+                        AndroidUtilities.addToClipboard(UserInfoActivity.birthdayString(userInfo.birthday));
+                        BulletinFactory.of(ProfileActivity.this).createCopyBulletin(LocaleController.getString(R.string.BirthdayCopied)).show();
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                    }
+                    return true;
                 } else {
                     return processOnClickOrPress(position, view, view.getWidth() / 2f, (int) (view.getHeight() * .75f));
                 }
@@ -4829,6 +4889,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         blurredView.setFitsSystemWindows(true);
         contentView.addView(blurredView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
+        createBirthdayEffect();
         createFloatingActionButton(getContext());
         return fragmentView;
     }
@@ -5525,7 +5586,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         showDialog(
                             new AlertDialog.Builder(getParentActivity(), resourcesProvider)
                                 .setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName))
-                                .setMessage(LocaleController.formatString("AdminWillBeRemoved", R.string.AdminWillBeRemoved, ContactsController.formatName(user.first_name, user.last_name)))
+                                .setMessage(formatString("AdminWillBeRemoved", R.string.AdminWillBeRemoved, ContactsController.formatName(user.first_name, user.last_name)))
                                 .setPositiveButton(LocaleController.getString("OK", R.string.OK), (dialog, which) -> openRightsEdit.run(1))
                                 .setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null)
                                 .create()
@@ -5642,6 +5703,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private boolean processOnClickOrPress(final int position, final View view, final float x, final float y) {
         if (position == usernameRow || position == setUsernameRow) {
             final String username;
+            final TLRPC.TL_username usernameObj;
             if (userId != 0) {
                 final TLRPC.User user = getMessagesController().getUser(userId);
                 String username1 = UserObject.getPublicUsername(user);
@@ -5649,12 +5711,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     return false;
                 }
                 username = username1;
+                usernameObj = DialogObject.findUsername(username, user);
             } else if (chatId != 0) {
                 final TLRPC.Chat chat = getMessagesController().getChat(chatId);
                 if (chat == null || topicId == 0 && !ChatObject.isPublic(chat)) {
                     return false;
                 }
                 username = ChatObject.getPublicUsername(chat);
+                usernameObj = DialogObject.findUsername(username, chat);
             } else {
                 return false;
             }
@@ -5666,15 +5730,75 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 } else {
                     link = "https://" + getMessagesController().linkPrefix + "/c/" + chat.id + (topicId != 0 ? "/" + topicId : "");
                 }
-                showDialog(new ShareAlert(getParentActivity(), null, link, false, link, false) {
+                ShareAlert shareAlert = new ShareAlert(getParentActivity(), null, link, false, link, false) {
                     @Override
                     protected void onSend(LongSparseArray<TLRPC.Dialog> dids, int count, TLRPC.TL_forumTopic topic) {
                         AndroidUtilities.runOnUIThread(() -> {
                             BulletinFactory.createInviteSentBulletin(getParentActivity(), contentView, dids.size(), dids.size() == 1 ? dids.valueAt(0).id : 0, count, getThemedColor(Theme.key_undo_background), getThemedColor(Theme.key_undo_infoColor)).show();
                         }, 250);
                     }
-                });
+                };
+                showDialog(shareAlert);
+                if (usernameObj != null && !usernameObj.editable) {
+                    TL_fragment.TL_getCollectibleInfo req = new TL_fragment.TL_getCollectibleInfo();
+                    TL_fragment.TL_inputCollectibleUsername input = new TL_fragment.TL_inputCollectibleUsername();
+                    input.username = usernameObj.username;
+                    req.collectible = input;
+                    int reqId = getConnectionsManager().sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
+                        if (res instanceof TL_fragment.TL_collectibleInfo) {
+                            TL_fragment.TL_collectibleInfo info = (TL_fragment.TL_collectibleInfo) res;
+                            TLObject obj;
+                            if (userId != 0) {
+                                obj = getMessagesController().getUser(userId);
+                            } else {
+                                obj = getMessagesController().getChat(chatId);
+                            }
+                            final String usernameStr = "@" + usernameObj.username;
+                            final String date = LocaleController.getInstance().formatterBoostExpired.format(new Date(info.purchase_date * 1000L));
+                            final String cryptoAmount = BillingController.getInstance().formatCurrency(info.crypto_amount, info.crypto_currency);
+                            final String amount = BillingController.getInstance().formatCurrency(info.amount, info.currency);
+                            BulletinFactory.of(shareAlert.bulletinContainer2, resourcesProvider)
+                                .createImageBulletin(
+                                    R.drawable.filled_username,
+                                    AndroidUtilities.withLearnMore(AndroidUtilities.replaceTags(formatString(R.string.FragmentChannelUsername, usernameStr, date, cryptoAmount, TextUtils.isEmpty(amount) ? "" : "("+amount+")")), () -> {
+                                        Bulletin.hideVisible();
+                                        Browser.openUrl(getContext(), info.url);
+                                    })
+                                )
+                                .setOnClickListener(v -> {
+                                    Bulletin.hideVisible();
+                                    Browser.openUrl(getContext(), info.url);
+                                })
+                                .show(false);
+                        } else {
+                            BulletinFactory.showError(err);
+                        }
+                    }));
+                    getConnectionsManager().bindRequestToGuid(reqId, getClassGuid());
+                }
             } else {
+                if (usernameObj != null && !usernameObj.editable) {
+                    TL_fragment.TL_getCollectibleInfo req = new TL_fragment.TL_getCollectibleInfo();
+                    TL_fragment.TL_inputCollectibleUsername input = new TL_fragment.TL_inputCollectibleUsername();
+                    input.username = usernameObj.username;
+                    req.collectible = input;
+                    int reqId = getConnectionsManager().sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
+                        if (res instanceof TL_fragment.TL_collectibleInfo) {
+                            TLObject obj;
+                            if (userId != 0) {
+                                obj = getMessagesController().getUser(userId);
+                            } else {
+                                obj = getMessagesController().getChat(chatId);
+                            }
+                            FragmentUsernameBottomSheet.open(getContext(), FragmentUsernameBottomSheet.TYPE_USERNAME, usernameObj.username, obj, (TL_fragment.TL_collectibleInfo) res, getResourceProvider());
+                        } else {
+                            BulletinFactory.showError(err);
+                        }
+                    }));
+                    getConnectionsManager().bindRequestToGuid(reqId, getClassGuid());
+                    return true;
+                }
+
                 try {
                     android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
                     String text = "@" + username;
@@ -5686,10 +5810,26 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
             }
             return true;
-        } else if (position == phoneRow || position == numberRow) {
+        } else if (position == phoneRow/* || position == numberRow*/) {
             final TLRPC.User user = getMessagesController().getUser(userId);
             if (user == null || user.phone == null || user.phone.length() == 0 || getParentActivity() == null) {
                 return false;
+            }
+
+            if (position == phoneRow && user.phone.startsWith("888")) {
+                TL_fragment.TL_inputCollectiblePhone input = new TL_fragment.TL_inputCollectiblePhone();
+                final String phone = input.phone = user.phone;
+                TL_fragment.TL_getCollectibleInfo req = new TL_fragment.TL_getCollectibleInfo();
+                req.collectible = input;
+                int reqId = getConnectionsManager().sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
+                    if (res instanceof TL_fragment.TL_collectibleInfo) {
+                        FragmentUsernameBottomSheet.open(getContext(), FragmentUsernameBottomSheet.TYPE_PHONE, phone, user, (TL_fragment.TL_collectibleInfo) res, getResourceProvider());
+                    } else {
+                        BulletinFactory.showError(err);
+                    }
+                }));
+                getConnectionsManager().bindRequestToGuid(reqId, getClassGuid());
+                return true;
             }
 
             ArrayList<CharSequence> items = new ArrayList<>();
@@ -5968,7 +6108,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 ArrayList<OpeningHoursActivity.Period>[] days = OpeningHoursActivity.getDaysHours(userInfo.business_work_hours.weekly_open);
                 StringBuilder sb = new StringBuilder();
                 if (userInfo.user != null) {
-                    sb.append(LocaleController.formatString(R.string.BusinessHoursCopyHeader, UserObject.getUserName(userInfo.user))).append("\n");
+                    sb.append(formatString(R.string.BusinessHoursCopyHeader, UserObject.getUserName(userInfo.user))).append("\n");
                 }
                 for (int i = 0; i < days.length; ++i) {
                     ArrayList<OpeningHoursActivity.Period> periods = days[i];
@@ -5996,7 +6136,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 int valueUtcOffset = timezone == null ? 0 : timezone.utc_offset;
                 int utcOffset = (currentUtcOffset - valueUtcOffset) / 60;
                 if (utcOffset != 0 && timezone != null) {
-                    sb.append(LocaleController.formatString(R.string.BusinessHoursCopyFooter, TimezonesController.getInstance(currentAccount).getTimezoneName(timezone, true)));
+                    sb.append(formatString(R.string.BusinessHoursCopyFooter, TimezonesController.getInstance(currentAccount).getTimezoneName(timezone, true)));
                 }
                 finalText = sb.toString();
             } else if (position == bizLocationRow) {
@@ -6351,7 +6491,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
             fragment.setIgnoreUsers(users);
         }
-        fragment.setDelegate((users, fwdCount) -> {
+        fragment.setDelegate2((users, fwdCount) -> {
             HashSet<Long> currentParticipants = new HashSet<>();
             ArrayList<TLRPC.User> addedUsers = new ArrayList<>();
             if (chatInfo != null && chatInfo.participants != null && chatInfo.participants.participants != null) {
@@ -7247,6 +7387,19 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 updateAutoDeleteItem();
                 updateTtlIcon();
+                if (profileChannelMessageFetcher == null && !isSettings()) {
+                    profileChannelMessageFetcher = new ProfileChannelCell.ChannelMessageFetcher(currentAccount);
+                    profileChannelMessageFetcher.subscribe(() -> updateListAnimated(false));
+                    profileChannelMessageFetcher.fetch(userInfo);
+                }
+                if (!isSettings()) {
+                    ProfileBirthdayEffect.BirthdayEffectFetcher oldFetcher = birthdayFetcher;
+                    birthdayFetcher = ProfileBirthdayEffect.BirthdayEffectFetcher.of(currentAccount, userInfo, birthdayFetcher);
+                    createdBirthdayFetcher = birthdayFetcher != oldFetcher;
+                    if (birthdayFetcher != null) {
+                        birthdayFetcher.subscribe(this::createBirthdayEffect);
+                    }
+                }
             }
         } else if (id == NotificationCenter.privacyRulesUpdated) {
             if (qrItem != null) {
@@ -7302,6 +7455,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (avatarImage != null) {
                 avatarImage.setHasStories(needInsetForStories());
                 updateAvatarRoundRadius();
+            }
+        } else if (id == NotificationCenter.userIsPremiumBlockedUpadted) {
+            if (otherItem != null) {
+                otherItem.setSubItemShown(start_secret_chat, !getMessagesController().isUserPremiumBlocked(userId));
             }
         }
     }
@@ -7485,6 +7642,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             undoView.hide(true, 0);
         }
         super.onBecomeFullyHidden();
+        fullyVisible = false;
     }
 
     public void setPlayProfileAnimation(int type) {
@@ -7859,6 +8017,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 }
                 animatorSet.playTogether(animators);
+                if (birthdayEffect != null) {
+                    birthdayEffect.hide();
+                }
             }
             profileTransitionInProgress = true;
             ValueAnimator valueAnimator = ValueAnimator.ofFloat(0, 1f);
@@ -7982,7 +8143,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         return getMessagesController().getStoriesController().hasStories(getDialogId()) && !isTopic;
     }
 
-    public void setUserInfo(TLRPC.UserFull value) {
+    public void setUserInfo(
+        TLRPC.UserFull value,
+        ProfileChannelCell.ChannelMessageFetcher channelMessageFetcher,
+        ProfileBirthdayEffect.BirthdayEffectFetcher birthdayAssetsFetcher
+    ) {
         userInfo = value;
         if (storyView != null) {
             storyView.setStories(userInfo.stories);
@@ -7992,6 +8157,27 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
         if (sharedMediaLayout != null) {
             sharedMediaLayout.setUserInfo(userInfo);
+        }
+        if (profileChannelMessageFetcher == null) {
+            profileChannelMessageFetcher = channelMessageFetcher;
+        }
+        if (profileChannelMessageFetcher == null) {
+            profileChannelMessageFetcher = new ProfileChannelCell.ChannelMessageFetcher(currentAccount);
+        }
+        profileChannelMessageFetcher.subscribe(() -> updateListAnimated(false));
+        profileChannelMessageFetcher.fetch(userInfo);
+        if (birthdayFetcher == null) {
+            birthdayFetcher = birthdayAssetsFetcher;
+        }
+        if (birthdayFetcher == null) {
+            birthdayFetcher = ProfileBirthdayEffect.BirthdayEffectFetcher.of(currentAccount, userInfo, birthdayFetcher);
+            createdBirthdayFetcher = birthdayFetcher != null;
+        }
+        if (birthdayFetcher != null) {
+            birthdayFetcher.subscribe(this::createBirthdayEffect);
+        }
+        if (otherItem != null) {
+            otherItem.setSubItemShown(start_secret_chat, !getMessagesController().isUserPremiumBlocked(userId));
         }
     }
 
@@ -8047,8 +8233,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         setAvatarSectionRow = -1;
         numberSectionRow = -1;
         numberRow = -1;
+        birthdayRow = -1;
         setUsernameRow = -1;
         bioRow = -1;
+        channelRow = -1;
+        channelDividerRow = -1;
         phoneSuggestionSectionRow = -1;
         phoneSuggestionRow = -1;
         passwordSuggestionSectionRow = -1;
@@ -8228,6 +8417,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 boolean hasInfo = userInfo != null && !TextUtils.isEmpty(userInfo.about) || user != null && !TextUtils.isEmpty(username);
                 boolean hasPhone = user != null && (!TextUtils.isEmpty(user.phone) || !TextUtils.isEmpty(vcardPhone));
 
+                if (CherrygramConfig.INSTANCE.getProfileChannelPreview() && (userInfo != null && (userInfo.flags2 & 64) != 0 && (profileChannelMessageFetcher == null || !profileChannelMessageFetcher.loaded || profileChannelMessageFetcher.messageObject != null))) {
+                    TLRPC.Chat channel = getMessagesController().getChat(userInfo.personal_channel_id);
+                    if (channel != null && (ChatObject.isPublic(channel) || !ChatObject.isNotInChat(channel))) {
+                        channelRow = rowCount++;
+                        channelDividerRow = rowCount++;
+                    }
+                }
                 infoStartRow = rowCount;
                 infoHeaderRow = rowCount++;
                 if (!isBot && (hasPhone || !hasInfo)) {
@@ -8245,16 +8441,19 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     idDcRow = rowCount++;
                 }
                 if (userInfo != null) {
-                    if (userInfo.business_work_hours != null) {
+                    if (userInfo.birthday != null && CherrygramConfig.INSTANCE.getProfileBirthDatePreview()) {
+                        birthdayRow = rowCount++;
+                    }
+                    if (userInfo.business_work_hours != null && CherrygramConfig.INSTANCE.getProfileBusinessPreview()) {
                         bizHoursRow = rowCount++;
                     }
-                    if (userInfo.business_location != null) {
+                    if (userInfo.business_location != null && CherrygramConfig.INSTANCE.getProfileBusinessPreview()) {
                         bizLocationRow = rowCount++;
                     }
                 }
-                if (phoneRow != -1 || userInfoRow != -1 || usernameRow != -1 || bizHoursRow != -1 || bizLocationRow != -1) {
-                    notificationsDividerRow = rowCount++;
-                }
+//                if (phoneRow != -1 || userInfoRow != -1 || usernameRow != -1 || bizHoursRow != -1 || bizLocationRow != -1) {
+//                    notificationsDividerRow = rowCount++;
+//                }
                 if (userId != getUserConfig().getClientUserId()) {
                     notificationsRow = rowCount++;
                 }
@@ -8331,9 +8530,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else if (CherrygramConfig.INSTANCE.getShowIDDC() == CherrygramConfig.ID_DC) {
                 idDcRow = rowCount++;
             }
-            if (infoHeaderRow != -1) {
-                notificationsDividerRow = rowCount++;
-            }
+//            if (infoHeaderRow != -1) {
+//                notificationsDividerRow = rowCount++;
+//            }
             notificationsRow = rowCount++;
             infoSectionRow = rowCount++;
 
@@ -8861,7 +9060,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (previousTransitionFragment != null) {
                 previousTransitionFragment.checkAndUpdateAvatar();
             }
-            avatarImage.getImageReceiver().setVisible(!PhotoViewer.isShowingImage(photoBig) && (storyViewer == null || !storyViewer.isShown() || storyViewer.transitionViewHolder.view != avatarImage), storyView != null);
+            avatarImage.getImageReceiver().setVisible(!PhotoViewer.isShowingImage(photoBig) && (getLastStoryViewer() == null || getLastStoryViewer().transitionViewHolder.view != avatarImage), storyView != null);
         } else if (chatId != 0) {
             TLRPC.Chat chat = getMessagesController().getChat(chatId);
             if (chat != null) {
@@ -8935,7 +9134,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         if (count > 0) {
                             statusString = LocaleController.formatPluralString("messages", count, count);
                         } else {
-                            statusString = LocaleController.formatString("TopicProfileStatus", R.string.TopicProfileStatus, chat.title);
+                            statusString = formatString("TopicProfileStatus", R.string.TopicProfileStatus, chat.title);
                         }
                         SpannableString arrowString = new SpannableString(">");
                         arrowString.setSpan(new ColoredImageSpan(R.drawable.arrow_newchat), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -9139,7 +9338,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 prevLoadedImageLocation = imageLocation;
                 getFileLoader().loadFile(imageLocation, chat, null, FileLoader.PRIORITY_LOW, 1);
             }
-            avatarImage.getImageReceiver().setVisible(!PhotoViewer.isShowingImage(photoBig) && (storyViewer == null || !storyViewer.isShown() || storyViewer.transitionViewHolder.view != avatarImage), storyView != null);
+            avatarImage.getImageReceiver().setVisible(!PhotoViewer.isShowingImage(photoBig) && (getLastStoryViewer() == null || getLastStoryViewer().transitionViewHolder.view != avatarImage), storyView != null);
         }
 
         if (qrItem != null) {
@@ -9192,13 +9391,17 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (view instanceof HeaderCell) {
                 ((HeaderCell) view).setTextColor(applyPeerColor(getThemedColor(Theme.key_windowBackgroundWhiteBlueHeader), false));
             } else if (view instanceof TextDetailCell) {
-                ((TextDetailCell) view).valueTextView.setTextColor(applyPeerColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText2), false));
+                ((TextDetailCell) view).updateColors();
             } else if (view instanceof TextCell) {
                 ((TextCell) view).updateColors();
             } else if (view instanceof AboutLinkCell) {
                 ((AboutLinkCell) view).updateColors();
             } else if (view instanceof NotificationsCheckCell) {
                 ((NotificationsCheckCell) view).getCheckBox().invalidate();
+            } else if (view instanceof ProfileHoursCell) {
+                ((ProfileHoursCell) view).updateColors();
+            } else if (view instanceof ProfileChannelCell) {
+                ((ProfileChannelCell) view).updateColors();
             }
         });
         if (sharedMediaLayout != null && sharedMediaLayout.scrollSlidingTextTabStrip != null) {
@@ -9218,7 +9421,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     private final SparseIntArray adaptedColors = new SparseIntArray();
     private int applyPeerColor(int color, boolean actionBar, Boolean online) {
-        if (!actionBar) return color;
+        if (!actionBar && isSettings()) return color;
         if (peerColor != null && CherrygramConfig.INSTANCE.getProfileBackgroundColor()) {
             if (!actionBar) {
                 int index = adaptedColors.indexOfKey(color);
@@ -9269,7 +9472,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 return;
             }
             if (UserObject.isUserSelf(user)) {
-                otherItem.addSubItem(edit_name, R.drawable.msg_edit, LocaleController.getString(R.string.EditName));
+                otherItem.addSubItem(edit_info, R.drawable.msg_edit, LocaleController.getString(R.string.EditInfo));
                 otherItem.addSubItem(edit_color, R.drawable.msg_colors, LocaleController.getString(R.string.EditProfileColor));
                 selfUser = true;
             } else {
@@ -9334,6 +9537,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         otherItem.addSubItem(gift_premium, R.drawable.msg_gift_premium, LocaleController.getString(R.string.GiftPremium));
                     }
                     otherItem.addSubItem(start_secret_chat, R.drawable.msg_secret, LocaleController.getString("StartEncryptedChat", R.string.StartEncryptedChat));
+                    otherItem.setSubItemShown(start_secret_chat, !getMessagesController().isUserPremiumBlocked(userId));
                 }
                 if (!isBot && getContactsController().contactsDict.get(userId) != null) {
                     otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString("AddShortcut", R.string.AddShortcut));
@@ -10161,7 +10365,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 VIEW_TYPE_TEXT_DETAIL_MULTILINE = 19,
                 VIEW_TYPE_NOTIFICATIONS_CHECK_SIMPLE = 20,
                 VIEW_TYPE_LOCATION = 21,
-                VIEW_TYPE_HOURS = 22;
+                VIEW_TYPE_HOURS = 22,
+                VIEW_TYPE_CHANNEL = 23;
 
         private Context mContext;
 
@@ -10180,7 +10385,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 case VIEW_TYPE_TEXT_DETAIL_MULTILINE:
                 case VIEW_TYPE_TEXT_DETAIL:
-                    final TextDetailCell textDetailCell = new TextDetailCell(mContext, resourcesProvider, viewType == VIEW_TYPE_TEXT_DETAIL_MULTILINE);
+                    final TextDetailCell textDetailCell = new TextDetailCell(mContext, resourcesProvider, viewType == VIEW_TYPE_TEXT_DETAIL_MULTILINE) {
+                        @Override
+                        protected int processColor(int color) {
+                            return applyPeerColor(color, false);
+                        }
+                    };
                     textDetailCell.setContentDescriptionValueFirst(true);
                     view = textDetailCell;
                     view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
@@ -10314,7 +10524,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_HOURS:
-                    view = new ProfileHoursCell(mContext, resourcesProvider);
+                    view = new ProfileHoursCell(mContext, resourcesProvider) {
+                        @Override
+                        protected int processColor(int color) {
+                            return applyPeerColor(color, false);
+                        }
+                    };
                     view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_VERSION:
@@ -10361,6 +10576,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     view = new ProfilePremiumCell(mContext, resourcesProvider);
                     view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
                     break;
+                case VIEW_TYPE_CHANNEL:
+                    view = new ProfileChannelCell(ProfileActivity.this) {
+                        @Override
+                        public int processColor(int color) {
+                            return applyPeerColor(color, false);
+                        }
+                    };
+                    view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+                    break;
             }
             if (viewType != VIEW_TYPE_SHARED_MEDIA) {
                 view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
@@ -10372,6 +10596,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
             if (holder.itemView == sharedMediaLayout) {
                 sharedMediaLayoutAttached = true;
+            }
+            if (holder.itemView instanceof TextDetailCell) {
+                ((TextDetailCell) holder.itemView).textView.setLoading(loadingSpan);
+                ((TextDetailCell) holder.itemView).valueTextView.setLoading(loadingSpan);
             }
         }
 
@@ -10410,7 +10638,35 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 case VIEW_TYPE_TEXT_DETAIL:
                     TextDetailCell detailCell = (TextDetailCell) holder.itemView;
                     boolean containsQr = false;
-                    if (position == phoneRow) {
+                    boolean containsGift = false;
+                    if (position == birthdayRow) {
+                        TLRPC.UserFull userFull = getMessagesController().getUserFull(userId);
+                        if (userFull != null && userFull.birthday != null) {
+                            final boolean today = BirthdayController.isToday(userFull);
+                            final boolean withYear = (userFull.birthday.flags & 1) != 0;
+                            final int age = withYear ? Period.between(LocalDate.of(userFull.birthday.year, userFull.birthday.month, userFull.birthday.day), LocalDate.now()).getYears() : -1;
+
+                            String text = UserInfoActivity.birthdayString(userFull.birthday);
+
+                            if (withYear) {
+                                text = LocaleController.formatPluralString(today ? "ProfileBirthdayTodayValueYear" : "ProfileBirthdayValueYear", age, text);
+                            } else {
+                                text = LocaleController.formatString(today ? R.string.ProfileBirthdayTodayValue : R.string.ProfileBirthdayValue, text);
+                            }
+
+                            detailCell.setTextAndValue(
+                                Emoji.replaceWithRestrictedEmoji(text, detailCell.textView, () -> {
+                                    if (holder.getAdapterPosition() == position && birthdayRow == position && holder.getItemViewType() == VIEW_TYPE_TEXT_DETAIL) {
+                                        onBindViewHolder(holder, position);
+                                    }
+                                }),
+                                LocaleController.getString(today ? R.string.ProfileBirthdayToday : R.string.ProfileBirthday),
+                                isTopic || bizHoursRow != -1 || bizLocationRow != -1
+                            );
+
+                            containsGift = today && !getMessagesController().premiumPurchaseBlocked();
+                        }
+                    } else if (position == phoneRow) {
                         String text;
                         TLRPC.User user = getMessagesController().getUser(userId);
                         String phoneNumber;
@@ -10447,7 +10703,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                         detailCell.setTextAndValue("ID: " + id, userDcLine, false);
                     } else if (position == usernameRow) {
-                        String text, username = null;
+                        String username = null;
+                        CharSequence text;
                         CharSequence value;
                         ArrayList<TLRPC.TL_username> usernames = new ArrayList<>();
                         if (userId != 0) {
@@ -10455,7 +10712,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             if (user != null) {
                                 usernames.addAll(user.usernames);
                             }
+                            TLRPC.TL_username usernameObj = null;
                             if (user != null && !TextUtils.isEmpty(user.username)) {
+                                usernameObj = DialogObject.findUsername(user.username, usernames);
                                 username = user.username;
                             }
                             usernames = user == null ? new ArrayList<>() : new ArrayList<>(user.usernames);
@@ -10463,6 +10722,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 for (int i = 0; i < usernames.size(); ++i) {
                                     TLRPC.TL_username u = usernames.get(i);
                                     if (u != null && u.active && !TextUtils.isEmpty(u.username)) {
+                                        usernameObj = u;
                                         username = u.username;
                                         break;
                                     }
@@ -10471,6 +10731,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             value = LocaleController.getString("Username", R.string.Username);
                             if (username != null) {
                                 text = "@" + username;
+                                if (usernameObj != null && !usernameObj.editable) {
+                                    text = new SpannableString(text);
+                                    ((SpannableString) text).setSpan(makeUsernameLinkSpan(usernameObj), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                }
                             } else {
                                 text = "—";
                             }
@@ -10492,7 +10756,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             value = "";
                             usernames = new ArrayList<>();
                         }
-                        detailCell.setTextAndValue(text, alsoUsernamesString(username, usernames, value), isTopic || bizHoursRow != -1 || bizLocationRow != -1);
+                        detailCell.setTextAndValue(text, alsoUsernamesString(username, usernames, value), (isTopic || bizHoursRow != -1 || bizLocationRow != -1) && birthdayRow < 0);
                     } else if (position == locationRow) {
                         if (chatInfo != null && chatInfo.location instanceof TLRPC.TL_channelLocation) {
                             TLRPC.TL_channelLocation location = (TLRPC.TL_channelLocation) chatInfo.location;
@@ -10500,17 +10764,33 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                     } else if (position == numberRow) {
                         TLRPC.User user = UserConfig.getInstance(currentAccount).getCurrentUser();
-                        String value;
-                        if (user != null && user.phone != null && user.phone.length() != 0) {
-                            if  (uz.unnarsx.cherrygram.CherrygramConfig.INSTANCE.getHidePhoneNumber()) {
-                                value = LocaleController.getString("MobileHidden", R.string.MobileHidden);
-                        } else {
-                                value = PhoneFormat.getInstance().format("+" + user.phone);
+                        AtomicReference<String> value = new AtomicReference<>(LocaleController.getString("MobileHidden", R.string.MobileHidden));
+
+                        detailCell.setOnClickListener(view -> {
+                            if (user != null && user.phone != null && user.phone.length() != 0) {
+                                value.set(PhoneFormat.getInstance().format("+" + user.phone));
+                            } else {
+                                value.set(LocaleController.getString("NumberUnknown", R.string.NumberUnknown));
                             }
-                        } else {
-                            value = LocaleController.getString("NumberUnknown", R.string.NumberUnknown);
-                        }
-                        detailCell.setTextAndValue(value, LocaleController.getString("TapToChangePhone", R.string.TapToChangePhone), true);
+                            detailCell.setTextAndValue(value.get(), LocaleController.getString("AP_HideUserPhone_Copy", R.string.AP_HideUserPhone_Copy), true);
+                        });
+
+                        detailCell.setOnLongClickListener(view1 -> {
+                            try {
+                                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                                android.content.ClipData clip = android.content.ClipData.newPlainText("label", "+" + user.phone);
+                                clipboard.setPrimaryClip(clip);
+                                if (AndroidUtilities.shouldShowClipboardToast()) {
+                                    BulletinFactory.of(ProfileActivity.this).createCopyBulletin(LocaleController.getString("PhoneCopied", R.string.PhoneCopied)).show();
+                                    view1.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                                }
+                            } catch (Exception e) {
+                                FileLog.e(e);
+                            }
+                            return false;
+                        });
+
+                        detailCell.setTextAndValue(value.get(), LocaleController.getString("AP_HideUserPhone_Show", R.string.AP_HideUserPhone_Show), true);
                         detailCell.setContentDescriptionValueFirst(false);
                     } else if (position == setUsernameRow) {
                         TLRPC.User user = UserConfig.getInstance(currentAccount).getCurrentUser();
@@ -10545,7 +10825,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         detailCell.setTextAndValue(text, value, true);
                         detailCell.setContentDescriptionValueFirst(true);
                     }
-                    if (containsQr) {
+                    if (containsGift) {
+                        Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.msg_input_gift);
+                        drawable.setColorFilter(new PorterDuffColorFilter(applyPeerColor(getThemedColor(Theme.key_switch2TrackChecked), false), PorterDuff.Mode.MULTIPLY));
+                        detailCell.setImage(drawable, LocaleController.getString(R.string.GiftPremium));
+                        detailCell.setImageClickListener(ProfileActivity.this::onTextDetailCellImageClicked);
+                    } else if (containsQr) {
                         Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.msg_qr_mini);
                         drawable.setColorFilter(new PorterDuffColorFilter(applyPeerColor(getThemedColor(Theme.key_switch2TrackChecked), false), PorterDuff.Mode.MULTIPLY));
                         detailCell.setImage(drawable, LocaleController.getString("GetQRCode", R.string.GetQRCode));
@@ -10555,6 +10840,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         detailCell.setImageClickListener(null);
                     }
                     detailCell.setTag(position);
+                    detailCell.textView.setLoading(loadingSpan);
+                    detailCell.valueTextView.setLoading(loadingSpan);
                     break;
                 case VIEW_TYPE_ABOUT_LINK:
                     AboutLinkCell aboutLinkCell = (AboutLinkCell) holder.itemView;
@@ -10750,11 +11037,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                 }
                                 enabled = true;
                             } else if (delta < 60 * 60) {
-                                val = LocaleController.formatString("WillUnmuteIn", R.string.WillUnmuteIn, LocaleController.formatPluralString("Minutes", delta / 60));
+                                val = formatString("WillUnmuteIn", R.string.WillUnmuteIn, LocaleController.formatPluralString("Minutes", delta / 60));
                             } else if (delta < 60 * 60 * 24) {
-                                val = LocaleController.formatString("WillUnmuteIn", R.string.WillUnmuteIn, LocaleController.formatPluralString("Hours", (int) Math.ceil(delta / 60.0f / 60)));
+                                val = formatString("WillUnmuteIn", R.string.WillUnmuteIn, LocaleController.formatPluralString("Hours", (int) Math.ceil(delta / 60.0f / 60)));
                             } else if (delta < 60 * 60 * 24 * 365) {
-                                val = LocaleController.formatString("WillUnmuteIn", R.string.WillUnmuteIn, LocaleController.formatPluralString("Days", (int) Math.ceil(delta / 60.0f / 60 / 24)));
+                                val = formatString("WillUnmuteIn", R.string.WillUnmuteIn, LocaleController.formatPluralString("Days", (int) Math.ceil(delta / 60.0f / 60 / 24)));
                             } else {
                                 val = null;
                             }
@@ -10870,6 +11157,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     });
                     hoursCell.set(userInfo != null ? userInfo.business_work_hours : null, hoursExpanded, hoursShownMine, notificationsDividerRow < 0 || bizLocationRow >= 0);
                     break;
+                case VIEW_TYPE_CHANNEL:
+                    ((ProfileChannelCell) holder.itemView).set(
+                        getMessagesController().getChat(userInfo.personal_channel_id),
+                        profileChannelMessageFetcher != null ? profileChannelMessageFetcher.messageObject : null
+                    );
+                    break;
             }
         }
 
@@ -10889,23 +11182,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (alsoUsernames.size() > 0) {
                 SpannableStringBuilder usernames = new SpannableStringBuilder();
                 for (int i = 0; i < alsoUsernames.size(); ++i) {
-                    final String usernameRaw = alsoUsernames.get(i).username;
+                    TLRPC.TL_username usernameObj = alsoUsernames.get(i);
+                    final String usernameRaw = usernameObj.username;
                     SpannableString username = new SpannableString("@" + usernameRaw);
-                    username.setSpan(new ClickableSpan() {
-                        @Override
-                        public void onClick(@NonNull View view) {
-                            String urlFinal = getMessagesController().linkPrefix + "/" + usernameRaw;
-                            if (currentChat == null || !currentChat.noforwards) {
-                                AndroidUtilities.addToClipboard(urlFinal);
-                                undoView.showWithAction(0, UndoView.ACTION_USERNAME_COPIED, null);
-                            }
-                        }
-
-                        @Override
-                        public void updateDrawState(@NonNull TextPaint ds) {
-                            ds.setUnderlineText(false);
-                        }
-                    }, 0, username.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    username.setSpan(makeUsernameLinkSpan(usernameObj), 0, username.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     username.setSpan(new ForegroundColorSpan(applyPeerColor(getThemedColor(Theme.key_chat_messageLinkIn), false)), 0, username.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     usernames.append(username);
                     if (i < alsoUsernames.size() - 1) {
@@ -10923,6 +11203,57 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else {
                 return fallback;
             }
+        }
+
+        private final HashMap<TLRPC.TL_username, ClickableSpan> usernameSpans = new HashMap<TLRPC.TL_username, ClickableSpan>();
+        public ClickableSpan makeUsernameLinkSpan(TLRPC.TL_username usernameObj) {
+            ClickableSpan span = usernameSpans.get(usernameObj);
+            if (span != null) return span;
+
+            final String usernameRaw = usernameObj.username;
+            span = new ClickableSpan() {
+                @Override
+                public void onClick(@NonNull View view) {
+                    if (!usernameObj.editable) {
+                        if (loadingSpan == this) return;
+                        setLoadingSpan(this);
+                        TL_fragment.TL_getCollectibleInfo req = new TL_fragment.TL_getCollectibleInfo();
+                        TL_fragment.TL_inputCollectibleUsername input = new TL_fragment.TL_inputCollectibleUsername();
+                        input.username = usernameObj.username;
+                        req.collectible = input;
+                        int reqId = getConnectionsManager().sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
+                            setLoadingSpan(null);
+                            if (res instanceof TL_fragment.TL_collectibleInfo) {
+                                TLObject obj;
+                                if (userId != 0) {
+                                    obj = getMessagesController().getUser(userId);
+                                } else {
+                                    obj = getMessagesController().getChat(chatId);
+                                }
+                                FragmentUsernameBottomSheet.open(getContext(), FragmentUsernameBottomSheet.TYPE_USERNAME, usernameObj.username, obj, (TL_fragment.TL_collectibleInfo) res, getResourceProvider());
+                            } else {
+                                BulletinFactory.showError(err);
+                            }
+                        }));
+                        getConnectionsManager().bindRequestToGuid(reqId, getClassGuid());
+                    } else {
+                        setLoadingSpan(null);
+                        String urlFinal = getMessagesController().linkPrefix + "/" + usernameRaw;
+                        if (currentChat == null || !currentChat.noforwards) {
+                            AndroidUtilities.addToClipboard(urlFinal);
+                            undoView.showWithAction(0, UndoView.ACTION_USERNAME_COPIED, null);
+                        }
+                    }
+                }
+
+                @Override
+                public void updateDrawState(@NonNull TextPaint ds) {
+                    ds.setUnderlineText(false);
+                    ds.setColor(ds.linkColor);
+                }
+            };
+            usernameSpans.put(usernameObj, span);
+            return span;
         }
 
         @Override
@@ -10943,7 +11274,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         position == faqRow || position == policyRow || position == sendLogsRow || position == sendLastLogsRow || position == cherrygramRow ||
                         position == clearLogsRow || position == setAvatarRow ||
                         position == addToGroupButtonRow || position == premiumRow || position == premiumGiftingRow ||
-                        position == businessRow || position == liteModeRow;
+                        position == businessRow || position == liteModeRow || position == birthdayRow || position == channelRow;
             }
             if (holder.itemView instanceof UserCell) {
                 UserCell userCell = (UserCell) holder.itemView;
@@ -10971,7 +11302,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (position == infoHeaderRow || position == membersHeaderRow || position == settingsSectionRow2 ||
                     position == numberSectionRow || position == helpHeaderRow || position == debugHeaderRow) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == idRow || position == idDcRow || position == phoneRow || position == locationRow || position == numberRow) {
+            } else if (position == idRow || position == idDcRow || position == phoneRow || position == locationRow || position == numberRow || position == birthdayRow) {
                 return VIEW_TYPE_TEXT_DETAIL;
             } else if (position == usernameRow || position == setUsernameRow) {
                 return VIEW_TYPE_TEXT_DETAIL_MULTILINE;
@@ -10996,7 +11327,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else if (position == infoSectionRow || position == lastSectionRow || position == membersSectionRow ||
                     position == secretSettingsSectionRow || position == settingsSectionRow || position == devicesSectionRow ||
                     position == helpSectionCell || position == setAvatarSectionRow || position == passwordSuggestionSectionRow ||
-                    position == phoneSuggestionSectionRow || position == premiumSectionsRow || position == reportDividerRow) {
+                    position == phoneSuggestionSectionRow || position == premiumSectionsRow || position == reportDividerRow || position == channelDividerRow) {
                 return VIEW_TYPE_SHADOW;
             } else if (position >= membersStartRow && position < membersEndRow) {
                 return VIEW_TYPE_USER;
@@ -11018,6 +11349,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 return VIEW_TYPE_LOCATION;
             } else if (position == bizHoursRow) {
                 return VIEW_TYPE_HOURS;
+            } else if (position == channelRow) {
+                return VIEW_TYPE_CHANNEL;
             }
             return 0;
         }
@@ -11203,7 +11536,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }),
                 new SearchResult(108, LocaleController.getString("Passcode", R.string.Passcode), LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg2_secret, () -> presentFragment(PasscodeActivity.determineOpenFragment())),
                 SharedConfig.hasEmailLogin ? new SearchResult(125, LocaleController.getString(R.string.EmailLogin), "emailLoginRow", LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg2_secret, () -> presentFragment(new PrivacySettingsActivity())) : null,
-                new SearchResult(101, LocaleController.getString("BlockedUsers", R.string.BlockedUsers), LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg_secret, () -> presentFragment(new PrivacyUsersActivity())),
+                new SearchResult(101, LocaleController.getString("BlockedUsers", R.string.BlockedUsers), LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg_secret, () -> presentFragment(new PrivacyUsersActivity().loadBlocked())),
                 new SearchResult(110, LocaleController.getString("SessionsTitle", R.string.SessionsTitle), R.drawable.msg2_secret, () -> presentFragment(new SessionsActivity(0))),
                 new SearchResult(105, LocaleController.getString("PrivacyPhone", R.string.PrivacyPhone), LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg_secret, () -> presentFragment(new PrivacyControlActivity(ContactsController.PRIVACY_RULES_TYPE_PHONE, true))),
                 new SearchResult(102, LocaleController.getString("PrivacyLastSeen", R.string.PrivacyLastSeen), LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg_secret, () -> presentFragment(new PrivacyControlActivity(ContactsController.PRIVACY_RULES_TYPE_LASTSEEN, true))),
@@ -11211,7 +11544,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 new SearchResult(104, LocaleController.getString("PrivacyForwards", R.string.PrivacyForwards), LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg_secret, () -> presentFragment(new PrivacyControlActivity(ContactsController.PRIVACY_RULES_TYPE_FORWARDS, true))),
                 new SearchResult(122, LocaleController.getString("PrivacyP2P", R.string.PrivacyP2P), LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg_secret, () -> presentFragment(new PrivacyControlActivity(ContactsController.PRIVACY_RULES_TYPE_P2P, true))),
                 new SearchResult(106, LocaleController.getString("Calls", R.string.Calls), LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg_secret, () -> presentFragment(new PrivacyControlActivity(ContactsController.PRIVACY_RULES_TYPE_CALLS, true))),
-                new SearchResult(107, LocaleController.getString("GroupsAndChannels", R.string.GroupsAndChannels), LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg_secret, () -> presentFragment(new PrivacyControlActivity(ContactsController.PRIVACY_RULES_TYPE_INVITE, true))),
+                new SearchResult(107, LocaleController.getString("PrivacyInvites", R.string.PrivacyInvites), LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg_secret, () -> presentFragment(new PrivacyControlActivity(ContactsController.PRIVACY_RULES_TYPE_INVITE, true))),
                 new SearchResult(123, LocaleController.getString("PrivacyVoiceMessages", R.string.PrivacyVoiceMessages), LocaleController.getString("PrivacySettings", R.string.PrivacySettings), R.drawable.msg_secret, () -> {
                     if (!getUserConfig().isPremium()) {
                         try {
@@ -12079,13 +12412,40 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             args.putLong("chat_id", chatId);
             args.putLong("user_id", userId);
             presentFragment(new QrActivity(args));
+        } else if (parent.getTag() != null && ((int) parent.getTag()) == birthdayRow) {
+            TLRPC.User user = getMessagesController().getUser(dialogId);
+            if (user == null || userInfo == null) return;
+            ArrayList<TLRPC.TL_premiumGiftOption> options = new ArrayList<>(userInfo.premium_gifts);
+            if (options.isEmpty()) {
+                if (getVisibleDialog() != null) return;
+                final AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER);
+                final int reqId = BoostRepository.loadGiftOptions(null, loadedOptions -> {
+                    progressDialog.dismiss();
+                    if (getVisibleDialog() != null) return;
+                    loadedOptions = BoostRepository.filterGiftOptions(loadedOptions, 1);
+                    loadedOptions = BoostRepository.filterGiftOptionsByBilling(loadedOptions);
+                    ArrayList<TLRPC.User> users = new ArrayList<>();
+                    users.add(user);
+                    PremiumPreviewGiftToUsersBottomSheet.show(users, loadedOptions);
+                });
+                progressDialog.setOnCancelListener(di -> {
+                    getConnectionsManager().cancelRequest(reqId, true);
+                });
+                progressDialog.showDelayed(500);
+            } else {
+                showDialog(new GiftPremiumBottomSheet(this, user));
+            }
         }
     }
+
+    private boolean fullyVisible;
 
     @Override
     public void onBecomeFullyVisible() {
         super.onBecomeFullyVisible();
         writeButtonSetBackground();
+        fullyVisible = true;
+        createBirthdayEffect();
     }
 
     private void writeButtonSetBackground() {
@@ -12283,6 +12643,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             put(++pointer, notificationsSimpleRow, sparseIntArray);
             put(++pointer, bizHoursRow, sparseIntArray);
             put(++pointer, bizLocationRow, sparseIntArray);
+            put(++pointer, birthdayRow, sparseIntArray);
+            put(++pointer, channelRow, sparseIntArray);
         }
 
         private void put(int id, int position, SparseIntArray sparseIntArray) {
@@ -12302,7 +12664,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             color = getThemedColor(Theme.key_actionBarActionModeDefault);
         } else if (mediaHeaderVisible) {
             color = getThemedColor(Theme.key_windowBackgroundWhite);
-        } else if (peerColor != null) {
+        } else if (peerColor != null && CherrygramConfig.INSTANCE.getProfileBackgroundColor()) {
             color = peerColor.getBgColor2(Theme.isCurrentThemeDark());
         } else {
             color = getThemedColor(Theme.key_actionBarDefault);
@@ -12558,19 +12920,19 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private ShowDrawable showStatusButton;
     public ShowDrawable getShowStatusButton() {
         if (showStatusButton == null) {
-            showStatusButton = new ShowDrawable();
+            showStatusButton = new ShowDrawable(LocaleController.getString(R.string.StatusHiddenShow));
             showStatusButton.setAlpha((int) (0xFF * Math.min(1f, extraHeight / AndroidUtilities.dp(88f))));
             showStatusButton.setBackgroundColor(ColorUtils.blendARGB(Theme.multAlpha(Theme.adaptHSV(actionBarBackgroundColor, +0.18f, -0.1f), 0.5f), 0x23ffffff, currentExpandAnimatorValue));
         }
         return showStatusButton;
     }
 
-    private static class ShowDrawable extends Drawable implements SimpleTextView.PressableDrawable {
+    public static class ShowDrawable extends Drawable implements SimpleTextView.PressableDrawable {
 
         private final Text text;
         public final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        public ShowDrawable() {
-            text = new Text(LocaleController.getString(R.string.StatusHiddenShow), 11);
+        public ShowDrawable(String string) {
+            text = new Text(string, 11);
             backgroundPaint.setColor(0x1f000000);
         }
 
@@ -12648,6 +13010,33 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         public boolean isPressed() {
             return pressed;
         }
+    }
+
+    public void setLoadingSpan(CharacterStyle span) {
+        if (loadingSpan == span) return;
+        loadingSpan = span;
+        AndroidUtilities.forEachViews(listView, view -> {
+            if (view instanceof TextDetailCell) {
+                ((TextDetailCell) view).textView.setLoading(loadingSpan);
+                ((TextDetailCell) view).valueTextView.setLoading(loadingSpan);
+            }
+        });
+    }
+
+    private ProfileBirthdayEffect birthdayEffect;
+
+    private void createBirthdayEffect() {
+        if (fragmentView == null || !fullyVisible || birthdayFetcher == null || getContext() == null)
+            return;
+
+        if (birthdayEffect != null) {
+            birthdayEffect.updateFetcher(birthdayFetcher);
+            birthdayEffect.invalidate();
+            return;
+        }
+
+        birthdayEffect = new ProfileBirthdayEffect(this, birthdayFetcher);
+        ((FrameLayout) fragmentView).addView(birthdayEffect, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL_HORIZONTAL | Gravity.TOP));
     }
 
 }

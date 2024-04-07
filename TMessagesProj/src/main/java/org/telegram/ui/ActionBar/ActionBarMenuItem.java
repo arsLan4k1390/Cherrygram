@@ -759,7 +759,7 @@ public class ActionBarMenuItem extends FrameLayout {
             popupLayout.setTopView(null);
         }
         popupWindow = new ActionBarPopupWindow(container, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT);
-        if (animationEnabled) {
+        if (animationEnabled && Build.VERSION.SDK_INT >= 19) {
             popupWindow.setAnimationStyle(0);
         } else {
             popupWindow.setAnimationStyle(R.style.PopupAnimation);
@@ -1943,6 +1943,13 @@ public class ActionBarMenuItem extends FrameLayout {
             view.setVisibility(VISIBLE);
             measurePopup = true;
         }
+    }
+
+    public void setSubItemShown(int id, boolean show) {
+        if (show)
+            showSubItem(id);
+        else
+            hideSubItem(id);
     }
 
     public int getVisibleSubItemsCount() {

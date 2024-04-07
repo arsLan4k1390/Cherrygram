@@ -47,8 +47,6 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
 import org.telegram.messenger.Utilities;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class DrawerLayoutContainer extends FrameLayout {
 
     private static final int MIN_DRAWER_MARGIN = 64;
@@ -450,7 +448,7 @@ public class DrawerLayoutContainer extends FrameLayout {
                 return true;
             }
 
-            if ((allowOpenDrawerBySwipe || drawerOpened) && allowOpenDrawer && parentActionBarLayout.getFragmentStack().size() == 1 && (parentActionBarLayout.getLastFragment().storyViewer == null || !parentActionBarLayout.getLastFragment().storyViewer.attachedToParent())) {
+            if ((allowOpenDrawerBySwipe || drawerOpened) && allowOpenDrawer && parentActionBarLayout.getFragmentStack().size() == 1 && (parentActionBarLayout.getLastFragment().getLastStoryViewer() == null || !parentActionBarLayout.getLastFragment().getLastStoryViewer().attachedToParent())) {
                 if (ev != null && (ev.getAction() == MotionEvent.ACTION_DOWN || ev.getAction() == MotionEvent.ACTION_MOVE) && !startedTracking && !maybeStartTracking) {
                    View scrollingChild = findScrollingChild(this, ev.getX(),ev.getY());
                    if (scrollingChild != null) {

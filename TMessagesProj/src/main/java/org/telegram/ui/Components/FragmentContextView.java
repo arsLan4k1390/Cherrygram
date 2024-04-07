@@ -683,7 +683,7 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
             if (currentStyle == STYLE_AUDIO_PLAYER) {
                 MessageObject messageObject = MediaController.getInstance().getPlayingMessageObject();
                 if (fragment != null && messageObject != null) {
-                    if (messageObject.isMusic() || messageObject.isVoice()) {
+                    if (messageObject.isMusic()) {
                         if (getContext() instanceof LaunchActivity) {
                             fragment.showDialog(new AudioPlayerAlert(getContext(), resourcesProvider));
                         }
@@ -757,6 +757,19 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
                 fragment.showDialog(importingAlert);
                 checkImport(false);
             }
+        });
+        setOnLongClickListener(v -> {
+            if (currentStyle == STYLE_AUDIO_PLAYER) {
+                MessageObject messageObject = MediaController.getInstance().getPlayingMessageObject();
+                if (fragment != null && messageObject != null) {
+                    if (messageObject.isVoice()) {
+                        if (getContext() instanceof LaunchActivity) {
+                            fragment.showDialog(new AudioPlayerAlert(getContext(), resourcesProvider));
+                        }
+                    }
+                }
+            }
+            return false;
         });
     }
 
