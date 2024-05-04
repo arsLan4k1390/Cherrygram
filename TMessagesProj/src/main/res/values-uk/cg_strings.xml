@@ -48,13 +48,13 @@
     <string name="CG_CreateMention">Згадати</string>
     <string name="CG_CreateCode">Створити Код</string>
     <string name="CG_CreateCodeLanguage">Мова</string>
-    <string name="CG_FwdMenu_EnableNoForward">Без авторства</string>
-    <string name="CG_FwdMenu_DisableNoForward">З авторством</string>
+    <string name="CG_FwdMenu_EnableNoForward">Вимкнути авторство</string>
+    <string name="CG_FwdMenu_DisableNoForward">Увімкнути авторство</string>
     <string name="CG_Without_Authorship">без авторства</string>
     <string name="CG_FwdMenu_NoNotify">Без сповіщення</string>
     <string name="CG_FwdMenu_Notify">Сповіщати</string>
-    <string name="CG_FwdMenu_EnableCaptions">З описом</string>
-    <string name="CG_FwdMenu_DisableCaptions">Без опису</string>
+    <string name="CG_FwdMenu_EnableCaptions">Увімкнути опис</string>
+    <string name="CG_FwdMenu_DisableCaptions">Прибрати опис</string>
     <!--Search filter-->
     <string name="CG_SearchFilter">Фільтрувати результати пошуку</string>
     <string name="CG_SearchFilter_None">Немає</string>
@@ -195,18 +195,21 @@
     <string name="AP_DrawerBlurIntensity">Інтенсивність розмиття</string>
     <string name="AP_DrawerIconPack_Header">Набір іконок меню</string>
     <string name="AP_DrawerButtonsCategory">Кнопки меню</string>
-    <string name="AP_HideUserPhone_Show">Тапніть щоб показати</string>
+    <string name="AP_HideUserPhone_Show">Торкніться щоб показати</string>
     <string name="AP_HideUserPhone_Copy">Затисніть щоб копіювати</string>
     <string name="AP_MutualContacts_Description">Цей контакт є є взаємним</string>
     <string name="AP_ShowID">Показати ID та DC у профілі</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Діалоги</string>
+    <string name="CP_Header_Messages">Повідомлення</string>
     <string name="CP_Slider_StickerAmplifier">Розмір стікерів</string>
     <string name="CP_BlockSomeSets">Блокує деякі стікери</string>
     <string name="CP_BlockSomeSets_Desc">Деякі стікери, що змушують крашити будуть замінені логотипом Cherrygram. \nФайл \"Cherrygram Logo\" буде завантажений після того, як ви увімкнете цю функцію і перезавантажте програму.</string>
     <string name="CP_TimeOnStick">Приховати час відправки на стікерах</string>
+    <string name="CP_AdminActions">Швидкі адмін-дії</string>
     <string name="CP_MessageMenu">Меню повідомлення</string>
+    <string name="AP_CenterChatsTitle">Центрувати заголовок у чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Показувати лічильник непрочитаних</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включити лічильник непрочитаних чатів на кнопці «Назад» в відкритому чаті</string>
     <string name="CP_NoRounding">Вимкнути округлення чисел</string>
@@ -217,6 +220,7 @@
     <string name="CP_ShowSeconds">Відформатувати час у секундах</string>
     <string name="CP_LeftBottomButtonAction">Дія лівої кнопки</string>
     <string name="CP_DoubleTapAction">Дія при подвійному дотику</string>
+    <string name="CG_MsgSlideAction">Дія при свайпі повідомлення</string>
     <string name="CP_DisableSwipeToNext">Вимкнути перехід на наступний канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Вимкнути перехід на наступний канал при прокрутці будь якого каналу</string>
     <string name="CP_HideMuteUnmuteButton">Приховати нижню кнопку в каналах</string>

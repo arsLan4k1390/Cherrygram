@@ -21,7 +21,6 @@ import android.text.format.DateFormat;
 import android.util.Xml;
 
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 
 import org.telegram.messenger.time.FastDateFormat;
 import org.telegram.tgnet.ConnectionsManager;
@@ -447,7 +446,7 @@ public class LocaleController {
 
         try {
             IntentFilter timezoneFilter = new IntentFilter(Intent.ACTION_TIMEZONE_CHANGED);
-            ContextCompat.registerReceiver(ApplicationLoader.applicationContext, new TimeZoneChangedReceiver(), timezoneFilter, ContextCompat.RECEIVER_NOT_EXPORTED);
+            ApplicationLoader.applicationContext.registerReceiver(new TimeZoneChangedReceiver(), timezoneFilter);
         } catch (Exception e) {
             FileLog.e(e);
         }
@@ -3661,7 +3660,7 @@ public class LocaleController {
                 } else if (diff < 60) {
                     return LocaleController.formatPluralString("CG_LastSeenMinutes", diff);
                 } else {
-                    return LocaleController.formatPluralString("CG_LastSeenHours", (int) Math.ceil(diff / 60.0f));
+                    return LocaleController.formatPluralString("CG_LastSeenHours", (int) Math.floor(diff / 60.0f));
                 }
             } else if (dateDay + 1 == day && year == dateYear) {
                 if (madeShorter != null) {

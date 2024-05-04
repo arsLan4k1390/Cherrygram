@@ -231,10 +231,16 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("AP_ChangeStatusDrawerButton", changeStatusDrawerButton)
     }
 
-    var myStoriesDrawerButton by sharedPreferences.boolean("AP_MyStoriesDrawerButton", true)
+    /*var myStoriesDrawerButton by sharedPreferences.boolean("AP_MyStoriesDrawerButton", true)
     fun toggleMyStoriesDrawerButton() {
         myStoriesDrawerButton = !myStoriesDrawerButton
         putBoolean("AP_MyStoriesDrawerButton", myStoriesDrawerButton)
+    }*/
+
+    var myProfileDrawerButton by sharedPreferences.boolean("AP_MyProfileDrawerButton", true)
+    fun toggleMyProfileDrawerButton() {
+        myProfileDrawerButton = !myProfileDrawerButton
+        putBoolean("AP_MyProfileDrawerButton", myProfileDrawerButton)
     }
 
     var createGroupDrawerButton by sharedPreferences.boolean("AP_CreateGroupDrawerButton", false)
@@ -306,6 +312,55 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var blockStickers by sharedPreferences.boolean("CP_BlockStickers", false)
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
     var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
+
+    //Chats
+    //Admin Shortcuts
+    var admins_Reactions by sharedPreferences.boolean("CP_Admins_Reactions", false)
+    fun toggleAdminsReactions() {
+        admins_Reactions = !admins_Reactions
+        putBoolean("CP_Admins_Reactions", admins_Reactions)
+    }
+
+    var admins_Permissions by sharedPreferences.boolean("CP_Admins_Permissions", false)
+    fun toggleAdminsPermissions() {
+        admins_Permissions = !admins_Permissions
+        putBoolean("CP_Admins_Permissions", admins_Permissions)
+    }
+
+    var admins_Administrators by sharedPreferences.boolean("CP_Admins_Administrators", false)
+    fun toggleAdminsAdministrators() {
+        admins_Administrators = !admins_Administrators
+        putBoolean("CP_Admins_Administrators", admins_Administrators)
+    }
+
+    var admins_Members by sharedPreferences.boolean("CP_Admins_Members", false)
+    fun toggleAdminsMembers() {
+        admins_Members = !admins_Members
+        putBoolean("CP_Admins_Members", admins_Members)
+    }
+
+    var admins_Statistics by sharedPreferences.boolean("CP_Admins_Statistics", false)
+    fun toggleAdminsStatistics() {
+        admins_Statistics = !admins_Statistics
+        putBoolean("CP_Admins_Statistics", admins_Statistics)
+    }
+
+    var admins_RecentActions by sharedPreferences.boolean("CP_Admins_RecentActions", false)
+    fun toggleAdminsRecentActions() {
+        admins_RecentActions = !admins_RecentActions
+        putBoolean("CP_Admins_RecentActions", admins_RecentActions)
+    }
+
+    var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle", true)
+    var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
+    var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
+    var hideKeyboardOnScroll by sharedPreferences.boolean("CP_HideKbdOnScroll", false)
+    var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
+    var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
+    var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
+    var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
+
+    //Messages
     //Direct Share
     var shareDrawStoryButton by sharedPreferences.boolean("CP_ShareDrawStoryButton", true)
     fun toggleShareDrawStoryButton() {
@@ -410,18 +465,15 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_ShowJSON", showJSON)
     }
 
-    //Chats
-    var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
-    var confirmCalls by sharedPreferences.boolean("CP_ConfirmCalls", false)
     var deleteForAll by sharedPreferences.boolean("CP_DeleteForAll", false)
     var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", false)
     var showPencilIcon by sharedPreferences.boolean("AP_PencilIcon", false)
 
     const val LEFT_BUTTON_FORWARD_WO_AUTHORSHIP = 0
-    const val LEFT_BUTTON_DIRECT_SHARE = 1
-    const val LEFT_BUTTON_REPLY = 2
-    const val LEFT_BUTTON_SAVE_MESSAGE= 3
-    var leftBottomButton by sharedPreferences.int("CP_LeftBottomButton", LEFT_BUTTON_FORWARD_WO_AUTHORSHIP)
+    const val LEFT_BUTTON_REPLY = 1
+    const val LEFT_BUTTON_SAVE_MESSAGE= 2
+    const val LEFT_BUTTON_DIRECT_SHARE = 3
+    var leftBottomButton by sharedPreferences.int("CP_LeftBottomButtonAction", LEFT_BUTTON_FORWARD_WO_AUTHORSHIP)
 
     const val DOUBLE_TAP_ACTION_NONE = 0
     const val DOUBLE_TAP_ACTION_REACTION = 1
@@ -431,11 +483,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     const val DOUBLE_TAP_ACTION_TRANSLATE = 5
     var doubleTapAction by sharedPreferences.int("CP_DoubleTapAction", DOUBLE_TAP_ACTION_REACTION)
 
-    var hideKeyboardOnScroll by sharedPreferences.boolean("CP_HideKbdOnScroll", false)
-    var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
-    var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
-    var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
-    var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
+    const val MESSAGE_SLIDE_ACTION_REPLY = 0
+    const val MESSAGE_SLIDE_ACTION_SAVE = 1
+    const val MESSAGE_SLIDE_ACTION_TRANSLATE = 2
+    const val MESSAGE_SLIDE_ACTION_DIRECT_SHARE = 3
+    var messageSlideAction by sharedPreferences.int("CP_MessageSlideAction", MESSAGE_SLIDE_ACTION_REPLY)
+
     //Media
     var largePhotos by sharedPreferences.boolean("CP_LargePhotos", true)
     var spoilersOnMedia by sharedPreferences.boolean("CP_SpoilersOnMedia", true)
@@ -444,6 +497,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
     var disableVibration by sharedPreferences.boolean("CP_DisableVibration", false)
     var videoSeekDuration by sharedPreferences.int("CP_VideoSeekDuration", 10)
+
     //Notifications
     const val NOTIF_SOUND_DISABLE = 0
     const val NOTIF_SOUND_DEFAULT = 1
@@ -485,6 +539,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     fun toggleRearCam() {
         rearCam = !rearCam
         putBoolean("CP_RearCam", rearCam)
+    }
+
+    var startFromUltraWideCam by sharedPreferences.boolean("startFromUltraWideCam", true)
+    fun toggleStartFromUltraWideCam() {
+        startFromUltraWideCam = !startFromUltraWideCam
+        putBoolean("staticZoom", startFromUltraWideCam)
     }
 
     const val Camera16to9 = 0
@@ -573,6 +633,13 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         filterLauncherIcon = !filterLauncherIcon
         putBoolean("AP_Filter_Launcher_Icon", filterLauncherIcon)
     }
+
+    var forceChatBlurEffect by sharedPreferences.boolean("AP_ForceBlur", false)
+    fun toggleForceChatBlurEffect() {
+        forceChatBlurEffect = !forceChatBlurEffect
+        putBoolean("AP_ForceBlur", forceChatBlurEffect)
+    }
+    var forceChatBlurEffectIntensity by sharedPreferences.int("AP_ForceBlur_Intensity", 155)
 
     //Translator
     var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")

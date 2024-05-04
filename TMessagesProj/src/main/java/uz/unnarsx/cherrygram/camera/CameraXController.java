@@ -95,7 +95,7 @@ public class CameraXController {
     public static final int CAMERA_HDR = 2;
     public static final int CAMERA_AUTO = 3;
     public static final int CAMERA_WIDE = 4;
-    public float oldZoomSelection = 0F;
+    public float oldZoomSelection = CherrygramConfig.INSTANCE.getStartFromUltraWideCam() ? 0F : 5F;
     private int selectedEffect = CAMERA_NONE;
 
     public static class CameraLifecycle implements LifecycleOwner {

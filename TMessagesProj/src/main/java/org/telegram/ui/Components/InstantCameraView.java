@@ -56,7 +56,6 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -201,6 +200,8 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     private CameraXController cameraXController;
     @TargetApi(21)
     private CameraXController.CameraLifecycle camLifecycle;
+    private float cameraZoom;
+    private boolean zoomWas;
     private boolean needDrawFlickerStub;
 
     private boolean isCameraSessionInitiated() {
@@ -1140,6 +1141,9 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
 
     private void switchCameraX(){
         saveLastCameraBitmap();
+        if (cameraZoom > 0) {
+            cameraZoom = 0;
+        }
         setOldBrightness();
         if (flashlightButton.getTag() != null) {
             flashlightButton.setBackgroundDrawable(Theme.createCircleDrawable(AndroidUtilities.dp(60), 0x22ffffff));
@@ -3828,6 +3832,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 AndroidUtilities.rectTmp.set(cameraContainer.getX(), cameraContainer.getY(), cameraContainer.getX() + cameraContainer.getMeasuredWidth(), cameraContainer.getY() + cameraContainer.getMeasuredHeight());
                 maybePinchToZoomTouchMode = AndroidUtilities.rectTmp.contains(ev.getX(), ev.getY());
             }
+            zoomWas = false;
             return true;
         } else if (ev.getActionMasked() == MotionEvent.ACTION_MOVE && isInPinchToZoomTouchMode) {
             int index1 = -1;
@@ -3859,8 +3864,23 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     cameraSession.setZoom(zoom);
                 }
             } else {
-                float zoom = Math.min(1f, Math.max(0, pinchScale - 1f));
-                cameraXController.setZoom(zoom);
+                float newDistance = (float) Math.hypot(ev.getX(index2) - ev.getX(index1), ev.getY(index2) - ev.getY(index1));
+                if (!zoomWas) {
+                    if (Math.abs(newDistance - pinchStartDistance) >= AndroidUtilities.getPixelsInCM(0.4f, false)) {
+                        pinchStartDistance = newDistance;
+                        zoomWas = true;
+                    }
+                } else {
+                    float diff = (newDistance - pinchStartDistance) / AndroidUtilities.dp(200);
+                    pinchStartDistance = newDistance;
+                    cameraZoom += diff;
+                    if (cameraZoom < 0.0f) {
+                        cameraZoom = 0.0f;
+                    } else if (cameraZoom > 1.0f) {
+                        cameraZoom = 1.0f;
+                    }
+                    cameraXController.setZoom(cameraZoom);
+                }
             }
         } else if ((ev.getActionMasked() == MotionEvent.ACTION_UP || (ev.getActionMasked() == MotionEvent.ACTION_POINTER_UP && checkPointerIds(ev)) || ev.getActionMasked() == MotionEvent.ACTION_CANCEL) && isInPinchToZoomTouchMode) {
             isInPinchToZoomTouchMode = false;
@@ -3887,19 +3907,13 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         if (zoom > 0f) {
             finishZoomTransition = ValueAnimator.ofFloat(zoom, 0);
             finishZoomTransition.addUpdateListener(valueAnimator -> {
-                if (cameraSession != null) {
-                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
-                        if (useCamera2) {
-                            if (camera2SessionCurrent != null) {
-                                camera2SessionCurrent.setZoom((float) valueAnimator.getAnimatedValue());
-                            }
-                        } else {
-                            if (cameraSession != null) {
-                                cameraSession.setZoom((float) valueAnimator.getAnimatedValue());
-                            }
-                        }
-                    } else {
-                        cameraXController.setZoom((float) valueAnimator.getAnimatedValue());
+                if (useCamera2) {
+                    if (camera2SessionCurrent != null) {
+                        camera2SessionCurrent.setZoom((float) valueAnimator.getAnimatedValue());
+                    }
+                } else {
+                    if (cameraSession != null) {
+                        cameraSession.setZoom((float) valueAnimator.getAnimatedValue());
                     }
                 }
             });

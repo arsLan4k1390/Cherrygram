@@ -160,6 +160,7 @@
     <string name="AP_ChangeIcon_Laguna">Laguna</string>
     <string name="AP_ChangeIcon_Green">Green</string>
     <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
+    <string name="AP_ChangeIcon_Violet_Sunset" translatable="false">Violet Sunset</string>
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
@@ -234,12 +235,15 @@
 
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
+    <string name="CP_Header_Messages">Messages</string>
     <string name="CP_Slider_StickerAmplifier">Sticker size amplifier</string>
     <string name="CP_BlockSomeSets">Block some stickers</string>
     <string name="CP_BlockSomeSets_Desc">Some stickers which forces the app crash will be replaced by Cherrygram\'s logo. \n\"Cherrygram Logo\" file will be downloaded after you enable the feature and restart the app.</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
 
+    <string name="CP_AdminActions">Admin shortcuts</string>
     <string name="CP_MessageMenu">Message menu</string>
+    <string name="AP_CenterChatsTitle">Center title in chats</string>
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
     <string name="CP_NoRounding">Disable number rounding</string>
@@ -254,6 +258,7 @@
     <string name="CP_FormatterDay12HSec" translatable="false">h:mm:ss a</string>
     <string name="CP_LeftBottomButtonAction">Left button action</string>
     <string name="CP_DoubleTapAction">Double tap action</string>
+    <string name="CG_MsgSlideAction">Action on message swipe</string>
     <string name="CP_DisableSwipeToNext">Disable transition to the next channel</string>
     <string name="CP_DisableSwipeToNext_Desc">Disable switching to the next channel when scrolling through any channel</string>
     <string name="CP_HideMuteUnmuteButton">Hide bottom button in channels</string>
@@ -278,7 +283,6 @@
 
     <string name="CP_Header_Notification">Notifications</string>
     <string name="CP_NotificationSound">Notification sound</string>
-    <string name="CP_IOSSound" translatable="false">IOS</string>
     <string name="CP_VibrateInChats">In-chat vibration</string>
     <string name="CP_VibrateInChats_Desc">Make a short vibration when you receive a message in chats</string>
     <string name="CP_SilenceNonContacts">Silence non-contacts</string>
@@ -288,11 +292,9 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Camera</string>
     <string name="CP_CameraType">Camera Type</string>
-    <string name="CP_Camera2" translatable="false">Camera 2</string>
     <string name="CP_Camera2Desc">All features that are hidden when Camera2 is turned on will not work with Camera2 enabled.</string>
     <string name="CP_CameraDualCamera">Dual camera</string>
     <string name="CP_CameraDualCamera_Desc">Captures video message on both cameras for faster switching between cameras while recording. Uses more battery.</string>
-    <string name="CP_CameraTypeDefault" translatable="false">Telegram</string>
     <string name="CP_DefaultCameraDesc">Use the Telegram\'s built-in camera.</string>
     <string name="CP_CameraXDesc">CameraX is only supported on <![CDATA[<a href="https://developer.android.com/training/camerax/devices">selected devices</a>]]>, effects and lenses support depends on your manufacturer.</string>
     <string name="CP_CameraQuality">Camera Quality</string>

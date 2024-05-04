@@ -39,7 +39,9 @@ import uz.unnarsx.cherrygram.extras.Constants;
 
 public class UpdaterBottomSheet extends BottomSheet {
 
-    public UpdaterBottomSheet(Context context, BaseFragment fragment, boolean available, UpdaterUtils.Update update) {
+    private BaseFragment fragment;
+
+    public UpdaterBottomSheet(Context context, boolean available, UpdaterUtils.Update update) {
         super(context, false);
         setOpenNoDelay(true);
         fixNavigationBar();
@@ -137,7 +139,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             doneButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             doneButton.setText(LocaleController.getString("AppUpdateDownloadNow", R.string.AppUpdateDownloadNow));
             doneButton.setOnClickListener(v -> {
-                UpdaterUtils.downloadApk(fragment.getContext(), update.downloadURL, "Cherrygram " + update.version);
+                UpdaterUtils.downloadApk(getContext(), update.downloadURL, "Cherrygram " + update.version);
                 dismiss();
             });
             linearLayout.addView(doneButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, 0, 16, 15, 16, 5));
@@ -232,8 +234,25 @@ public class UpdaterBottomSheet extends BottomSheet {
         setCustomView(scrollView);
     }
 
+    public void setFragment(BaseFragment fragment) {
+        this.fragment = fragment;
+    }
+
     private void copyText(CharSequence text) {
         AndroidUtilities.addToClipboard(text);
         BulletinFactory.of(getContainer(), null).createCopyBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
+    }
+
+    public static UpdaterBottomSheet showAlert(Context context, BaseFragment fragment, boolean available, UpdaterUtils.Update update) {
+        UpdaterBottomSheet alert = new UpdaterBottomSheet(context, available, update);
+        alert.setFragment(fragment);
+        if (fragment != null) {
+            if (fragment.getParentActivity() != null) {
+                fragment.showDialog(alert);
+            }
+        } else {
+            alert.show();
+        }
+        return alert;
     }
 }

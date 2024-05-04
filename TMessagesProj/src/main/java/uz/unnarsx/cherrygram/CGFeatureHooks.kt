@@ -4,15 +4,28 @@ import android.os.Build
 import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
+import android.view.View
 import android.widget.FrameLayout
 import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.ChatObject
 import org.telegram.messenger.LocaleController
+import org.telegram.messenger.MessageObject
+import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
+import org.telegram.messenger.UserConfig
+import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.ActionBarPopupWindow
+import org.telegram.ui.AvatarPreviewer
+import org.telegram.ui.ChatActivity
+import org.telegram.ui.ChatRightsEditActivity
+import org.telegram.ui.Components.BulletinFactory
 import org.telegram.ui.Components.ShareAlert
+import org.telegram.ui.Components.TranslateAlert2
+import org.telegram.ui.Components.UndoView
 import org.telegram.ui.LauncherIconController
 import org.telegram.ui.LauncherIconController.LauncherIcon
 import uz.unnarsx.cherrygram.extras.CherrygramExtras
+import uz.unnarsx.cherrygram.helpers.JsonBottomSheet
 import uz.unnarsx.cherrygram.ui.dialogs.ShareAlertExtraUI
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
@@ -72,11 +85,178 @@ object CGFeatureHooks {
     }
 
     @JvmStatic
+    fun injectChatActivityMsgSlideAction(cf: ChatActivity, msg: MessageObject, isChannel: Boolean, classGuid: Int) {
+        when (CherrygramConfig.messageSlideAction) {
+            CherrygramConfig.MESSAGE_SLIDE_ACTION_REPLY -> {
+                // Reply (default)
+                cf.showFieldPanelForReply(msg)
+            }
+            CherrygramConfig.MESSAGE_SLIDE_ACTION_SAVE -> {
+                // Save message
+                val customChatID = CherrygramConfig.customChatForSavedMessages
+                val preferences = MessagesController.getMainSettings(UserConfig.selectedAccount)
+                val savedMessagesChatID = preferences.getString("CP_CustomChatIDSM",
+                    UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId().toString()
+                )
+                val chatID = savedMessagesChatID!!.replace("-100", "-").toLong()
+                val userID = UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId()
+
+                cf.sendMessagesHelper.sendMessage(arrayListOf(msg),
+                    if (customChatID) chatID else userID, false, false, true, 0)
+
+                cf.createUndoView()
+                if (cf.undoView == null) {
+                    return
+                }
+                if (!customChatID) {
+                    if (!BulletinFactory.of(cf).showForwardedBulletinWithTag(userID, arrayListOf(msg).size)) {
+                        cf.undoView!!.showWithAction(userID, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
+                    }
+                } else {
+                    cf.undoView!!.showWithAction(chatID, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
+                }
+            }
+            CherrygramConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> {
+                // Translate
+                val languageAndTextToTranslate: String = msg.messageOwner.message
+                val toLang = TranslateAlert2.getToLanguage()
+                val alert = TranslateAlert2.showAlert(
+                    cf.context,
+                    cf,
+                    UserConfig.selectedAccount,
+                    languageAndTextToTranslate,
+                    toLang,
+                    languageAndTextToTranslate,
+                    null,
+                    false,
+                    null
+                ) { cf.dimBehindView(false) }
+                alert.setDimBehindAlpha(100)
+                alert.setDimBehind(true)
+            }
+            CherrygramConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> {
+                // Direct Share
+                cf.showDialog(object : ShareAlert(cf.parentActivity, arrayListOf(msg), null, isChannel, null, false) {
+                    override fun dismissInternal() {
+                        super.dismissInternal()
+                        AndroidUtilities.requestAdjustResize(cf.parentActivity, classGuid)
+                        if (cf.chatActivityEnterView.visibility == View.VISIBLE) {
+                            cf.fragmentView.requestLayout()
+                        }
+                        cf.updatePinnedMessageView(true)
+                    }
+                })
+
+                AndroidUtilities.setAdjustResizeToNothing(cf.parentActivity, classGuid)
+                cf.fragmentView.requestLayout()
+            }
+        }
+    }
+
+    @JvmStatic
+    fun getReplyIconDrawable(): Int {
+        return when (CherrygramConfig.messageSlideAction) {
+            CherrygramConfig.MESSAGE_SLIDE_ACTION_SAVE -> R.drawable.msg_saved_filled_solar
+            CherrygramConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> R.drawable.msg_share_filled
+            CherrygramConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> R.drawable.msg_translate_filled_solar
+            else -> R.drawable.filled_button_reply
+        }
+    }
+
+    @JvmStatic
+    fun showJsonMenu(sa: JsonBottomSheet, field: FrameLayout, messageObject: MessageObject) {
+        currentPopup = ShareAlertExtraUI.createPopupWindow(sa.container, field, sa.context, listOf(
+            ShareAlertExtraUI.PopupItem(
+                "Date: " + CherrygramExtras.createDateAndTimeForJSON(messageObject.messageOwner.date.toLong()),
+                R.drawable.msg_calendar2
+            ) {
+                currentPopup?.dismiss()
+                currentPopup = null
+            },
+        ))
+    }
+
+    @JvmStatic
+    fun injectChatActivityAvatarArraySize(cf: ChatActivity): Int {
+        var objs = 0
+
+        if (ChatObject.canBlockUsers(cf.currentChat)) objs++
+        if (ChatObject.hasAdminRights(cf.currentChat)) objs++
+        if (ChatObject.canAddAdmins(cf.currentChat)) objs++
+
+        return objs
+    }
+
+    @JvmStatic
+    fun injectChatActivityAvatarArrayItems(cf: ChatActivity, arr: Array<AvatarPreviewer.MenuItem>, enableMention: Boolean) {
+        var startPos = if (enableMention) 3 else 2
+
+        if (ChatObject.canBlockUsers(cf.currentChat)) {
+            arr[startPos] = AvatarPreviewer.MenuItem.CG_KICK
+            startPos++
+        }
+
+        if (ChatObject.hasAdminRights(cf.currentChat)) {
+            arr[startPos] = AvatarPreviewer.MenuItem.CG_CHANGE_PERMS
+            startPos++
+        }
+
+        if (ChatObject.canAddAdmins(cf.currentChat)) {
+            arr[startPos] = AvatarPreviewer.MenuItem.CG_CHANGE_ADMIN_PERMS
+            startPos++
+        }
+    }
+
+    @JvmStatic
+    fun injectChatActivityAvatarOnClick(cf: ChatActivity, item: AvatarPreviewer.MenuItem, user: TLRPC.User) {
+        when (item) {
+            AvatarPreviewer.MenuItem.CG_KICK -> {
+                cf.messagesController.deleteParticipantFromChat(cf.currentChat.id, cf.messagesController.getUser(user.id), cf.currentChatInfo)
+            }
+            AvatarPreviewer.MenuItem.CG_CHANGE_PERMS, AvatarPreviewer.MenuItem.CG_CHANGE_ADMIN_PERMS -> {
+                val action = if (item == AvatarPreviewer.MenuItem.CG_CHANGE_PERMS) 1 else 0 // 0 - change admin rights
+
+                val chatParticipant = cf.currentChatInfo.participants.participants.filter {
+                    it.user_id == user.id
+                }[0]
+
+                var channelParticipant: TLRPC.ChannelParticipant? = null
+
+                if (ChatObject.isChannel(cf.currentChat)) {
+                    channelParticipant = (chatParticipant as TLRPC.TL_chatChannelParticipant).channelParticipant
+                } else {
+                    chatParticipant is TLRPC.TL_chatParticipantAdmin
+                }
+
+                val frag = ChatRightsEditActivity(
+                    user.id,
+                    cf.currentChatInfo.id,
+                    channelParticipant?.admin_rights,
+                    cf.currentChat.default_banned_rights,
+                    channelParticipant?.banned_rights,
+                    channelParticipant?.rank,
+                    action,
+                    true,
+                    false,
+                    null
+                )
+
+                cf.presentFragment(frag)
+            }
+
+            else -> {}
+        }
+    }
+
+    @JvmStatic
     fun getProperNotificationIcon(): Int { //App notification icon
         return if (CherrygramConfig.oldNotificationIcon) {
             R.drawable.notification
         } else {
-            return if (LauncherIconController.isEnabled(LauncherIcon.DARK_CHERRY_BRA) || LauncherIconController.isEnabled(LauncherIcon.WHITE_CHERRY_BRA))
+            return if (LauncherIconController.isEnabled(LauncherIcon.DARK_CHERRY_BRA)
+                || LauncherIconController.isEnabled(LauncherIcon.WHITE_CHERRY_BRA)
+                || LauncherIconController.isEnabled(LauncherIcon.VIOLET_SUNSET_CHERRY_BRA)
+                )
                 R.drawable.cg_notification_bra else R.drawable.cg_notification
         }
     }
@@ -84,18 +264,18 @@ object CGFeatureHooks {
     @JvmStatic
     fun getLeftButtonText(): String { //ChatActivity.java:\Left button action
         return when (CherrygramConfig.leftBottomButton) {
-            CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP -> AndroidUtilities.capitalize(LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship))
-            CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> LocaleController.getString("DirectShare", R.string.DirectShare)
+            CherrygramConfig.LEFT_BUTTON_REPLY -> LocaleController.getString("Reply", R.string.Reply)
             CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
-            else -> LocaleController.getString("Reply", R.string.Reply)
+            CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> LocaleController.getString("DirectShare", R.string.DirectShare)
+            else -> AndroidUtilities.capitalize(LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship))
         }
     }
     @JvmStatic
     fun getLeftButtonDrawable(): Int { //ChatActivity.java:\Left button action
         return when (CherrygramConfig.leftBottomButton) {
-            CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP -> R.drawable.input_reply
-            CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> R.drawable.msg_share
+            CherrygramConfig.LEFT_BUTTON_REPLY -> R.drawable.input_reply
             CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE -> R.drawable.msg_saved
+            CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> R.drawable.msg_share
             else -> R.drawable.input_reply
         }
     }
@@ -130,8 +310,9 @@ object CGFeatureHooks {
     @JvmStatic
     fun getCameraName(): String { //Crashlytics.java
         return when (CherrygramConfig.cameraType) {
-            CherrygramConfig.TELEGRAM_CAMERA -> LocaleController.getString("CP_CameraTypeDefault", R.string.CP_CameraTypeDefault)
+            CherrygramConfig.TELEGRAM_CAMERA -> "Telegram"
             CherrygramConfig.CAMERA_X -> "CameraX"
+            CherrygramConfig.CAMERA_2 -> "Camera 2"
             else -> LocaleController.getString("CP_CameraTypeSystem", R.string.CP_CameraTypeSystem)
         }
     }

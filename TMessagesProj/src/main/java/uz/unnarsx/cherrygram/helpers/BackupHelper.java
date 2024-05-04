@@ -188,7 +188,8 @@ public class BackupHelper {
         mainconfig.add("AP_DrawerBlur");
         mainconfig.add("AP_DrawerBlur_Intensity");
         mainconfig.add("AP_ChangeStatusDrawerButton");
-        mainconfig.add("AP_MyStoriesDrawerButton");
+//        mainconfig.add("AP_MyStoriesDrawerButton");
+        mainconfig.add("AP_MyProfileDrawerButton");
         mainconfig.add("AP_CreateGroupDrawerButton");
         mainconfig.add("AP_SecretChatDrawerButton");
         mainconfig.add("AP_CreateChannelDrawerButton");
@@ -211,6 +212,12 @@ public class BackupHelper {
         mainconfig.add("CP_BlockStickers");
         mainconfig.add("CP_Slider_StickerAmplifier");
         mainconfig.add("CP_TimeOnStick");
+        mainconfig.add("CP_Admins_Reactions");
+        mainconfig.add("CP_Admins_Permissions");
+        mainconfig.add("CP_Admins_Administrators");
+        mainconfig.add("CP_Admins_Members");
+        mainconfig.add("CP_Admins_Statistics");
+        mainconfig.add("CP_Admins_RecentActions");
         mainconfig.add("CP_ShareDrawStoryButton");
         mainconfig.add("CP_UsersDrawShareButton");
         mainconfig.add("CP_ShowReply");
@@ -228,12 +235,14 @@ public class BackupHelper {
         mainconfig.add("CP_ChannelsDrawShareButton");
         mainconfig.add("CP_BotsDrawShareButton");
         mainconfig.add("CP_StickersDrawShareButton");
+        mainconfig.add("AP_CenterChatTitle");
         mainconfig.add("CP_UnreadBadgeOnBackButton");
         mainconfig.add("CP_ConfirmCalls");
         mainconfig.add("CP_DeleteForAll");
         mainconfig.add("CP_ForwardMsgDate");
         mainconfig.add("AP_PencilIcon");
-        mainconfig.add("CP_LeftBottomButton");
+        mainconfig.add("CP_LeftBottomButtonAction");
+        mainconfig.add("CP_MessageSlideAction");
         mainconfig.add("CP_DoubleTapAction");
         mainconfig.add("CP_HideKbdOnScroll");
         mainconfig.add("CP_DisableSwipeToNext");

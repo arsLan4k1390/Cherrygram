@@ -19,6 +19,95 @@ import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class AlertDialogSwitchers {
 
+    public static void showAdminActionsAlert(BaseFragment fragment) {
+        if (fragment.getParentActivity() == null) {
+            return;
+        }
+        Context context = fragment.getParentActivity();
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(LocaleController.getString("CP_AdminActions", R.string.CP_AdminActions));
+
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        LinearLayout linearLayoutInviteContainer = new LinearLayout(context);
+        linearLayoutInviteContainer.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(linearLayoutInviteContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+
+        int count = 6;
+        for (int a = 0; a < count; a++) {
+            TextCell textCell = new TextCell(context, 23, false, true, fragment.getResourceProvider());
+            switch (a) {
+                case 0: {
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("Reactions", R.string.Reactions), CherrygramConfig.INSTANCE.getAdmins_Reactions(), R.drawable.msg_reactions2, true);
+                    break;
+                }
+                case 1: {
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("ChannelPermissions", R.string.ChannelPermissions), CherrygramConfig.INSTANCE.getAdmins_Permissions(), R.drawable.msg_permissions, true);
+                    break;
+                }
+                case 2: {
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("ChannelAdministrators", R.string.ChannelAdministrators), CherrygramConfig.INSTANCE.getAdmins_Administrators(), R.drawable.msg_admins, true);
+                    break;
+                }
+                case 3: {
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("ChannelMembers", R.string.ChannelMembers), CherrygramConfig.INSTANCE.getAdmins_Members(), R.drawable.msg_groups, true);
+                    break;
+                }
+                case 4: {
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("StatisticsAndBoosts", R.string.StatisticsAndBoosts), CherrygramConfig.INSTANCE.getAdmins_Statistics(), R.drawable.msg_stats, true);
+                    break;
+                }
+                case 5: {
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("EventLog", R.string.EventLog), CherrygramConfig.INSTANCE.getAdmins_RecentActions(), R.drawable.msg_log, true);
+                    break;
+                }
+            }
+            textCell.setTag(a);
+            textCell.setBackground(Theme.getSelectorDrawable(false));
+            linearLayoutInviteContainer.addView(textCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+            textCell.setOnClickListener(v2 -> {
+                Integer tag = (Integer) v2.getTag();
+                switch (tag) {
+                    case 0: {
+                        CherrygramConfig.INSTANCE.toggleAdminsReactions();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getAdmins_Reactions());
+                        break;
+                    }
+                    case 1: {
+                        CherrygramConfig.INSTANCE.toggleAdminsPermissions();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getAdmins_Permissions());
+                        break;
+                    }
+                    case 2: {
+                        CherrygramConfig.INSTANCE.toggleAdminsAdministrators();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getAdmins_Administrators());
+                        break;
+                    }
+                    case 3: {
+                        CherrygramConfig.INSTANCE.toggleAdminsMembers();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getAdmins_Members());
+                        break;
+                    }
+                    case 4: {
+                        CherrygramConfig.INSTANCE.toggleAdminsStatistics();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getAdmins_Statistics());
+                        break;
+                    }
+                    case 5: {
+                        CherrygramConfig.INSTANCE.toggleAdminsRecentActions();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getAdmins_RecentActions());
+                        break;
+                    }
+                }
+                fragment.getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+            });
+        }
+        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
+        builder.setView(linearLayout);
+        fragment.showDialog(builder.create());
+    }
+
     public static void showDirectShareAlert(BaseFragment fragment) {
         if (fragment.getParentActivity() == null) {
             return;
@@ -140,8 +229,12 @@ public class AlertDialogSwitchers {
                     );
                     break;
                 }
+                /*case 1: {
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("ProfileStories", R.string.ProfileStories), CherrygramConfig.INSTANCE.getMyStoriesDrawerButton(), R.drawable.msg_menu_stories, true);
+                    break;
+                }*/
                 case 1: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("ProfileMyStories", R.string.ProfileMyStories), CherrygramConfig.INSTANCE.getMyStoriesDrawerButton(), R.drawable.msg_menu_stories, true);
+                    textCell.setTextAndCheckAndIcon(LocaleController.getString("MyProfile", R.string.MyProfile), CherrygramConfig.INSTANCE.getMyProfileDrawerButton(), R.drawable.left_status_profile, true);
                     break;
                 }
                 case 2: {
@@ -196,9 +289,14 @@ public class AlertDialogSwitchers {
                         textCell.setChecked(CherrygramConfig.INSTANCE.getChangeStatusDrawerButton());
                         break;
                     }
-                    case 1: {
+                    /*case 1: {
                         CherrygramConfig.INSTANCE.toggleMyStoriesDrawerButton();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getMyStoriesDrawerButton());
+                        break;
+                    }*/
+                    case 1: {
+                        CherrygramConfig.INSTANCE.toggleMyProfileDrawerButton();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getMyProfileDrawerButton());
                         break;
                     }
                     case 2: {

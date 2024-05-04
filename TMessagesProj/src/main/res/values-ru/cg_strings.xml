@@ -226,12 +226,15 @@
 
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Диалоги</string>
+    <string name="CP_Header_Messages">Сообщения</string>
     <string name="CP_Slider_StickerAmplifier">Размер стикеров</string>
     <string name="CP_BlockSomeSets">Блокировка стикеров</string>
     <string name="CP_BlockSomeSets_Desc">Некоторые стикеры, вызывающие вылет приложения, будут заменены логотипом Cherrygram. \nФайл \"Cherrygram Logo\" будет загружен после того, как Вы включите функцию и перезапустите приложение.</string>
     <string name="CP_TimeOnStick">Скрыть время отправки на стикерах</string>
 
+    <string name="CP_AdminActions">Действия для админов</string>
     <string name="CP_MessageMenu">Меню сообщения</string>
+    <string name="AP_CenterChatsTitle">Центрирование заголовка в чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включить счетчик непрочитанных чатов на кнопке «Назад» в открытом чате</string>
     <string name="CP_NoRounding">Отключить округление чисел</string>
@@ -242,6 +245,7 @@
     <string name="CP_ShowSeconds">Показывать время с секундами</string>
     <string name="CP_LeftBottomButtonAction">Действие левой кнопки</string>
     <string name="CP_DoubleTapAction">Действие при двойном нажатии</string>
+    <string name="CG_MsgSlideAction">Действие при свайпе по сообщению</string>
     <string name="CP_DisableSwipeToNext">Отключить переход на следующий канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Отключить переключение на следующий канал при прокрутке любого канала</string>
     <string name="CP_HideMuteUnmuteButton">Скрыть нижнюю кнопку в каналах</string>

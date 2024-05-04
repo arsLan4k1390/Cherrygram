@@ -58,8 +58,8 @@ import org.telegram.ui.Stories.StoryViewer;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.helpers.ChatsHelper;
-import uz.unnarsx.cherrygram.helpers.MessageHelper;
+import uz.unnarsx.cherrygram.helpers.chats.ChatsHelper;
+import uz.unnarsx.cherrygram.helpers.chats.MessageHelper;
 
 public abstract class BaseFragment {
 

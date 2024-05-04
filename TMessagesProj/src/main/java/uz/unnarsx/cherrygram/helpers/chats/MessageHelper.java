@@ -1,4 +1,4 @@
-package uz.unnarsx.cherrygram.helpers;
+package uz.unnarsx.cherrygram.helpers.chats;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;

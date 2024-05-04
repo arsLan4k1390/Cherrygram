@@ -36,7 +36,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -218,7 +217,7 @@ public class FileImportActivity extends BaseFragment {
             filter.addAction(Intent.ACTION_MEDIA_UNMOUNTABLE);
             filter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
             filter.addDataScheme("file");
-            ContextCompat.registerReceiver(ApplicationLoader.applicationContext, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
+            ApplicationLoader.applicationContext.registerReceiver(receiver, filter);
         }
 
         actionBar.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground));

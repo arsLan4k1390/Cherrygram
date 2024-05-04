@@ -18,6 +18,7 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -37,6 +38,7 @@ import android.text.TextWatcher;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.transition.TransitionValues;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -73,8 +75,10 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SendMessagesHelper;
+import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
+import org.telegram.messenger.VideoEditedInfo;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.TLObject;
@@ -98,8 +102,11 @@ import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PhotoViewer;
 import org.telegram.ui.PremiumPreviewFragment;
 import org.telegram.ui.ProfileActivity;
+import org.telegram.ui.Stories.DarkThemeResourceProvider;
+import org.telegram.ui.Stories.recorder.StoryEntry;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +115,8 @@ import java.util.regex.Pattern;
 
 public class StickersAlert extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
-    public final static boolean DISABLE_STICKER_EDITOR = /*!BuildVars.DEBUG_PRIVATE_VERSION*/ false;
+    public final static boolean DISABLE_STICKER_EDITOR = false;
+    public final static int STICKERS_MAX_COUNT = 120;
 
     public interface StickersAlertDelegate {
         void onStickerSelected(TLRPC.Document sticker, String query, Object parent, MessageObject.SendAnimationData sendAnimationData, boolean clearsInputField, boolean notify, int scheduleDate);
@@ -159,7 +167,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
     public boolean probablyEmojis;
     private boolean isEditModeEnabled;
 
-    private TLRPC.TL_messages_stickerSet stickerSet;
+    public TLRPC.TL_messages_stickerSet stickerSet;
     private TLRPC.Document selectedSticker;
     private SendMessagesHelper.ImportingSticker selectedStickerPath;
     private TLRPC.InputStickerSet inputStickerSet;
@@ -225,15 +233,33 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
         }
 
         @Override
+        public boolean canDeleteSticker(TLRPC.Document document) {
+            return true;
+        }
+
+        @Override
         public void deleteSticker(TLRPC.Document document) {
             stickerSet.documents.remove(document);
+            boolean empty = stickerSet.documents.isEmpty();
+            if (empty)
+                dismiss();
             adapter.notifyDataSetChanged();
+            AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER, resourcesProvider);
+            progressDialog.showDelayed(350);
             TLRPC.TL_stickers_removeStickerFromSet req = new TLRPC.TL_stickers_removeStickerFromSet();
             req.sticker = MediaDataController.getInputStickerSetItem(document, "").document;
-            ConnectionsManager.getInstance(UserConfig.selectedAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+            ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 if (response instanceof TLRPC.TL_messages_stickerSet) {
-                    MediaDataController.getInstance(UserConfig.selectedAccount).toggleStickerSet(null, response, 2, null, false, false);
+                    MediaDataController.getInstance(UserConfig.selectedAccount).putStickerSet((TLRPC.TL_messages_stickerSet) response);
+                    if (empty) {
+                        MediaDataController.getInstance(UserConfig.selectedAccount).toggleStickerSet(null, response, 0, null, false, false);
+                    } else {
+                        stickerSet = (TLRPC.TL_messages_stickerSet) response;
+                        loadStickerSet();
+                        updateFields();
+                    }
                 }
+                progressDialog.dismiss();
             }));
         }
 
@@ -250,24 +276,103 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
             } else {
                 chatActivity = null;
             }
-            final ArrayList<Object> photos = new ArrayList<>();
-            File file = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(document, true);
-            if (file == null || !file.exists()) {
-                return;
-            }
-            AndroidUtilities.runOnUIThread(() -> {
-                final MediaController.PhotoEntry entry = new MediaController.PhotoEntry(0, 0, 0, file.getAbsolutePath(), 0, false, 0, 0, 0);
-                photos.add(entry);
-                PhotoViewer.getInstance().setParentActivity(parentFragment.getParentActivity(), resourcesProvider);
-                PhotoViewer.getInstance().openPhotoForSelect(photos, 0, PhotoViewer.SELECT_TYPE_STICKER, false, new PhotoViewer.EmptyPhotoViewerProvider() {
-                    @Override
-                    public boolean allowCaption() {
-                        return false;
+            if (MessageObject.isStaticStickerDocument(document)) {
+                final ArrayList<Object> photos = new ArrayList<>();
+                File file = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(document, true);
+                if (file == null || !file.exists()) {
+                    return;
+                }
+                AndroidUtilities.runOnUIThread(() -> {
+                    final MediaController.PhotoEntry entry = new MediaController.PhotoEntry(0, 0, 0, file.getAbsolutePath(), 0, false, 0, 0, 0);
+                    photos.add(entry);
+                    PhotoViewer.getInstance().setParentActivity(parentFragment.getParentActivity(), resourcesProvider);
+                    PhotoViewer.getInstance().openPhotoForSelect(photos, 0, PhotoViewer.SELECT_TYPE_STICKER, false, new PhotoViewer.EmptyPhotoViewerProvider() {
+                        @Override
+                        public boolean allowCaption() {
+                            return false;
+                        }
+                    }, chatActivity);
+                    PhotoViewer.getInstance().enableStickerMode(document, false, null);
+                    ContentPreviewViewer.getInstance().setStickerSetForCustomSticker(stickerSet);
+                }, 300);
+            } else {
+                AndroidUtilities.runOnUIThread(() -> {
+                    File file = StoryEntry.makeCacheFile(currentAccount, "webp");
+                    int w = 512, h = 512;
+                    int maxSide;
+                    switch (SharedConfig.getDevicePerformanceClass()) {
+                        case SharedConfig.PERFORMANCE_CLASS_LOW:
+                            maxSide = 1280;
+                            break;
+                        default:
+                        case SharedConfig.PERFORMANCE_CLASS_AVERAGE:
+                            maxSide = 2560;
+                            break;
+                        case SharedConfig.PERFORMANCE_CLASS_HIGH:
+                            maxSide = 3840;
+                            break;
                     }
-                }, chatActivity);
-                PhotoViewer.getInstance().enableStickerMode(document);
-                ContentPreviewViewer.getInstance().setStickerSetForCustomSticker(stickerSet);
-            }, 300);
+                    Size size = new Size(w, h);
+                    size.width = maxSide;
+                    size.height = (float) Math.floor(size.width * h / w);
+                    if (size.height > maxSide) {
+                        size.height = maxSide;
+                        size.width = (float) Math.floor(size.height * w / h);
+                    }
+                    Bitmap b = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                    try {
+                        b.compress(Bitmap.CompressFormat.WEBP, 100, new FileOutputStream(file));
+                    } catch (Throwable e) {
+                        FileLog.e(e);
+                    }
+                    b.recycle();
+
+                    ArrayList<Object> arrayList = new ArrayList<>();
+                    final MediaController.PhotoEntry entry = new MediaController.PhotoEntry(0, 0, 0, file.getAbsolutePath(), 0, false, 0, 0, 0);
+                    arrayList.add(entry);
+                    VideoEditedInfo.MediaEntity entity = new VideoEditedInfo.MediaEntity();
+                    entity.type = VideoEditedInfo.MediaEntity.TYPE_STICKER;
+                    entity.parentObject = stickerSet;
+                    entity.text = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(document, true).getAbsolutePath();
+                    entity.x = .5f - (float) Math.min(w, h) / w / 2f;
+                    entity.y = .5f - (float) Math.min(w, h) / h / 2f;
+                    entity.width = (float) Math.min(w, h) / w;
+                    entity.height = (float) Math.min(w, h) / h;
+                    float side = (float) Math.floor(size.width * 0.5);
+                    entity.viewWidth = (int) side;
+                    entity.viewHeight = (int) side;
+                    entity.scale = 2f;
+                    entity.document = document;
+                    if (MessageObject.isAnimatedStickerDocument(document, true) || MessageObject.isVideoStickerDocument(document)) {
+                        boolean isAnimatedSticker = MessageObject.isAnimatedStickerDocument(document, true);
+                        entity.subType |= isAnimatedSticker ? 1 : 4;
+                    }
+                    entry.mediaEntities = new ArrayList<>();
+                    entry.mediaEntities.add(entity);
+                    entry.averageDuration = 3000L;
+                    if (MessageObject.isAnimatedStickerDocument(document, true)) {
+                        File stickerFile = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(document, true);
+                        if (stickerFile != null) {
+                            try {
+                                entry.averageDuration = (long) (RLottieDrawable.getDuration(stickerFile.getAbsolutePath(), null) * 1000L);
+                            } catch (Exception e) {
+                                FileLog.e(e);
+                            }
+                        }
+                    } else if (MessageObject.isVideoStickerDocument(document)) {
+                        entry.averageDuration = (long) (MessageObject.getDocumentDuration(document) * 1000L);
+                    }
+                    PhotoViewer.getInstance().setParentActivity(parentFragment.getParentActivity(), resourcesProvider);
+                    PhotoViewer.getInstance().openPhotoForSelect(arrayList, 0, PhotoViewer.SELECT_TYPE_STICKER, false, new PhotoViewer.EmptyPhotoViewerProvider() {
+                        @Override
+                        public boolean allowCaption() {
+                            return false;
+                        }
+                    }, chatActivity);
+                    PhotoViewer.getInstance().enableStickerMode(document, true, null);
+                    ContentPreviewViewer.getInstance().setStickerSetForCustomSticker(stickerSet);
+                }, 300);
+            }
         }
 
         @Override
@@ -482,7 +587,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
         return clearsInputField;
     }
 
-    private void loadStickerSet() {
+    public void loadStickerSet() {
         if (inputStickerSet != null) {
             final MediaDataController mediaDataController = MediaDataController.getInstance(currentAccount);
             if (stickerSet == null && inputStickerSet.short_name != null) {
@@ -536,7 +641,12 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                         }
                         optionsButton.setVisibility(View.VISIBLE);
                         stickerSet = (TLRPC.TL_messages_stickerSet) response;
-                        showEmoji = !stickerSet.set.masks;
+                        mediaDataController.putStickerSet(stickerSet, false);
+                        if (stickerSet != null && stickerSet.documents.isEmpty()) {
+                            dismiss();
+                            return;
+                        }
+                        showEmoji = stickerSet != null && stickerSet.set != null && !stickerSet.set.masks;
                         checkPremiumStickers();
                         mediaDataController.preloadStickerSetThumb(stickerSet);
                         updateSendButton();
@@ -564,6 +674,18 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
         if (stickerSet != null) {
             showEmoji = !stickerSet.set.masks;
         }
+        checkPremiumStickers();
+    }
+
+    public void updateStickerSet(TLRPC.TL_messages_stickerSet set) {
+        stickerSet = set;
+        if (adapter != null) {
+            updateSendButton();
+            updateFields();
+            adapter.notifyDataSetChanged();
+        }
+        updateDescription();
+        MediaDataController.getInstance(currentAccount).preloadStickerSetThumb(stickerSet);
         checkPremiumStickers();
     }
 
@@ -729,7 +851,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                 int w = AndroidUtilities.dp(36);
                 rect.set((getMeasuredWidth() - w) / 2, y, (getMeasuredWidth() + w) / 2, y + AndroidUtilities.dp(4));
                 Theme.dialogs_onlineCirclePaint.setColor(getThemedColor(Theme.key_sheet_scrollUp));
-                Theme.dialogs_onlineCirclePaint.setAlpha((int) (255 * Math.max(0, Math.min(1f, (y - AndroidUtilities.statusBarHeight) / (float) AndroidUtilities.dp(16)))));
+                Theme.dialogs_onlineCirclePaint.setAlpha((int) (Theme.dialogs_onlineCirclePaint.getAlpha() * Math.max(0, Math.min(1f, (y - AndroidUtilities.statusBarHeight) / (float) AndroidUtilities.dp(16)))));
                 canvas.drawRoundRect(rect, AndroidUtilities.dp(2), AndroidUtilities.dp(2), Theme.dialogs_onlineCirclePaint);
 
                 updateLightStatusBar(statusBarHeight > AndroidUtilities.statusBarHeight / 2);
@@ -814,6 +936,9 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                 if (source.getItemViewType() != target.getItemViewType()) {
                     return false;
                 }
+                if (stickerSet == null) {
+                    return false;
+                }
                 int fromPosition = source.getAdapterPosition();
                 int toPosition = target.getAdapterPosition();
                 TLRPC.Document removed = stickerSet.documents.remove(fromPosition);
@@ -821,6 +946,11 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                 adapter.notifyItemMoved(fromPosition, toPosition);
                 movedPos = toPosition;
                 return true;
+            }
+
+            @Override
+            public void onMoved(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, int fromPos, @NonNull RecyclerView.ViewHolder target, int toPos, int x, int y) {
+
             }
 
             @Override
@@ -838,11 +968,6 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                     TLRPC.TL_stickers_changeStickerPosition req = new TLRPC.TL_stickers_changeStickerPosition();
                     req.position = movedPos;
                     req.sticker = MediaDataController.getInputStickerSetItem(draggedDocument, "").document;
-                    AndroidUtilities.runOnUIThread(() -> ConnectionsManager.getInstance(UserConfig.selectedAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-                        if (response instanceof TLRPC.TL_messages_stickerSet) {
-                            MediaDataController.getInstance(UserConfig.selectedAccount).toggleStickerSet(null, response, 2, null, false, false);
-                        }
-                    })), 200);
                     movedPos = -1;
                     draggedDocument = null;
                 } else if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
@@ -1148,6 +1273,9 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                 deleteItem.getRightIcon().setColorFilter(redColor);
             }
         }
+        if (optionsButton.getPopupLayout() != null) {
+            optionsButton.getPopupLayout().requestLayout();
+        }
     }
 
     private void updateSendButton() {
@@ -1273,10 +1401,29 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                 FileLog.e(e);
             }
         } else if (id == 3) {
-            enableEditMode();
+            if (isEditModeEnabled) {
+                disableEditMode();
+            } else {
+                enableEditMode();
+            }
         } else if (id == 4) {
-            StickersDialogs.showNameEditorDialog(stickerSet.set, resourcesProvider, getContext(), arg -> {
-                titleTextView.setText(arg);
+            StickersDialogs.showNameEditorDialog(stickerSet.set, resourcesProvider, getContext(), (text, whenDone) -> {
+                titleTextView.setText(text);
+                TLRPC.TL_stickers_renameStickerSet req = new TLRPC.TL_stickers_renameStickerSet();
+                req.stickerset = MediaDataController.getInputStickerSet(stickerSet.set);
+                req.title = text.toString();
+                ConnectionsManager.getInstance(UserConfig.selectedAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                    boolean success = false;
+                    if (response instanceof TLRPC.TL_messages_stickerSet) {
+                        TLRPC.TL_messages_stickerSet newset = (TLRPC.TL_messages_stickerSet) response;
+                        MediaDataController.getInstance(UserConfig.selectedAccount).putStickerSet(newset);
+                        if (!MediaDataController.getInstance(UserConfig.selectedAccount).isStickerPackInstalled(newset.set.id)) {
+                            MediaDataController.getInstance(UserConfig.selectedAccount).toggleStickerSet(null, newset, 2, null, false, false);
+                        }
+                        success = true;
+                    }
+                    whenDone.run(success);
+                }));
             });
         } else if (id == 5) {
             StickersDialogs.showDeleteForEveryOneDialog(stickerSet.set, resourcesProvider, getContext(), () -> {
@@ -1290,7 +1437,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
         if (titleTextView == null) {
             return;
         }
-        if (stickerSet != null) {
+        if (stickerSet != null && stickerSet.documents != null && !stickerSet.documents.isEmpty()) {
             SpannableStringBuilder stringBuilder = null;
             CharSequence title = stickerSet.set.title;
             title = Emoji.replaceEmoji(title, titleTextView.getPaint().getFontMetricsInt(), dp(18), false);
@@ -1724,22 +1871,25 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
             setScrollOffsetY(gridView.getPaddingTop());
             return;
         }
-        View child = gridView.getChildAt(0);
-        RecyclerListView.Holder holder = (RecyclerListView.Holder) gridView.findContainingViewHolder(child);
-        int top = child.getTop();
+        int firstChildPosition = -1;
+        View firstChild = null;
+        for (int i = 0; i < gridView.getChildCount(); ++i) {
+            View child = gridView.getChildAt(i);
+            int position = gridView.getChildAdapterPosition(child);
+            if (firstChildPosition == -1 || firstChildPosition > position) {
+                firstChild = child;
+                firstChildPosition = position;
+            }
+        }
         int newOffset = 0;
-        if (top >= 0 && holder != null && holder.getAdapterPosition() == 0) {
-            newOffset = top;
+        if (firstChild != null && firstChild.getTop() >= 0) {
+            newOffset = (int) firstChild.getTop();
             runShadowAnimation(0, false);
         } else {
             runShadowAnimation(0, true);
         }
 
-//        if (layoutManager.findLastCompletelyVisibleItemPosition() == adapter.getItemCount() - 1) {
-//            runShadowAnimation(1, false);
-//        } else {
         runShadowAnimation(1, true);
-//        }
 
         if (scrollOffsetY != newOffset) {
             setScrollOffsetY(newOffset);
@@ -1748,7 +1898,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
 
     private void setScrollOffsetY(int newOffset) {
         scrollOffsetY = newOffset;
-        gridView.setTopGlowOffset(newOffset);
+//        gridView.setTopGlowOffset(newOffset);
         if (stickerSetCovereds == null) {
             titleTextView.setTranslationY(newOffset);
             if (descriptionTextView != null) {
@@ -1938,7 +2088,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                     newStickerSet = mediaDataController.getStickerSetById(inputStickerSet.id);
                 }
             }
-            if (newStickerSet != stickerSet) {
+            if (newStickerSet != null && newStickerSet != stickerSet) {
                 stickerSet = newStickerSet;
                 loadStickerSet();
             }
@@ -2171,6 +2321,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                     if (stickerSet == null) return;
                     cell.setSticker(stickerSet.documents.get(position), null, stickerSet, null, showEmoji, isEditModeEnabled);
                     cell.editModeIcon.setOnClickListener(v -> {
+                        ContentPreviewViewer.getInstance().setDelegate(previewDelegate);
                         ContentPreviewViewer.getInstance().showMenuFor(cell);
                     });
                 }
@@ -2227,7 +2378,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                 totalItems = importingStickersPaths.size();
             } else {
                 totalItems = stickerSet != null ? stickerSet.documents.size() : 0;
-                if (stickerSet != null && stickerSet.set.creator && !DISABLE_STICKER_EDITOR && !stickerSet.set.masks && !stickerSet.set.emojis) {
+                if (stickerSet != null && stickerSet.set.creator && stickerSet.documents.size() < STICKERS_MAX_COUNT && !DISABLE_STICKER_EDITOR && !stickerSet.set.masks && !stickerSet.set.emojis) {
                     totalItems++;
                 }
             }
@@ -2274,7 +2425,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
             }
         });
         optionsButton.postDelayed(() -> adapter.notifyDataSetChanged(), 200);
-        optionsButton.animate().alpha(0f).start();
+//        optionsButton.animate().alpha(0f).start();
         pickerBottomLayout.setText(LocaleController.getString(R.string.Done), true);
     }
 
@@ -2292,7 +2443,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
             }
         });
         optionsButton.postDelayed(() -> adapter.notifyDataSetChanged(), 200);
-        optionsButton.animate().alpha(1f).start();
+//        optionsButton.animate().alpha(1f).start();
         pickerBottomLayout.setText(LocaleController.getString(R.string.EditStickers), true);
     }
 
@@ -2366,6 +2517,7 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
         }
 
         public void startShake() {
+            stopShake(false);
             init();
             for (int i = 0; i < MAX_SHAKERS; i++) {
                 final int pos = i;

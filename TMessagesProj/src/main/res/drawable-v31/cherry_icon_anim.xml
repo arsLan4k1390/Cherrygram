@@ -33,14 +33,14 @@
                     android:propertyName="scaleX"
                     android:duration="@integer/splash_screen_duration"
                     android:valueFrom="0.1"
-                    android:valueTo="0.65"
+                    android:valueTo="0.60"
                     android:valueType="floatType"
                     android:interpolator="@android:interpolator/fast_out_extra_slow_in"/>
                 <objectAnimator
                     android:propertyName="scaleY"
                     android:duration="@integer/splash_screen_duration"
                     android:valueFrom="0.1"
-                    android:valueTo="0.65"
+                    android:valueTo="0.60"
                     android:valueType="floatType"
                     android:interpolator="@android:interpolator/fast_out_extra_slow_in"/>
                 <objectAnimator

@@ -11,7 +11,6 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.BulletinFactory
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.crashlytics.Crashlytics
-import uz.unnarsx.cherrygram.extras.CherrygramExtras
 import uz.unnarsx.cherrygram.extras.Constants
 import uz.unnarsx.cherrygram.ui.tgkit.preference.category
 import uz.unnarsx.cherrygram.ui.tgkit.preference.textDetail
@@ -46,7 +45,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                     ) + ": " + LocaleController.formatDateTime(CherrygramConfig.lastUpdateCheckTime / 1000, true);
 
                     listener = TGKitTextDetailRow.TGTDListener {
-                        UpdaterBottomSheet(bf.parentActivity, bf, false, null).show()
+                        UpdaterBottomSheet.showAlert(bf.context, bf, false, null)
                     }
                 }
             } else {

@@ -6,6 +6,8 @@ import androidx.core.util.Pair
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.ActionBar.Theme
+import uz.unnarsx.cherrygram.CGFeatureHooks
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.extras.VibrateUtil
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
@@ -70,20 +72,21 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
 
         category(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {
             textIcon {
-                title = LocaleController.getString("DirectShare", R.string.DirectShare)
-                icon = R.drawable.msg_share
+                title = LocaleController.getString("CP_AdminActions", R.string.CP_AdminActions)
+                icon = R.drawable.msg_admins
                 listener = TGKitTextIconRow.TGTIListener {
-                    AlertDialogSwitchers.showDirectShareAlert(bf)
+                    AlertDialogSwitchers.showAdminActionsAlert(bf)
                 }
                 divider = true
             }
-            textIcon {
-                title = LocaleController.getString("CP_MessageMenu", R.string.CP_MessageMenu)
-                icon = R.drawable.msg_list
-                listener = TGKitTextIconRow.TGTIListener {
-                    AlertDialogSwitchers.showChatMenuIconsAlert(bf)
+            switch {
+                title = LocaleController.getString("AP_CenterChatsTitle", R.string.AP_CenterChatsTitle)
+                contract({
+                    return@contract CherrygramConfig.centerChatTitle
+                }) {
+                    CherrygramConfig.centerChatTitle = it
+                    bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
-                divider = true
             }
             switch {
                 title = LocaleController.getString("CP_UnreadBadgeOnBackButton", R.string.CP_UnreadBadgeOnBackButton)
@@ -102,79 +105,6 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.confirmCalls
                 }) {
                     CherrygramConfig.confirmCalls = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_DeleteForAll", R.string.CP_DeleteForAll)
-                description = LocaleController.getString("CP_DeleteForAll_Desc", R.string.CP_DeleteForAll_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.deleteForAll
-                }) {
-                    CherrygramConfig.deleteForAll = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("CP_ForwardMsgDate", R.string.CP_ForwardMsgDate)
-
-                contract({
-                    return@contract CherrygramConfig.msgForwardDate
-                }) {
-                    CherrygramConfig.msgForwardDate = it
-                }
-            }
-            switch {
-                title = LocaleController.getString("AP_ShowPencilIcon", R.string.AP_ShowPencilIcon)
-                contract({
-                    return@contract CherrygramConfig.showPencilIcon
-                }) {
-                    CherrygramConfig.showPencilIcon = it
-                }
-            }
-            list {
-                title = LocaleController.getString("CP_LeftBottomButtonAction", R.string.CP_LeftBottomButtonAction)
-
-                contract({
-                    return@contract listOf(
-                        Pair(CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP, LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)),
-                        Pair(CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE, LocaleController.getString("DirectShare", R.string.DirectShare)),
-                        Pair(CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE, LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)),
-                        Pair(CherrygramConfig.LEFT_BUTTON_REPLY, LocaleController.getString("Reply", R.string.Reply))
-                    )
-                }, {
-                    return@contract when (CherrygramConfig.leftBottomButton) {
-                        CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> LocaleController.getString("DirectShare", R.string.DirectShare)
-                        CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
-                        CherrygramConfig.LEFT_BUTTON_REPLY -> LocaleController.getString("Reply", R.string.Reply)
-                        else -> LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)
-                    }
-                }) {
-                    CherrygramConfig.leftBottomButton = it
-                }
-            }
-            list {
-                title = LocaleController.getString("CP_DoubleTapAction", R.string.CP_DoubleTapAction)
-
-                contract({
-                    return@contract listOf(
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_NONE, LocaleController.getString("Disable", R.string.Disable)),
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_REACTION, LocaleController.getString("Reactions", R.string.Reactions)),
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_REPLY, LocaleController.getString("Reply", R.string.Reply)),
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_SAVE, LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)),
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_EDIT, LocaleController.getString("Edit", R.string.Edit)),
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_TRANSLATE, LocaleController.getString("TranslateMessage", R.string.TranslateMessage))
-                    )
-                }, {
-                    return@contract when (CherrygramConfig.doubleTapAction) {
-                        CherrygramConfig.DOUBLE_TAP_ACTION_REACTION -> LocaleController.getString("Reactions", R.string.Reactions)
-                        CherrygramConfig.DOUBLE_TAP_ACTION_REPLY -> LocaleController.getString("Reply", R.string.Reply)
-                        CherrygramConfig.DOUBLE_TAP_ACTION_SAVE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
-                        CherrygramConfig.DOUBLE_TAP_ACTION_EDIT -> LocaleController.getString("Edit", R.string.Edit)
-                        CherrygramConfig.DOUBLE_TAP_ACTION_TRANSLATE -> LocaleController.getString("TranslateMessage", R.string.TranslateMessage)
-                        else -> LocaleController.getString("Disable", R.string.Disable)
-                    }
-                }) {
-                    CherrygramConfig.doubleTapAction = it
                 }
             }
             switch {
@@ -248,6 +178,119 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     override fun getMax(): Int {
                         return 120
                     }
+                }
+            }
+        }
+
+        category(LocaleController.getString("CP_Header_Messages", R.string.CP_Header_Messages)) {
+            textIcon {
+                title = LocaleController.getString("DirectShare", R.string.DirectShare)
+                icon = R.drawable.msg_share
+                listener = TGKitTextIconRow.TGTIListener {
+                    AlertDialogSwitchers.showDirectShareAlert(bf)
+                }
+                divider = true
+            }
+            textIcon {
+                title = LocaleController.getString("CP_MessageMenu", R.string.CP_MessageMenu)
+                icon = R.drawable.msg_list
+                listener = TGKitTextIconRow.TGTIListener {
+                    AlertDialogSwitchers.showChatMenuIconsAlert(bf)
+                }
+                divider = true
+            }
+            switch {
+                title = LocaleController.getString("CP_DeleteForAll", R.string.CP_DeleteForAll)
+                description = LocaleController.getString("CP_DeleteForAll_Desc", R.string.CP_DeleteForAll_Desc)
+
+                contract({
+                    return@contract CherrygramConfig.deleteForAll
+                }) {
+                    CherrygramConfig.deleteForAll = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("CP_ForwardMsgDate", R.string.CP_ForwardMsgDate)
+
+                contract({
+                    return@contract CherrygramConfig.msgForwardDate
+                }) {
+                    CherrygramConfig.msgForwardDate = it
+                }
+            }
+            switch {
+                title = LocaleController.getString("AP_ShowPencilIcon", R.string.AP_ShowPencilIcon)
+                contract({
+                    return@contract CherrygramConfig.showPencilIcon
+                }) {
+                    CherrygramConfig.showPencilIcon = it
+                }
+            }
+            list {
+                title = LocaleController.getString("CP_LeftBottomButtonAction", R.string.CP_LeftBottomButtonAction)
+
+                contract({
+                    return@contract listOf(
+                        Pair(CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP, LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)),
+                        Pair(CherrygramConfig.LEFT_BUTTON_REPLY, LocaleController.getString("Reply", R.string.Reply)),
+                        Pair(CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE, LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)),
+                        Pair(CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE, LocaleController.getString("DirectShare", R.string.DirectShare))
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.leftBottomButton) {
+                        CherrygramConfig.LEFT_BUTTON_REPLY -> LocaleController.getString("Reply", R.string.Reply)
+                        CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
+                        CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> LocaleController.getString("DirectShare", R.string.DirectShare)
+                        else -> LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)
+                    }
+                }) {
+                    CherrygramConfig.leftBottomButton = it
+                }
+            }
+            list {
+                title = LocaleController.getString("CP_DoubleTapAction", R.string.CP_DoubleTapAction)
+
+                contract({
+                    return@contract listOf(
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_NONE, LocaleController.getString("Disable", R.string.Disable)),
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_REACTION, LocaleController.getString("Reactions", R.string.Reactions)),
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_REPLY, LocaleController.getString("Reply", R.string.Reply)),
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_SAVE, LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)),
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_EDIT, LocaleController.getString("Edit", R.string.Edit)),
+                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_TRANSLATE, LocaleController.getString("TranslateMessage", R.string.TranslateMessage))
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.doubleTapAction) {
+                        CherrygramConfig.DOUBLE_TAP_ACTION_REACTION -> LocaleController.getString("Reactions", R.string.Reactions)
+                        CherrygramConfig.DOUBLE_TAP_ACTION_REPLY -> LocaleController.getString("Reply", R.string.Reply)
+                        CherrygramConfig.DOUBLE_TAP_ACTION_SAVE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
+                        CherrygramConfig.DOUBLE_TAP_ACTION_EDIT -> LocaleController.getString("Edit", R.string.Edit)
+                        CherrygramConfig.DOUBLE_TAP_ACTION_TRANSLATE -> LocaleController.getString("TranslateMessage", R.string.TranslateMessage)
+                        else -> LocaleController.getString("Disable", R.string.Disable)
+                    }
+                }) {
+                    CherrygramConfig.doubleTapAction = it
+                }
+            }
+            list {
+                title = LocaleController.getString("CG_MsgSlideAction", R.string.CG_MsgSlideAction)
+
+                contract({
+                    return@contract listOf(
+                        Pair(CherrygramConfig.MESSAGE_SLIDE_ACTION_REPLY, LocaleController.getString("Reply", R.string.Reply)),
+                        Pair(CherrygramConfig.MESSAGE_SLIDE_ACTION_SAVE, LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)),
+                        Pair(CherrygramConfig.MESSAGE_SLIDE_ACTION_TRANSLATE, LocaleController.getString("TranslateMessage", R.string.TranslateMessage)),
+                        Pair(CherrygramConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE, LocaleController.getString("DirectShare", R.string.DirectShare))
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.messageSlideAction) {
+                        CherrygramConfig.MESSAGE_SLIDE_ACTION_SAVE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
+                        CherrygramConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> LocaleController.getString("TranslateMessage", R.string.TranslateMessage)
+                        CherrygramConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> LocaleController.getString("DirectShare", R.string.DirectShare)
+                        else -> LocaleController.getString("Reply", R.string.Reply)
+                    }
+                }) {
+                    CherrygramConfig.messageSlideAction = it
                 }
             }
         }
@@ -344,12 +387,12 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract listOf(
                         Pair(CherrygramConfig.NOTIF_SOUND_DISABLE, LocaleController.getString("Disable", R.string.Disable)),
                         Pair(CherrygramConfig.NOTIF_SOUND_DEFAULT, LocaleController.getString("Default", R.string.Default)),
-                        Pair(CherrygramConfig.NOTIF_SOUND_IOS, LocaleController.getString("CP_IOSSound", R.string.CP_IOSSound))
+                        Pair(CherrygramConfig.NOTIF_SOUND_IOS, "IOS")
                     )
                 }, {
                     return@contract when (CherrygramConfig.notificationSound) {
                         CherrygramConfig.NOTIF_SOUND_DEFAULT -> LocaleController.getString("Default", R.string.Default)
-                        CherrygramConfig.NOTIF_SOUND_IOS -> LocaleController.getString("CP_IOSSound", R.string.CP_IOSSound)
+                        CherrygramConfig.NOTIF_SOUND_IOS -> "IOS"
                         else -> LocaleController.getString("Disable", R.string.Disable)
                     }
                 }) {

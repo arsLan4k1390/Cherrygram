@@ -36,7 +36,6 @@ import android.view.View;
 import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.exoplayer2.C;
 
@@ -160,7 +159,7 @@ public class MusicPlayerService extends Service implements NotificationCenter.No
             mediaSession.setActive(true);
         }
 
-        ContextCompat.registerReceiver(this, headsetPlugReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY), ContextCompat.RECEIVER_NOT_EXPORTED);
+        registerReceiver(headsetPlugReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
 
         super.onCreate();
     }
@@ -707,6 +706,9 @@ public class MusicPlayerService extends Service implements NotificationCenter.No
             }
         } else if (id == NotificationCenter.messagePlayingDidSeek) {
             MessageObject messageObject = MediaController.getInstance().getPlayingMessageObject();
+            if (messageObject == null) {
+                return;
+            }
             long progress = Math.round(messageObject.audioPlayerDuration * (float) args[1]) * 1000L;
             updatePlaybackState(progress);
             if (remoteControlClient != null && Build.VERSION.SDK_INT >= 18) {

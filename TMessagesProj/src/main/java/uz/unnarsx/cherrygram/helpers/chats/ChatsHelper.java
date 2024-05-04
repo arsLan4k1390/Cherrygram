@@ -1,4 +1,4 @@
-package uz.unnarsx.cherrygram.helpers;
+package uz.unnarsx.cherrygram.helpers.chats;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -49,6 +49,8 @@ import java.util.Objects;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
+// I've created this so CG features can be injected in a source file with 1 line only (maybe)
+// Because manual editing of drklo's sources harms your mental health.
 public class ChatsHelper extends BaseController {
 
     private static final ChatsHelper[] Instance = new ChatsHelper[UserConfig.MAX_ACCOUNT_COUNT];

@@ -12,7 +12,6 @@ import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import org.json.JSONObject;
@@ -101,6 +100,10 @@ public class UpdaterUtils {
         void run();
     }
 
+    public static void checkUpdates(BaseFragment fragment, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound) {
+        checkUpdates(fragment, manual, onUpdateNotFound, onUpdateFound, null);
+    }
+
     public static void checkUpdates(BaseFragment fragment, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound, Browser.Progress progress) {
         if (CherrygramConfig.INSTANCE.isPremium()) return;
 
@@ -158,7 +161,7 @@ public class UpdaterUtils {
                 if (update.isNew() && fragment != null && fragment.getContext() != null) {
                     checkDirs();
                     AndroidUtilities.runOnUIThread(() -> {
-                        (new UpdaterBottomSheet(fragment.getContext(), fragment, true, update)).show();
+                        UpdaterBottomSheet.showAlert(fragment.getContext(), fragment, true, update);
                         if (onUpdateFound != null)
                             onUpdateFound.run();
                         if (progress != null) progress.end();
@@ -192,11 +195,7 @@ public class UpdaterUtils {
             var intentFilter = new IntentFilter();
             intentFilter.addAction("android.intent.action.DOWNLOAD_COMPLETE");
             intentFilter.addAction("android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED");
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                ContextCompat.registerReceiver(context, downloadBroadcastReceiver, intentFilter, ContextCompat.RECEIVER_EXPORTED);
-            } else  {
-                context.registerReceiver(downloadBroadcastReceiver, intentFilter);
-            }
+            context.registerReceiver(downloadBroadcastReceiver, intentFilter);
         } else {
             installApk(context, apkFile.getAbsolutePath());
         }

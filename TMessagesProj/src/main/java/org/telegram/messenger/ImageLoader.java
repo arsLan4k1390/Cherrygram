@@ -37,7 +37,6 @@ import android.util.Pair;
 import android.util.SparseArray;
 
 import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import org.json.JSONArray;
@@ -2367,7 +2366,7 @@ public class ImageLoader {
         filter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
         filter.addDataScheme("file");
         try {
-            ContextCompat.registerReceiver(ApplicationLoader.applicationContext, receiver, filter, ContextCompat.RECEIVER_NOT_EXPORTED);
+            ApplicationLoader.applicationContext.registerReceiver(receiver, filter);
         } catch (Throwable ignore) {
 
         }
@@ -3584,6 +3583,8 @@ public class ImageLoader {
                 }
                 url = url + docExt;
                 saveImageToCache = !MessageObject.isVideoDocument(object.document) && !MessageObject.isGifDocument(object.document) && !MessageObject.isRoundVideoDocument(object.document) && !MessageObject.canPreviewDocument(object.document);
+            } else if (parentObject instanceof TLRPC.StickerSet) {
+                url = url + "." + ext;
             }
             if (a == 0) {
                 imageKey = key;

@@ -36,7 +36,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.CodeHighlighting;
-import org.telegram.messenger.Emoji;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.NotificationCenter;
@@ -55,6 +54,8 @@ import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.RecyclerListView;
 
 import java.io.IOException;
+
+import uz.unnarsx.cherrygram.CGFeatureHooks;
 
 public class JsonBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
@@ -163,7 +164,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         listView.setItemAnimator(itemAnimator);
         containerView.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM));
 
-        headerView = new HeaderView(context);
+        headerView = new HeaderView(context, messageObject);
         containerView.addView(headerView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 78, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
         buttonView = new FrameLayout(context);
@@ -404,12 +405,13 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         private TextView titleTextView;
         private LinearLayout subtitleView;
         public TextView messageIdTextView;
+        private ImageView menuIconImageView;
 
         private View backgroundView;
 
         private View shadow;
 
-        public HeaderView(Context context) {
+        public HeaderView(Context context, MessageObject messageObject) {
             super(context);
 
             backgroundView = new View(context);
@@ -424,6 +426,14 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             backButton.setAlpha(0f);
             backButton.setOnClickListener(e -> dismiss());
             addView(backButton, LayoutHelper.createFrame(54, 54, Gravity.TOP, 1, 1, 1, 1));
+
+            menuIconImageView = new ImageView(context);
+            menuIconImageView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_actionBarActionModeDefaultSelector), 1));
+            menuIconImageView.setScaleType(ImageView.ScaleType.CENTER);
+            menuIconImageView.setImageResource(R.drawable.ic_ab_other);
+            menuIconImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogSearchIcon), PorterDuff.Mode.MULTIPLY));
+            menuIconImageView.setOnClickListener((v) -> CGFeatureHooks.showJsonMenu(JsonBottomSheet.this, headerView, messageObject));
+            addView(menuIconImageView, LayoutHelper.createFrame(36, 36, Gravity.RIGHT | Gravity.TOP, 0, 11, 16, 0));
 
             titleTextView = new TextView(context) {
                 @Override
@@ -463,6 +473,10 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             messageIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             messageIdTextView.setText("message ID: " + messageId);
             messageIdTextView.setPadding(0, dp(2), 0, dp(2));
+            messageIdTextView.setOnClickListener(v -> {
+                AndroidUtilities.addToClipboard(String.valueOf(messageId));
+                BulletinFactory.of(getContainer(), null).createCopyBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
+            });
 
             if (LocaleController.isRTL) {
                 subtitleView.addView(messageIdTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 4, 5, 0, 0));
@@ -607,16 +621,8 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         }
     }
 
-    public static JsonBottomSheet showAlert(Context context, BaseFragment fragment, MessageObject messageObject, TLRPC.Chat currentChat, Runnable onDismiss) {
-        JsonBottomSheet alert = new JsonBottomSheet(context, null, messageObject, currentChat) {
-            @Override
-            public void dismiss() {
-                super.dismiss();
-                if (onDismiss != null) {
-                    onDismiss.run();
-                }
-            }
-        };
+    public static JsonBottomSheet showAlert(Context context, BaseFragment fragment, MessageObject messageObject, TLRPC.Chat currentChat) {
+        JsonBottomSheet alert = new JsonBottomSheet(context, null, messageObject, currentChat);
         if (fragment != null) {
             if (fragment.getParentActivity() != null) {
                 fragment.showDialog(alert);

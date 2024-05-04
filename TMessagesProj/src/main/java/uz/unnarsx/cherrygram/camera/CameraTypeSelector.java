@@ -36,7 +36,7 @@ import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class CameraTypeSelector extends LinearLayout {
     String[] strings = new String[]{
-            LocaleController.getString("CP_CameraTypeDefault", R.string.CP_CameraTypeDefault),
+            "Telegram",
             "CameraX",
             "Camera2",
             LocaleController.getString("CP_CameraTypeSystem", R.string.CP_CameraTypeSystem),

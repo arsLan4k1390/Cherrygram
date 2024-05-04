@@ -19,7 +19,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 import kotlin.NotImplementedError;
-import uz.unnarsx.cherrygram.helpers.MessageHelper;
+import uz.unnarsx.cherrygram.helpers.chats.MessageHelper;
 
 public class TelegramTranslator extends BaseTranslator {
 

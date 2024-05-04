@@ -50,6 +50,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
     private int cameraUseDualCameraRow;
     private int cameraTypeHeaderRow;
     private int cameraTypeSelectorRow;
+    private int startFromUltraWideRow;
     private int cameraXQualityRow;
     private int cameraAdviseRow;
 
@@ -134,15 +135,11 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
         }
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
-            if (position == cameraUseDualCameraRow) {
-                CherrygramConfig.INSTANCE.toggleUseDualCamera();
+            if (position == startFromUltraWideRow) {
+                CherrygramConfig.INSTANCE.toggleStartFromUltraWideCam();
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUseDualCamera());
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getStartFromUltraWideCam());
                 }
-
-                listAdapter.notifyItemChanged(rearCamRow);
-                updateRowsId(false);
-                parentLayout.rebuildAllFragmentViews(false, false);
             } else if (position == cameraXQualityRow) {
                 Map<Quality, Size> availableSizes = CameraXUtils.getAvailableVideoSizes();
                 Stream<Integer> tmp = availableSizes.values().stream().sorted(Comparator.comparingInt(Size::getWidth).reversed()).map(Size::getHeight);
@@ -160,6 +157,15 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDisableAttachCamera());
                 }
                 AppRestartHelper.createRestartBulletin(this);
+            } else if (position == cameraUseDualCameraRow) {
+                CherrygramConfig.INSTANCE.toggleUseDualCamera();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getUseDualCamera());
+                }
+
+                listAdapter.notifyItemChanged(rearCamRow);
+                updateRowsId(false);
+                parentLayout.rebuildAllFragmentViews(false, false);
             } else if (position == rearCamRow) {
                 CherrygramConfig.INSTANCE.toggleRearCam();
                 if (view instanceof TextCheckCell) {
@@ -198,6 +204,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
 
         cameraTypeHeaderRow = -1;
         cameraTypeSelectorRow = -1;
+        startFromUltraWideRow = -1;
         cameraXQualityRow = -1;
         cameraAdviseRow = -1;
 
@@ -205,6 +212,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
             cameraTypeHeaderRow = rowCount++;
             cameraTypeSelectorRow = rowCount++;
             if (CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_X) {
+                startFromUltraWideRow = rowCount++;
                 cameraXQualityRow = rowCount++;
             }
             cameraAdviseRow = rowCount++;
@@ -270,7 +278,9 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 case 3:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
                     textCheckCell.setEnabled(true, null);
-                    if (position == cameraUseDualCameraRow) {
+                    if (position == startFromUltraWideRow) {
+                        textCheckCell.setTextAndValueAndCheck("Start from UW", "Videomessages will be recorded from Ultra Wide camera (if supported)", CherrygramConfig.INSTANCE.getStartFromUltraWideCam(), true, true);
+                    } else if (position == cameraUseDualCameraRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_CameraDualCamera", R.string.CP_CameraDualCamera), LocaleController.getString("CP_CameraDualCamera_Desc", R.string.CP_CameraDualCamera_Desc), CherrygramConfig.INSTANCE.getUseDualCamera(), true, true);
                     } else if (position == disableAttachCameraRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("CP_DisableCam", R.string.CP_DisableCam), LocaleController.getString("CP_DisableCam_Desc", R.string.CP_DisableCam_Desc), CherrygramConfig.INSTANCE.getDisableAttachCamera(), true, true);
@@ -326,11 +336,13 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                             CherrygramConfig.INSTANCE.setCameraType(cameraSelected);
                             if (cameraSelected == CherrygramConfig.CAMERA_X) {
                                 updateRowsId(false);
+                                listAdapter.notifyItemInserted(startFromUltraWideRow);
                                 listAdapter.notifyItemInserted(cameraXQualityRow);
                                 listAdapter.notifyItemChanged(cameraAdviseRow);
                                 listAdapter.notifyItemChanged(cameraUseDualCameraRow);
                                 listAdapter.notifyItemChanged(rearCamRow);
                             } else if (oldValue == CherrygramConfig.CAMERA_X){
+                                listAdapter.notifyItemRemoved(startFromUltraWideRow);
                                 listAdapter.notifyItemRemoved(cameraXQualityRow);
                                 listAdapter.notifyItemChanged(cameraAdviseRow - 1);
                                 updateRowsId(false);
@@ -367,7 +379,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
         public int getItemViewType(int position) {
             if (position == audioVideoHeaderRow || position == cameraTypeHeaderRow) {
                 return 2;
-            } else if (position == cameraUseDualCameraRow || position == disableAttachCameraRow || position == rearCamRow) {
+            } else if (position == startFromUltraWideRow || position == cameraUseDualCameraRow || position == disableAttachCameraRow || position == rearCamRow) {
                 return 3;
             } else if (position == cameraTypeSelectorRow) {
                 return 5;

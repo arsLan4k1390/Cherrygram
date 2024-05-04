@@ -69,6 +69,19 @@ object CherrygramExtras {
         return "LOC_ERR"
     }
 
+    fun createDateAndTimeForJSON(date: Long): String {
+        var dateAndTime = date
+        try {
+            dateAndTime *= 1000
+            val rightNow = Calendar.getInstance()
+            rightNow.timeInMillis = dateAndTime
+            return String.format("%1\$s | %2\$s", LocaleController.getInstance().formatterYear.format(Date(dateAndTime)),
+                LocaleController.getInstance().formatterDayWithSeconds.format(Date(dateAndTime))
+            )
+        } catch (ignore: Exception) { }
+        return "LOC_ERR"
+    }
+
     private val cherrygramLogo = File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "stickers/cherrygram.webm")
     fun downloadCherrygramLogo(context: Context) {
         if (!cherrygramLogo.exists()) {
