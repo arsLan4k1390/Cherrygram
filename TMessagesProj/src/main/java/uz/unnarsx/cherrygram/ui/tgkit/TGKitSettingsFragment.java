@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BackDrawable;
@@ -266,6 +267,10 @@ public class TGKitSettingsFragment extends BaseFragment {
                 case 5: {
                     TextCell cell = (TextCell) holder.itemView;
                     ((TGKitTextIconRow) positions.get(position)).bindCell(cell);
+                    if (settings != null && settings.name.contains(LocaleController.getString("DP_Donate", R.string.DP_Donate))) {
+                        cell.textView.setPadding(AndroidUtilities.dp(8), 0, 0, 0);
+                        cell.imageView.clearColorFilter();
+                    }
                     break;
                 }
                 case 6: {

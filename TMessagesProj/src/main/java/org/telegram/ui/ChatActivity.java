@@ -1915,7 +1915,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             if (attachItem != null) {
                                 attachItem.setVisibility(View.GONE);
                             }
-                            if (CherrygramConfig.INSTANCE.getCenterChatTitle() && editTextItem != null && editTextItem.getView() != null) {
+                            boolean allowAvatarClick = getChatMode() != ChatActivity.MODE_SAVED && getDialogId() != 0 && getDialogId() != UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
+                            if (CherrygramConfig.INSTANCE.getCenterChatTitle() && editTextItem != null && editTextItem.getView() != null && allowAvatarClick) {
                                 avatarContainer.avatarImageView.setOnClickListener(v -> editTextItem.getView().performClick());
                             }
                         } else {
@@ -1990,7 +1991,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         }
                     }
                 }
-                if (CherrygramConfig.INSTANCE.getCenterChatTitle() && headerItem != null) {
+                boolean allowAvatarClick = getChatMode() != ChatActivity.MODE_SAVED && getDialogId() != 0 && getDialogId() != UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
+                if (CherrygramConfig.INSTANCE.getCenterChatTitle() && headerItem != null && allowAvatarClick) {
                     CherrygramChatMenuInjector.injectAttachItem(headerItem, attachItem, chatActivityEnterView, chatAttachAlert, getContext(), getResourceProvider());
                     avatarContainer.avatarImageView.setOnClickListener(v -> getHeaderItem().performClick());
                 }
@@ -3645,7 +3647,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                     showDialog(builder.create());
                 } else if (id == OPTION_BLUR_SETTINGS) {
-                    BlurPreferencesBottomSheet.show(LaunchActivity.getLastFragment());
+                    if (LaunchActivity.getLastFragment() != null) BlurPreferencesBottomSheet.show(LaunchActivity.getLastFragment());
                 } else if (id == change_colors) {
                     showChatThemeBottomSheet();
                 } else if (id == topic_close) {
@@ -3876,7 +3878,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         }*/
 
-        editTextItem = menu.lazilyAddItem(chat_menu_edit_text_options, R.drawable.ic_ab_other, themeDelegate);
+        boolean doNotDrawDots = CherrygramConfig.INSTANCE.getCenterChatTitle() && getChatMode() != ChatActivity.MODE_SAVED
+                && getDialogId() != 0 && getDialogId() != UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
+        int dotsDrawable = doNotDrawDots ? 0 : R.drawable.ic_ab_other;
+
+        editTextItem = menu.lazilyAddItem(chat_menu_edit_text_options, dotsDrawable, themeDelegate);
         editTextItem.setContentDescription(LocaleController.getString("AccDescrMoreOptions", R.string.AccDescrMoreOptions));
         editTextItem.setTag(null);
         editTextItem.setVisibility(View.GONE);
@@ -3886,13 +3892,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             if (currentUser != null) {
                 userFull = getMessagesController().getUserFull(currentUser.id);
             }
-            boolean doNotDrawDots = CherrygramConfig.INSTANCE.getCenterChatTitle() && getChatMode() != ChatActivity.MODE_SAVED
-                    && getDialogId() != 0 && getDialogId() != UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
-            int dotsDrawable = doNotDrawDots ? 0 : R.drawable.ic_ab_other;
             headerItem = menu.addItem(chat_menu_options, dotsDrawable, themeDelegate);
             headerItem.setContentDescription(LocaleController.getString("AccDescrMoreOptions", R.string.AccDescrMoreOptions));
 
-            if (CherrygramConfig.INSTANCE.getCenterChatTitle() && headerItem != null) {
+            if (CherrygramConfig.INSTANCE.getCenterChatTitle() && headerItem != null && doNotDrawDots) {
                 CherrygramChatMenuInjector.injectAttachItem(headerItem, attachItem, chatActivityEnterView, chatAttachAlert, getContext(), getResourceProvider());
                 avatarContainer.avatarImageView.setOnClickListener(v -> getHeaderItem().performClick());
             }
@@ -4095,7 +4098,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         updateTitleIcons();
 
         if (chatMode == 0 && (!isThreadChat() || isTopic) && reportType < 0) {
-            attachItem = menu.lazilyAddItem(chat_menu_attach, R.drawable.ic_ab_other, themeDelegate);
+            attachItem = menu.lazilyAddItem(chat_menu_attach, dotsDrawable, themeDelegate);
             attachItem.setOverrideMenuClick(true);
             attachItem.setAllowCloseAnimation(false);
             attachItem.setContentDescription(LocaleController.getString("AccDescrMoreOptions", R.string.AccDescrMoreOptions));

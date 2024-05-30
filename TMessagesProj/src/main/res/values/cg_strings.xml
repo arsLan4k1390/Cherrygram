@@ -9,6 +9,11 @@
     <string name="CG_DoNotRemindAgain">Don\'t remind again</string>
 
     <!--Telegram screens-->
+    <string name="CG_RegistrationDate">Registration date:</string>
+    <string name="CG_RegistrationDateNewer">Newer than %s</string>
+    <string name="CG_RegistrationDateOlder">Older than %s</string>
+    <string name="CG_RegistrationDateApproximately">Approximately %s</string>
+    <string name="CG_RegistrationDateFailed">Failed to get registration date.</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">QR Login</string>
     <string name="CG_QRLoginMessage">Scan QRCode with another device to login.</string>
@@ -237,8 +242,6 @@
     <string name="CP_Header_Chats">Chats</string>
     <string name="CP_Header_Messages">Messages</string>
     <string name="CP_Slider_StickerAmplifier">Sticker size amplifier</string>
-    <string name="CP_BlockSomeSets">Block some stickers</string>
-    <string name="CP_BlockSomeSets_Desc">Some stickers which forces the app crash will be replaced by Cherrygram\'s logo. \n\"Cherrygram Logo\" file will be downloaded after you enable the feature and restart the app.</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
 
     <string name="CP_AdminActions">Admin shortcuts</string>
@@ -293,6 +296,9 @@
     <string name="CP_Category_Camera">Camera</string>
     <string name="CP_CameraType">Camera Type</string>
     <string name="CP_Camera2Desc">All features that are hidden when Camera2 is turned on will not work with Camera2 enabled.</string>
+    <string name="CP_CameraStabilisation">Camera stabilisation</string>
+    <string name="CP_CameraUW">Start from UW</string>
+    <string name="CP_CameraUW_Desc">Recording of videomessages will start from Ultra Wide camera (if your device\'s API supports it)</string>
     <string name="CP_CameraDualCamera">Dual camera</string>
     <string name="CP_CameraDualCamera_Desc">Captures video message on both cameras for faster switching between cameras while recording. Uses more battery.</string>
     <string name="CP_DefaultCameraDesc">Use the Telegram\'s built-in camera.</string>

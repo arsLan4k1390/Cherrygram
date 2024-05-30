@@ -167,8 +167,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
     <string name="CP_Slider_StickerAmplifier">Aumentar tamaño de sticker</string>
-    <string name="CP_BlockSomeSets">Bloquear algunas pegatinas</string>
-    <string name="CP_BlockSomeSets_Desc">Algunas pegatinas que fuerzan el bloqueo de la aplicación serán reemplazadas por el logotipo de Cherrygram. \n El archivo \"Logotipo de cherrygram\" se descargará después de activar la función y reiniciar la aplicación.</string>
     <string name="CP_TimeOnStick">Ocultar tiempo en los stickers del chat</string>
     <string name="CP_MessageMenu">Menú contextual</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de chats no leídos</string>

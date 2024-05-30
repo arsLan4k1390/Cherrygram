@@ -167,7 +167,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_Tab_Style_Pills">Comprimidos</string>
     <string name="AP_Tab_Style_Stroke">Adicionar traço</string>
     <string name="AP_DrawerCategory">Gaveta</string>
-    <string name="AP_DrawerPreferences">Preferências de gaveta</string>
     <string name="AP_DrawerAvatar">Foto de perfil como fundo de gaveta</string>
     <string name="AP_DrawerShowAvatar">Mostrar avatar</string>
     <string name="AP_DrawerDarken">Escurecer fundo</string>
@@ -182,8 +181,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Conversas</string>
     <string name="CP_Slider_StickerAmplifier">Amplificador de tamanho de autocolante</string>
-    <string name="CP_BlockSomeSets">Bloquear alguns autocolantes</string>
-    <string name="CP_BlockSomeSets_Desc">Alguns autocolantes que forçam a colisão da aplicação serão substituídos pelo logótipo do Cherrygram. \n O ficheiro \"Logótipo do Cherrygram\" será descarregado após ativar a funcionalidade e reiniciar a aplicação.</string>
     <string name="CP_TimeOnStick">Ocultar o tempo em autocolantes no chat</string>
     <string name="CP_MessageMenu">Menu de mensagens</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de conversas não lidas</string>

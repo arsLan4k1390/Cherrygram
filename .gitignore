@@ -6,6 +6,8 @@ build/
 obj/
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/helpers/UserInfoHelper.java
+/TMessagesProj/src/main/java/org/telegram/tgnet/ConnectionsManagerImpl.kt
 *.iml
 local.properties
 TMessagesProj/.cxx/

@@ -44,6 +44,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
 *Chats:*
 - Scrollable and clickable chat preview,
+- Blocking stickers (which cause Telegram apps crash),
 - Open profile from chat preview,
 - "Mark as read" support for folders,
 - Chat Blur support for all devices and themes (Blur is enabled by default),
@@ -108,7 +109,6 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Drawer icons set.
 
 *Cherrygram Chats Preferences:*
-- Blocking stickers (which cause Telegram apps crash),
 - Hide time on stickers,
 - Stickers size amplifier (changer),
 - Admin shortcuts in chats,

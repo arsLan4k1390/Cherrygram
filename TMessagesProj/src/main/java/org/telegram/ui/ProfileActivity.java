@@ -291,6 +291,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.Extra;
 import uz.unnarsx.cherrygram.extras.Constants;
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator;
@@ -10916,6 +10917,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     TextDetailCell detailCell = (TextDetailCell) holder.itemView;
                     boolean containsQr = false;
                     boolean containsGift = false;
+                    boolean hasRegistrationDate = false;
                     if (position == birthdayRow) {
                         TLRPC.UserFull userFull = getMessagesController().getUserFull(userId);
                         if (userFull != null && userFull.birthday != null) {
@@ -10963,21 +10965,27 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         final long id;
                         if (userId != 0) {
                             id = userId;
+                            Extra.INSTANCE.doAsyncWork(userId);
                         } else if (chatId != 0) {
                             id = Long.parseLong("-100" + chatId);
                         } else {
                             id = dialogId;
+                            Extra.INSTANCE.doAsyncWork(dialogId);
                         }
+                        hasRegistrationDate = chatId == 0;
                         detailCell.setTextAndValue(id + "", "ID", false);
                     } else if (position == idDcRow) {
                         final long id;
                         if (userId != 0) {
                             id = userId;
+                            Extra.INSTANCE.doAsyncWork(userId);
                         } else if (chatId != 0) {
                             id = Long.parseLong("-100" + chatId);
                         } else {
                             id = dialogId;
+                            Extra.INSTANCE.doAsyncWork(dialogId);
                         }
+                        hasRegistrationDate = chatId == 0;
                         detailCell.setTextAndValue("ID: " + id, userDcLine, false);
                     } else if (position == usernameRow) {
                         String username = null;
@@ -11109,6 +11117,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         detailCell.setImageClickListener(ProfileActivity.this::onTextDetailCellImageClicked);
                     } else if (containsQr) {
                         Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.msg_qr_mini);
+                        drawable.setColorFilter(new PorterDuffColorFilter(applyPeerColor(getThemedColor(Theme.key_switch2TrackChecked), false), PorterDuff.Mode.MULTIPLY));
+                        detailCell.setImage(drawable, LocaleController.getString("GetQRCode", R.string.GetQRCode));
+                        detailCell.setImageClickListener(ProfileActivity.this::onTextDetailCellImageClicked);
+                    } else if (hasRegistrationDate) {
+                        Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.msg_calendar2);
                         drawable.setColorFilter(new PorterDuffColorFilter(applyPeerColor(getThemedColor(Theme.key_switch2TrackChecked), false), PorterDuff.Mode.MULTIPLY));
                         detailCell.setImage(drawable, LocaleController.getString("GetQRCode", R.string.GetQRCode));
                         detailCell.setImageClickListener(ProfileActivity.this::onTextDetailCellImageClicked);
@@ -12727,6 +12740,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else {
                 showDialog(new GiftPremiumBottomSheet(this, user));
             }
+        } else if (parent.getTag() != null && ((((int) parent.getTag()) == idDcRow) || (((int) parent.getTag()) == idRow))) {
+            String regDate = String.valueOf(Extra.INSTANCE.getRegDate(userId));
+
+            Bulletin bulletin = BulletinFactory.of(this).createSimpleBulletin(R.raw.chats_infotip, regDate);
+            bulletin.setDuration(Bulletin.DURATION_PROLONG);
+            bulletin.show();
         }
     }
 

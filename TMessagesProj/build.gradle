@@ -122,7 +122,8 @@ android {
                 'src/main/res',
                 'src/main/res-vkui',
                 'src/main/res-solar',
-                'src/main/res-tabs'
+                'src/main/res-tabs',
+                'src/main/res-payments'
         ]
     }
 

@@ -163,7 +163,6 @@
     <string name="AP_Tab_Style_Pills">Таблеткі</string>
     <string name="AP_Tab_Style_Stroke">Дадаць абвядзенне</string>
     <string name="AP_DrawerCategory">Бакавое меню</string>
-    <string name="AP_DrawerPreferences">Налады бакавога меню</string>
     <string name="AP_DrawerAvatar">Аватар як фон меню</string>
     <string name="AP_DrawerShowAvatar">Паказаць аватар</string>
     <string name="AP_DrawerDarken">Зацямніць фон</string>
@@ -178,8 +177,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Чаты</string>
     <string name="CP_Slider_StickerAmplifier">Памер стыкераў</string>
-    <string name="CP_BlockSomeSets">Блакаванне стыкераў</string>
-    <string name="CP_BlockSomeSets_Desc">Некаторыя стыкеры, што выклікаюць вылет дадатку, будуць заменены лагатыпам Cherrygram. \nФайл \"Cherrygram Logo\" будзе загружаны пасля таго, як Вы ўключыце функцыю і перазапусціце дадатак.</string>
     <string name="CP_TimeOnStick">Схаваць час на стыкерах у чаце</string>
     <string name="CP_MessageMenu">Меню паведамленняў</string>
     <string name="CP_UnreadBadgeOnBackButton">Паказаць лічыльнік непрачытаных</string>

@@ -6,8 +6,6 @@ import androidx.core.util.Pair
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.ActionBar.Theme
-import uz.unnarsx.cherrygram.CGFeatureHooks
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.extras.VibrateUtil
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
@@ -26,17 +24,6 @@ import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
 class ChatsPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {
         category(LocaleController.getString("AccDescrStickers", R.string.AccDescrStickers)) {
-            switch {
-                title = LocaleController.getString("CP_BlockSomeSets", R.string.CP_BlockSomeSets)
-                description = LocaleController.getString("CP_BlockSomeSets_Desc", R.string.CP_BlockSomeSets_Desc)
-
-                contract({
-                    return@contract CherrygramConfig.blockStickers
-                }) {
-                    CherrygramConfig.blockStickers = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
             switch {
                 title = LocaleController.getString("CP_TimeOnStick", R.string.CP_TimeOnStick)
 

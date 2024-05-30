@@ -3897,6 +3897,9 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     }
 
     private void onPhotoEditModeChanged(boolean isEditMode) {
+//        if (disableAttachCamera) {
+//            return;
+//        }
 //        if (needCamera && !noCameraPermissions) {
 //            if (isEditMode) {
 //                if (cameraView != null) {
@@ -3915,6 +3918,9 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     }
 
     public void pauseCamera(boolean pause) {
+        if (disableAttachCamera) {
+            return;
+        }
         if (needCamera && !noCameraPermissions) {
             if (pause) {
                 if (cameraView != null) {

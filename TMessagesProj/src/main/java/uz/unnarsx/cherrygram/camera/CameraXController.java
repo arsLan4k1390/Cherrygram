@@ -7,6 +7,8 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureRequest;
 import android.media.MediaMetadataRetriever;
 import android.os.AsyncTask;
 import android.provider.MediaStore;
@@ -17,6 +19,8 @@ import android.view.WindowManager;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
+import androidx.camera.camera2.interop.Camera2CameraControl;
+import androidx.camera.camera2.interop.CaptureRequestOptions;
 import androidx.camera.core.AspectRatio;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraInfoUnavailableException;
@@ -361,6 +365,16 @@ public class CameraXController {
         if (lifecycle.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) return;
         if (stableFPSPreviewOnly) {
             camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, vCapture);
+
+            if (CherrygramConfig.INSTANCE.getCameraStabilisation()) {
+                CaptureRequestOptions captureRequestOptions = new CaptureRequestOptions.Builder()
+                        .setCaptureRequestOption(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, CameraMetadata.CONTROL_VIDEO_STABILIZATION_MODE_ON)
+                        .setCaptureRequestOption(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CameraMetadata.LENS_OPTICAL_STABILIZATION_MODE_ON)
+                        .build();
+
+                Camera2CameraControl cameraControl = Camera2CameraControl.from(camera.getCameraControl());
+                cameraControl.setCaptureRequestOptions(captureRequestOptions);
+            }
         } else {
             iCapture = iCaptureBuilder.build();
             try {

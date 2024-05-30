@@ -52,7 +52,7 @@ import uz.unnarsx.cherrygram.CherrygramConfig;
 public class TextCell extends FrameLayout {
 
     public final SimpleTextView textView;
-    private final SimpleTextView subtitleView;
+    public final SimpleTextView subtitleView;
     public final AnimatedTextView valueTextView;
     public final SimpleTextView valueSpoilersTextView;
     public final RLottieImageView imageView;

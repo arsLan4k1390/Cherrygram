@@ -8,6 +8,15 @@ object Extra {
     // https://developers.google.com/identity/sms-retriever/verify#computing_your_apps_hash_string
     const val SMS_HASH = ""
 
-    const val APPCENTER_SECRET = ""
     const val PLAYSTORE_APP_URL = ""
+
+    const val PACKAGE_HASH = ""
+
+    fun getRegDate(userId: Long): StringBuilder {
+
+    }
+
+    fun doAsyncWork(userId: Long) {
+
+    }
 }

@@ -28,7 +28,6 @@ import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
-import org.telegram.ui.DialogsActivity;
 
 import java.util.ArrayList;
 
@@ -155,9 +154,9 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 }
                 AppRestartHelper.createRestartBulletin(this);
             } else if (position == showRPCErrorRow) {
-                CherrygramConfig.INSTANCE.toggleShowRPCError();
+                CherrygramConfig.INSTANCE.toggleShowRPCErrors();
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getShowRPCError());
+                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getShowRPCErrors());
                 }
                 AppRestartHelper.createRestartBulletin(this);
             } else if (position == customChatRow) {
@@ -242,7 +241,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         }
 
         residentNotificationRow = rowCount++;
-        showRPCErrorRow = rowCount++;
+        if (!CherrygramConfig.INSTANCE.isStable()) showRPCErrorRow = rowCount++;
 
         customChatRow = rowCount++;
         customChatIdRow = -1;
@@ -310,7 +309,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     } else if (position == residentNotificationRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("CG_ResidentNotification", R.string.CG_ResidentNotification), CherrygramConfig.INSTANCE.getResidentNotification(), true);
                     } else if (position == showRPCErrorRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString("EP_ShowRPCError", R.string.EP_ShowRPCError), CherrygramConfig.INSTANCE.getShowRPCError(), true);
+                        textCheckCell.setTextAndCheck(LocaleController.getString("EP_ShowRPCError", R.string.EP_ShowRPCError), CherrygramConfig.INSTANCE.getShowRPCErrors(), true);
                     } else if (position == customChatRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("EP_CustomChat", R.string.EP_CustomChat), LocaleController.getString("EP_CustomChat_Desc", R.string.EP_CustomChat_Desc), CherrygramConfig.INSTANCE.getCustomChatForSavedMessages(), true, true);
 

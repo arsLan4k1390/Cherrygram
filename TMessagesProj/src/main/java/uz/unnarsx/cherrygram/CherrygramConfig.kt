@@ -4,12 +4,11 @@ import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
 import kotlinx.coroutines.*
-import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
+import org.telegram.tgnet.ConnectionsManagerImpl
 import org.telegram.tgnet.TLRPC
-import uz.unnarsx.cherrygram.extras.CherrygramExtras
 import uz.unnarsx.cherrygram.helpers.LocalVerificationsHelper
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.helpers.FirebaseAnalyticsHelper
@@ -17,12 +16,11 @@ import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
-import uz.unnarsx.cherrygram.helpers.StickersIDsHelper
+import uz.unnarsx.cherrygram.helpers.StickersHelper
 import uz.unnarsx.cherrygram.ui.icons.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.ui.icons.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.ui.icons.icon_replaces.SolarIconReplace
 import uz.unnarsx.cherrygram.ui.icons.icon_replaces.VkIconReplace
-import kotlin.system.exitProcess
 
 object CherrygramConfig: CoroutineScope by MainScope() {
 
@@ -309,7 +307,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     // Chats Settings
     //Stickers
-    var blockStickers by sharedPreferences.boolean("CP_BlockStickers", false)
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
     var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
 
@@ -541,10 +538,16 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_RearCam", rearCam)
     }
 
-    var startFromUltraWideCam by sharedPreferences.boolean("startFromUltraWideCam", true)
+    var cameraStabilisation by sharedPreferences.boolean("CP_CameraStabilisation", false)
+    fun toggleCameraStabilisation() {
+        cameraStabilisation = !cameraStabilisation
+        putBoolean("CP_CameraStabilisation", cameraStabilisation)
+    }
+
+    var startFromUltraWideCam by sharedPreferences.boolean("CP_StartFromUltraWideCam", true)
     fun toggleStartFromUltraWideCam() {
         startFromUltraWideCam = !startFromUltraWideCam
-        putBoolean("staticZoom", startFromUltraWideCam)
+        putBoolean("CP_StartFromUltraWideCam", startFromUltraWideCam)
     }
 
     const val Camera16to9 = 0
@@ -577,10 +580,10 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CG_ResidentNotification", residentNotification)
     }
 
-    var showRPCError by sharedPreferences.boolean("EP_ShowRPCError", false)
-    fun toggleShowRPCError() {
-        showRPCError = !showRPCError
-        putBoolean("EP_ShowRPCError", showRPCError)
+    var showRPCErrors by sharedPreferences.boolean("EP_ShowRPCErrors", false)
+    fun toggleShowRPCErrors() {
+        showRPCErrors = !showRPCErrors
+        putBoolean("EP_ShowRPCErrors", showRPCErrors)
     }
 
     var customChatForSavedMessages by sharedPreferences.boolean("CP_CustomChatForSavedMessages", false)
@@ -627,6 +630,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var forwardWithoutCaptions by sharedPreferences.boolean("CG_ForwardWithoutCaptions", false)
     var forwardNotify by sharedPreferences.boolean("CG_ForwardNotify", true)
     var noAuthorship by sharedPreferences.boolean("CG_NoAuthorship", false)
+    var gifSpoilers by sharedPreferences.boolean("CG_GifSpoiler", false)
 
     var filterLauncherIcon by sharedPreferences.boolean("AP_Filter_Launcher_Icon", false)
     fun toggleAppIconFilter() { // Telegram chats settings
@@ -667,15 +671,13 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     init {
         CherrygramToasts.init(sharedPreferences)
-        fuckOff()
+        ConnectionsManagerImpl.launch {}
     }
 
     init {
         launch(Dispatchers.IO) {
-            if (blockStickers) {
-                StickersIDsHelper.getStickerSetIDs()
-                CherrygramExtras.downloadCherrygramLogo(ApplicationLoader.applicationContext)
-            }
+            StickersHelper.getStickerSetIDs()
+            StickersHelper.copyStickerFromAssets()
             delay(2000)
             if (googleAnalytics && ApplicationLoader.checkPlayServices()) {
                 try {
@@ -692,14 +694,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
                     })*/
                 }
             }
-        }
-    }
-
-    private fun fuckOff() {
-        val good = Extra.PACKAGE_HASH
-        val info = AndroidUtilities.getCertificateSHA256Fingerprint()
-        if (info != good) {
-            exitProcess(0)
         }
     }
 

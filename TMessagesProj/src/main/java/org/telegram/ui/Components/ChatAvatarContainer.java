@@ -66,7 +66,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ChatAvatarContainer extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
-    boolean centerChatTitle = CherrygramConfig.INSTANCE.getCenterChatTitle();
+    private boolean centerChatTitle = CherrygramConfig.INSTANCE.getCenterChatTitle();
     public boolean allowDrawStories;
     private Integer storiesForceState;
     public BackupImageView avatarImageView;

@@ -209,7 +209,6 @@ public class BackupHelper {
         mainconfig.add("AP_TabStyleAddStroke");
         mainconfig.add("AP_DrawSnowInActionBar");
         mainconfig.add("AP_DrawSnowInChat");
-        mainconfig.add("CP_BlockStickers");
         mainconfig.add("CP_Slider_StickerAmplifier");
         mainconfig.add("CP_TimeOnStick");
         mainconfig.add("CP_Admins_Reactions");
@@ -262,6 +261,8 @@ public class BackupHelper {
         mainconfig.add("CP_CameraXOptimizedMode");
         mainconfig.add("CP_DisableCam");
         mainconfig.add("CP_RearCam");
+        mainconfig.add("CP_CameraStabilisation");
+        mainconfig.add("CP_StartFromUltraWideCam");
         mainconfig.add("CP_CameraAspectRatio");
         mainconfig.add("SP_NoProxyPromo");
         mainconfig.add("SP_GoogleAnalytics");

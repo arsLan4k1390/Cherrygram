@@ -15,11 +15,17 @@ public class TGKitTextIconRow extends TGKitPreference {
     public String value = null;
 
     @Nullable
+    public String subtitle = null;
+
+    @Nullable
     public TGTIListener listener;
 
     public void bindCell(TextCell cell) {
         if (icon != -1 && value != null) {
             cell.setTextAndValueAndIcon(title, value, icon, divider);
+        } else if (icon != -1 && subtitle != null) {
+            cell.setTextAndIcon(title, icon, divider);
+            cell.setSubtitle(subtitle);
         } else if (value != null) {
             cell.setTextAndValue(title, value, divider);
         } else if (icon != -1) {

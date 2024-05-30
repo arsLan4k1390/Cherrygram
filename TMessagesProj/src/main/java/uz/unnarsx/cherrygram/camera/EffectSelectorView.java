@@ -47,11 +47,11 @@ public class EffectSelectorView extends LinearLayout {
         }
     }
 
-    private static final String[] GOOGLE_FUCKUPS = {"raven", "bluejay", "panther", "cheetah", "lynx"};
+//    private static final String[] GOOGLE_FUCKUPS = {"raven", "bluejay", "panther", "cheetah", "lynx"};
 
     public void loadEffects(CameraXView cameraXView) {
         if (getChildCount() == 0) {
-            boolean fuckup = Arrays.asList(GOOGLE_FUCKUPS).contains(Build.DEVICE);
+            boolean fuckup = false /*Arrays.asList(GOOGLE_FUCKUPS).contains(Build.DEVICE)*/;
             ArrayList<Integer> list_effect = new ArrayList<>();
             if (!fuckup && cameraXView.isNightModeSupported()) {
                 list_effect.add(CameraXController.CAMERA_NIGHT);

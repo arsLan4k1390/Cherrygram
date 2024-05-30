@@ -7,6 +7,11 @@
     <string name="CG_DoNotRemindAgain">Не напоминать</string>
 
     <!--Telegram screens-->
+    <string name="CG_RegistrationDate">Дата регистрации:</string>
+    <string name="CG_RegistrationDateNewer">Позже, чем %s</string>
+    <string name="CG_RegistrationDateOlder">Ранее, чем %s</string>
+    <string name="CG_RegistrationDateApproximately">Приблизительно %s</string>
+    <string name="CG_RegistrationDateFailed">Не удалось получить дату регистрации.</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Вход по QR</string>
     <string name="CG_QRLoginMessage">Отсканируйте QR-код с помощью другого устройства для входа в систему.</string>
@@ -228,8 +233,6 @@
     <string name="CP_Header_Chats">Диалоги</string>
     <string name="CP_Header_Messages">Сообщения</string>
     <string name="CP_Slider_StickerAmplifier">Размер стикеров</string>
-    <string name="CP_BlockSomeSets">Блокировка стикеров</string>
-    <string name="CP_BlockSomeSets_Desc">Некоторые стикеры, вызывающие вылет приложения, будут заменены логотипом Cherrygram. \nФайл \"Cherrygram Logo\" будет загружен после того, как Вы включите функцию и перезапустите приложение.</string>
     <string name="CP_TimeOnStick">Скрыть время отправки на стикерах</string>
 
     <string name="CP_AdminActions">Действия для админов</string>
@@ -280,6 +283,9 @@
     <string name="CP_Category_Camera">Камера</string>
     <string name="CP_CameraType">Тип камеры</string>
     <string name="CP_Camera2Desc">С Camera2 не будут работать все функции, которые скрываются при включении Camera2.</string>
+    <string name="CP_CameraStabilisation">Стабилизация камеры</string>
+    <string name="CP_CameraUW">Начинать с ширика</string>
+    <string name="CP_CameraUW_Desc">Запись видеосообщений начнется со сверхширокоугольного объектива (если это поддерживает API вашего устройства)</string>
     <string name="CP_CameraDualCamera">Двойная камера</string>
     <string name="CP_CameraDualCamera_Desc">Записывает видеосообщение на обеих камерах для более быстрого переключения между камерами во время записи. Использует больше батареи.</string>
     <string name="CP_DefaultCameraDesc">Встроенная камера Telegram.</string>

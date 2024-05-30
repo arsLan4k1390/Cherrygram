@@ -416,8 +416,6 @@ class SolarIconReplace : BaseIconReplace() {
         R.drawable.stickers_recent to R.drawable.msg_emoji_recent_solar,
         R.drawable.tabs_reorder to R.drawable.tabs_reorder_solar,
         R.drawable.theme_picker to R.drawable.theme_picker_solar,
-        R.drawable.verified_area to R.drawable.verified_area_solar,
-        R.drawable.verified_check to R.drawable.verified_check_solar,
         R.drawable.verified_profile to R.drawable.verified_profile_solar,
         R.drawable.video_send_mute to R.drawable.video_send_mute_solar,
         R.drawable.video_send_unmute to R.drawable.video_send_unmute_solar,

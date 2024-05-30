@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelLink">订阅 @Cherry_Gram！</string>
     <string name="CG_FollowChannelTitle">订阅官方频道</string>
     <string name="CG_FollowChannelInfo">加入我们的频道以随时了解 Cherrygram 的所有新闻和功能！</string>
     <string name="CG_DoNotRemindAgain">不再提醒</string>
@@ -45,6 +46,7 @@
     <string name="CG_ViewUserHistory">消息历史</string>
     <string name="CG_ToSaved">收藏消息</string>
     <string name="CG_CreateMention">创建提及</string>
+    <string name="CG_CreateCodeLanguage">语言</string>
     <string name="CG_FwdMenu_EnableNoForward">移除转发来源</string>
     <string name="CG_FwdMenu_DisableNoForward">显示转发来源</string>
     <string name="CG_Without_Authorship">无来源转发</string>
@@ -52,6 +54,20 @@
     <string name="CG_FwdMenu_Notify">通知</string>
     <string name="CG_FwdMenu_EnableCaptions">显示字幕</string>
     <string name="CG_FwdMenu_DisableCaptions">隐藏字幕</string>
+    <!--Search filter-->
+    <string name="CG_SearchFilter">筛选搜索结果</string>
+    <string name="CG_SearchFilter_None">无结果</string>
+    <string name="CG_SearchFilter_Photos">图片</string>
+    <string name="CG_SearchFilter_Videos">视频</string>
+    <string name="CG_SearchFilter_VoiceMessages">语音信息</string>
+    <string name="CG_SearchFilter_VideoMessages">视频信息</string>
+    <string name="CG_SearchFilter_Files">文件/文档</string>
+    <string name="CG_SearchFilter_Music">音乐</string>
+    <string name="CG_SearchFilter_GIFs">GIF</string>
+    <string name="CG_SearchFilter_Geolocation">位置</string>
+    <string name="CG_SearchFilter_Contacts">联系人</string>
+    <string name="CG_SearchFilter_MyMentions">\@我的消息</string>
+    <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
     <string name="LS_EnterPasscode">输入 Cherrygram 密码</string>
@@ -83,6 +99,8 @@
     <string name="CG_GetEmojiPack">获得emoji</string>
     <string name="CG_ReplyBackground">回复背景</string>
     <string name="CG_ProfileBackground">应用个人资料背景</string>
+    <string name="CG_MessageContainsCustomReactions_one">表态包含 %1$d 里的自定义 emoji \n</string>
+    <string name="CG_MessageContainsCustomReactions_other">表态包含 %1$d 里的自定义 emoji \n</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -134,6 +152,9 @@
     <string name="CP_PremAndAnim_Header">动画和高级功能</string>
     <string name="CP_ProfileReplyBackground">消息和个人资料</string>
     <string name="CP_CustomizeProfile">自定义个人资料</string>
+    <string name="CP_ProfileChannelPreview">个人频道</string>
+    <string name="CP_ProfileBirthDatePreview">出生日期</string>
+    <string name="CP_ProfileBusinessPreview">工作时间和地点</string>
     <string name="CP_ProfileBackgroundColor">个人资料背景</string>
     <string name="CP_ProfileBackgroundEmoji">个人资料中的表情背景</string>
     <string name="CP_CustomizeMessage">自定义消息</string>
@@ -141,6 +162,8 @@
     <string name="CP_ReplyCustomColors">自定义回复和链接预览的颜色</string>
     <string name="CP_ReplyBackgroundEmoji">回复和链接预览中的表情</string>
     <string name="CP_HideStories">隐藏动态</string>
+    <string name="CP_CustomWallpapers">自定义聊天背景</string>
+    <string name="CP_CustomWallpapers_Desc">配置高级用户/增强频道设置的聊天/群组/频道中的自定义壁纸</string>
     <string name="CP_DisableAnimAvatars">禁用动态头像</string>
     <string name="CP_DisableReactionsOverlay">禁用表态弹窗</string>
     <string name="CP_DisableReactionsOverlay_Desc">禁用可使用表态的弹出窗口</string>
@@ -163,7 +186,6 @@
     <string name="AP_Tab_Style_Pills">药丸</string>
     <string name="AP_Tab_Style_Stroke">添加描边</string>
     <string name="AP_DrawerCategory">侧边栏</string>
-    <string name="AP_DrawerPreferences">侧边栏自定义</string>
     <string name="AP_DrawerAvatar">侧边栏背景使用个人资料图片</string>
     <string name="AP_DrawerShowAvatar">显示头像</string>
     <string name="AP_DrawerDarken">暗色背景</string>
@@ -172,16 +194,19 @@
     <string name="AP_DrawerBlurIntensity">模糊程度</string>
     <string name="AP_DrawerIconPack_Header">侧边栏图标设置</string>
     <string name="AP_DrawerButtonsCategory">侧边栏按钮</string>
+    <string name="AP_HideUserPhone_Show">点击显示</string>
+    <string name="AP_HideUserPhone_Copy">长按复制</string>
     <string name="AP_MutualContacts_Description">该帐号为双向联系人</string>
     <string name="AP_ShowID">在个人资料中显示 ID 和 DC</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">聊天</string>
+    <string name="CP_Header_Messages">信息</string>
     <string name="CP_Slider_StickerAmplifier">调整贴纸大小</string>
-    <string name="CP_BlockSomeSets">屏蔽部分贴纸</string>
-    <string name="CP_BlockSomeSets_Desc">一些会导致应用崩溃的贴纸将被Cherrygram的Logo替代。 \n\"Cherrygram Logo\" 文件将在您启用该功能并重启应用后下载</string>
     <string name="CP_TimeOnStick">隐藏贴纸时间</string>
+    <string name="CP_AdminActions">管理员快捷方式</string>
     <string name="CP_MessageMenu">消息菜单自定义</string>
+    <string name="AP_CenterChatsTitle">聊天中标题栏居中</string>
     <string name="CP_UnreadBadgeOnBackButton">显示未读聊天数量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已打开的聊天中显示未读消息数</string>
     <string name="CP_NoRounding">禁用数字舍入</string>
@@ -192,14 +217,18 @@
     <string name="CP_ShowSeconds">时间显示秒</string>
     <string name="CP_LeftBottomButtonAction">左侧按钮功能</string>
     <string name="CP_DoubleTapAction">双击操作</string>
+    <string name="CG_MsgSlideAction">左滑消息</string>
     <string name="CP_DisableSwipeToNext">禁用频道切换</string>
     <string name="CP_DisableSwipeToNext_Desc">浏览频道消息时禁止切换到下一个频道</string>
     <string name="CP_HideMuteUnmuteButton">隐藏频道底部按钮</string>
     <string name="CP_HideKbdOnScroll">滚动浏览时收起键盘</string>
     <string name="CP_HideSendAsChannel">隐藏频道身份发送按钮</string>
+    <string name="CP_HideSendAsChannelDesc">您可以通过长按Emoji/贴纸/GIF按钮打开以频道身份发送的菜单</string>
     <string name="CP_Slider_RecentEmojisAmplifier">最近使用的 Emojis 数量（重启应用生效）</string>
     <string name="CP_Slider_RecentStickersAmplifier">最近使用的贴纸数量（重启应用生效）</string>
     <string name="CP_Header_Record">媒体</string>
+    <string name="CP_SpoilersOnMedia">干扰效果</string>
+    <string name="CP_SpoilersOnMedia_Desc">禁用此功能后将不再显示对照片和视频的干扰效果</string>
     <string name="CP_VoiceEnhancements">语音增强</string>
     <string name="CP_VoiceEnhancements_Desc">降噪与人声增强</string>
     <string name="CP_PlayVideo">按下音量键播放视频</string>
@@ -218,6 +247,12 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">相机</string>
     <string name="CP_CameraType">相机类型</string>
+    <string name="CP_Camera2Desc">开启镜头时隐藏的所有功能都不会与启用镜头2兼容。</string>
+    <string name="CP_CameraStabilisation">相机稳定</string>
+    <string name="CP_CameraUW">从超广角镜头开始</string>
+    <string name="CP_CameraUW_Desc">视频消息的录制将从超广角摄像头开始 (如果您的设备的 API 支持)</string>
+    <string name="CP_CameraDualCamera">前后双摄</string>
+    <string name="CP_CameraDualCamera_Desc">同时调用前后相机，便于在录制视频时快速切换镜头。</string>
     <string name="CP_DefaultCameraDesc">使用 Telegram 内置相机</string>
     <string name="CP_CameraXDesc">CameraX 仅支持 <![CDATA[<a href="https://developer.android.com/training/camerax/devices">下述设备</a>]]>，效果和镜头支持取决于您的硬件</string>
     <string name="CP_CameraQuality">相机质量</string>
@@ -278,6 +313,7 @@
     <string name="UP_Version">版本</string>
     <string name="UP_UpdateSize">文件大小</string>
     <string name="UP_Changelog">更新日志</string>
+    <string name="UP_ChangelogRead">点击阅读</string>
     <string name="UP_Download">下载</string>
     <!--Updates Preferences-->
     <!--Donations-->

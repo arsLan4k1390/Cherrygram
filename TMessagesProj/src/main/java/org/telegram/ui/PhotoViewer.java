@@ -297,6 +297,8 @@ import uz.unnarsx.cherrygram.extras.CherrygramExtras;
 @SuppressLint("WrongConstant")
 @SuppressWarnings("unchecked")
 public class PhotoViewer implements NotificationCenter.NotificationCenterDelegate, GestureDetector2.OnGestureListener, GestureDetector2.OnDoubleTapListener {
+
+    private static boolean centerTitle = CherrygramConfig.INSTANCE.getCenterTitle();
     private final static float ZOOM_SCALE = 0.1f;
     private final static int MARK_DEFERRED_IMAGE_LOADING = 1;
 
@@ -357,7 +359,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             super(context);
 
             container = new FrameLayout(context);
-            container.setPadding(CherrygramConfig.INSTANCE.getCenterTitle() ? 0 : dp((AndroidUtilities.isTablet() ? 80 : 72) - 16), 0, 0, 0);
+            container.setPadding(centerTitle ? 0 : dp((AndroidUtilities.isTablet() ? 80 : 72) - 16), 0, 0, 0);
             addView(container, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
 
             titleLayout = new FrameLayout(context) {
@@ -368,29 +370,29 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 }
             };
             titleLayout.setPivotX(dp(16));
-            titleLayout.setPadding(CherrygramConfig.INSTANCE.getCenterTitle() ? 0 : dp(16), 0, 0, 0);
+            titleLayout.setPadding(centerTitle ? 0 : dp(16), centerTitle ? AndroidUtilities.dp(17) : 0, 0, 0);
             titleLayout.setClipToPadding(false);
             container.addView(titleLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
 
             titleTextView = new SimpleTextView[2];
             for (int i = 0; i < 2; ++i) {
                 titleTextView[i] = new SimpleTextView(context);
-                titleTextView[i].setGravity(CherrygramConfig.INSTANCE.getCenterTitle() ? Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL : Gravity.LEFT | Gravity.CENTER_VERTICAL);
+                titleTextView[i].setGravity(centerTitle ? Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL : Gravity.LEFT | Gravity.CENTER_VERTICAL);
                 titleTextView[i].setTextColor(0xffffffff);
-                titleTextView[i].setTextSize(20);
+                titleTextView[i].setTextSize(centerTitle ? 18 : 20);
                 titleTextView[i].setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
                 titleTextView[i].setDrawablePadding(dp(4));
                 titleTextView[i].setScrollNonFitText(true);
-                titleLayout.addView(titleTextView[i], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, CherrygramConfig.INSTANCE.getCenterTitle() ? Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL : Gravity.LEFT | Gravity.CENTER_VERTICAL, CherrygramConfig.INSTANCE.getCenterTitle() ? 96 : 0, 0, CherrygramConfig.INSTANCE.getCenterTitle() ? 96 : 0, 0));
+                titleLayout.addView(titleTextView[i], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, centerTitle ? Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL : Gravity.LEFT | Gravity.CENTER_VERTICAL, centerTitle ? 96 : 0, 0, centerTitle ? 96 : 0, 0));
             }
 
             subtitleTextView = new AnimatedTextView(context, true, false, false);
             subtitleTextView.setAnimationProperties(.4f, 0, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
             subtitleTextView.setTextSize(dp(14));
-            subtitleTextView.setGravity(CherrygramConfig.INSTANCE.getCenterTitle() ? Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL : Gravity.LEFT | Gravity.CENTER_VERTICAL);
+            subtitleTextView.setGravity(centerTitle ? Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL : Gravity.LEFT | Gravity.CENTER_VERTICAL);
             subtitleTextView.setTextColor(0xffffffff);
             subtitleTextView.setEllipsizeByGradient(true);
-            container.addView(subtitleTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, CherrygramConfig.INSTANCE.getCenterTitle() ? Gravity.CENTER_HORIZONTAL | Gravity.TOP : Gravity.LEFT | Gravity.TOP, CherrygramConfig.INSTANCE.getCenterTitle() ? 0 : 16, 0, 0, 0));
+            container.addView(subtitleTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, centerTitle ? Gravity.CENTER_HORIZONTAL | Gravity.TOP : Gravity.LEFT | Gravity.TOP, centerTitle ? 0 : 16, 0, 0, 0));
         }
 
         public void setTextShadows(boolean applyShadows) {
@@ -500,15 +502,15 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 }
 
                 final boolean isLandscape = AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y;
-                final int subtitleTranslation = dp((haveSubtitle ? 30 : 33) - (isLandscape ? 6 : 0) + (CherrygramConfig.INSTANCE.getCenterTitle() ? 3 : 0));
+                final int subtitleTranslation = dp((haveSubtitle ? 30 : 33) - (isLandscape ? 6 : 0) + (centerTitle ? 3 : 0));
 
                 if (animated) {
                     ArrayList<Animator> arrayList = new ArrayList<>();
                     arrayList.add(ObjectAnimator.ofFloat(subtitleTextView, View.ALPHA, haveSubtitle ? 1 : 0));
                     arrayList.add(ObjectAnimator.ofFloat(subtitleTextView, View.TRANSLATION_Y, subtitleTranslation));
-                    arrayList.add(ObjectAnimator.ofFloat(titleLayout, View.TRANSLATION_Y, haveSubtitle ? dp(-12 - (CherrygramConfig.INSTANCE.getCenterTitle() ? 3 : 0)) : 0));
-                    arrayList.add(ObjectAnimator.ofFloat(titleLayout, View.SCALE_X, haveSubtitle && !CherrygramConfig.INSTANCE.getCenterTitle() ? .87f : 1));
-                    arrayList.add(ObjectAnimator.ofFloat(titleLayout, View.SCALE_Y, haveSubtitle && !CherrygramConfig.INSTANCE.getCenterTitle() ? .87f : 1));
+                    arrayList.add(ObjectAnimator.ofFloat(titleLayout, View.TRANSLATION_Y, haveSubtitle ? dp(-12 - (centerTitle ? 3 : 0)) : 0));
+                    arrayList.add(ObjectAnimator.ofFloat(titleLayout, View.SCALE_X, haveSubtitle && !centerTitle ? .87f : 1));
+                    arrayList.add(ObjectAnimator.ofFloat(titleLayout, View.SCALE_Y, haveSubtitle && !centerTitle ? .87f : 1));
                     subtitleAnimator = new AnimatorSet();
                     subtitleAnimator.playTogether(arrayList);
                     subtitleAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
@@ -516,9 +518,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 } else {
                     subtitleTextView.setAlpha(haveSubtitle ? 1 : 0);
                     subtitleTextView.setTranslationY(subtitleTranslation);
-                    titleLayout.setTranslationY(haveSubtitle ? dp(-12 - (CherrygramConfig.INSTANCE.getCenterTitle() ? 3 : 0)) : 0);
-                    titleLayout.setScaleX(haveSubtitle && !CherrygramConfig.INSTANCE.getCenterTitle() ? .87f : 1);
-                    titleLayout.setScaleY(haveSubtitle && !CherrygramConfig.INSTANCE.getCenterTitle() ? .87f : 1);
+                    titleLayout.setTranslationY(haveSubtitle ? dp(-12 - (centerTitle ? 3 : 0)) : 0);
+                    titleLayout.setScaleX(haveSubtitle && !centerTitle ? .87f : 1);
+                    titleLayout.setScaleY(haveSubtitle && !centerTitle ? .87f : 1);
                 }
             }
             subtitleTextView.setText(subtitle, animated);
@@ -536,7 +538,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         private ValueAnimator rightPaddingAnimator;
         private float rightPadding;
         public void updateRightPadding(float rightPadding, boolean animated) {
-            if (CherrygramConfig.INSTANCE.getCenterTitle()) {
+            if (centerTitle) {
                 return;
             }
             if (rightPaddingAnimator != null) {
@@ -5260,7 +5262,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     };
                     masksAlert.show();
                 } else if (id == gallery_menu_pip || id == gallery_menu_pip2) {
-                    if (pipItem.getAlpha() != 1.0f && !CherrygramConfig.INSTANCE.getCenterTitle()) {
+                    if (pipItem.getAlpha() != 1.0f && !centerTitle) {
                         return;
                     }
                     if (isEmbedVideo) {
@@ -9043,7 +9045,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 aspectRatioFrameLayout.setVisibility(View.VISIBLE);
             }
             if (!pipItem.isEnabled() && (pipItem.getVisibility() == View.VISIBLE || menuItem.isSubItemVisible(gallery_menu_pip2))) {
-                if (CherrygramConfig.INSTANCE.getCenterTitle()) {
+                if (centerTitle) {
                     menuItem.showSubItem(gallery_menu_pip2);
                 }
                 pipAvailable = true;
@@ -12349,7 +12351,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     }
 
     private void setItemVisible(View itemView, boolean visible, boolean animate, float maxAlpha) {
-        if ((itemView == pipItem || itemView == masksItem || itemView == editItem) && CherrygramConfig.INSTANCE.getCenterTitle() && visible) {
+        if ((itemView == pipItem || itemView == masksItem || itemView == editItem) && centerTitle && visible) {
             return;
         }
         Boolean visibleNow = actionBarItemsVisibility.get(itemView);
@@ -13028,7 +13030,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 boolean canPaint = (newMessageObject.getDocument() == null || newMessageObject.canPreviewDocument() || newMessageObject.getMimeType().startsWith("video/")) && !(isEmbedVideo || newMessageObject.messageOwner.ttl != 0 && newMessageObject.messageOwner.ttl < 60 * 60 || noforwards) && canSendMediaToParentChatActivity() && !opennedFromMedia;
                 if (isEmbedVideo) {
                     menuItem.showSubItem(gallery_menu_openin);
-                    if (CherrygramConfig.INSTANCE.getCenterTitle()) {
+                    if (centerTitle) {
                         menuItem.showSubItem(gallery_menu_pip2);
                     }
                     setItemVisible(editItem, false, false);
@@ -13052,7 +13054,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     } else {
                         setItemVisible(pipItem, true, !masksItemVisible && editItem.getAlpha() <= 0);
                     }
-                    if (CherrygramConfig.INSTANCE.getCenterTitle()) {
+                    if (centerTitle) {
                         menuItem.showSubItem(gallery_menu_pip2);
                     }
                     setItemVisible(editItem, false, false);
@@ -13081,7 +13083,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     }
                     setItemVisible(editItem, canPaint, animated && !pipItemVisible && !shouldMasksItemBeVisible);
                     setItemVisible(masksItem, shouldMasksItemBeVisible, !pipItemVisible);
-                    if (canPaint && CherrygramConfig.INSTANCE.getCenterTitle()) {
+                    if (canPaint && centerTitle) {
                         menuItem.showSubItem(gallery_menu_paint2);
                     } else {
                         menuItem.hideSubItem(gallery_menu_paint2);
@@ -13284,8 +13286,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
                     if (!AndroidUtilities.isTablet() && avatarsDialogId != 0) {
                         TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(avatarsDialogId);
-                        boolean hasVideoAvatar = userFull.profile_photo != null && (!avatar.video_sizes.isEmpty() || !userFull.profile_photo.video_sizes.isEmpty());
-                        boolean hasPublicVideoAvatar = userFull.fallback_photo != null && !userFull.fallback_photo.video_sizes.isEmpty();
+                        boolean hasVideoAvatar = userFull != null && userFull.profile_photo != null && (avatar != null && !avatar.video_sizes.isEmpty() || userFull != null && !userFull.profile_photo.video_sizes.isEmpty());
+                        boolean hasPublicVideoAvatar = userFull != null && userFull.fallback_photo != null && !userFull.fallback_photo.video_sizes.isEmpty();
 
                         if (hasVideoAvatar) {
                             fetchSetId(FileLoader.getEmojiMarkup(avatar.video_sizes));
@@ -13572,7 +13574,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 } else {
                     setItemVisible(pipItem, true, true);
                 }
-                if (CherrygramConfig.INSTANCE.getCenterTitle()) {
+                if (centerTitle) {
                     menuItem.showSubItem(gallery_menu_pip2, true);
                 }
             } else {
@@ -20415,9 +20417,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(avatarsDialogId);
 
         String date = "";
-        if (avatar.date != 0) {
+        if (avatar != null && avatar.date != 0) {
             date = String.format("%s", CherrygramExtras.INSTANCE.createDateAndTime(avatar.date));
-        } else if (userFull.fallback_photo != null) {
+        } else if (userFull != null && userFull.fallback_photo != null) {
             date = String.format("%s", CherrygramExtras.INSTANCE.createDateAndTime(userFull.fallback_photo.date)
             + " | " + LocaleController.getString("PublicPhoto", R.string.PublicPhoto)
             );

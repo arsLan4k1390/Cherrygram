@@ -1,15 +1,22 @@
 package uz.unnarsx.cherrygram.helpers
 
+import android.content.res.AssetManager
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.MessageObject
 import org.telegram.tgnet.TLRPC
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
 import java.net.URL
 
-object StickersIDsHelper: CoroutineScope by MainScope() {
+object StickersHelper: CoroutineScope by MainScope() {
 
     private var SET_IDS = listOf<String>()
 
@@ -62,4 +69,29 @@ object StickersIDsHelper: CoroutineScope by MainScope() {
     fun setToBlock(document: TLRPC.Document): Boolean {
         return isGitSetId(document) || isLocalSetId(document)
     }
+
+    //Get sticker from assets
+    fun copyStickerFromAssets() {
+        try {
+            val outFile = File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "stickers/cherrygram.webm")
+            if (outFile.exists()) return
+            outFile.parentFile?.mkdirs()
+            val am: AssetManager = ApplicationLoader.applicationContext.assets
+            val `in` = am.open("cherrygram.webm")
+            val out: OutputStream = FileOutputStream(outFile)
+            copyFile(`in`, out)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun copyFile(`in`: InputStream, out: OutputStream) {
+        val buffer = ByteArray(1024)
+        var read: Int
+        while (`in`.read(buffer).also { read = it } != -1) {
+            out.write(buffer, 0, read)
+        }
+    }
+
 }

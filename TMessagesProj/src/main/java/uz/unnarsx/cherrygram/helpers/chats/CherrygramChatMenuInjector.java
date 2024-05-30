@@ -33,6 +33,8 @@ public class CherrygramChatMenuInjector {
                 chatActivityEnterView.getAttachButton().performClick();
             });
             headerItem.setOnClickListener(v-> headerItem.toggleSubMenu(attach, attachItem.createView()));
+        } else {
+            headerItem.setOnClickListener(v-> headerItem.toggleSubMenu(null, null));
         }
     }
 

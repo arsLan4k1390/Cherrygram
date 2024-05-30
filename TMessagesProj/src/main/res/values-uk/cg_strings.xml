@@ -6,6 +6,11 @@
     <string name="CG_FollowChannelInfo">Долучайтеся до нашого каналу, щоб бути в курсі всіх новин та можливостей Cherrygram!</string>
     <string name="CG_DoNotRemindAgain">Не нагадувати</string>
     <!--Telegram screens-->
+    <string name="CG_RegistrationDate">Дата реєстрації:</string>
+    <string name="CG_RegistrationDateNewer">Новіше за %s</string>
+    <string name="CG_RegistrationDateOlder">Старіше за %s</string>
+    <string name="CG_RegistrationDateApproximately">Приблизно %s</string>
+    <string name="CG_RegistrationDateFailed">Помилка отримання дати реєстрації.</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Увійти за QR</string>
     <string name="CG_QRLoginMessage">Відскануйте QR-код іншим пристроєм для входу.</string>
@@ -204,8 +209,6 @@
     <string name="CP_Header_Chats">Діалоги</string>
     <string name="CP_Header_Messages">Повідомлення</string>
     <string name="CP_Slider_StickerAmplifier">Розмір стікерів</string>
-    <string name="CP_BlockSomeSets">Блокує деякі стікери</string>
-    <string name="CP_BlockSomeSets_Desc">Деякі стікери, що змушують крашити будуть замінені логотипом Cherrygram. \nФайл \"Cherrygram Logo\" буде завантажений після того, як ви увімкнете цю функцію і перезавантажте програму.</string>
     <string name="CP_TimeOnStick">Приховати час відправки на стікерах</string>
     <string name="CP_AdminActions">Швидкі адмін-дії</string>
     <string name="CP_MessageMenu">Меню повідомлення</string>
@@ -251,6 +254,9 @@
     <string name="CP_Category_Camera">Камера</string>
     <string name="CP_CameraType">Тип камери</string>
     <string name="CP_Camera2Desc">Всі функції, які приховані, коли Камера2 увімкнено, не будуть працювати з увімкненим Camera2.</string>
+    <string name="CP_CameraStabilisation">Стабілізація камери</string>
+    <string name="CP_CameraUW">Почати з UW</string>
+    <string name="CP_CameraUW_Desc">Запис відеоповідомлення почнеться з Ультра Широкої камери (якщо API Вашого пристрою це підтримує)</string>
     <string name="CP_CameraDualCamera">Подвійна камера</string>
     <string name="CP_CameraDualCamera_Desc">Захоплює відеоповідомлення на обох камерах, щоб швидше переходити між камерами під час запису. Використовує більше батареї.</string>
     <string name="CP_DefaultCameraDesc">Влаштована камера Telegram.</string>

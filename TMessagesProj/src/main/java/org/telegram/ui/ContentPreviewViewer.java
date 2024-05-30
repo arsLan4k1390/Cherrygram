@@ -96,6 +96,7 @@ import org.telegram.ui.Stories.DarkThemeResourceProvider;
 import java.util.ArrayList;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class ContentPreviewViewer {
@@ -814,6 +815,11 @@ public class ContentPreviewViewer {
                     icons.add(R.drawable.input_notify_off);
                     actions.add(4);
                 }
+                if (delegate.needSend(currentContentType) && !delegate.isInScheduleMode()) {
+                    items.add(LocaleController.getString("EnablePhotoSpoiler", R.string.EnablePhotoSpoiler));
+                    icons.add(R.drawable.msg_spoiler);
+                    actions.add(10);
+                }
                 if (delegate.canSchedule()) {
                     items.add(LocaleController.getString("Schedule", R.string.Schedule));
                     icons.add(R.drawable.msg_autodelete);
@@ -867,6 +873,9 @@ public class ContentPreviewViewer {
                         Object parent = parentObject;
                         ContentPreviewViewerDelegate stickerPreviewViewerDelegate = delegate;
                         AlertsCreator.createScheduleDatePickerDialog(parentActivity, stickerPreviewViewerDelegate.getDialogId(), (notify, scheduleDate) -> stickerPreviewViewerDelegate.sendGif(document != null ? document : result, parent, notify, scheduleDate), resourcesProvider);
+                    } if (actions.get(which) == 10) {
+                        CGFeatureHooks.switchGifSpoilers(true);
+                        delegate.sendGif(currentDocument != null ? currentDocument : inlineResult, parentObject, true, 0);
                     }
                     dismissPopupWindow();
                 };

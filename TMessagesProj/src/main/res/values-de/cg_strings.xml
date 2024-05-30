@@ -167,8 +167,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
     <string name="CP_Slider_StickerAmplifier">Sticker size amplifier</string>
-    <string name="CP_BlockSomeSets">Block some stickers</string>
-    <string name="CP_BlockSomeSets_Desc">Some stickers which forces the app crash will be replaced by Cherrygram\'s logo. \n\"Cherrygram Logo\" file will be downloaded after you enable the feature and restart the app.</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
     <string name="CP_MessageMenu">Message menu</string>
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>

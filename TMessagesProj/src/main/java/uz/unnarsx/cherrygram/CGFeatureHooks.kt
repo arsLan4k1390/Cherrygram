@@ -44,6 +44,12 @@ object CGFeatureHooks {
         CherrygramConfig.noAuthorship = b
     }
 
+    @JvmStatic
+    fun switchGifSpoilers(b: Boolean) {
+        // ...
+        CherrygramConfig.gifSpoilers = b
+    }
+
     private var currentPopup: ActionBarPopupWindow? = null
     @JvmStatic
     fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {

@@ -163,7 +163,6 @@
     <string name="AP_Tab_Style_Pills">藥丸</string>
     <string name="AP_Tab_Style_Stroke">新增筆畫</string>
     <string name="AP_DrawerCategory">側邊欄</string>
-    <string name="AP_DrawerPreferences">側邊欄偏好設定</string>
     <string name="AP_DrawerAvatar">側邊欄背景使用大頭貼圖片</string>
     <string name="AP_DrawerShowAvatar">顯示大頭貼</string>
     <string name="AP_DrawerDarken">暗色背景</string>
@@ -178,8 +177,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">對話</string>
     <string name="CP_Slider_StickerAmplifier">調整貼圖大小</string>
-    <string name="CP_BlockSomeSets">封鎖部分貼圖</string>
-    <string name="CP_BlockSomeSets_Desc">一些會導致應用程式崩潰的貼圖將被Cherrygram的Logo替代。 \n「Cherrygram Logo」檔案將在您啟用該功能並重新啟動後下載</string>
     <string name="CP_TimeOnStick">隱藏貼圖時間</string>
     <string name="CP_MessageMenu">訊息選單自訂</string>
     <string name="CP_UnreadBadgeOnBackButton">顯示未讀對話數量</string>

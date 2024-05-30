@@ -167,8 +167,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">المحادثات</string>
     <string name="CP_Slider_StickerAmplifier">حجم الملصق</string>
-    <string name="CP_BlockSomeSets">كتل بعض الملصقات</string>
-    <string name="CP_BlockSomeSets_Desc">سيتم استبدال بعض الملصقات التي تجبر تعطل التطبيق بشعار Cherrygram. \nملف \"Cherrygram Logo\" سيتم تنزيله بعد تمكين الميزة وإعادة تشغيل التطبيق.</string>
     <string name="CP_TimeOnStick">إخفاء الوقت على الملصقات في المحادثات</string>
     <string name="CP_MessageMenu">قائمة الرسالة</string>
     <string name="CP_UnreadBadgeOnBackButton">إظهار عداد المحادثات غير المقروءة</string>
