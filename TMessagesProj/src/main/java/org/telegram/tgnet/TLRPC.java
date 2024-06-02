@@ -40487,13 +40487,11 @@ public class TLRPC {
         public int notify_default_delay_ms;
         public int push_chat_period_ms;
         public int push_chat_limit;
-        public int saved_gifs_limit;
         public int edit_time_limit;
         public int revoke_time_limit;
         public int revoke_pm_time_limit;
         public int rating_e_decay;
         public int stickers_recent_limit;
-        public int stickers_faved_limit;
         public int channels_read_media_period;
         public int tmp_sessions;
         public int call_receive_timeout_ms;
@@ -40566,13 +40564,11 @@ public class TLRPC {
             notify_default_delay_ms = stream.readInt32(exception);
             push_chat_period_ms = stream.readInt32(exception);
             push_chat_limit = stream.readInt32(exception);
-            saved_gifs_limit = stream.readInt32(exception);
             edit_time_limit = stream.readInt32(exception);
             revoke_time_limit = stream.readInt32(exception);
             revoke_pm_time_limit = stream.readInt32(exception);
             rating_e_decay = stream.readInt32(exception);
             stickers_recent_limit = stream.readInt32(exception);
-            stickers_faved_limit = stream.readInt32(exception);
             channels_read_media_period = stream.readInt32(exception);
             if ((flags & 1) != 0) {
                 tmp_sessions = stream.readInt32(exception);
@@ -40647,13 +40643,11 @@ public class TLRPC {
             stream.writeInt32(notify_default_delay_ms);
             stream.writeInt32(push_chat_period_ms);
             stream.writeInt32(push_chat_limit);
-            stream.writeInt32(saved_gifs_limit);
             stream.writeInt32(edit_time_limit);
             stream.writeInt32(revoke_time_limit);
             stream.writeInt32(revoke_pm_time_limit);
             stream.writeInt32(rating_e_decay);
             stream.writeInt32(stickers_recent_limit);
-            stream.writeInt32(stickers_faved_limit);
             stream.writeInt32(channels_read_media_period);
             if ((flags & 1) != 0) {
                 stream.writeInt32(tmp_sessions);

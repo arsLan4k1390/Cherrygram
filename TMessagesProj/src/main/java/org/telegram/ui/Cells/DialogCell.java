@@ -1227,7 +1227,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         } else if (chat.fake) {
                             drawScam = 2;
                             Theme.dialogs_fakeDrawable.checkText();
-                        } else if (DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0) {
+                        } else if (DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0 && !CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
                             drawPremium = true;
                             nameLayoutEllipsizeByGradient = true;
                             emojiStatus.center = LocaleController.isRTL;

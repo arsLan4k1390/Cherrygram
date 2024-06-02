@@ -956,7 +956,8 @@ public class MediaDataController extends BaseController {
             if (remove) {
                 NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_STICKER, document, StickerSetBulletinLayout.TYPE_REMOVED_FROM_FAVORITES);
             } else {
-                boolean replace = recentStickers[type].size() > getMessagesController().maxFaveStickersCount;
+                int faveStickersCount = UserConfig.getInstance(currentAccount).isPremium() ? getMessagesController().stickersFavedLimitPremium : getMessagesController().stickersFavedLimitDefault;
+                boolean replace = recentStickers[type].size() > /*getMessagesController().maxFaveStickersCount*/ faveStickersCount;
                 NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_STICKER, document, replace ? StickerSetBulletinLayout.TYPE_REPLACED_TO_FAVORITES : StickerSetBulletinLayout.TYPE_ADDED_TO_FAVORITES);
             }
             TLRPC.TL_messages_faveSticker req = new TLRPC.TL_messages_faveSticker();
@@ -975,7 +976,8 @@ public class MediaDataController extends BaseController {
                     AndroidUtilities.runOnUIThread(() -> getMediaDataController().loadRecents(MediaDataController.TYPE_FAVE, false, false, true));
                 }
             });
-            maxCount = getMessagesController().maxFaveStickersCount;
+//            maxCount = getMessagesController().maxFaveStickersCount;
+            maxCount = UserConfig.getInstance(currentAccount).isPremium() ? getMessagesController().stickersFavedLimitPremium : getMessagesController().stickersFavedLimitDefault;
         } else {
             if (type == TYPE_IMAGE && remove) {
                 NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_STICKER, document, StickerSetBulletinLayout.TYPE_REMOVED_FROM_RECENT);
@@ -994,7 +996,8 @@ public class MediaDataController extends BaseController {
                     }
                 });
             }
-            maxCount = getMessagesController().maxRecentStickersCount;
+//            maxCount = getMessagesController().maxRecentStickersCount;
+            maxCount = CherrygramConfig.INSTANCE.getSlider_RecentStickersAmplifier();
         }
         if (recentStickers[type].size() > maxCount || remove) {
             TLRPC.Document old = remove ? document : recentStickers[type].remove(recentStickers[type].size() - 1);
@@ -1997,14 +2000,17 @@ public class MediaDataController extends BaseController {
                     SQLiteDatabase database = getMessagesStorage().getDatabase();
                     int maxCount;
                     if (gif) {
-                        maxCount = getMessagesController().maxRecentGifsCount;
+//                        maxCount = getMessagesController().maxRecentGifsCount;
+                        maxCount = UserConfig.getInstance(currentAccount).isPremium() ? getMessagesController().savedGifsLimitPremium : getMessagesController().savedGifsLimitDefault;
                     } else {
                         if (type == TYPE_GREETINGS || type == TYPE_PREMIUM_STICKERS) {
                             maxCount = 200;
                         } else if (type == TYPE_FAVE) {
-                            maxCount = getMessagesController().maxFaveStickersCount;
+//                            maxCount = getMessagesController().maxFaveStickersCount;
+                            maxCount = UserConfig.getInstance(currentAccount).isPremium() ? getMessagesController().stickersFavedLimitPremium : getMessagesController().stickersFavedLimitDefault;
                         } else {
-                            maxCount = getMessagesController().maxRecentStickersCount;
+//                            maxCount = getMessagesController().maxRecentStickersCount;
+                            maxCount = CherrygramConfig.INSTANCE.getSlider_RecentStickersAmplifier();
                         }
                     }
                     database.beginTransaction();

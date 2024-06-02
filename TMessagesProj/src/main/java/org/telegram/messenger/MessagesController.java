@@ -4705,9 +4705,9 @@ public class MessagesController extends BaseController implements NotificationCe
             maxGroupCount = config.chat_size_max;
             maxEditTime = config.edit_time_limit;
             ratingDecay = config.rating_e_decay;
-            maxRecentGifsCount = config.saved_gifs_limit;
+//            maxRecentGifsCount = config.saved_gifs_limit;
             maxRecentStickersCount = config.stickers_recent_limit;
-            maxFaveStickersCount = config.stickers_faved_limit;
+//            maxFaveStickersCount = config.stickers_faved_limit;
             revokeTimeLimit = config.revoke_time_limit;
             revokeTimePmLimit = config.revoke_pm_time_limit;
             canRevokePmInbox = config.revoke_pm_inbox;
