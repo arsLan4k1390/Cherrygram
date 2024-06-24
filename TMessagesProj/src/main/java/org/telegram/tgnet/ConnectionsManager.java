@@ -390,7 +390,7 @@ public class ConnectionsManager extends BaseController {
                         if (BuildVars.LOGS_ENABLED && error.code != -2000) {
                             FileLog.e(object + " got error " + error.code + " " + error.text);
                         }
-                        if (CherrygramConfig.INSTANCE.getShowRPCErrors() && !CherrygramConfig.INSTANCE.isStableBuild()) {
+                        if (CherrygramConfig.INSTANCE.getShowRPCErrors() && !CherrygramConfig.INSTANCE.isStableBuild() && !CherrygramConfig.INSTANCE.isPlayStoreBuild()) {
                             ErrorDatabaseHelper.showErrorToast(object, errorText);
                         }
                     }

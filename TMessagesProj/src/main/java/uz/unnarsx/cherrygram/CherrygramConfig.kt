@@ -696,7 +696,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     init {
         CherrygramToasts.init(sharedPreferences)
-        ConnectionsManagerImpl.launch {}
+        if (!isPlayStoreBuild()) ConnectionsManagerImpl.launch {}
     }
 
     init {
@@ -723,7 +723,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     }
 
     fun isStableBuild(): Boolean {
-        return true
+        return false
     }
 
     fun isBetaBuild(): Boolean {
@@ -739,7 +739,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     }
 
     fun isPlayStoreBuild(): Boolean {
-        return false
+        return true
     }
 
     /*fun isCherryVerified(chat: TLRPC.Chat): Boolean {
