@@ -12,11 +12,11 @@ object Extra {
 
     const val PACKAGE_HASH = ""
 
-    fun getRegDate(userId: Long): StringBuilder {
+    fun getRegistrationDate(fragment: BaseFragment, parentActivity: Activity, userId: Long) {
 
     }
 
-    fun doAsyncWork(userId: Long) {
+    fun addBirthdayToCalendar(parentActivity: Activity, userId: Long) {
 
     }
 }

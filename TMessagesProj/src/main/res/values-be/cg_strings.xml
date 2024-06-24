@@ -8,9 +8,6 @@
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">QR логін</string>
     <string name="CG_QRLoginMessage">Сканіраванне QR-кода з іншага прылады для ўваходу ў сістэму.</string>
-    <string name="CG_TestBackendNumber">Тэставы нумар</string>
-    <string name="CG_TestBackendOn">Гэты аккаўнт ужо падключыцеся да тэставаму серверу.</string>
-    <string name="CG_TestBackendOff">Гэта аккаўнт ужо падключыцеся да тэставаму серверу.</string>
     <!--Sign in screen-->
     <!--Last seen status-->
     <string name="CG_LastSeenNow">apošni raz tolki što</string>
@@ -54,8 +51,6 @@
     <string name="CG_FwdMenu_DisableCaptions">Схаваць подпісы</string>
     <!--Chats screen-->
     <!--Misc-->
-    <string name="LS_EnterPasscode">Увядзіце свой код-пароль ад Cherrygram</string>
-    <string name="CG_SwitchBackend">Вы пераключыцеся на тэставы сервер. Калі ласка, не націскайце ОК, калі Вы не ведаеце, што робіце. Вы можаце зноў пераключыцца на звычайны сервер, націснуўшы на \"Пераключыць сервер\" у меню адладкі.</string>
     <string name="CG_Restart">Перазапусціць прыкладанне</string>
     <string name="CG_RestartToApply">Перазапусціце дадатак, каб прымяніць змены</string>
     <string name="CG_PushService">Сэрвіс апавяшчэнняў Cherrygram.</string>
@@ -233,7 +228,6 @@
     <string name="EP_NavigationAnimationCrossfading">Эфект плаўнага згасання</string>
     <string name="CG_ResidentNotification">Уключыць сталае паведамленне</string>
     <string name="EP_PhotosSize">Адпраўляць вялікія фота (2560px)</string>
-    <string name="EP_ShowRPCError">Усплыўныя паведамленні пра ўсе памылкі RPC</string>
     <string name="EP_CustomAppTitle">Назва дадатку</string>
     <string name="EP_CustomChat">Карыстацкі чат для Захаванага</string>
     <string name="EP_CustomChat_Desc">Усталюйце ID іншага чату/групы/канала, каб перасылаць туды паведамленні (праз кнопку ў панэлі дзеянняў, у меню паведамлення ці пры падвойным націску)</string>

@@ -3,6 +3,7 @@ package uz.unnarsx.cherrygram.ui.tgkit
 import uz.unnarsx.cherrygram.preferences.AboutPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.AppearancePreferencesEntry
 import uz.unnarsx.cherrygram.preferences.ChatsPreferencesEntry
+import uz.unnarsx.cherrygram.preferences.DebugPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.DonatePreferenceEntry
 import uz.unnarsx.cherrygram.preferences.GeneralPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.MainPreferencesEntry
@@ -16,5 +17,6 @@ object CherrygramPreferencesNavigator {
     fun createChats() = TGKitSettingsFragment(ChatsPreferencesEntry())
     fun createPrivacyAndSecurity() = TGKitSettingsFragment(PrivacyAndSecurityPreferencesEntry())
     fun createDonate() = TGKitSettingsFragment(DonatePreferenceEntry())
+    fun createDebug() = TGKitSettingsFragment(DebugPreferencesEntry())
     fun createAbout() = TGKitSettingsFragment(AboutPreferencesEntry())
 }

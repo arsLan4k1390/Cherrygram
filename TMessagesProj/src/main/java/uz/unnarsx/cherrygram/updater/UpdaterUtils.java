@@ -105,7 +105,8 @@ public class UpdaterUtils {
     }
 
     public static void checkUpdates(BaseFragment fragment, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound, Browser.Progress progress) {
-        if (CherrygramConfig.INSTANCE.isPremium()) return;
+        if (CherrygramConfig.INSTANCE.isPremiumBuild()) return;
+        if (CherrygramConfig.INSTANCE.isPlayStoreBuild()) return;
 
         if (checkingForUpdates || id != 1L || (System.currentTimeMillis() - CherrygramConfig.INSTANCE.getUpdateScheduleTimestamp() < updateCheckInterval && !manual))
             return;

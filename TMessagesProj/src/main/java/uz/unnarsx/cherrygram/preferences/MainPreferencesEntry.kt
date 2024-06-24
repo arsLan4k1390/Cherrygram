@@ -4,6 +4,7 @@ import android.content.Intent
 import org.telegram.messenger.*
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LaunchActivity
+import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.helpers.BackupHelper
 import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator
@@ -61,12 +62,14 @@ class MainPreferencesEntry : BasePreferencesEntry {
         }
 
         category(LocaleController.getString("LocalOther", R.string.LocalOther)) {
-            textIcon {
-                icon = R.drawable.heart_angle_solar
-                title = LocaleController.getString("DP_Donate", R.string.DP_Donate)
+            if (!CherrygramConfig.isPlayStoreBuild()) {
+                textIcon {
+                    icon = R.drawable.heart_angle_solar
+                    title = LocaleController.getString("DP_Donate", R.string.DP_Donate)
 
-                listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(CherrygramPreferencesNavigator.createDonate())
+                    listener = TGKitTextIconRow.TGTIListener {
+                        it.presentFragment(CherrygramPreferencesNavigator.createDonate())
+                    }
                 }
             }
             textIcon {

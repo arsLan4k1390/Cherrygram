@@ -17,10 +17,6 @@
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">QR Login</string>
     <string name="CG_QRLoginMessage">Scan QRCode with another device to login.</string>
-
-    <string name="CG_TestBackendNumber">Test Number</string>
-    <string name="CG_TestBackendOn">This account will connect to the test backend.</string>
-    <string name="CG_TestBackendOff">This account will connect to the production backend.</string>
     <!--Sign in screen-->
 
     <!--Last seen status-->
@@ -91,8 +87,6 @@
     <!--Chats screen-->
 
     <!--Misc-->
-    <string name="LS_EnterPasscode">Enter your Cherrygram passcode</string>
-    <string name="CG_SwitchBackend">You\'re going to switch to the test server. Please don\'t press OK if you don\'t know what you\'re doing. You can switch to normal server by pressing "Switch backend" in debug menu again.</string>
     <string name="CG_Restart">Restart app</string>
     <string name="CG_RestartToApply">Restart app to apply changes</string>
     <string name="CG_PushService">Cherrygram Push Service.</string>
@@ -244,6 +238,7 @@
     <string name="CP_Slider_StickerAmplifier">Sticker size amplifier</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
 
+    <string name="CP_ChatMenuShortcuts">Chat menu shortcuts</string>
     <string name="CP_AdminActions">Admin shortcuts</string>
     <string name="CP_MessageMenu">Message menu</string>
     <string name="AP_CenterChatsTitle">Center title in chats</string>
@@ -322,7 +317,6 @@
     <string name="EP_NavigationAnimationCrossfading">Crossfading effect</string>
     <string name="CG_ResidentNotification">Show a resident notification</string>
     <string name="EP_PhotosSize">Send large photos (2560px)</string>
-    <string name="EP_ShowRPCError">Toast all RPC errors</string>
     <string name="EP_CustomAppTitle">App Title</string>
     <string name="EP_CustomChat">Custom chat for Saved Messages</string>
     <string name="EP_CustomChat_Desc">Set an ID from another chat/group/channel to forward messages there (button in action bar, message menu or double tap)</string>
@@ -345,6 +339,13 @@
 
     <string name="SP_CleanOld">Remove old cache (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Removed successfully</string>
+
+    <string name="SP_AskPinBeforeDelete">Ask biometric confirmation before deleting a chat.</string>
+    <string name="SP_AskPinBeforeDelete_Desc">If you want to delete a chat or clear history, biometric confirmation will be required. Passcode and biometric confirmation in system need to be enabled.</string>
+
+    <string name="SP_AllowUseSystemPasscode">Allow use system PIN/Pattern</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">\"Cancel\" button on the fingerprint confirmation dialog will be replaced by \"Pin/Pattern\" button and you will be able to use system pass to unlock Cherrygram.</string>
+    <string name="SP_TestFingerprint">Test fingerprint</string>
 
     <string name="SP_Category_Account">Account</string>
     <string name="SP_DeleteAccount">Delete Telegram account</string>

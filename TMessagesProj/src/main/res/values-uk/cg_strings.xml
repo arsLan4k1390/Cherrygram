@@ -14,9 +14,6 @@
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Увійти за QR</string>
     <string name="CG_QRLoginMessage">Відскануйте QR-код іншим пристроєм для входу.</string>
-    <string name="CG_TestBackendNumber">Тестовий номер</string>
-    <string name="CG_TestBackendOn">Авторизація на тестовому сервері.</string>
-    <string name="CG_TestBackendOff">Авторизація на основному сервері.</string>
     <!--Sign in screen-->
     <!--Last seen status-->
     <string name="CG_LastSeenNow">активність — щойно</string>
@@ -76,8 +73,6 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
-    <string name="LS_EnterPasscode">Введіть свій код-пароль від Cherrygram</string>
-    <string name="CG_SwitchBackend">Ви переходите на тестовий сервер. Будь ласка, не нажимайте ОК, якщо ви не знаєте, що робите. Ви можете повернутись на звичайний сервер, натиснувши на \"Переключити сервер\" в меню налагодження.</string>
     <string name="CG_Restart">Перезапустити додаток</string>
     <string name="CG_RestartToApply">Перезавантажте додаток для застосування змін</string>
     <string name="CG_PushService">Сервіс повідомлень Cherrygram.</string>
@@ -210,6 +205,7 @@
     <string name="CP_Header_Messages">Повідомлення</string>
     <string name="CP_Slider_StickerAmplifier">Розмір стікерів</string>
     <string name="CP_TimeOnStick">Приховати час відправки на стікерах</string>
+    <string name="CP_ChatMenuShortcuts">Ярлики меню чату</string>
     <string name="CP_AdminActions">Швидкі адмін-дії</string>
     <string name="CP_MessageMenu">Меню повідомлення</string>
     <string name="AP_CenterChatsTitle">Центрувати заголовок у чатах</string>
@@ -277,7 +273,6 @@
     <string name="EP_NavigationAnimationCrossfading">Ефект перехресного затухання</string>
     <string name="CG_ResidentNotification">Увімкнути постійне сповіщення</string>
     <string name="EP_PhotosSize">Відправляти великі фотографії (2560px)</string>
-    <string name="EP_ShowRPCError">Спливаючі сповіщення про усі помилки RPC</string>
     <string name="EP_CustomAppTitle">Назва додатка</string>
     <string name="EP_CustomChat">Власний чат для збереження повідомлень</string>
     <string name="EP_CustomChat_Desc">Встановіть ID з іншого чату/групи/каналу на передові повідомлення там (кнопка в панелі дій, меню повідомлень або подвійного натискання)</string>
@@ -297,6 +292,11 @@
     <string name="SP_GoogleAnalytics_Desc">Якщо ввімкнути це, усі збої програми та статистичні дані надсилатимуться на \"console.firebase.google.com\" для подальшого перегляду розробником.</string>
     <string name="SP_CleanOld">Видалити старий кеш (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Видалено успішно</string>
+    <string name="SP_AskPinBeforeDelete">Запит біометрики перед видаленням чату.</string>
+    <string name="SP_AskPinBeforeDelete_Desc">Якщо Ви хочете видалити чат або очистити історію, потрібне буде підтвердження біометрики. В системі повинно бути активне підтвердження паролю та біометрики.</string>
+    <string name="SP_AllowUseSystemPasscode">Дозволити використовувати системний PIN/Графічний ключ</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">\"Скасувати\" на діалоговому вікні підтвердження відбитку пальця, буде замінено кнопкою \"Pin/Графічний ключ\", і ви зможете використати системний шлях для розблокування Cherrygram.</string>
+    <string name="SP_TestFingerprint">Тест відбитку пальця</string>
     <string name="SP_Category_Account">Акаунт</string>
     <string name="SP_DeleteAccount">Видалення акаунта</string>
     <!--Security Preferences-->

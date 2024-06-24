@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.preferences
 
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController
@@ -20,7 +22,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 title = "VISA (Visa Direct)"
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    AndroidUtilities.addToClipboard("4278310028769180")
+                    AndroidUtilities.addToClipboard("4278310028377794")
                     Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
             }
@@ -31,6 +33,16 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 listener = TGKitTextIconRow.TGTIListener {
                     AndroidUtilities.addToClipboard("5477330021782747")
                     Toast.makeText(bf.parentActivity, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
+                }
+            }
+            textIcon {
+                icon = if (isDarkMode) R.drawable.card_tirikchilik_dark else R.drawable.card_tirikchilik_light
+                title = "Tirikchilik (Uzbekistan)"
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    val openURL = Intent(Intent.ACTION_VIEW)
+                    openURL.data = Uri.parse("https://tirikchilik.uz/arslan4k1390")
+                    bf.parentActivity.startActivity(openURL)
                 }
             }
             textIcon {

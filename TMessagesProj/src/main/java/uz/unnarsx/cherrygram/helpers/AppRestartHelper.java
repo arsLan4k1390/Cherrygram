@@ -12,6 +12,7 @@ import android.os.Process;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 
 import java.util.ArrayList;
@@ -46,6 +47,13 @@ public final class AppRestartHelper extends Activity {
                 LocaleController.getString("BotUnblock", R.string.BotUnblock),
                 () -> {
                 }).show();
+    }
+
+    public static void createDebugSuccessBulletin(BaseFragment fragment) {
+        BulletinFactory.of(fragment)
+                .createSuccessBulletin(LocaleController.getString(R.string.OK))
+                .setDuration(Bulletin.DURATION_LONG)
+                .show();
     }
 }
 

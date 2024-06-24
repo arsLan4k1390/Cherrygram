@@ -8,9 +8,6 @@
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">掃描QR碼登入</string>
     <string name="CG_QRLoginMessage">使用另一台裝置掃描QR碼登入</string>
-    <string name="CG_TestBackendNumber">測試帳戶</string>
-    <string name="CG_TestBackendOn">使用測試伺服器登入帳戶</string>
-    <string name="CG_TestBackendOff">使用主用伺服器登入帳戶</string>
     <!--Sign in screen-->
     <!--Last seen status-->
     <string name="CG_LastSeenNow">最后上线于刚才</string>
@@ -54,8 +51,6 @@
     <string name="CG_FwdMenu_DisableCaptions">隱藏字幕</string>
     <!--Chats screen-->
     <!--Misc-->
-    <string name="LS_EnterPasscode">輸入 Cherrygram 密碼</string>
-    <string name="CG_SwitchBackend">即將切換到測試伺服器。如果您不知道自己在做什麼，請立即退出。您可以再次長按調試選單中的切換後端來切換到普通伺服器</string>
     <string name="CG_Restart">重新啟動應用程式</string>
     <string name="CG_RestartToApply">重啟應用程式以套用變更</string>
     <string name="CG_PushService">Cherrygram 推播服務</string>
@@ -233,7 +228,6 @@
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
     <string name="CG_ResidentNotification">顯示永久通知</string>
     <string name="EP_PhotosSize">傳送大型圖片(2560 像素)</string>
-    <string name="EP_ShowRPCError">透過 Toast 提示全部 RPC 錯誤</string>
     <string name="EP_CustomAppTitle">應用程式標題</string>
     <string name="EP_CustomChat">自訂已儲存訊息的對話</string>
     <string name="EP_CustomChat_Desc">為來自另一個對話/群組/頻道的 ID 設定轉寄訊息 (操作列中的按鈕、訊息選單或按兩下)</string>

@@ -8,9 +8,6 @@
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Inicio de sesión con QR</string>
     <string name="CG_QRLoginMessage">Escanee el código QR con otro dispositivo para iniciar sesión.</string>
-    <string name="CG_TestBackendNumber">Número de prueba</string>
-    <string name="CG_TestBackendOn">Esta cuenta se conectará con el backend de prueba.</string>
-    <string name="CG_TestBackendOff">Esta cuenta se conectará con el backend de producción.</string>
     <!--Sign in screen-->
     <!--Last seen status-->
     <string name="CG_LastSeenNow">última vez visto justo ahora</string>
@@ -54,8 +51,6 @@
     <string name="CG_FwdMenu_DisableCaptions">Ocultar textos</string>
     <!--Chats screen-->
     <!--Misc-->
-    <string name="LS_EnterPasscode">Introduzca su código de acceso de Cherrygram</string>
-    <string name="CG_SwitchBackend">Vas a cambiar al servidor de pruebas. Por favor, no presiones OK si no sabes lo que estás haciendo. Puede cambiar al servidor normal pulsando \"Switch backend\" en el menú de depuración de nuevo.</string>
     <string name="CG_Restart">Reiniciar app</string>
     <string name="CG_RestartToApply">Reinicie la aplicación para aplicar los cambios</string>
     <string name="CG_PushService">Servicio Push de Cherrygram.</string>
@@ -223,7 +218,6 @@
     <string name="EP_NavigationAnimationCrossfading">Efecto de desplazamiento</string>
     <string name="CG_ResidentNotification">Mostrar una notificación permanente</string>
     <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
-    <string name="EP_ShowRPCError">Enviar todos los errores RPC</string>
     <string name="EP_CustomAppTitle">Título de la app</string>
     <string name="EP_CustomChat">Chat personalizado para mensajes guardados</string>
     <string name="EP_CustomChat_Desc">Configure un ID de otro chat/grupo/canal para reenviar mensajes allí (botón en la barra de acciones, menú de mensajes o toque doble)</string>

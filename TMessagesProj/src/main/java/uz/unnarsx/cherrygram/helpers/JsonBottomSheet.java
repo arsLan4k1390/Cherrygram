@@ -101,7 +101,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         textView = new TextView(context);
         textView.setPadding(dp(22), dp(12), dp(22), dp(6));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        textView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+        textView.setTypeface(AndroidUtilities.bold());
         textView.setTextColor(getThemedColor(Theme.key_dialogTextBlack));
         textView.setTextIsSelectable(!isNoForwards);
 
@@ -182,7 +182,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         buttonTextView.setEllipsize(TextUtils.TruncateAt.END);
         buttonTextView.setGravity(Gravity.CENTER);
         buttonTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-        buttonTextView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+        buttonTextView.setTypeface(AndroidUtilities.bold());
         buttonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         buttonTextView.setText(LocaleController.getString("Close", R.string.Close));
         buttonTextView.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
@@ -446,7 +446,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             };
             titleTextView.setTextColor(getThemedColor(Theme.key_dialogTextBlack));
             titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-            titleTextView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+            titleTextView.setTypeface(AndroidUtilities.bold());
             titleTextView.setText("JSON");
             titleTextView.setPivotX(0);
             titleTextView.setPivotY(0);

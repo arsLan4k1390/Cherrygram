@@ -11,13 +11,13 @@ object Constants {
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     fun getAppName(): String {
-        if (CherrygramConfig.isStable()) {
+        if (CherrygramConfig.isStableBuild() || CherrygramConfig.isPlayStoreBuild()) {
             return "Cherrygram"
-        } else if (CherrygramConfig.isBeta()) {
+        } else if (CherrygramConfig.isBetaBuild()) {
             return "Cherrygram Beta"
-        } else if (CherrygramConfig.isPremium()) {
+        } else if (CherrygramConfig.isPremiumBuild()) {
             return "Cherrygram Premium"
-        } else if (CherrygramConfig.isDev()) {
+        } else if (CherrygramConfig.isDevBuild()) {
             return "Cherrygram Dev"
         }
         return LocaleController.getString("CG_AppName", R.string.CG_AppName)

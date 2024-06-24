@@ -59,10 +59,10 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
 
         category(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {
             textIcon {
-                title = LocaleController.getString("CP_AdminActions", R.string.CP_AdminActions)
-                icon = R.drawable.msg_admins
+                title = LocaleController.getString("CP_ChatMenuShortcuts", R.string.CP_ChatMenuShortcuts)
+                icon = R.drawable.msg_list
                 listener = TGKitTextIconRow.TGTIListener {
-                    AlertDialogSwitchers.showAdminActionsAlert(bf)
+                    AlertDialogSwitchers.showChatActionsAlert(bf)
                 }
                 divider = true
             }

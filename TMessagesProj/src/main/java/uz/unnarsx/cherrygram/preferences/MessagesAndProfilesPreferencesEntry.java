@@ -58,7 +58,6 @@ import org.telegram.ui.Components.AnimatedColor;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.Bulletin;
-import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.FilledTabsView;
 import org.telegram.ui.Components.LayoutHelper;
@@ -304,18 +303,11 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
                                 Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.msg_calendar2);
                                 detailCell.setImage(drawable);
-                                Extra.INSTANCE.doAsyncWork(getUserConfig().getCurrentUser().id);
                                 if (drawable != null && colorBar != null && colorBar.getActionBarButtonColor() != 0) {
                                     final int buttonColor = processColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, getResourceProvider()));
                                     drawable.setColorFilter(new PorterDuffColorFilter(buttonColor, PorterDuff.Mode.MULTIPLY));
                                 }
-                                detailCell.setImageClickListener(v -> {
-                                    String regDate = String.valueOf(Extra.INSTANCE.getRegDate(getUserConfig().getCurrentUser().id));
-
-                                    Bulletin bulletin = BulletinFactory.of(MessagesAndProfilesPreferencesEntry.this).createSimpleBulletin(R.raw.chats_infotip, regDate);
-                                    bulletin.setDuration(Bulletin.DURATION_PROLONG);
-                                    bulletin.show();
-                                });
+                                detailCell.setImageClickListener(v -> Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getParentActivity(), getUserConfig().getCurrentUser().id));
                             } else if (position == idDcPreviewRow) {
                                 StringBuilder sb = new StringBuilder();
                                 if (me.photo != null && me.photo.dc_id > 0) {
@@ -334,18 +326,11 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
                                 Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.msg_calendar2);
                                 detailCell.setImage(drawable);
-                                Extra.INSTANCE.doAsyncWork(getUserConfig().getCurrentUser().id);
                                 if (drawable != null && colorBar != null && colorBar.getActionBarButtonColor() != 0) {
                                     final int buttonColor = processColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, getResourceProvider()));
                                     drawable.setColorFilter(new PorterDuffColorFilter(buttonColor, PorterDuff.Mode.MULTIPLY));
                                 }
-                                detailCell.setImageClickListener(v -> {
-                                    String regDate = String.valueOf(Extra.INSTANCE.getRegDate(getUserConfig().getCurrentUser().id));
-
-                                    Bulletin bulletin = BulletinFactory.of(MessagesAndProfilesPreferencesEntry.this).createSimpleBulletin(R.raw.chats_infotip, regDate);
-                                    bulletin.setDuration(Bulletin.DURATION_PROLONG);
-                                    bulletin.show();
-                                });
+                                detailCell.setImageClickListener(v -> Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getParentActivity(), getUserConfig().getCurrentUser().id));
                             } else if (position == birthdayPreviewRow) {
                                 TLRPC.UserFull meFull = MessagesController.getInstance(currentAccount).getUserFull(me.id);
                                 if (meFull != null && meFull.birthday != null) {
@@ -357,6 +342,14 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                     detailCell.setTextAndValue(date + "", LocaleController.getString("ProfileBirthday", R.string.ProfileBirthday), false);
                                 }
                                 detailCell.textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, getResourceProvider()));
+
+                                Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.input_calendar_add_solar);
+                                detailCell.setImage(drawable);
+                                if (drawable != null && colorBar != null && colorBar.getActionBarButtonColor() != 0) {
+                                    final int buttonColor = processColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, getResourceProvider()));
+                                    drawable.setColorFilter(new PorterDuffColorFilter(buttonColor, PorterDuff.Mode.MULTIPLY));
+                                }
+                                detailCell.setImageClickListener(v -> Extra.INSTANCE.addBirthdayToCalendar(getParentActivity(), getUserConfig().getCurrentUser().id));
                             } else if (position == businessHoursPreviewRow) {
                                 detailCell.textView.setTextColor(Theme.getColor(Theme.key_avatar_nameInMessageGreen, getResourceProvider()));
                                 detailCell.setTextAndValue(LocaleController.getString("BusinessHoursProfileNowOpen", R.string.BusinessHoursProfileNowOpen), LocaleController.getString("BusinessHoursProfile", R.string.BusinessHoursProfile), false);
@@ -423,8 +416,11 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
                         profilePage.profilePreview.titleView.setRightDrawable(profilePage.profilePreview.statusEmoji);
                         profilePage.profilePreview.statusEmoji.play();
+                        profilePage.profilePreview.subtitleView.setText(LocaleController.getString(R.string.Online));
                     } else {
                         profilePage.profilePreview.titleView.setRightDrawable(0);
+                        String tgPremium = CherrygramConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
+                        profilePage.profilePreview.subtitleView.setText(LocaleController.getString(R.string.Online) + tgPremium);
                     }
 
                     updateMessages();
@@ -1228,7 +1224,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             titleView.setRightDrawableOnClick(v -> statusEmoji.play());
             titleView.setTextColor(0xFFFFFFFF);
             titleView.setTextSize(20);
-            titleView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+            titleView.setTypeface(AndroidUtilities.bold());
             titleView.setScrollNonFitText(true);
             addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 97, 0, 16, 50.33f));
 
@@ -1250,7 +1246,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             } catch (Exception ignore) {}
 
             titleView.setText(title);
-            subtitleView.setText(LocaleController.getString(R.string.Online));
+            String tgPremium = CherrygramConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
+            subtitleView.setText(LocaleController.getString(R.string.Online) + tgPremium);
 
             setWillNotDraw(false);
         }

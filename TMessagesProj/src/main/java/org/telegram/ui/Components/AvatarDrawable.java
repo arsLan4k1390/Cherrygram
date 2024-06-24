@@ -98,6 +98,7 @@ public class AvatarDrawable extends Drawable {
     public static final int AVATAR_TYPE_MY_NOTES = 22;
     public static final int AVATAR_TYPE_EXISTING_CHATS = 23;
     public static final int AVATAR_TYPE_NEW_CHATS = 24;
+    public static final int AVATAR_TYPE_EBLAN = 25;
 
     /**
      * Matches {@link org.telegram.ui.Components.AvatarConstructorFragment#defaultColors}
@@ -125,7 +126,7 @@ public class AvatarDrawable extends Drawable {
         super();
         this.resourcesProvider = resourcesProvider;
         namePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
-        namePaint.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        namePaint.setTypeface(AndroidUtilities.bold());
         namePaint.setTextSize(dp(18));
     }
 
@@ -614,6 +615,8 @@ public class AvatarDrawable extends Drawable {
                 drawable = Theme.avatarDrawables[21];
             } else if (avatarType == AVATAR_TYPE_NEW_CHATS) {
                 drawable = Theme.avatarDrawables[20];
+            } else if (avatarType == AVATAR_TYPE_EBLAN) {
+                drawable = Theme.avatarDrawables[22];
             } else {
                 drawable = Theme.avatarDrawables[9];
             }

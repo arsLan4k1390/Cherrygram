@@ -26,6 +26,7 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,8 +55,6 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-
-import java.util.Locale;
 
 public class GroupCreateUserCell extends FrameLayout {
 
@@ -95,6 +94,8 @@ public class GroupCreateUserCell extends FrameLayout {
     private Boolean premiumBlockedOverriden;
     private boolean showPremiumBlocked;
 
+    public ImageView joinButtonView;
+
     public boolean isBlocked() {
         return premiumBlocked;
     }
@@ -126,10 +127,18 @@ public class GroupCreateUserCell extends FrameLayout {
     }
 
     public GroupCreateUserCell(Context context, int checkBoxType, int pad, boolean selfAsSaved) {
-        this(context, checkBoxType, pad, selfAsSaved, false, null);
+        this(context, checkBoxType, pad, selfAsSaved, false, null, false);
+    }
+
+    public GroupCreateUserCell(Context context, int checkBoxType, int pad, boolean selfAsSaved, boolean needJoinButton) {
+        this(context, checkBoxType, pad, selfAsSaved, false, null, needJoinButton);
     }
 
     public GroupCreateUserCell(Context context, int checkBoxType, int pad, boolean selfAsSaved, boolean forCall, Theme.ResourcesProvider resourcesProvider) {
+        this(context, checkBoxType, pad, selfAsSaved, forCall, resourcesProvider, false);
+    }
+
+    public GroupCreateUserCell(Context context, int checkBoxType, int pad, boolean selfAsSaved, boolean forCall, Theme.ResourcesProvider resourcesProvider, boolean needJoinButton) {
         super(context);
         this.resourcesProvider = resourcesProvider;
         this.checkBoxType = checkBoxType;
@@ -153,7 +162,7 @@ public class GroupCreateUserCell extends FrameLayout {
         };
         NotificationCenter.listenEmojiLoading(nameTextView);
         nameTextView.setTextColor(Theme.getColor(forceDarkTheme ? Theme.key_voipgroup_nameText : Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
-        nameTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+        nameTextView.setTypeface(AndroidUtilities.bold());
         nameTextView.setTextSize(16);
         nameTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
         addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, (LocaleController.isRTL ? 28 : 72) + padding, 10, (LocaleController.isRTL ? 72 : 28) + padding, 0));
@@ -173,6 +182,17 @@ public class GroupCreateUserCell extends FrameLayout {
             paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(AndroidUtilities.dp(2));
+        }
+
+        if (needJoinButton) {
+            joinButtonView = new ImageView(context);
+            joinButtonView.setImageResource(R.drawable.msg2_chats_add);
+            joinButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_player_actionBarSelector, resourcesProvider)));
+            joinButtonView.setScaleType(ImageView.ScaleType.CENTER);
+            joinButtonView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+            joinButtonView.setVisibility(GONE);
+            joinButtonView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+            addView(joinButtonView, LayoutHelper.createFrame(40, 40, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 8 : 0, 0, LocaleController.isRTL ? 0 : 8, 0));
         }
 
         setWillNotDraw(false);
@@ -523,6 +543,10 @@ public class GroupCreateUserCell extends FrameLayout {
         }
 
         updatePremiumBlocked(false);
+
+        if (joinButtonView != null) {
+            joinButtonView.setVisibility(VISIBLE);
+        }
     }
 
     private PremiumGradient.PremiumGradientTools premiumGradient;

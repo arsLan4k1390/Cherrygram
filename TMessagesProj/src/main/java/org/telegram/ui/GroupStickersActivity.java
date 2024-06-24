@@ -72,6 +72,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+
 public class GroupStickersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private FrameLayout emptyFrameView;
@@ -1051,7 +1053,7 @@ public class GroupStickersActivity extends BaseFragment implements NotificationC
 
         @Override
         protected void onDraw(Canvas canvas) {
-            if (needDivider) {
+            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
                 canvas.drawLine(AndroidUtilities.dp(20), getHeight() - 1, getWidth() - getPaddingRight(), getHeight() - 1, Theme.dividerPaint);
             }
         }

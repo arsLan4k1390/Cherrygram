@@ -9,9 +9,6 @@
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">ورود با QR</string>
     <string name="CG_QRLoginMessage">برای ورود، کد QR را با دستگاه دیگری اسکن کنید.</string>
-    <string name="CG_TestBackendNumber">شماره‌ی تستی</string>
-    <string name="CG_TestBackendOn">این حساب کاربری به سرورهای تستی متصل خواهد شد.</string>
-    <string name="CG_TestBackendOff">این حساب کاربری به سرورهای اصلی متصل خواهد شد.</string>
     <!--Sign in screen-->
     <!--Last seen status-->
     <string name="CG_LastSeenNow">آخرین بازدید به تازگی</string>
@@ -71,8 +68,6 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
-    <string name="LS_EnterPasscode">گذرواژه Cherrygram خود را وارد کنید</string>
-    <string name="CG_SwitchBackend">شما در حال تغییر به سرور آزمایشی هستید. لطفاً تنها در صورتی که مطمئن هستید در حال انجام چه کاری هستید دکمه‌ی تائید را بفشارید. شما هر لحظه می‌توانید از منوی رفع اشکال به سرور عادی برگردید.</string>
     <string name="CG_Restart">راه‌اندازی مجدد برنامه</string>
     <string name="CG_RestartToApply">برای اعمال تغییرات برنامه را مجدداً راه‌اندازی کنید</string>
     <string name="CG_PushService">خدمات پوش Cherrygram.</string>
@@ -265,7 +260,6 @@
     <string name="EP_NavigationAnimationCrossfading">افکت نرم</string>
     <string name="CG_ResidentNotification">نمایش اعلان‌های همیشگی</string>
     <string name="EP_PhotosSize">ارسال تصاویر بزرگ (۲۵۶۰ پیکسلی)</string>
-    <string name="EP_ShowRPCError">نمایش پیغام خطا برای تمامی اشکال‌ها</string>
     <string name="EP_CustomAppTitle">عنوان برنامه</string>
     <string name="EP_CustomChat">چت سفارشی برای پیام‌های ذخیره‌شده</string>
     <string name="EP_CustomChat_Desc">تنظیم کردن شناسه یک چت/گروه/کانال دیگر برای انتقال پیام‌ها به آن (دکمه در نوار ابزار، منوی پیام یا دوبار کلیک)</string>

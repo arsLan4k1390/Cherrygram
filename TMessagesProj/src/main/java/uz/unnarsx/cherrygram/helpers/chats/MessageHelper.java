@@ -99,7 +99,7 @@ public class MessageHelper extends BaseController {
         imageView.setRoundRadius(AndroidUtilities.dp(20));
         if (forumTopic != null) {
             if (forumTopic.id == 1) {
-                imageView.setImageDrawable(ForumUtilities.createGeneralTopicDrawable(context, 0.75f, resourcesProvider));
+                imageView.setImageDrawable(ForumUtilities.createGeneralTopicDrawable(context, 0.75f, Theme.getColor(Theme.key_chat_inMenu, resourcesProvider), false));
             } else {
                 ForumUtilities.setTopicIcon(imageView, forumTopic, false, true, resourcesProvider);
             }
@@ -111,7 +111,7 @@ public class MessageHelper extends BaseController {
         TextView textView = new TextView(context);
         textView.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        textView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+        textView.setTypeface(AndroidUtilities.bold());
         textView.setLines(1);
         textView.setMaxLines(1);
         textView.setSingleLine(true);

@@ -8,9 +8,6 @@
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Aceder com Código QR</string>
     <string name="CG_QRLoginMessage">Digitalize o QRCode com outro dispositivo para iniciar sessão.</string>
-    <string name="CG_TestBackendNumber">Número de teste</string>
-    <string name="CG_TestBackendOn">Esta conta irá ligar-se ao backend do teste.</string>
-    <string name="CG_TestBackendOff">Esta conta irá ligar-se ao backend de produção.</string>
     <!--Sign in screen-->
     <!--Last seen status-->
     <string name="CG_LastSeenNow">visto pela última vez há pouco</string>
@@ -54,10 +51,6 @@
     <string name="CG_FwdMenu_DisableCaptions">Ocultar legendas</string>
     <!--Chats screen-->
     <!--Misc-->
-    <string name="LS_EnterPasscode">Introduza o seu código de acesso Cherrygram</string>
-    <string name="CG_SwitchBackend">Vai mudar para o servidor de testes. Por favor, não prima OK se 
-não sabe o que está a fazer. Pode mudar para o servidor normal por 
-premindo novamente \" Mudar backend\" no menu debug.</string>
     <string name="CG_Restart">Reiniciar aplicação</string>
     <string name="CG_RestartToApply">Reiniciar para aplicar alterações</string>
     <string name="CG_PushService">Serviço de Notificações do Cherrygram.</string>
@@ -237,7 +230,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="EP_NavigationAnimationCrossfading">Efeito crossfading</string>
     <string name="CG_ResidentNotification">Mostrar uma notificação persistente</string>
     <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
-    <string name="EP_ShowRPCError">Torrar todos os erros RPC</string>
     <string name="EP_CustomAppTitle">Título do aplicativo</string>
     <string name="EP_CustomChat">Conversa personalizada para mensagens guardadas</string>
     <string name="EP_CustomChat_Desc">Definir uma ID de outro chat/grupo/canal para reencaminhar mensagens para lá (botão na barra de ação, menu de mensagens ou duplo toque)</string>

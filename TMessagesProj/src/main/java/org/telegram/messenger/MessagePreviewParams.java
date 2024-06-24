@@ -499,6 +499,7 @@ public class MessagePreviewParams {
             }
             if (header != null) {
                 message.fwd_from = header;
+                message.fwd_from.date = messageObject.messageOwner.date;
                 message.flags |= TLRPC.MESSAGE_FLAG_FWD;
             }
         }

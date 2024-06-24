@@ -8,6 +8,8 @@
 
 package org.telegram.ui.Components;
 
+import static org.telegram.messenger.AndroidUtilities.lerp;
+
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -29,7 +31,6 @@ import android.widget.TextView;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
-import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
@@ -131,13 +132,6 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
         return color;
     }
 
-    protected int processColor(int color, @IntRange(from = 0x0, to = 0xFF) int alpha) {
-        if (alpha < 0 || alpha > 255) {
-            throw new IllegalArgumentException("alpha must be between 0 and 255.");
-        }
-        return (color & 0x00ffffff) | (alpha << 24);
-    }
-
     public ScrollSlidingTextTabStrip(Context context) {
         this(context, null);
     }
@@ -153,8 +147,7 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
         } else {
             selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
         }
-        selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey, resourcesProvider), tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
-
+        selectorDrawable.setColor(processColor(Theme.getColor(tabLineColorKey, resourcesProvider)));
 
         setFillViewport(true);
         setWillNotDraw(false);
@@ -313,7 +306,7 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
             if (tabStyle < CherrygramConfig.TAB_STYLE_VKUI) tab.setBackground(Theme.createSelectorDrawable(Theme.multAlpha(processColor(Theme.getColor(activeTextColorKey, resourcesProvider)), 0f), 3));
             tab.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             tab.setSingleLine(true);
-            tab.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
+            tab.setTypeface(AndroidUtilities.bold());
             tab.setPadding(AndroidUtilities.dp(16), 0, AndroidUtilities.dp(16), 0);
             tab.setOnClickListener(v -> {
                 int position1 = tabsContainer.indexOfChild(v);
@@ -387,7 +380,7 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
         activeTextColorKey = active;
         unactiveTextColorKey = unactive;
         selectorColorKey = selector;
-        selectorDrawable.setColor(processColor(Theme.getColor(tabLineColorKey, resourcesProvider), tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
+        selectorDrawable.setColor(processColor(Theme.getColor(tabLineColorKey, resourcesProvider)));
     }
 
     public void updateColors() {
@@ -397,7 +390,7 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
             tab.setTextColor(processColor(Theme.getColor(currentPosition == a ? activeTextColorKey : unactiveTextColorKey, resourcesProvider)));
             tab.setBackground(Theme.createSelectorDrawable(Theme.multAlpha(processColor(Theme.getColor(activeTextColorKey, resourcesProvider)), 0f), 3));
         }
-        selectorDrawable.setColor(processColor(Theme.getColor(tabLineColorKey, resourcesProvider), tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
+        selectorDrawable.setColor(processColor(Theme.getColor(tabLineColorKey, resourcesProvider)));
         invalidate();
     }
 
@@ -432,7 +425,7 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
         boolean result = super.drawChild(canvas, child, drawingTime);
         if (child == tabsContainer) {
             final int height = getMeasuredHeight();
-            selectorDrawable.setAlpha((int) (255 * tabsContainer.getAlpha()));
+            selectorDrawable.setAlpha((int) (tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 50 : 255 * tabsContainer.getAlpha()));
             float x = indicatorX + indicatorXAnimationDx;
             float w = x + indicatorWidth + indicatorWidthAnimationDx;
             selectorDrawable.setBounds(
@@ -441,10 +434,9 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
                     (int) w + (tabStyle == CherrygramConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
                     tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(15) : height
             );
-            if (tabStyle >= CherrygramConfig.TAB_STYLE_VKUI && CherrygramConfig.INSTANCE.getTabStyleStroke()) {
-//                    selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), 0));
-                selectorDrawable.setStroke(AndroidUtilities.dp(1), Theme.getColor(activeTextColorKey));
-            }
+            /*if (tabStyle >= CherrygramConfig.TAB_STYLE_VKUI && CherrygramConfig.INSTANCE.getTabStyleStroke()) {
+                selectorDrawable.setStroke(AndroidUtilities.dp(1), processColor(Theme.getColor(activeTextColorKey, resourcesProvider)));
+            }*/
             if (tabStyle != CherrygramConfig.TAB_STYLE_TEXT)
                 selectorDrawable.draw(canvas);
         }

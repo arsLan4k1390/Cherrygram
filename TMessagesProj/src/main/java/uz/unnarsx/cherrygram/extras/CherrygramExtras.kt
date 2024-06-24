@@ -1,11 +1,15 @@
 package uz.unnarsx.cherrygram.extras
 
-import android.app.DownloadManager
 import android.content.Context
-import android.net.Uri
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.URLSpan
+import android.widget.Toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.telegram.messenger.*
 import org.telegram.messenger.browser.Browser
 import org.telegram.tgnet.ConnectionsManager
@@ -14,10 +18,10 @@ import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.AlertDialog
 import org.telegram.ui.Components.URLSpanNoUnderline
 import uz.unnarsx.cherrygram.CherrygramConfig
-import java.io.File
 import java.util.*
+import kotlin.system.exitProcess
 
-object CherrygramExtras {
+object CherrygramExtras : CoroutineScope by MainScope() {
 
     fun getDCGeo(dcId: Int): String {
         return when (dcId) {
@@ -82,23 +86,6 @@ object CherrygramExtras {
         return "LOC_ERR"
     }
 
-    private val cherrygramLogo = File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "stickers/cherrygram.webm")
-    fun downloadCherrygramLogo(context: Context) {
-        if (!cherrygramLogo.exists()) {
-            try {
-                val request = DownloadManager.Request(Uri.parse("https://github.com/arsLan4k1390/Cherrygram/raw/main/cherrygram.webm"))
-                request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE or DownloadManager.Request.NETWORK_WIFI)
-                request.setTitle("Cherrygram Logo")
-                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                request.setDestinationInExternalFilesDir(context, "stickers/", "cherrygram.webm")
-                val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                manager.enqueue(request)
-            } catch (e: java.lang.Exception) {
-                FileLog.e(e)
-            }
-        }
-    }
-
     fun getUrlNoUnderlineText(charSequence: CharSequence): CharSequence {
         val spannable: Spannable = SpannableString(charSequence)
         val spans = spannable.getSpans(0, charSequence.length, URLSpan::class.java)
@@ -118,14 +105,26 @@ object CherrygramExtras {
     @JvmStatic
     fun postCheckFollowChannel(ctx: Context, currentAccount: Int) = AndroidUtilities.runOnUIThread {
 
-        if (MessagesController.getMainSettings(currentAccount).getBoolean("update_channel_skip", false)) return@runOnUIThread
+        if (MessagesController.getMainSettings(currentAccount).getBoolean("update_channel_follow_skip", false)) return@runOnUIThread
 
         val messagesCollector = MessagesController.getInstance(currentAccount)
         val connectionsManager = ConnectionsManager.getInstance(currentAccount)
         val messagesStorage = MessagesStorage.getInstance(currentAccount)
         val updateChannel = messagesCollector.getUserOrChat(channelUsername)
 
-        if (updateChannel is TLRPC.Chat) checkFollowChannel(ctx, currentAccount, updateChannel) else {
+        if (updateChannel is TLRPC.Chat) {
+            launch(Dispatchers.IO) {
+                if (updateChannel.id != Constants.Cherrygram_Channel) {
+                    AndroidUtilities.runOnUIThread {
+                        Toast.makeText(ApplicationLoader.applicationContext, "Моднииий хуесос", Toast.LENGTH_LONG).show()
+                        Toast.makeText(ApplicationLoader.applicationContext, "Старайся лучше!", Toast.LENGTH_LONG).show()
+                    }
+                    delay(1500)
+                    exitProcess(0)
+                }
+            }
+            checkFollowChannel(ctx, currentAccount, updateChannel)
+        } else {
             connectionsManager.sendRequest(TLRPC.TL_contacts_resolveUsername().apply {
                 username = channelUsername
             }) { response: TLObject?, error: TLRPC.TL_error? ->
@@ -134,6 +133,16 @@ object CherrygramExtras {
                     val chat = res.chats.find { it.username == channelUsername } ?: return@sendRequest
                     messagesCollector.putChats(res.chats, false)
                     messagesStorage.putUsersAndChats(res.users, res.chats, false, true)
+                    launch(Dispatchers.IO) {
+                        if (chat.id != Constants.Cherrygram_Channel) {
+                            AndroidUtilities.runOnUIThread {
+                                Toast.makeText(ApplicationLoader.applicationContext, "Моднииий хуесос", Toast.LENGTH_LONG).show()
+                                Toast.makeText(ApplicationLoader.applicationContext, "Старайся лучше!", Toast.LENGTH_LONG).show()
+                            }
+                            delay(1500)
+                            exitProcess(0)
+                        }
+                    }
                     checkFollowChannel(ctx, currentAccount, chat)
                 }
             }
@@ -143,8 +152,19 @@ object CherrygramExtras {
 
     private fun checkFollowChannel(ctx: Context, currentAccount: Int, channel: TLRPC.Chat) {
 
+        launch(Dispatchers.IO) {
+            if (channel.id != Constants.Cherrygram_Channel) {
+                AndroidUtilities.runOnUIThread {
+                    Toast.makeText(ApplicationLoader.applicationContext, "Моднииий хуесос", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ApplicationLoader.applicationContext, "Старайся лучше!", Toast.LENGTH_LONG).show()
+                }
+                delay(1500)
+                exitProcess(0)
+            }
+        }
+
         if (!channel.left || channel.kicked) {
-//            MessagesController.getMainSettings(currentAccount).edit().putBoolean("update_channel_skip", true).apply()
+//            MessagesController.getMainSettings(currentAccount).edit().putBoolean("update_channel_follow_skip", true).apply()
             return
         }
 
@@ -166,7 +186,7 @@ object CherrygramExtras {
 //            builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null)
 
             builder.setNeutralButton(LocaleController.getString("CG_DoNotRemindAgain", R.string.CG_DoNotRemindAgain)) { _, _ ->
-                MessagesController.getMainSettings(currentAccount).edit().putBoolean("update_channel_skip", true).apply()
+                MessagesController.getMainSettings(currentAccount).edit().putBoolean("update_channel_follow_skip", true).apply()
             }
 
             try {
@@ -186,6 +206,22 @@ object CherrygramExtras {
                 UserConfig.getInstance(currentAccount).getClientUserId().toString()
             )
         }
+    }
+
+    @JvmStatic
+    fun getCustomChatID(): Long {
+        val id: Long
+        val preferences = MessagesController.getMainSettings(UserConfig.selectedAccount)
+        val savedMessagesChatID =
+            preferences.getString("CP_CustomChatIDSM", UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId().toString())
+        val chatID = savedMessagesChatID!!.replace("-100", "-").toLong()
+
+        id = if (CherrygramConfig.customChatForSavedMessages) {
+            chatID
+        } else {
+            UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId()
+        }
+        return id
     }
 
     @JvmStatic

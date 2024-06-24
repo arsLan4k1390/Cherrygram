@@ -67,7 +67,7 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.msg_qrcode to R.drawable.qr_code_outline_28,
             R.drawable.msg_nearby to R.drawable.users_3_outline_28,
             // Context menu
-            R.drawable.msg_reply to R.drawable.reply_outline_28,
+            R.drawable.menu_reply to R.drawable.reply_outline_28,
             R.drawable.msg_link to R.drawable.chain_outline_28,
             R.drawable.msg_viewreplies to R.drawable.message_reply_outline_28,
             R.drawable.msg_recent to R.drawable.recent_outline_28,

@@ -9,9 +9,6 @@
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">扫码登录</string>
     <string name="CG_QRLoginMessage">使用另一个设备扫描二维码登录</string>
-    <string name="CG_TestBackendNumber">测试账号</string>
-    <string name="CG_TestBackendOn">使用测试服务器登录账号</string>
-    <string name="CG_TestBackendOff">使用主用服务器登录账号</string>
     <!--Sign in screen-->
     <!--Last seen status-->
     <string name="CG_LastSeenNow">最后一次上线是刚才</string>
@@ -70,8 +67,6 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
-    <string name="LS_EnterPasscode">输入 Cherrygram 密码</string>
-    <string name="CG_SwitchBackend">即将切换到测试服务器。如果您不知道自己在做什么，请立即退出。您可以再次长按调试菜单中的切换后端来切换到普通服务器</string>
     <string name="CG_Restart">重启应用</string>
     <string name="CG_RestartToApply">重启应用生效</string>
     <string name="CG_PushService">Cherrygram 推送服务</string>
@@ -271,7 +266,6 @@
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
     <string name="CG_ResidentNotification">显示常驻通知</string>
     <string name="EP_PhotosSize">发送大号照片（2560 像素）</string>
-    <string name="EP_ShowRPCError">通过 Toast 提示全部 RPC 错误</string>
     <string name="EP_CustomAppTitle">应用标题</string>
     <string name="EP_CustomChat">自定义已保存消息的聊天</string>
     <string name="EP_CustomChat_Desc">设置来自另一个聊天/群组/频道的 ID 转发消息(动作栏中的按钮，消息菜单或双击)</string>

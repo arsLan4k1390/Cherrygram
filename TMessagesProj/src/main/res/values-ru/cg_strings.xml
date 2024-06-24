@@ -15,10 +15,6 @@
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Вход по QR</string>
     <string name="CG_QRLoginMessage">Отсканируйте QR-код с помощью другого устройства для входа в систему.</string>
-
-    <string name="CG_TestBackendNumber">Тестовый номер</string>
-    <string name="CG_TestBackendOn">Авторизация на тестовом сервере.</string>
-    <string name="CG_TestBackendOff">Авторизация на основном сервере.</string>
     <!--Sign in screen-->
 
     <!--Last seen status-->
@@ -89,8 +85,6 @@
     <!--Chats screen-->
 
     <!--Misc-->
-    <string name="LS_EnterPasscode">Введите свой код-пароль от Cherrygram</string>
-    <string name="CG_SwitchBackend">Вы переключитесь на тестовый сервер. Пожалуйста не нажимайте ОК, если Вы не знаете, что делаете. Вы можете снова переключиться на обычный сервер, нажав на \"Переключить сервер\" в меню отладки.</string>
     <string name="CG_Restart">Перезапустить приложение</string>
     <string name="CG_RestartToApply">Перезапустите приложение</string>
     <string name="CG_PushService">Сервис уведомлений Cherrygram.</string>
@@ -235,6 +229,7 @@
     <string name="CP_Slider_StickerAmplifier">Размер стикеров</string>
     <string name="CP_TimeOnStick">Скрыть время отправки на стикерах</string>
 
+    <string name="CP_ChatMenuShortcuts">Действия в меню чата</string>
     <string name="CP_AdminActions">Действия для админов</string>
     <string name="CP_MessageMenu">Меню сообщения</string>
     <string name="AP_CenterChatsTitle">Центрирование заголовка в чатах</string>
@@ -308,7 +303,6 @@
     <string name="EP_NavigationAnimationCrossfading">Эффект плавного затухания</string>
     <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
     <string name="EP_PhotosSize">Отправлять большие фото (2560px)</string>
-    <string name="EP_ShowRPCError">Всплывающие уведомления обо всех ошибках RPC</string>
     <string name="EP_CustomAppTitle">Название приложения</string>
     <string name="EP_CustomChat">Пользовательский чат для Избранного</string>
     <string name="EP_CustomChat_Desc">Установите ID другого чата/группы/канала, чтобы пересылать туда сообщения (через кнопку в панели действий, в меню сообщения или при двойном тапе)</string>
@@ -330,6 +324,13 @@
 
     <string name="SP_CleanOld">Очистить старый кэш (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Успешно удалено</string>
+
+    <string name="SP_AskPinBeforeDelete">Запрашивать биметрическое подтверждение перед удалением чата.</string>
+    <string name="SP_AskPinBeforeDelete_Desc">Если вы хотите удалить чат или очистить историю, потребуется биометрическое подтверждение. Пароль и биометрическое подтверждение в системе должны быть включены.</string>
+
+    <string name="SP_AllowUseSystemPasscode">Использовать системный PIN/Граф. ключ</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">Кнопка \"Отмена\" в диалоге проверки отпечатка пальцев будет заменена на \"PIN/Граф. ключ\" и вы сможете разблокировать Cherrygram при помощи системного PIN/Графического ключа.</string>
+    <string name="SP_TestFingerprint">Протестировать отпечаток</string>
 
     <string name="SP_Category_Account">Аккаунт</string>
     <string name="SP_DeleteAccount">Удаление аккаунта</string>

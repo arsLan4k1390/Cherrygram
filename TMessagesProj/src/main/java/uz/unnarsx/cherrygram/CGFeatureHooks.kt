@@ -99,27 +99,20 @@ object CGFeatureHooks {
             }
             CherrygramConfig.MESSAGE_SLIDE_ACTION_SAVE -> {
                 // Save message
-                val customChatID = CherrygramConfig.customChatForSavedMessages
-                val preferences = MessagesController.getMainSettings(UserConfig.selectedAccount)
-                val savedMessagesChatID = preferences.getString("CP_CustomChatIDSM",
-                    UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId().toString()
-                )
-                val chatID = savedMessagesChatID!!.replace("-100", "-").toLong()
-                val userID = UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId()
+                val id = CherrygramExtras.getCustomChatID()
 
-                cf.sendMessagesHelper.sendMessage(arrayListOf(msg),
-                    if (customChatID) chatID else userID, false, false, true, 0)
+                cf.sendMessagesHelper.sendMessage(arrayListOf(msg), id, false, false, true, 0)
 
                 cf.createUndoView()
                 if (cf.undoView == null) {
                     return
                 }
-                if (!customChatID) {
-                    if (!BulletinFactory.of(cf).showForwardedBulletinWithTag(userID, arrayListOf(msg).size)) {
-                        cf.undoView!!.showWithAction(userID, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
+                if (!CherrygramConfig.customChatForSavedMessages) {
+                    if (!BulletinFactory.of(cf).showForwardedBulletinWithTag(id, arrayListOf(msg).size)) {
+                        cf.undoView!!.showWithAction(id, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
                     }
                 } else {
-                    cf.undoView!!.showWithAction(chatID, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
+                    cf.undoView!!.showWithAction(id, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
                 }
             }
             CherrygramConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> {
@@ -194,8 +187,8 @@ object CGFeatureHooks {
     }
 
     @JvmStatic
-    fun injectChatActivityAvatarArrayItems(cf: ChatActivity, arr: Array<AvatarPreviewer.MenuItem>, enableMention: Boolean) {
-        var startPos = if (enableMention) 3 else 2
+    fun injectChatActivityAvatarArrayItems(cf: ChatActivity, arr: Array<AvatarPreviewer.MenuItem>, enableMention: Boolean, enableSearchMessages: Boolean) {
+        var startPos = if (enableMention || enableSearchMessages) 3 else 2
 
         if (ChatObject.canBlockUsers(cf.currentChat)) {
             arr[startPos] = AvatarPreviewer.MenuItem.CG_KICK

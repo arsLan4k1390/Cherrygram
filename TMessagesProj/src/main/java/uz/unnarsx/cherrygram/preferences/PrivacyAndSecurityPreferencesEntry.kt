@@ -1,12 +1,15 @@
 package uz.unnarsx.cherrygram.preferences
 
+import android.os.Build
 import android.os.Environment
 import android.widget.Toast
+import androidx.biometric.BiometricPrompt
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.helpers.CGBiometricPrompt
 import uz.unnarsx.cherrygram.ui.dialogs.DeleteAccountDialog
 import uz.unnarsx.cherrygram.ui.tgkit.preference.category
 import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
@@ -48,6 +51,41 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     val file = File(Environment.getExternalStorageDirectory(), "Telegram")
                     file.deleteRecursively()
                     Toast.makeText(bf.parentActivity, LocaleController.getString("SP_RemovedS", R.string.SP_RemovedS), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+        val askPasscode = Build.VERSION.SDK_INT >= 23
+        if (askPasscode) {
+            category(LocaleController.getString("Passcode", R.string.Passcode)) {
+                switch {
+                    title = LocaleController.getString("SP_AskPinBeforeDelete", R.string.SP_AskPinBeforeDelete)
+                    description = LocaleController.getString("SP_AskPinBeforeDelete_Desc", R.string.SP_AskPinBeforeDelete_Desc)
+
+                    contract({
+                        return@contract CherrygramConfig.askPasscodeBeforeDelete
+                    }) {
+                        CherrygramConfig.askPasscodeBeforeDelete = it
+                        AppRestartHelper.createRestartBulletin(bf)
+                    }
+                }
+                switch {
+                    title = LocaleController.getString("SP_AllowUseSystemPasscode", R.string.SP_AllowUseSystemPasscode)
+                    description = LocaleController.getString("SP_AllowUseSystemPasscode_Desc", R.string.SP_AllowUseSystemPasscode_Desc)
+
+                    contract({
+                        return@contract CherrygramConfig.allowSystemPasscode
+                    }) {
+                        CherrygramConfig.allowSystemPasscode = it
+                    }
+                }
+                textIcon {
+                    title = LocaleController.getString("SP_TestFingerprint", R.string.SP_TestFingerprint)
+                    icon = R.drawable.fingerprint
+
+                    listener = TGKitTextIconRow.TGTIListener {
+                        CGBiometricPrompt.prompt(bf.parentActivity) { AppRestartHelper.createDebugSuccessBulletin(bf) }
+                    }
                 }
             }
         }

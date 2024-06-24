@@ -61,7 +61,7 @@ public class UpdaterBottomSheet extends BottomSheet {
 
             SimpleTextView nameView = new SimpleTextView(context);
             nameView.setTextSize(20);
-            nameView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+            nameView.setTypeface(AndroidUtilities.bold());
             nameView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             nameView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             nameView.setText(LocaleController.getString("UP_UpdateAvailable", R.string.UP_UpdateAvailable));
@@ -74,7 +74,7 @@ public class UpdaterBottomSheet extends BottomSheet {
         timeView.adaptWidth = false;
         timeView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
         timeView.setTextSize(AndroidUtilities.dp(13));
-        timeView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+        timeView.setTypeface(AndroidUtilities.bold());
         timeView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
         timeView.setText(available ? update.uploadDate + " UTC" : LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true));
         if (available) header.addView(timeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, Gravity.LEFT, available ? 75 : 0, 35, 0, 0));
@@ -135,7 +135,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             doneButton.setGravity(Gravity.CENTER);
             doneButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
             doneButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
-            doneButton.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+            doneButton.setTypeface(AndroidUtilities.bold());
             doneButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             doneButton.setText(LocaleController.getString("AppUpdateDownloadNow", R.string.AppUpdateDownloadNow));
             doneButton.setOnClickListener(v -> {
@@ -151,7 +151,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             scheduleButton.setGravity(Gravity.CENTER);
             scheduleButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_addButton));
             scheduleButton.setBackground(null);
-            scheduleButton.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+            scheduleButton.setTypeface(AndroidUtilities.bold());
             scheduleButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             scheduleButton.setText(LocaleController.getString("AppUpdateRemindMeLater", R.string.AppUpdateRemindMeLater));
             scheduleButton.setOnClickListener(v -> {
@@ -160,7 +160,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             });
             linearLayout.addView(scheduleButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, 0, 16, 1, 16, 0));
         } else {
-            final String btype = CherrygramConfig.INSTANCE.isBeta() ? LocaleController.getString("UP_BTBeta", R.string.UP_BTBeta) + " | " + CherrygramExtras.INSTANCE.getAbiCode() : LocaleController.getString("UP_BTRelease", R.string.UP_BTRelease) + " | " + CherrygramExtras.INSTANCE.getAbiCode();
+            final String btype = CherrygramConfig.INSTANCE.isBetaBuild() ? LocaleController.getString("UP_BTBeta", R.string.UP_BTBeta) + " | " + CherrygramExtras.INSTANCE.getAbiCode() : LocaleController.getString("UP_BTRelease", R.string.UP_BTRelease) + " | " + CherrygramExtras.INSTANCE.getAbiCode();
             TextCell buildType = new TextCell(context);
             buildType.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
             buildType.setTextAndValueAndIcon(LocaleController.getString("UP_BuildType", R.string.UP_BuildType), btype, R.drawable.msg_customize, true);
@@ -208,7 +208,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             checkUpdates.setAnimationProperties(.7f, 0, 500, CubicBezierInterpolator.EASE_OUT_QUINT);
             checkUpdates.setGravity(Gravity.CENTER);
             checkUpdates.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-            checkUpdates.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+            checkUpdates.setTypeface(AndroidUtilities.bold());
             checkUpdates.setTextSize(AndroidUtilities.dp(14));
             checkUpdates.setIgnoreRTL(!LocaleController.isRTL);
             checkUpdates.adaptWidth = false;

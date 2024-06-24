@@ -47,7 +47,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     private int springAnimationRow;
     private int actionbarCrossfadeRow;
     private int residentNotificationRow;
-    private int showRPCErrorRow;
     private int customChatRow;
     private int customChatIdRow;
     private int experimentalSettingsDivisor;
@@ -153,12 +152,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getResidentNotification());
                 }
                 AppRestartHelper.createRestartBulletin(this);
-            } else if (position == showRPCErrorRow) {
-                CherrygramConfig.INSTANCE.toggleShowRPCErrors();
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getShowRPCErrors());
-                }
-                AppRestartHelper.createRestartBulletin(this);
             } else if (position == customChatRow) {
                 CherrygramConfig.INSTANCE.toggleCustomChatForSavedMessages();
                 if (view instanceof TextCheckCell) {
@@ -241,7 +234,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         }
 
         residentNotificationRow = rowCount++;
-        if (!CherrygramConfig.INSTANCE.isStable()) showRPCErrorRow = rowCount++;
 
         customChatRow = rowCount++;
         customChatIdRow = -1;
@@ -308,11 +300,8 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                         textCheckCell.setTextAndCheck(LocaleController.getString("EP_NavigationAnimationCrossfading", R.string.EP_NavigationAnimationCrossfading), CherrygramConfig.INSTANCE.getActionbarCrossfade(), true);
                     } else if (position == residentNotificationRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("CG_ResidentNotification", R.string.CG_ResidentNotification), CherrygramConfig.INSTANCE.getResidentNotification(), true);
-                    } else if (position == showRPCErrorRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString("EP_ShowRPCError", R.string.EP_ShowRPCError), CherrygramConfig.INSTANCE.getShowRPCErrors(), true);
                     } else if (position == customChatRow) {
                         textCheckCell.setTextAndValueAndCheck(LocaleController.getString("EP_CustomChat", R.string.EP_CustomChat), LocaleController.getString("EP_CustomChat_Desc", R.string.EP_CustomChat_Desc), CherrygramConfig.INSTANCE.getCustomChatForSavedMessages(), true, true);
-
                     } else if (position == uploadSpeedBoostRow) {
                         textCheckCell.setTextAndCheck(LocaleController.getString("EP_UploadloadSpeedBoost", R.string.EP_UploadloadSpeedBoost), CherrygramConfig.INSTANCE.getUploadSpeedBoost(), true);
                     } else if (position == slowNetworkMode) {
@@ -385,7 +374,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 return 1;
             } else if (position == experimentalHeaderRow || position == networkHeaderRow) {
                 return 2;
-            } else if (position == actionbarCrossfadeRow || position == residentNotificationRow || position == showRPCErrorRow || position == customChatRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
+            } else if (position == actionbarCrossfadeRow || position == residentNotificationRow || position == customChatRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
                 return 3;
             } else if (position == springAnimationRow || position == customChatIdRow || position == downloadSpeedBoostRow) {
                 return 4;

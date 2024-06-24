@@ -139,7 +139,7 @@ public class ApplicationLoader extends Application {
     }
 
     public static boolean isStandaloneBuild() {
-        return true;
+        return !CherrygramConfig.INSTANCE.isPlayStoreBuild();
     }
 
     protected boolean isHuaweiBuild() {
@@ -147,7 +147,7 @@ public class ApplicationLoader extends Application {
     }
 
     protected boolean isStandalone() {
-        return true;
+        return !CherrygramConfig.INSTANCE.isPlayStoreBuild();
     }
 
     public static File getFilesDirFixed() {

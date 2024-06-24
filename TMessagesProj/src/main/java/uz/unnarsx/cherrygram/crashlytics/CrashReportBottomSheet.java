@@ -48,7 +48,7 @@ public class CrashReportBottomSheet extends OnceBottomSheet {
         title.setGravity(Gravity.CENTER_HORIZONTAL);
         title.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
         title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-        title.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+        title.setTypeface(AndroidUtilities.bold());
         title.setText(LocaleController.getString("CG_AppCrashed", R.string.CG_AppCrashed));
         linearLayout.addView(title, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 21, 20, 21, 0));
 
@@ -63,7 +63,7 @@ public class CrashReportBottomSheet extends OnceBottomSheet {
         buttonTextView.setPadding(AndroidUtilities.dp(34), 0, AndroidUtilities.dp(34), 0);
         buttonTextView.setGravity(Gravity.CENTER);
         buttonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        buttonTextView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+        buttonTextView.setTypeface(AndroidUtilities.bold());
         buttonTextView.setText(LocaleController.getString("DebugSendLogs", R.string.DebugSendLogs));
         buttonTextView.setOnClickListener(view -> {
             try {
@@ -96,7 +96,7 @@ public class CrashReportBottomSheet extends OnceBottomSheet {
         TextView textView = new TextView(activity);
         textView.setGravity(Gravity.CENTER);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        textView.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+        textView.setTypeface(AndroidUtilities.bold());
         textView.setText(LocaleController.getString("Cancel", R.string.Cancel));
         textView.setTextColor(Theme.getColor(Theme.key_featuredStickers_addButton));
 

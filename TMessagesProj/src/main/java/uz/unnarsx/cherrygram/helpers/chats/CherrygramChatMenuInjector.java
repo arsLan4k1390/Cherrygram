@@ -16,6 +16,7 @@ import org.telegram.ui.Components.ChatActivityEnterView;
 import org.telegram.ui.Components.ChatAttachAlert;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.extras.CherrygramExtras;
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
 // Because manual editing of drklo's sources harms your mental health.
@@ -47,20 +48,33 @@ public class CherrygramChatMenuInjector {
         }
     }
 
-    public static void injectCherrygramShortcuts(ActionBarMenuItem headerItem, TLRPC.Chat currentChat) {
-        headerItem.lazilyAddColoredGap();
+    public static void injectCherrygramShortcuts(ActionBarMenuItem headerItem, TLRPC.Chat currentChat, TLRPC.User currentUser) {
+        boolean isAnyButtonEnabled = CherrygramConfig.INSTANCE.getShortcut_JumpToBegin() || CherrygramConfig.INSTANCE.getShortcut_DeleteAll()
+                || CherrygramConfig.INSTANCE.getShortcut_SavedMessages() || CherrygramConfig.INSTANCE.getShortcut_Blur();
 
-        headerItem.lazilyAddSubItem(ChatActivity.OPTION_JUMP_TO_BEGINNING, R.drawable.ic_upward, LocaleController.getString("CG_JumpToBeginning", R.string.CG_JumpToBeginning));
+        if (isAnyButtonEnabled) headerItem.lazilyAddColoredGap();
+
+        if (CherrygramConfig.INSTANCE.getShortcut_JumpToBegin())
+            headerItem.lazilyAddSubItem(ChatActivity.OPTION_JUMP_TO_BEGINNING, R.drawable.ic_upward, LocaleController.getString("CG_JumpToBeginning", R.string.CG_JumpToBeginning));
 
         if ((ChatObject.isMegagroup(currentChat) || currentChat != null && !ChatObject.isChannel(currentChat)) && !CherrygramConfig.INSTANCE.isDeleteAllHidden(currentChat)) {
-            headerItem.lazilyAddSubItem(ChatActivity.OPTION_DELETE_ALL_FROM_SELF, R.drawable.msg_delete, LocaleController.getString("CG_DeleteAllFromSelf", R.string.CG_DeleteAllFromSelf));
+            if (CherrygramConfig.INSTANCE.getShortcut_DeleteAll())
+                headerItem.lazilyAddSubItem(ChatActivity.OPTION_DELETE_ALL_FROM_SELF, R.drawable.msg_delete, LocaleController.getString("CG_DeleteAllFromSelf", R.string.CG_DeleteAllFromSelf));
         }
 
         if (currentChat != null && !ChatObject.isChannel(currentChat) && currentChat.creator) {
             headerItem.lazilyAddSubItem(ChatActivity.OPTION_UPGRADE_GROUP, R.drawable.ic_upward, LocaleController.getString("UpgradeGroup", R.string.UpgradeGroup));
         }
 
-        headerItem.lazilyAddSubItem(ChatActivity.OPTION_BLUR_SETTINGS, R.drawable.msg_theme, LocaleController.getString("BlurInChat", R.string.BlurInChat));
+        if (currentChat != null && currentChat.id != Math.abs(CherrygramExtras.getCustomChatID())
+                || currentUser != null && currentUser.id != Math.abs(CherrygramExtras.getCustomChatID())
+        ) {
+            if (CherrygramConfig.INSTANCE.getShortcut_SavedMessages())
+                headerItem.lazilyAddSubItem(ChatActivity.OPTION_GO_TO_SAVED, R.drawable.msg_saved, LocaleController.getString("SavedMessages", R.string.SavedMessages));
+        }
+
+        if (CherrygramConfig.INSTANCE.getShortcut_Blur())
+            headerItem.lazilyAddSubItem(ChatActivity.OPTION_BLUR_SETTINGS, R.drawable.msg_theme, LocaleController.getString("BlurInChat", R.string.BlurInChat));
     }
 
     public static void injectAdminShortcuts(ActionBarMenuItem headerItem, TLRPC.Chat currentChat) {

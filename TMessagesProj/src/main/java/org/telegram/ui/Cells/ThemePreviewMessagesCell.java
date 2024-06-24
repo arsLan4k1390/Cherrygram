@@ -186,7 +186,7 @@ public class ThemePreviewMessagesCell extends LinearLayout {
             message.media.webpage.title = LocaleController.getString(R.string.UserColorPreviewLinkTitle);
             message.media.webpage.flags |= 8;
             message.media.webpage.description = LocaleController.getString(R.string.UserColorPreviewLinkDescription);
-            message.date = (int) (System.currentTimeMillis() / 1000);
+            message.date = date;
             message.dialog_id = 1;
             message.flags = 259;
             message.from_id = new TLRPC.TL_peerUser();
@@ -335,7 +335,7 @@ public class ThemePreviewMessagesCell extends LinearLayout {
         }
 
         for (int a = 0; a < cells.length; a++) {
-            cells[a] = new ChatMessageCell(context, false, null, resourcesProvider) {
+            cells[a] = new ChatMessageCell(context, currentAccount, false, null, resourcesProvider) {
                 private GestureDetector gestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
                     @Override
                     public boolean onDoubleTap(MotionEvent e) {

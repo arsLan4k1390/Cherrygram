@@ -824,10 +824,10 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             cameraThread.postRunnable(() -> this.cameraThread = null);
         }
         if (cameraSession[0] != null) {
-            cameraSession[0].destroy(false, null, null);
+            cameraSession[0].destroy(true, null, null);
         }
         if (cameraSession[1] != null) {
-            cameraSession[1].destroy(false, null, null);
+            cameraSession[1].destroy(true, null, null);
         }
         return false;
     }

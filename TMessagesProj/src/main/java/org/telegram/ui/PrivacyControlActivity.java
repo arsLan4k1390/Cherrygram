@@ -293,6 +293,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
             message.from_id = new TLRPC.TL_peerUser();
             message.id = 1;
             message.fwd_from = new TLRPC.TL_messageFwdHeader();
+            message.fwd_from.date = date;
             message.fwd_from.from_name = ContactsController.formatName(currentUser.first_name, currentUser.last_name);
             message.media = new TLRPC.TL_messageMediaEmpty();
             message.out = false;
@@ -302,7 +303,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
             messageObject.eventId = 1;
             messageObject.resetLayout();
 
-            cell = new ChatMessageCell(context);
+            cell = new ChatMessageCell(context, currentAccount);
             cell.setDelegate(new ChatMessageCell.ChatMessageCellDelegate() {
 
             });

@@ -211,6 +211,10 @@ public class BackupHelper {
         mainconfig.add("AP_DrawSnowInChat");
         mainconfig.add("CP_Slider_StickerAmplifier");
         mainconfig.add("CP_TimeOnStick");
+        mainconfig.add("CP_Shortcut_JumpToBegin");
+        mainconfig.add("CP_Shortcut_DeleteAll");
+        mainconfig.add("CP_Shortcut_SavedMessages");
+        mainconfig.add("CP_Shortcut_Blur");
         mainconfig.add("CP_Admins_Reactions");
         mainconfig.add("CP_Admins_Permissions");
         mainconfig.add("CP_Admins_Administrators");
@@ -269,12 +273,10 @@ public class BackupHelper {
         mainconfig.add("EP_UseLNavigation");
         mainconfig.add("CP_LargePhotos");
         mainconfig.add("CG_ResidentNotification");
-        mainconfig.add("EP_ShowRPCError");
         mainconfig.add("EP_DownloadSpeedBoost");
         mainconfig.add("EP_UploadSpeedBoost");
         mainconfig.add("EP_SlowNetworkMode");
         mainconfig.add("AP_Filter_Launcher_Icon");
-        mainconfig.add("CP_OldTimeStyle");
         //cherry
 
         spToJSON("mainconfig", configJson, mainconfig::contains);

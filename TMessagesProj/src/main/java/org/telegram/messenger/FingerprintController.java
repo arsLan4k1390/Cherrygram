@@ -17,7 +17,7 @@ import java.util.Locale;
 
 import javax.crypto.Cipher;
 
-import uz.unnarsx.cherrygram.helpers.BiometricPromptHelper;
+import uz.unnarsx.cherrygram.helpers.CGBiometricPrompt;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class FingerprintController {
@@ -102,7 +102,7 @@ public class FingerprintController {
     }
 
     public static void checkKeyReady(boolean notifyCheckFingerprint) {
-        if (!isKeyReady() && AndroidUtilities.isKeyguardSecure() && BiometricPromptHelper.hasBiometricEnrolled()) {
+        if (!isKeyReady() && AndroidUtilities.isKeyguardSecure() && CGBiometricPrompt.hasBiometricEnrolled()) {
             Utilities.globalQueue.postRunnable(() -> generateNewKey(notifyCheckFingerprint));
         }
     }

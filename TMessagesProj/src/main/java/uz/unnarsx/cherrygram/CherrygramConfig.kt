@@ -311,6 +311,30 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
 
     //Chats
+    //Cherrygram Shortcuts
+    var shortcut_JumpToBegin by sharedPreferences.boolean("CP_Shortcut_JumpToBegin", true)
+    fun toggleShortcutJumpToBegin() {
+        shortcut_JumpToBegin = !shortcut_JumpToBegin
+        putBoolean("CP_Shortcut_JumpToBegin", shortcut_JumpToBegin)
+    }
+
+    var shortcut_DeleteAll by sharedPreferences.boolean("CP_Shortcut_DeleteAll", true)
+    fun toggleShortcutDeleteAll() {
+        shortcut_DeleteAll = !shortcut_DeleteAll
+        putBoolean("CP_Shortcut_DeleteAll", shortcut_DeleteAll)
+    }
+
+    var shortcut_SavedMessages by sharedPreferences.boolean("CP_Shortcut_SavedMessages", false)
+    fun toggleShortcutSavedMessages() {
+        shortcut_SavedMessages = !shortcut_SavedMessages
+        putBoolean("CP_Shortcut_SavedMessages", shortcut_SavedMessages)
+    }
+
+    var shortcut_Blur by sharedPreferences.boolean("CP_Shortcut_Blur", false)
+    fun toggleShortcutBlur() {
+        shortcut_Blur = !shortcut_Blur
+        putBoolean("CP_Shortcut_Blur", shortcut_Blur)
+    }
     //Admin Shortcuts
     var admins_Reactions by sharedPreferences.boolean("CP_Admins_Reactions", false)
     fun toggleAdminsReactions() {
@@ -396,6 +420,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     }
 
     //Message menu
+    var showSaveForNotifications by sharedPreferences.boolean("CP_ShowSaveForNotifications", false)
+    fun toggleShowSaveForNotifications() {
+        showSaveForNotifications = !showSaveForNotifications
+        putBoolean("CP_ShowSaveForNotifications", showSaveForNotifications)
+    }
+
     var showReply by sharedPreferences.boolean("CP_ShowReply", true)
     fun toggleShowReply() {
         showReply = !showReply
@@ -561,6 +591,8 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     // Privacy
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
     var googleAnalytics by sharedPreferences.boolean("SP_GoogleAnalytics", ApplicationLoader.checkPlayServices())
+    var askPasscodeBeforeDelete by sharedPreferences.boolean("SP_AskPinBeforeDelete", false)
+    var allowSystemPasscode by sharedPreferences.boolean("SP_AllowSystemPasscode", false)
 
     // Experimental
     //General
@@ -578,12 +610,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     fun toggleResidentNotification() {
         residentNotification = !residentNotification
         putBoolean("CG_ResidentNotification", residentNotification)
-    }
-
-    var showRPCErrors by sharedPreferences.boolean("EP_ShowRPCErrors", false)
-    fun toggleShowRPCErrors() {
-        showRPCErrors = !showRPCErrors
-        putBoolean("EP_ShowRPCErrors", showRPCErrors)
     }
 
     var customChatForSavedMessages by sharedPreferences.boolean("CP_CustomChatForSavedMessages", false)
@@ -610,13 +636,13 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     }
 
     // OTA
-    var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isBeta())
+    var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isBetaBuild())
     fun toggleInstallBetas() {
         installBetas = !installBetas
         putBoolean("CG_Install_Beta_Ver", installBetas)
     }
 
-    var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", !isPremium())
+    var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", isStableBuild() || isBetaBuild() || isDevBuild())
     fun toggleAutoOTA() {
         autoOTA = !autoOTA
         putBoolean("CG_Auto_OTA", autoOTA)
@@ -624,6 +650,18 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     var lastUpdateCheckTime by sharedPreferences.long("CG_LastUpdateCheckTime", 0)
     var updateScheduleTimestamp by sharedPreferences.long("CG_UpdateScheduleTimestamp", 0)
+
+    // Debug menu
+    var showRPCErrors by sharedPreferences.boolean("EP_ShowRPCErrors", false)
+    var oldTimeStyle by sharedPreferences.boolean("CP_OldTimeStyle", false)
+    var playGIFsAsVideos by sharedPreferences.boolean("CP_PlayGIFsAsVideos", true)
+
+    var forceChatBlurEffect by sharedPreferences.boolean("AP_ForceBlur", false)
+    fun toggleForceChatBlurEffect() {
+        forceChatBlurEffect = !forceChatBlurEffect
+        putBoolean("AP_ForceBlur", forceChatBlurEffect)
+    }
+    var forceChatBlurEffectIntensity by sharedPreferences.int("AP_ForceBlur_Intensity", 155)
 
     // Misc
     var forwardNoAuthorship by sharedPreferences.boolean("CG_ForwardNoAuthorship", false)
@@ -638,22 +676,9 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("AP_Filter_Launcher_Icon", filterLauncherIcon)
     }
 
-    var forceChatBlurEffect by sharedPreferences.boolean("AP_ForceBlur", false)
-    fun toggleForceChatBlurEffect() {
-        forceChatBlurEffect = !forceChatBlurEffect
-        putBoolean("AP_ForceBlur", forceChatBlurEffect)
-    }
-    var forceChatBlurEffectIntensity by sharedPreferences.int("AP_ForceBlur_Intensity", 155)
-
     //Translator
     var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")
     var translationTarget by sharedPreferences.string("translationTarget", "app")
-    //Telegram Debug Menu
-    var oldTimeStyle by sharedPreferences.boolean("CP_OldTimeStyle", false)
-    fun toggleOldTimeStyle() {
-        oldTimeStyle = !oldTimeStyle
-        putBoolean("CP_OldTimeStyle", oldTimeStyle)
-    }
 
     //Search Filter
     const val FILTER_NONE = 0
@@ -697,19 +722,23 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         }
     }
 
-    fun isStable(): Boolean {
+    fun isStableBuild(): Boolean {
         return true
     }
 
-    fun isBeta(): Boolean {
+    fun isBetaBuild(): Boolean {
         return false
     }
 
-    fun isDev(): Boolean {
+    fun isDevBuild(): Boolean {
         return false
     }
 
-    fun isPremium(): Boolean {
+    fun isPremiumBuild(): Boolean {
+        return false
+    }
+
+    fun isPlayStoreBuild(): Boolean {
         return false
     }
 

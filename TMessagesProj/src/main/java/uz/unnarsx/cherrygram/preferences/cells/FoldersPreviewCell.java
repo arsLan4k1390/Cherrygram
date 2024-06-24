@@ -122,7 +122,7 @@ public class FoldersPreviewCell extends FrameLayout {
                 tab.addRect(0, startY + dp(4), getMeasuredWidth(), startY + dp(10), Path.Direction.CCW);
                 canvas.clipPath(tab, Region.Op.DIFFERENCE);
 
-                textPaint.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+                textPaint.setTypeface(AndroidUtilities.bold());
 
                 float startX = dp(25);
                 for (int i = 0; i < filters.length; i++) {
