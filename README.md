@@ -179,7 +179,6 @@ MTproto protocol manuals: https://core.telegram.org/mtproto
 
 ## Thanks to:
 - [Catogram](https://github.com/Catogram/Catogram)
-- [Nekogram](https://gitlab.com/Nekogram/Nekogram) and [Nekogram X](https://github.com/NekoX-Dev/NekoX)
+- [Nekogram](https://gitlab.com/Nekogram/Nekogram)
 - [OwlGram](https://github.com/OwlGramDev/OwlGram) and [exteraGram](https://github.com/exteraSquad/exteraGram)
-- [Telegraher](https://github.com/nikitasius/Telegraher)
 - [Telegram Monet](https://github.com/c3r5b8/Telegram-Monet)
