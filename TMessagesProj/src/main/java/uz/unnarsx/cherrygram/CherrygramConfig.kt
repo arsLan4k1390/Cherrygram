@@ -696,7 +696,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     init {
         CherrygramToasts.init(sharedPreferences)
-        ConnectionsManagerImpl.launch {}
+        if (!isPlayStoreBuild()) ConnectionsManagerImpl.launch {}
     }
 
     init {

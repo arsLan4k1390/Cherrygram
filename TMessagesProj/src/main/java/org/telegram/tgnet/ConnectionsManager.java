@@ -390,7 +390,7 @@ public class ConnectionsManager extends BaseController {
                         if (BuildVars.LOGS_ENABLED && error.code != -2000) {
                             FileLog.e(object + " got error " + error.code + " " + error.text);
                         }
-                        if (CherrygramConfig.INSTANCE.getShowRPCErrors() && !CherrygramConfig.INSTANCE.isStableBuild()) {
+                        if (CherrygramConfig.INSTANCE.getShowRPCErrors() && !CherrygramConfig.INSTANCE.isStableBuild() && !CherrygramConfig.INSTANCE.isPlayStoreBuild()) {
                             ErrorDatabaseHelper.showErrorToast(object, errorText);
                         }
                     }
@@ -1447,12 +1447,20 @@ public class ConnectionsManager extends BaseController {
         });
     }
 
-    public static void onIntegrityCheckClassic(final int currentAccount, final int requestToken, final String nonce) {
+    public static void onIntegrityCheckClassic(final int currentAccount, final int requestToken, final String project, final String nonce) {
         AndroidUtilities.runOnUIThread(() -> {
             long start = System.currentTimeMillis();
-            FileLog.d("account"+currentAccount+": server requests integrity classic check with nonce = " + nonce);
+            FileLog.d("account"+currentAccount+": server requests integrity classic check with project = "+project+" nonce = " + nonce);
             IntegrityManager integrityManager = IntegrityManagerFactory.create(ApplicationLoader.applicationContext);
-            Task<IntegrityTokenResponse> integrityTokenResponse = integrityManager.requestIntegrityToken(IntegrityTokenRequest.builder().setNonce(nonce).setCloudProjectNumber(760348033671L).build());
+            final long project_id;
+            try {
+                project_id = Long.parseLong(project);
+            } catch (Exception e) {
+                FileLog.d("account"+currentAccount+": integrity check failes to parse project id");
+                native_receivedIntegrityCheckClassic(currentAccount, requestToken, nonce, "PLAYINTEGRITY_FAILED_EXCEPTION_NOPROJECT");
+                return;
+            }
+            Task<IntegrityTokenResponse> integrityTokenResponse = integrityManager.requestIntegrityToken(IntegrityTokenRequest.builder().setNonce(nonce).setCloudProjectNumber(project_id).build());
             integrityTokenResponse
                 .addOnSuccessListener(r -> {
                     final String token = r.token();

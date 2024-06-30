@@ -74,7 +74,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                             SharedConfig.overrideDevicePerformanceClass(newClass)
                         }
                         bf.parentLayout.rebuildAllFragmentViews(true, true)
-                        value = SharedConfig.performanceClassName(which)
+                        value = SharedConfig.performanceClassName(newClass)
                         AppRestartHelper.createRestartBulletin(bf)
                     }
                     builder.setNegativeButton(
@@ -82,6 +82,15 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                         null
                     )
                     builder.show()
+                }
+            }
+            switch {
+                title = "Bot tabs 3d effect"
+
+                contract({
+                    return@contract SharedConfig.botTabs3DEffect
+                }) {
+                    SharedConfig.setBotTabs3DEffect(!SharedConfig.botTabs3DEffect)
                 }
             }
         }
