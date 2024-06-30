@@ -57,17 +57,17 @@ android {
 
     signingConfigs {
         debug {
-            storeFile file('../Your_Key.jks')
-            storePassword 'Your_Password'
-            keyAlias 'Your_Alias'
-            keyPassword 'Your_Password'
+            storeFile file('../Cherrygram-Dev.jks')
+            storePassword 'ars1390'
+            keyAlias 'key0'
+            keyPassword 'ars1390'
         }
 
         release {
-            storeFile file('../Your_Key.jks')
-            storePassword 'Your_Password'
-            keyAlias 'Your_Alias'
-            keyPassword 'Your_Password'
+            storeFile file('../Cherrygram.jks')
+            storePassword 'ars1390'
+            keyAlias 'key0'
+            keyPassword 'ars1390'
         }
     }
 
