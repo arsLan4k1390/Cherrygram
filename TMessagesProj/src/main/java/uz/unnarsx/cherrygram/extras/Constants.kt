@@ -23,6 +23,21 @@ object Constants {
         return LocaleController.getString("CG_AppName", R.string.CG_AppName)
     }
 
+    fun getBuildType(): String {
+        if (CherrygramConfig.isStableBuild()) {
+            return LocaleController.getString("UP_BTRelease", R.string.UP_BTRelease)
+        } else if (CherrygramConfig.isPlayStoreBuild()) {
+            return "Play Store"
+        } else if (CherrygramConfig.isBetaBuild()) {
+            return LocaleController.getString("UP_BTBeta", R.string.UP_BTBeta)
+        } else if (CherrygramConfig.isPremiumBuild()) {
+            return "Premium"
+        } else if (CherrygramConfig.isDevBuild()) {
+            return "Dev"
+        }
+        return "Unknown"
+    }
+
     const val Cherrygram_Owner = 282287840L // Cherrygram Owner (Arslan)
     const val Cherrygram_Channel = 1776033848L // Cherrygram Channel
     const val Cherrygram_Support = 1554776538L // Cherrygram Support Group
