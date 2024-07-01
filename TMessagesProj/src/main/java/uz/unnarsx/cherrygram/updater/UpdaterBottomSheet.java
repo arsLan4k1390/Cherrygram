@@ -160,10 +160,10 @@ public class UpdaterBottomSheet extends BottomSheet {
             });
             linearLayout.addView(scheduleButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, 0, 16, 1, 16, 0));
         } else {
-            final String btype = CherrygramConfig.INSTANCE.isBetaBuild() ? LocaleController.getString("UP_BTBeta", R.string.UP_BTBeta) + " | " + CherrygramExtras.INSTANCE.getAbiCode() : LocaleController.getString("UP_BTRelease", R.string.UP_BTRelease) + " | " + CherrygramExtras.INSTANCE.getAbiCode();
+            final String bType = Constants.INSTANCE.getBuildType() + " | " + CherrygramExtras.INSTANCE.getAbiCode();
             TextCell buildType = new TextCell(context);
             buildType.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
-            buildType.setTextAndValueAndIcon(LocaleController.getString("UP_BuildType", R.string.UP_BuildType), btype, R.drawable.msg_customize, true);
+            buildType.setTextAndValueAndIcon(LocaleController.getString("UP_BuildType", R.string.UP_BuildType), bType, R.drawable.msg_customize, true);
             buildType.setOnClickListener(v -> copyText(buildType.getTextView().getText() + ": " + buildType.getValueTextView().getText()));
             linearLayout.addView(buildType);
 

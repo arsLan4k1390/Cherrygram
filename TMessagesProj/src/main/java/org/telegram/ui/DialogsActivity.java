@@ -47,7 +47,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.text.SpannableStringBuilder;
 import android.text.TextPaint;
 import android.text.TextUtils;
@@ -8671,64 +8670,28 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         final ChatActivity[] chatActivity = new ChatActivity[1];
         previewMenu[0] = new ActionBarPopupWindow.ActionBarPopupWindowLayout(getParentActivity(), R.drawable.popup_fixed_alert2, getResourceProvider(), flags);
 
-        final ProfileActivity[] profileActivity = new ProfileActivity[1];
-        previewMenu1[0] = new ActionBarPopupWindow.ActionBarPopupWindowLayout(getParentActivity(), R.drawable.popup_fixed_alert2, getResourceProvider(), flags);
-
         if (!UserObject.isUserSelf(getMessagesController().getUser(dialogId))) {
             ActionBarMenuSubItem openProfileItem = new ActionBarMenuSubItem(getParentActivity(), false, false);
             openProfileItem.setTextAndIcon(LocaleController.getString("OpenProfile", R.string.OpenProfile), R.drawable.msg_openprofile);
-            openProfileItem.setOnClickListener(v -> new CountDownTimer(700, 100) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    finishPreviewFragment();
+            openProfileItem.setOnClickListener(v -> {
+                finishPreviewFragment();
+
+                Bundle args1 = new Bundle();
+                args1.putBoolean("expandPhoto", false);
+                if (DialogObject.isChatDialog(dialogId)) {
+                    args1.putLong("chat_id", -dialogId);
+                } else {
+                    args1.putLong("user_id", dialogId);
                 }
 
-                @Override
-                public void onFinish() {
-                    Bundle args1 = new Bundle();
-                    args1.putBoolean("expandPhoto", false);
-                    if (DialogObject.isChatDialog(dialogId)) {
-                        args1.putLong("chat_id", -dialogId);
-                    } else {
-                        args1.putLong("user_id", dialogId);
+                if (getMessagesController().checkCanOpenChat(args1, DialogsActivity.this)) {
+                    if (searchString != null) {
+                        getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
                     }
-
-                    if (getMessagesController().checkCanOpenChat(args1, DialogsActivity.this)) {
-                        if (searchString != null) {
-                            getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
-                        }
-                        prepareBlurBitmap();
-                        parentLayout.setHighlightActionButtons(true);
-                        presentFragmentAsPreviewWithMenu(profileActivity[0] = new ProfileActivity(args1), previewMenu1[0]);
-                    }
+                    presentFragment(new ProfileActivity(args1));
                 }
-            }.start());
+            });
             previewMenu[0].addView(openProfileItem);
-
-            ActionBarMenuSubItem openChat = new ActionBarMenuSubItem(getParentActivity(), false, false);
-            openChat.setTextAndIcon(LocaleController.getString("AccDescrOpenChat", R.string.AccDescrOpenChat), R.drawable.msg_discussion);
-            openChat.setMinimumWidth(160);
-            openChat.setOnClickListener(e -> new CountDownTimer(700, 100) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    finishPreviewFragment();
-                }
-
-                @Override
-                public void onFinish() {
-                    Bundle args2 = new Bundle();
-                    if (DialogObject.isChatDialog(dialogId)) {
-                        args2.putLong("chat_id", -dialogId);
-                    } else {
-                        args2.putLong("user_id", dialogId);
-                    }
-
-                    if (getMessagesController().checkCanOpenChat(args2, DialogsActivity.this)) {
-                        presentFragment(new ChatActivity(args2));
-                    }
-                }
-            }.start());
-            previewMenu1[0].addView(openChat);
         }
 
         if (hasFolders) {
