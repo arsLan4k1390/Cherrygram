@@ -98,7 +98,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
 
     public static String getCrashReportMessage() {
         return getReportMessage() + "\n\n" +
-                "Crash Date: " + LocaleController.getInstance().formatterStats.format(System.currentTimeMillis()) +
+                "Crash Date: " + LocaleController.getInstance().getFormatterStats().format(System.currentTimeMillis()) +
                 "\n\n#crash";
     }
 

@@ -96,7 +96,7 @@ public class ChatsHelper extends BaseController {
                 .append(' ')
                 .append(String.format("%d", messageObject.messageOwner.forwards))
                 .append( " • ")
-                .append(LocaleController.getInstance().formatterDay.format((long) (messageObject.messageOwner.date) * 1000));
+                .append(LocaleController.getInstance().getFormatterDay().format((long) (messageObject.messageOwner.date) * 1000));
         return spannableStringBuilder;
     }
 
@@ -128,7 +128,7 @@ public class ChatsHelper extends BaseController {
                 .append(hasForwards && !isMusic ? "• " : "")
                 .append(CherrygramConfig.INSTANCE.getShowPencilIcon() ? editedSpan : LocaleController.getString("EditedMessage", R.string.EditedMessage))
                 .append(hasForwards && !isMusic ? " • " : " ")
-                .append(LocaleController.getInstance().formatterDay.format((long) (messageObject.messageOwner.date) * 1000));
+                .append(LocaleController.getInstance().getFormatterDay().format((long) (messageObject.messageOwner.date) * 1000));
         return spannableStringBuilder;
     }
 

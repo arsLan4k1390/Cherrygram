@@ -1412,76 +1412,59 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 FileLog.d("InstantCamera create camera session " + index);
             }
 
-            surfaceTexture.setDefaultBufferSize(previewSize[0].getWidth(), previewSize[0].getHeight());
-            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
-                if (useCamera2) {
-                    if (bothCameras) {
-                        if (camera2Sessions[index] != null) {
-                            camera2Sessions[index].open(surfaceTexture);
-                        }
-                    } else {
-                        if (index == 1) return;
-                        cameraThread.setCurrentSession(camera2SessionCurrent);
-                        camera2SessionCurrent.open(surfaceTexture);
+            if (useCamera2) {
+                if (bothCameras) {
+                    if (camera2Sessions[index] != null) {
+                        camera2Sessions[index].open(surfaceTexture);
                     }
                 } else {
                     if (index == 1) return;
-                    surfaceTexture.setDefaultBufferSize(previewSize[0].getWidth(), previewSize[0].getHeight());
-                    cameraSession = new CameraSession(selectedCamera, previewSize[0], pictureSize, ImageFormat.JPEG, true);
-                    cameraThread.setCurrentSession(cameraSession);
-                    CameraController.getInstance().openRound(cameraSession, surfaceTexture, () -> {
-                        if (cameraSession != null) {
-                            boolean updateScale = false;
-                            try {
-                                Camera.Size size = cameraSession.getCurrentPreviewSize();
-                                if (size.width != previewSize[0].getWidth() || size.height != previewSize[0].getHeight()) {
-                                    previewSize[0] = new Size(size.width, size.height);
-                                    FileLog.d("InstantCamera change preview size to w = " + previewSize[0].getWidth() + " h = " + previewSize[0].getHeight());
-                                }
-                            } catch (Exception e) {
-                                FileLog.e(e);
-                            }
-
-                            try {
-                                Camera.Size size = cameraSession.getCurrentPictureSize();
-                                if (size.width != pictureSize.getWidth() || size.height != pictureSize.getHeight()) {
-                                    pictureSize = new Size(size.width, size.height);
-                                    FileLog.d("InstantCamera change picture size to w = " + pictureSize.getWidth() + " h = " + pictureSize.getHeight());
-                                    updateScale = true;
-                                }
-                            } catch (Exception e) {
-                                FileLog.e(e);
-                            }
-                            if (BuildVars.LOGS_ENABLED) {
-                                FileLog.d("InstantCamera camera initied");
-                            }
-                            cameraSession.setInitied();
-                            if (updateScale) {
-                                if (cameraThread != null) {
-                                    cameraThread.reinitForNewCamera();
-                                }
-                            }
-                        }
-                    }, () -> {
-                        if (cameraThread != null) {
-                            cameraThread.setCurrentSession(cameraSession);
-                        }
-                    });
+                    cameraThread.setCurrentSession(camera2SessionCurrent);
+                    camera2SessionCurrent.open(surfaceTexture);
                 }
             } else {
-                MeteringPointFactory factory = new SurfaceOrientedMeteringPointFactory(previewSize[0].getWidth(), previewSize[0].getHeight());
-                Preview.SurfaceProvider surfaceProvider = request -> {
-                    Surface surface = new Surface(surfaceTexture);
-                    request.provideSurface(surface, ContextCompat.getMainExecutor(getContext()), result -> {});
-                };
-                cameraXController = new CameraXController(camLifecycle, factory, surfaceProvider);
-                cameraXController.setStableFPSPreviewOnly(true);
-                cameraXController.initCamera(getContext(), isFrontface, ()-> {
+                if (index == 1) return;
+                surfaceTexture.setDefaultBufferSize(previewSize[0].getWidth(), previewSize[0].getHeight());
+                cameraSession = new CameraSession(selectedCamera, previewSize[0], pictureSize, ImageFormat.JPEG, true);
+                cameraThread.setCurrentSession(cameraSession);
+                CameraController.getInstance().openRound(cameraSession, surfaceTexture, () -> {
+                    if (cameraSession != null) {
+                        boolean updateScale = false;
+                        try {
+                            Camera.Size size = cameraSession.getCurrentPreviewSize();
+                            if (size.width != previewSize[0].getWidth() || size.height != previewSize[0].getHeight()) {
+                                previewSize[0] = new Size(size.width, size.height);
+                                FileLog.d("InstantCamera change preview size to w = " + previewSize[0].getWidth() + " h = " + previewSize[0].getHeight());
+                            }
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+
+                        try {
+                            Camera.Size size = cameraSession.getCurrentPictureSize();
+                            if (size.width != pictureSize.getWidth() || size.height != pictureSize.getHeight()) {
+                                pictureSize = new Size(size.width, size.height);
+                                FileLog.d("InstantCamera change picture size to w = " + pictureSize.getWidth() + " h = " + pictureSize.getHeight());
+                                updateScale = true;
+                            }
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+                        if (BuildVars.LOGS_ENABLED) {
+                            FileLog.d("InstantCamera camera initied");
+                        }
+                        cameraSession.setInitied();
+                        if (updateScale) {
+                            if (cameraThread != null) {
+                                cameraThread.reinitForNewCamera();
+                            }
+                        }
+                    }
+                }, () -> {
                     if (cameraThread != null) {
-                        cameraThread.setOrientation();
+                        cameraThread.setCurrentSession(cameraSession);
                     }
                 });
-                camLifecycle.start();
             }
         });
     }
@@ -2050,7 +2033,11 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
 
                     cameraSurface[0] = new SurfaceTexture(cameraTexture[0]);
                     cameraSurface[0].setOnFrameAvailableListener(surfaceTexture -> requestRender(true, false));
-                    createCamera(0, cameraSurface[0]);
+                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+                        createCamera(0, cameraSurface[0]);
+                    } else {
+                        createCameraX(cameraSurface[0]);
+                    }
 
                     updateScale();
 
