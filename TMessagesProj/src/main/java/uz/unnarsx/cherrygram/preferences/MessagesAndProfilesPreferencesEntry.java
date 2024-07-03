@@ -1404,7 +1404,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         calendar.set(Calendar.YEAR, 2022);
         calendar.set(Calendar.MONTH, 0);
         calendar.set(Calendar.DAY_OF_MONTH, 15);
-        return LocaleController.getInstance().formatterBoostExpired.format(calendar.getTimeInMillis());
+        return LocaleController.getInstance().getFormatterBoostExpired().format(calendar.getTimeInMillis());
     }
 
     public int processColor(int color) {

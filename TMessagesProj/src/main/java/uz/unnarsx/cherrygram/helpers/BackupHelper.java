@@ -44,7 +44,7 @@ public class BackupHelper {
             return;
         }
         try {
-            String formattedDate = String.format(LocaleController.getInstance().formatterYear.format(System.currentTimeMillis()), LocaleController.getInstance().formatterDay.format(System.currentTimeMillis()));
+            String formattedDate = String.format(LocaleController.getInstance().getFormatterYear().format(System.currentTimeMillis()), LocaleController.getInstance().getFormatterDay().format(System.currentTimeMillis()));
 
             File cacheFile = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), formattedDate + "-settings.cherry");
             BackupUtil.writeUtf8String(backupSettingsJson(), cacheFile);

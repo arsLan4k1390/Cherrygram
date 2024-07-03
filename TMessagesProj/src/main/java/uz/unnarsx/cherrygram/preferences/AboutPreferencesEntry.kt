@@ -11,6 +11,7 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.BulletinFactory
 import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.Extra
 import uz.unnarsx.cherrygram.crashlytics.Crashlytics
 import uz.unnarsx.cherrygram.extras.Constants
 import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator
@@ -34,25 +35,29 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                 }
             }
 
-            if (!CherrygramConfig.isPlayStoreBuild()) {
-                if (!CherrygramConfig.isPremiumBuild()) {
-                    textDetail {
-                        icon = R.drawable.sync_outline_28
-                        title = LocaleController.getString(
-                            "UP_Category_Updates",
-                            R.string.UP_Category_Updates
-                        )
-                        detail = LocaleController.getString(
-                            "UP_LastCheck",
-                            R.string.UP_LastCheck
-                        ) + ": " + LocaleController.formatDateTime(CherrygramConfig.lastUpdateCheckTime / 1000, true);
+            val otaAvailable = CherrygramConfig.isStableBuild() || CherrygramConfig.isBetaBuild() || CherrygramConfig.isDevBuild()
+            if (otaAvailable) {
+                textDetail {
+                    icon = R.drawable.sync_outline_28
+                    title = LocaleController.getString("UP_Category_Updates", R.string.UP_Category_Updates)
+                    detail = LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.lastUpdateCheckTime / 1000, true);
 
-                        listener = TGKitTextDetailRow.TGTDListener {
-                            UpdaterBottomSheet.showAlert(bf.context, bf, false, null)
+                    listener = TGKitTextDetailRow.TGTDListener {
+                        UpdaterBottomSheet.showAlert(bf.context, bf, false, null)
+                    }
+                }
+            } else {
+                textIcon {
+                    icon = R.drawable.sync_outline_28
+                    title = LocaleController.getString("UP_Category_Updates", R.string.UP_Category_Updates)
+
+                    listener = TGKitTextIconRow.TGTIListener {
+                        if (CherrygramConfig.isPlayStoreBuild()) {
+                            Browser.openUrl(bf.context, Extra.PLAYSTORE_APP_URL)
+                        } else if (CherrygramConfig.isPremiumBuild()) {
+                            // Fuckoff :)
                         }
                     }
-                } else {
-                    // Fuckoff :)
                 }
             }
 

@@ -189,6 +189,9 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
+import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.Extra;
+
 public class PeerStoriesView extends SizeNotifierFrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     public static boolean DISABLE_STORY_REPOSTING = false;
@@ -3429,18 +3432,18 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider), 30))
         );
         buttonTextView.setOnClickListener(v -> {
-            /*if (ApplicationLoader.isStandaloneBuild()) {
+            if (ApplicationLoader.isStandaloneBuild()) {
                 if (LaunchActivity.instance != null) {
-                    LaunchActivity.instance.checkAppUpdate(true, null);
+//                    LaunchActivity.instance.checkAppUpdate(true, null);
+                    LaunchActivity.instance.checkCherryUpdate(null);
                 }
+            } else if (CherrygramConfig.INSTANCE.isPlayStoreBuild()) {
+                Browser.openUrl(getContext(), Extra.PLAYSTORE_APP_URL);
             } else if (BuildVars.isHuaweiStoreApp()){
                 Browser.openUrl(getContext(), BuildVars.HUAWEI_STORE_URL);
-            } else {
+            } /*else {
                 Browser.openUrl(getContext(), BuildVars.PLAYSTORE_APP_URL);
             }*/
-            if (LaunchActivity.instance != null) {
-                LaunchActivity.instance.checkCherryUpdate(null);
-            }
         });
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         linearLayout.addView(buttonTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 24, 0, 0));

@@ -4439,8 +4439,8 @@ public class MessageObject {
                 } else if (messageOwner.action instanceof TLRPC.TL_messageActionLoginUnknownLocation) {
                     String date;
                     long time = ((long) messageOwner.date) * 1000;
-                    if (LocaleController.getInstance().formatterDay != null && LocaleController.getInstance().formatterYear != null) {
-                        date = LocaleController.formatString("formatDateAtTime", R.string.formatDateAtTime, LocaleController.getInstance().formatterYear.format(time), LocaleController.getInstance().formatterDay.format(time));
+                    if (LocaleController.getInstance().getFormatterDay() != null && LocaleController.getInstance().getFormatterYear() != null) {
+                        date = LocaleController.formatString("formatDateAtTime", R.string.formatDateAtTime, LocaleController.getInstance().getFormatterYear().format(time), LocaleController.getInstance().getFormatterDay().format(time));
                     } else {
                         date = "" + messageOwner.date;
                     }
@@ -6601,6 +6601,9 @@ public class MessageObject {
         }
         if (isFromUser()) {
             TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(messageOwner.from_id.user_id);
+            if ((user != null && user.bot && ("reviews_bot".equals(UserObject.getPublicUsername(user)) || "ReviewInsightsBot".equals(UserObject.getPublicUsername(user)))) && CherrygramConfig.INSTANCE.getBotsDrawShareButton()) {
+                return true;
+            }
             if (user != null && !isOut() && !isMegagroup() && ((!user.bot && CherrygramConfig.INSTANCE.getUsersDrawShareButton())/* || (messageOwner.from_id.chat_id != 0 && CherrygramConfig.INSTANCE.getGroupsDrawShareButton())*/)) {
                 return true;
             }
@@ -8016,6 +8019,9 @@ public class MessageObject {
 
     public static boolean shouldEncryptPhotoOrVideo(int currentAccount, TLRPC.Message message) {
         if (message != null && message.media != null && (isVoiceDocument(getDocument(message)) || isRoundVideoMessage(message)) && message.media.ttl_seconds == 0x7FFFFFFF) {
+            return true;
+        }
+        if (getMedia(message) instanceof TLRPC.TL_messageMediaPaidMedia) {
             return true;
         }
 //        if (MessagesController.getInstance(currentAccount).isChatNoForwards(getChatId(message)) || message != null && message.noforwards) {
