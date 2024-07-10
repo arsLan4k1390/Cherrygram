@@ -305,8 +305,17 @@
     <string name="CP_CameraAspectRatio">Camera aspect ratio</string>
     <string name="CP_RearCam">Use rear camera</string>
     <string name="CP_RearCam_Desc">Instead of front camera for video messages</string>
+    <string name="CP_CaptureType_Desc">Use \"VideoCapture\" by default. \nSelect \"ImageCapture\" (reduces quality) only if Cherrygram freezes for a second before starting to record a video message.</string>
     <string name="CP_DisableCam">Disable cam in media attach menu</string>
     <string name="CP_DisableCam_Desc">The camera button will be available next to the gallery button. \nPressing the button will open the Telegram camera, and holding it will launch the system camera.</string>
+
+    <string name="CP_Header_Videomessages">Videomessages</string>
+    <string name="CP_ZoomSliderPosition">Zoom slider position</string>
+    <string name="CP_ExposureSliderPosition">Exposure slider position</string>
+    <string name="CP_ZoomSliderPosition_Bottom">Bottom</string>
+    <string name="CP_ZoomSliderPosition_Right">Right</string>
+    <string name="CP_ZoomSliderPosition_Left">Left</string>
+    <string name="CP_Exposure">Exposure</string>
     <!--Camera Preferences-->
 
     <!--Experimental Preferences-->

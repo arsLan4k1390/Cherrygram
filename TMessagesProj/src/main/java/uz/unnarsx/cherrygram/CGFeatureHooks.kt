@@ -307,6 +307,42 @@ object CGFeatureHooks {
     }
 
     @JvmStatic
+    fun getZoomSliderPosition(): String { //CameraPreferences.java:\Zoom slider position
+        return when (CherrygramConfig.zoomSlider) {
+            CherrygramConfig.ZOOM_SLIDER_BOTTOM -> LocaleController.getString("CP_ZoomSliderPosition_Bottom", R.string.CP_ZoomSliderPosition_Bottom)
+//            CherrygramConfig.ZOOM_SLIDER_RIGHT -> LocaleController.getString("CP_ZoomSliderPosition_Right", R.string.CP_ZoomSliderPosition_Right)
+            CherrygramConfig.ZOOM_SLIDER_LEFT -> LocaleController.getString("CP_ZoomSliderPosition_Left", R.string.CP_ZoomSliderPosition_Left)
+            else -> LocaleController.getString("Disable", R.string.Disable)
+        }
+    }
+
+    @JvmStatic
+    fun getExposureSliderPosition(): String { //CameraPreferences.java:\Exposure slider position
+        return when (CherrygramConfig.exposureSlider) {
+//            CherrygramConfig.EXPOSURE_SLIDER_BOTTOM -> LocaleController.getString("CP_ZoomSliderPosition_Bottom", R.string.CP_ZoomSliderPosition_Bottom)
+            CherrygramConfig.EXPOSURE_SLIDER_RIGHT -> LocaleController.getString("CP_ZoomSliderPosition_Right", R.string.CP_ZoomSliderPosition_Right)
+//            CherrygramConfig.EXPOSURE_SLIDER_LEFT -> LocaleController.getString("CP_ZoomSliderPosition_Left", R.string.CP_ZoomSliderPosition_Left)
+            else -> LocaleController.getString("Disable", R.string.Disable)
+        }
+    }
+
+    @JvmStatic
+    fun getCameraCaptureTypeFront(): String { //CameraPreferences.java:\Camera capture type
+        return when (CherrygramConfig.captureTypeFront) {
+            CherrygramConfig.CaptureType_ImageCapture -> "ImageCapture"
+            else -> "VideoCapture"
+        }
+    }
+
+    @JvmStatic
+    fun getCameraCaptureTypeBack(): String { //CameraPreferences.java:\Camera capture type
+        return when (CherrygramConfig.captureTypeBack) {
+            CherrygramConfig.CaptureType_ImageCapture -> "ImageCapture"
+            else -> "VideoCapture"
+        }
+    }
+
+    @JvmStatic
     fun getCameraName(): String { //Crashlytics.java
         return when (CherrygramConfig.cameraType) {
             CherrygramConfig.TELEGRAM_CAMERA -> "Telegram"

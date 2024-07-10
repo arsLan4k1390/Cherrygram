@@ -562,11 +562,28 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_UseDualCamera", useDualCamera)
     }
 
+    const val ZOOM_SLIDER_NONE = 0
+    const val ZOOM_SLIDER_BOTTOM = 1
+//    const val ZOOM_SLIDER_RIGHT = 2
+    const val ZOOM_SLIDER_LEFT = 3
+    var zoomSlider by sharedPreferences.int("CP_ZoomSlider", ZOOM_SLIDER_BOTTOM)
+
+    const val EXPOSURE_SLIDER_NONE = 0
+//    const val EXPOSURE_SLIDER_BOTTOM = 1
+    const val EXPOSURE_SLIDER_RIGHT = 2
+//    const val EXPOSURE_SLIDER_LEFT = 3
+    var exposureSlider by sharedPreferences.int("CP_ExposureSlider", EXPOSURE_SLIDER_RIGHT)
+
     var rearCam by sharedPreferences.boolean("CP_RearCam", false)
     fun toggleRearCam() {
         rearCam = !rearCam
         putBoolean("CP_RearCam", rearCam)
     }
+
+    const val CaptureType_VideoCapture = 0
+    const val CaptureType_ImageCapture = 1
+    var captureTypeFront by sharedPreferences.int("CP_CaptureTypeFront", CaptureType_VideoCapture)
+    var captureTypeBack by sharedPreferences.int("CP_CaptureTypeBack", CaptureType_VideoCapture)
 
     var cameraStabilisation by sharedPreferences.boolean("CP_CameraStabilisation", false)
     fun toggleCameraStabilisation() {

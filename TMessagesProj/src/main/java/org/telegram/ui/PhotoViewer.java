@@ -815,7 +815,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     private ActionBarMenuSubItem speedItem;
     private ActionBarPopupWindow.GapView speedGap;
     private ActionBarMenu menu;
-//    private ActionBarMenuItem sendItem;
+    private ActionBarMenuItem sendItem;
     private ActionBarMenuItem editItem;
     private ActionBarMenuItem pipItem;
     private ActionBarMenuItem masksItem;
@@ -5465,8 +5465,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         masksItem.setContentDescription(LocaleController.getString("Masks", R.string.Masks));
         editItem = menu.addItem(gallery_menu_paint, R.drawable.msg_header_draw);
         editItem.setContentDescription(LocaleController.getString("AccDescrPhotoEditor", R.string.AccDescrPhotoEditor));
-        /*sendItem = menu.addItem(gallery_menu_send, R.drawable.msg_header_share);
-        sendItem.setContentDescription(LocaleController.getString("Forward", R.string.Forward));*/
+        sendItem = menu.addItem(gallery_menu_send, R.drawable.msg_header_share);
+        sendItem.setContentDescription(LocaleController.getString("Forward", R.string.Forward));
 
         menuItem = menu.addItem(0, menuItemIcon = new OptionsSpeedIconDrawable());
         menuItem.setOnMenuDismiss(byClick -> checkProgress(0, false, false));
@@ -12448,7 +12448,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         isEvent = object != null && object.isEvent;
         sharedMediaType = MediaDataController.MEDIA_PHOTOVIDEO;
         allMediaItem.setText(LocaleController.getString("ShowAllMedia", R.string.ShowAllMedia));
-//        setItemVisible(sendItem, false, false);
+        setItemVisible(sendItem, false, false);
         setItemVisible(pipItem, false, true);
         menuItem.hideSubItem(gallery_menu_pip2);
         if (photoCropView != null) {
@@ -12628,9 +12628,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     needSearchImageInArr = false;
                 } else if (currentAnimation != null) {
                     needSearchImageInArr = false;
-                    /*if (messageObject.canForwardMessage() && !noforwards) {
+                    if (messageObject.canForwardMessage() && !noforwards) {
                         setItemVisible(sendItem, true, false);
-                    }*/
+                    }
                 } else if (!messageObject.scheduled && !messageObject.isQuickReply() && !(MessageObject.getMedia(messageObject.messageOwner) instanceof TLRPC.TL_messageMediaInvoice) && !(MessageObject.getMedia(messageObject.messageOwner) instanceof TLRPC.TL_messageMediaWebPage) && (messageObject.messageOwner.action == null || messageObject.messageOwner.action instanceof TLRPC.TL_messageActionEmpty)) {
                     needSearchImageInArr = true;
                     imagesByIds[0].put(messageObject.getId(), messageObject);
@@ -12638,10 +12638,10 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         menuItem.showSubItem(gallery_menu_showinchat);
                         menuItem.showSubItem(gallery_menu_showall);
                     }
-//                    setItemVisible(sendItem, !noforwards, false);
-                } /*else if (isEmbedVideo && messageObject.eventId == 0) {
+                    setItemVisible(sendItem, !noforwards, false);
+                } else if (isEmbedVideo && messageObject.eventId == 0) {
                     setItemVisible(sendItem, true, false);
-                }*/
+                }
                 setImageIndex(0);
             }
         } else if (documents != null) {
@@ -12706,9 +12706,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     startOffset = object.starOffset;
                 }
                 menuItem.showSubItem(gallery_menu_showinchat);
-                /*if (openingObject.canForwardMessage() && !noforwards) {
+                if (openingObject.canForwardMessage() && !noforwards) {
                     setItemVisible(sendItem, true, false);
-                }*/
+                }
                 if (openingObject.canPreviewDocument()) {
                     sharedMediaType = MediaDataController.MEDIA_FILE;
                     allMediaItem.setText(LocaleController.getString("ShowAllFiles", R.string.ShowAllFiles));
@@ -13211,9 +13211,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 }
                 title = LocaleController.getString("AttachDocument", R.string.AttachDocument);
             }
-            /*if (DialogObject.isEncryptedDialog(currentDialogId) && !isEmbedVideo || noforwards) {
+            if (DialogObject.isEncryptedDialog(currentDialogId) && !isEmbedVideo || noforwards) {
                 setItemVisible(sendItem, false, false);
-            }*/
+            }
             if (isEmbedVideo || newMessageObject.messageOwner.ttl != 0 && newMessageObject.messageOwner.ttl < 60 * 60 || noforwards) {
                 allowShare = false;
                 menuItem.hideSubItem(gallery_menu_save);

@@ -3558,19 +3558,19 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
             if ((position == idRow || position == idDcRow) && (userInfo != null || chatInfo != null)){
                 final long id;
-                if (userId != 0) {
-                    id = userId;
-                } else if (chatId != 0) {
-                    id = Long.parseLong("-100" + chatId);
+                if (userInfo != null && userInfo.id != 0) {
+                    id = userInfo.id;
+                } else if (chatInfo != null && chatInfo.id != 0) {
+                    id = Long.parseLong("-100" + chatInfo.id);
                 } else {
                     id = dialogId;
                 }
                 try {
-                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                    android.content.ClipData clip = android.content.ClipData.newPlainText("label", id + "");
-                    clipboard.setPrimaryClip(clip);
-                    BulletinFactory.of(this).createErrorBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
-                } catch (Exception ignored) {}
+                    AndroidUtilities.addToClipboard(id + "");
+                    BulletinFactory.of(this).createCopyBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
                 return;
             }
             listView.stopScroll();
@@ -3969,17 +3969,17 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             public boolean onItemClick(View view, int position) {
                 if ((position == idRow || position == idDcRow) && userInfo != null){
                     final long id;
-                    if (userId != 0) {
-                        id = userId;
+                    if (userInfo.id != 0) {
+                        id = userInfo.id;
                     } else {
                         id = dialogId;
                     }
                     try {
-                        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                        android.content.ClipData clip = android.content.ClipData.newPlainText("label", "tg://user?id=" + id);
-                        clipboard.setPrimaryClip(clip);
-                        BulletinFactory.of(ProfileActivity.this).createErrorBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
-                    } catch (Exception ignored) {}
+                        AndroidUtilities.addToClipboard("tg://user?id=" + id);
+                        BulletinFactory.of(ProfileActivity.this).createCopyBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                    }
                     return processOnClickOrPress(position, view, view.getWidth(), view.getHeight());
                 } else if (position == versionRow) {
                     pressCount++;
