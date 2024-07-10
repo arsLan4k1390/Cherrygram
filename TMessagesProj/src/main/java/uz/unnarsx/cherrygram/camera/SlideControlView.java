@@ -25,12 +25,12 @@ public class SlideControlView extends View {
 
     private final int mode;
 
-    private Drawable minusDrawable;
-    private Drawable plusDrawable;
-    private final Drawable progressDrawable;
-    private Drawable filledProgressDrawable;
-    private final Drawable knobDrawable;
-    private final Drawable pressedKnobDrawable;
+    public Drawable minusDrawable;
+    public Drawable plusDrawable;
+    public final Drawable progressDrawable;
+    public Drawable filledProgressDrawable;
+    public final Drawable knobDrawable;
+    public final Drawable pressedKnobDrawable;
 
     private int minusCx;
     private int minusCy;

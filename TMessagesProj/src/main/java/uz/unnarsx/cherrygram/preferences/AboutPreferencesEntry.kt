@@ -22,6 +22,7 @@ import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextDetailRow
 import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
 import uz.unnarsx.cherrygram.updater.UpdaterBottomSheet
+import uz.unnarsx.cherrygram.updater.UpdaterUtils
 
 class AboutPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("CGP_Header_About", R.string.CGP_Header_About)) {
@@ -35,28 +36,21 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                 }
             }
 
-            val otaAvailable = CherrygramConfig.isStableBuild() || CherrygramConfig.isBetaBuild() || CherrygramConfig.isDevBuild()
-            if (otaAvailable) {
-                textDetail {
-                    icon = R.drawable.sync_outline_28
-                    title = LocaleController.getString("UP_Category_Updates", R.string.UP_Category_Updates)
-                    detail = LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.lastUpdateCheckTime / 1000, true);
+            textDetail {
+                icon = R.drawable.sync_outline_28
+                title = LocaleController.getString("UP_Category_Updates", R.string.UP_Category_Updates)
+                detail = UpdaterUtils.getLastCheckUpdateTime()
 
-                    listener = TGKitTextDetailRow.TGTDListener {
+                listener = TGKitTextDetailRow.TGTDListener {
+                    if (CherrygramConfig.isPlayStoreBuild()) {
+                        CherrygramConfig.lastUpdateCheckTime = System.currentTimeMillis()
+                        detail = UpdaterUtils.getLastCheckUpdateTime()
+
+                        Browser.openUrl(bf.context, Extra.PLAYSTORE_APP_URL)
+                    } else if (CherrygramConfig.isPremiumBuild()) {
+                        // Fuckoff :)
+                    } else {
                         UpdaterBottomSheet.showAlert(bf.context, bf, false, null)
-                    }
-                }
-            } else {
-                textIcon {
-                    icon = R.drawable.sync_outline_28
-                    title = LocaleController.getString("UP_Category_Updates", R.string.UP_Category_Updates)
-
-                    listener = TGKitTextIconRow.TGTIListener {
-                        if (CherrygramConfig.isPlayStoreBuild()) {
-                            Browser.openUrl(bf.context, Extra.PLAYSTORE_APP_URL)
-                        } else if (CherrygramConfig.isPremiumBuild()) {
-                            // Fuckoff :)
-                        }
                     }
                 }
             }

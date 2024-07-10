@@ -292,8 +292,17 @@
     <string name="CP_CameraAspectRatio">Соотношение сторон камеры</string>
     <string name="CP_RearCam">Использовать заднюю камеру</string>
     <string name="CP_RearCam_Desc">Вместо фронтальной камеры при записи видеосообщений</string>
+    <string name="CP_CaptureType_Desc">\"VideoCapture\" используется по умолчанию. \nВыбирайте \"ImageCapture\" (ухудшает качество) только если Cherrygram зависает на секунду до начала записи видеосообщения.</string>
     <string name="CP_DisableCam">Отключить камеру в меню выбора фото</string>
     <string name="CP_DisableCam_Desc">Кнопка камеры будет доступна рядом с кнопкой галереи. \nНажатие на кнопку откроет камеру Telegram, а зажатие запустит системную камеру.</string>
+
+    <string name="CP_Header_Videomessages">Видеосообщения</string>
+    <string name="CP_ZoomSliderPosition">Расположение зума (слайдер)</string>
+    <string name="CP_ExposureSliderPosition">Расположение экспозиции (слайдер)</string>
+    <string name="CP_ZoomSliderPosition_Bottom">Снизу</string>
+    <string name="CP_ZoomSliderPosition_Right">Справа</string>
+    <string name="CP_ZoomSliderPosition_Left">Слева</string>
+    <string name="CP_Exposure">Экспозиция</string>
     <!--Camera Preferences-->
 
     <!--Experimental Preferences-->

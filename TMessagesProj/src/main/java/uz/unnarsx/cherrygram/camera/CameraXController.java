@@ -33,6 +33,7 @@ import androidx.camera.core.MeteringPoint;
 import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
 import androidx.camera.core.ZoomState;
+import androidx.camera.core.impl.UseCaseConfigFactory;
 import androidx.camera.core.impl.utils.Exif;
 import androidx.camera.core.internal.compat.workaround.ExifRotationAvailability;
 import androidx.camera.extensions.ExtensionMode;
@@ -354,9 +355,18 @@ public class CameraXController {
             aspectRatio = AspectRatio.RATIO_16_9;
         }
 
-        ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
-                .setTargetAspectRatio(aspectRatio);
+        boolean useImageCaptureForFrontCamera = stableFPSPreviewOnly && CherrygramConfig.INSTANCE.getCaptureTypeFront() == CherrygramConfig.CaptureType_ImageCapture;
+        boolean useImageCaptureForBackCamera = stableFPSPreviewOnly && CherrygramConfig.INSTANCE.getCaptureTypeBack() == CherrygramConfig.CaptureType_ImageCapture;
+        boolean useImageCaptureForBothCameras = stableFPSPreviewOnly
+                && CherrygramConfig.INSTANCE.getCaptureTypeFront() == CherrygramConfig.CaptureType_ImageCapture
+                && CherrygramConfig.INSTANCE.getCaptureTypeBack() == CherrygramConfig.CaptureType_ImageCapture;
+
+
+        ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder();
+        iCaptureBuilder.setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY);
+        iCaptureBuilder.setTargetAspectRatio(aspectRatio);
+        if (useImageCaptureForFrontCamera ||useImageCaptureForBackCamera ||useImageCaptureForBothCameras) iCaptureBuilder.setCaptureType(UseCaseConfigFactory.CaptureType.VIDEO_CAPTURE);
+        iCaptureBuilder.build(); // need to build because attach camera crashes
 
         provider.unbindAll();
         previewUseCase = previewBuilder.build();
@@ -364,7 +374,18 @@ public class CameraXController {
 
         if (lifecycle.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) return;
         if (stableFPSPreviewOnly) {
-            camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, vCapture);
+            if (useImageCaptureForBothCameras) {
+                iCapture = iCaptureBuilder.build();
+                camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, iCapture);
+            } else if (useImageCaptureForFrontCamera) {
+                iCapture = iCaptureBuilder.build();
+                camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, isFrontface() ? iCapture : vCapture);
+            } else if (useImageCaptureForBackCamera) {
+                iCapture = iCaptureBuilder.build();
+                camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, isFrontface() ? vCapture : iCapture);
+            } else {
+                camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, vCapture);
+            }
 
             if (CherrygramConfig.INSTANCE.getCameraStabilisation()) {
                 CaptureRequestOptions captureRequestOptions = new CaptureRequestOptions.Builder()

@@ -66,18 +66,18 @@ public class UpdaterBottomSheet extends BottomSheet {
             nameView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             nameView.setText(LocaleController.getString("UP_UpdateAvailable", R.string.UP_UpdateAvailable));
             header.addView(nameView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 30, Gravity.LEFT, 75, 5, 0, 0));
-        }
 
-        AnimatedTextView timeView = new AnimatedTextView(context, true, true, false);
-        timeView.setAnimationProperties(0.7f, 0, 450, CubicBezierInterpolator.EASE_OUT_QUINT);
-        timeView.setIgnoreRTL(!LocaleController.isRTL);
-        timeView.adaptWidth = false;
-        timeView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
-        timeView.setTextSize(AndroidUtilities.dp(13));
-        timeView.setTypeface(AndroidUtilities.bold());
-        timeView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-        timeView.setText(available ? update.uploadDate + " UTC" : LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true));
-        if (available) header.addView(timeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, Gravity.LEFT, available ? 75 : 0, 35, 0, 0));
+            AnimatedTextView timeView = new AnimatedTextView(context, true, true, false);
+            timeView.setAnimationProperties(0.7f, 0, 450, CubicBezierInterpolator.EASE_OUT_QUINT);
+            timeView.setIgnoreRTL(!LocaleController.isRTL);
+            timeView.adaptWidth = false;
+            timeView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+            timeView.setTextSize(AndroidUtilities.dp(13));
+            timeView.setTypeface(AndroidUtilities.bold());
+            timeView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+            timeView.setText(update.uploadDate + " UTC");
+            header.addView(timeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, Gravity.LEFT, 75, 35, 0, 0));
+        }
 
         TextCell version = new TextCell(context);
         version.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
@@ -221,7 +221,6 @@ public class UpdaterBottomSheet extends BottomSheet {
                 checkUpdates.setText(spannableStringBuilder);
 
                 UpdaterUtils.checkUpdates(fragment, true, () -> {
-                    timeView.setText(LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true));
                     checkUpdates.setText(LocaleController.getString("UP_CheckForUpdates", R.string.UP_CheckForUpdates));
                     BulletinFactory.of(getContainer(), null).createErrorBulletin(LocaleController.getString("UP_Not_Found", R.string.UP_Not_Found)).show();
                 }, this::dismiss, null);

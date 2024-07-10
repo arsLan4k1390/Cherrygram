@@ -20,6 +20,7 @@ import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.R;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -367,5 +368,9 @@ public class UpdaterUtils {
         public boolean isForce() {
             return version.toLowerCase().contains("force");
         }
+    }
+
+    public static String getLastCheckUpdateTime() {
+        return LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true);
     }
 }

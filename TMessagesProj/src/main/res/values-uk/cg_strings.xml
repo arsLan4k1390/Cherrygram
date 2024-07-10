@@ -263,13 +263,20 @@
     <string name="CP_CameraAspectRatio">Співвідношення сторін камери</string>
     <string name="CP_RearCam">Використовувати задню камеру</string>
     <string name="CP_RearCam_Desc">Замість фронтальної камери під час запису відеоповідомлень</string>
+    <string name="CP_CaptureType_Desc">За замовчуванням використовує «VideoCapture». \nВиберіть «ImageCapture» (знижує якість), лише якщо Cherrygram зависає на секунду перед тим, як почати записувати відеоповідомлення.</string>
     <string name="CP_DisableCam">Вимкнути камеру в меню вибору фото</string>
     <string name="CP_DisableCam_Desc">Кнопка камери буде доступна поруч із кнопкою галереї. \nНатискання кнопки відкриє Telegram камеру і утримує її під час запуску системної камери.</string>
+    <string name="CP_Header_Videomessages">Відеоповідомлення</string>
+    <string name="CP_ZoomSliderPosition">Положення повзунка збільшення</string>
+    <string name="CP_ExposureSliderPosition">Положення повзунка експозиції</string>
+    <string name="CP_ZoomSliderPosition_Bottom">Знизу</string>
+    <string name="CP_ZoomSliderPosition_Right">Праворуч</string>
+    <string name="CP_ZoomSliderPosition_Left">Ліворуч</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Експериментальні</string>
     <string name="EP_NavigationAnimation">Анімація навігації</string>
-    <string name="EP_NavigationAnimationBezier">Класичний</string>
+    <string name="EP_NavigationAnimationBezier">Класична</string>
     <string name="EP_NavigationAnimationCrossfading">Ефект перехресного затухання</string>
     <string name="CG_ResidentNotification">Увімкнути постійне сповіщення</string>
     <string name="EP_PhotosSize">Відправляти великі фотографії (2560px)</string>
