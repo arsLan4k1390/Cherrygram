@@ -14,5 +14,10 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+
+        <meta-data android:name="com.google.android.gms.car.notification.SmallIcon" tools:node="remove" />
+        <meta-data android:name="com.google.android.gms.car.application" tools:node="remove" />
     </application>
+
+    <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" tools:node="remove" />
 </manifest>
