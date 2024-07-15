@@ -5,6 +5,7 @@ import org.telegram.messenger.*
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.extras.CherrygramExtras
 import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.helpers.BackupHelper
 import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator
@@ -69,6 +70,15 @@ class MainPreferencesEntry : BasePreferencesEntry {
 
                     listener = TGKitTextIconRow.TGTIListener {
                         it.presentFragment(CherrygramPreferencesNavigator.createDonate())
+                    }
+                }
+            } else {
+                textIcon {
+                    icon = R.drawable.heart_angle_solar
+                    title = LocaleController.getString("DP_RateUs", R.string.DP_RateUs)
+
+                    listener = TGKitTextIconRow.TGTIListener {
+                        CherrygramExtras.requestReviewFlow(bf, bf.context, bf.parentActivity)
                     }
                 }
             }

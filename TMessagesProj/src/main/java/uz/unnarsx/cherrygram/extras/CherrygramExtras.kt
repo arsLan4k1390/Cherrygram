@@ -1,10 +1,12 @@
 package uz.unnarsx.cherrygram.extras
 
+import android.app.Activity
 import android.content.Context
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.URLSpan
 import android.widget.Toast
+import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -16,8 +18,10 @@ import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLObject
 import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.AlertDialog
+import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.URLSpanNoUnderline
 import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.helpers.AppRestartHelper
 import java.util.*
 import kotlin.system.exitProcess
 
@@ -262,6 +266,34 @@ object CherrygramExtras : CoroutineScope by MainScope() {
             }
         }
         return filter
+    }
+
+    fun requestReviewFlow(fragment: BaseFragment, context: Context, activity: Activity) {
+        val reviewManager = ReviewManagerFactory.create(activity)
+
+        val requestReviewFlow = reviewManager.requestReviewFlow()
+        requestReviewFlow.addOnCompleteListener { request ->
+            if (!MessagesController.getMainSettings(fragment.currentAccount).getBoolean("is_cherrygram_rated", false)) {
+                if (request.isSuccessful) {
+                    val reviewInfo = request.result
+
+                    val flow = reviewManager.launchReviewFlow(activity, reviewInfo)
+                    flow.addOnCompleteListener {
+                        AppRestartHelper.createDebugSuccessBulletin(fragment)
+                        MessagesController.getMainSettings(fragment.currentAccount).edit().putBoolean("is_cherrygram_rated", true).apply()
+                    }
+                } else {
+                    reviewInGooglePlay(context)
+                }
+            } else {
+                reviewInGooglePlay(context)
+            }
+
+        }
+    }
+
+    private fun reviewInGooglePlay(context: Context) {
+        Browser.openUrl(context, "market://details?id=${context.packageName}")
     }
 
 }
