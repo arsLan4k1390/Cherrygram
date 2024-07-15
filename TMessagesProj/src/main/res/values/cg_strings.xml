@@ -384,6 +384,7 @@
     <!--Updates Preferences-->
 
     <!--Donations-->
+    <string name="DP_RateUs">Rate Cherrygram</string>
     <string name="DP_Donate">Donate</string>
     <string name="DP_Donate_Method">Choose method</string>
     <!--Donations-->

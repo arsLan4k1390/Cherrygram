@@ -122,6 +122,17 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                     Browser.openUrl(bf.parentActivity, "https://crowdin.com/project/cherrygram")
                 }
             }
+
+            if (CherrygramConfig.isPlayStoreBuild()) {
+                textIcon {
+                    icon = R.drawable.msg2_policy
+                    title = LocaleController.getString("PrivacyPolicy", R.string.PrivacyPolicy)
+
+                    listener = TGKitTextIconRow.TGTIListener {
+                        Browser.openUrl(bf.parentActivity, "https://arslan4k1390.github.io/cherrygram/privacy")
+                    }
+                }
+            }
             /*textIcon {
                 icon = R.drawable.heart_angle_solar
                 title = LocaleController.getString("DP_Donate", R.string.DP_Donate)
