@@ -19,6 +19,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
@@ -2322,6 +2323,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         return;
                     }
                     if (CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.SYSTEM_CAMERA) {
+                        if (currentAttachLayout != null && currentAttachLayout != photoLayout) showLayout(photoLayout);
                         openCameraLayout();
                     } else {
                         onLongClickCameraButton();
@@ -2366,11 +2368,22 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         restrictedLayout = new ChatAttachRestrictedLayout(6, this, getContext(), resourcesProvider);
                         showLayout(restrictedLayout);
                     } else {
-                        if (locationLayout == null) {
-                            layouts[5] = locationLayout = new ChatAttachAlertLocationLayout(this, getContext(), resourcesProvider);
-                            locationLayout.setDelegate((location, live, notify, scheduleDate) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate));
+                        if (CherrygramConfig.INSTANCE.isPlayStoreBuild()) {
+                            boolean locationDenied = Build.VERSION.SDK_INT >= 23 && AndroidUtilities.findActivity(getContext()) != null && AndroidUtilities.findActivity(getContext()).checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
+                            if (locationDenied) {
+                                createLocationRequiredDialog(getContext(), AndroidUtilities.findActivity(getContext()),
+                                        () -> AlertsCreator.createLocationRequiredDialog(getContext(), true).show(),
+                                        this::showLocationLayout).show();
+                            } else {
+                                showLocationLayout();
+                            }
+                        } else {
+                            if (locationLayout == null) {
+                                layouts[5] = locationLayout = new ChatAttachAlertLocationLayout(this, getContext(), resourcesProvider);
+                                locationLayout.setDelegate((location, live, notify, scheduleDate) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate));
+                            }
+                            showLayout(locationLayout);
                         }
-                        showLayout(locationLayout);
                     }
                 } else if (num == 9) {
                     if (!pollsEnabled && checkCanRemoveRestrictionsByBoosts()) {
@@ -5345,5 +5358,49 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             mentionContainer.getAdapter().setNeedUsernames(false);
         }
         mentionContainer.getAdapter().setNeedBotContext(false);
+    }
+
+    public interface OnPermissionNotGranted {
+        void run();
+    }
+
+    public interface OnPermissionGranted {
+        void run();
+    }
+
+    private void showLocationLayout() {
+        if (locationLayout == null) {
+            layouts[5] = locationLayout = new ChatAttachAlertLocationLayout(this, getContext(), resourcesProvider);
+            locationLayout.setDelegate((location, live, notify, scheduleDate) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate));
+        }
+        showLayout(locationLayout);
+    }
+
+    private Dialog createLocationRequiredDialog(Context ctx, Activity activity, OnPermissionNotGranted onPermissionNotGranted, OnPermissionGranted onPermissionGranted) {
+        return new AlertDialog.Builder(ctx)
+                .setMessage(AndroidUtilities.replaceTags(LocaleController.getString("PermissionNoLocation", R.string.PermissionNoLocation)))
+                .setTopAnimation(R.raw.permission_request_location, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, Theme.getColor(Theme.key_dialogTopBackground))
+                .setPositiveButton(LocaleController.getString("OK", R.string.OK), (dialogInterface, i) -> {
+                    String[] permissions = Build.VERSION.SDK_INT >= 29 ?
+                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_MEDIA_LOCATION} :
+                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
+                    activity.requestPermissions(permissions, BasePermissionsActivity.REQUEST_CODE_GEOLOCATION);
+
+
+                    if (Build.VERSION.SDK_INT >= 23 && AndroidUtilities.findActivity(getContext()) != null
+                            && AndroidUtilities.findActivity(getContext()).checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                    {
+                        AndroidUtilities.runOnUIThread(() -> {
+                            if (onPermissionGranted != null)
+                                onPermissionGranted.run();
+                        });
+                    } else {
+                        if (onPermissionNotGranted != null)
+                            AndroidUtilities.runOnUIThread(onPermissionNotGranted::run);
+                    }
+
+                })
+                .setNegativeButton(LocaleController.getString("ContactsPermissionAlertNotNow", R.string.ContactsPermissionAlertNotNow), null)
+                .create();
     }
 }

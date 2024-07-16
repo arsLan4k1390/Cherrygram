@@ -5670,13 +5670,14 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 if (prevOrientation == -10) {
                     prevOrientation = parentActivity.getRequestedOrientation();
                 }
-                WindowManager manager = (WindowManager) parentActivity.getSystemService(Activity.WINDOW_SERVICE);
-                int displayRotation = manager.getDefaultDisplay().getRotation();
-                if (displayRotation == Surface.ROTATION_270) {
-                    parentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-                } else {
-                    parentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-                }
+//                WindowManager manager = (WindowManager) parentActivity.getSystemService(Activity.WINDOW_SERVICE);
+//                int displayRotation = manager.getDefaultDisplay().getRotation();
+//                if (displayRotation == Surface.ROTATION_270) {
+//                    parentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+//                } else {
+//                    parentActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//                }
+                AndroidUtilities.lockOrientation(parentActivity, ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
                 toggleActionBar(false, false);
             });
         }
