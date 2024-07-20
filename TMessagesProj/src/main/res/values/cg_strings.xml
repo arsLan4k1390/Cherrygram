@@ -70,6 +70,11 @@
     <string name="CG_FwdMenu_EnableCaptions">Enable captions</string>
     <string name="CG_FwdMenu_DisableCaptions">Hide captions</string>
 
+    <!--Location screen-->
+    <string name="CG_LocationPermission">Cherrygram needs access to your location so you can share it with your friends. You will now be asked to allow your location to be used (while the app is open).</string>
+    <string name="CG_LocationPermission_Desc">However, if you want your location to be available to your friends while Cherrygram is closed and in the background, then go to the \"Live Location\" feature. Until you agree to use the Live Location feature, your location will not be available in the background.</string>
+    <!--Location screen-->
+
     <!--Search filter-->
     <string name="CG_SearchFilter">Filter search results</string>
     <string name="CG_SearchFilter_None">None</string>
