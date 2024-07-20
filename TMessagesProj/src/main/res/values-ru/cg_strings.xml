@@ -68,6 +68,11 @@
     <string name="CG_FwdMenu_EnableCaptions">Включить подписи</string>
     <string name="CG_FwdMenu_DisableCaptions">Скрыть подписи</string>
 
+    <!--Location screen-->
+    <string name="CG_LocationPermission">Cherrygram нужен доступ к вашему местоположению, дабы вы смогли поделиться им с вашими друзьями. Сейчас будет запрос на разрешение использования вашего местоположения (пока приложение открыто).</string>
+    <string name="CG_LocationPermission_Desc">Однако, если вы хотите, чтобы ваше местоположение было доступно вашим друзьям, пока Cherrygram закрыт и находится в фоновом режиме, то перейдите к функции \"Live Location\". До тех пор, пока вы не дадите свое согласие на использование функции Live Location, ваше местоположение в фоновом режиме будет недоступно.</string>
+    <!--Location screen-->
+
     <!--Search filter-->
     <string name="CG_SearchFilter">Фильтр по результатам поиска</string>
     <string name="CG_SearchFilter_None">Не фильтровать</string>
