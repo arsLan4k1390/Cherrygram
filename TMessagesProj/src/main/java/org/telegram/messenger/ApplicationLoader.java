@@ -223,8 +223,9 @@ public class ApplicationLoader extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        hasPlayServices = checkPlayServices();
+
         SharedConfig.loadConfig();
+        hasPlayServices = checkPlayServices();
         CameraXUtils.loadCameraXSizes();
         if (!CherrygramConfig.INSTANCE.isPlayStoreBuild()) ConnectionsManagerImpl.INSTANCE.checkConnection();
         SharedPrefsHelper.init(applicationContext);

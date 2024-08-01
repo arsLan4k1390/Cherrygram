@@ -100,7 +100,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.extras.CherrygramExtras;
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 
 @SuppressWarnings("unchecked")
 public class MediaDataController extends BaseController {
@@ -3809,7 +3809,7 @@ public class MediaDataController extends BaseController {
                     req.saved_reaction.add(reaction.toTLReaction());
                     req.flags |= 8;
                 }
-                req.filter = CherrygramExtras.getSearchFilterType();
+                req.filter = ChatsHelper2.getSearchFilterType();
                 mergeReqId = getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                     if (lastMergeDialogId == mergeDialogId) {
                         mergeReqId = 0;
@@ -3894,7 +3894,7 @@ public class MediaDataController extends BaseController {
             req.saved_reaction.add(reaction.toTLReaction());
             req.flags |= 8;
         }
-        req.filter = CherrygramExtras.getSearchFilterType();
+        req.filter = ChatsHelper2.getSearchFilterType();
         lastSearchQuery = query;
         long queryWithDialogFinal = queryWithDialog;
         String finalQuery = query;

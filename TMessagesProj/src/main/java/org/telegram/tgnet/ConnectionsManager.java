@@ -81,7 +81,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.ErrorDatabaseHelper;
+import uz.unnarsx.cherrygram.core.helpers.ErrorDatabaseHelper;
 
 import javax.net.ssl.SSLException;
 

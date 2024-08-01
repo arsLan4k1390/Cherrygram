@@ -79,7 +79,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 
 public class Bulletin {
 

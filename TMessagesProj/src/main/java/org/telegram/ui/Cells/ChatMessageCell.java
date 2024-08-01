@@ -209,8 +209,8 @@ import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.extras.CherrygramExtras;
-import uz.unnarsx.cherrygram.helpers.chats.ChatsHelper;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
 
 public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate, ImageReceiver.ImageReceiverDelegate, DownloadController.FileDownloadProgressListener, TextSelectionHelper.SelectableView, NotificationCenter.NotificationCenterDelegate {
     private final static int TIME_APPEAR_MS = 200;
@@ -15719,7 +15719,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         currentTimeString = new SpannableStringBuilder(timeString);
         if (signString != null) {
             if (messageObject.messageOwner.via_business_bot_id != 0) {
-                currentTimeString.insert(0, ", ");
+                currentTimeString.append(", ");
             } else if (messageObject.messageOwner.fwd_from != null && messageObject.messageOwner.fwd_from.imported) {
                 currentTimeString.insert(0, " ");
             } else {
@@ -15818,13 +15818,13 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             }
             SpannableStringBuilder currentTimeStringBuilder = new SpannableStringBuilder();
             if (messageObject.messageOwner.via_business_bot_id != 0) {
-//                currentTimeStringBuilder.append(currentTimeString);
+                currentTimeStringBuilder.append(currentTimeString);
                 currentTimeStringBuilder.append(signString);
             } else {
                 currentTimeStringBuilder.append(signString);
-//                currentTimeStringBuilder.append(currentTimeString);
+                currentTimeStringBuilder.append(currentTimeString);
             }
-            currentTimeString.insert(0, currentTimeStringBuilder);
+            currentTimeString = currentTimeStringBuilder;
             timeTextWidth += width;
             timeWidth += width;
         } else {
@@ -16179,7 +16179,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
                     forwardedNameWidth = getMaxNameWidth();
                     if (CherrygramConfig.INSTANCE.getMsgForwardDate() && !currentMessageObject.isSaved) {
-                        forwardedString = String.format("➥ %s", CherrygramExtras.INSTANCE.createDateAndTime(messageObject.messageOwner.fwd_from.date));
+                        forwardedString = String.format("➥ %s", CGResourcesHelper.INSTANCE.createDateAndTime(messageObject.messageOwner.fwd_from.date));
                     } else {
                         forwardedString = getForwardedMessageText(messageObject);
                     }
@@ -20045,6 +20045,13 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 effectDrawable.setAlpha((int) (0xFF * timeAlpha));
             }
             effectDrawable.draw(canvas);
+        }
+
+        if (currentMessageObject != null && !currentMessageObject.isMusic() && currentMessageObject.messageOwner != null && currentMessageObject.messageOwner.forwards > 0 && ChatsHelper.forwardsDrawable != null) {
+            ChatsHelper.forwardsDrawable.setAlpha(255);
+        }
+        if (edited && CherrygramConfig.INSTANCE.getShowPencilIcon() && ChatsHelper.editedDrawable != null) {
+            ChatsHelper.editedDrawable.setAlpha(255);
         }
     }
 

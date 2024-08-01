@@ -144,9 +144,9 @@ android {
         targetSdkVersion 33
         versionName APP_VERSION_NAME
 
-        multiDexEnabled true
-
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
+
+        multiDexEnabled true
 
         externalNativeBuild {
             cmake {
@@ -162,12 +162,13 @@ android {
 
     buildTypes {
         debug {
-            jniDebuggable true
-            minifyEnabled false
-            shrinkResources false
-            multiDexEnabled true
-            proguardFiles '../TMessagesProj/proguard-rules.pro'
-            ndk.debugSymbolLevel = 'FULL'
+//            debuggable true
+//            jniDebuggable true
+//            minifyEnabled false
+//            shrinkResources false
+//            multiDexEnabled true
+//            proguardFiles '../TMessagesProj/proguard-rules.pro'
+//            ndk.debugSymbolLevel = 'FULL'
             buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"" + APP_VERSION_NAME_CHERRY + "\""
             buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
             buildConfigField "boolean", "DEBUG_VERSION", "true"
@@ -175,12 +176,13 @@ android {
         }
 
         release {
-            jniDebuggable false
-            minifyEnabled true
-            shrinkResources false
-            multiDexEnabled true
-            proguardFiles '../TMessagesProj/proguard-rules.pro'
-            ndk.debugSymbolLevel = 'FULL'
+//            debuggable false
+//            jniDebuggable false
+//            minifyEnabled true
+//            shrinkResources false
+//            multiDexEnabled true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
+//            ndk.debugSymbolLevel = 'FULL'
             buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"" + APP_VERSION_NAME_CHERRY + "\""
             buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
             buildConfigField "boolean", "DEBUG_VERSION", "false"
@@ -192,6 +194,7 @@ android {
         buildConfigField "String", "GIT_COMMIT_HASH", "\"${getGitHash()}\""
     }
 }
+
 
 def getProps(String propName) {
     def propsFile = rootProject.file('local.properties')
@@ -223,4 +226,3 @@ task checkVisibility {
 }
 
 preBuild.dependsOn checkVisibility
-

@@ -126,7 +126,6 @@
     <string name="AP_IconReplacements">Заміна іконок</string>
     <string name="AP_Old_Notification_Icon">Стандартна іконка повідомлень (Telegram)</string>
     <string name="AP_ChangeIconFilter">Використовувати іконки Telegram</string>
-    <string name="AP_HoldToShowWallpaper">Утримуйте будь-яку піктограму, щоб відобразити шпалери робочого столу</string>
     <string name="AP_ChangeIcon_Cherry_NY">Новий Рік</string>
     <string name="AP_ChangeIcon_Default">По замовчуванню</string>
     <string name="AP_ChangeIcon_Dark">Темнота</string>

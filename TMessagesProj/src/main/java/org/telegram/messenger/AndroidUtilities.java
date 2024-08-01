@@ -215,7 +215,7 @@ import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
-import uz.unnarsx.cherrygram.utils.PermissionsUtils;
+import uz.unnarsx.cherrygram.core.PermissionsUtils;
 
 public class AndroidUtilities {
     public final static int LIGHT_STATUS_BAR_OVERLAY = 0x0f000000, DARK_STATUS_BAR_OVERLAY = 0x33000000;

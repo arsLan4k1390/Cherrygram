@@ -93,9 +93,9 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
-import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.extras.VibrateUtil;
+import uz.unnarsx.cherrygram.core.VibrateUtil;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
 public class NotificationsController extends BaseController {
 
@@ -4311,7 +4311,7 @@ public class NotificationsController extends BaseController {
             PendingIntent contentIntent = PendingIntent.getActivity(ApplicationLoader.applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_ONE_SHOT);
 
             mBuilder.setContentTitle(name)
-                    .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
+                    .setSmallIcon(CGResourcesHelper.getProperNotificationIcon())
                     .setAutoCancel(true)
                     .setNumber(total_unread_count)
                     .setContentIntent(contentIntent)
@@ -5232,7 +5232,7 @@ public class NotificationsController extends BaseController {
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(ApplicationLoader.applicationContext)
                     .setContentTitle(name)
-                    .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
+                    .setSmallIcon(CGResourcesHelper.getProperNotificationIcon())
                     .setContentText(text.toString())
                     .setAutoCancel(true)
                     .setNumber(dialogKey.story ? storyPushMessages.size() : messageObjects.size())

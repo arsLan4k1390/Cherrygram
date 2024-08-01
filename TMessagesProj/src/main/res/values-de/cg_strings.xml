@@ -126,7 +126,6 @@
     <string name="AP_IconReplacements">Icon-Ersetzungen</string>
     <string name="AP_Old_Notification_Icon">Standard-Benachrichtigungssymbol (Telegram)</string>
     <string name="AP_ChangeIconFilter">Telegram-Icons verwenden</string>
-    <string name="AP_HoldToShowWallpaper">Halten Sie ein beliebiges Symbol gedrückt, um Ihren Desktop-Hintergrund anzuzeigen</string>
     <string name="AP_ChangeIcon_Cherry_NY">Neujahr</string>
     <string name="AP_ChangeIcon_Default">Default</string>
     <string name="AP_ChangeIcon_Dark">Dunkel</string>

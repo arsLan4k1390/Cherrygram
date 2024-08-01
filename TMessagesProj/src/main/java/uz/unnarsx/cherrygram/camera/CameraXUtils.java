@@ -44,9 +44,9 @@ public class CameraXUtils {
         return SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE;
     }
 
-    public static int getDefault() {
-        return (isCameraXSupported() && SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH) ? 1 : 0;
-    }
+    /*public static int getDefaultCamera() { // Used for Config
+        return isCameraXSupported() ? CherrygramConfig.CAMERA_X : CherrygramConfig.TELEGRAM_CAMERA;
+    }*/
 
     public static boolean isWideAngleAvailable(ProcessCameraProvider provider) {
         return getWideCameraId(provider) != null;

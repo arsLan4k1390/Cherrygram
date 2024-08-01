@@ -584,35 +584,4 @@ public class Camera2Session {
         }
     }
 
-
-    public void enableTorch() {
-        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
-        try {
-            captureSession.setRepeatingRequest(captureRequestBuilder.build(), null, handler);
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
-    }
-
-    public void disableTorch() {
-        captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
-        try {
-            captureSession.setRepeatingRequest(captureRequestBuilder.build(), null, handler);
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
-    }
-
-    public boolean isTorchEnabled() {
-        boolean flashAvailable = false;
-        try {
-            flashAvailable = Boolean.TRUE.equals(cameraManager
-                    .getCameraCharacteristics("0")
-                    .get(CameraCharacteristics.FLASH_INFO_AVAILABLE));
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
-        return flashAvailable;
-    }
-
 }

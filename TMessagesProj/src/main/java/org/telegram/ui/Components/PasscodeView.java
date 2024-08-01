@@ -77,7 +77,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.CGBiometricPrompt;
+import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 
 public class PasscodeView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
     private final static float BACKGROUND_SPRING_STIFFNESS = 300f;

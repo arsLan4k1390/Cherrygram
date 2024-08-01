@@ -2,7 +2,6 @@ package org.telegram.ui.Cells;
 
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.app.WallpaperManager;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,7 +15,6 @@ import android.text.SpannableString;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -53,8 +51,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.chats.ChatsHelper;
-import uz.unnarsx.cherrygram.utils.PermissionsUtils;
 
 public class AppIconsSelectorCell extends RecyclerListView implements NotificationCenter.NotificationCenterDelegate {
     public final static float ICONS_ROUND_RADIUS = 100;
@@ -86,14 +82,6 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
                 IconHolderView holderView = (IconHolderView) holder.itemView;
                 LauncherIconController.LauncherIcon icon = availableIcons.get(position);
-
-//                if (CherrygramConfig.INSTANCE.getShowPhoneWallpaper()) {
-//                    WallpaperManager wallpaperManager = WallpaperManager.getInstance(getContext());
-//                    Drawable wallpaperDrawable = wallpaperManager.getDrawable();
-//                    setBackground(ChatsHelper.getInstance(UserConfig.selectedAccount).getBackgroundDrawable(wallpaperDrawable));
-//                } else {
-//                    setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-//                }
 
                 if ((icon == LauncherIconController.LauncherIcon.MONET_SAMSUNG ||
                         icon == LauncherIconController.LauncherIcon.MONET_PIXEL ||
@@ -193,26 +181,6 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
 
             NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_APP_ICON, icon);
         });
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            if (!PermissionsUtils.isStoragePermissionGranted()) {
-                PermissionsUtils.requestStoragePermission(fragment.getParentActivity());
-                return;
-            }
-            setOnItemLongClickListener((view, position) -> {
-                WallpaperManager wallpaperManager = WallpaperManager.getInstance(getContext());
-                Drawable wallpaperDrawable = wallpaperManager.getDrawable();
-                if (wallpaperDrawable != null) {
-                    try {
-                        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                    } catch (Exception ignore) {
-                    }
-                    setBackground(ChatsHelper.getInstance(UserConfig.selectedAccount).getBackgroundDrawable(wallpaperDrawable));
-                } else {
-                    setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                }
-                return false;
-            });
-        }
         updateIconsVisibility();
     }
 

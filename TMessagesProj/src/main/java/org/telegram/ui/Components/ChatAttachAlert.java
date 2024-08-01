@@ -142,7 +142,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.utils.PermissionsUtils;
+import uz.unnarsx.cherrygram.core.PermissionsUtils;
 
 public class ChatAttachAlert extends BottomSheet implements NotificationCenter.NotificationCenterDelegate, BottomSheet.BottomSheetDelegateInterface {
 

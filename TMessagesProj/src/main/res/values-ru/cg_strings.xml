@@ -148,7 +148,6 @@
     <string name="AP_IconReplacements">Замена иконок</string>
     <string name="AP_Old_Notification_Icon">Стандартная иконка уведомлений (Telegram)</string>
     <string name="AP_ChangeIconFilter">Использовать иконки Telegram</string>
-    <string name="AP_HoldToShowWallpaper">Удерживайте любую иконку чтобы показать обои вашего рабочего стола</string>
     <string name="AP_ChangeIcon_Cherry_NY">Новогодняя</string>
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
     <string name="AP_ChangeIcon_Dark">Тёмная</string>

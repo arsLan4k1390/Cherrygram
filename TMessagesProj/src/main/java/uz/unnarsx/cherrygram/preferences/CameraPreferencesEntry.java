@@ -28,7 +28,6 @@ import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
-import org.telegram.ui.Stories.recorder.DualCameraView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,11 +35,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.camera.CameraTypeSelector;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class CameraPreferencesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
@@ -410,7 +409,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 case 6:
                     TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
                     if (position == cameraAdviseRow) {
-                        textInfoPrivacyCell.setText(CGFeatureHooks.getCameraAdvise());
+                        textInfoPrivacyCell.setText(CGResourcesHelper.getCameraAdvise());
                     } else if (position == captureTypeAdviseRow) {
                         textInfoPrivacyCell.setText(LocaleController.getString("CP_CaptureType_Desc", R.string.CP_CaptureType_Desc));
                     }
@@ -421,17 +420,17 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                     TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
                     textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                     if (position == cameraAspectRatioRow) {
-                        textCell.setTextAndValue(LocaleController.getString("CP_CameraAspectRatio", R.string.CP_CameraAspectRatio), CGFeatureHooks.getCameraAspectRatio(), true);
+                        textCell.setTextAndValue(LocaleController.getString("CP_CameraAspectRatio", R.string.CP_CameraAspectRatio), CGResourcesHelper.getCameraAspectRatio(), true);
                     } else if (position == cameraXQualityRow) {
                         textSettingsCell.setTextAndValue(LocaleController.getString("CP_CameraQuality", R.string.CP_CameraQuality), CherrygramConfig.INSTANCE.getCameraResolution() + "p", false);
                     } else if (position == zoomSliderRow) {
-                        textCell.setTextAndValue(LocaleController.getString("CP_ZoomSliderPosition", R.string.CP_ZoomSliderPosition), CGFeatureHooks.getZoomSliderPosition(), true);
+                        textCell.setTextAndValue(LocaleController.getString("CP_ZoomSliderPosition", R.string.CP_ZoomSliderPosition), CGResourcesHelper.getZoomSliderPosition(), true);
                     } else if (position == exposureSliderRow) {
-                        textCell.setTextAndValue(LocaleController.getString("CP_ExposureSliderPosition", R.string.CP_ExposureSliderPosition), CGFeatureHooks.getExposureSliderPosition(), true);
+                        textCell.setTextAndValue(LocaleController.getString("CP_ExposureSliderPosition", R.string.CP_ExposureSliderPosition), CGResourcesHelper.getExposureSliderPosition(), true);
                     } else if (position == captureTypeFrontRow) {
-                        textCell.setTextAndValue("Capture type (Front camera)", CGFeatureHooks.getCameraCaptureTypeFront(), true);
+                        textCell.setTextAndValue("Capture type (Front camera)", CGResourcesHelper.getCameraCaptureTypeFront(), true);
                     } else if (position == captureTypeBackRow) {
-                        textCell.setTextAndValue("Capture type (Back camera)", CGFeatureHooks.getCameraCaptureTypeBack(), false);
+                        textCell.setTextAndValue("Capture type (Back camera)", CGResourcesHelper.getCameraCaptureTypeBack(), false);
                     }
                     break;
             }

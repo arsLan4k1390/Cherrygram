@@ -152,7 +152,6 @@
     <string name="AP_IconReplacements">Icon replacements</string>
     <string name="AP_Old_Notification_Icon">Default notification icon (Telegram)</string>
     <string name="AP_ChangeIconFilter">Use Telegram icons</string>
-    <string name="AP_HoldToShowWallpaper">Hold any icon to show your desktop wallpaper</string>
     <string name="AP_ChangeIcon_Cherry" translatable="false">Cherry</string>
     <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
     <string name="AP_ChangeIcon_Default">Default</string>

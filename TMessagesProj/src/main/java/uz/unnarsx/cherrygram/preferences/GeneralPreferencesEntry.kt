@@ -5,11 +5,11 @@ import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.ui.tgkit.preference.category
-import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
-import uz.unnarsx.cherrygram.ui.tgkit.preference.switch
-import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 
 class GeneralPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_General", R.string.AP_Header_General)) {

@@ -203,10 +203,9 @@
 
 -repackageclasses
 -allowaccessmodification
--overloadaggressively
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
 # Use -keep to explicitly keep any other classes shrinking would remove
-#-dontoptimize
+-dontoptimize
 -dontobfuscate

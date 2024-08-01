@@ -12,7 +12,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.SeekBarView;
 
-import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitSliderPreference;
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSliderPreference;
 
 public class StickerSliderCell extends FrameLayout {
     private final SeekBarView sizeBar;

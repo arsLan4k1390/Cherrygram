@@ -8,10 +8,10 @@ import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
-import uz.unnarsx.cherrygram.ui.tgkit.preference.category
-import uz.unnarsx.cherrygram.ui.tgkit.preference.textIcon
-import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
-import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class DonatePreferenceEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("DP_Donate", R.string.DP_Donate)) {

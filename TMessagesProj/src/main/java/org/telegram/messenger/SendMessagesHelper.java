@@ -101,7 +101,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import uz.unnarsx.cherrygram.CGFeatureHooks;
+import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class SendMessagesHelper extends BaseController implements NotificationCenter.NotificationCenterDelegate {
@@ -9223,20 +9223,32 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         int compressionsCount;
 
         float maxSize = Math.max(videoEditedInfo.originalWidth, videoEditedInfo.originalHeight);
-        if (maxSize > 3840) {
-            compressionsCount = 7;
-        } else if (maxSize > 2560) {
-            compressionsCount = 6;
-        } else if (maxSize > 1920) {
-            compressionsCount = 5;
-        } else if (maxSize > 1280) {
-            compressionsCount = 4;
-        } else if (maxSize > 854) {
-            compressionsCount = 3;
-        } else if (maxSize > 480) {
-            compressionsCount = 2;
+        if (CherrygramConfig.INSTANCE.getSendVideosAtMaxQuality()) {
+            if (maxSize > 3840) {
+                compressionsCount = 7;
+            } else if (maxSize > 2560) {
+                compressionsCount = 6;
+            } else if (maxSize > 1920) {
+                compressionsCount = 5;
+            } else if (maxSize > 1280) {
+                compressionsCount = 4;
+            } else if (maxSize > 854) {
+                compressionsCount = 3;
+            } else if (maxSize > 480) {
+                compressionsCount = 2;
+            } else {
+                compressionsCount = 1;
+            }
         } else {
-            compressionsCount = 1;
+            if (maxSize > 1280) {
+                compressionsCount = 4;
+            } else if (maxSize > 854) {
+                compressionsCount = 3;
+            } else if (maxSize > 640) {
+                compressionsCount = 2;
+            } else {
+                compressionsCount = 1;
+            }
         }
 
         int selectedCompression = Math.round(DownloadController.getInstance(UserConfig.selectedAccount).getMaxVideoBitrate() / (100f / compressionsCount));
@@ -9246,28 +9258,45 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         }
         boolean needCompress = false;
         if (new File(videoPath).length() < 1024L * 1024L * 1000L) {
-            if (selectedCompression != compressionsCount || Math.max(videoEditedInfo.originalWidth, videoEditedInfo.originalHeight) > 3840) {
+            if (selectedCompression != compressionsCount || Math.max(videoEditedInfo.originalWidth, videoEditedInfo.originalHeight) > (CherrygramConfig.INSTANCE.getSendVideosAtMaxQuality() ? 3840 : 1280)) {
                 needCompress = true;
-                switch (selectedCompression) {
-                    case 1:
-                        maxSize = 480.0f;
-                        break;
-                    case 2:
-                        maxSize = 854.0f;
-                        break;
-                    default:
-                    case 3:
-                        maxSize = 1280.0f;
-                        break;
-                    case 4:
-                        maxSize = 1920.0f;
-                        break;
-                    case 5:
-                        maxSize = 2560.0f;
-                        break;
-                    case 6:
-                        maxSize = 3840.0f;
-                        break;
+                if (CherrygramConfig.INSTANCE.getSendVideosAtMaxQuality()) {
+                    switch (selectedCompression) {
+                        case 1:
+                            maxSize = 480.0f;
+                            break;
+                        case 2:
+                            maxSize = 854.0f;
+                            break;
+                        default:
+                        case 3:
+                            maxSize = 1280.0f;
+                            break;
+                        case 4:
+                            maxSize = 1920.0f;
+                            break;
+                        case 5:
+                            maxSize = 2560.0f;
+                            break;
+                        case 6:
+                            maxSize = 3840.0f;
+                            break;
+                    }
+                } else {
+                    switch (selectedCompression) {
+                        case 1:
+                            maxSize = 432.0f;
+                            break;
+                        case 2:
+                            maxSize = 640.0f;
+                            break;
+                        case 3:
+                            maxSize = 848.0f;
+                            break;
+                        default:
+                            maxSize = 1280.0f;
+                            break;
+                    }
                 }
                 float scale = videoEditedInfo.originalWidth > videoEditedInfo.originalHeight ? maxSize / videoEditedInfo.originalWidth : maxSize / videoEditedInfo.originalHeight;
                 videoEditedInfo.resultWidth = Math.round(videoEditedInfo.originalWidth * scale / 2) * 2;
