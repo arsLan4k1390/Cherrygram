@@ -5,14 +5,14 @@ import org.telegram.messenger.*
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
-import uz.unnarsx.cherrygram.extras.CherrygramExtras
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.helpers.BackupHelper
-import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator
-import uz.unnarsx.cherrygram.ui.tgkit.preference.category
-import uz.unnarsx.cherrygram.ui.tgkit.preference.textIcon
-import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
-import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.misc.CherrygramExtras
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper
+import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class MainPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("CGP_AdvancedSettings", R.string.CGP_AdvancedSettings)) {

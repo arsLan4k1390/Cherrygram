@@ -109,7 +109,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.biometric.BiometricPrompt;
 import androidx.collection.LongSparseArray;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -286,25 +285,25 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import uz.unnarsx.cherrygram.CGFeatureHooks;
+import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.Extra;
-import uz.unnarsx.cherrygram.extras.CherrygramExtras;
-import uz.unnarsx.cherrygram.helpers.CGBiometricPrompt;
-import uz.unnarsx.cherrygram.helpers.chats.CherrygramChatMenuInjector;
+import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
+import uz.unnarsx.cherrygram.chats.CherrygramChatMenuInjector;
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.chats.CherrygramMessageMenuInjector;
-import uz.unnarsx.cherrygram.helpers.BackupHelper;
-import uz.unnarsx.cherrygram.helpers.chats.ChatsHelper;
-import uz.unnarsx.cherrygram.helpers.JsonBottomSheet;
+import uz.unnarsx.cherrygram.chats.CherrygramMessageMenuInjector;
+import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
+import uz.unnarsx.cherrygram.chats.JsonBottomSheet;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.preferences.BlurPreferencesBottomSheet;
-import uz.unnarsx.cherrygram.utils.PermissionsUtils;
-import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
+import uz.unnarsx.cherrygram.core.PermissionsUtils;
 
 @SuppressWarnings("unchecked")
 public class ChatActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, LocationActivity.LocationActivityDelegate, ChatAttachAlertDocumentLayout.DocumentSelectActivityDelegate, ChatActivityInterface, FloatingDebugProvider, InstantCameraView.Delegate {
 
     private boolean overrideHeaderColor = CherrygramConfig.INSTANCE.getOverrideHeaderColor();
-    private boolean customChatID = CherrygramConfig.INSTANCE.getCustomChatForSavedMessages();
+    public boolean customChatID = CherrygramConfig.INSTANCE.getCustomChatForSavedMessages();
 
     private final static boolean PULL_DOWN_BACK_FRAGMENT = false;
     private final static boolean DISABLE_PROGRESS_VIEW = true;
@@ -378,7 +377,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     @Nullable
     private TextView forwardButton;
     @Nullable
-    private TextView replyButton;
+    public TextView replyButton;
     @Nullable
     private FrameLayout emptyViewContainer;
     private LinearLayout emptyViewContent;
@@ -686,8 +685,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private boolean forbidForwardingWithDismiss;
     public MessagePreviewParams messagePreviewParams;
     private CharSequence formwardingNameText;
-    private MessageObject forwardingMessage;
-    private MessageObject.GroupedMessages forwardingMessageGroup;
+    public MessageObject forwardingMessage;
+    public MessageObject.GroupedMessages forwardingMessageGroup;
     private MessageObject.GroupedMessages replyingQuoteGroup;
     public MessageObject replyingTopMessage;
     private ReplyQuote replyingQuote;
@@ -734,9 +733,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private long dialog_id;
     private Long dialog_id_Long;
     private int lastLoadIndex = 1;
-    private SparseArray<MessageObject>[] selectedMessagesIds = new SparseArray[]{new SparseArray<>(), new SparseArray<>()};
-    private SparseArray<MessageObject>[] selectedMessagesCanCopyIds = new SparseArray[]{new SparseArray<>(), new SparseArray<>()};
-    private SparseArray<MessageObject>[] selectedMessagesCanStarIds = new SparseArray[]{new SparseArray<>(), new SparseArray<>()};
+    public SparseArray<MessageObject>[] selectedMessagesIds = new SparseArray[]{new SparseArray<>(), new SparseArray<>()};
+    public SparseArray<MessageObject>[] selectedMessagesCanCopyIds = new SparseArray[]{new SparseArray<>(), new SparseArray<>()};
+    public SparseArray<MessageObject>[] selectedMessagesCanStarIds = new SparseArray[]{new SparseArray<>(), new SparseArray<>()};
     private boolean hasUnfavedSelected;
     private int cantDeleteMessagesCount;
     private int cantForwardMessagesCount;
@@ -755,7 +754,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
     private ArrayList<ChatMessageCell> animateSendingViews = new ArrayList<>();
 
-    private SparseArray<MessageObject>[] messagesDict = new SparseArray[]{new SparseArray<>(), new SparseArray<>()};
+    public SparseArray<MessageObject>[] messagesDict = new SparseArray[]{new SparseArray<>(), new SparseArray<>()};
     private SparseArray<MessageObject> repliesMessagesDict = new SparseArray<>();
     private SparseArray<ArrayList<Integer>> replyMessageOwners = new SparseArray<>();
     private HashMap<String, ArrayList<MessageObject>> messagesByDays = new HashMap<>();
@@ -963,7 +962,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     public static Pattern publicMsgUrlPattern;
     public static Pattern voiceChatUrlPattern;
     public static Pattern privateMsgUrlPattern;
-    private boolean waitingForSendingMessageLoad;
+    public boolean waitingForSendingMessageLoad;
     private ValueAnimator changeBoundAnimator;
     private Animator messageEditTextAnimator;
 
@@ -1082,7 +1081,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     public final static int OPTION_DELETE_ALL_FROM_SELF = 2001;
     public final static int OPTION_UPGRADE_GROUP = 2002;
     private final static int OPTION_TEXT_MENTION = 2003;
-    private final static int OPTION_SELECT_BETWEEN = 2004;
+    public final static int OPTION_SELECT_BETWEEN = 2004;
     public final static int OPTION_SAVE_MESSAGE_CHAT = 2005;
     public final static int OPTION_FOR_ADMINS_REACTIONS = 2006;
     public final static int OPTION_FOR_ADMINS_PERMISSIONS = 2007;
@@ -1097,7 +1096,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     public final static int OPTION_DOWNLOAD_STICKER = 2016;
     public final static int OPTION_FORWARD_WO_AUTHOR = 2017;
     public final static int OPTION_GET_REPLY_BACKGROUND = 2018;
-    private final static int OPTION_GET_CUSTOM_REACTIONS = 2019;
+    public final static int OPTION_GET_CUSTOM_REACTIONS = 2019;
     public final static int OPTION_DETAILS = 2020;
     private final static int OPTION_TRANSLATE_DOUBLE_TAP = 2021;
     private final static int OPTION_TEXT_CODE = 2022;
@@ -3826,7 +3825,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
                     showDialog(builder.create());
                 } else if (id == OPTION_GO_TO_SAVED) {
-                    long chatID = CherrygramExtras.getCustomChatID();
+                    long chatID = ChatsHelper2.getCustomChatID();
 
                     Bundle args = new Bundle();
                     if (DialogObject.isChatDialog(chatID)) {
@@ -4687,7 +4686,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
 
                 int alpha = (int) (iconProgress * 0xFF);
-                Drawable replyIconDrawable = getContext().getResources().getDrawable(CGFeatureHooks.getReplyIconDrawable());
+                Drawable replyIconDrawable = getContext().getResources().getDrawable(CGResourcesHelper.getReplyIconDrawable());
                 replyIconDrawable.setAlpha(alpha);
                 replyIconDrawable.setBounds((int) (x - replyIconDrawable.getIntrinsicWidth() / 2 * scale), (int) (y - replyIconDrawable.getIntrinsicHeight() / 2 * scale), (int) (x + replyIconDrawable.getIntrinsicWidth() / 2 * scale), (int) (y + replyIconDrawable.getIntrinsicHeight() / 2 * scale));
                 replyIconDrawable.draw(canvas);
@@ -4770,7 +4769,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     }
                 } else if (slidingView != null && (e == null || e.getPointerId(0) == startedTrackingPointerId && (e.getAction() == MotionEvent.ACTION_CANCEL || e.getAction() == MotionEvent.ACTION_UP || e.getAction() == MotionEvent.ACTION_POINTER_UP))) {
                     if (e != null && e.getAction() != MotionEvent.ACTION_CANCEL && Math.abs(slidingView.getNonAnimationTranslationX(false)) >= AndroidUtilities.dp(50)) {
-                        CGFeatureHooks.injectChatActivityMsgSlideAction(
+                        ChatsHelper2.injectChatActivityMsgSlideAction(
                                 ChatActivity.this,
                                 slidingView.getMessageObject(),
                                 ChatObject.isChannel(currentChat),
@@ -9255,7 +9254,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
         if (!isInsideContainer) {
             replyButton = new TextView(getContext());
-            replyButton.setText(CGFeatureHooks.getLeftButtonText());
+            replyButton.setText(CGResourcesHelper.getLeftButtonText());
             replyButton.setGravity(Gravity.CENTER_VERTICAL);
             replyButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             replyButton.setPadding(AndroidUtilities.dp(14), 0, AndroidUtilities.dp(21), 0);
@@ -9263,33 +9262,34 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             replyButton.setTextColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon));
             replyButton.setCompoundDrawablePadding(AndroidUtilities.dp(7));
             replyButton.setTypeface(AndroidUtilities.bold());
-            Drawable image = getContext().getResources().getDrawable(CGFeatureHooks.getLeftButtonDrawable()).mutate();
+            Drawable image = getContext().getResources().getDrawable(CGResourcesHelper.getLeftButtonDrawable()).mutate();
             image.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), PorterDuff.Mode.MULTIPLY));
             replyButton.setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
             replyButton.setOnClickListener(v -> {
-                switch (CherrygramConfig.INSTANCE.getLeftBottomButton()) {
-                    case CherrygramConfig.LEFT_BUTTON_REPLY:
-                        createReplyAction();
-                        break;
-                    case CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE:
-                        createCGSaveMessagesSelected();
-                        break;
-                    case CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE:
-                        createCGShareAlertSelected();
-                        break;
-                    default:
-                    case CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP:
-                        CGFeatureHooks.switchNoAuthor(true);
-                        openForward(false);
-                        break;
+                getChatsHelper().makeReplyButtonClick(this);
+                /*MessageObject messageObject = null;
+                for (int a = 1; a >= 0; a--) {
+                    if (messageObject == null && selectedMessagesIds[a].size() != 0) {
+                        messageObject = messagesDict[a].get(selectedMessagesIds[a].keyAt(0));
+                    }
+                    selectedMessagesIds[a].clear();
+                    selectedMessagesCanCopyIds[a].clear();
+                    selectedMessagesCanStarIds[a].clear();
                 }
+                hideActionMode();
+                if (messageObject != null && (messageObject.messageOwner.id > 0 || messageObject.messageOwner.id < 0 && currentEncryptedChat != null)) {
+                    showFieldPanelForReply(messageObject);
+                }
+                updatePinnedMessageView(true);
+                updateVisibleRows();
+                updateSelectedMessageReactions();*/
             });
 
             replyButton.setOnLongClickListener(v -> {
                 if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
                     v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                 }
-                showLeftButtonActionSelector(getContext());
+                getChatsHelper().makeReplyButtonLongClick(this);
                 return false;
             });
             if (!getMessagesController().isChatNoForwards(currentChat)) bottomMessagesActionContainer.addView(replyButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP));
@@ -9694,7 +9694,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             actionModeViews.add(actionMode.addItemWithWidth(copy, R.drawable.msg_copy, AndroidUtilities.dp(54), LocaleController.getString(R.string.Copy)));
             actionModeViews.add(actionMode.addItemWithWidth(delete, R.drawable.msg_delete, AndroidUtilities.dp(54), LocaleController.getString(R.string.Delete)));
         }
-        updateMultipleSelection(actionMode);
+        getChatsHelper().updateMultipleSelection(actionMode, this);
         actionMode.setItemVisibility(edit, canEditMessagesCount == 1 && selectedMessagesIds[0].size() + selectedMessagesIds[1].size() == 1 ? View.VISIBLE : View.GONE);
         actionMode.setItemVisibility(copy, !getMessagesController().isChatNoForwards(currentChat) && selectedMessagesCanCopyIds[0].size() + selectedMessagesCanCopyIds[1].size() != 0 ? View.VISIBLE : View.GONE);
         actionMode.setItemVisibility(star, selectedMessagesCanStarIds[0].size() + selectedMessagesCanStarIds[1].size() != 0 ? View.VISIBLE : View.GONE);
@@ -10024,7 +10024,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (getParentActivity() == null) {
                   return;
                 }
-                showMessageFilterSelector(getContext());
+                ChatsHelper.getInstance(currentAccount).showSearchMessageFilterSelector(this);
             });
             searchFilterButton.setContentDescription(LocaleController.getString("CG_SearchFilter", R.string.CG_SearchFilter));
         }
@@ -11787,7 +11787,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         updateSelectedMessageReactions();
     }
 
-    private void openForward(boolean fromActionBar) {
+    public void openForward(boolean fromActionBar) {
         if (getMessagesController().isChatNoForwards(currentChat) || hasSelectedNoforwardsMessage()) {
             // We should update text if user changed locale without re-opening chat activity
             String str;
@@ -12345,7 +12345,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         }
     }
 
-    private void showMessagesSearchListView(boolean show) {
+    public void showMessagesSearchListView(boolean show) {
         if (messagesSearchListContainer == null || show && messagesSearchListContainer.getTag() != null || !show && messagesSearchListContainer.getTag() == null) {
             return;
         }
@@ -12520,7 +12520,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         showDialog(builder.create());
     }
 
-    /*private void showVoiceHint(boolean hide, boolean video) {
+    private void showVoiceHint(boolean hide, boolean video) {
         if (getParentActivity() == null || fragmentView == null || hide && voiceHintTextView == null || chatMode != 0 || chatActivityEnterView == null  || chatActivityEnterView.getAudioVideoButtonContainer() == null || chatActivityEnterView.getAudioVideoButtonContainer().getVisibility() != View.VISIBLE || isInPreviewMode()) {
             return;
         }
@@ -12545,7 +12545,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         }
 
         voiceHintTextView.showForView(chatActivityEnterView.getAudioVideoButtonContainer(), true);
-    }*/
+    }
 
     public boolean checkSlowMode(View view) {
         CharSequence time = chatActivityEnterView.getSlowModeTimer();
@@ -18337,7 +18337,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         updateSelectedMessageReactions();
     }
 
-    private void updateSelectedMessageReactions() {
+    public void updateSelectedMessageReactions() {
         if (getDialogId() == getUserConfig().getClientUserId()) {
             ArrayList<MessageObject> messageObjects = new ArrayList<>();
             for (int a = 0; a < selectedMessagesIds.length; ++a) {
@@ -18428,7 +18428,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 bottomOverlayChatText.setEnabled(true);
             }
         }
-        updateMultipleSelection(actionBar.createActionMode());
+        getChatsHelper().updateMultipleSelection(actionBar.createActionMode(), this);
     }
 
     public void updateTitle(boolean animated) {
@@ -28131,7 +28131,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         }, hideDimAfter ? () -> dimBehindView(false) : null, themeDelegate);
     }
 
-    private void hideActionMode() {
+    public void hideActionMode() {
         if (actionBar != null) {
             if (!actionBar.isActionModeShowed()) {
                 return;
@@ -29937,30 +29937,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     scrimPopupContainerLayout.applyViewBottom(fl);
                 }
 
-                boolean buttonAvailable = (message != null && message.messageOwner != null && message.messageOwner.reactions != null
-                        && ChatObject.isChannel(currentChat) && !ChatObject.canSendMessages(currentChat)
-                        && (!currentChat.megagroup || !currentChat.gigagroup || !isTopic)/* && getUserConfig().isPremium()*/
-                );
-                if (buttonAvailable && getChatsHelper().getCustomReactionsCount(selectedObject) > 0) {
-                    View gap = new FrameLayout(contentView.getContext());
-                    gap.setBackgroundColor(getThemedColor(Theme.key_actionBarDefaultSubmenuSeparator));
-                    popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
-
-                    FrameLayout button = new FrameLayout(getParentActivity());
-
-                    TextView buttonText = new TextView(getParentActivity());
-                    buttonText.setPadding(AndroidUtilities.dp(18), AndroidUtilities.dp(10), AndroidUtilities.dp(18), AndroidUtilities.dp(10));
-                    buttonText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-                    buttonText.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
-                    buttonText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText));
-                    buttonText.setText(LocaleController.formatPluralString("CG_MessageContainsCustomReactions", getChatsHelper().getCustomReactionsCount(selectedObject)));
-
-                    button.addView(buttonText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-                    button.setOnClickListener(e -> processSelectedOption(OPTION_GET_CUSTOM_REACTIONS));
-
-                    popupLayout.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-                    popupLayout.precalculateHeight();
-                }
+                getChatsHelper().showCustomReactionsInfo(this, popupLayout, message, selectedObject, currentChat, isTopic);
 
                 if (message.contentType == 0) {
                     AnimatedEmojiSpan[] animatedEmojiSpans1 = message.messageText instanceof Spanned ? ((Spanned) message.messageText).getSpans(0, message.messageText.length(), AnimatedEmojiSpan.class) : null;
@@ -30208,7 +30185,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         if (selectedMessagesCountTextView != null) {
             selectedMessagesCountTextView.setNumber(selectedMessagesIds[0].size() + selectedMessagesIds[1].size(), false);
         }
-        updateMultipleSelection(actionMode);
+        getChatsHelper().updateMultipleSelection(actionMode, this);
         updateVisibleRows();
         if (chatActivityEnterView != null) {
             chatActivityEnterView.hideBotCommands();
@@ -30813,7 +30790,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         MediaController.saveFile(path, getParentActivity(), messageObject.isVideo() ? 1 : 0, null, null);
     }
 
-    private void processSelectedOption(int option) {
+    public void processSelectedOption(int option) {
         if (selectedObject == null || getParentActivity() == null) {
             return;
         }
@@ -31682,7 +31659,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
             case OPTION_SAVE_MESSAGE_CHAT: {
                 try {
-                    long chatID = CherrygramExtras.getCustomChatID();
+                    long chatID = ChatsHelper2.getCustomChatID();
 
                     ArrayList<MessageObject> messages = new ArrayList<>();
                     if (selectedObjectGroup != null) {
@@ -31690,7 +31667,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     } else {
                         messages.add(selectedObject);
                     }
-                    forwardMessages(messages, false, true, 0, customChatID ? chatID : getUserConfig().getClientUserId());
+                    getChatsHelper().forwardMessages(this, messages, false, true, 0, customChatID ? chatID : getUserConfig().getClientUserId());
                     createUndoView();
                     if (undoView == null) {
                         return;
@@ -32257,7 +32234,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         return threadMessageObject != null && isComments;
     }
 
-    private void updateVisibleRows() {
+    public void updateVisibleRows() {
         updateVisibleRows(false);
     }
 
@@ -35441,6 +35418,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 hashtagSearchTabs.show(false);
             }
             setFilterMessages(false);
+            hashtagHistoryView.show(false);
         }
 
         @Override
@@ -36089,13 +36067,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             if (isAvatarPreviewerEnabled()) {
                 // Cherry start
                 ArrayList<Long> participantsIDs = new ArrayList<>();
-                if (chatInfo != null) {
+                if (chatInfo != null && chatInfo.participants != null) {
                     for (int a = 0; a < chatInfo.participants.participants.size(); a++) {
                         TLRPC.ChatParticipant participant = chatInfo.participants.participants.get(a);
                         participantsIDs.add(participant.user_id);
                     }
                 }
-                int isParticipant = participantsIDs.contains(user.id) ? CGFeatureHooks.injectChatActivityAvatarArraySize(ChatActivity.this) : 0;
+                int isParticipant = participantsIDs.contains(user.id) ? ChatsHelper2.injectChatActivityAvatarArraySize(ChatActivity.this) : 0;
                 // Cherry finish
                 final boolean enableMention = CherrygramConfig.INSTANCE.getShowViewHistory() && (currentChat != null && (bottomOverlayChat == null || bottomOverlayChat.getVisibility() != View.VISIBLE) && (bottomOverlay == null || bottomOverlay.getVisibility() != View.VISIBLE));
                 final boolean enableSearchMessages = !CherrygramConfig.INSTANCE.getShowViewHistory() && (currentChat != null && (threadMessageId == 0 || isTopic) && (!ChatObject.isChannel(currentChat) || currentChat.megagroup));
@@ -36110,7 +36088,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     menuItems[a++] = AvatarPreviewer.MenuItem.SEARCH_MESSAGES;
                 }
                 if (participantsIDs.contains(user.id)) {
-                    CGFeatureHooks.injectChatActivityAvatarArrayItems(ChatActivity.this, menuItems, enableMention, enableSearchMessages);
+                    ChatsHelper2.injectChatActivityAvatarArrayItems(ChatActivity.this, menuItems, enableMention, enableSearchMessages);
                 }
                 final TLRPC.UserFull userFull = getMessagesController().getUserFull(user.id);
                 AvatarPreviewer.Data data;
@@ -36139,7 +36117,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 break;
                         }
                         if (participantsIDs.contains(user.id)) {
-                            CGFeatureHooks.injectChatActivityAvatarOnClick(ChatActivity.this, item, user);
+                            ChatsHelper2.injectChatActivityAvatarOnClick(ChatActivity.this, item, user);
                         }
                     });
                     return true;
@@ -40124,37 +40102,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             final ItemOptions options = ItemOptions.makeOptions(ChatActivity.this, cell, true);
             final ScrimOptions dialog = new ScrimOptions(getContext(), themeDelegate);
 
-            if (getUserConfig().getCurrentUser().phone.startsWith("998")
-                /*CherrygramConfig.INSTANCE.isDev() && (card.startsWith("9860") || card.startsWith("555536")
-                    || card.startsWith("429434") || card.startsWith("418783") || card.startsWith("400847") || card.startsWith("472887") || card.startsWith("406228") || card.startsWith("419813") || card.startsWith("407342")
-                    || card.startsWith("8600") || card.startsWith("561468") || card.startsWith("5440") || card.startsWith("6262") || card.startsWith("6264"))*/
-            ) {
-                options.add(R.drawable.msg_payment_card, "Anorbank P2P", () -> {
-                    dialog.dismiss();
-                    AndroidUtilities.addToClipboard(card);
-                    Browser.openUrl(getParentActivity(), "https://anorbank.uz/deeplink/p2p");
-                    Toast.makeText(ApplicationLoader.applicationContext, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
-                });
-                options.add(R.drawable.msg_payment_card, "Click P2P", () -> {
-                    dialog.dismiss();
-                    AndroidUtilities.addToClipboard(card);
-                    Browser.openUrl(getParentActivity(), "https://my.click.uz/app/clickp2p/");
-                    Toast.makeText(ApplicationLoader.applicationContext, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
-                });
-                options.add(R.drawable.msg_payment_card, "Humans P2P", () -> {
-                    dialog.dismiss();
-                    AndroidUtilities.addToClipboard(card);
-                    Browser.openUrl(getParentActivity(), "https://apps.humans.uz/auth/send");
-                    Toast.makeText(ApplicationLoader.applicationContext, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
-                });
-                options.add(R.drawable.msg_payment_card, "Uzum Bank P2P", () -> {
-                    dialog.dismiss();
-                    AndroidUtilities.addToClipboard(card);
-                    Browser.openUrl(getParentActivity(), "https://uzumbank.uz/goto?action=transfer_to_card");
-                    Toast.makeText(ApplicationLoader.applicationContext, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
-                });
-                options.addGap();
-            }
+            getChatsHelper().showPlasticCardMenu(this, options, dialog, card);
 
             options.setOnDismiss(dialog::dismissFast);
             options.add(R.drawable.msg_copy, getString(R.string.CopyCardNumber), () -> {
@@ -40537,232 +40485,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
     }
 
-    private void updateMultipleSelection(ActionBarMenu actionMode) {
-        if (actionMode == null) {
-            return;
-        }
-        View item = actionMode.getItem(OPTION_SELECT_BETWEEN);
-        if (item == null) {
-            return;
-        }
-        final boolean t = selectedMessagesIds[0].size() > 1;
-        item.setVisibility(t ? View.VISIBLE : View.GONE);
-    }
-
-    private ArrayList<MessageObject> getSelectedMessages() {
-        ArrayList<MessageObject> fmessages = new ArrayList<>();
-
-        for (int a = 1; a >= 0; a--) {
-            ArrayList<Integer> ids = new ArrayList<>();
-            for (int b = 0; b < selectedMessagesIds[a].size(); b++) {
-                ids.add(selectedMessagesIds[a].keyAt(b));
-            }
-            Collections.sort(ids);
-            for (int b = 0; b < ids.size(); b++) {
-                Integer id = ids.get(b);
-                MessageObject messageObject = selectedMessagesIds[a].get(id);
-                if (messageObject != null) {
-                    fmessages.add(messageObject);
-                }
-            }
-            selectedMessagesCanCopyIds[a].clear();
-            selectedMessagesCanStarIds[a].clear();
-            selectedMessagesIds[a].clear();
-        }
-
-        hideActionMode();
-        updatePinnedMessageView(true);
-        updateVisibleRows();
-
-        return fmessages;
-    }
-
-    private void createReplyAction() {
-        MessageObject messageObject = null;
-        for (int a = 1; a >= 0; a--) {
-            if (messageObject == null && selectedMessagesIds[a].size() != 0) {
-                messageObject = messagesDict[a].get(selectedMessagesIds[a].keyAt(0));
-            }
-            selectedMessagesIds[a].clear();
-            selectedMessagesCanCopyIds[a].clear();
-            selectedMessagesCanStarIds[a].clear();
-        }
-        hideActionMode();
-        if (messageObject != null && (messageObject.messageOwner.id > 0 || messageObject.messageOwner.id < 0 && currentEncryptedChat != null)) {
-            showFieldPanelForReply(messageObject);
-        }
-        updatePinnedMessageView(true);
-        updateVisibleRows();
-        updateSelectedMessageReactions();
-    }
-
-    public void createCGShareAlertSelected() {
-        if (forwardingMessage == null && selectedMessagesIds[0].size() == 0 && selectedMessagesIds[1].size() == 0) {
-            return;
-        }
-        ArrayList<MessageObject> fmessages = new ArrayList<>();
-        if (forwardingMessage != null) {
-            if (forwardingMessageGroup != null) {
-                fmessages.addAll(forwardingMessageGroup.messages);
-            } else {
-                fmessages.add(forwardingMessage);
-            }
-            forwardingMessage = null;
-            forwardingMessageGroup = null;
-        } else {
-            for (int a = 1; a >= 0; a--) {
-                ArrayList<Integer> ids = new ArrayList<>();
-                for (int b = 0; b < selectedMessagesIds[a].size(); b++) {
-                    ids.add(selectedMessagesIds[a].keyAt(b));
-                }
-                Collections.sort(ids);
-                for (int b = 0; b < ids.size(); b++) {
-                    MessageObject messageObject = selectedMessagesIds[a].get(ids.get(b));
-                    if (messageObject != null) {
-                        fmessages.add(messageObject);
-                    }
-                }
-                selectedMessagesCanCopyIds[a].clear();
-                selectedMessagesCanStarIds[a].clear();
-                selectedMessagesIds[a].clear();
-            }
-        }
-        hideActionMode();
-        updatePinnedMessageView(true);
-        updateVisibleRows();
-
-        showDialog(new ShareAlert(getContext(), ChatActivity.this, fmessages, null, null, ChatObject.isChannel(currentChat), null, null, false, false, false, themeDelegate) {
-            @Override
-            public void dismissInternal() {
-                super.dismissInternal();
-                AndroidUtilities.requestAdjustResize(getParentActivity(), classGuid);
-                if (chatActivityEnterView.getVisibility() == View.VISIBLE) {
-                    fragmentView.requestLayout();
-                }
-            }
-
-            @Override
-            protected void onSend(LongSparseArray<TLRPC.Dialog> dids, int count, TLRPC.TL_forumTopic topic) {
-                createUndoView();
-                if (undoView == null) {
-                    return;
-                }
-                if (dids.size() == 1) {
-                    undoView.showWithAction(dids.valueAt(0).id, UndoView.ACTION_FWD_MESSAGES, count, topic, null, null);
-                } else {
-                    undoView.showWithAction(0, UndoView.ACTION_FWD_MESSAGES, count, dids.size(), null, null);
-                }
-            }
-        });
-        AndroidUtilities.setAdjustResizeToNothing(getParentActivity(), classGuid);
-        fragmentView.requestLayout();
-    }
-
-    public void createCGSaveMessagesSelected() {
-        try {
-            long chatID = CherrygramExtras.getCustomChatID();
-
-            ArrayList<MessageObject> messages = getSelectedMessages();
-            forwardMessages(messages, false, true, 0, customChatID ? chatID : getUserConfig().getClientUserId());
-            createUndoView();
-            if (undoView == null) {
-                return;
-            }
-            if (!customChatID) {
-                if (!BulletinFactory.of(ChatActivity.this).showForwardedBulletinWithTag(getUserConfig().getClientUserId(), messages.size())) {
-                    undoView.showWithAction(getUserConfig().getClientUserId(), UndoView.ACTION_FWD_MESSAGES, messages.size());
-                }
-            } else {
-                undoView.showWithAction(chatID, UndoView.ACTION_FWD_MESSAGES, messages.size());
-            }
-        } catch (Exception ignore) {
-            ignore.printStackTrace();
-            clearSelectionMode();
-            Toast.makeText(getParentActivity(), LocaleController.getString("EP_CustomChatNotFound", R.string.EP_CustomChatNotFound), Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void showLeftButtonActionSelector(Context context) {
-        ArrayList<String> configStringKeys = new ArrayList<>();
-        ArrayList<Integer> configValues = new ArrayList<>();
-
-        configStringKeys.add(LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship));
-        configValues.add(CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP);
-
-        configStringKeys.add(LocaleController.getString("Reply", R.string.Reply));
-        configValues.add(CherrygramConfig.LEFT_BUTTON_REPLY);
-
-        configStringKeys.add(LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved));
-        configValues.add(CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE);
-
-        configStringKeys.add(LocaleController.getString("DirectShare", R.string.DirectShare));
-        configValues.add(CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE);
-
-        PopupHelper.show(configStringKeys, LocaleController.getString("CP_LeftBottomButtonAction", R.string.CP_LeftBottomButtonAction), configValues.indexOf(CherrygramConfig.INSTANCE.getLeftBottomButton()), context, i -> {
-            CherrygramConfig.INSTANCE.setLeftBottomButton(configValues.get(i));
-
-            if (replyButton == null) return;
-            replyButton.setText(CGFeatureHooks.getLeftButtonText());
-            Drawable image = getContext().getResources().getDrawable(CGFeatureHooks.getLeftButtonDrawable()).mutate();
-            image.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), PorterDuff.Mode.MULTIPLY));
-            replyButton.setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
-        });
-    }
-
-    private void showMessageFilterSelector(Context context) {
-        ArrayList<String> configStringKeys = new ArrayList<>();
-        ArrayList<Integer> configValues = new ArrayList<>();
-
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_None", R.string.CG_SearchFilter_None));
-        configValues.add(CherrygramConfig.FILTER_NONE);
-
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Photos", R.string.CG_SearchFilter_Photos));
-        configValues.add(CherrygramConfig.FILTER_PHOTOS);
-
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Videos", R.string.CG_SearchFilter_Videos));
-        configValues.add(CherrygramConfig.FILTER_VIDEOS);
-
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_VoiceMessages", R.string.CG_SearchFilter_VoiceMessages));
-        configValues.add(CherrygramConfig.FILTER_VOICE_MESSAGES);
-
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_VideoMessages", R.string.CG_SearchFilter_VideoMessages));
-        configValues.add(CherrygramConfig.FILTER_VIDEO_MESSAGES);
-
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Files", R.string.CG_SearchFilter_Files));
-        configValues.add(CherrygramConfig.FILTER_FILES);
-
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Music", R.string.CG_SearchFilter_Music));
-        configValues.add(CherrygramConfig.FILTER_MUSIC);
-
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_GIFs", R.string.CG_SearchFilter_GIFs));
-        configValues.add(CherrygramConfig.FILTER_GIFS);
-
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Geolocation", R.string.CG_SearchFilter_Geolocation));
-        configValues.add(CherrygramConfig.FILTER_GEO);
-
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Contacts", R.string.CG_SearchFilter_Contacts));
-        configValues.add(CherrygramConfig.FILTER_CONTACTS);
-
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_MyMentions", R.string.CG_SearchFilter_MyMentions));
-        configValues.add(CherrygramConfig.FILTER_MENTIONS);
-
-        PopupHelper.show(configStringKeys, LocaleController.getString("CG_SearchFilter", R.string.CG_SearchFilter), configValues.indexOf(CherrygramConfig.INSTANCE.getMessagesSearchFilter()), context, i -> {
-            CherrygramConfig.INSTANCE.setMessagesSearchFilter(configValues.get(i));
-
-            openSearchWithText(null);
-            showMessagesSearchListView(true);
-        });
-    }
-
-    // This method is used to forward messages to Saved Messages, or to multi Dialogs
-    private void forwardMessages(ArrayList<MessageObject> arrayList, boolean fromMyName, boolean notify, int scheduleDate, long did) {
-        if (arrayList == null || arrayList.isEmpty()) {
-            return;
-        }
-        if ((scheduleDate != 0) == (chatMode == MODE_SCHEDULED)) {
-            waitingForSendingMessageLoad = true;
-        }
-        AlertsCreator.showSendMediaAlert(getSendMessagesHelper().sendMessage(arrayList, did == 0 ? dialog_id : did, fromMyName, false, notify, scheduleDate), this);
+    private void checkHashtagStories(boolean instant) {
+        if (searchType != SEARCH_PUBLIC_POSTS) return;
+        if (messagesSearchAdapter == null) return;
+        messagesSearchAdapter.searchStories(searchingHashtag, instant);
     }
 
     @Override
@@ -40803,9 +40529,4 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         animator.start();
     }
 
-    private void checkHashtagStories(boolean instant) {
-        if (searchType != SEARCH_PUBLIC_POSTS) return;
-        if (messagesSearchAdapter == null) return;
-        messagesSearchAdapter.searchStories(searchingHashtag, instant);
-    }
 }

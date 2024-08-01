@@ -12,23 +12,24 @@ import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.BulletinFactory
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.Extra
-import uz.unnarsx.cherrygram.crashlytics.Crashlytics
-import uz.unnarsx.cherrygram.extras.Constants
-import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator
-import uz.unnarsx.cherrygram.ui.tgkit.preference.category
-import uz.unnarsx.cherrygram.ui.tgkit.preference.textDetail
-import uz.unnarsx.cherrygram.ui.tgkit.preference.textIcon
-import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
-import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextDetailRow
-import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
-import uz.unnarsx.cherrygram.updater.UpdaterBottomSheet
-import uz.unnarsx.cherrygram.updater.UpdaterUtils
+import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics
+import uz.unnarsx.cherrygram.misc.Constants
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
+import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.textDetail
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextDetailRow
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.core.updater.UpdaterBottomSheet
+import uz.unnarsx.cherrygram.core.updater.UpdaterUtils
 
 class AboutPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("CGP_Header_About", R.string.CGP_Header_About)) {
         category(LocaleController.getString("Info", R.string.Info)) {
             textDetail {
-                title = Constants.getAppName() + " " + Constants.CG_VERSION + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING
+                title = CGResourcesHelper.getAppName() + " " + Constants.CG_VERSION + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING
                 detail = LocaleController.getString("CGP_About_Desc", R.string.CGP_About_Desc)
 
                 listener = TGKitTextDetailRow.TGTDListener {

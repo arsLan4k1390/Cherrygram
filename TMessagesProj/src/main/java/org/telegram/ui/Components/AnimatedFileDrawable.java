@@ -47,7 +47,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import uz.unnarsx.cherrygram.helpers.StickersHelper;
+import uz.unnarsx.cherrygram.chats.helpers.StickersHelper;
 
 public class AnimatedFileDrawable extends BitmapDrawable implements Animatable, BitmapsCache.Cacheable {
 

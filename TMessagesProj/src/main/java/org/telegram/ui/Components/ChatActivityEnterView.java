@@ -194,8 +194,8 @@ import java.util.List;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.translator.BaseTranslator;
-import uz.unnarsx.cherrygram.translator.Translator;
+import uz.unnarsx.cherrygram.chats.translator.BaseTranslator;
+import uz.unnarsx.cherrygram.chats.translator.Translator;
 
 public class ChatActivityEnterView extends BlurredFrameLayout implements NotificationCenter.NotificationCenterDelegate, SizeNotifierFrameLayout.SizeNotifierFrameLayoutDelegate, StickersAlert.StickersAlertDelegate, SuggestEmojiView.AnchorViewDelegate {
 

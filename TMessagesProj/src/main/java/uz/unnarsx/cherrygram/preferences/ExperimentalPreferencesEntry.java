@@ -31,11 +31,11 @@ import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
-import uz.unnarsx.cherrygram.ui.dialogs.TextFieldAlert;
+import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert;
 
 public class ExperimentalPreferencesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -331,7 +331,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                         );
                         textCell.setTextAndValue(t, v, false);
                     } else if (position == downloadSpeedBoostRow) {
-                        textCell.setTextAndValue(LocaleController.getString("EP_DownloadSpeedBoost", R.string.EP_DownloadSpeedBoost), CGFeatureHooks.getDownloadSpeedBoostText(), true);
+                        textCell.setTextAndValue(LocaleController.getString("EP_DownloadSpeedBoost", R.string.EP_DownloadSpeedBoost), CGResourcesHelper.getDownloadSpeedBoostText(), true);
                     }
                     break;
             }

@@ -99,8 +99,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.ui.tabs.FolderIconHelper;
-import uz.unnarsx.cherrygram.ui.tabs.IconSelectorAlert;
+import uz.unnarsx.cherrygram.preferences.folders.helpers.FolderIconHelper;
+import uz.unnarsx.cherrygram.preferences.folders.IconSelectorAlert;
 
 public class FilterCreateActivity extends BaseFragment {
 

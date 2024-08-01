@@ -240,10 +240,10 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.CGBiometricPrompt;
-import uz.unnarsx.cherrygram.crashlytics.CrashReportBottomSheet;
-import uz.unnarsx.cherrygram.crashlytics.Crashlytics;
-import uz.unnarsx.cherrygram.utils.PermissionsUtils;
+import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
+import uz.unnarsx.cherrygram.core.crashlytics.CrashReportBottomSheet;
+import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics;
+import uz.unnarsx.cherrygram.core.PermissionsUtils;
 
 public class DialogsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, FloatingDebugProvider {
 
@@ -8373,7 +8373,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         boolean hasFolders = getMessagesController().filtersEnabled && getMessagesController().dialogFiltersLoaded && getMessagesController().dialogFilters != null && getMessagesController().dialogFilters.size() > 0;
         final ActionBarPopupWindow.ActionBarPopupWindowLayout[] previewMenu = new ActionBarPopupWindow.ActionBarPopupWindowLayout[1];
-        final ActionBarPopupWindow.ActionBarPopupWindowLayout[] previewMenu1 = new ActionBarPopupWindow.ActionBarPopupWindowLayout[1];
 
         LinearLayout foldersMenuView = null;
         int[] foldersMenu = new int[1];
@@ -13029,5 +13028,4 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         searchViewPager.setFilteredSearchViewDelegate((showMediaFilters, users, dates, archive) -> DialogsActivity.this.updateFiltersView(showMediaFilters, users, dates, archive, true));
         searchViewPager.setVisibility(View.GONE);
     }
-
 }

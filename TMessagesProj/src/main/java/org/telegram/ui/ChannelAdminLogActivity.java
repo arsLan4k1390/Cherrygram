@@ -155,7 +155,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.helpers.JsonBottomSheet;
+import uz.unnarsx.cherrygram.chats.JsonBottomSheet;
 
 public class ChannelAdminLogActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 

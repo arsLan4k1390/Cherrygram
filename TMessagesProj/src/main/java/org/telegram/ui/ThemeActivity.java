@@ -216,7 +216,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
     private int appIconHeaderRow;
     private int appIconFilterRow;
     private int appIconSelectorRow;
-    private int appIconInfoRow;
     private int appIconShadowRow;
 
     private int rowCount;
@@ -584,7 +583,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         appIconFilterRow = -1;
         appIconSelectorRow = -1;
         appIconShadowRow = -1;
-        appIconInfoRow = -1;
         lastShadowRow = -1;
 
         defaultThemes.clear();
@@ -651,7 +649,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
 //            appIconFilterRow = rowCount++;
 //            appIconSelectorRow = rowCount++;
 //            appIconShadowRow = rowCount++;
-//            appIconInfoRow = rowCount++;
 
             swipeGestureHeaderRow = rowCount++;
             swipeGestureRow = rowCount++;
@@ -687,12 +684,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 listAdapter.notifyItemRemoved(appIconSelectorRow);
                 listAdapter.notifyItemInserted(appIconSelectorRow);
             }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                appIconInfoRow = rowCount++;
-            } else {
-                appIconShadowRow = rowCount++;
-            }
+            appIconShadowRow = rowCount++;
         } else {
             nightDisabledRow = rowCount++;
             nightScheduledRow = rowCount++;
@@ -2300,8 +2292,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                         cell.setText(getString("ChatListSwipeGestureInfo", R.string.ChatListSwipeGestureInfo));
                     } else if (position == liteModeInfoRow) {
                         cell.setText(getString("LiteModeInfo", R.string.LiteModeInfo));
-                    } else if (position == appIconInfoRow) {
-                        cell.setText(LocaleController.getString("AP_HoldToShowWallpaper", R.string.AP_HoldToShowWallpaper));
                     } else {
                         cell.setFixedSize(12);
                         cell.setText("");
@@ -2512,7 +2502,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     position == contactsReimportRow || position == contactsSortRow ||
                     position == bluetoothScoRow) {
                 return TYPE_TEXT_SETTING;
-            } else if (position == automaticBrightnessInfoRow || position == scheduleLocationInfoRow || position == swipeGestureInfoRow || position == stickersInfoRow || position == liteModeInfoRow || position == appIconInfoRow) {
+            } else if (position == automaticBrightnessInfoRow || position == scheduleLocationInfoRow || position == swipeGestureInfoRow || position == stickersInfoRow || position == liteModeInfoRow) {
                 return TYPE_TEXT_INFO_PRIVACY;
             } else if (position == themeInfoRow || position == nightTypeInfoRow || position == scheduleFromToInfoRow ||
                     position == settings2Row || position == newThemeInfoRow || position == chatListInfoRow || position == bubbleRadiusInfoRow ||

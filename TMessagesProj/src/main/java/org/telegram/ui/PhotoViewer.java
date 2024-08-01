@@ -291,7 +291,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.extras.CherrygramExtras;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
 @SuppressLint("WrongConstant")
 @SuppressWarnings("unchecked")
@@ -13310,7 +13310,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     title = UserObject.getUserName(user);
 
                     ImageLocation imageLocation = imagesArrLocations.get(index);
-                    if (imageLocation != null && imageLocation.photo != null) {
+                    if (imageLocation != null && imageLocation.photo != null && imageLocation.photo.date != 0) {
                         actionBarContainer.setSubtitle(LocaleController.formatDateTime(imageLocation.photo.date, true), animated);
                     } else {
                         actionBarContainer.setSubtitle("", animated);
@@ -13336,9 +13336,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
                     TLRPC.ChatFull chatFull = MessagesController.getInstance(currentAccount).getChatFull(-avatarsDialogId);
                     if (avatar.date != 0) {
-                        subtitle = String.format("%s", CherrygramExtras.INSTANCE.createDateAndTime(avatar.date));
-                    } else if (chatFull != null) {
-                        subtitle = String.format("%s", CherrygramExtras.INSTANCE.createDateAndTime(chatFull.chat_photo.date));
+                        subtitle = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(avatar.date));
+                    } else if (chatFull != null && chatFull.chat_photo != null && chatFull.chat_photo.date != 0) {
+                        subtitle = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(chatFull.chat_photo.date));
                     }
                     actionBarContainer.setSubtitle(subtitle, animated);
                 }
@@ -19617,14 +19617,22 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
         int compressionsCount = this.compressionsCount;
         int maxCompression = 2;
-        while (compressionsCount < 5) {
+        while (compressionsCount < 8) {
             int selectedCompression = preferences.getInt(String.format(Locale.US, "compress_video_%d", compressionsCount), -1);
             if (selectedCompression >= 0) {
-                return Math.max(selectedCompression, maxCompression);
+                if (CherrygramConfig.INSTANCE.getSendVideosAtMaxQuality()) {
+                    return Math.max(selectedCompression, maxCompression);
+                } else {
+                    return Math.min(selectedCompression, maxCompression);
+                }
             }
             compressionsCount++;
         }
-        return Math.max(maxCompression, Math.round(DownloadController.getInstance(currentAccount).getMaxVideoBitrate() / (100f / compressionsCount)) - 1);
+        if (CherrygramConfig.INSTANCE.getSendVideosAtMaxQuality()) {
+            return Math.max(maxCompression, Math.round(DownloadController.getInstance(currentAccount).getMaxVideoBitrate() / (100f / compressionsCount)) - 1);
+        } else {
+            return Math.min(maxCompression, Math.round(DownloadController.getInstance(currentAccount).getMaxVideoBitrate() / (100f / compressionsCount)) - 1);
+        }
     }
 
     private void updateCompressionsCount(int h, int w) {
@@ -20515,9 +20523,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
         String date = "";
         if (avatar != null && avatar.date != 0) {
-            date = String.format("%s", CherrygramExtras.INSTANCE.createDateAndTime(avatar.date));
-        } else if (userFull != null && userFull.fallback_photo != null) {
-            date = String.format("%s", CherrygramExtras.INSTANCE.createDateAndTime(userFull.fallback_photo.date)
+            date = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(avatar.date));
+        } else if (userFull != null && userFull.fallback_photo != null && userFull.fallback_photo.date != 0) {
+            date = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(userFull.fallback_photo.date)
             + " | " + LocaleController.getString("PublicPhoto", R.string.PublicPhoto)
             );
         }

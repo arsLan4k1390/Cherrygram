@@ -126,7 +126,6 @@
     <string name="AP_IconReplacements">استبدال الأيقونات</string>
     <string name="AP_Old_Notification_Icon">رمز الاشعارات الافتراضي (تيليجرام)</string>
     <string name="AP_ChangeIconFilter">إستخدام أيقونة تيليجرام</string>
-    <string name="AP_HoldToShowWallpaper">اضغط على أي أيقونة لإظهار خلفية سطح المكتب</string>
     <string name="AP_ChangeIcon_Cherry_NY">سنة جديدة</string>
     <string name="AP_ChangeIcon_Default">افتراضي</string>
     <string name="AP_ChangeIcon_Dark">داكن</string>

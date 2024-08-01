@@ -23,7 +23,7 @@ import java.util.Calendar;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.Extra;
-import uz.unnarsx.cherrygram.updater.UpdaterUtils;
+import uz.unnarsx.cherrygram.core.updater.UpdaterUtils;
 
 public class UserHelper extends BaseController {
 

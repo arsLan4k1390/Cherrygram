@@ -633,6 +633,19 @@ public class LocaleController {
         languagesDict.put(localeInfo.shortName, localeInfo);
 
         localeInfo = new LocaleInfo();
+        localeInfo.name = "日本語";
+        localeInfo.nameEnglish = "Japanese";
+        localeInfo.shortName = "ja_raw";
+        localeInfo.baseLangCode = null;
+        localeInfo.isRtl = false;
+        localeInfo.pathToFile = "unofficial";
+        localeInfo.pluralLangCode = "ja";
+        localeInfo.builtIn = true;
+        languages.add(localeInfo);
+        languagesDict.put(localeInfo.getKey(), localeInfo);
+        languagesDict.put("ja", localeInfo);
+
+        localeInfo = new LocaleInfo();
         localeInfo.name = "简体中文";
         localeInfo.nameEnglish = "Chinese (Simplified)";
         localeInfo.shortName = "fengcs";

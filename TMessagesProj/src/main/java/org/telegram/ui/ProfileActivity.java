@@ -294,10 +294,10 @@ import java.util.zip.ZipOutputStream;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.Extra;
-import uz.unnarsx.cherrygram.extras.Constants;
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
-import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator;
-import uz.unnarsx.cherrygram.extras.CherrygramExtras;
+import uz.unnarsx.cherrygram.misc.Constants;
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator;
 
 public class ProfileActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, SharedMediaLayout.SharedMediaPreloaderDelegate, ImageUpdater.ImageUpdaterDelegate, SharedMediaLayout.Delegate {
     private final static int PHONE_OPTION_CALL = 0,
@@ -9338,9 +9338,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 sb.append("DC: ");
                 sb.append(user.photo.dc_id);
                 sb.append(", ");
-                sb.append(CherrygramExtras.INSTANCE.getDCName(user.photo.dc_id));
+                sb.append(CGResourcesHelper.INSTANCE.getDCName(user.photo.dc_id));
                 sb.append(", ");
-                sb.append(CherrygramExtras.INSTANCE.getDCGeo(user.photo.dc_id));
+                sb.append(CGResourcesHelper.INSTANCE.getDCGeo(user.photo.dc_id));
             } else {
                 sb.append("DC: ");
                 sb.append(LocaleController.getString("NumberUnknown", R.string.NumberUnknown));
@@ -9394,9 +9394,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 sb.append("DC: ");
                 sb.append(chat.photo.dc_id);
                 sb.append(", ");
-                sb.append(CherrygramExtras.INSTANCE.getDCName(chat.photo.dc_id));
+                sb.append(CGResourcesHelper.INSTANCE.getDCName(chat.photo.dc_id));
                 sb.append(", ");
-                sb.append(CherrygramExtras.INSTANCE.getDCGeo(chat.photo.dc_id));
+                sb.append(CGResourcesHelper.INSTANCE.getDCGeo(chat.photo.dc_id));
             } else {
                 sb.append("DC: ");
                 sb.append(LocaleController.getString("NumberUnknown", R.string.NumberUnknown));
@@ -10868,8 +10868,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     cell.getTextView().setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText3));
                     cell.getTextView().setMovementMethod(null);
                     try {
-                        String abi = CherrygramExtras.INSTANCE.getAbiCode();
-                        String appName = Constants.INSTANCE.getAppName();
+                        String abi = CGResourcesHelper.INSTANCE.getAbiCode();
+                        String appName = CGResourcesHelper.INSTANCE.getAppName();
                         cell.setText(appName + " v" + Constants.INSTANCE.getCG_VERSION() + " " + abi + "\n Based on Telegram v" + BuildVars.BUILD_VERSION_STRING + " " + "\n" + Constants.INSTANCE.getCG_AUTHOR());
                     } catch (Exception e) {
                         FileLog.e(e);

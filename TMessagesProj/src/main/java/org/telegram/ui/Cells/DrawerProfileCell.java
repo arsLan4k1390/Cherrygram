@@ -73,7 +73,7 @@ import org.telegram.ui.Components.SnowflakesEffect;
 import org.telegram.ui.ThemeActivity;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.ui.drawer.DrawerBitmapHelper;
+import uz.unnarsx.cherrygram.preferences.drawer.helpers.DrawerBitmapHelper;
 
 import java.util.ArrayList;
 

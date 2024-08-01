@@ -92,8 +92,8 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.extras.VibrateUtil;
-import uz.unnarsx.cherrygram.helpers.CGBiometricPrompt;
+import uz.unnarsx.cherrygram.core.VibrateUtil;
+import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 
 public class PasscodeActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     public final static int TYPE_MANAGE_CODE_SETTINGS = 0,

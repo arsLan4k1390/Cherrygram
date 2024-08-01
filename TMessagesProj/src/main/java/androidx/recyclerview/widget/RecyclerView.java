@@ -98,7 +98,7 @@ import java.util.Collections;
 import java.util.List;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.extras.VibrateUtil;
+import uz.unnarsx.cherrygram.core.VibrateUtil;
 
 /**
  * A flexible view for providing a limited window into a large data set.

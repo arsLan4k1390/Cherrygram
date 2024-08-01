@@ -7,19 +7,19 @@ import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.CherrygramConfig
-import uz.unnarsx.cherrygram.extras.VibrateUtil
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.ui.dialogs.AlertDialogSwitchers
-import uz.unnarsx.cherrygram.ui.tgkit.preference.category
-import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
-import uz.unnarsx.cherrygram.ui.tgkit.preference.hint
-import uz.unnarsx.cherrygram.ui.tgkit.preference.list
-import uz.unnarsx.cherrygram.ui.tgkit.preference.slider
-import uz.unnarsx.cherrygram.ui.tgkit.preference.switch
-import uz.unnarsx.cherrygram.ui.tgkit.preference.textIcon
-import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
-import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitSliderPreference.TGSLContract
-import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.core.VibrateUtil
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.hint
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.list
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.slider
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSliderPreference.TGSLContract
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class ChatsPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {

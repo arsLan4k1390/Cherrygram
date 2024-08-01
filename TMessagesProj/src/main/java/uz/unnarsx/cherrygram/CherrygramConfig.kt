@@ -3,24 +3,29 @@ package uz.unnarsx.cherrygram
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManagerImpl
 import org.telegram.tgnet.TLRPC
-import uz.unnarsx.cherrygram.helpers.LocalVerificationsHelper
+import uz.unnarsx.cherrygram.camera.CameraXUtils
+import uz.unnarsx.cherrygram.chats.helpers.StickersHelper
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.helpers.LocalVerificationsHelper
+import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
+import uz.unnarsx.cherrygram.core.icons.icon_replaces.NoIconReplace
+import uz.unnarsx.cherrygram.core.icons.icon_replaces.SolarIconReplace
+import uz.unnarsx.cherrygram.core.icons.icon_replaces.VkIconReplace
 import uz.unnarsx.cherrygram.helpers.CherrygramToasts
-import uz.unnarsx.cherrygram.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
-import uz.unnarsx.cherrygram.helpers.StickersHelper
-import uz.unnarsx.cherrygram.ui.icons.icon_replaces.BaseIconReplace
-import uz.unnarsx.cherrygram.ui.icons.icon_replaces.NoIconReplace
-import uz.unnarsx.cherrygram.ui.icons.icon_replaces.SolarIconReplace
-import uz.unnarsx.cherrygram.ui.icons.icon_replaces.VkIconReplace
 
 object CherrygramConfig: CoroutineScope by MainScope() {
 
@@ -546,7 +551,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     const val CAMERA_X = 1
     const val CAMERA_2 = 2
     const val SYSTEM_CAMERA = 3
-    var cameraType by sharedPreferences.int("CP_CameraType", TELEGRAM_CAMERA)
+    var cameraType by sharedPreferences.int("CP_CameraType", if (CameraXUtils.isCameraXSupported()) CAMERA_X else TELEGRAM_CAMERA)
 
     var cameraResolution by sharedPreferences.int("CP_CameraResolution", -1)
     //Camera
@@ -679,6 +684,22 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("AP_ForceBlur", forceChatBlurEffect)
     }
     var forceChatBlurEffectIntensity by sharedPreferences.int("AP_ForceBlur_Intensity", 155)
+
+    //Audio Source
+    const val AUDIO_SOURCE_DEFAULT = 0
+    const val AUDIO_SOURCE_CAMCORDER = 1
+    const val AUDIO_SOURCE_MIC = 2
+    const val AUDIO_SOURCE_REMOTE_SUBMIX = 3
+    const val AUDIO_SOURCE_UNPROCESSED = 4
+    const val AUDIO_SOURCE_VOICE_CALL = 5
+    const val AUDIO_SOURCE_VOICE_COMMUNICATION = 6
+    const val AUDIO_SOURCE_VOICE_DOWNLINK = 7
+    const val AUDIO_SOURCE_VOICE_PERFORMANCE = 8
+    const val AUDIO_SOURCE_VOICE_RECOGNITION = 9
+    const val AUDIO_SOURCE_VOICE_UPLINK = 10
+    var audioSource by sharedPreferences.int("audioSource", AUDIO_SOURCE_DEFAULT)
+
+    var sendVideosAtMaxQuality by sharedPreferences.boolean("sendVideosMaxQuality", false)
 
     // Misc
     var forwardNoAuthorship by sharedPreferences.boolean("CG_ForwardNoAuthorship", false)

@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelLink">訂閱 @Cherry_Gram 頻道！</string>
     <string name="CG_FollowChannelTitle">訂閱官方頻道</string>
     <string name="CG_FollowChannelInfo">加入我們的頻道以隨時了解 Cherrygram 的所有新聞和功能！</string>
     <string name="CG_DoNotRemindAgain">下次不要顯示</string>
     <!--Telegram screens-->
+    <string name="CG_RegistrationDate">註冊日期：</string>
+    <string name="CG_RegistrationDateNewer">遲於%s</string>
+    <string name="CG_RegistrationDateOlder">早於%s</string>
+    <string name="CG_RegistrationDateApproximately">大約在%s</string>
+    <string name="CG_RegistrationDateFailed">無法取得註冊日期。</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">掃描QR碼登入</string>
     <string name="CG_QRLoginMessage">使用另一台裝置掃描QR碼登入</string>
@@ -42,6 +48,8 @@
     <string name="CG_ViewUserHistory">訊息紀錄</string>
     <string name="CG_ToSaved">儲存訊息</string>
     <string name="CG_CreateMention">建立提及</string>
+    <string name="CG_CreateCode">建立代碼</string>
+    <string name="CG_CreateCodeLanguage">語言</string>
     <string name="CG_FwdMenu_EnableNoForward">移除轉寄來源</string>
     <string name="CG_FwdMenu_DisableNoForward">顯示轉寄來源</string>
     <string name="CG_Without_Authorship">無來源轉寄</string>
@@ -49,6 +57,20 @@
     <string name="CG_FwdMenu_Notify">通知</string>
     <string name="CG_FwdMenu_EnableCaptions">顯示字幕</string>
     <string name="CG_FwdMenu_DisableCaptions">隱藏字幕</string>
+    <!--Search filter-->
+    <string name="CG_SearchFilter">篩選搜尋結果</string>
+    <string name="CG_SearchFilter_None">無</string>
+    <string name="CG_SearchFilter_Photos">圖片</string>
+    <string name="CG_SearchFilter_Videos">影片</string>
+    <string name="CG_SearchFilter_VoiceMessages">語音訊息</string>
+    <string name="CG_SearchFilter_VideoMessages">影片訊息</string>
+    <string name="CG_SearchFilter_Files">文件/檔案</string>
+    <string name="CG_SearchFilter_Music">音樂</string>
+    <string name="CG_SearchFilter_GIFs">GIF</string>
+    <string name="CG_SearchFilter_Geolocation">地理位置</string>
+    <string name="CG_SearchFilter_Contacts">聯絡人</string>
+    <string name="CG_SearchFilter_MyMentions">提及到我的訊息</string>
+    <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
     <string name="CG_Restart">重新啟動應用程式</string>
@@ -78,6 +100,8 @@
     <string name="CG_GetEmojiPack">獲取emoji</string>
     <string name="CG_ReplyBackground">回覆背景</string>
     <string name="CG_ProfileBackground">應用個人資料背景</string>
+    <string name="CG_MessageContainsCustomReactions_one">回應包含 %1$d 表情包內的自訂 emoji \n</string>
+    <string name="CG_MessageContainsCustomReactions_other">回應包含 %1$d 表情包內的自訂 emoji \n</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -102,7 +126,6 @@
     <string name="AP_IconReplacements">替換圖示</string>
     <string name="AP_Old_Notification_Icon">預設通知圖示 (Telegram)</string>
     <string name="AP_ChangeIconFilter">使用 Telegram 原始圖示</string>
-    <string name="AP_HoldToShowWallpaper">按住任何圖示即可顯示您的桌面背景</string>
     <string name="AP_ChangeIcon_Cherry_NY">新年</string>
     <string name="AP_ChangeIcon_Default">預設</string>
     <string name="AP_ChangeIcon_Dark">深色</string>
@@ -129,6 +152,9 @@
     <string name="CP_PremAndAnim_Header">動畫和進階功能</string>
     <string name="CP_ProfileReplyBackground">訊息和個人檔案</string>
     <string name="CP_CustomizeProfile">自訂個人檔案</string>
+    <string name="CP_ProfileChannelPreview">個人頻道</string>
+    <string name="CP_ProfileBirthDatePreview">出生日期</string>
+    <string name="CP_ProfileBusinessPreview">營業時間及地點</string>
     <string name="CP_ProfileBackgroundColor">個人檔案背景</string>
     <string name="CP_ProfileBackgroundEmoji">個人資料中的表情背景</string>
     <string name="CP_CustomizeMessage">自訂訊息</string>
@@ -136,6 +162,8 @@
     <string name="CP_ReplyCustomColors">自訂回覆和連結預覽的顏色</string>
     <string name="CP_ReplyBackgroundEmoji">回覆和連結預覽中的表情</string>
     <string name="CP_HideStories">隱藏限時動態</string>
+    <string name="CP_CustomWallpapers">自訂對話背景</string>
+    <string name="CP_CustomWallpapers_Desc">設定由Premium使用者/助力頻道所製作的對話/群組/頻道頁面中的自訂背景</string>
     <string name="CP_DisableAnimAvatars">停用動畫大頭貼</string>
     <string name="CP_DisableReactionsOverlay">停用 Emoji 回應選項</string>
     <string name="CP_DisableReactionsOverlay_Desc">此功能將停用 Emoji 回應選項</string>
@@ -166,14 +194,20 @@
     <string name="AP_DrawerBlurIntensity">模糊程度</string>
     <string name="AP_DrawerIconPack_Header">側邊欄圖示設定</string>
     <string name="AP_DrawerButtonsCategory">側邊欄按鈕</string>
+    <string name="AP_HideUserPhone_Show">按一下顯示</string>
+    <string name="AP_HideUserPhone_Copy">長按複製</string>
     <string name="AP_MutualContacts_Description">該帳戶為相互聯絡人，對方同時也新增您為聯絡人</string>
     <string name="AP_ShowID">在個人檔案中顯示 ID 和 DC</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">對話</string>
+    <string name="CP_Header_Messages">訊息</string>
     <string name="CP_Slider_StickerAmplifier">調整貼圖大小</string>
     <string name="CP_TimeOnStick">隱藏貼圖時間</string>
+    <string name="CP_ChatMenuShortcuts">對話功能表捷徑</string>
+    <string name="CP_AdminActions">管理員捷徑</string>
     <string name="CP_MessageMenu">訊息選單自訂</string>
+    <string name="AP_CenterChatsTitle">對話標題列置中</string>
     <string name="CP_UnreadBadgeOnBackButton">顯示未讀對話數量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已開啟的對話中顯示未讀訊息數量</string>
     <string name="CP_NoRounding">停用數字四捨五入</string>
@@ -184,14 +218,18 @@
     <string name="CP_ShowSeconds">時間顯示到秒數</string>
     <string name="CP_LeftBottomButtonAction">左側按鈕功能</string>
     <string name="CP_DoubleTapAction">雙擊操作</string>
+    <string name="CG_MsgSlideAction">訊息滑動操作</string>
     <string name="CP_DisableSwipeToNext">停用頻道切換</string>
     <string name="CP_DisableSwipeToNext_Desc">瀏覽頻道訊息時禁止切換至下一個頻道</string>
     <string name="CP_HideMuteUnmuteButton">隱藏頻道底部按鈕</string>
     <string name="CP_HideKbdOnScroll">捲動時隱藏鍵盤</string>
     <string name="CP_HideSendAsChannel">隱藏頻道身份傳送按鈕</string>
+    <string name="CP_HideSendAsChannelDesc">您可以透過長按Emoji/貼紙/GIF 按鈕，開啟以頻道身份傳送的選單</string>
     <string name="CP_Slider_RecentEmojisAmplifier">最近使用的 Emoji 數量 (重啟應用程式後生效)</string>
     <string name="CP_Slider_RecentStickersAmplifier">最近使用的貼圖數量 (重啟應用程式後生效)</string>
     <string name="CP_Header_Record">多媒體</string>
+    <string name="CP_SpoilersOnMedia">防劇透特效</string>
+    <string name="CP_SpoilersOnMedia_Desc">停用此功能後將不再顯示對照片和影片的防劇透特效。</string>
     <string name="CP_VoiceEnhancements">語音增強</string>
     <string name="CP_VoiceEnhancements_Desc">噪聲抑制和音量一致化</string>
     <string name="CP_PlayVideo">按下音量鍵播放影片</string>
@@ -210,6 +248,12 @@
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">相機</string>
     <string name="CP_CameraType">相機類型</string>
+    <string name="CP_Camera2Desc">鏡頭開啟時隱藏的所有功能，在啟用第二個鏡頭時將無法使用。</string>
+    <string name="CP_CameraStabilisation">相機防震</string>
+    <string name="CP_CameraUW">由超廣角鏡頭開始</string>
+    <string name="CP_CameraUW_Desc">影片訊息的錄製將由超廣角鏡頭開始 (如果您的裝置的 API 支援的話)</string>
+    <string name="CP_CameraDualCamera">雙鏡頭</string>
+    <string name="CP_CameraDualCamera_Desc">在兩個鏡頭同時上錄製影片訊息，以便在錄製時快速轉換另一個鏡頭。啟用此功能可能消耗更多電量。</string>
     <string name="CP_DefaultCameraDesc">使用 Telegram 內建相機</string>
     <string name="CP_CameraXDesc">CameraX 僅支援 <![CDATA[<a href="https://developer.android.com/training/camerax/devices">下列裝置</a>]]>，效果和鏡頭支援取決於您的硬體</string>
     <string name="CP_CameraQuality">相機品質</string>
@@ -218,8 +262,16 @@
     <string name="CP_CameraAspectRatio">相機縱橫比</string>
     <string name="CP_RearCam">使用後置鏡頭</string>
     <string name="CP_RearCam_Desc">視訊訊息不使用前置鏡頭</string>
+    <string name="CP_CaptureType_Desc">預設使用「VideoCapture」。 \n只有當 Cherrygram 在開始錄製影片訊息之前，被系統凍結一秒鐘的話，才選擇「ImageCapture」（品質會被降低）。</string>
     <string name="CP_DisableCam">在多媒體選單中停用相機</string>
     <string name="CP_DisableCam_Desc">如果多媒體選單開啟過慢，請開啟本功能</string>
+    <string name="CP_Header_Videomessages">視訊訊息</string>
+    <string name="CP_ZoomSliderPosition">縮放滑桿位置</string>
+    <string name="CP_ExposureSliderPosition">曝光滑桿位置</string>
+    <string name="CP_ZoomSliderPosition_Bottom">底部</string>
+    <string name="CP_ZoomSliderPosition_Right">右</string>
+    <string name="CP_ZoomSliderPosition_Left">左</string>
+    <string name="CP_Exposure">曝光</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">實驗功能</string>
@@ -247,6 +299,11 @@
     <string name="SP_GoogleAnalytics_Desc">啟用此功能後，所有的當機日誌和統計資料都會上傳至「console.firebase.google.com」，以供開發人員分析和改善應用程式。</string>
     <string name="SP_CleanOld">刪除舊快取 (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">刪除成功</string>
+    <string name="SP_AskPinBeforeDelete">要求生物識別確認，才能刪除對話。</string>
+    <string name="SP_AskPinBeforeDelete_Desc">如果您想刪除對話或清除歷史記錄，則需要進行生物辨識確認。您需要事先在手機系統設定中，啟用密碼和生物辨識功能。</string>
+    <string name="SP_AllowUseSystemPasscode">允許使用系統 PIN 碼/解鎖圖案</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">指紋確認對話方塊中的「取消」按鈕將被「Pin碼/解鎖圖案」按鈕取代，您將能夠使用系統密碼管理器解鎖 Cherrygram。</string>
+    <string name="SP_TestFingerprint">測試指紋</string>
     <string name="SP_Category_Account">帳戶</string>
     <string name="SP_DeleteAccount">刪除 Telegram 帳戶</string>
     <!--Security Preferences-->
@@ -269,9 +326,11 @@
     <string name="UP_Version">版本</string>
     <string name="UP_UpdateSize">更新檔大小</string>
     <string name="UP_Changelog">更新日誌：</string>
+    <string name="UP_ChangelogRead">按一下閱讀</string>
     <string name="UP_Download">下載</string>
     <!--Updates Preferences-->
     <!--Donations-->
+    <string name="DP_RateUs">Rate Cherrygram</string>
     <string name="DP_Donate">捐贈</string>
     <string name="DP_Donate_Method">選擇付款方式</string>
     <!--Donations-->

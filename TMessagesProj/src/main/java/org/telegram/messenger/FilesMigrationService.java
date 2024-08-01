@@ -34,8 +34,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import uz.unnarsx.cherrygram.CGFeatureHooks;
-import uz.unnarsx.cherrygram.utils.PermissionsUtils;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.core.PermissionsUtils;
 
 @RequiresApi(api = Build.VERSION_CODES.R)
 public class FilesMigrationService extends Service {
@@ -64,7 +64,7 @@ public class FilesMigrationService extends Service {
         Notification notification = new Notification.Builder(this, NotificationsController.OTHER_NOTIFICATIONS_CHANNEL)
                 .setContentTitle(getText(R.string.MigratingFiles))
                 .setAutoCancel(false)
-                .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
+                .setSmallIcon(CGResourcesHelper.getProperNotificationIcon())
                 .build();
 
         isRunning = true;
@@ -178,7 +178,7 @@ public class FilesMigrationService extends Service {
                 Notification notification = new Notification.Builder(FilesMigrationService.this, NotificationsController.OTHER_NOTIFICATIONS_CHANNEL)
                         .setContentTitle(getText(R.string.MigratingFiles))
                         .setContentText(String.format("%s/%s", currentCount, totalFilesCount))
-                        .setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
+                        .setSmallIcon(CGResourcesHelper.getProperNotificationIcon())
                         .setAutoCancel(false)
                         .setProgress(totalFilesCount, currentCount, false)
                         .build();

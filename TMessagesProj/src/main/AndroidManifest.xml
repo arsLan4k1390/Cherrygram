@@ -28,7 +28,6 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.READ_WALLPAPER_INTERNAL" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -737,7 +736,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="uz.unnarsx.cherrygram.extras.KaboomWidgetActivity"
+            android:name="uz.unnarsx.cherrygram.misc.widgets.KaboomWidgetActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:hardwareAccelerated="@bool/useHardwareAcceleration"
             android:windowSoftInputMode="adjustPan"
@@ -807,7 +806,7 @@
                   android:excludeFromRecents="true"
                 android:theme="@style/Theme.TMessages.TransparentWithAlerts"/>
         <activity
-            android:name="uz.unnarsx.cherrygram.helpers.AppRestartHelper"
+            android:name="uz.unnarsx.cherrygram.core.helpers.AppRestartHelper"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             android:process=":cherrygram"
             android:exported="false"
@@ -987,7 +986,7 @@
             android:exported="false" />
 
 
-        <receiver android:name="uz.unnarsx.cherrygram.extras.KaboomWidget" android:exported="false">
+        <receiver android:name="uz.unnarsx.cherrygram.misc.widgets.KaboomWidget" android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>

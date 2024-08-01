@@ -73,11 +73,10 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import uz.unnarsx.cherrygram.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.Extra;
-import uz.unnarsx.cherrygram.extras.CherrygramExtras;
-import uz.unnarsx.cherrygram.extras.Constants;
+import uz.unnarsx.cherrygram.misc.Constants;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
@@ -290,7 +289,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
                             textSettingsCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                             if (position == showDcIdSwitchRow) {
-                                textSettingsCell.setTextAndValue(LocaleController.getString("AP_ShowID", R.string.AP_ShowID), CGFeatureHooks.getShowDcIdText(), true);
+                                textSettingsCell.setTextAndValue(LocaleController.getString("AP_ShowID", R.string.AP_ShowID), CGResourcesHelper.getShowDcIdText(), true);
                             }
                             break;
                         }
@@ -315,9 +314,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                     sb.append("DC: ");
                                     sb.append(me.photo.dc_id);
                                     sb.append(", ");
-                                    sb.append(CherrygramExtras.INSTANCE.getDCName(me.photo.dc_id));
+                                    sb.append(CGResourcesHelper.INSTANCE.getDCName(me.photo.dc_id));
                                     sb.append(", ");
-                                    sb.append(CherrygramExtras.INSTANCE.getDCGeo(me.photo.dc_id));
+                                    sb.append(CGResourcesHelper.INSTANCE.getDCGeo(me.photo.dc_id));
                                 } else {
                                     sb.append("DC: ");
                                     sb.append(LocaleController.getString("NumberUnknown", R.string.NumberUnknown));

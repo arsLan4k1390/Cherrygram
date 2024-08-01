@@ -222,17 +222,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.extras.CherrygramExtras;
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
-import uz.unnarsx.cherrygram.preferences.FoldersPreferencesEntry;
-import uz.unnarsx.cherrygram.ui.drawer.DrawerPreferencesEntry;
-import uz.unnarsx.cherrygram.ui.tgkit.CherrygramPreferencesNavigator;
+import uz.unnarsx.cherrygram.misc.CherrygramExtras;
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
+import uz.unnarsx.cherrygram.preferences.folders.FoldersPreferencesEntry;
+import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry;
+import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator;
 import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
-import uz.unnarsx.cherrygram.updater.UpdaterUtils;
+import uz.unnarsx.cherrygram.core.updater.UpdaterUtils;
 import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry;
-import uz.unnarsx.cherrygram.ui.icons.CGUIResources;
-import uz.unnarsx.cherrygram.crashlytics.Crashlytics;
+import uz.unnarsx.cherrygram.core.icons.CGUIResources;
+import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics;
 
 public class LaunchActivity extends BasePermissionsActivity implements INavigationLayout.INavigationLayoutDelegate, NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate {
     public final static String EXTRA_FORCE_NOT_INTERNAL_APPS = "force_not_internal_apps";
@@ -662,7 +663,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     presentFragment(new CallLogActivity());
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (id == 11) {
-                    long chatID = CherrygramExtras.getCustomChatID();
+                    long chatID = ChatsHelper2.getCustomChatID();
 
                     Bundle args = new Bundle();
                     if (DialogObject.isChatDialog(chatID)) {
@@ -1063,7 +1064,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             } catch (Exception ignored) {}
         }
         CherrygramExtras.postCheckFollowChannel(this, currentAccount);
-        CherrygramExtras.checkCustomChatID(currentAccount);
+        ChatsHelper2.checkCustomChatID(currentAccount);
 
         BackupAgent.requestBackup(this);
 

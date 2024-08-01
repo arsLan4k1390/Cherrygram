@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelLink">\@Cherry_Gram\'a abone olun!</string>
+    <string name="CG_FollowChannelTitle">Resmi kanala abone olun</string>
+    <string name="CG_FollowChannelInfo">Cherrygram\'ın tüm haber ve özelliklerinden haberdar olmak için kanalımıza katılın!</string>
+    <string name="CG_DoNotRemindAgain">Bir daha hatırlatma</string>
+    <!--Telegram screens-->
+    <string name="CG_RegistrationDate">Kayıt tarihi:</string>
+    <string name="CG_RegistrationDateNewer">%s\'den daha yeni</string>
+    <string name="CG_RegistrationDateOlder">%s\'den daha eski</string>
+    <string name="CG_RegistrationDateApproximately">Yaklaşık %s</string>
+    <string name="CG_RegistrationDateFailed">Kayıt tarihi alınamadı.</string>
+    <!--Sign in screen-->
+    <string name="CG_QRLoginTitle">QR Kod Girişi</string>
+    <string name="CG_QRLoginMessage">Oturum açmak için QRKod\'u başka bir cihazla tarayın.</string>
+    <!--Sign in screen-->
+    <!--Last seen status-->
+    <string name="CG_LastSeenNow">en son şimdi görüldü</string>
+    <string name="CG_LastSeenMinutes_one">en son %1$d dakika önce görüldü</string>
+    <string name="CG_LastSeenMinutes_few">en son %1$d dakika önce görüldü</string>
+    <string name="CG_LastSeenMinutes_many">en son %1$d dakika önce görüldü</string>
+    <string name="CG_LastSeenMinutes_other">en son %1$d dakika önce görüldü</string>
+    <string name="CG_LastSeenHours_one">en son %1$d saat önce görüldü</string>
+    <string name="CG_LastSeenHours_few">en son %1$d saat önce görüldü</string>
+    <string name="CG_LastSeenHours_many">en son %1$d saat önce görüldü</string>
+    <string name="CG_LastSeenHours_other">en son %1$d saat önce görüldü</string>
+    <!--Last seen status-->
+    <!--Telegram Folders Settings-->
+    <string name="CG_FoldersType_Header">Sekme simgesi türü</string>
+    <string name="CG_FoldersTypeTitles">Sadece başlıklar</string>
+    <string name="CG_FoldersTypeIcons">Sadece simgeler</string>
+    <string name="CG_FoldersTypeIconsTitles">Başlıklı Simgeler</string>
+    <string name="CG_ChooseFolderIcon">Bir Simge Seçin</string>
+    <string name="CP_NewTabs_NoCounter">Sayacı sekmelerde gizle</string>
+    <string name="CP_NewTabs_NoCounter_Desc">Bu, okunmamış mesaj sayacını gizleyecektir</string>
+    <!--Telegram Folders Settings-->
+    <!--Chats screen-->
+    <string name="CG_JumpToBeginning">Başlangıca git</string>
+    <string name="CG_DeleteAllFromSelf">Kendi mesajlarını sil</string>
+    <string name="CG_DeleteAllFromSelfAlert">Uyarı! Bu işlem, bu sohbetten **tüm mesajlarınızı** **tüm** katılımcılar için **silecektir**.</string>
+    <string name="CG_DeleteAllFromSelfAlertBefore">Uyarı! Bu işlem, bu sohbetten **%s öncesindeki tüm mesajlarınızı** **tüm** katılımcılar için **silecektir**.</string>
+    <string name="CG_DeleteAllFromSelfBefore">Önce...</string>
+    <string name="CG_DeleteAllFromSelfAdmin">Yônetici hakları ile</string>
+    <string name="CG_DeleteAllFromSelfDone">Tüm mesajlarınız silinir</string>
+    <string name="CG_ClearFromCache">Önbellekten temizle</string>
+    <string name="CG_ClearedFromCache">Önbellekten temizlendi</string>
+    <string name="CG_ViewUserHistory">Mesaj geçmişi</string>
+    <string name="CG_ToSaved">Kaydet</string>
+    <string name="CG_CreateMention">Bahsetme Oluştur</string>
+    <string name="CG_CreateCode">Kod Oluştur</string>
+    <string name="CG_CreateCodeLanguage">Dil</string>
+    <string name="CG_FwdMenu_EnableNoForward">İletme yazarlığını devre dışı bırak</string>
+    <string name="CG_FwdMenu_DisableNoForward">İletme yazarlığını etkinleştir</string>
+    <string name="CG_Without_Authorship">yazarlık olmadan</string>
+    <string name="CG_FwdMenu_NoNotify">Bana haber verme</string>
+    <string name="CG_FwdMenu_Notify">Bildir</string>
+    <string name="CG_FwdMenu_EnableCaptions">Altyazıları etkinleştir</string>
+    <string name="CG_FwdMenu_DisableCaptions">Altyazıları gizle</string>
+    <!--Location screen-->
+    <string name="CG_LocationPermission">Cherrygram needs access to your location so you can share it with your friends. You will now be asked to allow your location to be used (while the app is open).</string>
+    <string name="CG_LocationPermission_Desc">However, if you want your location to be available to your friends while Cherrygram is closed and in the background, then go to the \"Live Location\" feature. Until you agree to use the Live Location feature, your location will not be available in the background.</string>
+    <!--Location screen-->
+    <!--Search filter-->
+    <string name="CG_SearchFilter">Arama sonuçlarını filtrele</string>
+    <string name="CG_SearchFilter_None">Hiçbiri</string>
+    <string name="CG_SearchFilter_Photos">Fotoğraflar</string>
+    <string name="CG_SearchFilter_Videos">Videolar</string>
+    <string name="CG_SearchFilter_VoiceMessages">Sesli mesajlar</string>
+    <string name="CG_SearchFilter_VideoMessages">Videolu mesajlar</string>
+    <string name="CG_SearchFilter_Files">Dosyalar/Belgeler</string>
+    <string name="CG_SearchFilter_Music">Müzik</string>
+    <string name="CG_SearchFilter_GIFs">Gifler</string>
+    <string name="CG_SearchFilter_Geolocation">Coğrafi konum</string>
+    <string name="CG_SearchFilter_Contacts">Kişiler</string>
+    <string name="CG_SearchFilter_MyMentions">Bahsettiklerim</string>
+    <!--Search filter-->
+    <!--Chats screen-->
+    <!--Misc-->
+    <string name="CG_Restart">Uygulamayı yeniden başlat</string>
+    <string name="CG_RestartToApply">Değişiklikleri uygulamak için uygulamayı yeniden başlatın</string>
+    <string name="CG_PushService">Cherrygram Bildirim Servisi</string>
+    <string name="CG_ForceClean">Telegram Önbelleğini Temizlemeye Zorla</string>
+    <string name="CG_ForceCleanInfo">Önbelleği temizlemeye çalışırken uzun süre \"Hesaplanıyor...\" mesajıyla karşılaşırsanız bunu kullanın.\nBu, önbelleğinizdeki HER ŞEYİ silecektir; dikkatli olun!</string>
+    <string name="CG_ForceCleanInfo1">Telegram önbelleğinizdeki HER ŞEYİ gerçekten silmek istiyor musunuz?</string>
+    <string name="CG_Kaboom">Bu özellik, sistem ayarları üzerinden Cherrygram parolası olmadan erişilebilir. Bu özellik, tüm yerel (Cherrygram\'a ait) verilerinizi tamamen siler. Acil durumlarda kullanılabilir.</string>
+    <string name="CG_AppCrashed">Bir şeyler yanlış gitti</string>
+    <string name="CG_AppCrashedDesc">Cherrygram çalışmayı durdurdu. Lütfen, bu hatayı en kısa sürede düzeltmeleri için geliştiricilere günlükleri gönderin.</string>
+    <string name="CG_CopyReportDetails">Rapor Ayrıntılarını Kopyala</string>
+    <string name="CG_ReportDetailsCopied">Rapor ayrıntıları panoya kopyalandı.</string>
+    <string name="CG_TranslationLanguage">Çeviri Dili</string>
+    <string name="CG_CopyPhoto">Fotoğrafı kopyala</string>
+    <string name="CG_CopyPhotoAsSticker">Fotoğrafı çıkartma olarak kopyala</string>
+    <string name="CG_PhotoCopied">Fotoğraf panoya kopyalandı.</string>
+    <string name="CG_SaveSticker">Çıkartmayı kaydet</string>
+    <string name="CG_StickerSavedHint">Çıkartma indirilenlere kaydedildi</string>
+    <string name="CG_CopySetId">Varlık ID\'sini kopyala</string>
+    <string name="CG_ExportSettings">Ayarları dışa aktar</string>
+    <string name="CG_ImportSettings">Ayarları içe aktar</string>
+    <string name="CG_ImportSettingsAlert">Ayarların üzerine yazılsın mı\? Bilinmeyen kaynaklardan ayarların içe aktarılması uygulamanın çalışmamasına neden olabilir.</string>
+    <string name="CG_OpenStickerPack">Çıkartmayı almak için dokunun</string>
+    <string name="CG_OpenEmojiPack">Emojiyi almak için dokunun</string>
+    <string name="CG_ReplyContainsEmojiPack">Bu yanıt **%s** emoji içeriyor</string>
+    <string name="CG_GetEmojiPack">Emojiyi al</string>
+    <string name="CG_ReplyBackground">Yanıt arka planı</string>
+    <string name="CG_ProfileBackground">Profil arka planını uygula</string>
+    <string name="CG_MessageContainsCustomReactions_one">Tepkiler %1$d paketten \nözel emoji içeriyor.</string>
+    <string name="CG_MessageContainsCustomReactions_other">Tepkiler %1$d paketten\nözel emojiler içeriyor.</string>
+    <!--Misc-->
+    <!--Telegram screens-->
+    <!--Cherrygram screens-->
+    <!--Cherrygram Preferences-->
+    <string name="CGP_AdvancedSettings">Cherrygram Ayarları</string>
+    <string name="CGP_About_Desc">Deneysel bir Telegram uygulaması değişikliği. Uygulamaların özellik listesini okumak için buraya dokunun.</string>
+    <string name="CGP_Header_About">Cherrygram Hakkında</string>
+    <string name="CGP_Header_About_Desc">Güncellemeler, kaynak kodu ve daha fazlası</string>
+    <string name="CGP_Links">Bağlantılar</string>
+    <string name="CGP_ToChannel">Resmi kanal</string>
+    <string name="CGP_ToChat">Resmi sohbet</string>
+    <string name="CGP_Source">Kaynak kodu</string>
+    <string name="CGP_Crowdin">Çeviri konusunda yardım</string>
+    <string name="CGP_Header_Categories">Kategoriler</string>
+    <!--Cherrygram Preferences-->
+    <!--General Preferences-->
+    <string name="AP_Header_General">Genel</string>
+    <!--General Preferences-->
+    <!--Appearance Preferences-->
+    <string name="AP_Header_Appearance">Dış görünüş</string>
+    <string name="AP_RedesignCategory">Yeniden tasarlamak</string>
+    <string name="AP_IconReplacements">Simge değiştirmeleri</string>
+    <string name="AP_Old_Notification_Icon">Varsayılan bildirim simgesi (Telegram)</string>
+    <string name="AP_ChangeIconFilter">Telegram simgelerini kullanın</string>
+    <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
+    <string name="AP_ChangeIcon_Default">Varsayılan</string>
+    <string name="AP_ChangeIcon_Dark">Karanlık</string>
+    <string name="AP_ChangeIcon_White">Aydınlık</string>
+    <string name="AP_ChangeIcon_Laguna">Laguna</string>
+    <string name="AP_ChangeIcon_Green">Yeşil</string>
+    <string name="AP_ChangeIcon_Lavanda">Lavanta</string>
+    <string name="AP_ChangeIcon_Sunset">Gün batımı</string>
+    <string name="AP_ChangeIcon_Sunrise">Gündoğumu</string>
+    <string name="AP_IconReplacement_VKUI">VKUI Simgeleri</string>
+    <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
+    <string name="AP_IconReplacement_Default">Varsayılan</string>
+    <string name="AP_OneUI_Switch_Style">OneUI Anahtar Stili</string>
+    <string name="AP_SystemEmoji">Sistem emojisini kullan</string>
+    <string name="AP_ShowPencilIcon">Düzenlenen Mesajlar için Kalem Simgesi</string>
+    <string name="AP_CenterTitle">İşlem çubuğunda başlığı ortalayın</string>
+    <string name="AP_OverrideHeader">Başlık rengini geçersiz kıl</string>
+    <string name="AP_OverrideHeader_Desc">Başlıklar ana arka planla aynı renkte olacaktır</string>
+    <string name="AP_DisableDividers">Bölücüleri devre dışı bırak</string>
+    <string name="AP_ToolBarShadow">Araç çubuğu gölgesini devre dışı bırak</string>
+    <string name="AP_SystemFonts">Sistem yazı tipini kullan</string>
+    <string name="CP_Snowflakes_Header">Kar Taneleri</string>
+    <string name="CP_Snowflakes_AH">Uygulama başlığı</string>
+    <string name="CP_PremAndAnim_Header">Animasyonlar ve Premium Özellikler</string>
+    <string name="CP_ProfileReplyBackground">Mesajlar ve profiller</string>
+    <string name="CP_CustomizeProfile">Profili özelleştir</string>
+    <string name="CP_ProfileChannelPreview">Kişisel Kanallar</string>
+    <string name="CP_ProfileBirthDatePreview">Doğum Tarihi</string>
+    <string name="CP_ProfileBusinessPreview">Çalışma saatleri ve yeri</string>
+    <string name="CP_ProfileBackgroundColor">Profildeki arka plan</string>
+    <string name="CP_ProfileBackgroundEmoji">Profil arka planını uygula</string>
+    <string name="CP_CustomizeMessage">Bir mesajı özelleştirme</string>
+    <string name="CP_ReplyBackground">Profildeki arka plan</string>
+    <string name="CP_ReplyCustomColors">Yanıtların ve bağlantıların önizlemesindeki özel renkler</string>
+    <string name="CP_ReplyBackgroundEmoji">Yanıtların ve bağlantıların önizlemesindeki özel renkler</string>
+    <string name="CP_HideStories">Hikayeleri Gizle</string>
+    <string name="CP_CustomWallpapers">Sohbetlerde özel arka plan</string>
+    <string name="CP_CustomWallpapers_Desc">Premium kullanıcılar/güçlendirilmiş kanallar tarafından belirlenen sohbetlerde/gruplarda/kanallarda özel duvar kağıtlarını yapılandırın</string>
+    <string name="CP_DisableAnimAvatars">Hareketli avatarları devre dışı bırak</string>
+    <string name="CP_DisableReactionsOverlay">Reaksiyon katmanını devre dışı bırak</string>
+    <string name="CP_DisableReactionsOverlay_Desc">Bu, mevcut reaksiyonları içeren açılır pencere kaplamasını devre dışı bırakacaktır</string>
+    <string name="CP_DisableReactionAnim">Reaksiyon animasyonunu devre dışı bırak</string>
+    <string name="CP_DisableReactionAnim_Desc">(bir mesaja tepki verirken)</string>
+    <string name="CP_DisablePremiumStatuses">Premium durumlarını devre dışı bırak</string>
+    <string name="CP_DisablePremiumStatuses_Desc">Bu, çekmece hariç her yerde premium durumlarını devre dışı bırakacaktır</string>
+    <string name="CP_DisablePremStickAnim">Premium çıkartmalardaki dokunuşları devre dışı bırakın</string>
+    <string name="CP_DisablePremStickAnim_Desc">Premium çıkartmaya dokunursanız hiçbir şey olmayacak</string>
+    <string name="CP_DisablePremStickAutoPlay">Premium çıkartmaların otomatik oynatılmasını devre dışı bırak</string>
+    <string name="CP_DisablePremStickAutoPlay_Desc">Premium çıkartma animasyonu otomatik olarak oynatılmayacaktır (premium çıkartmalara dokunmayı devre dışı bırakırsanız bu özellik çalışmayacaktır)</string>
+    <string name="CP_Filters_Header">Klasörler</string>
+    <string name="AP_FolderNameInHeader">\"Cherrygram\" yerine klasör adı</string>
+    <string name="AP_FolderNameInHeader_Desc">Bu işlem çubuğundaki \"Cherrygram\"ı klasörünüzün adıyla değiştirecektir (klasör adları yerine yalnızca simgeleriniz varsa kullanışlıdır)</string>
+    <string name="CP_NewTabs_RemoveAllChats">\"Tüm Sohbetler\" Sekmesini Gizle</string>
+    <string name="AP_Tab_Style">Sekme biçimi</string>
+    <string name="AP_Tab_Style_Default">Varsayılan</string>
+    <string name="AP_Tab_Style_Rounded">Yuvarlatılmış</string>
+    <string name="AP_Tab_Style_Text">Metin</string>
+    <string name="AP_Tab_Style_Pills">Kapsül Şeklinde</string>
+    <string name="AP_Tab_Style_Stroke">Kenar ekle</string>
+    <string name="AP_DrawerCategory">Çekmece</string>
+    <string name="AP_DrawerAvatar">Çekmece arka planı olarak profil fotoğrafı</string>
+    <string name="AP_DrawerShowAvatar">Avatarları göster</string>
+    <string name="AP_DrawerDarken">Arka planı karart</string>
+    <string name="AP_ShadeBackground">Gradyan Arka Plan</string>
+    <string name="AP_DrawerBlur">Arka planı bulanıklaştır</string>
+    <string name="AP_DrawerBlurIntensity">Bulanıklık seviyesi</string>
+    <string name="AP_DrawerIconPack_Header">Çekmece simge seti</string>
+    <string name="AP_DrawerButtonsCategory">Çekmece düğmeleri</string>
+    <string name="AP_HideUserPhone_Show">Görmek için tıkla</string>
+    <string name="AP_HideUserPhone_Copy">Kopyalamak için basılı tutun</string>
+    <string name="AP_MutualContacts_Description">Bu karşılıklı bir temastır.</string>
+    <string name="AP_ShowID">Profilde ID ve DC\'yi göster</string>
+    <!--Appearance Preferences-->
+    <!--Chats Preferences-->
+    <string name="CP_Header_Chats">Sohbetler</string>
+    <string name="CP_Header_Messages">Mesajlar</string>
+    <string name="CP_Slider_StickerAmplifier">Etiket boyutunda amplifikatör</string>
+    <string name="CP_TimeOnStick">Sohbetteki çıkartmalarda zamanı gizle</string>
+    <string name="CP_ChatMenuShortcuts">Başlangıç menüsü kısayolu</string>
+    <string name="CP_AdminActions">Yönetici kısayolları</string>
+    <string name="CP_MessageMenu">Mesaj Menüsü</string>
+    <string name="AP_CenterChatsTitle">Sohbetlerde başlığı ortala</string>
+    <string name="CP_UnreadBadgeOnBackButton">Okunmamış sohbet sayacını göster</string>
+    <string name="CP_UnreadBadgeOnBackButton_Desc">Açılan sohbette geri düğmesindeki okunmamış sohbet sayacını etkinleştirin</string>
+    <string name="CP_NoRounding">Sayı yuvarlamayı devre dışı bırak</string>
+    <string name="CP_DeleteForAll">Varsayılan olarak \"Tümünden sil\" seçeneğini kullanın</string>
+    <string name="CP_DeleteForAll_Desc">Mesajları silerken onay kutusu otomatik olarak işaretlenecektir.</string>
+    <string name="CP_ConfirmCalls">Aramadan Önce Sor</string>
+    <string name="CP_ForwardMsgDate">İletilen mesajın tarihini göster</string>
+    <string name="CP_ShowSeconds">Saniyeli zaman biçimi</string>
+    <string name="CP_LeftBottomButtonAction">Sol düğme eylemi</string>
+    <string name="CP_DoubleTapAction">Çift tıklama eylemi</string>
+    <string name="CG_MsgSlideAction">Mesaj kaydırma işlemiyle ilgili işlem</string>
+    <string name="CP_DisableSwipeToNext">Sonraki kanala geçişi devre dışı bırak</string>
+    <string name="CP_DisableSwipeToNext_Desc">Herhangi bir kanalda gezinirken sonraki kanala geçişi devre dışı bırakın</string>
+    <string name="CP_HideMuteUnmuteButton">Kanallardaki alt düğmeyi gizle</string>
+    <string name="CP_HideKbdOnScroll">Kaydırma sırasında klavyeyi gizle</string>
+    <string name="CP_HideSendAsChannel">\"Kanal Olarak Gönder\"i Gizle</string>
+    <string name="CP_HideSendAsChannelDesc">Menüye Emoji/Çıkartmalar/GIFler butonuna uzun tıklayarak ulaşabilirsiniz</string>
+    <string name="CP_Slider_RecentEmojisAmplifier">En son emoji sayacı (uygulamak için uygulamayı yeniden başlatın)</string>
+    <string name="CP_Slider_RecentStickersAmplifier">En son emoji sayacı (uygulamak için uygulamayı yeniden başlatın)</string>
+    <string name="CP_Header_Record">Medya</string>
+    <string name="CP_SpoilersOnMedia">Spoiler efekti</string>
+    <string name="CP_SpoilersOnMedia_Desc">Özellik devre dışı bırakılırsa fotoğraflar ve videolardaki spoiler efekti gösterilmeyecektir.</string>
+    <string name="CP_VoiceEnhancements">Ses Geliştirmeleri</string>
+    <string name="CP_VoiceEnhancements_Desc">Gürültü Engelleme ve Ses Normalleştirme</string>
+    <string name="CP_PlayVideo">Ses düğmesine tıklayınca video oynatın</string>
+    <string name="CP_PlayVideo_Desc">Ses düğmesine bastığınızda sohbet sırasında ekrandaki herhangi bir video oynatılacaktır</string>
+    <string name="CP_AutoPauseVideo">Videoyu Otomatik Duraklat</string>
+    <string name="CP_AutoPauseVideo_Desc">Kilit ekranına veya arka plana geçildiğinde</string>
+    <string name="CP_DisableVibration">Titreşimi devre dışı bırak</string>
+    <string name="CP_VideoSeekDuration">Video aramak için iki kez dokunun (saniye)</string>
+    <string name="CP_Header_Notification">Bildirimler</string>
+    <string name="CP_NotificationSound">Bildirim sesi</string>
+    <string name="CP_VibrateInChats">Sohbet içi titreşim</string>
+    <string name="CP_VibrateInChats_Desc">Sohbetlerde mesaj aldığınızda kısa bir titreşim yapın</string>
+    <string name="CP_SilenceNonContacts">Rehberde olmayan kişileri sessize al</string>
+    <string name="CP_SilenceNonContacts_Desc">Etkinleştirilirse sesli bildirimler yalnızca kişilerden gelecektir. Bir kişiyi telefon numarası olmasa bile kişilerinize ekleyebilirsiniz, bunu onun profilinde yapın</string>
+    <!--Chats Preferences-->
+    <!--Camera Preferences-->
+    <string name="CP_Category_Camera">Kamera</string>
+    <string name="CP_CameraType">Kamera türü</string>
+    <string name="CP_Camera2Desc">Camera2 açıldığında gizlenen tüm özellikler, Camera2 etkinken çalışmayacaktır.</string>
+    <string name="CP_CameraStabilisation">Kamera stabilizasyonu</string>
+    <string name="CP_CameraUW">UW\'den başla</string>
+    <string name="CP_CameraUW_Desc">Video mesajların kaydı Ultra Geniş kameradan başlayacaktır (cihazınızın API\'si destekliyorsa)</string>
+    <string name="CP_CameraDualCamera">Çift kamera</string>
+    <string name="CP_CameraDualCamera_Desc">Kayıt sırasında kameralar arasında daha hızlı geçiş yapmak için her iki kamerada da video mesajı yakalar. Daha fazla pil kullanır.</string>
+    <string name="CP_DefaultCameraDesc">Telegram\'ın yerleşik kamerasını kullan.</string>
+    <string name="CP_CameraXDesc">CameraX yalnızca <![CDATA[<a href="https://developer.android.com/training/camerax/devices">belirli cihazlarda</a>]]> desteklenir, efektler ve lens desteği üreticinize bağlıdır.</string>
+    <string name="CP_CameraQuality">Kamera kalitesi</string>
+    <string name="CP_CameraTypeSystem">Sistem</string>
+    <string name="CP_SystemCameraDesc">Sistem kamerasına doğrudan erişin (video mesajlar için geçerli değildir).</string>
+    <string name="CP_CameraAspectRatio">Kamera en boy oranı</string>
+    <string name="CP_RearCam">Arka kamerayı kullan</string>
+    <string name="CP_RearCam_Desc">Görüntülü mesajlar için ön kamera yerine</string>
+    <string name="CP_CaptureType_Desc">Varsayılan olarak \"VideoCapture\"ı kullanın. \n\"ImageCapture\"ı seçin (kaliteyi düşürür), yalnızca Cherrygram video mesajını kaydetmeye başlamadan önce bir saniyeliğine donarsa seçin.</string>
+    <string name="CP_DisableCam">Medya ekleme menüsünde kamerayı devre dışı bırakın</string>
+    <string name="CP_DisableCam_Desc">Kamera butonu galeri butonunun yanında yer alacak. \nDüğmeye basmak Telegram kamerasını açacak ve düğmeyi basılı tutmak sistem kamerasını başlatacaktır.</string>
+    <string name="CP_Header_Videomessages">Video mesajları</string>
+    <string name="CP_ZoomSliderPosition">Yakınlaştırma kaydırıcısı konumu</string>
+    <string name="CP_ExposureSliderPosition">Yakınlaştırma kaydırıcısı konumu</string>
+    <string name="CP_ZoomSliderPosition_Bottom">Alt</string>
+    <string name="CP_ZoomSliderPosition_Right">Sağ</string>
+    <string name="CP_ZoomSliderPosition_Left">Sol</string>
+    <string name="CP_Exposure">Pozlama</string>
+    <!--Camera Preferences-->
+    <!--Experimental Preferences-->
+    <string name="EP_Category_Experimental">Deneysel</string>
+    <string name="EP_NavigationAnimation">Gezinme animasyonu</string>
+    <string name="EP_NavigationAnimationBezier">Klasik</string>
+    <string name="EP_NavigationAnimationCrossfading">Çapraz solma efekti</string>
+    <string name="CG_ResidentNotification">Kalıcı bildirim göster</string>
+    <string name="EP_PhotosSize">Büyük fotoğraflar gönderin (2560 piksel)</string>
+    <string name="EP_CustomAppTitle">Uygulama İsmi</string>
+    <string name="EP_CustomChat">Kayıtlı Mesajlar için özel sohbet</string>
+    <string name="EP_CustomChat_Desc">Mesajları oraya iletmek için başka bir sohbetten/gruptan/kanaldan bir kimlik ayarlayın (işlem çubuğundaki düğme, mesaj menüsünde veya iki kez dokunun)</string>
+    <string name="EP_CustomChatNotFound">Sohbet bulunamadı!</string>
+    <string name="EP_Network">Ağ</string>
+    <string name="EP_DownloadSpeedBoost">İndirme hızını yükselt</string>
+    <string name="EP_DownloadSpeedBoostNone">Kapalı</string>
+    <string name="EP_DownloadSpeedBoostAverage">Açık</string>
+    <string name="EP_DownloadSpeedBoostExtreme">Yüksek</string>
+    <string name="EP_UploadloadSpeedBoost">Yükleme hızını yükselt</string>
+    <string name="EP_SlowNetworkMode">Yavaş ağ modu</string>
+    <!--Experimental Preferences-->
+    <!--Security Preferences-->
+    <string name="SP_Category_PrivacyAndSecurity">Gizlilik ve Güvenlik</string>
+    <string name="SP_Header_Privacy">Gizlilik</string>
+    <string name="SP_NoProxyPromo">Proxy sponsorunu gösterme</string>
+    <string name="SP_GoogleAnalytics_Desc">Bunu etkinleştirdiğinizde, tüm uygulama çökmeleri ve istatistikler, geliştirici tarafından daha ayrıntılı incelenmek üzere \"console.firebase.google.com\" adresine bildirilecektir.</string>
+    <string name="SP_CleanOld">Eski önbelleği kaldır (/sdcard/Telegram)</string>
+    <string name="SP_RemovedS">Başarıyla kaldırıldı</string>
+    <string name="SP_AskPinBeforeDelete">Bir sohbeti silmeden önce biyometrik onay isteyin.</string>
+    <string name="SP_AskPinBeforeDelete_Desc">Bir sohbeti silmek veya geçmişi temizlemek istiyorsanız biyometrik onay gerekecektir. Sistemde şifre ve biyometrik doğrulamanın etkinleştirilmesi gerekiyor.</string>
+    <string name="SP_AllowUseSystemPasscode">Sistem PIN\'ini/Desenini kullanmaya izin ver</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">Parmak izi doğrulama iletişim kutusundaki \"İptal\" butonunun yerini \"Pin/Desen\" butonu alacak ve Cherrygram\'ın kilidini açmak için sistem şifresini kullanabileceksiniz.</string>
+    <string name="SP_TestFingerprint">Parmak izini test et</string>
+    <string name="SP_Category_Account">Hesap</string>
+    <string name="SP_DeleteAccount">Telegram hesabını sil</string>
+    <!--Security Preferences-->
+    <!--Updates Preferences-->
+    <string name="UP_Category_Updates">Güncellemeler</string>
+    <string name="UP_TapToCheckUpdates">Güncellemeler hakkında bilgi almak için buraya dokunun</string>
+    <string name="UP_LastCheck">Son kontrol</string>
+    <string name="UP_CurrentVersion">Geçerli sürüm</string>
+    <string name="UP_BuildType">Yapı türü</string>
+    <string name="UP_BTRelease">Kararlı</string>
+    <string name="UP_BTBeta">Beta</string>
+    <string name="UP_InstallBetas">Beta Sürümü Yükle</string>
+    <string name="UP_Auto_OTA">Başlangıçta kontrol et</string>
+    <string name="UP_ClearUpdatesCache">Güncelleme önbelleğini temizle</string>
+    <string name="UP_ClearedUpdatesCache">Önbellek **%1$s** temizlendi.</string>
+    <string name="UP_NothingToClear">Temizlenecek bir şey yok.</string>
+    <string name="UP_CheckForUpdates">Güncellemeleri kontrol et</string>
+    <string name="UP_Not_Found">Cherrygram güncel.</string>
+    <string name="UP_UpdateAvailable">Güncelleme mevcut!</string>
+    <string name="UP_Version">Versiyon</string>
+    <string name="UP_UpdateSize">Güncelleme boyutu</string>
+    <string name="UP_Changelog">Değişiklik günlüğü:</string>
+    <string name="UP_ChangelogRead">Okumak İçi̇n Dokun</string>
+    <string name="UP_Download">İndir</string>
+    <!--Updates Preferences-->
+    <!--Donations-->
+    <string name="DP_RateUs">Rate Cherrygram</string>
+    <string name="DP_Donate">Bağış Yap</string>
+    <string name="DP_Donate_Method">Yöntem seç</string>
+    <!--Donations-->
+    <!--Cherrygram screens-->
+</resources>

@@ -119,7 +119,7 @@ import uz.unnarsx.cherrygram.camera.CameraXView;
 import uz.unnarsx.cherrygram.camera.EffectSelectorView;
 import uz.unnarsx.cherrygram.camera.LockAnimationView;
 import uz.unnarsx.cherrygram.camera.SlideControlView;
-import uz.unnarsx.cherrygram.utils.PermissionsUtils;
+import uz.unnarsx.cherrygram.core.PermissionsUtils;
 
 public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayout implements NotificationCenter.NotificationCenterDelegate {
 

@@ -150,7 +150,7 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import uz.unnarsx.cherrygram.CGFeatureHooks;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
 @SuppressLint("NewApi")
 public class VoIPService extends Service implements SensorEventListener, AudioManager.OnAudioFocusChangeListener, VoIPController.ConnectionStateListener, NotificationCenter.NotificationCenterDelegate {
@@ -2980,7 +2980,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			builder.setSmallIcon(isMicMute() ? R.drawable.voicechat_muted : R.drawable.voicechat_active);
 		} else {
 			builder.setContentTitle(LocaleController.getString("VoipOutgoingCall", R.string.VoipOutgoingCall));
-			builder.setSmallIcon(CGFeatureHooks.getProperNotificationIcon());
+			builder.setSmallIcon(CGResourcesHelper.getProperNotificationIcon());
 			builder.setOngoing(true);
 		}
 		builder.setPriority(Notification.PRIORITY_MAX);
@@ -4102,7 +4102,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 
 		Notification.Builder builder = new Notification.Builder(this)
 				.setContentTitle(video ? LocaleController.getString("VoipInVideoCallBranding", R.string.VoipInVideoCallBranding) : LocaleController.getString("VoipInCallBranding", R.string.VoipInCallBranding))
-				.setSmallIcon(CGFeatureHooks.getProperNotificationIcon())
+				.setSmallIcon(CGResourcesHelper.getProperNotificationIcon())
 				.setContentIntent(PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			SharedPreferences nprefs = MessagesController.getGlobalNotificationsSettings();

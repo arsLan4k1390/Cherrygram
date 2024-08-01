@@ -3,6 +3,7 @@ package uz.unnarsx.cherrygram.preferences
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Build
+import androidx.core.util.Pair
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ChatThemeController
 import org.telegram.messenger.LocaleController
@@ -16,14 +17,15 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.Paint.PersistColorPalette
 import org.telegram.ui.RestrictedLanguagesSelectActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.ui.tgkit.preference.category
-import uz.unnarsx.cherrygram.ui.tgkit.preference.contract
-import uz.unnarsx.cherrygram.ui.tgkit.preference.hint
-import uz.unnarsx.cherrygram.ui.tgkit.preference.switch
-import uz.unnarsx.cherrygram.ui.tgkit.preference.textIcon
-import uz.unnarsx.cherrygram.ui.tgkit.preference.tgKitScreen
-import uz.unnarsx.cherrygram.ui.tgkit.preference.types.TGKitTextIconRow
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.hint
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.list
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class DebugPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen("Debug // WIP") {
@@ -117,6 +119,53 @@ class DebugPreferencesEntry : BasePreferencesEntry {
             }
         }
         category("Chats") {
+            if (Build.VERSION.SDK_INT >= 29) {
+                list {
+                    title = "Microphone Audio Source *"
+
+                    contract({
+                        return@contract listOf(
+                            Pair(CherrygramConfig.AUDIO_SOURCE_DEFAULT, "DEFAULT"),
+                            Pair(CherrygramConfig.AUDIO_SOURCE_CAMCORDER, "CAMCORDER"),
+                            Pair(CherrygramConfig.AUDIO_SOURCE_MIC, "MIC"),
+                            Pair(CherrygramConfig.AUDIO_SOURCE_REMOTE_SUBMIX, "REMOTE_SUBMIX"),
+                            Pair(CherrygramConfig.AUDIO_SOURCE_UNPROCESSED, "UNPROCESSED"),
+                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_CALL, "VOICE_CALL"),
+                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_COMMUNICATION, "VOICE_COMMUNICATION"),
+                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_DOWNLINK, "VOICE_DOWNLINK"),
+                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_PERFORMANCE, "VOICE_PERFORMANCE"),
+                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_RECOGNITION, "VOICE_RECOGNITION"),
+                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_UPLINK, "VOICE_UPLINK")
+                        )
+                    }, {
+                        return@contract when (CherrygramConfig.audioSource) {
+                            CherrygramConfig.AUDIO_SOURCE_CAMCORDER -> "CAMCORDER"
+                            CherrygramConfig.AUDIO_SOURCE_MIC -> "MIC"
+                            CherrygramConfig.AUDIO_SOURCE_REMOTE_SUBMIX -> "REMOTE_SUBMIX"
+                            CherrygramConfig.AUDIO_SOURCE_UNPROCESSED -> "UNPROCESSED"
+                            CherrygramConfig.AUDIO_SOURCE_VOICE_CALL -> "VOICE_CALL"
+                            CherrygramConfig.AUDIO_SOURCE_VOICE_COMMUNICATION -> "VOICE_COMMUNICATION"
+                            CherrygramConfig.AUDIO_SOURCE_VOICE_DOWNLINK -> "VOICE_DOWNLINK"
+                            CherrygramConfig.AUDIO_SOURCE_VOICE_PERFORMANCE -> "VOICE_PERFORMANCE"
+                            CherrygramConfig.AUDIO_SOURCE_VOICE_RECOGNITION -> "VOICE_RECOGNITION"
+                            CherrygramConfig.AUDIO_SOURCE_VOICE_UPLINK -> "VOICE_UPLINK"
+                            else -> "DEFAULT"
+                        }
+                    }) {
+                        CherrygramConfig.audioSource = it
+                    }
+                }
+            }
+            switch {
+                title = "Send videos at max quality *"
+                description = "Max quality will be automatically selected when you send a video"
+
+                contract({
+                    return@contract CherrygramConfig.sendVideosAtMaxQuality
+                }) {
+                    CherrygramConfig.sendVideosAtMaxQuality = it
+                }
+            }
             switch {
                 title = "Play GIFs as Videos *"
 

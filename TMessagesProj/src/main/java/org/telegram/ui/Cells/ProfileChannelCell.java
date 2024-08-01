@@ -40,8 +40,6 @@ import org.telegram.ui.Stories.StoriesListPlaceProvider;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.extras.Constants;
-
 public class ProfileChannelCell extends FrameLayout {
 
     private final Theme.ResourcesProvider resourcesProvider;

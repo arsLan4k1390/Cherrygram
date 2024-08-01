@@ -126,7 +126,7 @@ import java.util.Objects;
 import java.util.Stack;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.extras.Constants;
+import uz.unnarsx.cherrygram.misc.Constants;
 
 public class DialogCell extends BaseCell implements StoriesListPlaceProvider.AvatarOverlaysView {
 

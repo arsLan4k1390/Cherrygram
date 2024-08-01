@@ -60,8 +60,8 @@ import org.telegram.ui.bots.BotWebViewAttachedSheet;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.helpers.chats.ChatsHelper;
-import uz.unnarsx.cherrygram.helpers.chats.MessageHelper;
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
+import uz.unnarsx.cherrygram.chats.helpers.MessageHelper;
 
 public abstract class BaseFragment {
 

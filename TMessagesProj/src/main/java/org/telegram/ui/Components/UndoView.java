@@ -63,7 +63,7 @@ import org.telegram.ui.PaymentFormActivity;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 
 @SuppressWarnings("FieldCanBeLocal")
 @Deprecated // use Bulletin instead

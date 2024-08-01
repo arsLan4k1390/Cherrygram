@@ -121,7 +121,6 @@
     <string name="AP_IconReplacements">جایگزینی آیکون‌ها</string>
     <string name="AP_Old_Notification_Icon">آیکون اعلان پیشفرض (تلگرام)</string>
     <string name="AP_ChangeIconFilter">استفاده از آیکون‌های تلگرام</string>
-    <string name="AP_HoldToShowWallpaper">نگه‌داشتن هر آیکون برای نمایش تصویر پس‌زمینه دسکتاپ</string>
     <string name="AP_ChangeIcon_Cherry_NY">سال نو</string>
     <string name="AP_ChangeIcon_Default">پیش‌فرض</string>
     <string name="AP_ChangeIcon_Dark">تیره</string>
