@@ -565,7 +565,7 @@ public class GroupCreateUserCell extends FrameLayout {
             float cy = avatarImageView.getTop() + avatarImageView.getMeasuredHeight() / 2;
             canvas.drawCircle(cx, cy, AndroidUtilities.dp(18) + AndroidUtilities.dp(4) * checkProgress, paint);
         }
-        if (drawDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (drawDivider) {
             int start = AndroidUtilities.dp(LocaleController.isRTL ? 0 : 72 + padding);
             int end = getMeasuredWidth() - AndroidUtilities.dp(!LocaleController.isRTL ? 0 : 72 + padding);
             if (forceDarkTheme) {

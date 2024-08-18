@@ -641,7 +641,7 @@ public class NotificationsSoundActivity extends BaseFragment implements ChatAtta
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
                     break;
                 case 2:
-                    CreationTextCell creationTextCell = new CreationTextCell(context, resourcesProvider);
+                    CreationTextCell creationTextCell = new CreationTextCell(context, 70, resourcesProvider);
                     creationTextCell.startPadding = 61;
                     view = creationTextCell;
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
@@ -768,7 +768,7 @@ public class NotificationsSoundActivity extends BaseFragment implements ChatAtta
 
         @Override
         protected void onDraw(Canvas canvas) {
-            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+            if (needDivider) {
                 canvas.drawLine(AndroidUtilities.dp(LocaleController.isRTL ? 0 : 60), getHeight() - 1, getMeasuredWidth() - AndroidUtilities.dp(LocaleController.isRTL ? 60 : 0), getHeight() - 1, Theme.dividerPaint);
             }
         }

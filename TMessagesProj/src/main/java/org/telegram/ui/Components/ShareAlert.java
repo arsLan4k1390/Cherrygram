@@ -1517,55 +1517,8 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             });
         }
         writeButtonContainer.addView(writeButton, LayoutHelper.createFrame(Build.VERSION.SDK_INT >= 21 ? 56 : 60, Build.VERSION.SDK_INT >= 21 ? 56 : 60, Gravity.LEFT | Gravity.TOP, Build.VERSION.SDK_INT >= 21 ? 2 : 0, 0, 0, 0));
-        writeButton.setOnClickListener(v -> {
-            for (int a = 0; a < selectedDialogs.size(); a++) {
-                long key = selectedDialogs.keyAt(a);
-                if (AlertsCreator.checkSlowMode(getContext(), currentAccount, key, frameLayout2.getTag() != null && commentTextView.length() > 0)) {
-                    return;
-                }
-            }
-
-            if (sendingMessageObjects != null) {
-                for (int a = 0; a < selectedDialogs.size(); a++) {
-                    long key = selectedDialogs.keyAt(a);
-                    TLRPC.TL_forumTopic topic = selectedDialogTopics.get(selectedDialogs.get(key));
-                    MessageObject replyTopMsg = topic != null ? new MessageObject(currentAccount, topic.topicStartMessage, false, false) : null;
-                    if (replyTopMsg != null) {
-                        replyTopMsg.isTopicMainMessage = true;
-                    }
-                    if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(commentTextView.getText().toString(), key, null, null, null, true, null, null, null, true, 0, null, false));
-                    }
-                    if (CherrygramConfig.INSTANCE.getForwardNoAuthorship() || CherrygramConfig.INSTANCE.getForwardWithoutCaptions()) {
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, true, CherrygramConfig.INSTANCE.getForwardWithoutCaptions(), CherrygramConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg);
-                    } else {
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, false, false, CherrygramConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg);
-                    }
-                }
-                onSend(selectedDialogs, sendingMessageObjects.size(), selectedDialogs.size() == 1 ? selectedDialogTopics.get(selectedDialogs.valueAt(0)) : null);
-            } else {
-                int num;
-                if (switchView != null) {
-                    num = switchView.currentTab;
-                } else {
-                    num = 0;
-                }
-                if (sendingText[num] != null) {
-                    for (int a = 0; a < selectedDialogs.size(); a++) {
-                        long key = selectedDialogs.keyAt(a);
-                        if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                            SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(commentTextView.getText().toString(), key, null, null, null, true, null, null, null, true, 0, null, false));
-                        }
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(sendingText[num], key, null, null, null, true, null, null, null, true, 0, null, false));
-                    }
-                }
-                onSend(selectedDialogs, 1, selectedDialogTopics.get(selectedDialogs.valueAt(0)));
-            }
-            if (delegate != null) {
-                delegate.didShare();
-            }
-            dismiss();
-        });
+        writeButton.setOnClickListener(v -> sendInternalCherry());
+        writeButton.setOnLongClickListener(v -> onSendLongClick(writeButton));
 
         textPaint.setTextSize(dp(12));
         textPaint.setTypeface(AndroidUtilities.bold());
@@ -1948,7 +1901,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         return containerView.getMeasuredHeight() - containerViewTop;
     }
 
-    /*private boolean showSendersName = true;
+    private boolean showSendersName = true;
     private ActionBarPopupWindow sendPopupWindow;
     private boolean onSendLongClick(View view) {
         if (parentActivity == null) {
@@ -2191,7 +2144,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             delegate.didShare();
         }
         dismiss();
-    }*/
+    }
 
     protected void onSend(LongSparseArray<TLRPC.Dialog> dids, int count, TLRPC.TL_forumTopic topic) {
 
@@ -3400,5 +3353,103 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                 }
             }
         }
+    }
+
+    protected void sendInternalCherry() {
+        for (int a = 0; a < selectedDialogs.size(); a++) {
+            long key = selectedDialogs.keyAt(a);
+            if (AlertsCreator.checkSlowMode(getContext(), currentAccount, key, frameLayout2.getTag() != null && commentTextView.length() > 0)) {
+                return;
+            }
+        }
+
+        CharSequence[] text = new CharSequence[] { commentTextView.getText() };
+        ArrayList<TLRPC.MessageEntity> entities = MediaDataController.getInstance(currentAccount).getEntities(text, true);
+        if (sendingMessageObjects != null) {
+            List<Long> removeKeys = new ArrayList<>();
+            for (int a = 0; a < selectedDialogs.size(); a++) {
+                long key = selectedDialogs.keyAt(a);
+                TLRPC.TL_forumTopic topic = selectedDialogTopics.get(selectedDialogs.get(key));
+                MessageObject replyTopMsg = topic != null ? new MessageObject(currentAccount, topic.topicStartMessage, false, false) : null;
+                if (replyTopMsg != null) {
+                    replyTopMsg.isTopicMainMessage = true;
+                }
+                if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
+                    SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, replyTopMsg, replyTopMsg, null, true, entities, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false));
+                }
+                int result;
+                if (CherrygramConfig.INSTANCE.getForwardNoAuthorship() || CherrygramConfig.INSTANCE.getForwardWithoutCaptions()) {
+                    result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, true, CherrygramConfig.INSTANCE.getForwardWithoutCaptions(), CherrygramConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg);
+                } else {
+                    result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, false, false, CherrygramConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg);
+                }
+                if (result != 0) {
+                    removeKeys.add(key);
+                }
+                if (selectedDialogs.size() == 1) {
+                    AlertsCreator.showSendMediaAlert(result, parentFragment, null);
+
+                    if (result != 0) {
+                        break;
+                    }
+                }
+            }
+            for (long key : removeKeys) {
+                TLRPC.Dialog dialog = selectedDialogs.get(key);
+                selectedDialogs.remove(key);
+                if (dialog != null) {
+                    selectedDialogTopics.remove(dialog);
+                }
+            }
+            if (!selectedDialogs.isEmpty()) {
+                onSend(selectedDialogs, sendingMessageObjects.size(), selectedDialogs.size() == 1 ? selectedDialogTopics.get(selectedDialogs.valueAt(0)) : null);
+            }
+        } else {
+            int num;
+            if (switchView != null) {
+                num = switchView.currentTab;
+            } else {
+                num = 0;
+            }
+            if (storyItem != null) {
+                for (int a = 0; a < selectedDialogs.size(); a++) {
+                    long key = selectedDialogs.keyAt(a);
+                    TLRPC.TL_forumTopic topic = selectedDialogTopics.get(selectedDialogs.get(key));
+                    MessageObject replyTopMsg = topic != null ? new MessageObject(currentAccount, topic.topicStartMessage, false, false) : null;
+
+                    SendMessagesHelper.SendMessageParams params;
+                    if (storyItem == null) {
+                        if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
+                            params = SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, null, replyTopMsg, null, true, entities, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false);
+                        } else {
+                            params = SendMessagesHelper.SendMessageParams.of(sendingText[num], key, null, replyTopMsg, null, true, null, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false);
+                        }
+                    } else {
+                        if (frameLayout2.getTag() != null && commentTextView.length() > 0 && text[0] != null) {
+                            SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(text[0].toString(), key, null, replyTopMsg, null, true, null, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false));
+                        }
+                        params = SendMessagesHelper.SendMessageParams.of(null, key, null, replyTopMsg, null, true, null, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false);
+                        params.sendingStory = storyItem;
+                    }
+                    SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
+                }
+            } else if (sendingText[num] != null) {
+                for (int a = 0; a < selectedDialogs.size(); a++) {
+                    long key = selectedDialogs.keyAt(a);
+                    TLRPC.TL_forumTopic topic = selectedDialogTopics.get(selectedDialogs.get(key));
+                    MessageObject replyTopMsg = topic != null ? new MessageObject(currentAccount, topic.topicStartMessage, false, false) : null;
+
+                    if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
+                        SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, null, replyTopMsg, null, true, entities, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false));
+                    }
+                    SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(sendingText[num], key, null, replyTopMsg, null, true, null, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false));
+                }
+            }
+            onSend(selectedDialogs, 1, selectedDialogTopics.get(selectedDialogs.valueAt(0)));
+        }
+        if (delegate != null) {
+            delegate.didShare();
+        }
+        dismiss();
     }
 }

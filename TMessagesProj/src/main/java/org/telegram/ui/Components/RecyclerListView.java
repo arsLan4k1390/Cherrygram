@@ -44,6 +44,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.util.Consumer;
@@ -134,6 +135,7 @@ public class RecyclerListView extends RecyclerView {
 
     private boolean drawSelectorBehind;
     private int selectorType = 2;
+    @Nullable
     protected Drawable selectorDrawable;
     protected int selectorPosition;
     protected View selectorView;
@@ -1460,7 +1462,9 @@ public class RecyclerListView extends RecyclerView {
                 }
                 if (selectorPosition != NO_POSITION) {
                     selectorRect.offset(-dx, -dy);
-                    selectorDrawable.setBounds(selectorRect);
+                    if (selectorDrawable != null) {
+                        selectorDrawable.setBounds(selectorRect);
+                    }
                     invalidate();
                 } else {
                     selectorRect.setEmpty();
@@ -1652,6 +1656,8 @@ public class RecyclerListView extends RecyclerView {
             selectorDrawable = Theme.createSimpleSelectorRoundRectDrawable(0, 0x00, 0x00, 0x00);
         } else if (selectorType == 8) {
             selectorDrawable = Theme.createRadSelectorDrawable(color, selectorRadius, 0);
+        } else if (selectorType == 9) {
+            selectorDrawable = null;
         } else if (topBottomSelectorRadius > 0) {
             selectorDrawable = Theme.createRadSelectorDrawable(color, topBottomSelectorRadius, topBottomSelectorRadius);
         } else if (selectorRadius > 0 && selectorType != Theme.RIPPLE_MASK_CIRCLE_20DP) {
@@ -1661,7 +1667,9 @@ public class RecyclerListView extends RecyclerView {
         } else {
             selectorDrawable = Theme.createSelectorDrawable(color, selectorType, selectorRadius);
         }
-        selectorDrawable.setCallback(this);
+        if (selectorDrawable != null) {
+            selectorDrawable.setCallback(this);
+        }
     }
 
     public Drawable getSelectorDrawable() {
@@ -1980,7 +1988,11 @@ public class RecyclerListView extends RecyclerView {
     public void invalidateViews() {
         int count = getChildCount();
         for (int a = 0; a < count; a++) {
-            getChildAt(a).invalidate();
+            View child = getChildAt(a);
+            if (child instanceof Theme.Colorable) {
+                ((Theme.Colorable) child).updateColors();
+            }
+            child.invalidate();
         }
     }
 
@@ -2023,8 +2035,10 @@ public class RecyclerListView extends RecyclerView {
             pendingHighlightPosition = null;
             if (selectorView != null && highlightPosition != NO_POSITION) {
                 positionSelector(highlightPosition, selectorView);
-                selectorDrawable.setState(new int[]{});
-                invalidateDrawable(selectorDrawable);
+                if (selectorDrawable != null) {
+                    selectorDrawable.setState(new int[]{});
+                    invalidateDrawable(selectorDrawable);
+                }
                 selectorView = null;
                 highlightPosition = NO_POSITION;
             } else {
@@ -2550,7 +2564,7 @@ public class RecyclerListView extends RecyclerView {
             itemsEnterAnimator.dispatchDraw();
         }
 
-        if (drawSelection && drawSelectorBehind && !selectorRect.isEmpty()) {
+        if (drawSelection && drawSelectorBehind && !selectorRect.isEmpty() && selectorDrawable != null) {
             if ((translateSelector == -2 || translateSelector == selectorPosition) && selectorView != null) {
                 int bottomPadding;
                 if (getAdapter() instanceof SelectionAdapter) {
@@ -2574,7 +2588,7 @@ public class RecyclerListView extends RecyclerView {
             canvas.restore();
         }
         super.dispatchDraw(canvas);
-        if (drawSelection && !drawSelectorBehind && !selectorRect.isEmpty()) {
+        if (drawSelection && !drawSelectorBehind && !selectorRect.isEmpty() && selectorDrawable != null) {
             if ((translateSelector == -2 || translateSelector == selectorPosition) && selectorView != null) {
                 int bottomPadding;
                 if (getAdapter() instanceof SelectionAdapter) {

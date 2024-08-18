@@ -223,7 +223,7 @@ public class LocationCell extends FrameLayout {
         canvas.restore();
         super.onDraw(canvas);
 
-        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (needDivider) {
             Paint dividerPaint = resourcesProvider == null ? null : resourcesProvider.getPaint(Theme.key_paint_divider);
             if (dividerPaint == null) {
                 dividerPaint = Theme.dividerPaint;

@@ -219,7 +219,7 @@ public class TextDetailCell extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider  && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (needDivider) {
             canvas.drawLine(
                 LocaleController.isRTL ? 0 : dp(20),
                 getMeasuredHeight() - 1,

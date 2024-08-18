@@ -50,7 +50,7 @@ public class DividerCell extends View {
             paint.setColor(Theme.getColor(Theme.key_divider, resourcesProvider));
         }
 
-        if (!CherrygramConfig.INSTANCE.getDisableDividers()) canvas.drawLine(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getPaddingTop(), paint);
+        canvas.drawLine(getPaddingLeft(), getPaddingTop(), getWidth() - getPaddingRight(), getPaddingTop(), paint);
     }
 
     public void setForceDarkTheme(boolean forceDarkTheme) {

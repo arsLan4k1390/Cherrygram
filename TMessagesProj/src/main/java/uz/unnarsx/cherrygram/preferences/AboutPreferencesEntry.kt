@@ -94,23 +94,22 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                     Browser.openUrl(bf.parentActivity, "https://t.me/CherrygramSupport")
                 }
             }
-            if (!CherrygramConfig.isPremiumBuild()) {
-                textIcon {
-                    icon = R.drawable.github_logo_white
-                    title = LocaleController.getString("CGP_Source", R.string.CGP_Source)
+            textIcon {
+                isAvailable = !CherrygramConfig.isPremiumBuild()
+                icon = R.drawable.github_logo_white
+                title = LocaleController.getString("CGP_Source", R.string.CGP_Source)
 
-                    value = if (CherrygramConfig.isBetaBuild() || CherrygramConfig.isDevBuild()) {
-                        "GitHub"
+                value = if (CherrygramConfig.isBetaBuild() || CherrygramConfig.isDevBuild()) {
+                    "GitHub"
+                } else {
+                    "commit " + BuildConfig.GIT_COMMIT_HASH.substring(0, 8)
+                }
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    if (CherrygramConfig.isBetaBuild() || CherrygramConfig.isDevBuild()) {
+                        Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/")
                     } else {
-                        "commit " + BuildConfig.GIT_COMMIT_HASH.substring(0, 8)
-                    }
-
-                    listener = TGKitTextIconRow.TGTIListener {
-                        if (CherrygramConfig.isBetaBuild() || CherrygramConfig.isDevBuild()) {
-                            Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/")
-                        } else {
-                            Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/commit/" + BuildConfig.GIT_COMMIT_HASH)
-                        }
+                        Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/commit/" + BuildConfig.GIT_COMMIT_HASH)
                     }
                 }
             }

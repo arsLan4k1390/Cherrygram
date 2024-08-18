@@ -251,6 +251,6 @@ public class ThemeSelectorDrawerCell extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (!CherrygramConfig.INSTANCE.getDisableDividers()) canvas.drawLine(AndroidUtilities.dp(8), getMeasuredHeight() - 1, getMeasuredWidth() - AndroidUtilities.dp(8), getMeasuredHeight() - 1, Theme.dividerPaint);
+        canvas.drawLine(AndroidUtilities.dp(8), getMeasuredHeight() - 1, getMeasuredWidth() - AndroidUtilities.dp(8), getMeasuredHeight() - 1, Theme.dividerPaint);
     }
 }

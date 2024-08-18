@@ -63,7 +63,7 @@ public class CGBiometricPrompt {
             @Override
             public void onError(CharSequence msg) {
                 if (CherrygramConfig.INSTANCE.getShowRPCErrors())
-                    Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();
             }
 
             @Override

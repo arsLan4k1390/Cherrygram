@@ -288,7 +288,7 @@ public class SessionCell extends FrameLayout {
         }
     }
 
-    public static Drawable createDrawable(int sz, String platform) {
+    public static CombinedDrawable createDrawable(int sz, String platform) {
         TLRPC.TL_authorization auth = new TLRPC.TL_authorization();
         auth.device_model = platform;
         auth.platform = platform;
@@ -296,7 +296,7 @@ public class SessionCell extends FrameLayout {
         return createDrawable(sz, auth);
     }
 
-    public static Drawable createDrawable(int sz, TLRPC.TL_authorization session) {
+    public static CombinedDrawable createDrawable(int sz, TLRPC.TL_authorization session) {
         String platform = session.platform.toLowerCase();
         if (platform.isEmpty()) {
             platform = session.system_version.toLowerCase();
@@ -455,7 +455,7 @@ public class SessionCell extends FrameLayout {
                 canvas.restore();
             }
         }
-        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (needDivider) {
             int margin = currentType == 1 ? 49 : 72;
             canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(margin), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(margin) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
         }

@@ -1202,13 +1202,13 @@ public class AlertsCreator {
         }
         long inlineReturn = (fragment instanceof ChatActivity) ? ((ChatActivity) fragment).getInlineReturn() : 0;
         if (Browser.isInternalUrl(url, null) || !ask) {
-            Browser.openUrl(fragment.getParentActivity(), Uri.parse(url), inlineReturn == 0, tryTelegraph, forceNotInternalForApps && checkInternalBotApp(url), progress, null);
+            Browser.openUrl(fragment.getParentActivity(), Uri.parse(url), inlineReturn == 0, tryTelegraph, forceNotInternalForApps && checkInternalBotApp(url), progress, null, false);
         } else {
             String urlFinal;
             if (punycode) {
                 try {
                     Uri uri = Uri.parse(url);
-                    urlFinal = Browser.replaceHostname(uri, IDN.toUnicode(uri.getHost(), IDN.ALLOW_UNASSIGNED));
+                    urlFinal = Browser.replaceHostname(uri, Browser.IDN_toUnicode(uri.getHost()), null);
                 } catch (Exception e) {
                     FileLog.e(e, false);
                     urlFinal = url;
@@ -1446,7 +1446,7 @@ public class AlertsCreator {
         Context context = fragment.getContext();
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        TextView messageTextView = new TextView(context) {
+        LinkSpanDrawable.LinksTextView messageTextView = new LinkSpanDrawable.LinksTextView(context) {
             @Override
             public void setText(CharSequence text, BufferType type) {
                 text = Emoji.replaceEmoji(text, getPaint().getFontMetricsInt(), false);
@@ -1455,9 +1455,9 @@ public class AlertsCreator {
         };
         NotificationCenter.listenEmojiLoading(messageTextView);
         messageTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+        messageTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn));
         messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         messageTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
-        messageTextView.setText(LocaleController.getString(R.string.BotWebViewStartPermission));
 
         FrameLayout frameLayout = new FrameLayout(context);
         builder.setCustomViewOffset(6);
@@ -1501,11 +1501,19 @@ public class AlertsCreator {
             }
         });
         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-        fragment.showDialog(builder.create(), false, dialog -> {
+        AlertDialog dialog = builder.create();
+        fragment.showDialog(dialog, false, d -> {
             if (onDismiss != null) {
                 onDismiss.run();
             }
         });
+
+        messageTextView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.BotWebViewStartPermission), () -> {
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+            Browser.openUrl(context, getString(R.string.BotWebViewStartPermissionLink));
+        }));
     }
 
     public static void createBotLaunchAlert(BaseFragment fragment, AtomicBoolean allowWrite, TLRPC.User user, Runnable loadBotSheet) {
@@ -1516,7 +1524,7 @@ public class AlertsCreator {
         CheckBoxCell[] cell = new CheckBoxCell[1];
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        TextView messageTextView = new TextView(context) {
+        LinkSpanDrawable.LinksTextView messageTextView = new LinkSpanDrawable.LinksTextView(context) {
             @Override
             public void setText(CharSequence text, BufferType type) {
                 text = Emoji.replaceEmoji(text, getPaint().getFontMetricsInt(), false);
@@ -1525,9 +1533,9 @@ public class AlertsCreator {
         };
         NotificationCenter.listenEmojiLoading(messageTextView);
         messageTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
+        messageTextView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn));
         messageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         messageTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP);
-        messageTextView.setText(LocaleController.getString(R.string.BotWebViewStartPermission));
 
         FrameLayout frameLayout = new FrameLayout(context) {
             @Override
@@ -1618,7 +1626,15 @@ public class AlertsCreator {
 
         builder.setPositiveButton(LocaleController.getString(R.string.Start), (dialogInterface, i) -> loadBotSheet.run());
         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-        fragment.showDialog(builder.create());
+        AlertDialog dialog = builder.create();
+        fragment.showDialog(dialog);
+
+        messageTextView.setText(AndroidUtilities.replaceSingleTag(getString(R.string.BotWebViewStartPermission), () -> {
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+            Browser.openUrl(context, getString(R.string.BotWebViewStartPermissionLink));
+        }));
     }
 
     public static void createClearOrDeleteDialogAlert(BaseFragment fragment, boolean clear, TLRPC.Chat chat, TLRPC.User user, boolean secret, boolean canDeleteHistory, MessagesStorage.BooleanCallback onProcessRunnable) {

@@ -61,7 +61,6 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
     private int cameraUseDualCameraRow;
     private int startFromUltraWideRow;
     private int cameraStabilisationRow;
-    private int zoomSliderRow;
     private int exposureSliderRow;
     private int rearCamRow;
     private int captureTypeFrontRow;
@@ -201,27 +200,6 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getCameraStabilisation());
                 }
-            } else if (position == zoomSliderRow) {
-                ArrayList<String> configStringKeys = new ArrayList<>();
-                ArrayList<Integer> configValues = new ArrayList<>();
-
-                configStringKeys.add(LocaleController.getString("CP_ZoomSliderPosition_Bottom", R.string.CP_ZoomSliderPosition_Bottom));
-                configValues.add(CherrygramConfig.ZOOM_SLIDER_BOTTOM);
-
-                /*configStringKeys.add(LocaleController.getString("CP_ZoomSliderPosition_Right", R.string.CP_ZoomSliderPosition_Right));
-                configValues.add(CherrygramConfig.ZOOM_SLIDER_RIGHT);*/
-
-                configStringKeys.add(LocaleController.getString("CP_ZoomSliderPosition_Left", R.string.CP_ZoomSliderPosition_Left));
-                configValues.add(CherrygramConfig.ZOOM_SLIDER_LEFT);
-
-                configStringKeys.add(LocaleController.getString("Disable", R.string.Disable));
-                configValues.add(CherrygramConfig.ZOOM_SLIDER_NONE);
-
-                PopupHelper.show(configStringKeys, LocaleController.getString("CP_ZoomSliderPosition", R.string.CP_ZoomSliderPosition), configValues.indexOf(CherrygramConfig.INSTANCE.getZoomSlider()), context, i -> {
-                    CherrygramConfig.INSTANCE.setZoomSlider(configValues.get(i));
-
-                    listAdapter.notifyItemChanged(zoomSliderRow);
-                });
             } else if (position == exposureSliderRow) {
                 ArrayList<String> configStringKeys = new ArrayList<>();
                 ArrayList<Integer> configValues = new ArrayList<>();
@@ -324,12 +302,10 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
         if (CameraXUtils.isCameraXSupported() && CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_X) {
             startFromUltraWideRow = rowCount++;
             cameraStabilisationRow = rowCount++;
-            zoomSliderRow = rowCount++;
             exposureSliderRow = rowCount++;
         } else {
             startFromUltraWideRow = -1;
             cameraStabilisationRow = -1;
-            zoomSliderRow = -1;
             exposureSliderRow = -1;
         }
 
@@ -423,8 +399,6 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                         textCell.setTextAndValue(LocaleController.getString("CP_CameraAspectRatio", R.string.CP_CameraAspectRatio), CGResourcesHelper.getCameraAspectRatio(), true);
                     } else if (position == cameraXQualityRow) {
                         textSettingsCell.setTextAndValue(LocaleController.getString("CP_CameraQuality", R.string.CP_CameraQuality), CherrygramConfig.INSTANCE.getCameraResolution() + "p", false);
-                    } else if (position == zoomSliderRow) {
-                        textCell.setTextAndValue(LocaleController.getString("CP_ZoomSliderPosition", R.string.CP_ZoomSliderPosition), CGResourcesHelper.getZoomSliderPosition(), true);
                     } else if (position == exposureSliderRow) {
                         textCell.setTextAndValue(LocaleController.getString("CP_ExposureSliderPosition", R.string.CP_ExposureSliderPosition), CGResourcesHelper.getExposureSliderPosition(), true);
                     } else if (position == captureTypeFrontRow) {
@@ -474,7 +448,6 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                             listAdapter.notifyItemChanged(cameraUseDualCameraRow);
                             listAdapter.notifyItemChanged(startFromUltraWideRow);
                             listAdapter.notifyItemChanged(cameraStabilisationRow);
-                            listAdapter.notifyItemChanged(zoomSliderRow);
                             listAdapter.notifyItemChanged(exposureSliderRow);
                             listAdapter.notifyItemChanged(rearCamRow);
                             listAdapter.notifyItemChanged(captureTypeFrontRow);
@@ -513,7 +486,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 return 5;
             } else if (position == cameraAdviseRow || position == captureTypeAdviseRow) {
                 return 6;
-            } else if (position == cameraAspectRatioRow || position == cameraXQualityRow || position == zoomSliderRow || position == exposureSliderRow || position == captureTypeFrontRow || position == captureTypeBackRow) {
+            } else if (position == cameraAspectRatioRow || position == cameraXQualityRow || position == exposureSliderRow || position == captureTypeFrontRow || position == captureTypeBackRow) {
                 return 7;
             }
             return 1;

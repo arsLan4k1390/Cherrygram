@@ -380,7 +380,7 @@ public class TextCell extends FrameLayout {
         }
     }
 
-    public void setTextAndIcon(String text, Drawable drawable, boolean divider) {
+    public void setTextAndIcon(CharSequence text, Drawable drawable, boolean divider) {
         offsetFromImage = 71;
         imageLeft = 18;
         textView.setText(text);
@@ -443,7 +443,8 @@ public class TextCell extends FrameLayout {
         offsetFromImage = getOffsetFromImage(false);
         textView.setText(text);
         textView.setRightDrawable(null);
-        valueTextView.setText(TextUtils.ellipsize(valueText = value, valueTextView.getPaint(), AndroidUtilities.displaySize.x / 2.5f, TextUtils.TruncateAt.END), animated);
+        valueText = value;
+        valueTextView.setText(valueText == null ? null : TextUtils.ellipsize(valueText, valueTextView.getPaint(), AndroidUtilities.displaySize.x / 2.5f, TextUtils.TruncateAt.END), animated);
         valueTextView.setVisibility(VISIBLE);
         valueSpoilersTextView.setVisibility(GONE);
         imageView.setVisibility(GONE);
@@ -635,7 +636,7 @@ public class TextCell extends FrameLayout {
         }
     }
 
-    public void setTextAndValueDrawable(String text, Drawable drawable, boolean divider) {
+    public void setTextAndValueDrawable(CharSequence text, Drawable drawable, boolean divider) {
         imageLeft = 21;
         offsetFromImage = getOffsetFromImage(false);
         textView.setText(text);
@@ -770,7 +771,7 @@ public class TextCell extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (needDivider) {
             Paint paint = resourcesProvider != null ? resourcesProvider.getPaint(Theme.key_paint_divider) : null;
             if (paint == null) {
                 paint = Theme.dividerPaint;

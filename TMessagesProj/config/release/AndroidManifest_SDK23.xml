@@ -34,7 +34,7 @@
 
         <service
             android:name="org.telegram.messenger.GcmPushListenerService"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

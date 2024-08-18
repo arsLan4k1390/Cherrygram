@@ -6,6 +6,7 @@ import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.DialogsActivity
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
@@ -60,6 +61,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramConfig.disableDividers
                 }) {
                     CherrygramConfig.disableDividers = it
+                    Theme.applyCommonTheme();
                     bf.parentLayout.rebuildAllFragmentViews(true, true)
                 }
             }

@@ -68,6 +68,11 @@
     <string name="CG_FwdMenu_EnableCaptions">Включить подписи</string>
     <string name="CG_FwdMenu_DisableCaptions">Скрыть подписи</string>
 
+    <string name="CG_CopyTitle">Скопировать название</string>
+    <string name="CG_CopyCallback">Скопировать callback</string>
+    <string name="CG_CopyInlineQuery">Скопировать inline запрос</string>
+    <string name="CG_CopyID">Скопировать ID пользователя</string>
+
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygram нужен доступ к вашему местоположению, дабы вы смогли поделиться им с вашими друзьями. Сейчас будет запрос на разрешение использования вашего местоположения (пока приложение открыто).</string>
     <string name="CG_LocationPermission_Desc">Однако, если вы хотите, чтобы ваше местоположение было доступно вашим друзьям, пока Cherrygram закрыт и находится в фоновом режиме, то перейдите к функции \"Live Location\". До тех пор, пока вы не дадите свое согласие на использование функции Live Location, ваше местоположение в фоновом режиме будет недоступно.</string>
@@ -102,8 +107,8 @@
     <string name="CG_CopyReportDetails">Скопировать детали отчёта</string>
     <string name="CG_ReportDetailsCopied">Детали отчёта скопированы в буфер обмена.</string>
     <string name="CG_TranslationLanguage">Язык перевода</string>
-    <string name="CG_CopyPhoto">Копировать фото</string>
-    <string name="CG_CopyPhotoAsSticker">Копировать фото как стикер</string>
+    <string name="CG_CopyPhoto">Скопировать фото</string>
+    <string name="CG_CopyPhotoAsSticker">Скопировать фото как стикер</string>
     <string name="CG_PhotoCopied">Фото скопировано в буфер обмена.</string>
     <string name="CG_SaveSticker">Сохранить стикер</string>
     <string name="CG_StickerSavedHint">Стикер сохранен в загрузки</string>
@@ -116,7 +121,6 @@
 
     <string name="CG_ReplyContainsEmojiPack">В этом реплае эмодзи из набора **%s**</string>
     <string name="CG_GetEmojiPack">Получить эмодзи</string>
-    <string name="CG_ReplyBackground">Фон ответа</string>
     <string name="CG_ProfileBackground">Применить фон профиля</string>
     <string name="CG_MessageContainsCustomReactions_one">Реакции содержат кастомный эмодзи \nиз %1$d набора.</string>
     <string name="CG_MessageContainsCustomReactions_other">Реакции содержат кастомные эмодзи \nиз %1$d наборов.</string>
@@ -301,7 +305,6 @@
     <string name="CP_DisableCam_Desc">Кнопка камеры будет доступна рядом с кнопкой галереи. \nНажатие на кнопку откроет камеру Telegram, а зажатие запустит системную камеру.</string>
 
     <string name="CP_Header_Videomessages">Видеосообщения</string>
-    <string name="CP_ZoomSliderPosition">Расположение зума (слайдер)</string>
     <string name="CP_ExposureSliderPosition">Расположение экспозиции (слайдер)</string>
     <string name="CP_ZoomSliderPosition_Bottom">Снизу</string>
     <string name="CP_ZoomSliderPosition_Right">Справа</string>

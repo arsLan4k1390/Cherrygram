@@ -214,6 +214,7 @@ public class BackupHelper {
         mainconfig.add("CP_Shortcut_DeleteAll");
         mainconfig.add("CP_Shortcut_SavedMessages");
         mainconfig.add("CP_Shortcut_Blur");
+        mainconfig.add("CP_Shortcut_Browser");
         mainconfig.add("CP_Admins_Reactions");
         mainconfig.add("CP_Admins_Permissions");
         mainconfig.add("CP_Admins_Administrators");
@@ -231,7 +232,6 @@ public class BackupHelper {
         mainconfig.add("CP_ShowViewHistory");
         mainconfig.add("CP_ShowSaveMessage");
         mainconfig.add("CP_ShowReport");
-        mainconfig.add("CP_ShowGetReplyBackground");
         mainconfig.add("CP_ShowJSON");
         mainconfig.add("CP_SupergroupsDrawShareButton");
         mainconfig.add("CP_ChannelsDrawShareButton");

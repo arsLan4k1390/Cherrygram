@@ -71,8 +71,7 @@ public class ChatActivityMemberRequestsDelegate {
                 @Override
                 protected void onDraw(Canvas canvas) {
                     super.onDraw(canvas);
-                    if (!CherrygramConfig.INSTANCE.getDisableDividers())
-                        canvas.drawLine(0, getMeasuredHeight() - AndroidUtilities.dp(2), getMeasuredWidth(), getMeasuredHeight() - AndroidUtilities.dp(2), Theme.dividerPaint);
+                    canvas.drawLine(0, getMeasuredHeight() - AndroidUtilities.dp(2), getMeasuredWidth(), getMeasuredHeight() - AndroidUtilities.dp(2), Theme.dividerPaint);
                 }
             };
             root.setBackgroundColor(fragment.getThemedColor(Theme.key_chat_topPanelBackground));

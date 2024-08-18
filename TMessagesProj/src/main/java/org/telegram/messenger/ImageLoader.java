@@ -32,7 +32,6 @@ import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
 
@@ -101,7 +100,6 @@ import java.util.zip.GZIPInputStream;
  * firstframe - return firstframe for Lottie or Video animation
  * ignoreOrientation - do not extract EXIF orientation and do not apply it to an imagereceiver
  * exif — check exif contents of invert/orientation
- * bnb — airbnb canvas lottie impl
  */
 public class ImageLoader {
 
@@ -1021,11 +1019,10 @@ public class ImageLoader {
                             cacheOptions.firstFrame = true;
                         }
                     }
-                    final boolean airbnb = cacheImage.filter != null && cacheImage.filter.contains("bnb");
                     if (compressed) {
-                        lottieDrawable = new RLottieDrawable(cacheImage.finalFilePath, decompressGzip(cacheImage.finalFilePath), w, h, cacheOptions, limitFps, null, fitzModifier, airbnb);
+                        lottieDrawable = new RLottieDrawable(cacheImage.finalFilePath, decompressGzip(cacheImage.finalFilePath), w, h, cacheOptions, limitFps, null, fitzModifier);
                     } else {
-                        lottieDrawable = new RLottieDrawable(cacheImage.finalFilePath, w, h, cacheOptions, limitFps, null, fitzModifier, airbnb);
+                        lottieDrawable = new RLottieDrawable(cacheImage.finalFilePath, w, h, cacheOptions, limitFps, null, fitzModifier);
                     }
                 }
                 if (lastFrameBitmap || firstFrameBitmap) {
@@ -1474,13 +1471,13 @@ public class ImageLoader {
                     }
                 } else {
                     try {
-                        int delay = 20;
+                        /*int delay = 20;
                         if (mediaId != null) {
                             delay = 0;
                         }
                         if (delay != 0 && lastCacheOutTime != 0 && lastCacheOutTime > SystemClock.elapsedRealtime() - delay && Build.VERSION.SDK_INT < 21) {
                             Thread.sleep(delay);
-                        }
+                        }*/
                         lastCacheOutTime = SystemClock.elapsedRealtime();
                         synchronized (sync) {
                             if (isCancelled) {

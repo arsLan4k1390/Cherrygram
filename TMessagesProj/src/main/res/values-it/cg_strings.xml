@@ -75,7 +75,6 @@
     <string name="CG_OpenEmojiPack">Tocca per salvare l\'emoji</string>
     <string name="CG_ReplyContainsEmojiPack">Questa risposta contiene le emoji **%s**</string>
     <string name="CG_GetEmojiPack">Aggiungi emoji</string>
-    <string name="CG_ReplyBackground">Sfondo risposta</string>
     <string name="CG_ProfileBackground">Applica sfondo profilo</string>
     <!--Misc-->
     <!--Telegram screens-->

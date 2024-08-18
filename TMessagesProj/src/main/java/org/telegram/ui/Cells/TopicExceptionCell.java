@@ -62,7 +62,7 @@ public class TopicExceptionCell extends FrameLayout {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        if (drawDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (drawDivider) {
             canvas.drawLine(AndroidUtilities.dp(72), getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
         }
     }

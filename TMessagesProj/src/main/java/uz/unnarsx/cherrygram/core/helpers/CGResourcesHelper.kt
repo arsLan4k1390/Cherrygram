@@ -105,16 +105,6 @@ object CGResourcesHelper {
     }
 
     @JvmStatic
-    fun getZoomSliderPosition(): String { // CameraPreferences.java:\Zoom slider
-        return when (CherrygramConfig.zoomSlider) {
-            CherrygramConfig.ZOOM_SLIDER_BOTTOM -> LocaleController.getString("CP_ZoomSliderPosition_Bottom", R.string.CP_ZoomSliderPosition_Bottom)
-//            CherrygramConfig.ZOOM_SLIDER_RIGHT -> LocaleController.getString("CP_ZoomSliderPosition_Right", R.string.CP_ZoomSliderPosition_Right)
-            CherrygramConfig.ZOOM_SLIDER_LEFT -> LocaleController.getString("CP_ZoomSliderPosition_Left", R.string.CP_ZoomSliderPosition_Left)
-            else -> LocaleController.getString("Disable", R.string.Disable)
-        }
-    }
-
-    @JvmStatic
     fun getExposureSliderPosition(): String { // CameraPreferences.java:\Exposure slider
         return when (CherrygramConfig.exposureSlider) {
 //            CherrygramConfig.EXPOSURE_SLIDER_BOTTOM -> LocaleController.getString("CP_ZoomSliderPosition_Bottom", R.string.CP_ZoomSliderPosition_Bottom)

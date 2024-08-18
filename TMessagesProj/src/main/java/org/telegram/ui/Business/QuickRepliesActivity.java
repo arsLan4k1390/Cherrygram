@@ -698,7 +698,7 @@ public class QuickRepliesActivity extends BaseFragment implements NotificationCe
             );
             imageReceiver.draw(canvas);
             super.onDraw(canvas);
-            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+            if (needDivider) {
                 Paint dividerPaint = Theme.getThemePaint(Theme.key_paint_divider, resourcesProvider);
                 if (dividerPaint == null) dividerPaint = Theme.dividerPaint;
                 canvas.drawRect(dp(LocaleController.isRTL ? 0 : 64), getMeasuredHeight() - 1, getWidth() - dp(LocaleController.isRTL ? 64 : 0), getMeasuredHeight(), dividerPaint);
@@ -827,7 +827,7 @@ public class QuickRepliesActivity extends BaseFragment implements NotificationCe
             imageReceiver.draw(canvas);
             super.onDraw(canvas);
             canvas.drawPath(arrowPath, arrowPaint);
-            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+            if (needDivider) {
                 Paint dividerPaint = Theme.getThemePaint(Theme.key_paint_divider, resourcesProvider);
                 if (dividerPaint == null) dividerPaint = Theme.dividerPaint;
                 canvas.drawRect(dp(LocaleController.isRTL ? 0 : 78), getMeasuredHeight() - 1, getWidth() - dp(LocaleController.isRTL ? 78 : 0), getMeasuredHeight(), dividerPaint);

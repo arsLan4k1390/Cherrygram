@@ -14,6 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
     <permission android:name="${applicationId}.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
@@ -32,7 +33,7 @@
         <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyBd1yu9V_Z-ktNND67u1gF0zH6AjMDRVoM" />
 
         <service
-            android:name="org.telegram.messenger.GcmPushListenerService" android:exported="false">
+            android:name="org.telegram.messenger.GcmPushListenerService" android:exported="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>

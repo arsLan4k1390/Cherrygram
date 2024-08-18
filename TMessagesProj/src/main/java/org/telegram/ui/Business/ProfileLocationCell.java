@@ -113,7 +113,7 @@ public class ProfileLocationCell extends LinearLayout {
 
         super.onDraw(canvas);
 
-        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (needDivider) {
             Paint dividerPaint = Theme.getThemePaint(Theme.key_paint_divider, resourcesProvider);
             if (dividerPaint == null) dividerPaint = Theme.dividerPaint;
             canvas.drawRect(dp(LocaleController.isRTL ? 0 : 21.33f), getMeasuredHeight() - 1, getWidth() - dp(LocaleController.isRTL ? 21.33f : 0), getMeasuredHeight(), dividerPaint);

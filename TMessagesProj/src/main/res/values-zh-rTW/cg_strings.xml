@@ -98,7 +98,6 @@
     <string name="CG_OpenEmojiPack">按一下以取得 Emoji</string>
     <string name="CG_ReplyContainsEmojiPack">此回復包含 **%s** 表情符號</string>
     <string name="CG_GetEmojiPack">獲取emoji</string>
-    <string name="CG_ReplyBackground">回覆背景</string>
     <string name="CG_ProfileBackground">應用個人資料背景</string>
     <string name="CG_MessageContainsCustomReactions_one">回應包含 %1$d 表情包內的自訂 emoji \n</string>
     <string name="CG_MessageContainsCustomReactions_other">回應包含 %1$d 表情包內的自訂 emoji \n</string>
@@ -266,7 +265,6 @@
     <string name="CP_DisableCam">在多媒體選單中停用相機</string>
     <string name="CP_DisableCam_Desc">如果多媒體選單開啟過慢，請開啟本功能</string>
     <string name="CP_Header_Videomessages">視訊訊息</string>
-    <string name="CP_ZoomSliderPosition">縮放滑桿位置</string>
     <string name="CP_ExposureSliderPosition">曝光滑桿位置</string>
     <string name="CP_ZoomSliderPosition_Bottom">底部</string>
     <string name="CP_ZoomSliderPosition_Right">右</string>

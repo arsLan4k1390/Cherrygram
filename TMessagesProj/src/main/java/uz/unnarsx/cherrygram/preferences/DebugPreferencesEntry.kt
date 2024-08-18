@@ -30,7 +30,8 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 class DebugPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen("Debug // WIP") {
         category("Misc") {
-            switch { // Hide for stable version(?) // if (!CherrygramConfig.isStableBuild())
+            switch {
+                isAvailable = !CherrygramConfig.isStableBuild() && !CherrygramConfig.isPlayStoreBuild()
                 title = "Toast all RPC errors *"
                 description = "you'll see RPC errors from Telegram's backend as toast messages."
 
@@ -95,6 +96,16 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                     SharedConfig.setBotTabs3DEffect(!SharedConfig.botTabs3DEffect)
                 }
             }
+            switch {
+                title = "Swipe inside a bot to close *"
+                description = "When you swipe down (accidentally or intentionally), web-view just gets closed while you just want to scroll something in the mini-app"
+
+                contract({
+                    return@contract CherrygramConfig.swipeInsideBotToClose
+                }) {
+                    CherrygramConfig.swipeInsideBotToClose = it
+                }
+            }
         }
         category("Blur") {
             switch {
@@ -106,54 +117,63 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                     CherrygramConfig.forceChatBlurEffect = it
                 }
             }
-            if (Build.VERSION.SDK_INT >= 31) {
-                switch {
-                    title = "New blur (GPU)"
+            switch {
+                isAvailable = Build.VERSION.SDK_INT >= 31
+                title = "New blur (GPU)"
 
-                    contract({
-                        return@contract SharedConfig.useNewBlur
-                    }) {
-                        SharedConfig.toggleUseNewBlur()
-                    }
+                contract({
+                    return@contract SharedConfig.useNewBlur
+                }) {
+                    SharedConfig.toggleUseNewBlur()
                 }
             }
         }
         category("Chats") {
-            if (Build.VERSION.SDK_INT >= 29) {
-                list {
-                    title = "Microphone Audio Source *"
+            switch {
+                isAvailable = Build.VERSION.SDK_INT >= 23
+                title = "Ask passcode before open a chat"
+                description = "Ask a system passcode (fingerprint, face id or pattern/password) before open a chat. To enable, tap on 3 dots inside a chat."
 
-                    contract({
-                        return@contract listOf(
-                            Pair(CherrygramConfig.AUDIO_SOURCE_DEFAULT, "DEFAULT"),
-                            Pair(CherrygramConfig.AUDIO_SOURCE_CAMCORDER, "CAMCORDER"),
-                            Pair(CherrygramConfig.AUDIO_SOURCE_MIC, "MIC"),
-                            Pair(CherrygramConfig.AUDIO_SOURCE_REMOTE_SUBMIX, "REMOTE_SUBMIX"),
-                            Pair(CherrygramConfig.AUDIO_SOURCE_UNPROCESSED, "UNPROCESSED"),
-                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_CALL, "VOICE_CALL"),
-                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_COMMUNICATION, "VOICE_COMMUNICATION"),
-                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_DOWNLINK, "VOICE_DOWNLINK"),
-                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_PERFORMANCE, "VOICE_PERFORMANCE"),
-                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_RECOGNITION, "VOICE_RECOGNITION"),
-                            Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_UPLINK, "VOICE_UPLINK")
-                        )
-                    }, {
-                        return@contract when (CherrygramConfig.audioSource) {
-                            CherrygramConfig.AUDIO_SOURCE_CAMCORDER -> "CAMCORDER"
-                            CherrygramConfig.AUDIO_SOURCE_MIC -> "MIC"
-                            CherrygramConfig.AUDIO_SOURCE_REMOTE_SUBMIX -> "REMOTE_SUBMIX"
-                            CherrygramConfig.AUDIO_SOURCE_UNPROCESSED -> "UNPROCESSED"
-                            CherrygramConfig.AUDIO_SOURCE_VOICE_CALL -> "VOICE_CALL"
-                            CherrygramConfig.AUDIO_SOURCE_VOICE_COMMUNICATION -> "VOICE_COMMUNICATION"
-                            CherrygramConfig.AUDIO_SOURCE_VOICE_DOWNLINK -> "VOICE_DOWNLINK"
-                            CherrygramConfig.AUDIO_SOURCE_VOICE_PERFORMANCE -> "VOICE_PERFORMANCE"
-                            CherrygramConfig.AUDIO_SOURCE_VOICE_RECOGNITION -> "VOICE_RECOGNITION"
-                            CherrygramConfig.AUDIO_SOURCE_VOICE_UPLINK -> "VOICE_UPLINK"
-                            else -> "DEFAULT"
-                        }
-                    }) {
-                        CherrygramConfig.audioSource = it
+                contract({
+                    return@contract CherrygramConfig.askForPasscodeBeforeOpenChat
+                }) {
+                    CherrygramConfig.askForPasscodeBeforeOpenChat = it
+                }
+            }
+            list {
+                isAvailable = Build.VERSION.SDK_INT >= 29
+                title = "Microphone Audio Source *"
+
+                contract({
+                    return@contract listOf(
+                        Pair(CherrygramConfig.AUDIO_SOURCE_DEFAULT, "DEFAULT"),
+                        Pair(CherrygramConfig.AUDIO_SOURCE_CAMCORDER, "CAMCORDER"),
+                        Pair(CherrygramConfig.AUDIO_SOURCE_MIC, "MIC"),
+                        Pair(CherrygramConfig.AUDIO_SOURCE_REMOTE_SUBMIX, "REMOTE_SUBMIX"),
+                        Pair(CherrygramConfig.AUDIO_SOURCE_UNPROCESSED, "UNPROCESSED"),
+                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_CALL, "VOICE_CALL"),
+                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_COMMUNICATION, "VOICE_COMMUNICATION"),
+                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_DOWNLINK, "VOICE_DOWNLINK"),
+                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_PERFORMANCE, "VOICE_PERFORMANCE"),
+                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_RECOGNITION, "VOICE_RECOGNITION"),
+                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_UPLINK, "VOICE_UPLINK")
+                    )
+                }, {
+                    return@contract when (CherrygramConfig.audioSource) {
+                        CherrygramConfig.AUDIO_SOURCE_CAMCORDER -> "CAMCORDER"
+                        CherrygramConfig.AUDIO_SOURCE_MIC -> "MIC"
+                        CherrygramConfig.AUDIO_SOURCE_REMOTE_SUBMIX -> "REMOTE_SUBMIX"
+                        CherrygramConfig.AUDIO_SOURCE_UNPROCESSED -> "UNPROCESSED"
+                        CherrygramConfig.AUDIO_SOURCE_VOICE_CALL -> "VOICE_CALL"
+                        CherrygramConfig.AUDIO_SOURCE_VOICE_COMMUNICATION -> "VOICE_COMMUNICATION"
+                        CherrygramConfig.AUDIO_SOURCE_VOICE_DOWNLINK -> "VOICE_DOWNLINK"
+                        CherrygramConfig.AUDIO_SOURCE_VOICE_PERFORMANCE -> "VOICE_PERFORMANCE"
+                        CherrygramConfig.AUDIO_SOURCE_VOICE_RECOGNITION -> "VOICE_RECOGNITION"
+                        CherrygramConfig.AUDIO_SOURCE_VOICE_UPLINK -> "VOICE_UPLINK"
+                        else -> "DEFAULT"
                     }
+                }) {
+                    CherrygramConfig.audioSource = it
                 }
             }
             switch {

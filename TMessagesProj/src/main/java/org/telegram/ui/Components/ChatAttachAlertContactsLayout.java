@@ -296,7 +296,7 @@ public class ChatAttachAlertContactsLayout extends ChatAttachAlert.AttachAlertLa
 
         @Override
         protected void onDraw(Canvas canvas) {
-            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+            if (needDivider) {
                 canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(70), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(70) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
             }
         }
@@ -592,7 +592,7 @@ public class ChatAttachAlertContactsLayout extends ChatAttachAlert.AttachAlertLa
         ArrayList<AndroidUtilities.VcardItem> items = new ArrayList<>();
         ArrayList<AndroidUtilities.VcardItem> phones = new ArrayList<>();
         ArrayList<AndroidUtilities.VcardItem> other = new ArrayList<>();
-        ArrayList<TLRPC.TL_restrictionReason> vcard = null;
+        ArrayList<TLRPC.RestrictionReason> vcard = null;
         if (contact.key != null) {
             Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, contact.key);
             result = AndroidUtilities.loadVCardFromStream(uri, parentAlert.currentAccount, true, items, name);
@@ -682,7 +682,7 @@ public class ChatAttachAlertContactsLayout extends ChatAttachAlert.AttachAlertLa
                 }
             }
             currentUser.restriction_reason.clear();
-            TLRPC.TL_restrictionReason reason = new TLRPC.TL_restrictionReason();
+            TLRPC.RestrictionReason reason = new TLRPC.RestrictionReason();
             reason.text = builder.toString();
             reason.reason = "";
             reason.platform = "";

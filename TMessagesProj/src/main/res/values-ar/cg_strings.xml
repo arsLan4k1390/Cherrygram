@@ -98,7 +98,6 @@
     <string name="CG_OpenEmojiPack">أُنقر للحصول على الرموز التعبيرية</string>
     <string name="CG_ReplyContainsEmojiPack">يحتوي هذا الرد على **%s** رمز تعبيري</string>
     <string name="CG_GetEmojiPack">أُحصل على الرموز التعبيرية</string>
-    <string name="CG_ReplyBackground">خلفية الرد</string>
     <string name="CG_ProfileBackground">تطبيق خلفية الملف الشخصي</string>
     <string name="CG_MessageContainsCustomReactions_one">تحتوي التفاعلات على رموز تعبيرية مخصصة \n من حزمة %1$d.</string>
     <string name="CG_MessageContainsCustomReactions_other">تحتوي التفاعلات على رموز تعبيرية مخصصة \n من حزمة %1$d.</string>

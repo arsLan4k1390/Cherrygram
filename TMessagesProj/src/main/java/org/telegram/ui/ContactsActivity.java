@@ -110,6 +110,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
+import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 
 public class ContactsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -545,7 +547,11 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                             Bundle args = new Bundle();
                             args.putLong("user_id", user.id);
                             if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
-                                presentFragment(new ChatActivity(args), needFinishFragment);
+                                if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(user.id))) {
+                                    CGBiometricPrompt.prompt(getParentActivity(), () -> presentFragment(new ChatActivity(args), needFinishFragment));
+                                } else {
+                                    presentFragment(new ChatActivity(args), needFinishFragment);
+                                }
                             }
                         }
                     }
@@ -665,7 +671,11 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 Bundle args = new Bundle();
                                 args.putLong("user_id", user.id);
                                 if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
-                                    presentFragment(new ChatActivity(args), needFinishFragment);
+                                    if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(user.id))) {
+                                        CGBiometricPrompt.prompt(getParentActivity(), () -> presentFragment(new ChatActivity(args), needFinishFragment));
+                                    } else {
+                                        presentFragment(new ChatActivity(args), needFinishFragment);
+                                    }
                                 }
                             }
                         }

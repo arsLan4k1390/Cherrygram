@@ -1,14 +1,13 @@
 package uz.unnarsx.cherrygram.camera;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.SurfaceTexture;
-import android.os.CountDownTimer;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
@@ -21,25 +20,26 @@ import androidx.core.content.ContextCompat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
-import org.telegram.ui.ActionBar.Theme;
+import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.R;
 import org.telegram.ui.Components.InstantCameraView;
+import org.telegram.ui.Components.RLottieDrawable;
 
-import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 
 public class VideoMessagesHelper {
+
+    public CameraXController cameraXController;
+    public CameraXController.CameraLifecycle camLifecycle = new CameraXController.CameraLifecycle();
 
     public void createCameraX(InstantCameraView instantCameraView, final SurfaceTexture surfaceTexture) {
         AndroidUtilities.runOnUIThread(() -> {
             if (instantCameraView.cameraThread == null) {
                 return;
             }
-            if (instantCameraView.zoomControlView != null) {
-                instantCameraView.zoomControlView.setSliderValue(0f, false);
-            }
-            if (instantCameraView.evControlView != null) {
-                instantCameraView.evControlView.setValue(0.5f);
-            }
+            if (instantCameraView.zoomControlView != null) instantCameraView.zoomControlView.setSliderValue(getZoomForSlider(instantCameraView), false);
+            if (instantCameraView.evControlView != null) instantCameraView.evControlView.setValue(0.5f);
             if (BuildVars.LOGS_ENABLED) {
                 FileLog.d("InstantCamera create camera session");
             }
@@ -50,14 +50,15 @@ public class VideoMessagesHelper {
                 Surface surface = new Surface(surfaceTexture);
                 request.provideSurface(surface, ContextCompat.getMainExecutor(instantCameraView.getContext()), result -> {});
             };
-            instantCameraView.cameraXController = new CameraXController(instantCameraView.camLifecycle, factory, surfaceProvider);
-            instantCameraView.cameraXController.setStableFPSPreviewOnly(true);
-            instantCameraView.cameraXController.initCamera(instantCameraView.getContext(), instantCameraView.isFrontface, ()-> {
+            updateCameraXFlash(instantCameraView);
+            cameraXController = new CameraXController(camLifecycle, factory, surfaceProvider);
+            cameraXController.setStableFPSPreviewOnly(true);
+            cameraXController.initCamera(instantCameraView.getContext(), instantCameraView.isFrontface, ()-> {
                 if (instantCameraView.cameraThread != null) {
                     instantCameraView.cameraThread.setOrientation();
                 }
             });
-            instantCameraView.camLifecycle.start();
+            camLifecycle.start();
         });
     }
 
@@ -66,11 +67,9 @@ public class VideoMessagesHelper {
         if (instantCameraView.cameraZoom > 0) {
             instantCameraView.cameraZoom = 0;
         }
-        disableTorch(instantCameraView);
-        if (instantCameraView.zoomControlView != null && instantCameraView.zoomControlView.getTag() != null) {
-            instantCameraView.zoomControlView.setSliderValue(0f, false);
-            instantCameraView.zoomControlView.setTag(null);
-        }
+        updateCameraXFlash(instantCameraView);
+
+        if (instantCameraView.zoomControlView != null) instantCameraView.zoomControlView.setSliderValue(getZoomForSlider(instantCameraView), true);
         if (instantCameraView.evControlView != null && instantCameraView.evControlView.getTag() != null) {
             instantCameraView.evControlView.setValue(0.5f);
             instantCameraView.evControlView.setTag(null);
@@ -87,41 +86,32 @@ public class VideoMessagesHelper {
 
     public void destroyCameraX(InstantCameraView instantCameraView) {
         try {
-            disableTorch(instantCameraView);
-            if (instantCameraView.zoomControlView != null && instantCameraView.zoomControlView.getTag() != null) instantCameraView.zoomControlView.setTag(null);
-            if (instantCameraView.evControlView != null && instantCameraView.evControlView.getTag() != null) instantCameraView.evControlView.setTag(null);
+            toggleTorch(instantCameraView);
 
-            instantCameraView.cameraXController.stopVideoRecording(true);
-            instantCameraView.cameraXController.closeCamera();
+            cameraXController.stopVideoRecording(true);
+            cameraXController.closeCamera();
         }  catch (Exception ignored) {}
     }
 
     public void toggleTorch(InstantCameraView instantCameraView) {
-        if (instantCameraView.flashlightButton.getTag() == null) {
-            instantCameraView.flashlightButton.setTag(1);
+        if (instantCameraView.flashing) {
             if (instantCameraView.isFrontface) {
                 setMaxBrightness(instantCameraView);
             } else {
+                if (!instantCameraView.cameraReady || !cameraXController.isInitied() || instantCameraView.cameraThread == null){
+                    return;
+                }
                 CameraXController.setTorchEnabled(true);
             }
         } else {
-            instantCameraView.flashlightButton.setBackgroundDrawable(Theme.createCircleDrawable(AndroidUtilities.dp(60), 0x22ffffff));
-            instantCameraView.flashlightButton.setTag(null);
             if (instantCameraView.isFrontface) {
                 setOldBrightness(instantCameraView);
             } else {
+                if (!instantCameraView.cameraReady || !cameraXController.isInitied() || instantCameraView.cameraThread == null){
+                    return;
+                }
                 CameraXController.setTorchEnabled(false);
             }
-        }
-    }
-
-    public void disableTorch(InstantCameraView instantCameraView) {
-        instantCameraView.flashlightButton.setBackgroundDrawable(Theme.createCircleDrawable(AndroidUtilities.dp(60), 0x22ffffff));
-        instantCameraView.flashlightButton.setTag(null);
-        if (instantCameraView.isFrontface) {
-            setOldBrightness(instantCameraView);
-        } else {
-            CameraXController.setTorchEnabled(false);
         }
     }
 
@@ -131,10 +121,11 @@ public class VideoMessagesHelper {
         ((Activity) instantCameraView.getContext()).getWindow().setAttributes(attributes);
 
         CGFeatureHooks.setFlashLight(true);
+        instantCameraView.blurBehindDrawable.showFlash(true);
         AndroidUtilities.setLightStatusBar(((Activity) instantCameraView.getContext()).getWindow(), true);
-        instantCameraView.flashlightButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
-        instantCameraView.switchCameraDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
-        instantCameraView.switchCameraButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_alwaysBlack), PorterDuff.Mode.MULTIPLY));
+        instantCameraView.flashButton.setInvert(1F);
+        instantCameraView.switchCameraButton.setInvert(1F);
+        instantCameraView.zoomControlView.invertColors(1F);
     }
 
     public void setOldBrightness(InstantCameraView instantCameraView) {
@@ -142,91 +133,69 @@ public class VideoMessagesHelper {
         attributes.screenBrightness = -1F; //previousBrightness
         ((Activity) instantCameraView.getContext()).getWindow().setAttributes(attributes);
 
-        new CountDownTimer(300, 100) {
-            @Override
-            public void onTick(long millisUntilFinished) {}
-
-            @Override
-            public void onFinish() {
-                CGFeatureHooks.setFlashLight(false);
-                AndroidUtilities.setLightStatusBar(((Activity) instantCameraView.getContext()).getWindow(), false);
-                instantCameraView.invalidateBlur();
-                instantCameraView.flashlightButton.clearColorFilter();
-                instantCameraView.switchCameraDrawable.clearColorFilter();
-                instantCameraView.switchCameraButton.clearColorFilter();
-            }
-        }.start();
+        CGFeatureHooks.setFlashLight(false);
+        instantCameraView.blurBehindDrawable.showFlash(false);
+        AndroidUtilities.setLightStatusBar(((Activity) instantCameraView.getContext()).getWindow(), false);
+        instantCameraView.invalidateBlur();
+        instantCameraView.flashButton.setInvert(0F);
+        instantCameraView.switchCameraButton.setInvert(0F);
+        instantCameraView.zoomControlView.invertColors(0F);
     }
 
-    public void showZoomControls(InstantCameraView instantCameraView, boolean show, boolean animated) {
-        if (instantCameraView == null && instantCameraView.zoomControlView == null) {
-            return;
-        }
-        if (instantCameraView.zoomControlView.getTag() != null && show || instantCameraView.zoomControlView.getTag() == null && !show) {
-            if (show) {
-                if (instantCameraView.zoomControlHideRunnable != null) {
-                    AndroidUtilities.cancelRunOnUIThread(instantCameraView.zoomControlHideRunnable);
+    private Boolean wasFlashing;
+    public void updateCameraXFlash(InstantCameraView instantCameraView) {
+        toggleTorch(instantCameraView);
+
+        if (instantCameraView.flashButton != null && (wasFlashing == null || wasFlashing != instantCameraView.flashing)) {
+            instantCameraView.flashButton.setContentDescription(LocaleController.getString(instantCameraView.flashing ? R.string.AccDescrCameraFlashOff : R.string.AccDescrCameraFlashOn));
+            if (!instantCameraView.flashing) {
+                if (instantCameraView.flashOnDrawable == null) {
+                    instantCameraView.flashOnDrawable = new RLottieDrawable(R.raw.roundcamera_flash_on, "roundcamera_flash_on", dp(28), dp(28));
+                    instantCameraView.flashOnDrawable.setCallback(instantCameraView.flashButton);
                 }
-                AndroidUtilities.runOnUIThread(instantCameraView.zoomControlHideRunnable = () -> {
-                    showZoomControls(instantCameraView, false, true);
-                    instantCameraView.zoomControlHideRunnable = null;
-                    instantCameraView.zoomControlView.setVisibility(View.INVISIBLE);
-                }, 3000);
+                instantCameraView.flashButton.setImageDrawable(instantCameraView.flashOnDrawable);
+                if (wasFlashing == null) {
+                    instantCameraView.flashOnDrawable.setCurrentFrame(instantCameraView.flashOnDrawable.getFramesCount() - 1);
+                } else {
+                    instantCameraView.flashOnDrawable.setCurrentFrame(0);
+                    instantCameraView.flashOnDrawable.start();
+                }
+            } else {
+                if (instantCameraView.flashOffDrawable == null) {
+                    instantCameraView.flashOffDrawable = new RLottieDrawable(R.raw.roundcamera_flash_off, "roundcamera_flash_off", dp(28), dp(28));
+                    instantCameraView.flashOffDrawable.setCallback(instantCameraView.flashButton);
+                }
+                instantCameraView.flashButton.setImageDrawable(instantCameraView.flashOffDrawable);
+                if (wasFlashing == null) {
+                    instantCameraView.flashOffDrawable.setCurrentFrame(instantCameraView.flashOffDrawable.getFramesCount() - 1);
+                } else {
+                    instantCameraView.flashOffDrawable.setCurrentFrame(0);
+                    instantCameraView.flashOffDrawable.start();
+                }
             }
-            return;
-        }
-        if (instantCameraView.zoomControlAnimation != null) {
-            instantCameraView.zoomControlAnimation.cancel();
-        }
-        instantCameraView.zoomControlView.setTag(show ? 1 : null);
-        instantCameraView.zoomControlAnimation = new AnimatorSet();
-        instantCameraView.zoomControlAnimation.setDuration(180);
-        instantCameraView.zoomControlAnimation.playTogether(ObjectAnimator.ofFloat(instantCameraView.zoomControlView, View.ALPHA, show ? 1.0f : 0.0f));
-        instantCameraView.zoomControlAnimation.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                instantCameraView.zoomControlAnimation = null;
-            }
-        });
-        instantCameraView.zoomControlAnimation.start();
-        if (show) {
-            AndroidUtilities.runOnUIThread(instantCameraView.zoomControlHideRunnable = () -> {
-                showZoomControls(instantCameraView, false, true);
-                instantCameraView.zoomControlHideRunnable = null;
-                instantCameraView.zoomControlView.setVisibility(View.INVISIBLE);
-            }, 3000);
+            wasFlashing = instantCameraView.flashing;
         }
     }
 
-    /*public float getZoomForSlider() {
+    public float getZoomForSlider(InstantCameraView instantCameraView) {
         float value = 0;
         if (
-                !isFrontface
+                !instantCameraView.isFrontface
                 && !CherrygramConfig.INSTANCE.getStartFromUltraWideCam()
-                && ((CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_X))
+                && cameraXController != null && !cameraXController.isAvailableWideMode() /* Wide camera check to prevent wrong slider value on non-supported devices*/
         ) {
             value = 0.5f;
         }
         return value;
-    }*/
+    }
 
-    public void setZoomForSlider(InstantCameraView instantCameraView, float zoom) {
-        if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
-            if (instantCameraView.useCamera2) {
-                if (instantCameraView.camera2SessionCurrent != null) {
-                    instantCameraView.camera2SessionCurrent.setZoom(zoom);
-                }
-            } else {
-                instantCameraView.cameraSession.setZoom(zoom);
-            }
-        } else {
-            if (instantCameraView.cameraXController != null) {
-                instantCameraView.cameraXController.setZoom(zoom);
-            }
+    public void setZoomForSlider(float zoom) {
+        if (cameraXController != null) {
+            cameraXController.setZoom(zoom);
         }
     }
 
-    public void showExposureControls(InstantCameraView instantCameraView, boolean show, boolean animated) {
+    public void showExposureControls(InstantCameraView instantCameraView, boolean show) {
         if (instantCameraView.evControlView == null) {
             return;
         }
@@ -236,7 +205,7 @@ public class VideoMessagesHelper {
                     AndroidUtilities.cancelRunOnUIThread(instantCameraView.evControlHideRunnable);
                 }
                 AndroidUtilities.runOnUIThread(instantCameraView.evControlHideRunnable = () -> {
-                    showExposureControls(instantCameraView, false, true);
+                    showExposureControls(instantCameraView, false);
                     instantCameraView.evControlHideRunnable = null;
                     instantCameraView.evControlView.setVisibility(View.INVISIBLE);
                 }, 3000);
@@ -259,7 +228,7 @@ public class VideoMessagesHelper {
         instantCameraView.evControlAnimation.start();
         if (show) {
             AndroidUtilities.runOnUIThread(instantCameraView.evControlHideRunnable = () -> {
-                showExposureControls(instantCameraView, false, true);
+                showExposureControls(instantCameraView, false);
                 instantCameraView.evControlHideRunnable = null;
                 instantCameraView.evControlView.setVisibility(View.INVISIBLE);
             }, 3000);
