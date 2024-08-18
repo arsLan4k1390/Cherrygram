@@ -51,7 +51,7 @@ public class GroupCreateDividerItemDecoration extends RecyclerView.ItemDecoratio
                 continue;
             }
             top = child.getBottom();
-            if (!CherrygramConfig.INSTANCE.getDisableDividers()) canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(72), top, width - (LocaleController.isRTL ? AndroidUtilities.dp(72) : 0), top, Theme.dividerPaint);
+            canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(72), top, width - (LocaleController.isRTL ? AndroidUtilities.dp(72) : 0), top, Theme.dividerPaint);
         }
     }
 

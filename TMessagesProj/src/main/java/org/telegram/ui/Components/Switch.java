@@ -390,13 +390,13 @@ public class Switch extends View {
 
         if (CherrygramConfig.INSTANCE.getOneUI_SwitchStyle()) {
             thumb = AndroidUtilities.dp(17.5F); // толщина свитча
-            x = 12; // длина свитча когда он включен
+            x = AndroidUtilities.dp(4); // длина свитча когда он включен
             y = getMeasuredHeight() / 2 - thumb / 2;
 
             if (isChecked) {
                 tx = ((getMeasuredWidth() - width) / 2) + AndroidUtilities.dp(7) + (int) (AndroidUtilities.dp(17) * progress);
             } else {
-                tx = ((getMeasuredWidth() - width) / 1) + AndroidUtilities.dp(7) + (int) (AndroidUtilities.dp(17) * progress);
+                tx = ((getMeasuredWidth() - width)) + AndroidUtilities.dp(7) + (int) (AndroidUtilities.dp(17) * progress);
             }
 
         } else {

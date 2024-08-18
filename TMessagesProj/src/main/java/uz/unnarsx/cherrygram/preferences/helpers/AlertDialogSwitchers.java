@@ -35,7 +35,7 @@ public class AlertDialogSwitchers {
         linearLayoutInviteContainer.setOrientation(LinearLayout.VERTICAL);
         linearLayout.addView(linearLayoutInviteContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-        int count = 5;
+        int count = 6;
         for (int a = 0; a < count; a++) {
             TextCell textCell = new TextCell(context, 23, false, true, fragment.getResourceProvider());
             switch (a) {
@@ -56,6 +56,10 @@ public class AlertDialogSwitchers {
                     break;
                 }
                 case 4: {
+                    textCell.setTextAndCheckAndIcon("Telegram Browser", CherrygramConfig.INSTANCE.getShortcut_Browser(), R.drawable.msg_language, true);
+                    break;
+                }
+                case 5: {
                     textCell.checkBox.setVisibility(View.INVISIBLE);
                     textCell.setTextAndIcon(LocaleController.getString("CP_AdminActions", R.string.CP_AdminActions), R.drawable.msg_admins, false);
                     break;
@@ -88,6 +92,11 @@ public class AlertDialogSwitchers {
                         break;
                     }
                     case 4: {
+                        CherrygramConfig.INSTANCE.toggleShortcutBrowser();
+                        textCell.setChecked(CherrygramConfig.INSTANCE.getShortcut_Browser());
+                        break;
+                    }
+                    case 5: {
                         showAdminActionsAlert(fragment);
                         break;
                     }
@@ -454,7 +463,7 @@ public class AlertDialogSwitchers {
         linearLayoutInviteContainer.setOrientation(LinearLayout.VERTICAL);
         linearLayout.addView(linearLayoutInviteContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-        int count = 12;
+        int count = 11;
         for (int a = 0; a < count; a++) {
             TextCell textCell = new TextCell(context, 23, false, true, fragment.getResourceProvider());
             switch (a) {
@@ -499,10 +508,6 @@ public class AlertDialogSwitchers {
                     break;
                 }
                 case 10: {
-                    textCell.setTextAndCheckAndIcon(LocaleController.getString("CG_ReplyBackground", R.string.CG_ReplyBackground), CherrygramConfig.INSTANCE.getShowGetReplyBackground(), R.drawable.msg_emoji_stickers, false);
-                    break;
-                }
-                case 11: {
                     textCell.setTextAndCheckAndIcon("JSON", CherrygramConfig.INSTANCE.getShowJSON(), R.drawable.msg_info, false);
                     break;
                 }
@@ -564,11 +569,6 @@ public class AlertDialogSwitchers {
                         break;
                     }
                     case 10: {
-                        CherrygramConfig.INSTANCE.toggleShowGetReplyBackground();
-                        textCell.setChecked(CherrygramConfig.INSTANCE.getShowGetReplyBackground());
-                        break;
-                    }
-                    case 11: {
                         CherrygramConfig.INSTANCE.toggleShowJSON();
                         textCell.setChecked(CherrygramConfig.INSTANCE.getShowJSON());
                         break;

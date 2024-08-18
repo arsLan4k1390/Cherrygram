@@ -1549,7 +1549,7 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
                 imageDrawable.draw(canvas);
             }
 
-            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+            if (needDivider) {
                 Paint dividerPaint = resourcesProvider != null ? resourcesProvider.getPaint(Theme.key_paint_divider) : Theme.dividerPaint;
                 if (dividerPaint != null) {
                     canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(23), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(23) : 0), getMeasuredHeight() - 1, dividerPaint);

@@ -57,6 +57,14 @@
     <string name="CG_FwdMenu_Notify">Сповіщати</string>
     <string name="CG_FwdMenu_EnableCaptions">Увімкнути опис</string>
     <string name="CG_FwdMenu_DisableCaptions">Прибрати опис</string>
+    <string name="CG_CopyTitle">Копіювати заголовок</string>
+    <string name="CG_CopyCallback">Копіювати Callback-дані</string>
+    <string name="CG_CopyInlineQuery">Копіювати Inline-запит</string>
+    <string name="CG_CopyID">Скопіювати ID користувача</string>
+    <!--Location screen-->
+    <string name="CG_LocationPermission">Cherrygram потребує доступу до вашого розташування, щоб ви могли поділитися ним з друзями. Вам буде запропоновано дозволити використання вашого місцезнаходження (при відкритті додатку).</string>
+    <string name="CG_LocationPermission_Desc">Проте, якщо ви хочете, щоб ваше місце розташування було доступним вашим друзям, а Cherrygram закритий та у фоновому режимі, тоді перейдіть на функцію \"Поточне розташування\". Поки ви не погоджуєтеся використовувати функцію Live Location, ваше місцезнаходження не буде доступне у фоновому режимі.</string>
+    <!--Location screen-->
     <!--Search filter-->
     <string name="CG_SearchFilter">Фільтрувати результати пошуку</string>
     <string name="CG_SearchFilter_None">Немає</string>
@@ -98,7 +106,6 @@
     <string name="CG_OpenEmojiPack">Натисніть, щоб отримати емодзі</string>
     <string name="CG_ReplyContainsEmojiPack">Ця відповідь містить **%s** емодзі</string>
     <string name="CG_GetEmojiPack">Взяти емодзі</string>
-    <string name="CG_ReplyBackground">Задній план відповіді</string>
     <string name="CG_ProfileBackground">Застосувати задній план профілю</string>
     <string name="CG_MessageContainsCustomReactions_one">Реакції містять емодзі пак.</string>
     <string name="CG_MessageContainsCustomReactions_other">Реакції містять користувацькі емодзі \nз %1$d.</string>
@@ -264,13 +271,13 @@
     <string name="CP_RearCam_Desc">Замість фронтальної камери під час запису відеоповідомлень</string>
     <string name="CP_CaptureType_Desc">За замовчуванням використовує «VideoCapture». \nВиберіть «ImageCapture» (знижує якість), лише якщо Cherrygram зависає на секунду перед тим, як почати записувати відеоповідомлення.</string>
     <string name="CP_DisableCam">Вимкнути камеру в меню вибору фото</string>
-    <string name="CP_DisableCam_Desc">Кнопка камери буде доступна поруч із кнопкою галереї. \nНатискання кнопки відкриє Telegram камеру і утримує її під час запуску системної камери.</string>
+    <string name="CP_DisableCam_Desc">Кнопка камери буде доступна поруч із кнопкою галереї. \nНатискання кнопки відкриє Telegram камеру, та утримання її запустить системну камеру.</string>
     <string name="CP_Header_Videomessages">Відеоповідомлення</string>
-    <string name="CP_ZoomSliderPosition">Положення повзунка збільшення</string>
     <string name="CP_ExposureSliderPosition">Положення повзунка експозиції</string>
     <string name="CP_ZoomSliderPosition_Bottom">Знизу</string>
     <string name="CP_ZoomSliderPosition_Right">Праворуч</string>
     <string name="CP_ZoomSliderPosition_Left">Ліворуч</string>
+    <string name="CP_Exposure">Експозиція</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Експериментальні</string>
@@ -329,6 +336,7 @@
     <string name="UP_Download">Звантажити</string>
     <!--Updates Preferences-->
     <!--Donations-->
+    <string name="DP_RateUs">Оцініть Cherrygram</string>
     <string name="DP_Donate">Підтримати розробку</string>
     <string name="DP_Donate_Method">Оберіть метод</string>
     <!--Donations-->

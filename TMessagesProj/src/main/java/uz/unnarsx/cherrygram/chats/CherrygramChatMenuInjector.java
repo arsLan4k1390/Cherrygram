@@ -17,6 +17,7 @@ import org.telegram.ui.Components.ChatAttachAlert;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
+import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
 // Because manual editing of drklo's sources harms your mental health.
@@ -50,7 +51,8 @@ public class CherrygramChatMenuInjector {
 
     public static void injectCherrygramShortcuts(ActionBarMenuItem headerItem, TLRPC.Chat currentChat, TLRPC.User currentUser) {
         boolean isAnyButtonEnabled = CherrygramConfig.INSTANCE.getShortcut_JumpToBegin() || CherrygramConfig.INSTANCE.getShortcut_DeleteAll()
-                || CherrygramConfig.INSTANCE.getShortcut_SavedMessages() || CherrygramConfig.INSTANCE.getShortcut_Blur();
+                || CherrygramConfig.INSTANCE.getShortcut_SavedMessages() || CherrygramConfig.INSTANCE.getShortcut_Blur()
+                || CherrygramConfig.INSTANCE.getAskForPasscodeBeforeOpenChat() || CherrygramConfig.INSTANCE.getShortcut_Browser();
 
         if (isAnyButtonEnabled) headerItem.lazilyAddColoredGap();
 
@@ -75,6 +77,22 @@ public class CherrygramChatMenuInjector {
 
         if (CherrygramConfig.INSTANCE.getShortcut_Blur())
             headerItem.lazilyAddSubItem(ChatActivity.OPTION_BLUR_SETTINGS, R.drawable.msg_theme, LocaleController.getString("BlurInChat", R.string.BlurInChat));
+
+        if (CherrygramConfig.INSTANCE.getAskForPasscodeBeforeOpenChat() && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()) {
+            if (ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array) != null && !ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).isEmpty() &&
+                    (currentUser != null && currentUser.id != 0 && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(currentUser.id))
+                            /*|| currentChat != null && currentChat.id != 0 && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(currentChat.id))*/
+                    )
+            ) {
+                headerItem.lazilyAddSubItem(ChatActivity.OPTION_DO_NOT_ASK_PASSCODE, R.drawable.msg_secret, "Don't ask Passcode");
+            } else {
+                headerItem.lazilyAddSubItem(ChatActivity.OPTION_ASK_PASSCODE, R.drawable.msg_secret, "Ask Passcode");
+            }
+        }
+
+        if (CherrygramConfig.INSTANCE.getShortcut_Browser() )
+            headerItem.lazilyAddSubItem(ChatActivity.OPTION_OPEN_TELEGRAM_BROWSER, R.drawable.msg_language, "Telegram Browser");
+
     }
 
     public static void injectAdminShortcuts(ActionBarMenuItem headerItem, TLRPC.Chat currentChat) {

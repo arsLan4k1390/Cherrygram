@@ -3,19 +3,22 @@ package uz.unnarsx.cherrygram
 import android.app.Activity
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
-import org.telegram.tgnet.ConnectionsManagerImpl
 import org.telegram.tgnet.TLRPC
 import uz.unnarsx.cherrygram.camera.CameraXUtils
+import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper
+import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper.getArrayList
+import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper.saveArrayList
 import uz.unnarsx.cherrygram.chats.helpers.StickersHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
 import uz.unnarsx.cherrygram.core.helpers.LocalVerificationsHelper
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.NoIconReplace
@@ -27,7 +30,9 @@ import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
 
-object CherrygramConfig: CoroutineScope by MainScope() {
+object CherrygramConfig: CoroutineScope by CoroutineScope(
+    context = SupervisorJob() + Dispatchers.Main.immediate
+) {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
@@ -340,6 +345,12 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         shortcut_Blur = !shortcut_Blur
         putBoolean("CP_Shortcut_Blur", shortcut_Blur)
     }
+
+    var shortcut_Browser by sharedPreferences.boolean("CP_Shortcut_Browser", false)
+    fun toggleShortcutBrowser() {
+        shortcut_Browser = !shortcut_Browser
+        putBoolean("CP_Shortcut_Browser", shortcut_Browser)
+    }
     //Admin Shortcuts
     var admins_Reactions by sharedPreferences.boolean("CP_Admins_Reactions", false)
     fun toggleAdminsReactions() {
@@ -485,12 +496,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_ShowReport", showReport)
     }
 
-    var showGetReplyBackground by sharedPreferences.boolean("CP_ShowGetReplyBackground", true)
-    fun toggleShowGetReplyBackground() {
-        showGetReplyBackground = !showGetReplyBackground
-        putBoolean("CP_ShowGetReplyBackground", showGetReplyBackground)
-    }
-
     var showJSON by sharedPreferences.boolean("CP_ShowJSON", false)
     fun toggleShowJSON() {
         showJSON = !showJSON
@@ -567,12 +572,6 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("CP_UseDualCamera", useDualCamera)
     }
 
-    const val ZOOM_SLIDER_NONE = 0
-    const val ZOOM_SLIDER_BOTTOM = 1
-//    const val ZOOM_SLIDER_RIGHT = 2
-    const val ZOOM_SLIDER_LEFT = 3
-    var zoomSlider by sharedPreferences.int("CP_ZoomSlider", ZOOM_SLIDER_BOTTOM)
-
     const val EXPOSURE_SLIDER_NONE = 0
 //    const val EXPOSURE_SLIDER_BOTTOM = 1
     const val EXPOSURE_SLIDER_RIGHT = 2
@@ -609,6 +608,7 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", CameraAspectDefault)
 
     var whiteBackground by sharedPreferences.boolean("CG_WhiteBG", false)
+    var videoMessagesResolution by sharedPreferences.int("CG_Round_Video_Resolution", 512)
 
     // Privacy
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
@@ -676,6 +676,8 @@ object CherrygramConfig: CoroutineScope by MainScope() {
     // Debug menu
     var showRPCErrors by sharedPreferences.boolean("EP_ShowRPCErrors", false)
     var oldTimeStyle by sharedPreferences.boolean("CP_OldTimeStyle", false)
+    var askForPasscodeBeforeOpenChat by sharedPreferences.boolean("askForPasscodeBeforeOpenChat", false)
+    private var tweakPasscodeChatsArray by sharedPreferences.boolean("tweakPasscodeChatsArray", false)
     var playGIFsAsVideos by sharedPreferences.boolean("CP_PlayGIFsAsVideos", true)
 
     var forceChatBlurEffect by sharedPreferences.boolean("AP_ForceBlur", false)
@@ -714,6 +716,8 @@ object CherrygramConfig: CoroutineScope by MainScope() {
         putBoolean("AP_Filter_Launcher_Icon", filterLauncherIcon)
     }
 
+    var swipeInsideBotToClose by sharedPreferences.boolean("swipeToClose", false)
+
     //Translator
     var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")
     var translationTarget by sharedPreferences.string("translationTarget", "app")
@@ -734,28 +738,26 @@ object CherrygramConfig: CoroutineScope by MainScope() {
 
     init {
         CherrygramToasts.init(sharedPreferences)
-        if (!isPlayStoreBuild()) ConnectionsManagerImpl.launch {}
     }
 
     init {
-        launch(Dispatchers.IO) {
+        launch {
             StickersHelper.getStickerSetIDs()
             StickersHelper.copyStickerFromAssets()
-            delay(2000)
+            if (ApplicationLoader.checkPlayServices()) FirebaseRemoteConfigHelper.initRemoteConfig()
             if (googleAnalytics && ApplicationLoader.checkPlayServices()) {
-                try {
-                    FirebaseAnalyticsHelper.start(ApplicationLoader.applicationContext)
-                    val bundle = Bundle()
-                    FirebaseAnalyticsHelper.trackEvent("cg_start", bundle)
-                    /*AndroidUtilities.runOnUIThread(Runnable {
-                        Toast.makeText(ApplicationLoader.applicationContext, "cg_start", Toast.LENGTH_SHORT).show()
-                    })*/
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
-                    /*AndroidUtilities.runOnUIThread(Runnable {
-                        Toast.makeText(ApplicationLoader.applicationContext, "error", Toast.LENGTH_SHORT).show()
-                    })*/
+                FirebaseAnalyticsHelper.start(ApplicationLoader.applicationContext)
+                FirebaseAnalyticsHelper.trackEvent("cg_start", Bundle.EMPTY)
+                if (isDevBuild() || showRPCErrors) {
+                    Toast.makeText(ApplicationLoader.applicationContext, "cg_start", Toast.LENGTH_SHORT).show()
                 }
+            }
+
+            if (!tweakPasscodeChatsArray) {
+                val arr: ArrayList<String?> = ArrayList()
+                arr.add("0")
+                saveArrayList(arr, ChatsPasswordHelper.Passcode_Array)
+                tweakPasscodeChatsArray = true
             }
         }
     }

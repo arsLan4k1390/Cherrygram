@@ -122,7 +122,7 @@ public class PremiumTierCell extends ViewGroup {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        if (hasDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (hasDivider) {
             if (LocaleController.isRTL) {
                 canvas.drawLine(0, getHeight() - 1, titleView.getRight(), getHeight() - 1, Theme.dividerPaint);
             } else {

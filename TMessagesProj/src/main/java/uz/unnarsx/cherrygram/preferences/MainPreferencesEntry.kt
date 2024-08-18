@@ -7,7 +7,9 @@ import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.misc.CherrygramExtras
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper
+import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
@@ -63,23 +65,25 @@ class MainPreferencesEntry : BasePreferencesEntry {
         }
 
         category(LocaleController.getString("LocalOther", R.string.LocalOther)) {
-            if (!CherrygramConfig.isPlayStoreBuild()) {
-                textIcon {
-                    icon = R.drawable.heart_angle_solar
-                    title = LocaleController.getString("DP_Donate", R.string.DP_Donate)
+            textIcon {
+                isAvailable = /*!CherrygramConfig.isPlayStoreBuild()*/ ApplicationLoader.checkPlayServices() && FirebaseRemoteConfigHelper.isFeatureEnabled(Constants.Is_Donate_Screen_Available) ||
+                        CherrygramConfig.isDevBuild() || CherrygramConfig.isStableBuild() || CherrygramConfig.isBetaBuild() || CherrygramConfig.isPremiumBuild()
 
-                    listener = TGKitTextIconRow.TGTIListener {
-                        it.presentFragment(CherrygramPreferencesNavigator.createDonate())
-                    }
+                icon = R.drawable.heart_angle_solar
+                title = LocaleController.getString("DP_Donate", R.string.DP_Donate)
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    it.presentFragment(CherrygramPreferencesNavigator.createDonate())
                 }
-            } else {
-                textIcon {
-                    icon = R.drawable.heart_angle_solar
-                    title = LocaleController.getString("DP_RateUs", R.string.DP_RateUs)
+            }
+            textIcon {
+                isAvailable = CherrygramConfig.isPlayStoreBuild()
 
-                    listener = TGKitTextIconRow.TGTIListener {
-                        CherrygramExtras.requestReviewFlow(bf, bf.context, bf.parentActivity)
-                    }
+                icon = R.drawable.heart_angle_solar
+                title = LocaleController.getString("DP_RateUs", R.string.DP_RateUs)
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    CherrygramExtras.requestReviewFlow(bf, bf.context, bf.parentActivity)
                 }
             }
             textIcon {

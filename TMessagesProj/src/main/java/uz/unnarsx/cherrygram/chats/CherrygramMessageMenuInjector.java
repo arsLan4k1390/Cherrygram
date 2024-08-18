@@ -2,9 +2,7 @@ package uz.unnarsx.cherrygram.chats;
 
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
-import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ChatActivity;
@@ -12,7 +10,6 @@ import org.telegram.ui.ChatActivity;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
 // Because manual editing of drklo's sources harms your mental health.
@@ -74,26 +71,6 @@ public class CherrygramMessageMenuInjector {
             items.add(LocaleController.getString("CG_SaveSticker", R.string.CG_SaveSticker));
             options.add(ChatActivity.OPTION_DOWNLOAD_STICKER);
             icons.add(R.drawable.msg_download);
-        }
-    }
-
-    public static void injectReplyBackground(MessageObject selectedObject, ArrayList<CharSequence> items, final ArrayList<Integer> options, ArrayList<Integer> icons) {
-        int selectedAccount = UserConfig.selectedAccount;
-        MessagesController getMessagesController = MessagesController.getInstance(selectedAccount);
-        UserConfig getUserConfig = UserConfig.getInstance(selectedAccount);
-        ChatsHelper getChatsHelper = ChatsHelper.getInstance(selectedAccount);
-
-        if (CherrygramConfig.INSTANCE.getShowGetReplyBackground() && selectedObject != null && selectedObject.replyMessageObject != null
-                && selectedObject.replyMessageObject.messageOwner.from_id != null && selectedObject.replyMessageObject.messageOwner.from_id.user_id != 0
-                && getMessagesController.getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id) != null
-        ) {
-            long emojiDocumentId = getChatsHelper.getEmojiIdFromReply(selectedObject, getMessagesController.getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
-
-            if (emojiDocumentId != 0 && UserObject.getEmojiId(getUserConfig.getCurrentUser()) != emojiDocumentId) {
-                items.add(LocaleController.getString("CG_ReplyBackground", R.string.CG_ReplyBackground));
-                options.add(ChatActivity.OPTION_GET_REPLY_BACKGROUND);
-                icons.add(R.drawable.msg_emoji_stickers);
-            }
         }
     }
 

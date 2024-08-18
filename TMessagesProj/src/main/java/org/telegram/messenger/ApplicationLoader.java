@@ -52,6 +52,9 @@ import org.telegram.ui.LauncherIconController;
 import java.io.File;
 import java.util.ArrayList;
 
+import kotlin.coroutines.Continuation;
+import kotlin.coroutines.CoroutineContext;
+import kotlin.coroutines.EmptyCoroutineContext;
 import uz.unnarsx.cherrygram.CherrygramConfig;
 import org.telegram.tgnet.ConnectionsManagerImpl;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
@@ -227,7 +230,21 @@ public class ApplicationLoader extends Application {
         SharedConfig.loadConfig();
         hasPlayServices = checkPlayServices();
         CameraXUtils.loadCameraXSizes();
-        if (!CherrygramConfig.INSTANCE.isPlayStoreBuild()) ConnectionsManagerImpl.INSTANCE.checkConnection();
+        if (!CherrygramConfig.INSTANCE.isPlayStoreBuild()) {
+            Continuation<Object> suspendResult = new Continuation<>() {
+                @NonNull
+                @Override
+                public CoroutineContext getContext() {
+                    return EmptyCoroutineContext.INSTANCE;
+                }
+
+                @Override
+                public void resumeWith(@NonNull Object o) {
+
+                }
+            };
+            ConnectionsManagerImpl.INSTANCE.checkConnection(suspendResult);
+        }
         SharedPrefsHelper.init(applicationContext);
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) { //TODO improve account
             UserConfig.getInstance(a).loadConfig();
@@ -655,5 +672,4 @@ public class ApplicationLoader extends Application {
     public BaseFragment openSettings(int n) {
         return null;
     }
-
 }

@@ -71,7 +71,7 @@ public class TopicSearchCell extends FrameLayout {
     @Override
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
-        if (drawDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (drawDivider) {
             int left = AndroidUtilities.dp(56);
             if (LocaleController.isRTL) {
                 canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth() - left, getMeasuredHeight() - 1, Theme.dividerPaint);

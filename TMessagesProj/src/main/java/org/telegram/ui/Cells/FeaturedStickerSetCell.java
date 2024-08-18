@@ -321,7 +321,7 @@ public class FeaturedStickerSetCell extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (needDivider) {
             canvas.drawLine(0, getHeight() - 1, getWidth() - getPaddingRight(), getHeight() - 1, Theme.dividerPaint);
         }
     }

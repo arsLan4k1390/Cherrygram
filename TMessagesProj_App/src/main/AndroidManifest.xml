@@ -4,7 +4,10 @@
     android:installLocation="auto">
 
     <application android:name="org.telegram.messenger.ApplicationLoaderImpl" tools:replace="name">
-        <service android:name="org.telegram.messenger.GoogleVoiceClientService" android:exported="true"/>
+        <service
+            android:name="org.telegram.messenger.GoogleVoiceClientService"
+            android:exported="true"
+        />
         <activity
             android:name="org.telegram.messenger.GoogleVoiceClientActivity"
             android:exported="true">

@@ -131,7 +131,7 @@ public class PremiumFeatureCell extends FrameLayout {
             imageDrawable.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueIcon));
             imageDrawable.draw(canvas);
         }
-        if (drawDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (drawDivider) {
             canvas.drawRect(AndroidUtilities.dp(62), getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight(), Theme.dividerPaint);
         }
     }

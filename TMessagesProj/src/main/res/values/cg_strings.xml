@@ -70,6 +70,11 @@
     <string name="CG_FwdMenu_EnableCaptions">Enable captions</string>
     <string name="CG_FwdMenu_DisableCaptions">Hide captions</string>
 
+    <string name="CG_CopyTitle">Copy Title</string>
+    <string name="CG_CopyCallback">Copy Callback Data</string>
+    <string name="CG_CopyInlineQuery">Copy Inline Query</string>
+    <string name="CG_CopyID">Copy user ID</string>
+
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygram needs access to your location so you can share it with your friends. You will now be asked to allow your location to be used (while the app is open).</string>
     <string name="CG_LocationPermission_Desc">However, if you want your location to be available to your friends while Cherrygram is closed and in the background, then go to the \"Live Location\" feature. Until you agree to use the Live Location feature, your location will not be available in the background.</string>
@@ -118,7 +123,6 @@
 
     <string name="CG_ReplyContainsEmojiPack">This reply contains **%s** emoji</string>
     <string name="CG_GetEmojiPack">Get emoji</string>
-    <string name="CG_ReplyBackground">Reply background</string>
     <string name="CG_ProfileBackground">Apply profile background</string>
     <string name="CG_MessageContainsCustomReactions_one">Reactions contain custom emoji \nfrom %1$d pack.</string>
     <string name="CG_MessageContainsCustomReactions_other">Reactions contain custom emojis \nfrom %1$d packs.</string>
@@ -314,7 +318,6 @@
     <string name="CP_DisableCam_Desc">The camera button will be available next to the gallery button. \nPressing the button will open the Telegram camera, and holding it will launch the system camera.</string>
 
     <string name="CP_Header_Videomessages">Videomessages</string>
-    <string name="CP_ZoomSliderPosition">Zoom slider position</string>
     <string name="CP_ExposureSliderPosition">Exposure slider position</string>
     <string name="CP_ZoomSliderPosition_Bottom">Bottom</string>
     <string name="CP_ZoomSliderPosition_Right">Right</string>

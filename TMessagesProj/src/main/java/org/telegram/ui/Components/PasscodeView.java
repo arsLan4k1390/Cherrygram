@@ -551,6 +551,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
 
         imageView = new RLottieImageView(context);
         imageView.setAnimation(R.raw.passcode_lock, 58, 58);
+//        imageView.getAnimatedDrawable().setCurrentFrame(37, false); // set lock animation to locked
         imageView.setAutoRepeat(false);
         addView(imageView, LayoutHelper.createFrame(58, 58, Gravity.LEFT | Gravity.TOP));
 

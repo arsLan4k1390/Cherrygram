@@ -125,8 +125,7 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
         divider = new View(getContext()) {
             @Override
             protected void onDraw(Canvas canvas) {
-                if (!CherrygramConfig.INSTANCE.getDisableDividers())
-                    canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
+                canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
             }
         };
         addView(divider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 1, 0, 0, 48, 0, 0));
@@ -1062,7 +1061,7 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
         @Override
         protected void dispatchDraw(Canvas canvas) {
             super.dispatchDraw(canvas);
-            if (drawDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+            if (drawDivider) {
                 if (LocaleController.isRTL) {
                     canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth() - AndroidUtilities.dp(48), getMeasuredHeight() - 1, Theme.dividerPaint);
                 } else {

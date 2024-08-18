@@ -235,7 +235,7 @@ public class PhonebookShareAlert extends BottomSheet {
 
         @Override
         protected void onDraw(Canvas canvas) {
-            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+            if (needDivider) {
                 canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(70), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(70) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
             }
         }
@@ -259,7 +259,7 @@ public class PhonebookShareAlert extends BottomSheet {
         String name = ContactsController.formatName(firstName, lastName);
         ArrayList<TLRPC.User> result = null;
         ArrayList<AndroidUtilities.VcardItem> items = new ArrayList<>();
-        ArrayList<TLRPC.TL_restrictionReason> vcard = null;
+        ArrayList<TLRPC.RestrictionReason> vcard = null;
         if (uri != null) {
             result = AndroidUtilities.loadVCardFromStream(uri, currentAccount, false, items, name);
         } else if (file != null) {
@@ -922,7 +922,7 @@ public class PhonebookShareAlert extends BottomSheet {
                         }
                     }
                     currentUser.restriction_reason.clear();
-                    TLRPC.TL_restrictionReason reason = new TLRPC.TL_restrictionReason();
+                    TLRPC.RestrictionReason reason = new TLRPC.RestrictionReason();
                     reason.text = builder.toString();
                     reason.reason = "";
                     reason.platform = "";

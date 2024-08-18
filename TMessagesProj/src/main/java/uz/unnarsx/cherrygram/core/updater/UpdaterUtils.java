@@ -307,7 +307,7 @@ public class UpdaterUtils {
         @Override
         public void onReceive(Context context, Intent intent){
             String action = intent.getAction();
-            if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
+            if (context != null && DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
                 long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 1L);
                 DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
                 DownloadManager.Query query = new DownloadManager.Query();

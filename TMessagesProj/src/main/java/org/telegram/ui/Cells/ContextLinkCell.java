@@ -840,7 +840,7 @@ public class ContextLinkCell extends FrameLayout implements DownloadController.F
             radialProgress.draw(canvas);
         }
 
-        if (needDivider && !mediaWebpage && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (needDivider && !mediaWebpage) {
             if (LocaleController.isRTL) {
                 canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth() - AndroidUtilities.dp(AndroidUtilities.leftBaseline), getMeasuredHeight() - 1, Theme.dividerPaint);
             } else {

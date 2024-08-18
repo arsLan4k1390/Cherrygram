@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -26,6 +27,7 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BaseController;
 import org.telegram.messenger.ChatObject;
+import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
@@ -59,6 +61,10 @@ import org.telegram.ui.PeerColorActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -108,7 +114,7 @@ public class ChatsHelper extends BaseController {
         }
         if (forwardsSpan == null) {
             forwardsSpan = new SpannableStringBuilder("\u200B");
-            forwardsSpan.setSpan(new ColoredImageSpan(forwardsDrawable), 0, 1, 0);
+            forwardsSpan.setSpan(new ColoredImageSpan(forwardsDrawable, true), 0, 1, 0);
         }
         spannableStringBuilder
                 .append(' ')
@@ -130,14 +136,14 @@ public class ChatsHelper extends BaseController {
         }
         if (editedSpan == null) {
             editedSpan = new SpannableStringBuilder("\u200B");
-            editedSpan.setSpan(new ColoredImageSpan(editedDrawable), 0, 1, 0);
+            editedSpan.setSpan(new ColoredImageSpan(editedDrawable, true), 0, 1, 0);
         }
         if (forwardsDrawable == null) {
             forwardsDrawable = Objects.requireNonNull(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.forwards_solar)).mutate();
         }
         if (forwardsSpan == null) {
             forwardsSpan = new SpannableStringBuilder("\u200B");
-            forwardsSpan.setSpan(new ColoredImageSpan(forwardsDrawable), 0, 1, 0);
+            forwardsSpan.setSpan(new ColoredImageSpan(forwardsDrawable, true), 0, 1, 0);
         }
         spannableStringBuilder
                 .append(isMusic ? "" : " ")
@@ -246,26 +252,48 @@ public class ChatsHelper extends BaseController {
         });
     }
 
-    public long getEmojiIdFromReply(MessageObject messageObject, TLRPC.User user) {
-        if (messageObject == null || messageObject.messageOwner == null || messageObject.replyMessageObject == null || messageObject.messageOwner.from_id == null) {
-            return 0;
+    public long getEmojiIdFromReply(MessageObject messageObject, TLRPC.User currentUser) {
+        if (messageObject != null && messageObject.messageOwner != null && messageObject.replyMessageObject != null && messageObject.replyMessageObject.messageOwner != null && messageObject.replyMessageObject.messageOwner.from_id != null) {
+            if (DialogObject.isEncryptedDialog(messageObject.replyMessageObject.getDialogId())) {
+                TLRPC.User user = messageObject.replyMessageObject.isOutOwner() ? UserConfig.getInstance(messageObject.replyMessageObject.currentAccount).getCurrentUser() : currentUser;
+                if (user != null) {
+                    return UserObject.getEmojiId(user);
+                }
+            } else if (messageObject.replyMessageObject.isFromUser()) {
+                TLRPC.User user = MessagesController.getInstance(messageObject.currentAccount).getUser(messageObject.replyMessageObject.messageOwner.from_id.user_id);
+                if (user != null) {
+                    return UserObject.getEmojiId(user);
+                }
+            } else if (messageObject.replyMessageObject.isFromChannel()) {
+                TLRPC.Chat chat = MessagesController.getInstance(messageObject.currentAccount).getChat(messageObject.replyMessageObject.messageOwner.from_id.channel_id);
+                if (chat != null) {
+                    return ChatObject.getEmojiId(chat);
+                }
+            }
         }
-        if (messageObject.replyMessageObject.isFromUser() && user != null) {
-            return UserObject.getEmojiId(user);
-        } else {
-            return ChatObject.getEmojiId(MessagesController.getInstance(messageObject.currentAccount).getChat(messageObject.replyMessageObject.messageOwner.from_id.channel_id));
-        }
+        return 0;
     }
 
-    private int getEmojiBackgroundFromReply(MessageObject messageObject, TLRPC.User user) {
-        if (messageObject == null || messageObject.messageOwner == null || messageObject.replyMessageObject == null || messageObject.messageOwner.from_id == null) {
-            return 0;
+    private int getEmojiBackgroundFromReply(MessageObject messageObject, TLRPC.User currentUser) {
+        if (messageObject != null && messageObject.messageOwner != null && messageObject.replyMessageObject != null && messageObject.replyMessageObject.messageOwner != null && messageObject.replyMessageObject.messageOwner.from_id != null) {
+            if (DialogObject.isEncryptedDialog(messageObject.replyMessageObject.getDialogId())) {
+                TLRPC.User user = messageObject.replyMessageObject.isOutOwner() ? UserConfig.getInstance(messageObject.replyMessageObject.currentAccount).getCurrentUser() : currentUser;
+                if (user != null) {
+                    return UserObject.getColorId(user);
+                }
+            } else if (messageObject.replyMessageObject.isFromUser()) {
+                TLRPC.User user = MessagesController.getInstance(messageObject.currentAccount).getUser(messageObject.replyMessageObject.messageOwner.from_id.user_id);
+                if (user != null) {
+                    return UserObject.getColorId(user);
+                }
+            } else if (messageObject.replyMessageObject.isFromChannel()) {
+                TLRPC.Chat chat = MessagesController.getInstance(messageObject.currentAccount).getChat(messageObject.replyMessageObject.messageOwner.from_id.channel_id);
+                if (chat != null) {
+                    return ChatObject.getColorId(chat);
+                }
+            }
         }
-        if (messageObject.replyMessageObject.isFromUser() && user != null) {
-            return UserObject.getColorId(user);
-        } else {
-            return ChatObject.getColorId(MessagesController.getInstance(messageObject.currentAccount).getChat(messageObject.replyMessageObject.messageOwner.from_id.channel_id));
-        }
+        return 0;
     }
 
     public void applyReplyBackground(MessageObject selectedObject, BaseFragment fragment) {
@@ -636,5 +664,14 @@ public class ChatsHelper extends BaseController {
             chatActivity.openSearchWithText(null);
             chatActivity.showMessagesSearchListView(true);
         });
+    }
+
+    private static final CharsetDecoder textDecoder = StandardCharsets.UTF_8.newDecoder();
+    public static String getTextFromCallback(byte[] data) {
+        try {
+            return textDecoder.decode(ByteBuffer.wrap(data)).toString();
+        } catch (CharacterCodingException e) {
+            return Base64.encodeToString(data, Base64.NO_PADDING | Base64.NO_WRAP);
+        }
     }
 }

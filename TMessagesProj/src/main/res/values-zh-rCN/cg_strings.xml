@@ -92,7 +92,6 @@
     <string name="CG_OpenEmojiPack">点击获取 Emoji</string>
     <string name="CG_ReplyContainsEmojiPack">此回复包含**%s* 表情符号</string>
     <string name="CG_GetEmojiPack">获得emoji</string>
-    <string name="CG_ReplyBackground">回复背景</string>
     <string name="CG_ProfileBackground">应用个人资料背景</string>
     <string name="CG_MessageContainsCustomReactions_one">表态包含 %1$d 里的自定义 emoji \n</string>
     <string name="CG_MessageContainsCustomReactions_other">表态包含 %1$d 里的自定义 emoji \n</string>

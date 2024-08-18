@@ -199,7 +199,7 @@ public class CameraTypeSelector extends LinearLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (numberPicker.getValue() == 1 && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (numberPicker.getValue() == 1) {
             canvas.drawLine(AndroidUtilities.dp(8), getMeasuredHeight() - 1, getMeasuredWidth() - AndroidUtilities.dp(8), getMeasuredHeight() - 1, Theme.dividerPaint);
         }
     }

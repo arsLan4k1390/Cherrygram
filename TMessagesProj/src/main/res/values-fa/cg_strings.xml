@@ -93,7 +93,6 @@
     <string name="CG_OpenEmojiPack">ضربه برای گرفتن ایموجی</string>
     <string name="CG_ReplyContainsEmojiPack">این پاسخ حاوی ایموجی **%s** است</string>
     <string name="CG_GetEmojiPack">دریافت ایموجی</string>
-    <string name="CG_ReplyBackground">پس زمینه پاسخ</string>
     <string name="CG_ProfileBackground">تنظیم پس‌زمینه نمایه</string>
     <string name="CG_MessageContainsCustomReactions_one">واکنش‌ها شامل ایموجی‌های سفارشی\nاز بسته %1$d.</string>
     <string name="CG_MessageContainsCustomReactions_other">واکنش‌ها شامل ایموجی‌های سفارشی\nاز بسته %1$d.</string>

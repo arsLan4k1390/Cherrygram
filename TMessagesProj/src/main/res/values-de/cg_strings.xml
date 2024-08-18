@@ -98,7 +98,6 @@
     <string name="CG_OpenEmojiPack">Tippen, um Emoji zu erhalten</string>
     <string name="CG_ReplyContainsEmojiPack">Diese Antwort enthält **%s** Emoji</string>
     <string name="CG_GetEmojiPack">Emoji bekommen</string>
-    <string name="CG_ReplyBackground">Antwort-Hintergrund</string>
     <string name="CG_ProfileBackground">Profil-Hintergrund anwenden</string>
     <string name="CG_MessageContainsCustomReactions_one">Reaktionen enthalten benutzerdefinierte Emoji \naus %1$d Paket.</string>
     <string name="CG_MessageContainsCustomReactions_other">Reaktionen enthalten benutzerdefinierte Emoji \naus %1$d Paket.</string>
@@ -266,7 +265,6 @@
     <string name="CP_DisableCam">Deaktiviere Kamera im Medien-Menü</string>
     <string name="CP_DisableCam_Desc">Enable if media attach menu lags</string>
     <string name="CP_Header_Videomessages">Videomessages</string>
-    <string name="CP_ZoomSliderPosition">Zoom slider position</string>
     <string name="CP_ExposureSliderPosition">Exposure slider position</string>
     <string name="CP_ZoomSliderPosition_Bottom">Bottom</string>
     <string name="CP_ZoomSliderPosition_Right">Right</string>

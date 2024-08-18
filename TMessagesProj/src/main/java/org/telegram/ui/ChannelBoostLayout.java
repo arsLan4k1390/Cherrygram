@@ -161,7 +161,7 @@ public class ChannelBoostLayout extends FrameLayout {
                         protected void dispatchDraw(Canvas canvas) {
                             super.dispatchDraw(canvas);
                             dividerPaint.setColor(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider));
-                            if (!CherrygramConfig.INSTANCE.getDisableDividers()) canvas.drawRect(0, getHeight() - 2, getWidth(), getHeight(), dividerPaint);
+                            canvas.drawRect(0, getHeight() - 2, getWidth(), getHeight(), dividerPaint);
                         }
                     };
                     boostsTabs.setDelegate(new ScrollSlidingTextTabStrip.ScrollSlidingTabStripDelegate() {

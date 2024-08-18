@@ -93,7 +93,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             @Override
             protected void onDraw(Canvas canvas) {
                 super.onDraw(canvas);
-                if (!CherrygramConfig.INSTANCE.getDisableDividers()) canvas.drawLine(0, AndroidUtilities.dp(1), getMeasuredWidth(), AndroidUtilities.dp(1), Theme.dividerPaint);
+                canvas.drawLine(0, AndroidUtilities.dp(1), getMeasuredWidth(), AndroidUtilities.dp(1), Theme.dividerPaint);
             }
         };
 
@@ -167,12 +167,14 @@ public class UpdaterBottomSheet extends BottomSheet {
             buildType.setOnClickListener(v -> copyText(buildType.getTextView().getText() + ": " + buildType.getValueTextView().getText()));
             linearLayout.addView(buildType);
 
+            AnimatedTextView checkUpdates = new AnimatedTextView(context, true, true, false);
             TextCell installBetas = new TextCell(context, 23, false, true, resourcesProvider);
             installBetas.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
             installBetas.setTextAndCheckAndIcon(LocaleController.getString("UP_InstallBetas", R.string.UP_InstallBetas), CherrygramConfig.INSTANCE.getInstallBetas(), R.drawable.test_tube_solar, false);
             installBetas.setOnClickListener(v -> {
                 CherrygramConfig.INSTANCE.toggleInstallBetas();
                 installBetas.setChecked(!installBetas.isChecked());
+                checkUpdates.callOnClick();
             });
             linearLayout.addView(installBetas);
 
@@ -204,7 +206,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             checkUpdatesBackground.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
             linearLayout.addView(checkUpdatesBackground, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, 0, 16, 15, 16, 16));
 
-            AnimatedTextView checkUpdates = new AnimatedTextView(context, true, true, false);
+//            AnimatedTextView checkUpdates = new AnimatedTextView(context, true, true, false);
             checkUpdates.setAnimationProperties(.7f, 0, 500, CubicBezierInterpolator.EASE_OUT_QUINT);
             checkUpdates.setGravity(Gravity.CENTER);
             checkUpdates.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
@@ -214,7 +216,6 @@ public class UpdaterBottomSheet extends BottomSheet {
             checkUpdates.adaptWidth = false;
             checkUpdates.setText(LocaleController.getString("UP_CheckForUpdates", R.string.UP_CheckForUpdates));
             checkUpdates.setOnClickListener(v -> {
-
                 SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
                 spannableStringBuilder.append(".  ");
                 spannableStringBuilder.setSpan(new ColoredImageSpan(Objects.requireNonNull(ContextCompat.getDrawable(getContext(), R.drawable.sync_outline_28))), 0, 1, 0);

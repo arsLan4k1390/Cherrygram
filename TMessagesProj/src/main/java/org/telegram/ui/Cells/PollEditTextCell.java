@@ -466,7 +466,7 @@ public class PollEditTextCell extends FrameLayout implements SuggestEmojiView.An
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider && drawDivider() && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (needDivider && drawDivider()) {
             canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(moveImageView != null ? 63 : 20), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(moveImageView != null ? 63 : 20) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
         }
     }

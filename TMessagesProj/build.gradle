@@ -41,6 +41,7 @@ dependencies {
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:32.3.1')
     implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-datatransport'
     implementation 'com.google.firebase:firebase-appindexing:20.0.0'
     implementation 'com.google.firebase:firebase-crashlytics'
@@ -49,7 +50,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
     //Google services
-    implementation 'com.google.android.gms:play-services-maps:18.2.0'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.android.gms:play-services-auth:21.2.0'
     implementation 'com.google.android.gms:play-services-vision:20.1.3'
     implementation 'com.google.android.gms:play-services-wearable:18.2.0'
@@ -58,17 +59,17 @@ dependencies {
     implementation 'com.googlecode.mp4parser:isoparser:1.0.6'
     implementation 'com.stripe:stripe-android:2.0.2'
     implementation 'com.google.mlkit:language-id:17.0.5'
-    implementation "com.android.billingclient:billing:6.2.0"
+    implementation 'com.android.billingclient:billing:6.0.1'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.google.guava:guava:31.1-android'
-    implementation 'com.airbnb.android:lottie:6.4.0'
     implementation 'com.google.android.play:integrity:1.3.0'
-    implementation 'com.google.android.play:review-ktx:2.0.1'
+//    implementation 'com.google.android.gms:play-services-safetynet:18.1.0'
 
     //Cherrygram
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+    implementation 'com.google.android.play:review-ktx:2.0.1'
 
     // CameraX Implementation
     def camerax_version = "1.3.0-alpha07"
@@ -209,7 +210,9 @@ def getProps(String propName) {
 
 task checkVisibility {
     doFirst {
-        def isPrivateBuild = project.gradle.startParameter.taskNames.find { it.contains("HA_private") }
+        def isPrivateBuild = project.gradle.startParameter.taskNames.find {
+            it.contains("HA_private") || it.contains("Debug") || it.contains("Release")
+        }
         def isPublicAllowed = !project.hasProperty("IS_PRIVATE") || !project.property("IS_PRIVATE").toBoolean()
         if (!isPrivateBuild && !isPublicAllowed) {
             throw new GradleException("Building public version of private code!")

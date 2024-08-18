@@ -544,7 +544,7 @@ public class BusinessLinksActivity extends UniversalFragment implements Notifica
         @Override
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
-            if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+            if (needDivider) {
                 Paint dividerPaint = Theme.getThemePaint(Theme.key_paint_divider, resourcesProvider);
                 if (dividerPaint == null)
                     dividerPaint = Theme.dividerPaint;

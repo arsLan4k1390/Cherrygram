@@ -462,10 +462,10 @@ public class CheckBoxCell extends FrameLayout {
             linksTextView.setSingleLine(false);
             linksTextView.setEllipsize(null);
             if (currentType != TYPE_CHECK_BOX_URL) {
-                layoutParams.height = LayoutParams.WRAP_CONTENT;
-                layoutParams.gravity = (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP;
-                layoutParams.topMargin = dp(14);
-                layoutParams.bottomMargin = dp(10);
+//                layoutParams.height = LayoutParams.WRAP_CONTENT;
+//                layoutParams.gravity = (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP;
+//                layoutParams.topMargin = dp(14);
+//                layoutParams.bottomMargin = dp(10);
             }
         } else {
             linksTextView.setLines(1);
@@ -540,7 +540,7 @@ public class CheckBoxCell extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (needDivider) {
             int offset = dp(isCheckboxRound() ? 60 : 20) + (int) Math.abs(textView.getTranslationX());
             if (currentType == TYPE_CHECK_BOX_USER) {
                 offset += dp(39);

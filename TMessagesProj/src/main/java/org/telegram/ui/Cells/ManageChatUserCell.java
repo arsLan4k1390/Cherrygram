@@ -384,7 +384,7 @@ public class ManageChatUserCell extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (needDivider) {
             if (dividerColor >= 0) {
                 Theme.dividerExtraPaint.setColor(Theme.getColor(dividerColor, resourcesProvider));
             }

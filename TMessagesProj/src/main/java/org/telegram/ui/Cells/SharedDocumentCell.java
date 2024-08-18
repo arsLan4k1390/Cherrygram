@@ -751,7 +751,7 @@ public class SharedDocumentCell extends FrameLayout implements DownloadControlle
     }
 
     private void drawDivider(Canvas canvas) {
-        if (needDivider && !CherrygramConfig.INSTANCE.getDisableDividers()) {
+        if (needDivider) {
             canvas.drawLine(AndroidUtilities.dp(72), getHeight() - 1, getWidth() - getPaddingRight(), getHeight() - 1, Theme.getThemePaint(Theme.key_paint_divider, resourcesProvider));
         }
     }

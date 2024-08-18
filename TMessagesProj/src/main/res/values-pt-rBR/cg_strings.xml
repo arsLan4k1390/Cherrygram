@@ -78,7 +78,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CG_OpenEmojiPack">Toque para obter o emoji</string>
     <string name="CG_ReplyContainsEmojiPack">Esta resposta contém **%s** emoji</string>
     <string name="CG_GetEmojiPack">Obter emoji</string>
-    <string name="CG_ReplyBackground">Fundo de resposta</string>
     <string name="CG_ProfileBackground">Aplicar perfil de fundo</string>
     <!--Misc-->
     <!--Telegram screens-->

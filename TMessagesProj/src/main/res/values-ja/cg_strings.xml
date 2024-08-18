@@ -3,7 +3,7 @@
     <!-- by t.me/arsLan-->
     <string name="CG_FollowChannelLink">\@Cherry_Gram を購読する!</string>
     <string name="CG_FollowChannelTitle">公式チャンネルを購読する</string>
-    <string name="CG_FollowChannelInfo">私たちのチャンネルに参加してCherrygramのニュースや機能の最新情報を入手しましょう!</string>
+    <string name="CG_FollowChannelInfo">Cherrygramのニュースや最新情報を入手しましょう!</string>
     <string name="CG_DoNotRemindAgain">今後は表示しない</string>
     <!--Telegram screens-->
     <string name="CG_RegistrationDate">アカウント登録日:</string>
@@ -32,7 +32,7 @@
     <string name="CG_FoldersTypeIcons">アイコンのみ</string>
     <string name="CG_FoldersTypeIconsTitles">タイトル付きのアイコン</string>
     <string name="CG_ChooseFolderIcon">アイコンを選択してください</string>
-    <string name="CP_NewTabs_NoCounter">タブのカウンターを非表示にする</string>
+    <string name="CP_NewTabs_NoCounter">タブのカウンターを非表示</string>
     <string name="CP_NewTabs_NoCounter_Desc">未読メッセージのカウンターを非表示にします。</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
@@ -50,16 +50,16 @@
     <string name="CG_CreateMention">返信を作成</string>
     <string name="CG_CreateCode">コードを作成</string>
     <string name="CG_CreateCodeLanguage">言語</string>
-    <string name="CG_FwdMenu_EnableNoForward">著作者の転送を無効化する</string>
+    <string name="CG_FwdMenu_EnableNoForward">著作者の転送を無効化</string>
     <string name="CG_FwdMenu_DisableNoForward">著作者の転送を有効化する</string>
     <string name="CG_Without_Authorship">著作者権限なし</string>
     <string name="CG_FwdMenu_NoNotify">通知しない</string>
     <string name="CG_FwdMenu_Notify">通知する</string>
     <string name="CG_FwdMenu_EnableCaptions">字幕を有効化する</string>
-    <string name="CG_FwdMenu_DisableCaptions">字幕を非表示にする</string>
+    <string name="CG_FwdMenu_DisableCaptions">字幕を非表示</string>
     <!--Location screen-->
-    <string name="CG_LocationPermission">Cherrygram needs access to your location so you can share it with your friends. You will now be asked to allow your location to be used (while the app is open).</string>
-    <string name="CG_LocationPermission_Desc">However, if you want your location to be available to your friends while Cherrygram is closed and in the background, then go to the \"Live Location\" feature. Until you agree to use the Live Location feature, your location will not be available in the background.</string>
+    <string name="CG_LocationPermission">Cherrygramは、あなたの位置情報を友人と共有するために、位置情報へのアクセスを必要とします。位置情報の使用を許可するかどうかを確認します(アプリが開いている間)。</string>
+    <string name="CG_LocationPermission_Desc">ただし、Cherrygramを終了してバックグラウンドになっている間にあなたの位置情報を友人に知らせたい場合は、「ライブロケーション」機能にアクセスしてください。 ライブロケーション機能を使用することに同意するまでは、位置情報をバックグラウンドで送信しません。</string>
     <!--Location screen-->
     <!--Search filter-->
     <string name="CG_SearchFilter">検索結果をフィルター</string>
@@ -102,7 +102,6 @@
     <string name="CG_OpenEmojiPack">タップで絵文字を入手</string>
     <string name="CG_ReplyContainsEmojiPack">この返信には **%s** 絵文字が含まれています。</string>
     <string name="CG_GetEmojiPack">絵文字を入手</string>
-    <string name="CG_ReplyBackground">返信の背景</string>
     <string name="CG_ProfileBackground">プロフィールの背景を適用する</string>
     <string name="CG_MessageContainsCustomReactions_one">リアクションにはカスタム絵文字が含まれています。\n%1$d パックから。</string>
     <string name="CG_MessageContainsCustomReactions_other">リアクションにはカスタム絵文字が含まれています。\n%1$d パックから。</string>
@@ -111,7 +110,7 @@
     <!--Cherrygram screens-->
     <!--Cherrygram Preferences-->
     <string name="CGP_AdvancedSettings">Cherrygramの設定</string>
-    <string name="CGP_About_Desc">実験的なTelegramアプリに変更します。 アプリの機能リストを確認するには、ここをタップしてください。</string>
+    <string name="CGP_About_Desc">実験的なTelegramアプリに変更します。 アプリの機能一覧を確認するには、ここをタップしてください。</string>
     <string name="CGP_Header_About">Cherrygramについて</string>
     <string name="CGP_Header_About_Desc">更新とソースコード、その他</string>
     <string name="CGP_Links">リンク</string>
@@ -145,10 +144,10 @@
     <string name="AP_OneUI_Switch_Style">OneUIの切り替えスタイル</string>
     <string name="AP_SystemEmoji">システムの絵文字を使用する</string>
     <string name="AP_ShowPencilIcon">編集されたメッセージの鉛筆アイコン</string>
-    <string name="AP_CenterTitle">アクションバーのタイトルを中央に表示する</string>
+    <string name="AP_CenterTitle">アクションバーのタイトルを中央に表示</string>
     <string name="AP_OverrideHeader">ヘッダーの色を上書き</string>
     <string name="AP_OverrideHeader_Desc">ヘッダーはメインの背景と同じ色になります。</string>
-    <string name="AP_DisableDividers">区切り線を無効化する</string>
+    <string name="AP_DisableDividers">区切り線を無効化</string>
     <string name="AP_ToolBarShadow">ツールバーの影を無効化</string>
     <string name="AP_SystemFonts">システムフォントを使用する</string>
     <string name="CP_Snowflakes_Header">スノーフレーク</string>
@@ -163,26 +162,26 @@
     <string name="CP_ProfileBackgroundEmoji">プロフィールの背景の絵文字</string>
     <string name="CP_CustomizeMessage">メッセージをカスタマイズ</string>
     <string name="CP_ReplyBackground">返信の背景</string>
-    <string name="CP_ReplyCustomColors">返信とリンクのプレビューのカスタムカラー</string>
-    <string name="CP_ReplyBackgroundEmoji">返信とリンクのプレビューに絵文字を表示する</string>
-    <string name="CP_HideStories">ストーリーを非表示にする</string>
+    <string name="CP_ReplyCustomColors">返信とリンクのプレビューの色を変更</string>
+    <string name="CP_ReplyBackgroundEmoji">返信とリンクのプレビューの絵文字</string>
+    <string name="CP_HideStories">ストーリーを非表示</string>
     <string name="CP_CustomWallpapers">チャットのカスタム背景</string>
     <string name="CP_CustomWallpapers_Desc">プレミアムユーザー、ブーストされたチャンネル、チャット、グループ、チャンネルにカスタム壁紙を設定します。</string>
-    <string name="CP_DisableAnimAvatars">アニメーションアバターを無効化する</string>
-    <string name="CP_DisableReactionsOverlay">リアクションのオーバーレイを無効化する</string>
+    <string name="CP_DisableAnimAvatars">アニメーションアバターを無効化</string>
+    <string name="CP_DisableReactionsOverlay">リアクションのオーバーレイを無効化</string>
     <string name="CP_DisableReactionsOverlay_Desc">利用可能なアクションを含むポップアップオーバーレイを無効化します。</string>
-    <string name="CP_DisableReactionAnim">リアクションアニメーションを無効化する</string>
+    <string name="CP_DisableReactionAnim">リアクションアニメーションを無効化</string>
     <string name="CP_DisableReactionAnim_Desc">(メッセージに反応した場合)</string>
-    <string name="CP_DisablePremiumStatuses">プレミアムの状態を無効化する</string>
+    <string name="CP_DisablePremiumStatuses">プレミアムの状態を無効化</string>
     <string name="CP_DisablePremiumStatuses_Desc">ドロワー以外のすべての画面上でプレミアムの状態を無効化します。</string>
-    <string name="CP_DisablePremStickAnim">プレミアムステッカーのタップを無効化する</string>
+    <string name="CP_DisablePremStickAnim">ステッカーのタップを無効化</string>
     <string name="CP_DisablePremStickAnim_Desc">プレミアムステッカーをタップしても何も起こらなくなります。</string>
-    <string name="CP_DisablePremStickAutoPlay">プレミアムステッカーの自動再生を無効化する</string>
+    <string name="CP_DisablePremStickAutoPlay">ステッカーの自動再生を無効化</string>
     <string name="CP_DisablePremStickAutoPlay_Desc">プレミアムステッカーの自動再生を無効化します (プレミアムステッカーのタップを無効化している場合は機能が動作しません)。</string>
     <string name="CP_Filters_Header">フォルダ</string>
-    <string name="AP_FolderNameInHeader">｢Cherrygram｣の代わりにフォルダ名にする</string>
+    <string name="AP_FolderNameInHeader">フォルダ名を変更</string>
     <string name="AP_FolderNameInHeader_Desc">アクションバーの｢Cherrygram｣がフォルダ名に変更されます (フォルダ名ではなくアイコンの表示だけになっている場合に役立ちます)。</string>
-    <string name="CP_NewTabs_RemoveAllChats">「すべてのチャット」タブを非表示にする</string>
+    <string name="CP_NewTabs_RemoveAllChats">「すべてのチャット」タブを非表示</string>
     <string name="AP_Tab_Style">タブのスタイル</string>
     <string name="AP_Tab_Style_Default">デフォルト</string>
     <string name="AP_Tab_Style_Rounded">丸い角</string>
@@ -190,8 +189,8 @@
     <string name="AP_Tab_Style_Pills">ピル</string>
     <string name="AP_Tab_Style_Stroke">ストロークを追加</string>
     <string name="AP_DrawerCategory">ドロワー</string>
-    <string name="AP_DrawerAvatar">プロフィール写真をドロワーの背景にする</string>
-    <string name="AP_DrawerShowAvatar">アバターを表示する</string>
+    <string name="AP_DrawerAvatar">写真をドロワーの背景にする</string>
+    <string name="AP_DrawerShowAvatar">アバターを表示</string>
     <string name="AP_DrawerDarken">背景を暗くする</string>
     <string name="AP_ShadeBackground">グラデーションの背景</string>
     <string name="AP_DrawerBlur">背景をぼかす</string>
@@ -201,33 +200,33 @@
     <string name="AP_HideUserPhone_Show">タップで表示</string>
     <string name="AP_HideUserPhone_Copy">長押しでコピー</string>
     <string name="AP_MutualContacts_Description">相互の連絡先です。</string>
-    <string name="AP_ShowID">プロフィールにIDとDCを表示する</string>
+    <string name="AP_ShowID">プロフィールにIDとDCを表示</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">チャット</string>
     <string name="CP_Header_Messages">メッセージ</string>
     <string name="CP_Slider_StickerAmplifier">ステッカーサイズの調整</string>
-    <string name="CP_TimeOnStick">ステッカーの時間表示を無効化する</string>
+    <string name="CP_TimeOnStick">ステッカーの時間表示を無効化</string>
     <string name="CP_ChatMenuShortcuts">チャットメニューのショートカット</string>
     <string name="CP_AdminActions">管理者のショートカット</string>
     <string name="CP_MessageMenu">メッセージメニュー</string>
     <string name="AP_CenterChatsTitle">チャットのタイトルを中央に表示する</string>
-    <string name="CP_UnreadBadgeOnBackButton">チャットの未読カウンターを表示する</string>
+    <string name="CP_UnreadBadgeOnBackButton">チャットの未読カウンターを表示</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">開いているチャット上の戻るボタンで未読のチャットカウンターが有効化します。</string>
-    <string name="CP_NoRounding">数字の丸みを無効化する</string>
+    <string name="CP_NoRounding">四捨五入の表示を無効化</string>
     <string name="CP_DeleteForAll">デフォルトで｢すべて削除｣を使用する</string>
     <string name="CP_DeleteForAll_Desc">メッセージの削除時にチェックボックスが自動的に選択されます。</string>
     <string name="CP_ConfirmCalls">通話をする前に確認する</string>
-    <string name="CP_ForwardMsgDate">転送されたメッセージの日付を表示する</string>
+    <string name="CP_ForwardMsgDate">転送されたメッセージの日付を表示</string>
     <string name="CP_ShowSeconds">送信時間に秒を表示する</string>
     <string name="CP_LeftBottomButtonAction">左側のボタンのアクション</string>
     <string name="CP_DoubleTapAction">ダブルタップアクション</string>
     <string name="CG_MsgSlideAction">メッセージをスワイプ時のアクション</string>
-    <string name="CP_DisableSwipeToNext">次のチャンネルへの遷移を無効化する</string>
+    <string name="CP_DisableSwipeToNext">次のチャンネルへの遷移を無効化</string>
     <string name="CP_DisableSwipeToNext_Desc">チャンネルをスクロール時に次のチャンネルへの切り替えを無効化します。</string>
-    <string name="CP_HideMuteUnmuteButton">チャンネルの下部のボタンを非表示にする</string>
-    <string name="CP_HideKbdOnScroll">スクロール時にキーボードを非表示にする</string>
-    <string name="CP_HideSendAsChannel">｢チャンネルとして送信｣を非表示にする</string>
+    <string name="CP_HideMuteUnmuteButton">チャンネルの下部のボタンを非表示</string>
+    <string name="CP_HideKbdOnScroll">スクロール時にキーボードを非表示</string>
+    <string name="CP_HideSendAsChannel">｢チャンネルとして送信｣を非表示</string>
     <string name="CP_HideSendAsChannelDesc">絵文字、ステッカー、GIFボタンを長押しでメニューにアクセスできます。</string>
     <string name="CP_Slider_RecentEmojisAmplifier">最近の絵文字カウンター (アプリを再起動後に適用されます)</string>
     <string name="CP_Slider_RecentStickersAmplifier">最近のステッカーカウンター (アプリを再起動後に適用されます)</string>
@@ -240,7 +239,7 @@
     <string name="CP_PlayVideo_Desc">音量ボタンをタップするとチャット内の動画が再生されます。</string>
     <string name="CP_AutoPauseVideo">ビデオを自動で一時停止</string>
     <string name="CP_AutoPauseVideo_Desc">画面をロックまたは背景に切り替え時</string>
-    <string name="CP_DisableVibration">バイブレーションを無効化する</string>
+    <string name="CP_DisableVibration">バイブレーションを無効化</string>
     <string name="CP_VideoSeekDuration">ダブルタップで動画をシーク (秒単位)</string>
     <string name="CP_Header_Notification">通知</string>
     <string name="CP_NotificationSound">通知の音</string>
@@ -267,10 +266,9 @@
     <string name="CP_RearCam">リアカメラを使用する</string>
     <string name="CP_RearCam_Desc">ビデオメッセージでフロントカメラの代替として使用可能にします。</string>
     <string name="CP_CaptureType_Desc">デフォルトでは｢動画のキャプチャ｣を使用してください。\nCherrygramがビデオメッセージの録画を開始する前に一瞬フリーズする場合のみ｢画像のキャプチャ｣(画質が落ちます)を選択してください。</string>
-    <string name="CP_DisableCam">メディアアタッチメニューでのカメラを無効化する</string>
+    <string name="CP_DisableCam">メディア選択メニューでのカメラを無効化</string>
     <string name="CP_DisableCam_Desc">ギャラリーボタンの隣にカメラボタンが表示されます。\nボタンを押すことでTelegramのカメラを開きます。ボタンを押し続けるとシステムのカメラが起動します。</string>
     <string name="CP_Header_Videomessages">ビデオメッセージ</string>
-    <string name="CP_ZoomSliderPosition">拡大スライダーの位置</string>
     <string name="CP_ExposureSliderPosition">露光スライダーの位置</string>
     <string name="CP_ZoomSliderPosition_Bottom">下</string>
     <string name="CP_ZoomSliderPosition_Right">右</string>
@@ -282,10 +280,10 @@
     <string name="EP_NavigationAnimation">ナビゲーションのアニメーション</string>
     <string name="EP_NavigationAnimationBezier">クラシック</string>
     <string name="EP_NavigationAnimationCrossfading">クロスフェード効果</string>
-    <string name="CG_ResidentNotification">常駐通知を表示する</string>
+    <string name="CG_ResidentNotification">常駐通知を表示</string>
     <string name="EP_PhotosSize">大きな写真を送信 (2560px)</string>
     <string name="EP_CustomAppTitle">アプリのタイトル</string>
-    <string name="EP_CustomChat">保存されたメッセージのカスタムチャット</string>
+    <string name="EP_CustomChat">保存されたメッセージのチャット</string>
     <string name="EP_CustomChat_Desc">他のチャット、グループ、チャンネルでIDを設定してメッセージを転送します (アクションバーのボタン、メッセージメニューまたはダブルタップ)。</string>
     <string name="EP_CustomChatNotFound">チャットがありません!</string>
     <string name="EP_Network">ネットワーク</string>
@@ -297,15 +295,15 @@
     <string name="EP_SlowNetworkMode">低速ネットワークモード</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_PrivacyAndSecurity">プライバシーとセキュリティー</string>
+    <string name="SP_Category_PrivacyAndSecurity">プライバシーとセキュリティ</string>
     <string name="SP_Header_Privacy">プライバシー</string>
     <string name="SP_NoProxyPromo">プロキシスポンサーを表示しない</string>
     <string name="SP_GoogleAnalytics_Desc">これを有効化することですべてのアプリのクラッシュや統計情報が、｢console.firebase.google.com｣に送信されます。開発者が問題の修正などを効率良く行えるようになります。</string>
-    <string name="SP_CleanOld">古いキャッシュを削除 (/sdcard/Telegram)</string>
+    <string name="SP_CleanOld">/sdcard/Telegram のキャッシュを削除</string>
     <string name="SP_RemovedS">削除に成功しました</string>
-    <string name="SP_AskPinBeforeDelete">チャットを削除する前に指紋認証を要求する</string>
+    <string name="SP_AskPinBeforeDelete">削除時に指紋認証を要求する</string>
     <string name="SP_AskPinBeforeDelete_Desc">チャットまたは履歴を削除する場合に指紋認証を要求します。パスコードと指紋認証を設定している必要があります。</string>
-    <string name="SP_AllowUseSystemPasscode">システムのPINまたはパターンの使用を許可する</string>
+    <string name="SP_AllowUseSystemPasscode">PINまたはパターンの使用を許可する</string>
     <string name="SP_AllowUseSystemPasscode_Desc">指紋認証のダイアログの｢キャンセル｣のボタンを｢PIN/パターン｣のボタンに置き換えることで、システムパスを使用してCherrygramのロックを解除できるようになります。</string>
     <string name="SP_TestFingerprint">指紋認証のテスト</string>
     <string name="SP_Category_Account">アカウント</string>
@@ -321,7 +319,7 @@
     <string name="UP_BTBeta">Beta</string>
     <string name="UP_InstallBetas">Betaバージョンをインストール</string>
     <string name="UP_Auto_OTA">起動時に確認する</string>
-    <string name="UP_ClearUpdatesCache">更新キャッシュを消去</string>
+    <string name="UP_ClearUpdatesCache">更新のキャッシュを消去</string>
     <string name="UP_ClearedUpdatesCache">キャッシュの%1$sを消去しました。</string>
     <string name="UP_NothingToClear">消去する物はありません。</string>
     <string name="UP_CheckForUpdates">更新を確認</string>
@@ -334,7 +332,7 @@
     <string name="UP_Download">ダウンロード</string>
     <!--Updates Preferences-->
     <!--Donations-->
-    <string name="DP_RateUs">Rate Cherrygram</string>
+    <string name="DP_RateUs">Cherrygramを評価する</string>
     <string name="DP_Donate">寄付</string>
     <string name="DP_Donate_Method">寄付の方法を選択</string>
     <!--Donations-->
