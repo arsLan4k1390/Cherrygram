@@ -1080,7 +1080,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 UpdaterUtils.checkUpdates(actionBarLayout.getFragmentStack().size() > 0 ? actionBarLayout.getFragmentStack().get(0) : layersActionBarLayout.getFragmentStack().get(0), false);
             } catch (Exception ignored) {}
         }
-        CherrygramExtras.postCheckFollowChannel(this, currentAccount);
+        if (!CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) CherrygramExtras.postCheckFollowChannel(this, currentAccount);
         ChatsHelper2.checkCustomChatID(currentAccount);
 
         BackupAgent.requestBackup(this);
