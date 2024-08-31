@@ -5,7 +5,7 @@
     <string name="CG_AppNameBeta" translatable="false">Cherrygram</string>
     <string name="CG_FollowChannelLink">Subscribe to @Cherry_Gram!</string>
     <string name="CG_FollowChannelTitle">Subscribe to the official channel</string>
-    <string name="CG_FollowChannelInfo">Join our channel to stay up to date with all the news and features of Cherrygram!</string>
+    <string name="CG_FollowChannelInfo">Join the channel to stay up to date with all the news and features of Cherrygram!</string>
     <string name="CG_DoNotRemindAgain">Don\'t remind again</string>
 
     <!--Telegram screens-->

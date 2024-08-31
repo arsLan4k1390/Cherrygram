@@ -3,7 +3,7 @@
     <!-- by t.me/arsLan-->
     <string name="CG_FollowChannelLink">Подписывайтесь на @Cherry_Gram!</string>
     <string name="CG_FollowChannelTitle">Подписаться на официальный канал</string>
-    <string name="CG_FollowChannelInfo">Присоединяйтесь к нашему каналу, чтобы быть в курсе всех новостей и возможностей Cherrygram!</string>
+    <string name="CG_FollowChannelInfo">Присоединяйтесь к каналу, чтобы быть в курсе всех новостей и возможностей Cherrygram!</string>
     <string name="CG_DoNotRemindAgain">Не напоминать</string>
 
     <!--Telegram screens-->

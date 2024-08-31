@@ -5573,8 +5573,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         needLayoutText(Math.min(1f, extraHeight / AndroidUtilities.dp(88f)));
 
-        nameTextView[1].setTextColor(ColorUtils.blendARGB(peerColor != null ? Color.WHITE : getThemedColor(Theme.key_profile_title), Color.WHITE, currentExpandAnimatorValue));
-        actionBar.setItemsColor(ColorUtils.blendARGB(peerColor != null ? Color.WHITE : getThemedColor(Theme.key_actionBarDefaultIcon), Color.WHITE, value), false);
+        nameTextView[1].setTextColor(ColorUtils.blendARGB(peerColor != null && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? Color.WHITE : getThemedColor(Theme.key_profile_title), Color.WHITE, currentExpandAnimatorValue));
+        actionBar.setItemsColor(ColorUtils.blendARGB(peerColor != null && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? Color.WHITE : getThemedColor(Theme.key_actionBarDefaultIcon), Color.WHITE, value), false);
         actionBar.setMenuOffsetSuppressed(true);
 
         avatarImage.setForegroundAlpha(value);
@@ -9880,7 +9880,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             actionBar.setItemsBackgroundColor(peerColor != null ? 0x20ffffff : getThemedColor(Theme.key_avatar_actionBarSelectorBlue), false);
 
             final int color = AvatarDrawable.getIconColorForId(userId != 0 || ChatObject.isChannel(chatId, currentAccount) && !currentChat.megagroup ? 5 : chatId, resourcesProvider);
-            final int iconColor = peerColor != null ? Color.WHITE : getThemedColor(Theme.key_actionBarDefaultIcon);
+            final int iconColor = peerColor != null && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? Color.WHITE : getThemedColor(Theme.key_actionBarDefaultIcon);
             actionBar.setItemsColor(ColorUtils.blendARGB(iconColor, color, avatarAnimationProgress), false);
         }
         if (verifiedDrawable[1] != null) {
@@ -9894,7 +9894,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             verifiedCheckDrawable[1].setColorFilter(AndroidUtilities.getOffsetColor(color1, color2, mediaHeaderAnimationProgress, 1.0f), PorterDuff.Mode.MULTIPLY);
         }
         if (nameTextView[1] != null) {
-            nameTextView[1].setTextColor(ColorUtils.blendARGB(peerColor != null ? Color.WHITE : getThemedColor(Theme.key_profile_title), Color.WHITE, currentExpandAnimatorValue));
+            nameTextView[1].setTextColor(ColorUtils.blendARGB(peerColor != null && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? Color.WHITE : getThemedColor(Theme.key_profile_title), Color.WHITE, currentExpandAnimatorValue));
         }
         if (autoDeletePopupWrapper != null && autoDeletePopupWrapper.textView != null) {
             autoDeletePopupWrapper.textView.invalidate();
