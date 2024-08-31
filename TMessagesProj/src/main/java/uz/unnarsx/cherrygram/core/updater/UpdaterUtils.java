@@ -48,7 +48,7 @@ import uz.unnarsx.cherrygram.misc.Constants;
 
 public class UpdaterUtils {
 
-    public static final DispatchQueue otaQueue = new DispatchQueue("otaQueue");
+    /*public static final DispatchQueue otaQueue = new DispatchQueue("otaQueue");
 
     private static String uri = "https://api.github.com/repos/arsLan4k1390/Cherrygram/releases/latest";
     private static String betauri = "https://api.github.com/repos/arsLan4k1390/CherrygramBeta-APKs/releases/latest";
@@ -60,7 +60,7 @@ public class UpdaterUtils {
     private static final long updateCheckInterval = 3600000L; // 1 hour
 
     private static boolean updateDownloaded;
-    private static boolean checkingForUpdates;
+    private static boolean checkingForUpdates;*/
 
     public static final String[] deviceModels = {
             "Galaxy S6", "Galaxy S7", "Galaxy S8", "Galaxy S9", "Galaxy S10", "Galaxy S21",
@@ -78,7 +78,7 @@ public class UpdaterUtils {
         return String.format("Mozilla/5.0 (Linux; Android %s; %s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s Mobile Safari/537.36", androidVersion, deviceModel, chromeVersion);
     }
 
-    public static void checkDirs() {
+    /*public static void checkDirs() {
         otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
         if (version != null) {
             versionPath = new File(otaPath, version);
@@ -372,7 +372,7 @@ public class UpdaterUtils {
         public boolean isForce() {
             return version.toLowerCase().contains("force");
         }
-    }
+    }*/
 
     public static String getLastCheckUpdateTime() {
         return getString(R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramCoreConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true);

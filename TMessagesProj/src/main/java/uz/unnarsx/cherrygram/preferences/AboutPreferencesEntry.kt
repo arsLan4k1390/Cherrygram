@@ -22,7 +22,6 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextDetailRow
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
-import uz.unnarsx.cherrygram.core.updater.UpdaterBottomSheet
 import uz.unnarsx.cherrygram.core.updater.UpdaterUtils
 
 class AboutPreferencesEntry : BasePreferencesEntry {
@@ -51,7 +50,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                     } else if (CherrygramCoreConfig.isPremiumBuild()) {
                         // Fuckoff :)
                     } else {
-                        UpdaterBottomSheet.showAlert(bf.context, bf, false, null)
+//                        UpdaterBottomSheet.showAlert(bf.context, bf, false, null)
                     }
                 }
             }

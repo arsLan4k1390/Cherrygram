@@ -17,7 +17,7 @@ import java.net.URL
 
 object StickersHelper: CoroutineScope by MainScope() {
 
-    private var SET_IDS = listOf<String>()
+    /*private var SET_IDS = listOf<String>()
 
     suspend fun getStickerSetIDs() = withContext(Dispatchers.IO) {
         try {
@@ -34,7 +34,7 @@ object StickersHelper: CoroutineScope by MainScope() {
 
     private fun isGitSetId(document: TLRPC.Document): Boolean {
         return gitFetcher(MessageObject.getStickerSetId(document))
-    }
+    }*/
 
     // Locally stored IDs
     private val iDs = arrayOf(683462835916767409L, 1510769529645432834L, 8106175868352593928L, 5835129661968875533L,
@@ -49,7 +49,7 @@ object StickersHelper: CoroutineScope by MainScope() {
     }
 
     fun setToBlock(document: TLRPC.Document): Boolean {
-        return isGitSetId(document) || isLocalSetId(document)
+        return /*isGitSetId(document) ||*/ isLocalSetId(document)
     }
 
     //Get sticker from assets

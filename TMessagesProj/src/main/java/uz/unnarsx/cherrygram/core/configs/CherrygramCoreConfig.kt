@@ -79,7 +79,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** Cherrygram build types start **/
     fun isStableBuild(): Boolean {
-        return true
+        return false
     }
 
     fun isBetaBuild(): Boolean {
@@ -95,7 +95,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     }
 
     fun isPlayStoreBuild(): Boolean {
-        return false
+        return true
     }
     /** Cherrygram build types finish **/
 

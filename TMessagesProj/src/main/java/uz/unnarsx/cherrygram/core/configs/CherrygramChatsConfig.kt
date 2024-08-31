@@ -303,7 +303,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
         CherrygramToasts.init(sharedPreferences)
 
         launch {
-            if (!CherrygramCoreConfig.isPlayStoreBuild()) StickersHelper.getStickerSetIDs()
+//            if (!CherrygramCoreConfig.isPlayStoreBuild()) StickersHelper.getStickerSetIDs()
             StickersHelper.copyStickerFromAssets()
         }
     }

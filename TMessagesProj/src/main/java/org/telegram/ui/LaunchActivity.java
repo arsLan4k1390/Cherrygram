@@ -1075,11 +1075,11 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             LauncherIconController.updateMonetIcon();
         }
 
-        if (CherrygramCoreConfig.INSTANCE.getAutoOTA()) {
+        /*if (CherrygramCoreConfig.INSTANCE.getAutoOTA()) {
             try {
                 UpdaterUtils.checkUpdates(actionBarLayout.getFragmentStack().size() > 0 ? actionBarLayout.getFragmentStack().get(0) : layersActionBarLayout.getFragmentStack().get(0), false);
             } catch (Exception ignored) {}
-        }
+        }*/
         CherrygramExtras.postCheckFollowChannel(this, currentAccount);
         ChatsHelper2.checkCustomChatID(currentAccount);
 
@@ -2969,9 +2969,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                         }
                                         String purpose = data.getQueryParameter("purpose");
                                         StarsController.getInstance(intentAccount[0]).showStarsTopup(this, balance, purpose);
-                                    } else if ((url.startsWith("tg:update") || url.startsWith("tg://update"))) {
+                                    } /*else if ((url.startsWith("tg:update") || url.startsWith("tg://update"))) {
                                         checkUpdates = true;
-                                    } else {
+                                    }*/ else {
                                         unsupportedUrl = url.replace("tg://", "").replace("tg:", "");
                                         int index;
                                         if ((index = unsupportedUrl.indexOf('?')) >= 0) {
@@ -3415,13 +3415,13 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     drawerLayoutContainer.setAllowOpenDrawer(true, false);
                 }
                 pushOpened.set(true);
-            } else if (checkUpdates) {
+            } /*else if (checkUpdates) {
                 BaseFragment currentFragment = !mainFragmentsStack.isEmpty() ? mainFragmentsStack.get(mainFragmentsStack.size() - 1) : null;
                 if (currentFragment != null && (currentFragment.isRemovingFromStack() || currentFragment.isInPreviewMode())) {
                     currentFragment = mainFragmentsStack.size() > 1 ? mainFragmentsStack.get(mainFragmentsStack.size() - 2) : null;
                 }
                 UpdaterUtils.checkUpdates(currentFragment, true, () -> showBulletin(factory -> factory.createErrorBulletin(LocaleController.getString("UP_Not_Found", R.string.UP_Not_Found))), null);
-            } else if (newContact) {
+            }*/ else if (newContact) {
                 final NewContactBottomSheet fragment = new NewContactBottomSheet(actionBarLayout.getLastFragment(), this);
                 if (newContactName != null) {
                     final String[] names = newContactName.split(" ", 2);
@@ -8287,12 +8287,12 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
 
     public void checkCherryUpdate(Browser.Progress progress) {
-        if (progress != null) progress.init();
+        /*if (progress != null) progress.init();
         BaseFragment currentFragment = !mainFragmentsStack.isEmpty() ? mainFragmentsStack.get(mainFragmentsStack.size() - 1) : null;
         if (currentFragment != null && (currentFragment.isRemovingFromStack() || currentFragment.isInPreviewMode())) {
             currentFragment = mainFragmentsStack.size() > 1 ? mainFragmentsStack.get(mainFragmentsStack.size() - 2) : null;
             UpdaterUtils.checkUpdates(currentFragment, true, () -> showBulletin(factory -> factory.createErrorBulletin(LocaleController.getString("UP_Not_Found", R.string.UP_Not_Found))), null, progress);
-        }
+        }*/
     }
 
     private void openCameraScanActivity() {
