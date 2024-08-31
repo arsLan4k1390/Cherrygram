@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.preferences.tgkit;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.content.Context;
 import android.util.SparseArray;
 import android.view.Gravity;
@@ -13,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BackDrawable;
@@ -267,7 +268,7 @@ public class TGKitSettingsFragment extends BaseFragment {
                 case 5: {
                     TextCell cell = (TextCell) holder.itemView;
                     ((TGKitTextIconRow) positions.get(position)).bindCell(cell);
-                    if (settings != null && settings.name.contains(LocaleController.getString("DP_Donate", R.string.DP_Donate))) {
+                    if (settings != null && settings.name.contains(getString(R.string.DP_Donate))) {
                         cell.textView.setPadding(AndroidUtilities.dp(8), 0, 0, 0);
                         cell.imageView.clearColorFilter();
                     }

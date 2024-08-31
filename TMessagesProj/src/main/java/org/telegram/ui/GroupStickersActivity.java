@@ -72,8 +72,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class GroupStickersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private FrameLayout emptyFrameView;

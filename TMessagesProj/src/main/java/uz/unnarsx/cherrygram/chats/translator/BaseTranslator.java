@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 abstract public class BaseTranslator {
 
@@ -157,11 +157,11 @@ abstract public class BaseTranslator {
     }
 
     public String getCurrentTargetLanguage() {
-        return getTargetLanguage(CherrygramConfig.INSTANCE.getTranslationTarget());
+        return getTargetLanguage(CherrygramChatsConfig.INSTANCE.getTranslationTarget());
     }
 
     public String getCurrentTargetKeyboardLanguage() {
-        return getTargetLanguage(CherrygramConfig.INSTANCE.getTranslationKeyboardTarget());
+        return getTargetLanguage(CherrygramChatsConfig.INSTANCE.getTranslationKeyboardTarget());
     }
 
     public static class Http429Exception extends IOException {

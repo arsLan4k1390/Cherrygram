@@ -3,15 +3,15 @@ package uz.unnarsx.cherrygram.core.icons
 import android.annotation.SuppressLint
 import android.content.res.*
 import android.graphics.drawable.Drawable
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
 //import com.google.android.exoplayer2.util.Log
-import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
 
 @Suppress("DEPRECATION")
 class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, wrapped.displayMetrics, wrapped.configuration) {
-    private var activeReplacement: BaseIconReplace = CherrygramConfig.getCurrentIconPack()
+    private var activeReplacement: BaseIconReplace = CherrygramAppearanceConfig.getCurrentIconPack()
     fun reloadReplacements() {
-        activeReplacement = CherrygramConfig.getCurrentIconPack()
+        activeReplacement = CherrygramAppearanceConfig.getCurrentIconPack()
     }
 
     @Deprecated("Deprecated in Java")

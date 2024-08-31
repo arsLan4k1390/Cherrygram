@@ -3,10 +3,10 @@ package uz.unnarsx.cherrygram.preferences
 import android.media.MediaPlayer
 import android.view.HapticFeedbackConstants
 import androidx.core.util.Pair
-import org.telegram.messenger.LocaleController
+import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.VibrateUtil
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers
@@ -22,27 +22,27 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSliderPrefe
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class ChatsPreferencesEntry : BasePreferencesEntry {
-    override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {
-        category(LocaleController.getString("AccDescrStickers", R.string.AccDescrStickers)) {
+    override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.CP_Header_Chats)) {
+        category(getString(R.string.AccDescrStickers)) {
             switch {
-                title = LocaleController.getString("CP_TimeOnStick", R.string.CP_TimeOnStick)
+                title = getString(R.string.CP_TimeOnStick)
 
                 contract({
-                    return@contract CherrygramConfig.hideStickerTime
+                    return@contract CherrygramChatsConfig.hideStickerTime
                 }) {
-                    CherrygramConfig.hideStickerTime = it
+                    CherrygramChatsConfig.hideStickerTime = it
                 }
             }
         }
-        category(LocaleController.getString("CP_Slider_StickerAmplifier", R.string.CP_Slider_StickerAmplifier)) {
+        category(getString(R.string.CP_Slider_StickerAmplifier)) {
             slider {
                 contract = object : TGSLContract {
                     override fun setValue(value: Int) {
-                        CherrygramConfig.slider_stickerAmplifier = value
+                        CherrygramChatsConfig.slider_stickerAmplifier = value
                     }
 
                     override fun getPreferenceValue(): Int {
-                        return CherrygramConfig.slider_stickerAmplifier
+                        return CherrygramChatsConfig.slider_stickerAmplifier
                     }
 
                     override fun getMin(): Int {
@@ -57,9 +57,9 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
 
         }
 
-        category(LocaleController.getString("AS_Header_Chats", R.string.CP_Header_Chats)) {
+        category(getString(R.string.CP_Header_Chats)) {
             textIcon {
-                title = LocaleController.getString("CP_ChatMenuShortcuts", R.string.CP_ChatMenuShortcuts)
+                title = getString(R.string.CP_ChatMenuShortcuts)
                 icon = R.drawable.msg_list
                 listener = TGKitTextIconRow.TGTIListener {
                     AlertDialogSwitchers.showChatActionsAlert(bf)
@@ -67,73 +67,73 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 divider = true
             }
             switch {
-                title = LocaleController.getString("AP_CenterChatsTitle", R.string.AP_CenterChatsTitle)
+                title = getString(R.string.AP_CenterChatsTitle)
                 contract({
-                    return@contract CherrygramConfig.centerChatTitle
+                    return@contract CherrygramChatsConfig.centerChatTitle
                 }) {
-                    CherrygramConfig.centerChatTitle = it
+                    CherrygramChatsConfig.centerChatTitle = it
                     bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
             }
             switch {
-                title = LocaleController.getString("CP_UnreadBadgeOnBackButton", R.string.CP_UnreadBadgeOnBackButton)
-                description = LocaleController.getString("CP_UnreadBadgeOnBackButton_Desc", R.string.CP_UnreadBadgeOnBackButton_Desc)
+                title = getString(R.string.CP_UnreadBadgeOnBackButton)
+                description = getString(R.string.CP_UnreadBadgeOnBackButton_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.unreadBadgeOnBackButton
+                    return@contract CherrygramChatsConfig.unreadBadgeOnBackButton
                 }) {
-                    CherrygramConfig.unreadBadgeOnBackButton = it
+                    CherrygramChatsConfig.unreadBadgeOnBackButton = it
                 }
             }
             switch {
-                title = LocaleController.getString("CP_ConfirmCalls", R.string.CP_ConfirmCalls)
+                title = getString(R.string.CP_ConfirmCalls)
 
                 contract({
-                    return@contract CherrygramConfig.confirmCalls
+                    return@contract CherrygramChatsConfig.confirmCalls
                 }) {
-                    CherrygramConfig.confirmCalls = it
+                    CherrygramChatsConfig.confirmCalls = it
                 }
             }
             switch {
-                title = LocaleController.getString("CP_HideKbdOnScroll", R.string.CP_HideKbdOnScroll)
+                title = getString(R.string.CP_HideKbdOnScroll)
 
                 contract({
-                    return@contract CherrygramConfig.hideKeyboardOnScroll
+                    return@contract CherrygramChatsConfig.hideKeyboardOnScroll
                 }) {
-                    CherrygramConfig.hideKeyboardOnScroll = it
+                    CherrygramChatsConfig.hideKeyboardOnScroll = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
-                title = LocaleController.getString("CP_DisableSwipeToNext", R.string.CP_DisableSwipeToNext)
-                description = LocaleController.getString("CP_DisableSwipeToNext_Desc", R.string.CP_DisableSwipeToNext_Desc)
+                title = getString(R.string.CP_DisableSwipeToNext)
+                description = getString(R.string.CP_DisableSwipeToNext_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.disableSwipeToNext
+                    return@contract CherrygramChatsConfig.disableSwipeToNext
                 }) {
-                    CherrygramConfig.disableSwipeToNext = it
+                    CherrygramChatsConfig.disableSwipeToNext = it
                 }
             }
             switch {
-                title = LocaleController.getString("CP_HideMuteUnmuteButton", R.string.CP_HideMuteUnmuteButton)
+                title = getString(R.string.CP_HideMuteUnmuteButton)
 
                 contract({
-                    return@contract CherrygramConfig.hideMuteUnmuteButton
+                    return@contract CherrygramChatsConfig.hideMuteUnmuteButton
                 }) {
-                    CherrygramConfig.hideMuteUnmuteButton = it
+                    CherrygramChatsConfig.hideMuteUnmuteButton = it
                 }
             }
         }
 
-        category(LocaleController.getString("CP_Slider_RecentEmojisAmplifier", R.string.CP_Slider_RecentEmojisAmplifier)) {
+        category(getString(R.string.CP_Slider_RecentEmojisAmplifier)) {
             slider {
                 contract = object : TGSLContract {
                     override fun setValue(value: Int) {
-                        CherrygramConfig.slider_RecentEmojisAmplifier = value
+                        CherrygramChatsConfig.slider_RecentEmojisAmplifier = value
                     }
 
                     override fun getPreferenceValue(): Int {
-                        return CherrygramConfig.slider_RecentEmojisAmplifier
+                        return CherrygramChatsConfig.slider_RecentEmojisAmplifier
                     }
 
                     override fun getMin(): Int {
@@ -147,15 +147,15 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
             }
         }
 
-        category(LocaleController.getString("CP_Slider_RecentStickersAmplifier", R.string.CP_Slider_RecentStickersAmplifier)) {
+        category(getString(R.string.CP_Slider_RecentStickersAmplifier)) {
             slider {
                 contract = object : TGSLContract {
                     override fun setValue(value: Int) {
-                        CherrygramConfig.slider_RecentStickersAmplifier = value
+                        CherrygramChatsConfig.slider_RecentStickersAmplifier = value
                     }
 
                     override fun getPreferenceValue(): Int {
-                        return CherrygramConfig.slider_RecentStickersAmplifier
+                        return CherrygramChatsConfig.slider_RecentStickersAmplifier
                     }
 
                     override fun getMin(): Int {
@@ -169,9 +169,9 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
             }
         }
 
-        category(LocaleController.getString("CP_Header_Messages", R.string.CP_Header_Messages)) {
+        category(getString(R.string.CP_Header_Messages)) {
             textIcon {
-                title = LocaleController.getString("DirectShare", R.string.DirectShare)
+                title = getString(R.string.DirectShare)
                 icon = R.drawable.msg_share
                 listener = TGKitTextIconRow.TGTIListener {
                     AlertDialogSwitchers.showDirectShareAlert(bf)
@@ -179,7 +179,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 divider = true
             }
             textIcon {
-                title = LocaleController.getString("CP_MessageMenu", R.string.CP_MessageMenu)
+                title = getString(R.string.CP_MessageMenu)
                 icon = R.drawable.msg_list
                 listener = TGKitTextIconRow.TGTIListener {
                     AlertDialogSwitchers.showChatMenuIconsAlert(bf)
@@ -187,172 +187,172 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 divider = true
             }
             switch {
-                title = LocaleController.getString("CP_DeleteForAll", R.string.CP_DeleteForAll)
-                description = LocaleController.getString("CP_DeleteForAll_Desc", R.string.CP_DeleteForAll_Desc)
+                title = getString(R.string.CP_DeleteForAll)
+                description = getString(R.string.CP_DeleteForAll_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.deleteForAll
+                    return@contract CherrygramChatsConfig.deleteForAll
                 }) {
-                    CherrygramConfig.deleteForAll = it
+                    CherrygramChatsConfig.deleteForAll = it
                 }
             }
             switch {
-                title = LocaleController.getString("CP_ForwardMsgDate", R.string.CP_ForwardMsgDate)
+                title = getString(R.string.CP_ForwardMsgDate)
 
                 contract({
-                    return@contract CherrygramConfig.msgForwardDate
+                    return@contract CherrygramChatsConfig.msgForwardDate
                 }) {
-                    CherrygramConfig.msgForwardDate = it
+                    CherrygramChatsConfig.msgForwardDate = it
                 }
             }
             switch {
-                title = LocaleController.getString("AP_ShowPencilIcon", R.string.AP_ShowPencilIcon)
+                title = getString(R.string.AP_ShowPencilIcon)
                 contract({
-                    return@contract CherrygramConfig.showPencilIcon
+                    return@contract CherrygramChatsConfig.showPencilIcon
                 }) {
-                    CherrygramConfig.showPencilIcon = it
+                    CherrygramChatsConfig.showPencilIcon = it
                 }
             }
             list {
-                title = LocaleController.getString("CP_LeftBottomButtonAction", R.string.CP_LeftBottomButtonAction)
+                title = getString(R.string.CP_LeftBottomButtonAction)
 
                 contract({
                     return@contract listOf(
-                        Pair(CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP, LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)),
-                        Pair(CherrygramConfig.LEFT_BUTTON_REPLY, LocaleController.getString("Reply", R.string.Reply)),
-                        Pair(CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE, LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)),
-                        Pair(CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE, LocaleController.getString("DirectShare", R.string.DirectShare))
+                        Pair(CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP, getString(R.string.Forward) + getString(R.string.CG_Without_Authorship)),
+                        Pair(CherrygramChatsConfig.LEFT_BUTTON_REPLY, getString(R.string.Reply)),
+                        Pair(CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE, getString(R.string.CG_ToSaved)),
+                        Pair(CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE, getString(R.string.DirectShare))
                     )
                 }, {
-                    return@contract when (CherrygramConfig.leftBottomButton) {
-                        CherrygramConfig.LEFT_BUTTON_REPLY -> LocaleController.getString("Reply", R.string.Reply)
-                        CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
-                        CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE -> LocaleController.getString("DirectShare", R.string.DirectShare)
-                        else -> LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship)
+                    return@contract when (CherrygramChatsConfig.leftBottomButton) {
+                        CherrygramChatsConfig.LEFT_BUTTON_REPLY -> getString(R.string.Reply)
+                        CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE -> getString(R.string.CG_ToSaved)
+                        CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE -> getString(R.string.DirectShare)
+                        else -> getString(R.string.Forward) + getString(R.string.CG_Without_Authorship)
                     }
                 }) {
-                    CherrygramConfig.leftBottomButton = it
+                    CherrygramChatsConfig.leftBottomButton = it
                 }
             }
             list {
-                title = LocaleController.getString("CP_DoubleTapAction", R.string.CP_DoubleTapAction)
+                title = getString(R.string.CP_DoubleTapAction)
 
                 contract({
                     return@contract listOf(
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_NONE, LocaleController.getString("Disable", R.string.Disable)),
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_REACTION, LocaleController.getString("Reactions", R.string.Reactions)),
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_REPLY, LocaleController.getString("Reply", R.string.Reply)),
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_SAVE, LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)),
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_EDIT, LocaleController.getString("Edit", R.string.Edit)),
-                        Pair(CherrygramConfig.DOUBLE_TAP_ACTION_TRANSLATE, LocaleController.getString("TranslateMessage", R.string.TranslateMessage))
+                        Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_NONE, getString(R.string.Disable)),
+                        Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_REACTION, getString(R.string.Reactions)),
+                        Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_REPLY, getString(R.string.Reply)),
+                        Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_SAVE, getString(R.string.CG_ToSaved)),
+                        Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_EDIT, getString(R.string.Edit)),
+                        Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_TRANSLATE, getString(R.string.TranslateMessage))
                     )
                 }, {
-                    return@contract when (CherrygramConfig.doubleTapAction) {
-                        CherrygramConfig.DOUBLE_TAP_ACTION_REACTION -> LocaleController.getString("Reactions", R.string.Reactions)
-                        CherrygramConfig.DOUBLE_TAP_ACTION_REPLY -> LocaleController.getString("Reply", R.string.Reply)
-                        CherrygramConfig.DOUBLE_TAP_ACTION_SAVE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
-                        CherrygramConfig.DOUBLE_TAP_ACTION_EDIT -> LocaleController.getString("Edit", R.string.Edit)
-                        CherrygramConfig.DOUBLE_TAP_ACTION_TRANSLATE -> LocaleController.getString("TranslateMessage", R.string.TranslateMessage)
-                        else -> LocaleController.getString("Disable", R.string.Disable)
+                    return@contract when (CherrygramChatsConfig.doubleTapAction) {
+                        CherrygramChatsConfig.DOUBLE_TAP_ACTION_REACTION -> getString(R.string.Reactions)
+                        CherrygramChatsConfig.DOUBLE_TAP_ACTION_REPLY -> getString(R.string.Reply)
+                        CherrygramChatsConfig.DOUBLE_TAP_ACTION_SAVE -> getString(R.string.CG_ToSaved)
+                        CherrygramChatsConfig.DOUBLE_TAP_ACTION_EDIT -> getString(R.string.Edit)
+                        CherrygramChatsConfig.DOUBLE_TAP_ACTION_TRANSLATE -> getString(R.string.TranslateMessage)
+                        else -> getString(R.string.Disable)
                     }
                 }) {
-                    CherrygramConfig.doubleTapAction = it
+                    CherrygramChatsConfig.doubleTapAction = it
                 }
             }
             list {
-                title = LocaleController.getString("CG_MsgSlideAction", R.string.CG_MsgSlideAction)
+                title = getString(R.string.CG_MsgSlideAction)
 
                 contract({
                     return@contract listOf(
-                        Pair(CherrygramConfig.MESSAGE_SLIDE_ACTION_REPLY, LocaleController.getString("Reply", R.string.Reply)),
-                        Pair(CherrygramConfig.MESSAGE_SLIDE_ACTION_SAVE, LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)),
-                        Pair(CherrygramConfig.MESSAGE_SLIDE_ACTION_TRANSLATE, LocaleController.getString("TranslateMessage", R.string.TranslateMessage)),
-                        Pair(CherrygramConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE, LocaleController.getString("DirectShare", R.string.DirectShare))
+                        Pair(CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_REPLY, getString(R.string.Reply)),
+                        Pair(CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE, getString(R.string.CG_ToSaved)),
+                        Pair(CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE, getString(R.string.TranslateMessage)),
+                        Pair(CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE, getString(R.string.DirectShare))
                     )
                 }, {
-                    return@contract when (CherrygramConfig.messageSlideAction) {
-                        CherrygramConfig.MESSAGE_SLIDE_ACTION_SAVE -> LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved)
-                        CherrygramConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> LocaleController.getString("TranslateMessage", R.string.TranslateMessage)
-                        CherrygramConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> LocaleController.getString("DirectShare", R.string.DirectShare)
-                        else -> LocaleController.getString("Reply", R.string.Reply)
+                    return@contract when (CherrygramChatsConfig.messageSlideAction) {
+                        CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE -> getString(R.string.CG_ToSaved)
+                        CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> getString(R.string.TranslateMessage)
+                        CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> getString(R.string.DirectShare)
+                        else -> getString(R.string.Reply)
                     }
                 }) {
-                    CherrygramConfig.messageSlideAction = it
+                    CherrygramChatsConfig.messageSlideAction = it
                 }
             }
         }
 
-        category(LocaleController.getString("AS_Header_Record", R.string.CP_Header_Record)) {
+        category(getString(R.string.CP_Header_Record)) {
             switch {
-                title = LocaleController.getString("EP_PhotosSize", R.string.EP_PhotosSize)
+                title = getString(R.string.EP_PhotosSize)
 
                 contract({
-                    return@contract CherrygramConfig.largePhotos
+                    return@contract CherrygramChatsConfig.largePhotos
                 }) {
-                    CherrygramConfig.largePhotos = it
+                    CherrygramChatsConfig.largePhotos = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
-                title = LocaleController.getString("CP_SpoilersOnMedia", R.string.CP_SpoilersOnMedia)
+                title = getString(R.string.CP_SpoilersOnMedia)
 
                 contract({
-                    return@contract CherrygramConfig.spoilersOnMedia
+                    return@contract CherrygramChatsConfig.spoilersOnMedia
                 }) {
-                    CherrygramConfig.spoilersOnMedia = it
+                    CherrygramChatsConfig.spoilersOnMedia = it
                 }
             }
             switch {
-                title = LocaleController.getString("CP_VoiceEnhancements", R.string.CP_VoiceEnhancements)
-                description = LocaleController.getString("CP_VoiceEnhancements_Desc", R.string.CP_VoiceEnhancements_Desc)
+                title = getString(R.string.CP_VoiceEnhancements)
+                description = getString(R.string.CP_VoiceEnhancements_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.voicesAgc
+                    return@contract CherrygramChatsConfig.voicesAgc
                 }) {
-                    CherrygramConfig.voicesAgc = it
+                    CherrygramChatsConfig.voicesAgc = it
                 }
             }
             switch {
-                title = LocaleController.getString("CP_PlayVideo", R.string.CP_PlayVideo)
-                description = LocaleController.getString("CP_PlayVideo_Desc", R.string.CP_PlayVideo_Desc)
+                title = getString(R.string.CP_PlayVideo)
+                description = getString(R.string.CP_PlayVideo_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.playVideoOnVolume
+                    return@contract CherrygramChatsConfig.playVideoOnVolume
                 }) {
-                    CherrygramConfig.playVideoOnVolume = it
+                    CherrygramChatsConfig.playVideoOnVolume = it
                 }
             }
             switch {
-                title = LocaleController.getString("CP_AutoPauseVideo", R.string.CP_AutoPauseVideo)
-                description = LocaleController.getString("CP_AutoPauseVideo_Desc", R.string.CP_AutoPauseVideo_Desc)
+                title = getString(R.string.CP_AutoPauseVideo)
+                description = getString(R.string.CP_AutoPauseVideo_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.autoPauseVideo
+                    return@contract CherrygramChatsConfig.autoPauseVideo
                 }) {
-                    CherrygramConfig.autoPauseVideo = it
+                    CherrygramChatsConfig.autoPauseVideo = it
                 }
             }
             switch {
-                title = LocaleController.getString("CP_DisableVibration", R.string.CP_DisableVibration)
+                title = getString(R.string.CP_DisableVibration)
 
                 contract({
-                    return@contract CherrygramConfig.disableVibration
+                    return@contract CherrygramChatsConfig.disableVibration
                 }) {
-                    CherrygramConfig.disableVibration = it
+                    CherrygramChatsConfig.disableVibration = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
         }
 
-        category(LocaleController.getString("CP_VideoSeekDuration", R.string.CP_VideoSeekDuration)) {
+        category(getString(R.string.CP_VideoSeekDuration)) {
             slider {
                 contract = object : TGSLContract {
                     override fun setValue(value: Int) {
-                        CherrygramConfig.videoSeekDuration = value
+                        CherrygramChatsConfig.videoSeekDuration = value
                     }
 
                     override fun getPreferenceValue(): Int {
-                        return CherrygramConfig.videoSeekDuration
+                        return CherrygramChatsConfig.videoSeekDuration
                     }
 
                     override fun getMin(): Int {
@@ -366,30 +366,30 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
             }
         }
 
-        category(LocaleController.getString("AS_Header_Notification", R.string.CP_Header_Notification)) {
+        category(getString(R.string.CP_Header_Notification)) {
             list {
-                title = LocaleController.getString("CP_NotificationSound", R.string.CP_NotificationSound)
+                title = getString(R.string.CP_NotificationSound)
 
                 contract({
                     return@contract listOf(
-                        Pair(CherrygramConfig.NOTIF_SOUND_DISABLE, LocaleController.getString("Disable", R.string.Disable)),
-                        Pair(CherrygramConfig.NOTIF_SOUND_DEFAULT, LocaleController.getString("Default", R.string.Default)),
-                        Pair(CherrygramConfig.NOTIF_SOUND_IOS, "IOS")
+                        Pair(CherrygramChatsConfig.NOTIF_SOUND_DISABLE, getString(R.string.Disable)),
+                        Pair(CherrygramChatsConfig.NOTIF_SOUND_DEFAULT, getString(R.string.Default)),
+                        Pair(CherrygramChatsConfig.NOTIF_SOUND_IOS, "IOS")
                     )
                 }, {
-                    return@contract when (CherrygramConfig.notificationSound) {
-                        CherrygramConfig.NOTIF_SOUND_DEFAULT -> LocaleController.getString("Default", R.string.Default)
-                        CherrygramConfig.NOTIF_SOUND_IOS -> "IOS"
-                        else -> LocaleController.getString("Disable", R.string.Disable)
+                    return@contract when (CherrygramChatsConfig.notificationSound) {
+                        CherrygramChatsConfig.NOTIF_SOUND_DEFAULT -> getString(R.string.Default)
+                        CherrygramChatsConfig.NOTIF_SOUND_IOS -> "IOS"
+                        else -> getString(R.string.Disable)
                     }
                 }) {
-                    CherrygramConfig.notificationSound = it
+                    CherrygramChatsConfig.notificationSound = it
 
                     var tone = 0
                     try {
-                        if (CherrygramConfig.notificationSound == 1) {
+                        if (CherrygramChatsConfig.notificationSound == 1) {
                             tone = R.raw.sound_in
-                        } else if (CherrygramConfig.notificationSound == 2) {
+                        } else if (CherrygramChatsConfig.notificationSound == 2) {
                             tone = R.raw.sound_in_ios
                         }
                         val mp: MediaPlayer = MediaPlayer.create(bf.context, tone)
@@ -400,39 +400,39 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             list {
-                title = LocaleController.getString("CP_VibrateInChats", R.string.CP_VibrateInChats)
+                title = getString(R.string.CP_VibrateInChats)
 
                 contract({
                     return@contract listOf(
-                        Pair(CherrygramConfig.VIBRATION_DISABLE, LocaleController.getString("Disable", R.string.Disable)),
-                        Pair(CherrygramConfig.VIBRATION_CLICK, "1"),
-                        Pair(CherrygramConfig.VIBRATION_WAVE_FORM, "2"),
-                        Pair(CherrygramConfig.VIBRATION_KEYBOARD_TAP, "3"),
-                        Pair(CherrygramConfig.VIBRATION_LONG, "4")
+                        Pair(CherrygramChatsConfig.VIBRATION_DISABLE, getString(R.string.Disable)),
+                        Pair(CherrygramChatsConfig.VIBRATION_CLICK, "1"),
+                        Pair(CherrygramChatsConfig.VIBRATION_WAVE_FORM, "2"),
+                        Pair(CherrygramChatsConfig.VIBRATION_KEYBOARD_TAP, "3"),
+                        Pair(CherrygramChatsConfig.VIBRATION_LONG, "4")
                     )
                 }, {
-                    return@contract when (CherrygramConfig.vibrateInChats) {
-                        CherrygramConfig.VIBRATION_CLICK -> "1"
-                        CherrygramConfig.VIBRATION_WAVE_FORM -> "2"
-                        CherrygramConfig.VIBRATION_KEYBOARD_TAP -> "3"
-                        CherrygramConfig.VIBRATION_LONG -> "4"
-                        else -> LocaleController.getString("Disable", R.string.Disable)
+                    return@contract when (CherrygramChatsConfig.vibrateInChats) {
+                        CherrygramChatsConfig.VIBRATION_CLICK -> "1"
+                        CherrygramChatsConfig.VIBRATION_WAVE_FORM -> "2"
+                        CherrygramChatsConfig.VIBRATION_KEYBOARD_TAP -> "3"
+                        CherrygramChatsConfig.VIBRATION_LONG -> "4"
+                        else -> getString(R.string.Disable)
                     }
                 }) {
-                    CherrygramConfig.vibrateInChats = it
+                    CherrygramChatsConfig.vibrateInChats = it
 
                     try {
-                        when (CherrygramConfig.vibrateInChats) {
-                            CherrygramConfig.VIBRATION_CLICK -> {
+                        when (CherrygramChatsConfig.vibrateInChats) {
+                            CherrygramChatsConfig.VIBRATION_CLICK -> {
                                 VibrateUtil.makeClickVibration()
                             }
-                            CherrygramConfig.VIBRATION_WAVE_FORM -> {
+                            CherrygramChatsConfig.VIBRATION_WAVE_FORM -> {
                                 VibrateUtil.makeWaveVibration()
                             }
-                            CherrygramConfig.VIBRATION_KEYBOARD_TAP -> {
+                            CherrygramChatsConfig.VIBRATION_KEYBOARD_TAP -> {
                                 VibrateUtil.vibrate(HapticFeedbackConstants.KEYBOARD_TAP.toLong())
                             }
-                            CherrygramConfig.VIBRATION_LONG -> {
+                            CherrygramChatsConfig.VIBRATION_LONG -> {
                                 VibrateUtil.vibrate()
                             }
                         }
@@ -440,17 +440,17 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
 
                 }
             }
-            hint(LocaleController.getString("CP_VibrateInChats_Desc", R.string.CP_VibrateInChats_Desc))
+            hint(getString(R.string.CP_VibrateInChats_Desc))
 
             switch {
-                title = LocaleController.getString("CP_SilenceNonContacts", R.string.CP_SilenceNonContacts)
-                description = LocaleController.getString("CP_SilenceNonContacts_Desc", R.string.CP_SilenceNonContacts_Desc)
+                title = getString(R.string.CP_SilenceNonContacts)
+                description = getString(R.string.CP_SilenceNonContacts_Desc)
 
 
                 contract({
-                    return@contract CherrygramConfig.silenceNonContacts
+                    return@contract CherrygramChatsConfig.silenceNonContacts
                 }) {
-                    CherrygramConfig.silenceNonContacts = it
+                    CherrygramChatsConfig.silenceNonContacts = it
                 }
             }
         }

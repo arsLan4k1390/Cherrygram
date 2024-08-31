@@ -44,8 +44,6 @@ import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.ProgressButton;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class FeaturedStickerSetCell extends FrameLayout {
 
     private TextView textView;

@@ -17,8 +17,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -45,7 +43,6 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Adapters.DrawerLayoutAdapter;
 import org.telegram.ui.Components.ForegroundDetector;
-import org.telegram.ui.Components.Premium.boosts.BoostRepository;
 import org.telegram.ui.IUpdateLayout;
 import org.telegram.ui.LauncherIconController;
 
@@ -55,9 +52,10 @@ import java.util.ArrayList;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import org.telegram.tgnet.ConnectionsManagerImpl;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 
 public class ApplicationLoader extends Application {
 
@@ -142,7 +140,7 @@ public class ApplicationLoader extends Application {
     }
 
     public static boolean isStandaloneBuild() {
-        return !CherrygramConfig.INSTANCE.isPlayStoreBuild();
+        return !CherrygramCoreConfig.INSTANCE.isPlayStoreBuild();
     }
 
     protected boolean isHuaweiBuild() {
@@ -150,7 +148,7 @@ public class ApplicationLoader extends Application {
     }
 
     protected boolean isStandalone() {
-        return !CherrygramConfig.INSTANCE.isPlayStoreBuild();
+        return !CherrygramCoreConfig.INSTANCE.isPlayStoreBuild();
     }
 
     public static File getFilesDirFixed() {
@@ -195,7 +193,7 @@ public class ApplicationLoader extends Application {
 
                     }
 
-                    boolean isSlow = CherrygramConfig.INSTANCE.getSlowNetworkMode();
+                    boolean isSlow = CherrygramExperimentalConfig.INSTANCE.getSlowNetworkMode();
                     for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
                         ConnectionsManager.getInstance(a).checkConnection();
                         FileLoader.getInstance(a).onNetworkChanged(isSlow);
@@ -230,7 +228,7 @@ public class ApplicationLoader extends Application {
         SharedConfig.loadConfig();
         hasPlayServices = checkPlayServices();
         CameraXUtils.loadCameraXSizes();
-        if (!CherrygramConfig.INSTANCE.isPlayStoreBuild()) {
+        if (!CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
             Continuation<Object> suspendResult = new Continuation<>() {
                 @NonNull
                 @Override
@@ -344,7 +342,7 @@ public class ApplicationLoader extends Application {
                     Log.d("TFOSS", "Trying to start push service every 10 minutes");
                     Log.d("TFOSS", "Starting push service...");
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && CherrygramConfig.INSTANCE.getResidentNotification()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && CherrygramExperimentalConfig.INSTANCE.getResidentNotification()) {
                     applicationContext.startForegroundService(new Intent(applicationContext, NotificationsService.class));
                 } else {
                     applicationContext.startService(new Intent(applicationContext, NotificationsService.class));

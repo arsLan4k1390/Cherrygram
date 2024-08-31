@@ -56,8 +56,6 @@ import org.telegram.ui.Stories.RoundRectOutlineProvider;
 import java.util.Collections;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class AvatarPreviewer {
 
     @SuppressLint("StaticFieldLeak")

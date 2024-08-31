@@ -1,10 +1,11 @@
 package uz.unnarsx.cherrygram.helpers.ui;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.content.Context;
 import android.widget.LinearLayout;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.Theme;
@@ -38,7 +39,7 @@ public class PopupHelper {
                 listener.onClick(which);
             });
         }
-        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+        builder.setNegativeButton(getString(R.string.Cancel), null);
         builder.show();
     }
 

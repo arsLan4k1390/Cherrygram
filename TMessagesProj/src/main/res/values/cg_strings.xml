@@ -356,7 +356,12 @@
     <string name="SP_CleanOld">Remove old cache (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Removed successfully</string>
 
-    <string name="SP_AskPinBeforeDelete">Ask biometric confirmation before deleting a chat.</string>
+    <string name="SP_AskPinForChats">Require biometric confirmation to open a chat</string>
+    <string name="SP_AskPinForChats_Desc">System password (fingerprint, face id, PIN or pattern) will be required to open a specific chat. To enable, tap on 3 dots inside the chat.</string>
+    <string name="SP_AskPin">Require password</string>
+    <string name="SP_DoNotAskPin">Don\'t require password</string>
+
+    <string name="SP_AskPinBeforeDelete">Require biometric confirmation before deleting a chat.</string>
     <string name="SP_AskPinBeforeDelete_Desc">If you want to delete a chat or clear history, biometric confirmation will be required. Passcode and biometric confirmation in system need to be enabled.</string>
 
     <string name="SP_AllowUseSystemPasscode">Allow use system PIN/Pattern</string>

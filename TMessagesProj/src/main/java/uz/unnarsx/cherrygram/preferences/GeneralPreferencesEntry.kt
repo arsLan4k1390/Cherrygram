@@ -1,10 +1,10 @@
 package uz.unnarsx.cherrygram.preferences
 
 import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.LocaleController
+import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
@@ -12,130 +12,130 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 
 class GeneralPreferencesEntry : BasePreferencesEntry {
-    override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_General", R.string.AP_Header_General)) {
-        category(LocaleController.getString("AP_Header_General", R.string.AP_Header_General)) {
+    override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.AP_Header_General)) {
+        category(getString(R.string.AP_Header_General)) {
             switch {
-                title = LocaleController.getString("AS_NoRounding", R.string.CP_NoRounding)
-                description = LocaleController.getString("AS_NoRoundingSummary", R.string.CP_NoRoundingSummary)
+                title = getString(R.string.CP_NoRounding)
+                description = getString(R.string.CP_NoRoundingSummary)
 
                 contract({
-                    return@contract CherrygramConfig.noRounding
+                    return@contract CherrygramCoreConfig.noRounding
                 }) {
-                    CherrygramConfig.noRounding = it
+                    CherrygramCoreConfig.noRounding = it
                 }
             }
             switch {
-                title = LocaleController.getString("AP_SystemEmoji", R.string.AP_SystemEmoji)
+                title = getString(R.string.AP_SystemEmoji)
                 contract({
-                    return@contract CherrygramConfig.systemEmoji
+                    return@contract CherrygramCoreConfig.systemEmoji
                 }) {
-                    CherrygramConfig.systemEmoji = it
+                    CherrygramCoreConfig.systemEmoji = it
                 }
             }
             switch {
-                title = LocaleController.getString("AP_SystemFonts", R.string.AP_SystemFonts)
+                title = getString(R.string.AP_SystemFonts)
 
                 contract({
-                    return@contract CherrygramConfig.systemFonts
+                    return@contract CherrygramCoreConfig.systemFonts
                 }) {
-                    CherrygramConfig.systemFonts = it
+                    CherrygramCoreConfig.systemFonts = it
                     AndroidUtilities.clearTypefaceCache()
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
-                title = LocaleController.getString("AP_Old_Notification_Icon", R.string.AP_Old_Notification_Icon)
+                title = getString(R.string.AP_Old_Notification_Icon)
                 contract({
-                    return@contract CherrygramConfig.oldNotificationIcon
+                    return@contract CherrygramCoreConfig.oldNotificationIcon
                 }) {
-                    CherrygramConfig.oldNotificationIcon = it
+                    CherrygramCoreConfig.oldNotificationIcon = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
         }
 
-        category(LocaleController.getString("CP_PremAndAnim_Header", R.string.CP_PremAndAnim_Header)) {
+        category(getString(R.string.CP_PremAndAnim_Header)) {
             switch {
-                title = LocaleController.getString("CP_HideStories", R.string.CP_HideStories)
+                title = getString(R.string.CP_HideStories)
 
                 contract({
-                    return@contract CherrygramConfig.hideStories
+                    return@contract CherrygramCoreConfig.hideStories
                 }) {
-                    CherrygramConfig.hideStories = it
+                    CherrygramCoreConfig.hideStories = it
                 }
             }
             switch {
-                title = LocaleController.getString("CP_CustomWallpapers", R.string.CP_CustomWallpapers)
-                description = LocaleController.getString("CP_CustomWallpapers_Desc", R.string.CP_CustomWallpapers_Desc)
+                title = getString(R.string.CP_CustomWallpapers)
+                description = getString(R.string.CP_CustomWallpapers_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.customWallpapers
+                    return@contract CherrygramCoreConfig.customWallpapers
                 }) {
-                    CherrygramConfig.customWallpapers = it
+                    CherrygramCoreConfig.customWallpapers = it
                 }
             }
             switch {
-                title = LocaleController.getString("CP_DisableAnimAvatars", R.string.CP_DisableAnimAvatars)
+                title = getString(R.string.CP_DisableAnimAvatars)
 
                 contract({
-                    return@contract CherrygramConfig.disableAnimatedAvatars
+                    return@contract CherrygramCoreConfig.disableAnimatedAvatars
                 }) {
-                    CherrygramConfig.disableAnimatedAvatars = it
+                    CherrygramCoreConfig.disableAnimatedAvatars = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
-                title = LocaleController.getString("CP_DisableReactionsOverlay", R.string.CP_DisableReactionsOverlay)
-                description = LocaleController.getString("CP_DisableReactionsOverlay_Desc", R.string.CP_DisableReactionsOverlay_Desc)
+                title = getString(R.string.CP_DisableReactionsOverlay)
+                description = getString(R.string.CP_DisableReactionsOverlay_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.disableReactionsOverlay
+                    return@contract CherrygramCoreConfig.disableReactionsOverlay
                 }) {
-                    CherrygramConfig.disableReactionsOverlay = it
+                    CherrygramCoreConfig.disableReactionsOverlay = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
-                title = LocaleController.getString("CP_DisableReactionAnim", R.string.CP_DisableReactionAnim)
-                description = LocaleController.getString("CP_DisableReactionAnim_Desc", R.string.CP_DisableReactionAnim_Desc)
+                title = getString(R.string.CP_DisableReactionAnim)
+                description = getString(R.string.CP_DisableReactionAnim_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.disableReactionAnim
+                    return@contract CherrygramCoreConfig.disableReactionAnim
                 }) {
-                    CherrygramConfig.disableReactionAnim = it
+                    CherrygramCoreConfig.disableReactionAnim = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
-                title = LocaleController.getString("CP_DisablePremStickAnim", R.string.CP_DisablePremStickAnim)
-                description = LocaleController.getString("CP_DisablePremStickAnim_Desc", R.string.CP_DisablePremStickAnim_Desc)
+                title = getString(R.string.CP_DisablePremStickAnim)
+                description = getString(R.string.CP_DisablePremStickAnim_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.disablePremStickAnim
+                    return@contract CherrygramCoreConfig.disablePremStickAnim
                 }) {
-                    CherrygramConfig.disablePremStickAnim = it
+                    CherrygramCoreConfig.disablePremStickAnim = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
-                title = LocaleController.getString("CP_DisablePremStickAutoPlay", R.string.CP_DisablePremStickAutoPlay)
-                description = LocaleController.getString("CP_DisablePremStickAutoPlay_Desc", R.string.CP_DisablePremStickAutoPlay_Desc)
+                title = getString(R.string.CP_DisablePremStickAutoPlay)
+                description = getString(R.string.CP_DisablePremStickAutoPlay_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.disablePremStickAutoPlay
+                    return@contract CherrygramCoreConfig.disablePremStickAutoPlay
                 }) {
-                    CherrygramConfig.disablePremStickAutoPlay = it
+                    CherrygramCoreConfig.disablePremStickAutoPlay = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
-                title = LocaleController.getString("CP_HideSendAsChannel", R.string.CP_HideSendAsChannel)
-                description = LocaleController.getString("CP_HideSendAsChannelDesc", R.string.CP_HideSendAsChannelDesc)
+                title = getString(R.string.CP_HideSendAsChannel)
+                description = getString(R.string.CP_HideSendAsChannelDesc)
 
                 contract({
-                    return@contract CherrygramConfig.hideSendAsChannel
+                    return@contract CherrygramCoreConfig.hideSendAsChannel
                 }) {
-                    CherrygramConfig.hideSendAsChannel = it
+                    CherrygramCoreConfig.hideSendAsChannel = it
                 }
             }
 

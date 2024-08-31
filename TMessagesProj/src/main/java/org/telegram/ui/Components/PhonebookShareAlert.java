@@ -58,8 +58,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PhonebookShareAlert extends BottomSheet {
 
     private ListAdapter listAdapter;

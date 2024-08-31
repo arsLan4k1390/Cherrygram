@@ -9,11 +9,9 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
 import androidx.core.math.MathUtils;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -28,7 +26,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ChatMessageCell;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ReplyMessageLine {
 
@@ -201,52 +199,52 @@ public class ReplyMessageLine {
                 if (dialogId < 0) {
                     TLRPC.Chat chat = MessagesController.getInstance(messageObject.currentAccount).getChat(-dialogId);
                     if (chat != null) {
-                        colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(currentChat) : 0;
+                        colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(currentChat) : 0;
                     }
                     if (type == TYPE_LINK) {
-                        emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(chat) : 0;
+                        emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(chat) : 0;
                     }
                 } else {
                     TLRPC.User user = MessagesController.getInstance(messageObject.currentAccount).getUser(dialogId);
                     if (user != null) {
-                        colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
+                        colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
                     }
                     if (type == TYPE_LINK) {
-                        emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                        emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
                     }
                 }
             } else if (DialogObject.isEncryptedDialog(messageObject.getDialogId()) && currentUser != null) {
                 TLRPC.User user = messageObject.isOutOwner() ? UserConfig.getInstance(messageObject.currentAccount).getCurrentUser() : currentUser;
                 if (user == null) user = currentUser;
-                colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
+                colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
                 if (type == TYPE_LINK) {
-                    emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                    emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
                 }
             } else if (messageObject.isFromUser() && currentUser != null) {
-                colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(currentUser) : 0;
+                colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(currentUser) : 0;
                 if (type == TYPE_LINK) {
-                    emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(currentUser) : 0;
+                    emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(currentUser) : 0;
                 }
             } else if (messageObject.isFromChannel() && currentChat != null) {
                 if (currentChat.signature_profiles) {
                     long did = messageObject.getFromChatId();
                     if (did >= 0) {
                         TLRPC.User user = MessagesController.getInstance(messageObject.currentAccount).getUser(did);
-                        colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
+                        colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
                         if (type == TYPE_LINK) {
-                            emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                            emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
                         }
                     } else {
                         TLRPC.Chat chat = MessagesController.getInstance(messageObject.currentAccount).getChat(-did);
-                        colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(chat) : 0;
+                        colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(chat) : 0;
                         if (type == TYPE_LINK) {
-                            emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(chat) : 0;
+                            emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(chat) : 0;
                         }
                     }
                 } else {
-                    colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(currentChat) : 0;
+                    colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(currentChat) : 0;
                     if (type == TYPE_LINK) {
-                        emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(currentChat) : 0;
+                        emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(currentChat) : 0;
                     }
                 }
             } else {
@@ -272,24 +270,24 @@ public class ReplyMessageLine {
             } else if (DialogObject.isEncryptedDialog(messageObject.replyMessageObject.getDialogId())) {
                 TLRPC.User user = messageObject.replyMessageObject.isOutOwner() ? UserConfig.getInstance(messageObject.replyMessageObject.currentAccount).getCurrentUser() : currentUser;
                 if (user != null) {
-                    colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
-                    emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                    colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
+                    emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
                 } else {
                     colorId = 0;
                 }
             } else if (messageObject.replyMessageObject.isFromUser()) {
                 TLRPC.User user = MessagesController.getInstance(messageObject.currentAccount).getUser(messageObject.replyMessageObject.messageOwner.from_id.user_id);
                 if (user != null) {
-                    colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
-                    emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                    colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : 0;
+                    emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
                 } else {
                     colorId = 0;
                 }
             } else if (messageObject.replyMessageObject.isFromChannel()) {
                 TLRPC.Chat chat = MessagesController.getInstance(messageObject.currentAccount).getChat(messageObject.replyMessageObject.messageOwner.from_id.channel_id);
                 if (chat != null) {
-                    colorId = CherrygramConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(chat) : 0;
-                    emojiDocumentId = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(chat) : 0;
+                    colorId = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? ChatObject.getColorId(chat) : 0;
+                    emojiDocumentId = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? ChatObject.getEmojiId(chat) : 0;
                 } else {
                     colorId = 0;
                 }
@@ -297,7 +295,7 @@ public class ReplyMessageLine {
                 colorId = 0;
             }
             resolveColor(messageObject.replyMessageObject, colorId, resourcesProvider);
-            backgroundColor = CherrygramConfig.INSTANCE.getReplyBackground() ? Theme.multAlpha(color1, 0.10f) : Color.TRANSPARENT;
+            backgroundColor = CherrygramAppearanceConfig.INSTANCE.getReplyBackground() ? Theme.multAlpha(color1, 0.10f) : Color.TRANSPARENT;
             nameColor = color1;
         } else {
             hasColor2 = false;

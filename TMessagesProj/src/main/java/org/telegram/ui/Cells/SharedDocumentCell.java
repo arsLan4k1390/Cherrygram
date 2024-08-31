@@ -59,8 +59,6 @@ import java.io.File;
 import java.util.Date;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class SharedDocumentCell extends FrameLayout implements DownloadController.FileDownloadProgressListener {
 
     private ImageView placeholderImageView;

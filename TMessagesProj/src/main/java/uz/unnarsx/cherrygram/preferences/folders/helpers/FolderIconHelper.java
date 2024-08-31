@@ -1,13 +1,14 @@
 package uz.unnarsx.cherrygram.preferences.folders.helpers;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 
 import java.util.LinkedHashMap;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class FolderIconHelper {
     public static LinkedHashMap<String, Integer> folderIcons = new LinkedHashMap<>();
@@ -52,46 +53,46 @@ public class FolderIconHelper {
         String newEmoticon = "";
         if ((flags & MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) == MessagesController.DIALOG_FILTER_FLAG_ALL_CHATS) {
             if ((newFilterFlags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_READ) != 0) {
-                newName = LocaleController.getString("FilterNameUnread", R.string.FilterNameUnread);
+                newName = getString(R.string.FilterNameUnread);
                 newEmoticon = "\u2705";
             } else if ((newFilterFlags & MessagesController.DIALOG_FILTER_FLAG_EXCLUDE_MUTED) != 0) {
-                newName = LocaleController.getString("FilterNameNonMuted", R.string.FilterNameNonMuted);
+                newName = getString(R.string.FilterNameNonMuted);
                 newEmoticon = "\uD83D\uDD14";
             }
         } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_CONTACTS) != 0) {
             flags &= ~MessagesController.DIALOG_FILTER_FLAG_CONTACTS;
             if (flags == 0) {
-                newName = LocaleController.getString("FilterContacts", R.string.FilterContacts);
+                newName = getString(R.string.FilterContacts);
                 newEmoticon = "\uD83D\uDC64";
             } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS) != 0) {
                 flags &= ~MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS;
                 if (flags == 0) {
-                    newName = LocaleController.getString("FilterContacts", R.string.FilterContacts);
+                    newName = getString(R.string.FilterContacts);
                     newEmoticon = "\uD83D\uDC64";
                 }
             }
         } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS) != 0) {
             flags &= ~MessagesController.DIALOG_FILTER_FLAG_NON_CONTACTS;
             if (flags == 0) {
-                newName = LocaleController.getString("FilterNonContacts", R.string.FilterNonContacts);
+                newName = getString(R.string.FilterNonContacts);
                 newEmoticon = "\uD83D\uDC64";
             }
         } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_GROUPS) != 0) {
             flags &= ~MessagesController.DIALOG_FILTER_FLAG_GROUPS;
             if (flags == 0) {
-                newName = LocaleController.getString("FilterGroups", R.string.FilterGroups);
+                newName = getString(R.string.FilterGroups);
                 newEmoticon = "\uD83D\uDC65";
             }
         } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_BOTS) != 0) {
             flags &= ~MessagesController.DIALOG_FILTER_FLAG_BOTS;
             if (flags == 0) {
-                newName = LocaleController.getString("FilterBots", R.string.FilterBots);
+                newName = getString(R.string.FilterBots);
                 newEmoticon = "\uD83E\uDD16";
             }
         } else if ((flags & MessagesController.DIALOG_FILTER_FLAG_CHANNELS) != 0) {
             flags &= ~MessagesController.DIALOG_FILTER_FLAG_CHANNELS;
             if (flags == 0) {
-                newName = LocaleController.getString("FilterChannels", R.string.FilterChannels);
+                newName = getString(R.string.FilterChannels);
                 newEmoticon = "\uD83D\uDCE2";
             }
         }
@@ -103,7 +104,7 @@ public class FolderIconHelper {
     }
 
     public static int getPadding() {
-        if (CherrygramConfig.INSTANCE.getTabMode() == CherrygramConfig.TAB_TYPE_MIX) {
+        if (CherrygramAppearanceConfig.INSTANCE.getTabMode() == CherrygramAppearanceConfig.TAB_TYPE_MIX) {
             return AndroidUtilities.dp(6);
         }
         return 0;
@@ -111,15 +112,15 @@ public class FolderIconHelper {
 
     public static int getTotalIconWidth() {
         int result = 0;
-        if (CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_TEXT) {
+        if (CherrygramAppearanceConfig.INSTANCE.getTabMode() != CherrygramAppearanceConfig.TAB_TYPE_TEXT) {
             result = getIconWidth() + getPadding();
         }
         return result;
     }
 
     public static int getPaddingTab() {
-        if (CherrygramConfig.INSTANCE.getTabMode() != CherrygramConfig.TAB_TYPE_ICON ||
-                CherrygramConfig.INSTANCE.getTabStyle() >= CherrygramConfig.TAB_STYLE_VKUI) {
+        if (CherrygramAppearanceConfig.INSTANCE.getTabMode() != CherrygramAppearanceConfig.TAB_TYPE_ICON ||
+                CherrygramAppearanceConfig.INSTANCE.getTabStyle() >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
             return AndroidUtilities.dp(32);
         }
         return AndroidUtilities.dp(16);

@@ -57,8 +57,6 @@ import org.telegram.ui.Components.ViewPagerFixed;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class DataUsage2Activity extends BaseFragment {
 
     private Theme.ResourcesProvider resourcesProvider;

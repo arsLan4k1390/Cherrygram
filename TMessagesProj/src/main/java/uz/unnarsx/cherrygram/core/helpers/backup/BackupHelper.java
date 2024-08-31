@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.core.helpers.backup;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -305,10 +307,10 @@ public class BackupHelper {
     public static void importSettings(Context context, File settingsFile) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 //        builder.setBlurredBackground(false);
-        builder.setTitle(LocaleController.getString("CG_ImportSettings", R.string.CG_ImportSettings));
-        builder.setMessage(LocaleController.getString("CG_ImportSettingsAlert", R.string.CG_ImportSettingsAlert));
-        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), (dialog2, which2) -> {
+        builder.setTitle(getString(R.string.CG_ImportSettings));
+        builder.setMessage(getString(R.string.CG_ImportSettingsAlert));
+        builder.setNegativeButton(getString(R.string.Cancel), null);
+        builder.setPositiveButton(getString(R.string.OK), (dialog2, which2) -> {
             importSettingsConfirmed(context, settingsFile);
         });
         builder.show();
@@ -326,9 +328,9 @@ public class BackupHelper {
             importSettings(configJson);
 
             AlertDialog restart = new AlertDialog(context, 0);
-            restart.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
-            restart.setMessage(LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply));
-            restart.setPositiveButton(LocaleController.getString("BotUnblock", R.string.BotUnblock), (__, ___) -> {
+            restart.setTitle(getString(R.string.CG_AppName));
+            restart.setMessage(getString(R.string.CG_RestartToApply));
+            restart.setPositiveButton(getString(R.string.BotUnblock), (__, ___) -> {
                 AppRestartHelper.triggerRebirth(context, new Intent(context, LaunchActivity.class));
             });
             restart.show();

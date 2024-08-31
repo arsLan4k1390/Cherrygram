@@ -160,7 +160,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ThemePreviewActivity extends BaseFragment implements DownloadController.FileDownloadProgressListener, NotificationCenter.NotificationCenterDelegate {
 
@@ -612,7 +612,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
 
     @Override
     public boolean isLightStatusBar() {
-        if (!CherrygramConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
+        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
         int color = getThemedColor(Theme.key_windowBackgroundWhite);
         return ColorUtils.calculateLuminance(color) > 0.7f;
     }
@@ -687,7 +687,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
         actionBar.setAddToContainer(false);
         actionBar.setTitle(LocaleController.getString("ThemePreview", R.string.ThemePreview));
 
-        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
             actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
             actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
@@ -875,7 +875,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
         }
         actionBar2.setBackButtonDrawable(new BackDrawable(false));
 
-        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             actionBar2.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
             actionBar2.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
             actionBar2.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
@@ -1181,12 +1181,12 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 dropDown.setMaxLines(1);
                 dropDown.setEllipsize(TextUtils.TruncateAt.END);
                 dropDown.setTextColor(getThemedColor(Theme.key_actionBarDefaultTitle));
-                if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) dropDown.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+                if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) dropDown.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                 dropDown.setTypeface(AndroidUtilities.bold());
                 dropDown.setText(LocaleController.getString("ColorPickerMainColor", R.string.ColorPickerMainColor));
                 Drawable dropDownDrawable = context.getResources().getDrawable(R.drawable.ic_arrow_drop_down).mutate();
                 dropDownDrawable.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarDefaultTitle), PorterDuff.Mode.MULTIPLY));
-                if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) dropDownDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), PorterDuff.Mode.MULTIPLY));
+                if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) dropDownDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), PorterDuff.Mode.MULTIPLY));
                 dropDown.setCompoundDrawablesWithIntrinsicBounds(null, null, dropDownDrawable, null);
                 dropDown.setCompoundDrawablePadding(dp(4));
                 dropDown.setPadding(0, 0, dp(10), 0);
@@ -5717,7 +5717,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
         items.add(new ThemeDescription(page1, ThemeDescription.FLAG_BACKGROUND, null, null, null, descriptionDelegate, Theme.key_windowBackgroundWhite));
         items.add(new ThemeDescription(viewPager, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));
 
-        /*if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        /*if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));

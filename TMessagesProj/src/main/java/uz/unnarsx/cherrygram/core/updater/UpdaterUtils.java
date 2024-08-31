@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.core.updater;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
@@ -40,7 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 
@@ -108,19 +110,19 @@ public class UpdaterUtils {
     }
 
     public static void checkUpdates(BaseFragment fragment, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound, Browser.Progress progress) {
-        if (CherrygramConfig.INSTANCE.isPremiumBuild()) return;
-        if (CherrygramConfig.INSTANCE.isPlayStoreBuild()) return;
+        if (CherrygramCoreConfig.INSTANCE.isPremiumBuild()) return;
+        if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) return;
 
-        if (checkingForUpdates || id != 1L || (System.currentTimeMillis() - CherrygramConfig.INSTANCE.getUpdateScheduleTimestamp() < updateCheckInterval && !manual))
+        if (checkingForUpdates || id != 1L || (System.currentTimeMillis() - CherrygramCoreConfig.INSTANCE.getUpdateScheduleTimestamp() < updateCheckInterval && !manual))
             return;
 
         checkingForUpdates = true;
         otaQueue.postRunnable(() -> {
-            CherrygramConfig.INSTANCE.getLastUpdateCheckTime();
-            CherrygramConfig.INSTANCE.setLastUpdateCheckTime(System.currentTimeMillis());
+            CherrygramCoreConfig.INSTANCE.getLastUpdateCheckTime();
+            CherrygramCoreConfig.INSTANCE.setLastUpdateCheckTime(System.currentTimeMillis());
             try {
                 var connection = (HttpURLConnection) new URI(uri).toURL().openConnection();
-                if (CherrygramConfig.INSTANCE.getInstallBetas()) {
+                if (CherrygramCoreConfig.INSTANCE.getInstallBetas()) {
                     connection = (HttpURLConnection) new URI(betauri).toURL().openConnection();
                 }
                 connection.setRequestMethod("GET");
@@ -373,6 +375,6 @@ public class UpdaterUtils {
     }
 
     public static String getLastCheckUpdateTime() {
-        return LocaleController.getString("UP_LastCheck", R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true);
+        return getString(R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramCoreConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true);
     }
 }

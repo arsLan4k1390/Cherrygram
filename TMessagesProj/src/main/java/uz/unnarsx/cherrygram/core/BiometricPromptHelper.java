@@ -23,13 +23,13 @@
 //import org.telegram.messenger.ApplicationLoader;
 //import org.telegram.messenger.FileLog;
 //import org.telegram.messenger.FingerprintController;
-//import org.telegram.messenger.LocaleController;
+//import org.telegram.messenger.LocaleController.getString;
 //import org.telegram.messenger.R;
 //import org.telegram.ui.ActionBar.AlertDialog;
 //import org.telegram.ui.ActionBar.Theme;
 //import org.telegram.ui.Components.LayoutHelper;
 //
-//import uz.unnarsx.cherrygram.CherrygramConfig;
+//import uz.unnarsx.cherrygram.core.configs.CherrygramConfig;
 //
 //@SuppressWarnings("deprecation")
 //@RequiresApi(23)
@@ -71,9 +71,9 @@
 //            }
 //            cancellationSignal = new CancellationSignal();
 //            BiometricPrompt.Builder builder = new BiometricPrompt.Builder(activity);
-//            builder.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
+//            builder.setTitle(getString(R.string.CG_AppName));
 //            if (!CherrygramConfig.INSTANCE.getAllowSystemPasscode()) {
-//                builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), activity.getMainExecutor(), (dialog, which) -> {
+//                builder.setNegativeButton(getString(R.string.Cancel), activity.getMainExecutor(), (dialog, which) -> {
 //                });
 //            }
 //            if (Build.VERSION.SDK_INT >= 29) {
@@ -104,14 +104,14 @@
 //            titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
 //            titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
 //            titleTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-//            titleTextView.setText(LocaleController.getString("CG_AppName", R.string.CG_AppName));
+//            titleTextView.setText(getString(R.string.CG_AppName));
 //            linearLayout.addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 24, 24, 24, 0));
 //
 //            TextView descriptionTextView = new TextView(activity);
 //            descriptionTextView.setGravity(Gravity.CENTER_HORIZONTAL);
 //            descriptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
 //            descriptionTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-//            descriptionTextView.setText(LocaleController.getString("FingerprintInfo", R.string.FingerprintInfo));
+//            descriptionTextView.setText(getString(R.string.FingerprintInfo));
 //            descriptionTextView.setPadding(0, AndroidUtilities.dp(8), 0, 0);
 //            linearLayout.addView(descriptionTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 24, 0, 24, 0));
 //
@@ -123,13 +123,13 @@
 //            errorTextView.setGravity(Gravity.CENTER_HORIZONTAL);
 //            errorTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12);
 //            errorTextView.setTextColor(Theme.getColor(Theme.key_dialogTextGray2));
-//            errorTextView.setText(LocaleController.getString("CG_AppName", R.string.CG_AppName));
+//            errorTextView.setText(getString(R.string.CG_AppName));
 //            errorTextView.setPadding(0, AndroidUtilities.dp(16), 0, AndroidUtilities.dp(24));
 //            linearLayout.addView(errorTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 24, 0, 24, 0));
 //
 //            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 //            builder.setView(linearLayout);
-//            builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+//            builder.setNegativeButton(getString(R.string.Cancel), null);
 //            builder.setOnDismissListener(dialog -> {
 //                if (cancellationSignal != null) {
 //                    selfCancelled = true;
@@ -181,12 +181,12 @@
 //                @Override
 //                public void onAuthenticationFailed() {
 //                    updateState(STATE_ERROR);
-//                    showTemporaryMessage(LocaleController.getString("FingerprintNotRecognized", R.string.FingerprintNotRecognized));
+//                    showTemporaryMessage(getString(R.string.FingerprintNotRecognized));
 //                }
 //            }, null);
 //
 //            updateState(STATE_AUTHENTICATING);
-//            errorTextView.setText(LocaleController.getString("FingerprintHelp", R.string.FingerprintHelp));
+//            errorTextView.setText(getString(R.string.FingerprintHelp));
 //            errorTextView.setVisibility(View.VISIBLE);
 //        }
 //    }
@@ -221,7 +221,7 @@
 //            return;
 //        }
 //        updateState(STATE_AUTHENTICATING);
-//        errorTextView.setText(LocaleController.getString("FingerprintHelp", R.string.FingerprintHelp));
+//        errorTextView.setText(getString(R.string.FingerprintHelp));
 //        errorTextView.setTextColor(Theme.getColor(Theme.key_dialogButton));
 //    }
 //

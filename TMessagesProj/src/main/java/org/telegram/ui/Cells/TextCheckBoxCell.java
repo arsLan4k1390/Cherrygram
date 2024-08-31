@@ -23,8 +23,6 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.CheckBoxSquare;
 import org.telegram.ui.Components.LayoutHelper;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class TextCheckBoxCell extends FrameLayout {
 
     private TextView textView;

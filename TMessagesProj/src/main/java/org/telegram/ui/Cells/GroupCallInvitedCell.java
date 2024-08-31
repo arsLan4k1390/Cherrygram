@@ -21,8 +21,6 @@ import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.LayoutHelper;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 @SuppressWarnings("FieldCanBeLocal")
 public class GroupCallInvitedCell extends FrameLayout {
 

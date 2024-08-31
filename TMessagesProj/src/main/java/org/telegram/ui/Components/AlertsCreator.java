@@ -122,7 +122,6 @@ import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 import org.telegram.ui.ThemePreviewActivity;
 import org.telegram.ui.TooManyCommunitiesActivity;
 
-import java.net.IDN;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -138,7 +137,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class AlertsCreator {
     public final static int PERMISSIONS_REQUEST_TOP_ICON_SIZE = 72;
@@ -1779,12 +1778,12 @@ public class AlertsCreator {
                 }
             } else if (clear) {
                 cell[0].setText(LocaleController.formatString("ClearHistoryOptionAlso", R.string.ClearHistoryOptionAlso, UserObject.getFirstName(user)), "", false, false);
-//                deleteForAll[0] = CherrygramConfig.INSTANCE.getDeleteForAll(); //Clear history
-//                cell[0].setText(LocaleController.formatString("ClearHistoryOptionAlso", R.string.ClearHistoryOptionAlso, UserObject.getFirstName(user)), "", CherrygramConfig.INSTANCE.getDeleteForAll(), false);
+//                deleteForAll[0] = CherrygramChatsConfig.INSTANCE.getDeleteForAll(); //Clear history
+//                cell[0].setText(LocaleController.formatString("ClearHistoryOptionAlso", R.string.ClearHistoryOptionAlso, UserObject.getFirstName(user)), "", CherrygramChatsConfig.INSTANCE.getDeleteForAll(), false);
             } else {
                 cell[0].setText(LocaleController.formatString("DeleteMessagesOptionAlso", R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", false, false);
-//                deleteForAll[0] = CherrygramConfig.INSTANCE.getDeleteForAll(); //Delete chat
-//                cell[0].setText(LocaleController.formatString("DeleteMessagesOptionAlso", R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", CherrygramConfig.INSTANCE.getDeleteForAll(), false);
+//                deleteForAll[0] = CherrygramChatsConfig.INSTANCE.getDeleteForAll(); //Delete chat
+//                cell[0].setText(LocaleController.formatString("DeleteMessagesOptionAlso", R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", CherrygramChatsConfig.INSTANCE.getDeleteForAll(), false);
             }
             cell[0].setPadding(LocaleController.isRTL ? dp(16) : dp(8), 0, LocaleController.isRTL ? dp(8) : dp(16), 0);
             frameLayout.addView(cell[0], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.LEFT, 0, 0, 0, 0));
@@ -6044,7 +6043,7 @@ public class AlertsCreator {
             }
         }
 
-        final boolean[] deleteForAll = {CherrygramConfig.INSTANCE.getDeleteForAll()};
+        final boolean[] deleteForAll = {CherrygramChatsConfig.INSTANCE.getDeleteForAll()};
         boolean canRevokeInbox = user != null && MessagesController.getInstance(currentAccount).canRevokePmInbox;
         int revokeTimeLimit;
         if (user != null) {
@@ -6238,10 +6237,10 @@ public class AlertsCreator {
                 CheckBoxCell cell = new CheckBoxCell(activity, 1, resourcesProvider);
                 cell.setBackgroundDrawable(Theme.getSelectorDrawable(false));
                 if (canDeleteInbox) {
-//                    deleteForAll[0] = CherrygramConfig.INSTANCE.getDeleteForAll();
-                    cell.setText(LocaleController.formatString("DeleteMessagesOptionAlso", R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", CherrygramConfig.INSTANCE.getDeleteForAll(), false); //Personal messages
+//                    deleteForAll[0] = CherrygramChatsConfig.INSTANCE.getDeleteForAll();
+                    cell.setText(LocaleController.formatString("DeleteMessagesOptionAlso", R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", CherrygramChatsConfig.INSTANCE.getDeleteForAll(), false); //Personal messages
                 } else if (chat != null && (hasNotOut || myMessagesCount == count)) {
-                    cell.setText(LocaleController.getString("DeleteForAll", R.string.DeleteForAll), "", CherrygramConfig.INSTANCE.getDeleteForAll(), false); //legacy groups
+                    cell.setText(LocaleController.getString("DeleteForAll", R.string.DeleteForAll), "", CherrygramChatsConfig.INSTANCE.getDeleteForAll(), false); //legacy groups
                 } else {
                     cell.setText(LocaleController.getString("DeleteMessagesOption", R.string.DeleteMessagesOption), "", false, false);
                 }

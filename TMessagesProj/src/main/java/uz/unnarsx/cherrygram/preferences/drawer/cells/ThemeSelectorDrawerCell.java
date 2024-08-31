@@ -22,8 +22,6 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 @SuppressLint("ViewConstructor")
 public class ThemeSelectorDrawerCell extends FrameLayout {
     private int noTheme = 0;

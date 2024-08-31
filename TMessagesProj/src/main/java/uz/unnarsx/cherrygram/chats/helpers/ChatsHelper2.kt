@@ -4,7 +4,7 @@ import android.view.View
 import android.widget.FrameLayout
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ChatObject
-import org.telegram.messenger.LocaleController
+import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessageObject
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
@@ -18,14 +18,17 @@ import org.telegram.ui.Components.BulletinFactory
 import org.telegram.ui.Components.ShareAlert
 import org.telegram.ui.Components.TranslateAlert2
 import org.telegram.ui.Components.UndoView
-import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
+import uz.unnarsx.cherrygram.core.helpers.LocalVerificationsHelper
 import uz.unnarsx.cherrygram.helpers.ui.ActionBarPopupWindowHelper
 
 object ChatsHelper2 {
 
-    /**Avatar admin actions start**/
+    /** Avatar admin actions start **/
     @JvmStatic
     fun injectChatActivityAvatarArraySize(cf: ChatActivity): Int {
         var objs = 0
@@ -97,40 +100,40 @@ object ChatsHelper2 {
             else -> {}
         }
     }
-    /**Avatar admin actions finish**/
+    /** Avatar admin actions finish **/
 
-    /**Chat search filter start**/
+    /** Chat search filter start **/
     @JvmStatic
     fun getSearchFilterType(): TLRPC.MessagesFilter {
-        val filter: TLRPC.MessagesFilter = when (CherrygramConfig.messagesSearchFilter) {
-            CherrygramConfig.FILTER_PHOTOS -> {
+        val filter: TLRPC.MessagesFilter = when (CherrygramChatsConfig.messagesSearchFilter) {
+            CherrygramChatsConfig.FILTER_PHOTOS -> {
                 TLRPC.TL_inputMessagesFilterPhotos()
             }
-            CherrygramConfig.FILTER_VIDEOS -> {
+            CherrygramChatsConfig.FILTER_VIDEOS -> {
                 TLRPC.TL_inputMessagesFilterVideo()
             }
-            CherrygramConfig.FILTER_VOICE_MESSAGES -> {
+            CherrygramChatsConfig.FILTER_VOICE_MESSAGES -> {
                 TLRPC.TL_inputMessagesFilterVoice()
             }
-            CherrygramConfig.FILTER_VIDEO_MESSAGES -> {
+            CherrygramChatsConfig.FILTER_VIDEO_MESSAGES -> {
                 TLRPC.TL_inputMessagesFilterRoundVideo()
             }
-            CherrygramConfig.FILTER_FILES -> {
+            CherrygramChatsConfig.FILTER_FILES -> {
                 TLRPC.TL_inputMessagesFilterDocument()
             }
-            CherrygramConfig.FILTER_MUSIC -> {
+            CherrygramChatsConfig.FILTER_MUSIC -> {
                 TLRPC.TL_inputMessagesFilterMusic()
             }
-            CherrygramConfig.FILTER_GIFS -> {
+            CherrygramChatsConfig.FILTER_GIFS -> {
                 TLRPC.TL_inputMessagesFilterGif()
             }
-            CherrygramConfig.FILTER_GEO -> {
+            CherrygramChatsConfig.FILTER_GEO -> {
                 TLRPC.TL_inputMessagesFilterGeo()
             }
-            CherrygramConfig.FILTER_CONTACTS -> {
+            CherrygramChatsConfig.FILTER_CONTACTS -> {
                 TLRPC.TL_inputMessagesFilterContacts()
             }
-            CherrygramConfig.FILTER_MENTIONS -> {
+            CherrygramChatsConfig.FILTER_MENTIONS -> {
                 TLRPC.TL_inputMessagesFilterMyMentions()
             }
             else -> {
@@ -139,15 +142,15 @@ object ChatsHelper2 {
         }
         return filter
     }
-    /**Chat search filter finish**/
+    /** Chat search filter finish **/
 
-    /**Custom chat id for Saved Messages start**/
+    /** Custom chat id for Saved Messages start **/
     @JvmStatic
     fun checkCustomChatID(currentAccount: Int) {
         val preferences = MessagesController.getMainSettings(currentAccount)
         val empty = preferences.getString("CP_CustomChatIDSM", "CP_CustomChatIDSM").equals("")
         if (empty) {
-            CherrygramConfig.putStringForUserPrefs("CP_CustomChatIDSM",
+            CherrygramCoreConfig.putStringForUserPrefs("CP_CustomChatIDSM",
                 UserConfig.getInstance(currentAccount).getClientUserId().toString()
             )
 //            FileLog.e("changed the id")
@@ -162,58 +165,58 @@ object ChatsHelper2 {
             preferences.getString("CP_CustomChatIDSM", UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId().toString())
         val chatID = savedMessagesChatID!!.replace("-100", "-").toLong()
 
-        id = if (CherrygramConfig.customChatForSavedMessages) {
+        id = if (CherrygramExperimentalConfig.customChatForSavedMessages) {
             chatID
         } else {
             UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId()
         }
         return id
     }
-    /**Custom chat id for Saved Messages finish**/
+    /** Custom chat id for Saved Messages finish **/
 
-    /**Direct share menu start**/
+    /** Direct share menu start **/
     private var currentPopup: ActionBarPopupWindow? = null
     @JvmStatic
     fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {
         currentPopup = ActionBarPopupWindowHelper.createPopupWindow(sa.container, field, sa.context, listOf(
             ActionBarPopupWindowHelper.PopupItem(
-                if (CherrygramConfig.forwardNoAuthorship)
-                    LocaleController.getString("CG_FwdMenu_DisableNoForward", R.string.CG_FwdMenu_DisableNoForward)
-                else LocaleController.getString("CG_FwdMenu_EnableNoForward", R.string.CG_FwdMenu_EnableNoForward),
+                if (CherrygramChatsConfig.forwardNoAuthorship)
+                    getString(R.string.CG_FwdMenu_DisableNoForward)
+                else getString(R.string.CG_FwdMenu_EnableNoForward),
                 R.drawable.msg_forward
             ) {
                 // Toggle!
-                CherrygramConfig.forwardNoAuthorship = !CherrygramConfig.forwardNoAuthorship
+                CherrygramChatsConfig.forwardNoAuthorship = !CherrygramChatsConfig.forwardNoAuthorship
                 currentPopup?.dismiss()
                 currentPopup = null
             },
             ActionBarPopupWindowHelper.PopupItem(
-                if (CherrygramConfig.forwardWithoutCaptions)
-                    LocaleController.getString("CG_FwdMenu_EnableCaptions", R.string.CG_FwdMenu_EnableCaptions)
-                else LocaleController.getString("CG_FwdMenu_DisableCaptions", R.string.CG_FwdMenu_DisableCaptions),
+                if (CherrygramChatsConfig.forwardWithoutCaptions)
+                    getString(R.string.CG_FwdMenu_EnableCaptions)
+                else getString(R.string.CG_FwdMenu_DisableCaptions),
                 R.drawable.msg_edit
             ) {
                 // Toggle!
-                CherrygramConfig.forwardWithoutCaptions = !CherrygramConfig.forwardWithoutCaptions
+                CherrygramChatsConfig.forwardWithoutCaptions = !CherrygramChatsConfig.forwardWithoutCaptions
                 currentPopup?.dismiss()
                 currentPopup = null
             },
             ActionBarPopupWindowHelper.PopupItem(
-                if (CherrygramConfig.forwardNotify)
-                    LocaleController.getString("CG_FwdMenu_NoNotify", R.string.CG_FwdMenu_NoNotify)
-                else LocaleController.getString("CG_FwdMenu_Notify", R.string.CG_FwdMenu_Notify),
+                if (CherrygramChatsConfig.forwardNotify)
+                    getString(R.string.CG_FwdMenu_NoNotify)
+                else getString(R.string.CG_FwdMenu_Notify),
                 R.drawable.input_notify_on
             ) {
                 // Toggle!
-                CherrygramConfig.forwardNotify = !CherrygramConfig.forwardNotify
+                CherrygramChatsConfig.forwardNotify = !CherrygramChatsConfig.forwardNotify
                 currentPopup?.dismiss()
                 currentPopup = null
             },
         ))
     }
-    /**Direct share menu finish**/
+    /** Direct share menu finish **/
 
-    /**JSON menu start**/
+    /** JSON menu start **/
     @JvmStatic
     fun showJsonMenu(sa: JsonBottomSheet, field: FrameLayout, messageObject: MessageObject) {
         currentPopup = ActionBarPopupWindowHelper.createPopupWindow(sa.container, field, sa.context, listOf(
@@ -226,17 +229,17 @@ object ChatsHelper2 {
             }
         ))
     }
-    /**JSON menu finish**/
+    /** JSON menu finish **/
 
-    /**Message slide action start**/
+    /** Message slide action start **/
     @JvmStatic
     fun injectChatActivityMsgSlideAction(cf: ChatActivity, msg: MessageObject, isChannel: Boolean, classGuid: Int) {
-        when (CherrygramConfig.messageSlideAction) {
-            CherrygramConfig.MESSAGE_SLIDE_ACTION_REPLY -> {
+        when (CherrygramChatsConfig.messageSlideAction) {
+            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_REPLY -> {
                 // Reply (default)
                 cf.showFieldPanelForReply(msg)
             }
-            CherrygramConfig.MESSAGE_SLIDE_ACTION_SAVE -> {
+            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE -> {
                 // Save message
                 val id = ChatsHelper2.getCustomChatID()
 
@@ -246,7 +249,7 @@ object ChatsHelper2 {
                 if (cf.undoView == null) {
                     return
                 }
-                if (!CherrygramConfig.customChatForSavedMessages) {
+                if (!CherrygramExperimentalConfig.customChatForSavedMessages) {
                     if (!BulletinFactory.of(cf).showForwardedBulletinWithTag(id, arrayListOf(msg).size)) {
                         cf.undoView!!.showWithAction(id, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
                     }
@@ -254,7 +257,7 @@ object ChatsHelper2 {
                     cf.undoView!!.showWithAction(id, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
                 }
             }
-            CherrygramConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> {
+            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> {
                 // Translate
                 val languageAndTextToTranslate: String = msg.messageOwner.message
                 val toLang = TranslateAlert2.getToLanguage()
@@ -272,7 +275,7 @@ object ChatsHelper2 {
                 alert.setDimBehindAlpha(100)
                 alert.setDimBehind(true)
             }
-            CherrygramConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> {
+            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> {
                 // Direct Share
                 cf.showDialog(object : ShareAlert(cf.parentActivity, arrayListOf(msg), null, isChannel, null, false) {
                     override fun dismissInternal() {
@@ -290,6 +293,14 @@ object ChatsHelper2 {
             }
         }
     }
-    /**Message slide action finish**/
+    /** Message slide action finish **/
+
+    /*fun isCherryVerified(chat: TLRPC.Chat): Boolean {
+        return LocalVerificationsHelper.getVerify().stream().anyMatch { id: Long -> id == chat.id }
+    }*/
+
+    fun isDeleteAllHidden(chat: TLRPC.Chat): Boolean {
+        return LocalVerificationsHelper.hideDeleteAll().stream().anyMatch { id: Long -> id == chat.id }
+    }
 
 }

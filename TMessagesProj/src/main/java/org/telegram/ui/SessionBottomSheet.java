@@ -34,8 +34,6 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RLottieImageView;
 import org.telegram.ui.Components.Switch;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class SessionBottomSheet extends BottomSheet {
 
     TLRPC.TL_authorization session;

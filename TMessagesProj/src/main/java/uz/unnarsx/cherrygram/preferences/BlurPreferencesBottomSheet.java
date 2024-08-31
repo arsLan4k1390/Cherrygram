@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.preferences;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -23,7 +25,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.SeekBarView;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 
 public class BlurPreferencesBottomSheet extends BottomSheet {
 
@@ -48,9 +50,9 @@ public class BlurPreferencesBottomSheet extends BottomSheet {
 
         TextCell forceBlur = new TextCell(context, 23, false, true, resourcesProvider);
         forceBlur.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
-        forceBlur.setTextAndCheck(LocaleController.getString("BlurInChat", R.string.BlurInChat), CherrygramConfig.INSTANCE.getForceChatBlurEffect(), false);
+        forceBlur.setTextAndCheck(getString(R.string.BlurInChat), CherrygramDebugConfig.INSTANCE.getForceChatBlurEffect(), false);
         forceBlur.setOnClickListener(v -> {
-            CherrygramConfig.INSTANCE.toggleForceChatBlurEffect();
+            CherrygramDebugConfig.INSTANCE.toggleForceChatBlurEffect();
             forceBlur.setChecked(!forceBlur.isChecked());
             contentView.invalidateBlur();
             contentView.invalidateBlurredViews();
@@ -58,7 +60,7 @@ public class BlurPreferencesBottomSheet extends BottomSheet {
         linearLayout.addView(forceBlur);
 
         blurRadiusTextView = new TextView(context);
-        blurRadiusTextView.setText(LocaleController.getString("AP_DrawerBlurIntensity", R.string.AP_DrawerBlurIntensity) + ": " + CherrygramConfig.INSTANCE.getForceChatBlurEffectIntensity());
+        blurRadiusTextView.setText(getString(R.string.AP_DrawerBlurIntensity) + ": " + CherrygramDebugConfig.INSTANCE.getForceChatBlurEffectIntensity());
         blurRadiusTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlue2));
         blurRadiusTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
         blurRadiusTextView.setLines(1);
@@ -71,8 +73,8 @@ public class BlurPreferencesBottomSheet extends BottomSheet {
             @Override
             protected void onBlurIntensityChange(int percentage, boolean layout) {
                 super.onBlurIntensityChange(percentage, layout);
-                CherrygramConfig.INSTANCE.setForceChatBlurEffectIntensity(percentage);
-                blurRadiusTextView.setText(LocaleController.getString("AP_DrawerBlurIntensity", R.string.AP_DrawerBlurIntensity) + ": " + percentage);
+                CherrygramDebugConfig.INSTANCE.setForceChatBlurEffectIntensity(percentage);
+                blurRadiusTextView.setText(getString(R.string.AP_DrawerBlurIntensity) + ": " + percentage);
             }
         };
         linearLayout.addView(blurIntensityCell, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 38, 0, 5, 4, 5, 0));
@@ -130,7 +132,7 @@ public class BlurPreferencesBottomSheet extends BottomSheet {
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), heightMeasureSpec);
-            sizeBar.setProgress((CherrygramConfig.INSTANCE.getForceChatBlurEffectIntensity() - startIntensity) / (float) (endIntensity - startIntensity));
+            sizeBar.setProgress((CherrygramDebugConfig.INSTANCE.getForceChatBlurEffectIntensity() - startIntensity) / (float) (endIntensity - startIntensity));
         }
 
         @Override

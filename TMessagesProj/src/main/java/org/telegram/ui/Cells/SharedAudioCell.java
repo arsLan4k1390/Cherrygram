@@ -42,8 +42,6 @@ import org.telegram.ui.Components.MediaActionDrawable;
 import org.telegram.ui.Components.RadialProgress2;
 import org.telegram.ui.FilteredSearchView;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class SharedAudioCell extends FrameLayout implements DownloadController.FileDownloadProgressListener, NotificationCenter.NotificationCenterDelegate {
 
     private SpannableStringBuilder dotSpan;

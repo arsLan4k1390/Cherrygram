@@ -1,12 +1,13 @@
 package uz.unnarsx.cherrygram.chats.translator;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.core.text.HtmlCompat;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.Theme;
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class Translator {
@@ -39,13 +40,13 @@ public class Translator {
         AndroidUtilities.selectionSort(names, targetLanguages);
 
         targetLanguages.add(0, "app");
-        names.add(0, LocaleController.getString("Default", R.string.Default));
+        names.add(0, getString(R.string.Default));
 
-        PopupHelper.show(names, LocaleController.getString("CG_TranslationLanguage", R.string.CG_TranslationLanguage), targetLanguages.indexOf(isKeyboard ? CherrygramConfig.INSTANCE.getTranslationKeyboardTarget() : CherrygramConfig.INSTANCE.getTranslationTarget()), context, i -> {
+        PopupHelper.show(names, getString(R.string.CG_TranslationLanguage), targetLanguages.indexOf(isKeyboard ? CherrygramChatsConfig.INSTANCE.getTranslationKeyboardTarget() : CherrygramChatsConfig.INSTANCE.getTranslationTarget()), context, i -> {
             if (isKeyboard) {
-                CherrygramConfig.INSTANCE.setTranslationKeyboardTarget(targetLanguages.get(i));
+                CherrygramChatsConfig.INSTANCE.setTranslationKeyboardTarget(targetLanguages.get(i));
             } else {
-                CherrygramConfig.INSTANCE.setTranslationTarget(targetLanguages.get(i));
+                CherrygramChatsConfig.INSTANCE.setTranslationTarget(targetLanguages.get(i));
             }
             callback.run();
         }, resourcesProvider);

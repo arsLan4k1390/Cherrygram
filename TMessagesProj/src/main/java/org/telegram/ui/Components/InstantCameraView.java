@@ -26,7 +26,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorSpace;
 import android.graphics.ImageFormat;
 import android.graphics.Outline;
 import android.graphics.Paint;
@@ -35,7 +34,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
-import android.graphics.drawable.AnimatedVectorDrawable;
 import android.hardware.Camera;
 import android.media.AudioFormat;
 import android.media.AudioManager;
@@ -44,7 +42,6 @@ import android.media.AudioTimestamp;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.opengl.EGL14;
 import android.opengl.EGLExt;
@@ -55,7 +52,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -70,7 +66,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import com.google.android.exoplayer2.ExoPlayer;
@@ -129,7 +124,9 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.camera.SlideControlView;
 import uz.unnarsx.cherrygram.camera.VideoMessagesHelper;
@@ -193,7 +190,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     private Size aspectRatio = SharedConfig.roundCamera16to9 ? new Size(16, 9) : new Size(4, 3);
     private TextureView textureView;
     public BackupImageView textureOverlayView;
-    public final boolean useCamera2 = CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_2;
+    public final boolean useCamera2 = CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2;
     public CameraSession cameraSession;
     private boolean bothCameras;
     private Camera2Session[] camera2Sessions = new Camera2Session[2];
@@ -373,7 +370,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         zoomControlView = new SlideControlView(context, SlideControlView.SLIDER_MODE_ZOOM);
         zoomControlView.setVisibility(View.GONE);
         zoomControlView.setAlpha(0.0f);
-        if (CameraXUtils.isCameraXSupported() && CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_X) {
+        if (CameraXUtils.isCurrentCameraCameraX()) {
             zoomControlView.setVisibility(View.VISIBLE);
             zoomControlView.setAlpha(1.0f);
             addView(zoomControlView, LayoutHelper.createFrame(AndroidUtilities.dp(105), AndroidUtilities.dp(10), Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 0, 0, AndroidUtilities.dp(20)));
@@ -383,9 +380,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         evControlView = new SliderView(getContext(), SliderView.TYPE_EXPOSURE);
         evControlView.setVisibility(View.GONE);
         evControlView.setAlpha(0.0f);
-        if (CherrygramConfig.INSTANCE.getExposureSlider() != CherrygramConfig.EXPOSURE_SLIDER_NONE
-                && CameraXUtils.isCameraXSupported() && CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_X
-        ) {
+        if (CherrygramCameraConfig.INSTANCE.getExposureSlider() != CherrygramCameraConfig.EXPOSURE_SLIDER_NONE && CameraXUtils.isCurrentCameraCameraX()) {
             evControlView.setRotation(270f);
             evControlView.setVisibility(View.VISIBLE);
             evControlView.setAlpha(1.0f);
@@ -412,7 +407,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         switchCameraButton.setContentDescription(LocaleController.getString(R.string.AccDescrSwitchCamera));
         addView(switchCameraButton, LayoutHelper.createFrame(62, 62, Gravity.LEFT | Gravity.BOTTOM, 8, 0, 0, 0));
         switchCameraButton.setOnClickListener(v -> {
-            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+            if (CameraXUtils.isCurrentCameraNotCameraX()) {
                 if (!cameraReady || !isCameraSessionInitiated() || cameraThread == null) {
                     return;
                 }
@@ -436,7 +431,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             valueAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
             final boolean[] didSwap = new boolean[1];
             Runnable doSwap = () -> {
-                if ((!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) && bothCameras) {
+                if (CameraXUtils.isCurrentCameraNotCameraX() && bothCameras) {
                     switchCamera();
                 }
             };
@@ -446,7 +441,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 @Override
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
                     float p = (float) valueAnimator.getAnimatedValue();
-                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+                    if (CameraXUtils.isCurrentCameraNotCameraX()) {
                         if (p > 0.5f && !didSwap[0]) {
                             didSwap[0] = true;
                             doSwap.run();
@@ -464,7 +459,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+                    if (CameraXUtils.isCurrentCameraNotCameraX()) {
                         if (!didSwap[0]) {
                             didSwap[0] = true;
                             doSwap.run();
@@ -484,13 +479,13 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         addView(flashButton, LayoutHelper.createFrame(62, 62, Gravity.LEFT | Gravity.BOTTOM, 62 - 4, 0, 0, 0));
         flashButton.setOnClickListener(v -> {
             flashing = !flashing;
-            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+            if (CameraXUtils.isCurrentCameraNotCameraX()) {
                 updateFlash();
             } else {
                 videoMessagesHelper.updateCameraXFlash(this);
             }
         });
-        if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+        if (CameraXUtils.isCurrentCameraNotCameraX()) {
             updateFlash();
         }
 
@@ -676,7 +671,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
     }
 
     public void destroy(boolean async) {
-        if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+        if (CameraXUtils.isCurrentCameraNotCameraX()) {
             if (useCamera2) {
                 for (int a = 0; a < camera2Sessions.length; ++a) {
                     if (camera2Sessions[a] != null) {
@@ -769,7 +764,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         if (recording) {
             cancelled = recordedTime < 800;
             recording = false;
-            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+            if (CameraXUtils.isCurrentCameraNotCameraX()) {
                 updateFlash();
             } else {
                 flashing = false;
@@ -800,7 +795,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 videoPlayer.releasePlayer(true);
                 videoPlayer = null;
             }
-            if (CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_X) {
+            if (CameraXUtils.isCurrentCameraCameraX()) {
                 flashing = false;
                 videoMessagesHelper.updateCameraXFlash(this);
             }
@@ -808,7 +803,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             try {
                 performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
             } catch (Exception ignore) {}
-            if (!AndroidUtilities.isTablet() && CherrygramConfig.INSTANCE.getIconReplacement() != CherrygramConfig.ICON_REPLACE_NONE) {
+            if (!AndroidUtilities.isTablet() && CherrygramAppearanceConfig.INSTANCE.getIconReplacement() != CherrygramAppearanceConfig.ICON_REPLACE_NONE) {
                 AndroidUtilities.lockOrientation(delegate.getParentActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             } else {
                 AndroidUtilities.lockOrientation(delegate.getParentActivity());
@@ -848,10 +843,10 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         cameraReady = false;
         selectedCamera = null;
         if (!fromPaused) {
-            if (!useCamera2) {
-                isFrontface = !CherrygramConfig.INSTANCE.getRearCam();
+            if (!useCamera2 /*!CherrygramCameraConfig.INSTANCE.getUseDualCamera()*/) { // casuses unworking main flash if recording starts from front camera in Camera2
+                isFrontface = !CherrygramCameraConfig.INSTANCE.getRearCam();
             }
-            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+            if (CameraXUtils.isCurrentCameraNotCameraX()) {
                 updateFlash();
             }
             recordedTime = 0;
@@ -895,7 +890,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         }
 
         if (useCamera2) {
-            bothCameras = DualCameraView.dualAvailableStatic(getContext()) && CherrygramConfig.INSTANCE.getUseDualCamera();
+            bothCameras = DualCameraView.dualAvailableStatic(getContext()) && CherrygramCameraConfig.INSTANCE.getUseDualCamera();
             if (bothCameras) {
                 for (int a = 0; a < 2; ++a) {
                     if (camera2Sessions[a] == null) {
@@ -913,7 +908,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 }
                 if (camera2SessionCurrent == null) return;
             } else {
-                camera2SessionCurrent = camera2Sessions[!CherrygramConfig.INSTANCE.getRearCam() ? 0 : 1] = Camera2Session.create(isFrontface, MessagesController.getInstance(UserConfig.selectedAccount).roundVideoSize, MessagesController.getInstance(UserConfig.selectedAccount).roundVideoSize);
+                camera2SessionCurrent = camera2Sessions[!CherrygramCameraConfig.INSTANCE.getRearCam() ? 0 : 1] = Camera2Session.create(isFrontface, MessagesController.getInstance(UserConfig.selectedAccount).roundVideoSize, MessagesController.getInstance(UserConfig.selectedAccount).roundVideoSize);
                 if (camera2SessionCurrent == null) return;
                 camera2SessionCurrent.setRecordingVideo(true);
                 previewSize[0] = new Size(camera2SessionCurrent.getPreviewWidth(), camera2SessionCurrent.getPreviewHeight());
@@ -952,7 +947,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     cameraThread.shutdown(0, 0, 0);
                     cameraThread = null;
                 }
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+                if (CameraXUtils.isCurrentCameraNotCameraX()) {
                     if (useCamera2) {
                         for (int a = 0; a < camera2Sessions.length; ++a) {
                             if (camera2Sessions[a] != null) {
@@ -1136,7 +1131,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             cancelled = recordedTime < 800;
             recording = false;
             flashing = false;
-            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+            if (CameraXUtils.isCurrentCameraNotCameraX()) {
                 updateFlash();
             } else {
                 videoMessagesHelper.updateCameraXFlash(this);
@@ -1199,7 +1194,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         cancelled = true;
         recording = false;
         flashing = false;
-        if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+        if (CameraXUtils.isCurrentCameraNotCameraX()) {
             updateFlash();
         } else {
             videoMessagesHelper.updateCameraXFlash(this);
@@ -1288,9 +1283,9 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 if (camera2SessionCurrent != null) {
                     camera2SessionCurrent.destroy(false);
                     camera2SessionCurrent = null;
-                    camera2Sessions[!CherrygramConfig.INSTANCE.getRearCam() ? 1 : 0] = null;
+                    camera2Sessions[!CherrygramCameraConfig.INSTANCE.getRearCam() ? 1 : 0] = null;
                 }
-                camera2SessionCurrent = camera2Sessions[!CherrygramConfig.INSTANCE.getRearCam() ? 0 : 1] = Camera2Session.create(isFrontface, MessagesController.getInstance(UserConfig.selectedAccount).roundVideoSize, MessagesController.getInstance(UserConfig.selectedAccount).roundVideoSize);
+                camera2SessionCurrent = camera2Sessions[!CherrygramCameraConfig.INSTANCE.getRearCam() ? 0 : 1] = Camera2Session.create(isFrontface, MessagesController.getInstance(UserConfig.selectedAccount).roundVideoSize, MessagesController.getInstance(UserConfig.selectedAccount).roundVideoSize);
                 if (camera2SessionCurrent == null) return;
                 camera2SessionCurrent.setRecordingVideo(true);
                 previewSize[0] = new Size(camera2SessionCurrent.getPreviewWidth(), camera2SessionCurrent.getPreviewHeight());
@@ -1341,16 +1336,16 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         ArrayList<Size> previewSizes = selectedCamera.getPreviewSizes();
         ArrayList<Size> pictureSizes = selectedCamera.getPictureSizes();
 
-        if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera1to1) {
+        if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera1to1) {
             previewSize = new Size[]{CameraController.chooseOptimalSize(previewSizes, 960, 540, new Size(1, 1), false)};
             pictureSize = CameraController.chooseOptimalSize(pictureSizes, 960, 540, new Size(1, 1), false);
-        } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera4to3) {
+        } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera4to3) {
             previewSize = new Size[]{CameraController.chooseOptimalSize(previewSizes, 960, 540, new Size(4, 3), false)};
             pictureSize = CameraController.chooseOptimalSize(pictureSizes, 960, 540, new Size(4, 3), false);
-        } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera16to9) {
+        } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera16to9) {
             previewSize = new Size[]{CameraController.chooseOptimalSize(previewSizes, 960, 540, new Size(16, 9), false)};
             pictureSize = CameraController.chooseOptimalSize(pictureSizes, 960, 540, new Size(16, 9), false);
-        } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.CameraAspectDefault) {
+        } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.CameraAspectDefault) {
             previewSize[0] = chooseOptimalSize(previewSizes);
             pictureSize = chooseOptimalSize(pictureSizes);
         }
@@ -1866,7 +1861,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     cameraTextureAvailable = true;
                     requestRender(i == 0, i == 1);
                 });
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+                if (CameraXUtils.isCurrentCameraNotCameraX()) {
                     createCamera(a, cameraSurface[a]);
                 } else {
                     videoMessagesHelper.createCameraX(InstantCameraView.this, cameraSurface[0]);
@@ -1989,7 +1984,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 }
                 videoEncoder.startRecording(cameraFile, EGL14.eglGetCurrentContext());
                 int orientation = 0;
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+                if (CameraXUtils.isCurrentCameraNotCameraX()) {
                     if (currentSession instanceof CameraSession) {
                         orientation = ((CameraSession) currentSession).getCurrentOrientation();
                     } else if (currentSession instanceof Camera2Session) {
@@ -2009,7 +2004,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     scaleY = temp;
                 }
                 recording = true;
-                if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+                if (CameraXUtils.isCurrentCameraNotCameraX()) {
                     updateFlash();
                 }
             }
@@ -2110,7 +2105,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
 
                     cameraSurface[0] = new SurfaceTexture(cameraTexture[0]);
                     cameraSurface[0].setOnFrameAvailableListener(surfaceTexture -> requestRender(true, false));
-                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+                    if (CameraXUtils.isCurrentCameraNotCameraX()) {
                         createCamera(0, cameraSurface[0]);
                     } else {
                         videoMessagesHelper.createCameraX(InstantCameraView.this, cameraSurface[0]);
@@ -2505,7 +2500,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
 
             started = true;
             //int resolution = MessagesController.getInstance(currentAccount).roundVideoSize;
-            int resolution = CherrygramConfig.INSTANCE.getVideoMessagesResolution();
+            int resolution = CherrygramCameraConfig.INSTANCE.getVideoMessagesResolution();
             int bitrate = MessagesController.getInstance(currentAccount).roundVideoBitrate * 1024;
             AndroidUtilities.runOnUIThread(() -> {
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.stopAllHeavyOperations, 512);
@@ -3430,14 +3425,14 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     if (cancelled) {
                         return;
                     }
-                    if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                         try {
                             performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                         } catch (Exception ignore) {
 
                         }
                     }
-                    if (!AndroidUtilities.isTablet() && CherrygramConfig.INSTANCE.getIconReplacement() != CherrygramConfig.ICON_REPLACE_NONE) {
+                    if (!AndroidUtilities.isTablet() && CherrygramAppearanceConfig.INSTANCE.getIconReplacement() != CherrygramAppearanceConfig.ICON_REPLACE_NONE) {
                         AndroidUtilities.lockOrientation(delegate.getParentActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                     } else {
                         AndroidUtilities.lockOrientation(delegate.getParentActivity());
@@ -3445,7 +3440,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     recordPlusTime = fromPause ? recordedTime : 0;
                     recordStartTime = System.currentTimeMillis();
                     recording = true;
-                    if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+                    if (CameraXUtils.isCurrentCameraNotCameraX()) {
                         updateFlash();
                     }
                     invalidate();
@@ -3951,7 +3946,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 return false;
             }
             pinchScale = (float) Math.hypot(ev.getX(index2) - ev.getX(index1), ev.getY(index2) - ev.getY(index1)) / pinchStartDistance;
-            if (!CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() != CherrygramConfig.CAMERA_X) {
+            if (CameraXUtils.isCurrentCameraNotCameraX()) {
                 if (useCamera2) {
                     if (camera2SessionCurrent != null) {
                         float zoom = Utilities.clamp(pinchScale, camera2SessionCurrent.getMaxZoom(), camera2SessionCurrent.getMinZoom());
@@ -3985,7 +3980,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
             isInPinchToZoomTouchMode = false;
             finishZoom();
         }
-        if (CameraXUtils.isCameraXSupported() || CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_X && evControlView != null && recording) {
+        if (CameraXUtils.isCurrentCameraCameraX() && evControlView != null && recording) {
             evControlView.setVisibility(View.VISIBLE);
             videoMessagesHelper.showExposureControls(this, true);
         }

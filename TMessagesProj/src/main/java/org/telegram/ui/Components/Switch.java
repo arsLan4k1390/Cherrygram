@@ -26,8 +26,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.util.StateSet;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
@@ -39,7 +37,8 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.BaseCell;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class Switch extends View {
 
@@ -113,7 +112,7 @@ public class Switch extends View {
         paint2.setStrokeCap(Paint.Cap.ROUND);
         paint2.setStrokeWidth(AndroidUtilities.dp(2));
 
-        setHapticFeedbackEnabled(!CherrygramConfig.INSTANCE.getDisableVibration());
+        setHapticFeedbackEnabled(!CherrygramChatsConfig.INSTANCE.getDisableVibration());
     }
 
     @Keep
@@ -289,7 +288,7 @@ public class Switch extends View {
         if (checked != isChecked) {
             isChecked = checked;
             if (attachedToWindow && animated) {
-                if (!CherrygramConfig.INSTANCE.getDisableVibration()) vibrateChecked();
+                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) vibrateChecked();
                 animateToCheckedState(checked);
             } else {
                 cancelCheckAnimator();
@@ -388,7 +387,7 @@ public class Switch extends View {
         int width = AndroidUtilities.dp(31);
         int thumb;
 
-        if (CherrygramConfig.INSTANCE.getOneUI_SwitchStyle()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle()) {
             thumb = AndroidUtilities.dp(17.5F); // толщина свитча
             x = AndroidUtilities.dp(4); // длина свитча когда он включен
             y = getMeasuredHeight() / 2 - thumb / 2;
@@ -480,7 +479,7 @@ public class Switch extends View {
             paint4.setColor(color4);
             paint5.setColor(color5);
 
-            if (CherrygramConfig.INSTANCE.getOneUI_SwitchStyle()) {
+            if (CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle()) {
                 rectF.set(x, y, getMeasuredWidth(), getMeasuredHeight() / 2 + thumb / 2);
                 if (!isChecked) { //User gray color when switch is unchecked (disabled)
                     canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), paint4); // Switch (thumb) color
@@ -545,7 +544,7 @@ public class Switch extends View {
             alpha = (int) (a1 + (a2 - a1) * colorProgress);
             paint.setColor(((alpha & 0xff) << 24) | ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff));
 
-            if (CherrygramConfig.INSTANCE.getOneUI_SwitchStyle()) {
+            if (CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle()) {
                 canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dp(9.5F), paint3); // Inner circle size and color
             } else {
                 canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dp(8), paint);

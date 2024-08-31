@@ -54,8 +54,6 @@ import org.telegram.ui.Components.WaveDrawable;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class GroupCallUserCell extends FrameLayout {
 
     private AvatarWavesDrawable avatarWavesDrawable;

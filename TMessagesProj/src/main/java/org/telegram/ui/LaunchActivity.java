@@ -53,7 +53,6 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.util.Base64;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.ActionMode;
@@ -195,7 +194,6 @@ import org.telegram.ui.Components.spoilers.SpoilerEffect2;
 import org.telegram.ui.Components.voip.VoIPHelper;
 import org.telegram.ui.Stars.ISuperRipple;
 import org.telegram.ui.Stars.StarsController;
-import org.telegram.ui.Stars.StarsIntroActivity;
 import org.telegram.ui.Stars.SuperRipple;
 import org.telegram.ui.Stars.SuperRippleFallback;
 import org.telegram.ui.Stories.StoriesController;
@@ -210,8 +208,6 @@ import org.webrtc.voiceengine.WebRtcAudioTrack;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -232,7 +228,9 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
@@ -667,7 +665,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (id == 6) {
                     Bundle args = new Bundle();
-                    args.putBoolean("needFinishFragment", false);
+                    args.putBoolean("needFinishFragment", true);
                     presentFragment(new ContactsActivity(args));
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (id == 7) {
@@ -1077,7 +1075,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             LauncherIconController.updateMonetIcon();
         }
 
-        if (CherrygramConfig.INSTANCE.getAutoOTA()) {
+        if (CherrygramCoreConfig.INSTANCE.getAutoOTA()) {
             try {
                 UpdaterUtils.checkUpdates(actionBarLayout.getFragmentStack().size() > 0 ? actionBarLayout.getFragmentStack().get(0) : layersActionBarLayout.getFragmentStack().get(0), false);
             } catch (Exception ignored) {}
@@ -1482,8 +1480,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && checkNavigationBar && (!useCurrentFragment || currentFragment == null || !currentFragment.isInPreviewMode())) {
                 final Window window = getWindow();
-                int color = Theme.getColor(CherrygramConfig.INSTANCE.getFlatNavbar() ? Theme.key_chat_messagePanelBackground : Theme.key_windowBackgroundGray, null, true);
-                if (window.getNavigationBarColor() != color || CherrygramConfig.INSTANCE.getFlatNavbar() ) {
+                int color = Theme.getColor(CherrygramAppearanceConfig.INSTANCE.getFlatNavbar() ? Theme.key_chat_messagePanelBackground : Theme.key_windowBackgroundGray, null, true);
+                if (window.getNavigationBarColor() != color || CherrygramAppearanceConfig.INSTANCE.getFlatNavbar() ) {
                     window.setNavigationBarColor(color);
                     final float brightness = AndroidUtilities.computePerceivedBrightness(color);
                     AndroidUtilities.setLightNavigationBar(getWindow(), brightness >= 0.721f);
@@ -3157,7 +3155,11 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     }
                     if (mainFragmentsStack.isEmpty() || MessagesController.getInstance(intentAccount[0]).checkCanOpenChat(args, mainFragmentsStack.get(mainFragmentsStack.size() - 1))) {
                         ChatActivity fragment = new ChatActivity(args);
-                        if (getSafeLastFragment().getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(push_user_id))) {
+                        if (getSafeLastFragment().getParentActivity() != null
+                                && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()
+                                && push_user_id != 0
+                                && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(push_user_id))
+                        ) {
                             CGBiometricPrompt.prompt(getSafeLastFragment().getParentActivity(), () -> {
                                 if (getActionBarLayout().presentFragment(new INavigationLayout.NavigationParams(fragment).setNoAnimation(true))) {
                                     pushOpened.set(true);
@@ -7977,7 +7979,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         showVoiceChatTooltip(mute ? UndoView.ACTION_VOIP_SOUND_MUTED : UndoView.ACTION_VOIP_SOUND_UNMUTED);
                     }
                 }
-            } else if (CherrygramConfig.INSTANCE.getPlayVideoOnVolume() && (!mainFragmentsStack.isEmpty() && (!PhotoViewer.hasInstance() || !PhotoViewer.getInstance().isVisible()) && event.getRepeatCount() == 0)) {
+            } else if (CherrygramChatsConfig.INSTANCE.getPlayVideoOnVolume() && (!mainFragmentsStack.isEmpty() && (!PhotoViewer.hasInstance() || !PhotoViewer.getInstance().isVisible()) && event.getRepeatCount() == 0)) {
                 BaseFragment fragment = mainFragmentsStack.get(mainFragmentsStack.size() - 1);
                 if (fragment instanceof ChatActivity && !BaseFragment.hasSheets(fragment)) {
                     if (((ChatActivity) fragment).maybePlayVisibleVideo()) {

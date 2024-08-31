@@ -27,13 +27,10 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.RenderEffect;
-import android.graphics.RuntimeShader;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
@@ -66,9 +63,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.Components.BackButtonMenu;
-import org.telegram.ui.Components.RLottieDrawable;
 import org.telegram.ui.EmptyBaseFragment;
-import org.telegram.ui.Stars.SuperRipple;
 import org.telegram.ui.bots.BotWebViewSheet;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.ChatAttachAlert;
@@ -84,8 +79,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.VibrateUtil;
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 
 
 public class ActionBarLayout extends FrameLayout implements INavigationLayout, FloatingDebugProvider {
@@ -341,7 +338,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                                     if (shouldBeEnabled != enabled) {
                                         ripple.setState(shouldBeEnabled ? new int[]{android.R.attr.state_pressed, android.R.attr.state_enabled} : new int[]{});
                                         if (shouldBeEnabled) {
-                                            if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                                            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                                                 AndroidUtilities.vibrateCursor(button);
                                             }
                                         }
@@ -516,7 +513,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
 
         if (layerShadowDrawable == null) {
             layerShadowDrawable = getResources().getDrawable(R.drawable.layer_shadow);
-            headerShadowDrawable = CherrygramConfig.INSTANCE.getDisableToolBarShadow() ? null : getResources().getDrawable(R.drawable.header_shadow).mutate();
+            headerShadowDrawable = CherrygramAppearanceConfig.INSTANCE.getDisableToolBarShadow() ? null : getResources().getDrawable(R.drawable.header_shadow).mutate();
             scrimPaint = new Paint();
         }
 
@@ -1101,7 +1098,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         View fragmentView = lastFragment.fragmentView;
         if (fragmentView == null) {
             fragmentView = lastFragment.createView(parentActivity);
-            if (CherrygramConfig.INSTANCE.getDisableVibration()) {
+            if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                 VibrateUtil.disableHapticFeedback(fragmentView);
             }
         }
@@ -1736,7 +1733,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         View fragmentView = fragment.fragmentView;
         if (fragmentView == null) {
             fragmentView = fragment.createView(parentActivity);
-            if (CherrygramConfig.INSTANCE.getDisableVibration()) {
+            if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                 VibrateUtil.disableHapticFeedback(fragmentView);
             }
         } else {
@@ -2261,7 +2258,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             }
         });
         animatorSet.start();
-        if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
             performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
         }
 
@@ -2318,7 +2315,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             View fragmentView = previousFragment.fragmentView;
             if (fragmentView == null) {
                 fragmentView = previousFragment.createView(parentActivity);
-                if (CherrygramConfig.INSTANCE.getDisableVibration()) {
+                if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                     VibrateUtil.disableHapticFeedback(fragmentView);
                 }
             }
@@ -2505,7 +2502,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         View fragmentView = previousFragment.fragmentView;
         if (fragmentView == null) {
             fragmentView = previousFragment.createView(parentActivity);
-            if (CherrygramConfig.INSTANCE.getDisableVibration()) {
+            if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                 VibrateUtil.disableHapticFeedback(fragmentView);
             }
         } else {
@@ -3151,7 +3148,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         return Math.max(0, usableViewHeight - (rect.bottom - rect.top));
     }
 
-    private static boolean USE_ACTIONBAR_CROSSFADE = CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING && CherrygramConfig.INSTANCE.getActionbarCrossfade();
+    private static boolean USE_ACTIONBAR_CROSSFADE = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING && CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade();
     private float swipeProgress;
     private MenuDrawable menuDrawable;
 
@@ -3243,7 +3240,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         }
     }
 
-    private static boolean USE_SPRING_ANIMATION = CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING;
+    private static boolean USE_SPRING_ANIMATION = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING;
     private static final float SPRING_STIFFNESS = 1000f;
     private static final float SPRING_STIFFNESS_PREVIEW = 650f;
     private static final float SPRING_STIFFNESS_PREVIEW_OUT = 800f;

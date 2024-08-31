@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.core.updater;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.text.SpannableStringBuilder;
@@ -33,7 +35,7 @@ import org.telegram.ui.Components.StickerImageView;
 
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
@@ -64,7 +66,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             nameView.setTypeface(AndroidUtilities.bold());
             nameView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             nameView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
-            nameView.setText(LocaleController.getString("UP_UpdateAvailable", R.string.UP_UpdateAvailable));
+            nameView.setText(getString(R.string.UP_UpdateAvailable));
             header.addView(nameView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 30, Gravity.LEFT, 75, 5, 0, 0));
 
             AnimatedTextView timeView = new AnimatedTextView(context, true, true, false);
@@ -82,9 +84,9 @@ public class UpdaterBottomSheet extends BottomSheet {
         TextCell version = new TextCell(context);
         version.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
         if (available) {
-            version.setTextAndValueAndIcon(LocaleController.getString("UP_Version", R.string.UP_Version), update.version.replaceAll("v|-beta|-force", ""), R.drawable.msg_info, true);
+            version.setTextAndValueAndIcon(getString(R.string.UP_Version), update.version.replaceAll("v|-beta|-force", ""), R.drawable.msg_info, true);
         } else {
-            version.setTextAndValueAndIcon(LocaleController.getString("UP_CurrentVersion", R.string.UP_CurrentVersion), Constants.INSTANCE.getCG_VERSION(), R.drawable.msg_info, false);
+            version.setTextAndValueAndIcon(getString(R.string.UP_CurrentVersion), Constants.INSTANCE.getCG_VERSION(), R.drawable.msg_info, false);
         }
         version.setOnClickListener(v -> copyText(version.getTextView().getText() + ": " + version.getValueTextView().getText()));
         linearLayout.addView(version);
@@ -100,7 +102,7 @@ public class UpdaterBottomSheet extends BottomSheet {
         if (available) {
             TextCell size = new TextCell(context);
             size.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
-            size.setTextAndValueAndIcon(LocaleController.getString("UP_UpdateSize", R.string.UP_UpdateSize), update.size, R.drawable.msg_sendfile, true);
+            size.setTextAndValueAndIcon(getString(R.string.UP_UpdateSize), update.size, R.drawable.msg_sendfile, true);
             size.setOnClickListener(v -> copyText(size.getTextView().getText() + ": " + size.getValueTextView().getText()));
             linearLayout.addView(size);
 
@@ -108,9 +110,9 @@ public class UpdaterBottomSheet extends BottomSheet {
                 TextCell changelog = new TextCell(context);
                 changelog.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
                 if (update.changelog.contains("Changelog")) {
-                    changelog.setTextAndIcon(LocaleController.getString("UP_Changelog", R.string.UP_Changelog), R.drawable.msg_log, false);
+                    changelog.setTextAndIcon(getString(R.string.UP_Changelog), R.drawable.msg_log, false);
                 } else {
-                    changelog.setTextAndValueAndIcon(LocaleController.getString("UP_Changelog", R.string.UP_Changelog), LocaleController.getString("UP_ChangelogRead", R.string.UP_ChangelogRead), R.drawable.msg_log, false);
+                    changelog.setTextAndValueAndIcon(getString(R.string.UP_Changelog), getString(R.string.UP_ChangelogRead), R.drawable.msg_log, false);
                     changelog.setOnClickListener(v -> {
                         Browser.openUrl(getContext(), update.changelog);
                         dismiss();
@@ -137,7 +139,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             doneButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
             doneButton.setTypeface(AndroidUtilities.bold());
             doneButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            doneButton.setText(LocaleController.getString("AppUpdateDownloadNow", R.string.AppUpdateDownloadNow));
+            doneButton.setText(getString(R.string.AppUpdateDownloadNow));
             doneButton.setOnClickListener(v -> {
                 UpdaterUtils.downloadApk(getContext(), update.downloadURL, "Cherrygram " + update.version);
                 dismiss();
@@ -153,9 +155,9 @@ public class UpdaterBottomSheet extends BottomSheet {
             scheduleButton.setBackground(null);
             scheduleButton.setTypeface(AndroidUtilities.bold());
             scheduleButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            scheduleButton.setText(LocaleController.getString("AppUpdateRemindMeLater", R.string.AppUpdateRemindMeLater));
+            scheduleButton.setText(getString(R.string.AppUpdateRemindMeLater));
             scheduleButton.setOnClickListener(v -> {
-                CherrygramConfig.INSTANCE.setUpdateScheduleTimestamp(System.currentTimeMillis());
+                CherrygramCoreConfig.INSTANCE.setUpdateScheduleTimestamp(System.currentTimeMillis());
                 dismiss();
             });
             linearLayout.addView(scheduleButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, 0, 16, 1, 16, 0));
@@ -163,16 +165,16 @@ public class UpdaterBottomSheet extends BottomSheet {
             final String bType = CGResourcesHelper.INSTANCE.getBuildType() + " | " + CGResourcesHelper.INSTANCE.getAbiCode();
             TextCell buildType = new TextCell(context);
             buildType.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
-            buildType.setTextAndValueAndIcon(LocaleController.getString("UP_BuildType", R.string.UP_BuildType), bType, R.drawable.msg_customize, true);
+            buildType.setTextAndValueAndIcon(getString(R.string.UP_BuildType), bType, R.drawable.msg_customize, true);
             buildType.setOnClickListener(v -> copyText(buildType.getTextView().getText() + ": " + buildType.getValueTextView().getText()));
             linearLayout.addView(buildType);
 
             AnimatedTextView checkUpdates = new AnimatedTextView(context, true, true, false);
             TextCell installBetas = new TextCell(context, 23, false, true, resourcesProvider);
             installBetas.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
-            installBetas.setTextAndCheckAndIcon(LocaleController.getString("UP_InstallBetas", R.string.UP_InstallBetas), CherrygramConfig.INSTANCE.getInstallBetas(), R.drawable.test_tube_solar, false);
+            installBetas.setTextAndCheckAndIcon(getString(R.string.UP_InstallBetas), CherrygramCoreConfig.INSTANCE.getInstallBetas(), R.drawable.test_tube_solar, false);
             installBetas.setOnClickListener(v -> {
-                CherrygramConfig.INSTANCE.toggleInstallBetas();
+                CherrygramCoreConfig.INSTANCE.toggleInstallBetas();
                 installBetas.setChecked(!installBetas.isChecked());
                 checkUpdates.callOnClick();
             });
@@ -180,21 +182,21 @@ public class UpdaterBottomSheet extends BottomSheet {
 
             TextCell checkOnLaunch = new TextCell(context, 23, false, true, resourcesProvider);
             checkOnLaunch.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
-            checkOnLaunch.setTextAndCheckAndIcon(LocaleController.getString("UP_Auto_OTA", R.string.UP_Auto_OTA), CherrygramConfig.INSTANCE.getAutoOTA(), R.drawable.msg_retry, false);
+            checkOnLaunch.setTextAndCheckAndIcon(getString(R.string.UP_Auto_OTA), CherrygramCoreConfig.INSTANCE.getAutoOTA(), R.drawable.msg_retry, false);
             checkOnLaunch.setOnClickListener(v -> {
-                CherrygramConfig.INSTANCE.toggleAutoOTA();
+                CherrygramCoreConfig.INSTANCE.toggleAutoOTA();
                 checkOnLaunch.setChecked(!checkOnLaunch.isChecked());
             });
             linearLayout.addView(checkOnLaunch);
 
             TextCell clearUpdates = new TextCell(context);
             clearUpdates.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
-            clearUpdates.setTextAndIcon(LocaleController.getString("UP_ClearUpdatesCache", R.string.UP_ClearUpdatesCache), R.drawable.msg_clear, false);
+            clearUpdates.setTextAndIcon(getString(R.string.UP_ClearUpdatesCache), R.drawable.msg_clear, false);
             clearUpdates.setOnClickListener(v -> {
                 if (UpdaterUtils.getOtaDirSize().replaceAll("\\D+", "").equals("0")) {
-                    BulletinFactory.of(getContainer(), null).createErrorBulletin(LocaleController.getString("UP_NothingToClear", R.string.UP_NothingToClear)).show();
+                    BulletinFactory.of(getContainer(), null).createErrorBulletin(getString(R.string.UP_NothingToClear)).show();
                 } else {
-                    BulletinFactory.of(getContainer(), null).createErrorBulletin(LocaleController.formatString("UP_ClearedUpdatesCache", R.string.UP_ClearedUpdatesCache, UpdaterUtils.getOtaDirSize())).show();
+                    BulletinFactory.of(getContainer(), null).createErrorBulletin(LocaleController.formatString(R.string.UP_ClearedUpdatesCache, UpdaterUtils.getOtaDirSize())).show();
                     UpdaterUtils.cleanOtaDir();
                 }
             });
@@ -214,7 +216,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             checkUpdates.setTextSize(AndroidUtilities.dp(14));
             checkUpdates.setIgnoreRTL(!LocaleController.isRTL);
             checkUpdates.adaptWidth = false;
-            checkUpdates.setText(LocaleController.getString("UP_CheckForUpdates", R.string.UP_CheckForUpdates));
+            checkUpdates.setText(getString(R.string.UP_CheckForUpdates));
             checkUpdates.setOnClickListener(v -> {
                 SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
                 spannableStringBuilder.append(".  ");
@@ -222,8 +224,8 @@ public class UpdaterBottomSheet extends BottomSheet {
                 checkUpdates.setText(spannableStringBuilder);
 
                 UpdaterUtils.checkUpdates(fragment, true, () -> {
-                    checkUpdates.setText(LocaleController.getString("UP_CheckForUpdates", R.string.UP_CheckForUpdates));
-                    BulletinFactory.of(getContainer(), null).createErrorBulletin(LocaleController.getString("UP_Not_Found", R.string.UP_Not_Found)).show();
+                    checkUpdates.setText(getString(R.string.UP_CheckForUpdates));
+                    BulletinFactory.of(getContainer(), null).createErrorBulletin(getString(R.string.UP_Not_Found)).show();
                 }, this::dismiss, null);
             });
             checkUpdatesBackground.addView(checkUpdates, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
@@ -240,7 +242,7 @@ public class UpdaterBottomSheet extends BottomSheet {
 
     private void copyText(CharSequence text) {
         AndroidUtilities.addToClipboard(text);
-        BulletinFactory.of(getContainer(), null).createCopyBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
+        BulletinFactory.of(getContainer(), null).createCopyBulletin(getString(R.string.TextCopied)).show();
     }
 
     public static UpdaterBottomSheet showAlert(Context context, BaseFragment fragment, boolean available, UpdaterUtils.Update update) {

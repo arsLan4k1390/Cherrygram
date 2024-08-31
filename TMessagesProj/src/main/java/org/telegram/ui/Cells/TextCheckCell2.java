@@ -31,8 +31,6 @@ import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Switch;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class TextCheckCell2 extends FrameLayout {
 
     public int id;

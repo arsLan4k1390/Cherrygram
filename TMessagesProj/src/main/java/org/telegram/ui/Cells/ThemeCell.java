@@ -33,8 +33,6 @@ import org.telegram.ui.Components.LayoutHelper;
 import java.io.File;
 import java.io.FileInputStream;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class ThemeCell extends FrameLayout {
 
     private TextView textView;

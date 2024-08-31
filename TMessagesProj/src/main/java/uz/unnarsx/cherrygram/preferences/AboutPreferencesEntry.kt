@@ -4,13 +4,13 @@ import android.os.Bundle
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.BuildConfig
 import org.telegram.messenger.BuildVars
-import org.telegram.messenger.LocaleController
+import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.BulletinFactory
-import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.Extra
 import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics
 import uz.unnarsx.cherrygram.misc.Constants
@@ -26,11 +26,11 @@ import uz.unnarsx.cherrygram.core.updater.UpdaterBottomSheet
 import uz.unnarsx.cherrygram.core.updater.UpdaterUtils
 
 class AboutPreferencesEntry : BasePreferencesEntry {
-    override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("CGP_Header_About", R.string.CGP_Header_About)) {
-        category(LocaleController.getString("Info", R.string.Info)) {
+    override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.CGP_Header_About)) {
+        category(getString(R.string.Info)) {
             textDetail {
                 title = CGResourcesHelper.getAppName() + " " + Constants.CG_VERSION + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING
-                detail = LocaleController.getString("CGP_About_Desc", R.string.CGP_About_Desc)
+                detail = getString(R.string.CGP_About_Desc)
 
                 listener = TGKitTextDetailRow.TGTDListener {
                     Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram#readme")
@@ -39,16 +39,16 @@ class AboutPreferencesEntry : BasePreferencesEntry {
 
             textDetail {
                 icon = R.drawable.sync_outline_28
-                title = LocaleController.getString("UP_Category_Updates", R.string.UP_Category_Updates)
+                title = getString(R.string.UP_Category_Updates)
                 detail = UpdaterUtils.getLastCheckUpdateTime()
 
                 listener = TGKitTextDetailRow.TGTDListener {
-                    if (CherrygramConfig.isPlayStoreBuild()) {
-                        CherrygramConfig.lastUpdateCheckTime = System.currentTimeMillis()
+                    if (CherrygramCoreConfig.isPlayStoreBuild()) {
+                        CherrygramCoreConfig.lastUpdateCheckTime = System.currentTimeMillis()
                         detail = UpdaterUtils.getLastCheckUpdateTime()
 
                         Browser.openUrl(bf.context, Extra.PLAYSTORE_APP_URL)
-                    } else if (CherrygramConfig.isPremiumBuild()) {
+                    } else if (CherrygramCoreConfig.isPremiumBuild()) {
                         // Fuckoff :)
                     } else {
                         UpdaterBottomSheet.showAlert(bf.context, bf, false, null)
@@ -58,11 +58,11 @@ class AboutPreferencesEntry : BasePreferencesEntry {
 
             textIcon {
                 icon = R.drawable.bug_solar
-                title = LocaleController.getString("CG_CopyReportDetails", R.string.CG_CopyReportDetails)
+                title = getString(R.string.CG_CopyReportDetails)
 
                 listener = TGKitTextIconRow.TGTIListener {
                     AndroidUtilities.addToClipboard(Crashlytics.getReportMessage().toString() + "\n\n#bug")
-                    BulletinFactory.of(bf).createErrorBulletin(LocaleController.getString("CG_ReportDetailsCopied", R.string.CG_ReportDetailsCopied)).show()
+                    BulletinFactory.of(bf).createErrorBulletin(getString(R.string.CG_ReportDetailsCopied)).show()
                 }
             }
             textIcon {
@@ -75,10 +75,10 @@ class AboutPreferencesEntry : BasePreferencesEntry {
             }
         }
 
-        category(LocaleController.getString("CGP_Links", R.string.CGP_Links)) {
+        category(getString(R.string.CGP_Links)) {
             textIcon {
                 icon = R.drawable.msg_channel_solar
-                title = LocaleController.getString("CGP_ToChannel", R.string.CGP_ToChannel)
+                title = getString(R.string.CGP_ToChannel)
                 value = "@Cherry_gram"
 
                 listener = TGKitTextIconRow.TGTIListener {
@@ -87,7 +87,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
             }
             textIcon {
                 icon = R.drawable.msg_discuss_solar
-                title = LocaleController.getString("CGP_ToChat", R.string.CGP_ToChat)
+                title = getString(R.string.CGP_ToChat)
                 value = "@CherrygramSupport"
 
                 listener = TGKitTextIconRow.TGTIListener {
@@ -95,18 +95,18 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                isAvailable = !CherrygramConfig.isPremiumBuild()
+                isAvailable = !CherrygramCoreConfig.isPremiumBuild()
                 icon = R.drawable.github_logo_white
-                title = LocaleController.getString("CGP_Source", R.string.CGP_Source)
+                title = getString(R.string.CGP_Source)
 
-                value = if (CherrygramConfig.isBetaBuild() || CherrygramConfig.isDevBuild()) {
+                value = if (CherrygramCoreConfig.isBetaBuild() || CherrygramCoreConfig.isDevBuild()) {
                     "GitHub"
                 } else {
                     "commit " + BuildConfig.GIT_COMMIT_HASH.substring(0, 8)
                 }
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    if (CherrygramConfig.isBetaBuild() || CherrygramConfig.isDevBuild()) {
+                    if (CherrygramCoreConfig.isBetaBuild() || CherrygramCoreConfig.isDevBuild()) {
                         Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/")
                     } else {
                         Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/commit/" + BuildConfig.GIT_COMMIT_HASH)
@@ -115,7 +115,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
             }
             textIcon {
                 icon = R.drawable.msg_translate_solar
-                title = LocaleController.getString("CGP_Crowdin", R.string.CGP_Crowdin)
+                title = getString(R.string.CGP_Crowdin)
                 value = "Crowdin"
 
                 listener = TGKitTextIconRow.TGTIListener {
@@ -123,10 +123,10 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                 }
             }
 
-            if (CherrygramConfig.isPlayStoreBuild()) {
+            if (CherrygramCoreConfig.isPlayStoreBuild()) {
                 textIcon {
                     icon = R.drawable.msg2_policy
-                    title = LocaleController.getString("PrivacyPolicy", R.string.PrivacyPolicy)
+                    title = getString(R.string.PrivacyPolicy)
 
                     listener = TGKitTextIconRow.TGTIListener {
                         Browser.openUrl(bf.parentActivity, "https://arslan4k1390.github.io/cherrygram/privacy")
@@ -135,7 +135,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
             }
             /*textIcon {
                 icon = R.drawable.heart_angle_solar
-                title = LocaleController.getString("DP_Donate", R.string.DP_Donate)
+                title = getString(R.string.DP_Donate)
 
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(CherrygramPreferencesNavigator.createDonate())

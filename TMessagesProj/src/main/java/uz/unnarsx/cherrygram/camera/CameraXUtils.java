@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class CameraXUtils {
 
@@ -44,8 +44,16 @@ public class CameraXUtils {
         return SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE;
     }
 
+    public static boolean isCurrentCameraCameraX() {
+        return /*isCameraXSupported() &&*/ CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_X;
+    }
+
+    public static boolean isCurrentCameraNotCameraX() {
+        return /*!isCameraXSupported() ||*/ CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_X;
+    }
+
     /*public static int getDefaultCamera() { // Used for Config
-        return isCameraXSupported() ? CherrygramConfig.CAMERA_X : CherrygramConfig.TELEGRAM_CAMERA;
+        return isCameraXSupported() ? CherrygramCameraConfig.CAMERA_X : CherrygramCameraConfig.TELEGRAM_CAMERA;
     }*/
 
     public static boolean isWideAngleAvailable(ProcessCameraProvider provider) {
@@ -137,8 +145,8 @@ public class CameraXUtils {
                 .findFirst()
                 .ifPresent(height -> {
                     cameraResolution = height;
-                    if (CherrygramConfig.INSTANCE.getCameraResolution() == -1 || CherrygramConfig.INSTANCE.getCameraResolution() > max || CherrygramConfig.INSTANCE.getCameraResolution() < min) {
-                        CherrygramConfig.INSTANCE.setCameraResolution(height);
+                    if (CherrygramCameraConfig.INSTANCE.getCameraResolution() == -1 || CherrygramCameraConfig.INSTANCE.getCameraResolution() > max || CherrygramCameraConfig.INSTANCE.getCameraResolution() < min) {
+                        CherrygramCameraConfig.INSTANCE.setCameraResolution(height);
                     }
                 });
     }
@@ -146,14 +154,14 @@ public class CameraXUtils {
     public static Size getPreviewBestSize() {
         int suggestedRes = getSuggestedResolution(true);
         return getAvailableVideoSizes().values().stream()
-                .filter(size -> size.getHeight() <= CherrygramConfig.INSTANCE.getCameraResolution() && size.getHeight() <= suggestedRes)
+                .filter(size -> size.getHeight() <= CherrygramCameraConfig.INSTANCE.getCameraResolution() && size.getHeight() <= suggestedRes)
                 .max(Comparator.comparingInt(Size::getHeight))
                 .orElse(new Size(0, 0));
     }
 
     public static Quality getVideoQuality() {
         return getAvailableVideoSizes().entrySet().stream()
-                .filter(entry -> entry.getValue().getHeight() == CherrygramConfig.INSTANCE.getCameraResolution())
+                .filter(entry -> entry.getValue().getHeight() == CherrygramCameraConfig.INSTANCE.getCameraResolution())
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElse(Quality.HIGHEST);

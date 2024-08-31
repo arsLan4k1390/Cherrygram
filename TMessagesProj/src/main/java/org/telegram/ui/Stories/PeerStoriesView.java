@@ -177,7 +177,6 @@ import org.telegram.ui.WrappedResourceProvider;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.net.IDN;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -189,7 +188,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.Extra;
 
 public class PeerStoriesView extends SizeNotifierFrameLayout implements NotificationCenter.NotificationCenterDelegate {
@@ -3573,7 +3572,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
 //                    LaunchActivity.instance.checkAppUpdate(true, null);
                     LaunchActivity.instance.checkCherryUpdate(null);
                 }
-            } else if (CherrygramConfig.INSTANCE.isPlayStoreBuild()) {
+            } else if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
                 Browser.openUrl(getContext(), Extra.PLAYSTORE_APP_URL);
             } else if (BuildVars.isHuaweiStoreApp()){
                 Browser.openUrl(getContext(), BuildVars.HUAWEI_STORE_URL);

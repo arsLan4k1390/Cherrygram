@@ -37,8 +37,6 @@ import org.telegram.ui.Components.RLottieImageView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class TextSettingsCell extends FrameLayout {
 
     private Theme.ResourcesProvider resourcesProvider;

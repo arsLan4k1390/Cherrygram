@@ -97,7 +97,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class ContentPreviewViewer {
 
@@ -663,7 +663,7 @@ public class ContentPreviewViewer {
                 }
                 popupWindow.showAtLocation(containerView, 0, (int) ((containerView.getMeasuredWidth() - previewMenu.getMeasuredWidth()) / 2f), y);
 
-                if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                     containerView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                 }
             } else if (currentContentType == CONTENT_TYPE_EMOJI && delegate != null) {
@@ -926,7 +926,7 @@ public class ContentPreviewViewer {
                 y += AndroidUtilities.dp(24) - moveY;
                 popupWindow.showAtLocation(containerView, 0, (int) ((containerView.getMeasuredWidth() - previewMenu.getMeasuredWidth()) / 2f), y);
 
-                if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                     containerView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                 }
 

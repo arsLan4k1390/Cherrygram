@@ -2,6 +2,7 @@ package uz.unnarsx.cherrygram.chats;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.dpf2;
+import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -184,7 +185,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         buttonTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
         buttonTextView.setTypeface(AndroidUtilities.bold());
         buttonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        buttonTextView.setText(LocaleController.getString("Close", R.string.Close));
+        buttonTextView.setText(getString(R.string.Close));
         buttonTextView.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
         buttonTextView.setOnClickListener(e -> dismiss());
         buttonView.addView(buttonTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
@@ -197,13 +198,13 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         copyButton.setOnClickListener(v -> {
             if (isNoForwards) {
                 if (ChatObject.isChannel(currentChat) && !currentChat.megagroup) {
-                    BulletinFactory.of(getContainer(), null).createErrorBulletin(LocaleController.getString("ForwardsRestrictedInfoChannel", R.string.ForwardsRestrictedInfoChannel)).show();
+                    BulletinFactory.of(getContainer(), null).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoChannel)).show();
                 } else {
-                    BulletinFactory.of(getContainer(), null).createErrorBulletin(LocaleController.getString("ForwardsRestrictedInfoGroup", R.string.ForwardsRestrictedInfoGroup)).show();
+                    BulletinFactory.of(getContainer(), null).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoGroup)).show();
                 }
             } else {
                 AndroidUtilities.addToClipboard(textView.getText());
-                BulletinFactory.of(getContainer(), null).createCopyBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
+                BulletinFactory.of(getContainer(), null).createCopyBulletin(getString(R.string.TextCopied)).show();
             }
         });
         buttonView.addView(copyButton, LayoutHelper.createFrame(48, 48, Gravity.BOTTOM | Gravity.RIGHT, 0, 16, 16, 16));
@@ -475,7 +476,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             messageIdTextView.setPadding(0, dp(2), 0, dp(2));
             messageIdTextView.setOnClickListener(v -> {
                 AndroidUtilities.addToClipboard(String.valueOf(messageId));
-                BulletinFactory.of(getContainer(), null).createCopyBulletin(LocaleController.getString("TextCopied", R.string.TextCopied)).show();
+                BulletinFactory.of(getContainer(), null).createCopyBulletin(getString(R.string.TextCopied)).show();
             });
 
             if (LocaleController.isRTL) {

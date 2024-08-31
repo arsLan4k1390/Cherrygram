@@ -162,7 +162,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class GroupCallActivity extends BottomSheet implements NotificationCenter.NotificationCenterDelegate, VoIPService.StateListener {
 
@@ -430,7 +430,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
         if (call == null || !scheduled || VoIPService.getSharedInstance() == null) {
             return;
         }
-        if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
             muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
         }
         updateMuteButton(MUTE_BUTTON_STATE_MUTE, true);
@@ -4179,7 +4179,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
                         updateMuteButton(MUTE_BUTTON_STATE_UNMUTE, true);
                         if (VoIPService.getSharedInstance() != null) {
                             VoIPService.getSharedInstance().setMicMute(true, true, false);
-                            if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                                 muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                             }
                         }
@@ -4337,13 +4337,13 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
                     } else if (muteButtonState == MUTE_BUTTON_STATE_UNMUTE) {
                         updateMuteButton(MUTE_BUTTON_STATE_MUTE, true);
                         VoIPService.getSharedInstance().setMicMute(false, false, true);
-                        if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                             muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                         }
                     } else {
                         updateMuteButton(MUTE_BUTTON_STATE_UNMUTE, true);
                         VoIPService.getSharedInstance().setMicMute(true, false, true);
-                        if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                             muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                         }
                     }

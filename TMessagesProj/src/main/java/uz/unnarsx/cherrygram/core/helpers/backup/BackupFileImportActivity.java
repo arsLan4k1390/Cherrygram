@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.core.helpers.backup;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -81,7 +83,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.StringTokenizer;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class BackupFileImportActivity extends BaseFragment {
 
@@ -226,7 +228,7 @@ public class BackupFileImportActivity extends BaseFragment {
         actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_dialogButtonSelector), false);
         actionBar.setBackButtonDrawable(new BackDrawable(false));
         actionBar.setAllowOverlayTitle(true);
-        actionBar.setTitle(LocaleController.getString("SelectFile", R.string.SelectFile));
+        actionBar.setTitle(getString(R.string.SelectFile));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -248,7 +250,7 @@ public class BackupFileImportActivity extends BaseFragment {
         final ActionBarMenu menu = actionBar.createMenu();
 
         sortItem = menu.addItem(sort_button, sortByName ? R.drawable.msg_contacts_time : R.drawable.msg_contacts_name);
-        sortItem.setContentDescription(LocaleController.getString("AccDescrContactSorting", R.string.AccDescrContactSorting));
+        sortItem.setContentDescription(getString(R.string.AccDescrContactSorting));
 
         selectedFiles.clear();
 
@@ -530,7 +532,7 @@ public class BackupFileImportActivity extends BaseFragment {
         InputFilter[] inputFilters = new InputFilter[1];
         inputFilters[0] = new InputFilter.LengthFilter(getMessagesController().maxCaptionLength);
         commentTextView.setFilters(inputFilters);
-        commentTextView.setHint(LocaleController.getString("AddCaption", R.string.AddCaption));
+        commentTextView.setHint(getString(R.string.AddCaption));
         commentTextView.onResume();
 
         frameLayout2.addView(commentTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT, 0, 0, 84, 0));
@@ -543,7 +545,7 @@ public class BackupFileImportActivity extends BaseFragment {
         writeButtonContainer.setScaleX(0.2f);
         writeButtonContainer.setScaleY(0.2f);
         writeButtonContainer.setAlpha(0.0f);
-        writeButtonContainer.setContentDescription(LocaleController.getString("Send", R.string.Send));
+        writeButtonContainer.setContentDescription(getString(R.string.Send));
         sizeNotifierFrameLayout.addView(writeButtonContainer, LayoutHelper.createFrame(60, 60, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 12, 10));
 
         writeButton = new ImageView(context);
@@ -636,7 +638,7 @@ public class BackupFileImportActivity extends BaseFragment {
             view.getLocationInWindow(location);
             sendPopupWindow.showAtLocation(view, Gravity.LEFT | Gravity.TOP, location[0] + view.getMeasuredWidth() - sendPopupLayout.getMeasuredWidth() + AndroidUtilities.dp(8), location[1] - sendPopupLayout.getMeasuredHeight() - AndroidUtilities.dp(2));
             sendPopupWindow.dimBehind();
-            if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
             }
 
@@ -689,17 +691,17 @@ public class BackupFileImportActivity extends BaseFragment {
             add = false;
         } else {
             if (!item.file.canRead()) {
-                showErrorBox(LocaleController.getString("AccessError", R.string.AccessError));
+                showErrorBox(getString(R.string.AccessError));
                 return false;
             }
             if (sizeLimit != 0) {
                 if (item.file.length() > sizeLimit) {
-                    showErrorBox(LocaleController.formatString("FileUploadLimit", R.string.FileUploadLimit, AndroidUtilities.formatFileSize(sizeLimit)));
+                    showErrorBox(LocaleController.formatString(R.string.FileUploadLimit, AndroidUtilities.formatFileSize(sizeLimit)));
                     return false;
                 }
             }
             if (maxSelectedFiles >= 0 && selectedFiles.size() >= maxSelectedFiles) {
-                showErrorBox(LocaleController.formatString("PassportUploadMaxReached", R.string.PassportUploadMaxReached, LocaleController.formatPluralString("Files", maxSelectedFiles)));
+                showErrorBox(LocaleController.formatString(R.string.PassportUploadMaxReached, LocaleController.formatPluralString("Files", maxSelectedFiles)));
                 return false;
             }
             if (item.file.length() == 0) {
@@ -938,8 +940,8 @@ public class BackupFileImportActivity extends BaseFragment {
     }
 
     private void updateEmptyView() {
-        emptyTitleTextView.setText(LocaleController.getString("NoFilesFound", R.string.NoFilesFound));
-        emptySubtitleTextView.setText(LocaleController.getString("NoFilesInfo", R.string.NoFilesInfo));
+        emptyTitleTextView.setText(getString(R.string.NoFilesFound));
+        emptySubtitleTextView.setText(getString(R.string.NoFilesInfo));
         emptyView.setGravity(Gravity.CENTER);
         emptyView.setPadding(0, 0, 0, 0);
         emptySubtitleTextView.setPadding(AndroidUtilities.dp(40), 0, AndroidUtilities.dp(40), AndroidUtilities.dp(128));
@@ -993,7 +995,7 @@ public class BackupFileImportActivity extends BaseFragment {
                     return true;
                 }
             }
-            showErrorBox(LocaleController.getString("AccessError", R.string.AccessError));
+            showErrorBox(getString(R.string.AccessError));
             return false;
         }
         File[] files;
@@ -1004,7 +1006,7 @@ public class BackupFileImportActivity extends BaseFragment {
             return false;
         }
         if (files == null) {
-            showErrorBox(LocaleController.getString("UnknownError", R.string.UnknownError));
+            showErrorBox(getString(R.string.UnknownError));
             return false;
         }
         currentDir = dir;
@@ -1019,7 +1021,7 @@ public class BackupFileImportActivity extends BaseFragment {
             item.file = file;
             if (file.isDirectory()) {
                 item.icon = R.drawable.files_folder;
-                item.subtitle = LocaleController.getString("Folder", R.string.Folder);
+                item.subtitle = getString(R.string.Folder);
             } else {
                 hasFiles = true;
                 String fname = file.getName();
@@ -1038,12 +1040,12 @@ public class BackupFileImportActivity extends BaseFragment {
         if (listAdapter.history.size() > 0) {
             HistoryEntry entry = listAdapter.history.get(listAdapter.history.size() - 1);
             if (entry.dir == null) {
-                item.subtitle = LocaleController.getString("Folder", R.string.Folder);
+                item.subtitle = getString(R.string.Folder);
             } else {
                 item.subtitle = entry.dir.toString();
             }
         } else {
-            item.subtitle = LocaleController.getString("Folder", R.string.Folder);
+            item.subtitle = getString(R.string.Folder);
         }
         item.icon = R.drawable.files_folder;
         item.file = null;
@@ -1059,7 +1061,11 @@ public class BackupFileImportActivity extends BaseFragment {
         if (getParentActivity() == null) {
             return;
         }
-        new AlertDialog.Builder(getParentActivity()).setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName)).setMessage(error).setPositiveButton(LocaleController.getString("OK", R.string.OK), null).show();
+        new AlertDialog.Builder(getParentActivity())
+                .setTitle(getString(R.string.CG_AppName))
+                .setMessage(error)
+                .setPositiveButton(getString(R.string.OK), null)
+                .show();
     }
 
     @SuppressLint("NewApi")
@@ -1073,9 +1079,9 @@ public class BackupFileImportActivity extends BaseFragment {
         String defaultPathState = Environment.getExternalStorageState();
         if (defaultPathState.equals(Environment.MEDIA_MOUNTED) || defaultPathState.equals(Environment.MEDIA_MOUNTED_READ_ONLY)) {
             ListItem ext = new ListItem();
-            ext.title = LocaleController.getString("InternalStorage", R.string.InternalStorage);
+            ext.title = getString(R.string.InternalStorage);
             ext.icon = R.drawable.files_storage;
-            ext.subtitle = LocaleController.getString("InternalFolderInfo", R.string.InternalFolderInfo);
+            ext.subtitle = getString(R.string.InternalFolderInfo);
             ext.file = Environment.getExternalStorageDirectory();
             listAdapter.items.add(ext);
             paths.add(defaultPath);
@@ -1129,7 +1135,7 @@ public class BackupFileImportActivity extends BaseFragment {
             if (telegramPath.exists()) {
                 fs = new ListItem();
                 fs.title = "Telegram";
-                fs.subtitle = LocaleController.getString("AppFolderInfo", R.string.AppFolderInfo);
+                fs.subtitle = getString(R.string.AppFolderInfo);
                 fs.icon = R.drawable.files_folder;
                 fs.file = telegramPath;
                 listAdapter.items.add(fs);

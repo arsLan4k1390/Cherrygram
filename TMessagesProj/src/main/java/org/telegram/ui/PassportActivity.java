@@ -141,8 +141,6 @@ import java.util.TimerTask;
 
 import javax.crypto.Cipher;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PassportActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     public final static int TYPE_REQUEST = 0;

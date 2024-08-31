@@ -29,8 +29,6 @@ import org.telegram.ui.Components.SeekBarView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class MaxFileSizeCell extends FrameLayout {
 
     private TextView textView;

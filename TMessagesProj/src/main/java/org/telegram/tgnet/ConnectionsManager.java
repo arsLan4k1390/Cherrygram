@@ -7,14 +7,9 @@ import android.content.pm.PackageInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.SystemClock;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.LongSparseArray;
-import android.util.SparseIntArray;
 
-import com.google.android.exoplayer2.util.Log;
 import com.google.android.gms.tasks.Task;
 import com.google.android.play.core.integrity.IntegrityManager;
 import com.google.android.play.core.integrity.IntegrityManagerFactory;
@@ -38,20 +33,11 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.PushListenerController;
-import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.StatsController;
 import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
-import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.ChatActivity;
-import org.telegram.ui.Components.BulletinFactory;
-import org.telegram.ui.Components.TypefaceSpan;
-import org.telegram.ui.DialogsActivity;
-import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.LoginActivity;
-import org.telegram.ui.PremiumPreviewFragment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -80,7 +66,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.helpers.ErrorDatabaseHelper;
 
 import javax.net.ssl.SSLException;
@@ -391,7 +379,7 @@ public class ConnectionsManager extends BaseController {
                         if (BuildVars.LOGS_ENABLED && error.code != -2000) {
                             FileLog.e(object + " got error " + error.code + " " + error.text);
                         }
-                        if (CherrygramConfig.INSTANCE.getShowRPCErrors() && !CherrygramConfig.INSTANCE.isStableBuild() && !CherrygramConfig.INSTANCE.isPlayStoreBuild()) {
+                        if (CherrygramDebugConfig.INSTANCE.getShowRPCErrors() && !CherrygramCoreConfig.INSTANCE.isStableBuild() && !CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
                             ErrorDatabaseHelper.showErrorToast(object, errorText);
                         }
                     }
@@ -576,7 +564,7 @@ public class ConnectionsManager extends BaseController {
             FileLog.d("selected ip strategy " + selectedStrategy);
         }
         native_setIpStrategy(currentAccount, selectedStrategy);
-        native_setNetworkAvailable(currentAccount, ApplicationLoader.isNetworkOnline(), ApplicationLoader.getCurrentNetworkType(), CherrygramConfig.INSTANCE.getSlowNetworkMode());
+        native_setNetworkAvailable(currentAccount, ApplicationLoader.isNetworkOnline(), ApplicationLoader.getCurrentNetworkType(), CherrygramExperimentalConfig.INSTANCE.getSlowNetworkMode());
     }
 
     public void setPushConnectionEnabled(boolean value) {

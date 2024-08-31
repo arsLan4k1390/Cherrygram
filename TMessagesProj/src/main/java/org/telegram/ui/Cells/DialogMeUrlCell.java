@@ -29,8 +29,6 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AvatarDrawable;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class DialogMeUrlCell extends BaseCell {
 
     private TLRPC.RecentMeUrl recentMeUrl;

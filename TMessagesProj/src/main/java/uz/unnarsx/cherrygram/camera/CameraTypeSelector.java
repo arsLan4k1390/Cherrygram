@@ -1,10 +1,13 @@
 package uz.unnarsx.cherrygram.camera;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,6 +19,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.widget.FrameLayout;
@@ -25,21 +29,21 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.Easings;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.NumberPicker;
+import org.telegram.ui.LaunchActivity;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class CameraTypeSelector extends LinearLayout {
     String[] strings = new String[]{
             "Telegram",
             "CameraX",
-            "Camera2",
-            LocaleController.getString("CP_CameraTypeSystem", R.string.CP_CameraTypeSystem),
+            "Camera 2 (Telegram)",
+            getString(R.string.CP_CameraTypeSystem),
     };
     int[] icons = new int[]{
             R.drawable.telegram_camera_icon,
@@ -47,7 +51,7 @@ public class CameraTypeSelector extends LinearLayout {
             R.drawable.camerax_icon,
             R.drawable.android_camera_icon
     };
-    int currentIcon = CherrygramConfig.INSTANCE.getCameraType();
+    int currentIcon = CherrygramCameraConfig.INSTANCE.getCameraType();
     private final NumberPicker numberPicker;
     private final FrameLayout preview;
 
@@ -155,10 +159,16 @@ public class CameraTypeSelector extends LinearLayout {
         numberPicker.setFormatter(value -> strings[value]);
         numberPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
             onSelectedCamera(newVal);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                    && context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+                LaunchActivity.makeRipple((preview.getLeft() | preview.getRight()) / 2f, /*preview.getTop() | preview.getBottom()*/ AndroidUtilities.dp(230), 5);
+            }
+
             updateIcon(true);
             picker.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
         });
-        int selectedButton = CherrygramConfig.INSTANCE.getCameraType();
+        int selectedButton = CherrygramCameraConfig.INSTANCE.getCameraType();
         numberPicker.setValue(selectedButton);
         addView(numberPicker, LayoutHelper.createFrame(132, 102, Gravity.RIGHT, 0, 33, 21, 33));
         updateIcon(false);
@@ -179,7 +189,7 @@ public class CameraTypeSelector extends LinearLayout {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    currentIcon = CherrygramConfig.INSTANCE.getCameraType();
+                    currentIcon = CherrygramCameraConfig.INSTANCE.getCameraType();
                     animator.setFloatValues(0f, 1f);
                     animator.removeAllListeners();
                     animator.start();

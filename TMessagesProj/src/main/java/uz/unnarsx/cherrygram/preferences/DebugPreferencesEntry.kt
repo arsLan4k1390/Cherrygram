@@ -6,7 +6,7 @@ import android.os.Build
 import androidx.core.util.Pair
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ChatThemeController
-import org.telegram.messenger.LocaleController
+import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
@@ -16,7 +16,8 @@ import org.telegram.ui.ActionBar.AlertDialog
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.Paint.PersistColorPalette
 import org.telegram.ui.RestrictedLanguagesSelectActivity
-import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
@@ -31,14 +32,14 @@ class DebugPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen("Debug // WIP") {
         category("Misc") {
             switch {
-                isAvailable = !CherrygramConfig.isStableBuild() && !CherrygramConfig.isPlayStoreBuild()
+                isAvailable = !CherrygramCoreConfig.isStableBuild() && !CherrygramCoreConfig.isPlayStoreBuild()
                 title = "Toast all RPC errors *"
                 description = "you'll see RPC errors from Telegram's backend as toast messages."
 
                 contract({
-                    return@contract CherrygramConfig.showRPCErrors
+                    return@contract CherrygramDebugConfig.showRPCErrors
                 }) {
-                    CherrygramConfig.showRPCErrors = it
+                    CherrygramDebugConfig.showRPCErrors = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
@@ -47,9 +48,9 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 description = "unlike IOS and TDesktop"
 
                 contract({
-                    return@contract CherrygramConfig.oldTimeStyle
+                    return@contract CherrygramDebugConfig.oldTimeStyle
                 }) {
-                    CherrygramConfig.oldTimeStyle = it
+                    CherrygramDebugConfig.oldTimeStyle = it
                 }
             }
             textIcon {
@@ -81,7 +82,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                         AppRestartHelper.createRestartBulletin(bf)
                     }
                     builder.setNegativeButton(
-                        LocaleController.getString("Cancel", R.string.Cancel),
+                        getString(R.string.Cancel),
                         null
                     )
                     builder.show()
@@ -101,9 +102,9 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 description = "When you swipe down (accidentally or intentionally), web-view just gets closed while you just want to scroll something in the mini-app"
 
                 contract({
-                    return@contract CherrygramConfig.swipeInsideBotToClose
+                    return@contract CherrygramDebugConfig.swipeInsideBotToClose
                 }) {
-                    CherrygramConfig.swipeInsideBotToClose = it
+                    CherrygramDebugConfig.swipeInsideBotToClose = it
                 }
             }
         }
@@ -112,9 +113,9 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 title = "Force chat blur *"
 
                 contract({
-                    return@contract CherrygramConfig.forceChatBlurEffect
+                    return@contract CherrygramDebugConfig.forceChatBlurEffect
                 }) {
-                    CherrygramConfig.forceChatBlurEffect = it
+                    CherrygramDebugConfig.forceChatBlurEffect = it
                 }
             }
             switch {
@@ -129,51 +130,40 @@ class DebugPreferencesEntry : BasePreferencesEntry {
             }
         }
         category("Chats") {
-            switch {
-                isAvailable = Build.VERSION.SDK_INT >= 23
-                title = "Ask passcode before open a chat"
-                description = "Ask a system passcode (fingerprint, face id or pattern/password) before open a chat. To enable, tap on 3 dots inside a chat."
-
-                contract({
-                    return@contract CherrygramConfig.askForPasscodeBeforeOpenChat
-                }) {
-                    CherrygramConfig.askForPasscodeBeforeOpenChat = it
-                }
-            }
             list {
                 isAvailable = Build.VERSION.SDK_INT >= 29
                 title = "Microphone Audio Source *"
 
                 contract({
                     return@contract listOf(
-                        Pair(CherrygramConfig.AUDIO_SOURCE_DEFAULT, "DEFAULT"),
-                        Pair(CherrygramConfig.AUDIO_SOURCE_CAMCORDER, "CAMCORDER"),
-                        Pair(CherrygramConfig.AUDIO_SOURCE_MIC, "MIC"),
-                        Pair(CherrygramConfig.AUDIO_SOURCE_REMOTE_SUBMIX, "REMOTE_SUBMIX"),
-                        Pair(CherrygramConfig.AUDIO_SOURCE_UNPROCESSED, "UNPROCESSED"),
-                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_CALL, "VOICE_CALL"),
-                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_COMMUNICATION, "VOICE_COMMUNICATION"),
-                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_DOWNLINK, "VOICE_DOWNLINK"),
-                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_PERFORMANCE, "VOICE_PERFORMANCE"),
-                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_RECOGNITION, "VOICE_RECOGNITION"),
-                        Pair(CherrygramConfig.AUDIO_SOURCE_VOICE_UPLINK, "VOICE_UPLINK")
+                        Pair(CherrygramDebugConfig.AUDIO_SOURCE_DEFAULT, "DEFAULT"),
+                        Pair(CherrygramDebugConfig.AUDIO_SOURCE_CAMCORDER, "CAMCORDER"),
+                        Pair(CherrygramDebugConfig.AUDIO_SOURCE_MIC, "MIC"),
+                        Pair(CherrygramDebugConfig.AUDIO_SOURCE_REMOTE_SUBMIX, "REMOTE_SUBMIX"),
+                        Pair(CherrygramDebugConfig.AUDIO_SOURCE_UNPROCESSED, "UNPROCESSED"),
+                        Pair(CherrygramDebugConfig.AUDIO_SOURCE_VOICE_CALL, "VOICE_CALL"),
+                        Pair(CherrygramDebugConfig.AUDIO_SOURCE_VOICE_COMMUNICATION, "VOICE_COMMUNICATION"),
+                        Pair(CherrygramDebugConfig.AUDIO_SOURCE_VOICE_DOWNLINK, "VOICE_DOWNLINK"),
+                        Pair(CherrygramDebugConfig.AUDIO_SOURCE_VOICE_PERFORMANCE, "VOICE_PERFORMANCE"),
+                        Pair(CherrygramDebugConfig.AUDIO_SOURCE_VOICE_RECOGNITION, "VOICE_RECOGNITION"),
+                        Pair(CherrygramDebugConfig.AUDIO_SOURCE_VOICE_UPLINK, "VOICE_UPLINK")
                     )
                 }, {
-                    return@contract when (CherrygramConfig.audioSource) {
-                        CherrygramConfig.AUDIO_SOURCE_CAMCORDER -> "CAMCORDER"
-                        CherrygramConfig.AUDIO_SOURCE_MIC -> "MIC"
-                        CherrygramConfig.AUDIO_SOURCE_REMOTE_SUBMIX -> "REMOTE_SUBMIX"
-                        CherrygramConfig.AUDIO_SOURCE_UNPROCESSED -> "UNPROCESSED"
-                        CherrygramConfig.AUDIO_SOURCE_VOICE_CALL -> "VOICE_CALL"
-                        CherrygramConfig.AUDIO_SOURCE_VOICE_COMMUNICATION -> "VOICE_COMMUNICATION"
-                        CherrygramConfig.AUDIO_SOURCE_VOICE_DOWNLINK -> "VOICE_DOWNLINK"
-                        CherrygramConfig.AUDIO_SOURCE_VOICE_PERFORMANCE -> "VOICE_PERFORMANCE"
-                        CherrygramConfig.AUDIO_SOURCE_VOICE_RECOGNITION -> "VOICE_RECOGNITION"
-                        CherrygramConfig.AUDIO_SOURCE_VOICE_UPLINK -> "VOICE_UPLINK"
+                    return@contract when (CherrygramDebugConfig.audioSource) {
+                        CherrygramDebugConfig.AUDIO_SOURCE_CAMCORDER -> "CAMCORDER"
+                        CherrygramDebugConfig.AUDIO_SOURCE_MIC -> "MIC"
+                        CherrygramDebugConfig.AUDIO_SOURCE_REMOTE_SUBMIX -> "REMOTE_SUBMIX"
+                        CherrygramDebugConfig.AUDIO_SOURCE_UNPROCESSED -> "UNPROCESSED"
+                        CherrygramDebugConfig.AUDIO_SOURCE_VOICE_CALL -> "VOICE_CALL"
+                        CherrygramDebugConfig.AUDIO_SOURCE_VOICE_COMMUNICATION -> "VOICE_COMMUNICATION"
+                        CherrygramDebugConfig.AUDIO_SOURCE_VOICE_DOWNLINK -> "VOICE_DOWNLINK"
+                        CherrygramDebugConfig.AUDIO_SOURCE_VOICE_PERFORMANCE -> "VOICE_PERFORMANCE"
+                        CherrygramDebugConfig.AUDIO_SOURCE_VOICE_RECOGNITION -> "VOICE_RECOGNITION"
+                        CherrygramDebugConfig.AUDIO_SOURCE_VOICE_UPLINK -> "VOICE_UPLINK"
                         else -> "DEFAULT"
                     }
                 }) {
-                    CherrygramConfig.audioSource = it
+                    CherrygramDebugConfig.audioSource = it
                 }
             }
             switch {
@@ -181,22 +171,22 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 description = "Max quality will be automatically selected when you send a video"
 
                 contract({
-                    return@contract CherrygramConfig.sendVideosAtMaxQuality
+                    return@contract CherrygramDebugConfig.sendVideosAtMaxQuality
                 }) {
-                    CherrygramConfig.sendVideosAtMaxQuality = it
+                    CherrygramDebugConfig.sendVideosAtMaxQuality = it
                 }
             }
             switch {
                 title = "Play GIFs as Videos *"
 
                 contract({
-                    return@contract CherrygramConfig.playGIFsAsVideos
+                    return@contract CherrygramDebugConfig.playGIFsAsVideos
                 }) {
-                    CherrygramConfig.playGIFsAsVideos = it
+                    CherrygramDebugConfig.playGIFsAsVideos = it
                 }
             }
             textIcon {
-                title = LocaleController.getString("DebugMenuResetDialogs", R.string.DebugMenuResetDialogs)
+                title = getString(R.string.DebugMenuResetDialogs)
 
                 listener = TGKitTextIconRow.TGTIListener {
                     bf.messagesController.forceResetDialogs()
@@ -204,7 +194,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                title = LocaleController.getString("DebugMenuClearMediaCache", R.string.DebugMenuClearMediaCache)
+                title = getString(R.string.DebugMenuClearMediaCache)
 
                 listener = TGKitTextIconRow.TGTIListener {
                     bf.messagesStorage.clearSentMedia()
@@ -268,7 +258,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                title = LocaleController.getString("DebugMenuReadAllDialogs", R.string.DebugMenuReadAllDialogs)
+                title = getString(R.string.DebugMenuReadAllDialogs)
 
                 listener = TGKitTextIconRow.TGTIListener {
                     bf.messagesStorage.readAllDialogs(-1)
@@ -278,7 +268,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
         }
         category("Contacts") {
             textIcon {
-                title = LocaleController.getString("DebugMenuImportContacts", R.string.DebugMenuImportContacts)
+                title = getString(R.string.DebugMenuImportContacts)
 
                 listener = TGKitTextIconRow.TGTIListener {
                     bf.userConfig.syncContacts = true
@@ -288,7 +278,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                title = LocaleController.getString("DebugMenuReloadContacts", R.string.DebugMenuReloadContacts)
+                title = getString(R.string.DebugMenuReloadContacts)
 
                 listener = TGKitTextIconRow.TGTIListener {
                     bf.contactsController.loadContacts(false, 0)
@@ -296,7 +286,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                title = LocaleController.getString("DebugMenuResetContacts", R.string.DebugMenuResetContacts)
+                title = getString(R.string.DebugMenuResetContacts)
 
                 listener = TGKitTextIconRow.TGTIListener {
                     bf.contactsController.resetImportedContacts()

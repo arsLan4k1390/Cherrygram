@@ -18,8 +18,6 @@ import org.telegram.ui.Cells.GroupCreateSectionCell;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class GroupCreateDividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private boolean searching;

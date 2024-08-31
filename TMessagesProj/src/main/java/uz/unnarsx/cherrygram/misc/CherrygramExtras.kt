@@ -10,6 +10,7 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.telegram.messenger.*
+import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.browser.Browser
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLObject
@@ -101,17 +102,17 @@ object CherrygramExtras : CoroutineScope by MainScope() {
 
             val builder = AlertDialog.Builder(ctx)
 
-            builder.setTitle(LocaleController.getString("CG_FollowChannelTitle", R.string.CG_FollowChannelTitle))
-            builder.setMessage(LocaleController.getString("CG_FollowChannelInfo", R.string.CG_FollowChannelInfo))
+            builder.setTitle(getString(R.string.CG_FollowChannelTitle))
+            builder.setMessage(getString(R.string.CG_FollowChannelInfo))
 
-            builder.setPositiveButton(LocaleController.getString("ProfileJoinChannel", R.string.ProfileJoinChannel)) { _, _ ->
+            builder.setPositiveButton(getString(R.string.ProfileJoinChannel)) { _, _ ->
                 messagesCollector.addUserToChat(channel.id, userConfig.currentUser, 0, null, null, null)
                 Browser.openUrl(ctx, "https://t.me/$channelUsername")
             }
 
-//            builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null)
+//            builder.setNegativeButton(getString(R.string.Cancel), null)
 
-            builder.setNeutralButton(LocaleController.getString("CG_DoNotRemindAgain", R.string.CG_DoNotRemindAgain)) { _, _ ->
+            builder.setNeutralButton(getString(R.string.CG_DoNotRemindAgain)) { _, _ ->
                 MessagesController.getMainSettings(currentAccount).edit().putBoolean("update_channel_follow_skip", true).apply()
             }
 

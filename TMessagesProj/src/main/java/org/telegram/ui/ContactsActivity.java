@@ -109,9 +109,9 @@ import org.telegram.ui.Stories.StoriesListPlaceProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ContactsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -251,7 +251,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
 
     @Override
     public boolean isLightStatusBar() {
-        if (!CherrygramConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
+        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
         int color = getThemedColor(Theme.key_windowBackgroundWhite);
         return ColorUtils.calculateLuminance(color) > 0.7f;
     }
@@ -263,7 +263,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
 
-        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
             actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
             actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
@@ -547,8 +547,14 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                             Bundle args = new Bundle();
                             args.putLong("user_id", user.id);
                             if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
-                                if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(user.id))) {
-                                    CGBiometricPrompt.prompt(getParentActivity(), () -> presentFragment(new ChatActivity(args), needFinishFragment));
+                                if (getParentActivity() != null
+                                        && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()
+                                        && user.id != 0
+                                        && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(user.id))
+                                ) {
+                                    CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                                        presentFragment(new ChatActivity(args), needFinishFragment);
+                                    });
                                 } else {
                                     presentFragment(new ChatActivity(args), needFinishFragment);
                                 }
@@ -671,8 +677,14 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 Bundle args = new Bundle();
                                 args.putLong("user_id", user.id);
                                 if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
-                                    if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(user.id))) {
-                                        CGBiometricPrompt.prompt(getParentActivity(), () -> presentFragment(new ChatActivity(args), needFinishFragment));
+                                    if (getParentActivity() != null
+                                            && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()
+                                            && user.id != 0
+                                            && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(user.id))
+                                    ) {
+                                        CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                                            presentFragment(new ChatActivity(args), needFinishFragment);
+                                        });
                                     } else {
                                         presentFragment(new ChatActivity(args), needFinishFragment);
                                     }
@@ -1651,7 +1663,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
 
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
 
-        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));

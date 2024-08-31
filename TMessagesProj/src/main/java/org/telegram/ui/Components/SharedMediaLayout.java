@@ -35,7 +35,6 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
 import android.transition.TransitionValues;
@@ -148,7 +147,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 @SuppressWarnings("unchecked")
 public class SharedMediaLayout extends FrameLayout implements NotificationCenter.NotificationCenterDelegate, DialogCell.DialogCellDelegate {
@@ -1469,7 +1469,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
             this.initialTab = TAB_BOT_PREVIEWS;
         } else if (userInfo != null && userInfo.bot_info != null && userInfo.bot_info.has_preview_medias) {
             this.initialTab = TAB_STORIES;
-        } else if (!CherrygramConfig.INSTANCE.getHideStories() && (userInfo != null && userInfo.stories_pinned_available || chatInfo != null && chatInfo.stories_pinned_available || isStoriesView())) {
+        } else if (!CherrygramCoreConfig.INSTANCE.getHideStories() && (userInfo != null && userInfo.stories_pinned_available || chatInfo != null && chatInfo.stories_pinned_available || isStoriesView())) {
             this.initialTab = getInitialTab();
         } else if (initialTab != -1 && topicId == 0) {
             this.initialTab = initialTab;
@@ -3105,7 +3105,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
         }
 
         shadowLine = new View(context);
-        if (!CherrygramConfig.INSTANCE.getDisableToolBarShadow()) {
+        if (!CherrygramAppearanceConfig.INSTANCE.getDisableToolBarShadow()) {
             shadowLine.setBackgroundColor(getThemedColor(Theme.key_divider));
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1);
             layoutParams.topMargin = customTabs() ? 0 : dp(48) - 1;
@@ -3132,7 +3132,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
     }
 
     protected boolean includeStories() {
-        return !CherrygramConfig.INSTANCE.getHideStories();
+        return !CherrygramCoreConfig.INSTANCE.getHideStories();
     }
 
     protected boolean includeSavedDialogs() {
@@ -5801,7 +5801,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
         boolean hasBotPreviews = user != null && user.bot && !user.bot_can_edit && (userInfo != null && userInfo.bot_info != null && userInfo.bot_info.has_preview_medias) && !hasEditBotPreviews;
         boolean hasStories = (DialogObject.isUserDialog(dialog_id) || DialogObject.isChatDialog(dialog_id)) && !DialogObject.isEncryptedDialog(dialog_id) && (userInfo != null && userInfo.stories_pinned_available || info != null && info.stories_pinned_available || isStoriesView()) && includeStories();
         int changed = 0;
-        if (!CherrygramConfig.INSTANCE.getHideStories() && ((hasStories || hasBotPreviews) != scrollSlidingTextTabStrip.hasTab(TAB_STORIES))) {
+        if (!CherrygramCoreConfig.INSTANCE.getHideStories() && ((hasStories || hasBotPreviews) != scrollSlidingTextTabStrip.hasTab(TAB_STORIES))) {
             changed++;
         }
         if (hasEditBotPreviews != scrollSlidingTextTabStrip.hasTab(TAB_BOT_PREVIEWS)) {
@@ -5907,7 +5907,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                 if (!scrollSlidingTextTabStrip.hasTab(TAB_STORIES)) {
                     scrollSlidingTextTabStrip.addTextTab(TAB_STORIES, getString(R.string.ProfileBotPreviewTab), idToView);
                 }
-            } else if (!CherrygramConfig.INSTANCE.getHideStories() && ((DialogObject.isUserDialog(dialog_id) || DialogObject.isChatDialog(dialog_id)) && !DialogObject.isEncryptedDialog(dialog_id) && (userInfo != null && userInfo.stories_pinned_available || info != null && info.stories_pinned_available || isStoriesView()) && includeStories())) {
+            } else if (!CherrygramCoreConfig.INSTANCE.getHideStories() && ((DialogObject.isUserDialog(dialog_id) || DialogObject.isChatDialog(dialog_id)) && !DialogObject.isEncryptedDialog(dialog_id) && (userInfo != null && userInfo.stories_pinned_available || info != null && info.stories_pinned_available || isStoriesView()) && includeStories())) {
                 if (isArchivedOnlyStoriesView()) {
                     if (!scrollSlidingTextTabStrip.hasTab(TAB_ARCHIVED_STORIES)) {
                         scrollSlidingTextTabStrip.addTextTab(TAB_ARCHIVED_STORIES, getString(R.string.ProfileArchivedStories), idToView);

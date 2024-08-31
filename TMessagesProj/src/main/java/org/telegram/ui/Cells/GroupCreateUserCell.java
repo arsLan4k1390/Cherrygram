@@ -54,8 +54,6 @@ import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class GroupCreateUserCell extends FrameLayout {
 
     private BackupImageView avatarImageView;

@@ -60,7 +60,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.SimpleFloatPropertyCompat;
 import org.telegram.ui.web.BotWebViewContainer;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 
 public class ChatAttachAlertBotWebViewLayout extends ChatAttachAlert.AttachAlertLayout implements NotificationCenter.NotificationCenterDelegate {
     private final static int POLL_PERIOD = 60000;
@@ -780,7 +780,7 @@ public class ChatAttachAlertBotWebViewLayout extends ChatAttachAlert.AttachAlert
             gestureDetector = new GestureDetectorCompat(context, new GestureDetector.SimpleOnGestureListener() {
                 @Override
                 public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-                    if (CherrygramConfig.INSTANCE.getSwipeInsideBotToClose()) {
+                    if (CherrygramDebugConfig.INSTANCE.getSwipeInsideBotToClose()) {
                         if (isSwipeDisallowed || !allowSwipes || fullsize && !allowFullSizeSwipe || (shouldWaitWebViewScroll && !allowingScroll(false))) {
                             return false;
                         }
@@ -810,7 +810,7 @@ public class ChatAttachAlertBotWebViewLayout extends ChatAttachAlert.AttachAlert
 
                 @Override
                 public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                    if (CherrygramConfig.INSTANCE.getSwipeInsideBotToClose()) {
+                    if (CherrygramDebugConfig.INSTANCE.getSwipeInsideBotToClose()) {
                         if (!isScrolling && !isSwipeDisallowed && allowSwipes && (!shouldWaitWebViewScroll || swipeOffsetY != -offsetY + topActionBarOffsetY || allowingScroll(false))) {
                             if (isKeyboardVisible.provide(null) && swipeOffsetY == -offsetY + topActionBarOffsetY) {
                                 isSwipeDisallowed = true;

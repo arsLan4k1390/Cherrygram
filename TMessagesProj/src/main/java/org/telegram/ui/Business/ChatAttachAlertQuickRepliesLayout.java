@@ -48,8 +48,6 @@ import org.telegram.ui.Components.AvatarDrawable;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class ChatAttachAlertQuickRepliesLayout extends ChatAttachAlert.AttachAlertLayout implements NotificationCenter.NotificationCenterDelegate {
 
     private FrameLayout frameLayout;

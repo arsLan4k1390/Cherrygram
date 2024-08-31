@@ -1,6 +1,7 @@
 package uz.unnarsx.cherrygram.preferences.folders;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
+import static org.telegram.messenger.LocaleController.getString;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -152,7 +153,7 @@ public class IconSelectorAlert extends BottomSheet {
         titleView.setPivotX(LocaleController.isRTL ? titleView.getWidth() : 0);
         titleView.setPivotY(0);
         titleView.setLines(1);
-        titleView.setText(LocaleController.getString("CG_ChooseFolderIcon", R.string.CG_ChooseFolderIcon));
+        titleView.setText(getString(R.string.CG_ChooseFolderIcon));
         titleView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
         titleView.setTypeface(AndroidUtilities.bold());
         titleView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));

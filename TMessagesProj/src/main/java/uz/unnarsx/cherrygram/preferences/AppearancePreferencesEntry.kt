@@ -1,7 +1,7 @@
 package uz.unnarsx.cherrygram.preferences
 
 import androidx.core.util.Pair
-import org.telegram.messenger.LocaleController
+import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
@@ -9,7 +9,7 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.DialogsActivity
 import org.telegram.ui.LaunchActivity
-import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
 import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert
 import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.folders.FoldersPreferencesEntry
@@ -22,61 +22,61 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
-    override fun getPreferences(bf: BaseFragment) = tgKitScreen(LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)) {
-        category(LocaleController.getString("AP_RedesignCategory", R.string.AP_RedesignCategory)) {
+    override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.AP_Header_Appearance)) {
+        category(getString(R.string.AP_RedesignCategory)) {
             list {
-                title = LocaleController.getString("AP_IconReplacements", R.string.AP_IconReplacements)
+                title = getString(R.string.AP_IconReplacements)
 
                 contract({
                     return@contract listOf(
-                        Pair(CherrygramConfig.ICON_REPLACE_NONE, LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default)),
-                        Pair(CherrygramConfig.ICON_REPLACE_VKUI, LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI)),
-                        Pair(CherrygramConfig.ICON_REPLACE_SOLAR, LocaleController.getString("AP_IconReplacement_Solar", R.string.AP_IconReplacement_Solar))
+                        Pair(CherrygramAppearanceConfig.ICON_REPLACE_NONE, getString(R.string.AP_IconReplacement_Default)),
+                        Pair(CherrygramAppearanceConfig.ICON_REPLACE_VKUI, getString(R.string.AP_IconReplacement_VKUI)),
+                        Pair(CherrygramAppearanceConfig.ICON_REPLACE_SOLAR, getString(R.string.AP_IconReplacement_Solar))
                     )
                 }, {
-                    return@contract when (CherrygramConfig.iconReplacement) {
-                        CherrygramConfig.ICON_REPLACE_VKUI -> LocaleController.getString("AP_IconReplacement_VKUI", R.string.AP_IconReplacement_VKUI)
-                        CherrygramConfig.ICON_REPLACE_SOLAR -> LocaleController.getString("AP_IconReplacement_Solar", R.string.AP_IconReplacement_Solar)
-                        else -> LocaleController.getString("AP_IconReplacement_Default", R.string.AP_IconReplacement_Default)
+                    return@contract when (CherrygramAppearanceConfig.iconReplacement) {
+                        CherrygramAppearanceConfig.ICON_REPLACE_VKUI -> getString(R.string.AP_IconReplacement_VKUI)
+                        CherrygramAppearanceConfig.ICON_REPLACE_SOLAR -> getString(R.string.AP_IconReplacement_Solar)
+                        else -> getString(R.string.AP_IconReplacement_Default)
                     }
                 }) {
-                    CherrygramConfig.iconReplacement = it
+                    CherrygramAppearanceConfig.iconReplacement = it
                     (bf.parentActivity as? LaunchActivity)?.reloadResources()
                     bf.parentLayout.rebuildAllFragmentViews(true, true)
                 }
             }
             switch {
-                title = LocaleController.getString("AP_OneUI_Switch_Style", R.string.AP_OneUI_Switch_Style)
+                title = getString(R.string.AP_OneUI_Switch_Style)
 
                 contract({
-                    return@contract CherrygramConfig.oneUI_SwitchStyle
+                    return@contract CherrygramAppearanceConfig.oneUI_SwitchStyle
                 }) {
-                    CherrygramConfig.oneUI_SwitchStyle = it
+                    CherrygramAppearanceConfig.oneUI_SwitchStyle = it
                     bf.parentLayout.rebuildAllFragmentViews(true, true)
                 }
             }
             switch {
-                title = LocaleController.getString("AP_DisableDividers", R.string.AP_DisableDividers)
+                title = getString(R.string.AP_DisableDividers)
                 contract({
-                    return@contract CherrygramConfig.disableDividers
+                    return@contract CherrygramAppearanceConfig.disableDividers
                 }) {
-                    CherrygramConfig.disableDividers = it
+                    CherrygramAppearanceConfig.disableDividers = it
                     Theme.applyCommonTheme();
                     bf.parentLayout.rebuildAllFragmentViews(true, true)
                 }
             }
         }
 
-        category(LocaleController.getString("CP_Snowflakes_AH", R.string.CP_Snowflakes_AH)) {
+        category(getString(R.string.CP_Snowflakes_AH)) {
             textIcon {
-                title = LocaleController.getString("EP_CustomAppTitle", R.string.EP_CustomAppTitle)
-                value = MessagesController.getMainSettings(UserConfig.selectedAccount).getString("CG_AppName", LocaleController.getString("CG_AppName", R.string.CG_AppName))
+                title = getString(R.string.EP_CustomAppTitle)
+                value = MessagesController.getMainSettings(UserConfig.selectedAccount).getString("CG_AppName", getString(R.string.CG_AppName))
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    val defaultValue = LocaleController.getString("CG_AppName", R.string.CG_AppName)
+                    val defaultValue = getString(R.string.CG_AppName)
                     TextFieldAlert.createFieldAlertForAppName(
                         bf.context,
-                        LocaleController.getString("EP_CustomAppTitle", R.string.EP_CustomAppTitle),
+                        getString(R.string.EP_CustomAppTitle),
                         MessagesController.getMainSettings(UserConfig.selectedAccount).getString("CG_AppName", defaultValue)!!
                     ) { result: String ->
                         var result = result
@@ -98,43 +98,43 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             }
 
             switch {
-                title = LocaleController.getString("AP_CenterTitle", R.string.AP_CenterTitle)
+                title = getString(R.string.AP_CenterTitle)
                 contract({
-                    return@contract CherrygramConfig.centerTitle
+                    return@contract CherrygramAppearanceConfig.centerTitle
                 }) {
-                    CherrygramConfig.centerTitle = it
+                    CherrygramAppearanceConfig.centerTitle = it
                     bf.parentLayout.rebuildAllFragmentViews(true, true)
                 }
             }
             switch {
-                title = LocaleController.getString("AP_ToolBarShadow", R.string.AP_ToolBarShadow)
+                title = getString(R.string.AP_ToolBarShadow)
 
                 contract({
-                    return@contract CherrygramConfig.disableToolBarShadow
+                    return@contract CherrygramAppearanceConfig.disableToolBarShadow
                 }) {
-                    CherrygramConfig.disableToolBarShadow = it
+                    CherrygramAppearanceConfig.disableToolBarShadow = it
                     bf.parentLayout.setHeaderShadow(
-                        if (CherrygramConfig.disableToolBarShadow) null else bf.parentLayout.parentActivity.getDrawable(R.drawable.header_shadow)?.mutate()
+                        if (CherrygramAppearanceConfig.disableToolBarShadow) null else bf.parentLayout.parentActivity.getDrawable(R.drawable.header_shadow)?.mutate()
                     )
                     bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
             }
             switch {
-                title = LocaleController.getString("AP_OverrideHeader", R.string.AP_OverrideHeader)
-                description = LocaleController.getString("AP_OverrideHeader_Desc", R.string.AP_OverrideHeader_Desc)
+                title = getString(R.string.AP_OverrideHeader)
+                description = getString(R.string.AP_OverrideHeader_Desc)
 
                 contract({
-                    return@contract CherrygramConfig.overrideHeaderColor
+                    return@contract CherrygramAppearanceConfig.overrideHeaderColor
                 }) {
-                    CherrygramConfig.overrideHeaderColor = it
+                    CherrygramAppearanceConfig.overrideHeaderColor = it
                     bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
             }
         }
 
-        category(LocaleController.getString("AP_Header_Appearance", R.string.AP_Header_Appearance)) {
+        category(getString(R.string.AP_Header_Appearance)) {
             textIcon {
-                title = LocaleController.getString("CP_ProfileReplyBackground", R.string.CP_ProfileReplyBackground)
+                title = getString(R.string.CP_ProfileReplyBackground)
                 icon = R.drawable.msg_customize
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(MessagesAndProfilesPreferencesEntry())
@@ -142,7 +142,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             }
 
             textIcon {
-                title = LocaleController.getString("CP_Filters_Header", R.string.CP_Filters_Header)
+                title = getString(R.string.CP_Filters_Header)
                 icon = R.drawable.msg_folders
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(FoldersPreferencesEntry())
@@ -150,7 +150,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             }
 
             textIcon {
-                title = LocaleController.getString("AP_DrawerCategory", R.string.AP_DrawerCategory)
+                title = getString(R.string.AP_DrawerCategory)
                 icon = R.drawable.msg_list
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(DrawerPreferencesEntry())
@@ -158,22 +158,22 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             }
         }
 
-        category(LocaleController.getString("CP_Snowflakes_Header", R.string.CP_Snowflakes_Header)) {
+        category(getString(R.string.CP_Snowflakes_Header)) {
             switch {
-                title = LocaleController.getString("CP_Snowflakes_AH", R.string.CP_Snowflakes_AH)
+                title = getString(R.string.CP_Snowflakes_AH)
                 contract({
-                    return@contract CherrygramConfig.drawSnowInActionBar
+                    return@contract CherrygramAppearanceConfig.drawSnowInActionBar
                 }) {
-                    CherrygramConfig.drawSnowInActionBar = it
+                    CherrygramAppearanceConfig.drawSnowInActionBar = it
                     bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
             }
             switch {
-                title = LocaleController.getString("CP_Header_Chats", R.string.CP_Header_Chats)
+                title = getString(R.string.CP_Header_Chats)
                 contract({
-                    return@contract CherrygramConfig.drawSnowInChat
+                    return@contract CherrygramAppearanceConfig.drawSnowInChat
                 }) {
-                    CherrygramConfig.drawSnowInChat = it
+                    CherrygramAppearanceConfig.drawSnowInChat = it
                     bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
             }

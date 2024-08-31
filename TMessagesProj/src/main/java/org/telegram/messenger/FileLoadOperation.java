@@ -32,7 +32,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipException;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 
 public class FileLoadOperation {
 
@@ -282,11 +282,11 @@ public class FileLoadOperation {
     }
 
     private void updateParams() {
-        if ((CherrygramConfig.INSTANCE.getDownloadSpeedBoost() == CherrygramConfig.BOOST_AVERAGE || (preloadPrefixSize > 0 || MessagesController.getInstance(currentAccount).getfileExperimentalParams)) && !forceSmallChunk) {
+        if ((CherrygramExperimentalConfig.INSTANCE.getDownloadSpeedBoost() == CherrygramExperimentalConfig.BOOST_AVERAGE || (preloadPrefixSize > 0 || MessagesController.getInstance(currentAccount).getfileExperimentalParams)) && !forceSmallChunk) {
             downloadChunkSizeBig = 1024 * 512;
             maxDownloadRequests = 8;
             maxDownloadRequestsBig = 8;
-        } else if (CherrygramConfig.INSTANCE.getDownloadSpeedBoost() == CherrygramConfig.BOOST_EXTREME) {
+        } else if (CherrygramExperimentalConfig.INSTANCE.getDownloadSpeedBoost() == CherrygramExperimentalConfig.BOOST_EXTREME) {
             downloadChunkSizeBig = 1024 * 1024;
             maxDownloadRequests = 12;
             maxDownloadRequestsBig = 12;

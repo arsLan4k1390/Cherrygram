@@ -62,7 +62,7 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class VoIPHelper {
 
@@ -104,7 +104,7 @@ public class VoIPHelper {
 			return;
 		}
 
-		if (CherrygramConfig.INSTANCE.getConfirmCalls() && !confirmed && activity instanceof LaunchActivity) {
+		if (CherrygramChatsConfig.INSTANCE.getConfirmCalls() && !confirmed && activity instanceof LaunchActivity) {
 			final BaseFragment lastFragment = ((LaunchActivity) activity).getActionBarLayout().getLastFragment();
 			if (lastFragment != null) {
 				AlertsCreator.createCallDialogAlert(lastFragment, lastFragment.getMessagesController().getUser(user.id), videoCall);

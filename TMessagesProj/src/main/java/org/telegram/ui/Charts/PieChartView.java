@@ -7,9 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.text.TextPaint;
-import android.view.HapticFeedbackConstants;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.Charts.data.ChartData;
@@ -20,8 +18,7 @@ import org.telegram.ui.Charts.view_data.LineViewData;
 import org.telegram.ui.Charts.view_data.PieLegendView;
 import org.telegram.ui.Charts.view_data.TransitionParams;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class PieChartView extends StackLinearChartView<PieChartViewData> {
 
@@ -387,7 +384,7 @@ public class PieChartView extends StackLinearChartView<PieChartViewData> {
 
             pieLegendView.setTranslationX(xl);
             pieLegendView.setTranslationY(yl);
-            if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                 AndroidUtilities.vibrateCursor(this);
             }
         }

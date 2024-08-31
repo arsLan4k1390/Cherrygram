@@ -81,8 +81,6 @@ import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class QuickRepliesActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private UniversalRecyclerView listView;

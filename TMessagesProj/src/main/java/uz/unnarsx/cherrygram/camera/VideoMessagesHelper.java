@@ -1,6 +1,7 @@
 package uz.unnarsx.cherrygram.camera;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
+import static org.telegram.messenger.LocaleController.getString;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -20,13 +21,12 @@ import androidx.core.content.ContextCompat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.Components.InstantCameraView;
 import org.telegram.ui.Components.RLottieDrawable;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class VideoMessagesHelper {
 
@@ -147,7 +147,7 @@ public class VideoMessagesHelper {
         toggleTorch(instantCameraView);
 
         if (instantCameraView.flashButton != null && (wasFlashing == null || wasFlashing != instantCameraView.flashing)) {
-            instantCameraView.flashButton.setContentDescription(LocaleController.getString(instantCameraView.flashing ? R.string.AccDescrCameraFlashOff : R.string.AccDescrCameraFlashOn));
+            instantCameraView.flashButton.setContentDescription(getString(instantCameraView.flashing ? R.string.AccDescrCameraFlashOff : R.string.AccDescrCameraFlashOn));
             if (!instantCameraView.flashing) {
                 if (instantCameraView.flashOnDrawable == null) {
                     instantCameraView.flashOnDrawable = new RLottieDrawable(R.raw.roundcamera_flash_on, "roundcamera_flash_on", dp(28), dp(28));
@@ -181,7 +181,7 @@ public class VideoMessagesHelper {
         float value = 0;
         if (
                 !instantCameraView.isFrontface
-                && !CherrygramConfig.INSTANCE.getStartFromUltraWideCam()
+                && !CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam()
                 && cameraXController != null && !cameraXController.isAvailableWideMode() /* Wide camera check to prevent wrong slider value on non-supported devices*/
         ) {
             value = 0.5f;

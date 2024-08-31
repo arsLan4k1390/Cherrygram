@@ -41,9 +41,6 @@ import org.telegram.ui.Components.RLottieImageView;
 import org.telegram.ui.Components.Switch;
 
 import java.util.ArrayList;
-import java.util.Locale;
-
-import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class TextCheckCell extends FrameLayout {
     private boolean isAnimatingToThumbInsteadOfTouch;

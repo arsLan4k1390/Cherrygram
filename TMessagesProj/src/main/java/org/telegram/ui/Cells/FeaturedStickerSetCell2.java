@@ -50,8 +50,6 @@ import org.telegram.ui.Components.RecyclerListView;
 import java.util.ArrayList;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class FeaturedStickerSetCell2 extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     private final int currentAccount = UserConfig.selectedAccount;

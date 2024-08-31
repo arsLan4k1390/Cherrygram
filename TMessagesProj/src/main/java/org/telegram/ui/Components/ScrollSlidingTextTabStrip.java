@@ -15,12 +15,10 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.SystemClock;
 import android.text.Layout;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.util.TypedValue;
@@ -32,13 +30,12 @@ import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
 
@@ -99,7 +96,7 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
     private float indicatorXAnimationDx;
     private float indicatorWidthAnimationDx;
 
-    int tabStyle = CherrygramConfig.INSTANCE.getTabStyle();
+    int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
 
     public long animationDuration = 200;
 
@@ -144,8 +141,8 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
         this.resourcesProvider = resourcesProvider;
 
         selectorDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, null);
-        float rad = AndroidUtilities.dpf2(tabStyle == CherrygramConfig.TAB_STYLE_VKUI ? 10 : tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? 30 : 3);
-        if (tabStyle == CherrygramConfig.TAB_STYLE_ROUNDED ||tabStyle >= CherrygramConfig.TAB_STYLE_VKUI) {
+        float rad = AndroidUtilities.dpf2(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 10 : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 30 : 3);
+        if (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_ROUNDED ||tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
             selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
         } else {
             selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
@@ -306,7 +303,7 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
             };
             tab.setGravity(Gravity.CENTER);
             tab.setTextAlignment(TEXT_ALIGNMENT_CENTER);
-            if (tabStyle < CherrygramConfig.TAB_STYLE_VKUI) tab.setBackground(Theme.createSelectorDrawable(Theme.multAlpha(processColor(Theme.getColor(activeTextColorKey, resourcesProvider)), 0f), 3));
+            if (tabStyle < CherrygramAppearanceConfig.TAB_STYLE_VKUI) tab.setBackground(Theme.createSelectorDrawable(Theme.multAlpha(processColor(Theme.getColor(activeTextColorKey, resourcesProvider)), 0f), 3));
             tab.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             tab.setSingleLine(true);
             tab.setTypeface(AndroidUtilities.bold());
@@ -432,19 +429,19 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
         boolean result = super.drawChild(canvas, child, drawingTime);
         if (child == tabsContainer) {
             final int height = getMeasuredHeight();
-            selectorDrawable.setAlpha((int) (tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 50 : 255 * tabsContainer.getAlpha()));
+            selectorDrawable.setAlpha((int) (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 50 : 255 * tabsContainer.getAlpha()));
             float x = indicatorX + indicatorXAnimationDx;
             float w = x + indicatorWidth + indicatorWidthAnimationDx;
             selectorDrawable.setBounds(
-                    (int) x - (tabStyle == CherrygramConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
-                    tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(15) : height - AndroidUtilities.dp(4),
-                    (int) w + (tabStyle == CherrygramConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
-                    tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(15) : height
+                    (int) x - (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
+                    tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(15) : height - AndroidUtilities.dp(4),
+                    (int) w + (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
+                    tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(15) : height
             );
-            /*if (tabStyle >= CherrygramConfig.TAB_STYLE_VKUI && CherrygramConfig.INSTANCE.getTabStyleStroke()) {
+            /*if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI && CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
                 selectorDrawable.setStroke(AndroidUtilities.dp(1), processColor(Theme.getColor(activeTextColorKey, resourcesProvider)));
             }*/
-            if (tabStyle != CherrygramConfig.TAB_STYLE_TEXT)
+            if (tabStyle != CherrygramAppearanceConfig.TAB_STYLE_TEXT)
                 selectorDrawable.draw(canvas);
         }
         return result;

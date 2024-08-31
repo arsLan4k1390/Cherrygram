@@ -6,8 +6,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.FingerprintController
-import uz.unnarsx.cherrygram.CherrygramConfig
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
+import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
 import java.lang.reflect.Type
 
 object ChatsPasswordHelper {
@@ -32,6 +32,6 @@ object ChatsPasswordHelper {
     }
 
     var askPasscodeForChats =
-        CherrygramConfig.askForPasscodeBeforeOpenChat && getArrayList(Passcode_Array) != null && !getArrayList(Passcode_Array)!!.isEmpty()
+        CherrygramPrivacyConfig.askForPasscodeBeforeOpenChat && getArrayList(Passcode_Array) != null && !getArrayList(Passcode_Array)!!.isEmpty()
                 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 }

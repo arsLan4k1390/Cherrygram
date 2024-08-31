@@ -56,7 +56,6 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.os.Vibrator;
@@ -271,7 +270,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.IDN;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -298,8 +296,12 @@ import uz.unnarsx.cherrygram.Extra;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.chats.CherrygramChatMenuInjector;
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.chats.CherrygramMessageMenuInjector;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet;
@@ -310,8 +312,8 @@ import uz.unnarsx.cherrygram.core.PermissionsUtils;
 @SuppressWarnings("unchecked")
 public class ChatActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, LocationActivity.LocationActivityDelegate, ChatAttachAlertDocumentLayout.DocumentSelectActivityDelegate, ChatActivityInterface, FloatingDebugProvider, InstantCameraView.Delegate {
 
-    private boolean overrideHeaderColor = CherrygramConfig.INSTANCE.getOverrideHeaderColor();
-    public boolean customChatID = CherrygramConfig.INSTANCE.getCustomChatForSavedMessages();
+    private boolean overrideHeaderColor = CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor();
+    public boolean customChatID = CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages();
 
     private final static boolean PULL_DOWN_BACK_FRAGMENT = false;
     private final static boolean DISABLE_PROGRESS_VIEW = true;
@@ -381,7 +383,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     private AnimatorSet bottomOverlayAnimation;
     private boolean bottomOverlayChatWaitsReply;
     private BlurredFrameLayout bottomOverlayChat;
-    private BlurredFrameLayout bottomMessagesActionContainer;
+    public BlurredFrameLayout bottomMessagesActionContainer;
     @Nullable
     private TextView forwardButton;
     @Nullable
@@ -1722,14 +1724,14 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         @Override
         public boolean hasDoubleTap(View view, int position) {
             if (chatMode == MODE_QUICK_REPLIES) return false;
-            if (CherrygramConfig.INSTANCE.getDoubleTapAction() == CherrygramConfig.DOUBLE_TAP_ACTION_NONE || !(view instanceof ChatMessageCell)) {
+            if (CherrygramChatsConfig.INSTANCE.getDoubleTapAction() == CherrygramChatsConfig.DOUBLE_TAP_ACTION_NONE || !(view instanceof ChatMessageCell)) {
                 return false;
             }
 
             ChatMessageCell cell = (ChatMessageCell) view;
             boolean isOutOwner = cell.getMessageObject().isOutOwner();
 
-            if (CherrygramConfig.INSTANCE.getDoubleTapAction() == CherrygramConfig.DOUBLE_TAP_ACTION_REACTION || (CherrygramConfig.INSTANCE.getDoubleTapAction() == CherrygramConfig.DOUBLE_TAP_ACTION_EDIT && !isOutOwner)) {
+            if (CherrygramChatsConfig.INSTANCE.getDoubleTapAction() == CherrygramChatsConfig.DOUBLE_TAP_ACTION_REACTION || (CherrygramChatsConfig.INSTANCE.getDoubleTapAction() == CherrygramChatsConfig.DOUBLE_TAP_ACTION_EDIT && !isOutOwner)) {
                 String reactionStringSetting = getMediaDataController().getDoubleTapReaction();
                 TLRPC.TL_availableReaction reaction = getMediaDataController().getReactionsMap().get(reactionStringSetting);
                 if (reaction == null && (reactionStringSetting == null || !reactionStringSetting.startsWith("animated_"))) {
@@ -1769,14 +1771,14 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     }
                     allowEdit = captionsCount < 2;
                 }
-                switch (CherrygramConfig.INSTANCE.getDoubleTapAction()) {
-                    case CherrygramConfig.DOUBLE_TAP_ACTION_TRANSLATE:
+                switch (CherrygramChatsConfig.INSTANCE.getDoubleTapAction()) {
+                    case CherrygramChatsConfig.DOUBLE_TAP_ACTION_TRANSLATE:
                         return message.contentType == 0 && !message.isAnimatedEmoji() && !message.isDice() && (actionBar != null && !actionBar.isActionModeShowed());
-                    case CherrygramConfig.DOUBLE_TAP_ACTION_REPLY:
+                    case CherrygramChatsConfig.DOUBLE_TAP_ACTION_REPLY:
                         return message.getId() > 0 && allowChatActions;
-                    case CherrygramConfig.DOUBLE_TAP_ACTION_SAVE:
+                    case CherrygramChatsConfig.DOUBLE_TAP_ACTION_SAVE:
                         return !message.isSponsored() && chatMode != MODE_SCHEDULED && !message.needDrawBluredPreview() && !message.isLiveLocation() && message.type != 16 && !getMessagesController().isChatNoForwards(currentChat) && !UserObject.isUserSelf(currentUser);
-                    case CherrygramConfig.DOUBLE_TAP_ACTION_EDIT:
+                    case CherrygramChatsConfig.DOUBLE_TAP_ACTION_EDIT:
                         return allowEdit;
                 }
             }
@@ -1785,13 +1787,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
         @Override
         public void onDoubleTap(View view, int position, float x, float y) {
-            if (CherrygramConfig.INSTANCE.getDoubleTapAction() == CherrygramConfig.DOUBLE_TAP_ACTION_NONE || !(view instanceof ChatMessageCell) || getParentActivity() == null || isSecretChat() || isInScheduleMode() || isInPreviewMode() || chatMode == MODE_QUICK_REPLIES) {
+            if (CherrygramChatsConfig.INSTANCE.getDoubleTapAction() == CherrygramChatsConfig.DOUBLE_TAP_ACTION_NONE || !(view instanceof ChatMessageCell) || getParentActivity() == null || isSecretChat() || isInScheduleMode() || isInPreviewMode() || chatMode == MODE_QUICK_REPLIES) {
                 return;
             }
             ChatMessageCell cell = (ChatMessageCell) view;
             boolean isOutOwner = cell.getMessageObject().isOutOwner();
 
-            if (CherrygramConfig.INSTANCE.getDoubleTapAction() == CherrygramConfig.DOUBLE_TAP_ACTION_REACTION || (CherrygramConfig.INSTANCE.getDoubleTapAction() == CherrygramConfig.DOUBLE_TAP_ACTION_EDIT && !isOutOwner)) {
+            if (CherrygramChatsConfig.INSTANCE.getDoubleTapAction() == CherrygramChatsConfig.DOUBLE_TAP_ACTION_REACTION || (CherrygramChatsConfig.INSTANCE.getDoubleTapAction() == CherrygramChatsConfig.DOUBLE_TAP_ACTION_EDIT && !isOutOwner)) {
                 if (isSecretChat() || isInScheduleMode()) {
                     return;
                 }
@@ -1830,17 +1832,17 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 var message = cell.getMessageObject();
                 selectedObject = message;
                 selectedObjectGroup = getValidGroupedMessage(message);
-                switch (CherrygramConfig.INSTANCE.getDoubleTapAction()) {
-                    case CherrygramConfig.DOUBLE_TAP_ACTION_TRANSLATE:
+                switch (CherrygramChatsConfig.INSTANCE.getDoubleTapAction()) {
+                    case CherrygramChatsConfig.DOUBLE_TAP_ACTION_TRANSLATE:
                         processSelectedOption(OPTION_TRANSLATE_DOUBLE_TAP);
                         break;
-                    case CherrygramConfig.DOUBLE_TAP_ACTION_REPLY:
+                    case CherrygramChatsConfig.DOUBLE_TAP_ACTION_REPLY:
                         processSelectedOption(OPTION_REPLY);
                         break;
-                    case CherrygramConfig.DOUBLE_TAP_ACTION_SAVE:
+                    case CherrygramChatsConfig.DOUBLE_TAP_ACTION_SAVE:
                         processSelectedOption(OPTION_SAVE_MESSAGE_CHAT);
                         break;
-                    case CherrygramConfig.DOUBLE_TAP_ACTION_EDIT:
+                    case CherrygramChatsConfig.DOUBLE_TAP_ACTION_EDIT:
                         processSelectedOption(OPTION_EDIT);
                         break;
                 }
@@ -2010,7 +2012,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 attachItem.setVisibility(View.GONE);
                             }
                             boolean allowAvatarClick = getChatMode() != ChatActivity.MODE_SAVED && getDialogId() != 0 && getDialogId() != UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
-                            if (CherrygramConfig.INSTANCE.getCenterChatTitle() && editTextItem != null && editTextItem.getView() != null && allowAvatarClick) {
+                            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle() && editTextItem != null && editTextItem.getView() != null && allowAvatarClick) {
                                 avatarContainer.avatarImageView.setOnClickListener(v -> editTextItem.getView().performClick());
                             }
                         } else {
@@ -2086,7 +2088,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     }
                 }
                 boolean allowAvatarClick = getChatMode() != ChatActivity.MODE_SAVED && getDialogId() != 0 && getDialogId() != UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
-                if (CherrygramConfig.INSTANCE.getCenterChatTitle() && headerItem != null && getContext() != null && allowAvatarClick) {
+                if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle() && headerItem != null && getContext() != null && allowAvatarClick) {
                     CherrygramChatMenuInjector.injectAttachItem(headerItem, attachItem, chatActivityEnterView, chatAttachAlert, getContext(), getResourceProvider());
                     avatarContainer.avatarImageView.setOnClickListener(v -> getHeaderItem().performClick());
                 }
@@ -2465,7 +2467,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
     @Override
     public boolean onFragmentCreate() {
-        CherrygramConfig.INSTANCE.setMessagesSearchFilter(CherrygramConfig.FILTER_NONE);
+        CherrygramChatsConfig.INSTANCE.setMessagesSearchFilter(CherrygramChatsConfig.FILTER_NONE);
 
         final long chatId = arguments.getLong("chat_id", 0);
         final long userId = arguments.getLong("user_id", 0);
@@ -3586,7 +3588,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     if (getParentActivity() == null) {
                         return;
                     }
-                    boolean askPasscode = CherrygramConfig.INSTANCE.getAskPasscodeBeforeDelete() && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged();
+                    boolean askPasscode = CherrygramPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete() && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged();
                     if (askPasscode) {
                         CGBiometricPrompt.prompt(getParentActivity(),
                             () -> {
@@ -3743,7 +3745,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } else if (id == bot_settings) {
                     getSendMessagesHelper().sendMessage(SendMessagesHelper.SendMessageParams.of("/settings", dialog_id, null, null, null, false, null, null, null, true, 0, null, false));
                 } else if (id == search) {
-                    CherrygramConfig.INSTANCE.setMessagesSearchFilter(CherrygramConfig.FILTER_NONE);
+                    CherrygramChatsConfig.INSTANCE.setMessagesSearchFilter(CherrygramChatsConfig.FILTER_NONE);
                     openSearchWithText(/*isSupportedTags() ? "" : */null);
                 } else if (id == translate) {
                     getMessagesController().getTranslateController().setHideTranslateDialog(getDialogId(), false, true);
@@ -3880,23 +3882,31 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } else if (id == OPTION_ASK_PASSCODE) {
                     CGBiometricPrompt.prompt(getParentActivity(), () -> {
                         ArrayList<String> arr = new ArrayList<>(ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array));
-                        if (currentUser != null && DialogObject.isUserDialog(currentUser.id)) {
-                            if (!arr.contains(String.valueOf(currentUser.id))) arr.add(String.valueOf(currentUser.id));
-                        } else if (currentChat != null && DialogObject.isChatDialog(currentChat.id)) {
-                            if (!arr.contains(String.valueOf(currentChat.id))) arr.add(String.valueOf(currentChat.id));
+                        if (DialogObject.isUserDialog(getDialogId())) {
+                            if (!arr.contains(String.valueOf(getDialogId()))) {
+                                arr.add(String.valueOf(getDialogId()));
+                                headerItem.hideSubItem(OPTION_ASK_PASSCODE);
+                            }
+                        } else if (DialogObject.isChatDialog(getDialogId())) {
+                            if (!arr.contains(String.valueOf(getDialogId()))) {
+                                arr.add(String.valueOf(getDialogId()));
+                                headerItem.hideSubItem(OPTION_ASK_PASSCODE);
+                            }
                         }
-                        FileLog.d("new array for: " + arr);
+                        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("new locked chats array: " + arr);
                         ChatsPasswordHelper.INSTANCE.saveArrayList(arr, ChatsPasswordHelper.Passcode_Array);
                     });
                 } else if (id == OPTION_DO_NOT_ASK_PASSCODE) {
                     CGBiometricPrompt.prompt(getParentActivity(), () -> {
                         ArrayList<String> arr = new ArrayList<>(ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array));
-                        if (currentUser != null && DialogObject.isUserDialog(currentUser.id)) {
-                            arr.remove(String.valueOf(currentUser.id));
-                        } else if (currentChat != null && DialogObject.isChatDialog(currentChat.id)) {
-                            arr.remove(String.valueOf(currentChat.id));
+                        if (DialogObject.isUserDialog(getDialogId())) {
+                            arr.remove(String.valueOf(getDialogId()));
+                            headerItem.hideSubItem(OPTION_DO_NOT_ASK_PASSCODE);
+                        } else if (DialogObject.isChatDialog(getDialogId())) {
+                            arr.remove(String.valueOf(getDialogId()));
+                            headerItem.hideSubItem(OPTION_DO_NOT_ASK_PASSCODE);
                         }
-                        FileLog.d("new array for: " + arr);
+                        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("new locked chats array: " + arr);
                         ChatsPasswordHelper.INSTANCE.saveArrayList(arr, ChatsPasswordHelper.Passcode_Array);
                     });
                 } else if (id == OPTION_OPEN_TELEGRAM_BROWSER) {
@@ -4131,7 +4141,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         }*/
 
-        boolean doNotDrawDots = CherrygramConfig.INSTANCE.getCenterChatTitle() && getChatMode() != ChatActivity.MODE_SAVED
+        boolean doNotDrawDots = CherrygramChatsConfig.INSTANCE.getCenterChatTitle() && getChatMode() != ChatActivity.MODE_SAVED
                 && getDialogId() != 0 && getDialogId() != UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId();
         int dotsDrawable = doNotDrawDots ? 0 : R.drawable.ic_ab_other;
 
@@ -4148,7 +4158,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             headerItem = menu.addItem(chat_menu_options, dotsDrawable, themeDelegate);
             headerItem.setContentDescription(LocaleController.getString("AccDescrMoreOptions", R.string.AccDescrMoreOptions));
 
-            if (CherrygramConfig.INSTANCE.getCenterChatTitle() && headerItem != null && getContext() != null && doNotDrawDots) {
+            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle() && headerItem != null && getContext() != null && doNotDrawDots) {
                 CherrygramChatMenuInjector.injectAttachItem(headerItem, attachItem, chatActivityEnterView, chatAttachAlert, getContext(), getResourceProvider());
                 avatarContainer.avatarImageView.setOnClickListener(v -> getHeaderItem().performClick());
             }
@@ -4805,7 +4815,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     } else if (startedTrackingSlidingView) {
                         if (Math.abs(dx) >= AndroidUtilities.dp(50)) {
                             if (!wasTrackingVibrate) {
-                                if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                                     try {
                                         performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                                     } catch (Exception ignore) {
@@ -4852,7 +4862,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (e.getAction() == MotionEvent.ACTION_DOWN) {
                     scrollByTouch = true;
                 }
-                if (!CherrygramConfig.INSTANCE.getDisableSwipeToNext() && pullingDownOffset != 0 && (e.getAction() == MotionEvent.ACTION_UP || e.getAction() == MotionEvent.ACTION_CANCEL)) {
+                if (!CherrygramChatsConfig.INSTANCE.getDisableSwipeToNext() && pullingDownOffset != 0 && (e.getAction() == MotionEvent.ACTION_UP || e.getAction() == MotionEvent.ACTION_CANCEL)) {
                     float progress = Math.min(1f, pullingDownOffset / AndroidUtilities.dp(110));
                     if (e.getAction() == MotionEvent.ACTION_UP && progress == 1 && pullingDownDrawable != null && !pullingDownDrawable.emptyStub) {
                         if (pullingDownDrawable.animationIsRunning()) {
@@ -4991,7 +5001,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     drawReplyButton(c);
                 }
 
-                if (!CherrygramConfig.INSTANCE.getDisableSwipeToNext() && pullingDownOffset != 0 && !isInPreviewMode() && !isInsideContainer && chatMode != MODE_SAVED) {
+                if (!CherrygramChatsConfig.INSTANCE.getDisableSwipeToNext() && pullingDownOffset != 0 && !isInPreviewMode() && !isInsideContainer && chatMode != MODE_SAVED) {
                     c.save();
                     float transitionOffset = 0;
                     if (pullingDownAnimateProgress != 0) {
@@ -6285,7 +6295,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
             @Override
             public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
-                if (!CherrygramConfig.INSTANCE.getDisableSwipeToNext() && dy < 0 && pullingDownOffset != 0) {
+                if (!CherrygramChatsConfig.INSTANCE.getDisableSwipeToNext() && dy < 0 && pullingDownOffset != 0) {
                     pullingDownOffset += dy;
                     if (pullingDownOffset < 0) {
                         dy = (int) pullingDownOffset;
@@ -6315,7 +6325,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (!foundTopView) {
                     scrolled = super.scrollVerticallyBy(dy, recycler, state);
                 }
-                if (!CherrygramConfig.INSTANCE.getDisableSwipeToNext() && dy > 0 && scrolled == 0 && (ChatObject.isChannel(currentChat) && !currentChat.megagroup || isTopic) && chatMode != MODE_SAVED  && chatListView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING && !chatListView.isFastScrollAnimationRunning() && !chatListView.isMultiselect() && reportType < 0) {
+                if (!CherrygramChatsConfig.INSTANCE.getDisableSwipeToNext() && dy > 0 && scrolled == 0 && (ChatObject.isChannel(currentChat) && !currentChat.megagroup || isTopic) && chatMode != MODE_SAVED  && chatListView.getScrollState() == RecyclerView.SCROLL_STATE_DRAGGING && !chatListView.isFastScrollAnimationRunning() && !chatListView.isMultiselect() && reportType < 0) {
                     if (pullingDownOffset == 0 && pullingDownDrawable != null) {
                         if (nextChannels != null && !nextChannels.isEmpty()) {
                             pullingDownDrawable.updateDialog(nextChannels.get(0));
@@ -6451,7 +6461,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         checkTextureViewPosition = true;
                         scrollingChatListView = true;
 
-                        if (CherrygramConfig.INSTANCE.getHideKeyboardOnScroll()) {
+                        if (CherrygramChatsConfig.INSTANCE.getHideKeyboardOnScroll()) {
                             InputMethodManager imm = (InputMethodManager) getParentActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                             imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
                         }
@@ -9348,7 +9358,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             });
 
             replyButton.setOnLongClickListener(v -> {
-                if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                     v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                 }
                 getChatsHelper().makeReplyButtonLongClick(this);
@@ -10036,7 +10046,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 searchCalendarButton.setVisibility(View.GONE);
                 searchUserButton.setVisibility(View.GONE);
                 searchFilterButton.setVisibility(View.GONE);
-                CherrygramConfig.INSTANCE.setMessagesSearchFilter(CherrygramConfig.FILTER_NONE);
+                CherrygramChatsConfig.INSTANCE.setMessagesSearchFilter(CherrygramChatsConfig.FILTER_NONE);
                 searchingForUser = true;
                 searchingUserMessages = null;
                 searchingChatMessages = null;
@@ -15175,7 +15185,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     updateReactionsMentionButton(true);
                 }
                 getDownloadController().checkUnviewedDownloads(messageCell.getId(), dialog_id);
-                boolean allowPlayEffect = !CherrygramConfig.INSTANCE.getDisablePremStickAutoPlay() && (messageObject.getEffect() != null || ((messageObject.messageOwner.media != null && !messageObject.messageOwner.media.nopremium) || (messageObject.isAnimatedEmojiStickerSingle() && dialog_id > 0)));
+                boolean allowPlayEffect = !CherrygramCoreConfig.INSTANCE.getDisablePremStickAutoPlay() && (messageObject.getEffect() != null || ((messageObject.messageOwner.media != null && !messageObject.messageOwner.media.nopremium) || (messageObject.isAnimatedEmojiStickerSingle() && dialog_id > 0)));
                 if ((chatListItemAnimator == null || !chatListItemAnimator.isRunning()) && (!messageObject.isOutOwner() || messageObject.forcePlayEffect) && allowPlayEffect && !messageObject.messageOwner.premiumEffectWasPlayed && (messageObject.isPremiumSticker() || messageCell.getEffect() != null || messageObject.isAnimatedEmojiStickerSingle()) && emojiAnimationsOverlay.isIdle() && emojiAnimationsOverlay.checkPosition(messageCell, chatListViewPaddingTop, chatListView.getMeasuredHeight() - blurredViewBottomOffset)) {
                     emojiAnimationsOverlay.onTapItem(messageCell, ChatActivity.this, false);
                 } else if (messageObject.isAnimatedAnimatedEmoji()) {
@@ -17160,7 +17170,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     }
                 } else {
                     if (avatarContainer != null && avatarContainer.getLayoutParams() != null) {
-                        if (CherrygramConfig.INSTANCE.getCenterChatTitle()) {
+                        if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) {
                             ((ViewGroup.MarginLayoutParams) avatarContainer.getLayoutParams()).rightMargin = (UserObject.isReplyUser(currentUser) || isComments) ? AndroidUtilities.dp(40) : AndroidUtilities.dp(0);
                         } else {
                             ((ViewGroup.MarginLayoutParams) avatarContainer.getLayoutParams()).rightMargin = AndroidUtilities.dp(40);
@@ -18239,7 +18249,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
                     int newVisibility;
 
-                    if ((chatMode == MODE_SCHEDULED || !allowChatActions || selectedMessagesIds[0].size() != 0 && selectedMessagesIds[1].size() != 0) && CherrygramConfig.INSTANCE.getLeftBottomButton() == CherrygramConfig.LEFT_BUTTON_REPLY) {
+                    if ((chatMode == MODE_SCHEDULED || !allowChatActions || selectedMessagesIds[0].size() != 0 && selectedMessagesIds[1].size() != 0) && CherrygramChatsConfig.INSTANCE.getLeftBottomButton() == CherrygramChatsConfig.LEFT_BUTTON_REPLY) {
                         newVisibility = View.GONE;
                     } else if (selectedCount == 1) {
                         newVisibility = View.VISIBLE;
@@ -18257,7 +18267,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             for (int b = 0, N = selectedMessagesIds[a].size(); b < N; b++) {
                                 MessageObject message = selectedMessagesIds[a].valueAt(b);
                                 long groupId = message.getGroupId();
-                                if ((groupId == 0 || lastGroupId != 0 && lastGroupId != groupId || (ChatObject.isForum(currentChat) && !canSendMessageToTopic(message))) && CherrygramConfig.INSTANCE.getLeftBottomButton() == CherrygramConfig.LEFT_BUTTON_REPLY) {
+                                if ((groupId == 0 || lastGroupId != 0 && lastGroupId != groupId || (ChatObject.isForum(currentChat) && !canSendMessageToTopic(message))) && CherrygramChatsConfig.INSTANCE.getLeftBottomButton() == CherrygramChatsConfig.LEFT_BUTTON_REPLY) {
                                     newVisibility = View.GONE;
                                     break;
                                 }
@@ -21502,7 +21512,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         for (int a = 0, N = results.results.size(); a < N; a++) {
                             TLRPC.TL_pollAnswerVoters voters = results.results.get(a);
                             if (voters.chosen) {
-                                if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                                     pollView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                                 }
                                 if (voters.correct) {
@@ -28259,7 +28269,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         if (chatActivityEnterView != null) {
             chatActivityEnterView.preventInput = false;
         }
-        if (CherrygramConfig.INSTANCE.getHideMuteUnmuteButton()) {
+        if (CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton()) {
             updatePaddings();
         }
         textSelectionHintWasShowed = false;
@@ -28609,7 +28619,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     icons.add(selectedObject.messageOwner.ttl_period != 0 ? R.drawable.msg_delete_auto : R.drawable.msg_delete);
                 } else if (type == 1) {
                     if (currentChat != null) {
-                        if (CherrygramConfig.INSTANCE.getShowReply() && allowChatActions && !isInsideContainer) {
+                        if (CherrygramChatsConfig.INSTANCE.getShowReply() && allowChatActions && !isInsideContainer) {
                             items.add(LocaleController.getString("Reply", R.string.Reply));
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
@@ -28654,7 +28664,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             icons.add(R.drawable.msg_report);
                         }
                     } else {
-                        if (CherrygramConfig.INSTANCE.getShowReply() && selectedObject.getId() > 0 && allowChatActions && !isInsideContainer) {
+                        if (CherrygramChatsConfig.INSTANCE.getShowReply() && selectedObject.getId() > 0 && allowChatActions && !isInsideContainer) {
                             items.add(LocaleController.getString("Reply", R.string.Reply));
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
@@ -28698,7 +28708,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 icons.add(R.drawable.msg_fave);
                             }
                         }
-                        if (CherrygramConfig.INSTANCE.getShowReply() && (allowChatActions || !noforwardsOrPaidMedia && ChatObject.isChannelAndNotMegaGroup(currentChat) && !selectedObject.isSponsored() && selectedObject.contentType == 0 && chatMode == MODE_DEFAULT) && !isInsideContainer) {
+                        if (CherrygramChatsConfig.INSTANCE.getShowReply() && (allowChatActions || !noforwardsOrPaidMedia && ChatObject.isChannelAndNotMegaGroup(currentChat) && !selectedObject.isSponsored() && selectedObject.contentType == 0 && chatMode == MODE_DEFAULT) && !isInsideContainer) {
                             items.add(LocaleController.getString("Reply", R.string.Reply));
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
@@ -28925,7 +28935,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 icons.add(R.drawable.msg_unfave);
                             }
                         }
-                        if (CherrygramConfig.INSTANCE.getShowForward() && !selectedObject.isSponsored() && chatMode != MODE_QUICK_REPLIES && chatMode != MODE_SCHEDULED && (!selectedObject.needDrawBluredPreview() || selectedObject.hasExtendedMediaPreview()) &&
+                        if (CherrygramChatsConfig.INSTANCE.getShowForward() && !selectedObject.isSponsored() && chatMode != MODE_QUICK_REPLIES && chatMode != MODE_SCHEDULED && (!selectedObject.needDrawBluredPreview() || selectedObject.hasExtendedMediaPreview()) &&
                                 !selectedObject.isLiveLocation() && selectedObject.type != MessageObject.TYPE_PHONE_CALL && !noforwardsOrPaidMedia &&
                                 selectedObject.type != MessageObject.TYPE_GIFT_PREMIUM && selectedObject.type != MessageObject.TYPE_GIFT_PREMIUM_CHANNEL && selectedObject.type != MessageObject.TYPE_SUGGEST_PHOTO && !selectedObject.isWallpaperAction()
                                 && !message.isExpiredStory() && message.type != MessageObject.TYPE_STORY_MENTION && message.type != MessageObject.TYPE_GIFT_STARS) {
@@ -28985,7 +28995,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 items.add(LocaleController.getString("BlockContact", R.string.BlockContact));
                                 options.add(OPTION_REPORT_CHAT);
                                 icons.add(R.drawable.msg_block2);
-                            } else if (CherrygramConfig.INSTANCE.getShowReport()) {
+                            } else if (CherrygramChatsConfig.INSTANCE.getShowReport()) {
                                 items.add(LocaleController.getString("ReportChat", R.string.ReportChat));
                                 options.add(OPTION_REPORT_CHAT);
                                 icons.add(R.drawable.msg_report);
@@ -28997,7 +29007,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             icons.add(selectedObject.messageOwner.ttl_period != 0 ? R.drawable.msg_delete_auto : R.drawable.msg_delete);
                         }
                     } else {
-                        if (CherrygramConfig.INSTANCE.getShowReply() && allowChatActions && !isInsideContainer) {
+                        if (CherrygramChatsConfig.INSTANCE.getShowReply() && allowChatActions && !isInsideContainer) {
                             items.add(LocaleController.getString("Reply", R.string.Reply));
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
@@ -29110,17 +29120,17 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             Rect rect = new Rect();
 
             List<TLRPC.TL_availableReaction> availableReacts = getMediaDataController().getEnabledReactionsList();
-            boolean isReactionsViewAvailable = !isSecretChat() && !isInScheduleMode() && currentUser == null && message.hasReactions() && (!ChatObject.isChannel(currentChat) || currentChat.megagroup) && !availableReacts.isEmpty() && message.messageOwner.reactions.can_see_list && !message.isSecretMedia() && !CherrygramConfig.INSTANCE.getDisableReactionsOverlay();
+            boolean isReactionsViewAvailable = !isSecretChat() && !isInScheduleMode() && currentUser == null && message.hasReactions() && (!ChatObject.isChannel(currentChat) || currentChat.megagroup) && !availableReacts.isEmpty() && message.messageOwner.reactions.can_see_list && !message.isSecretMedia() && !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay();
             boolean isReactionsAvailable;
             if (message.isForwardedChannelPost()) {
                 TLRPC.ChatFull chatInfo = getMessagesController().getChatFull(-message.getFromChatId());
-                if (chatInfo == null && !CherrygramConfig.INSTANCE.getDisableReactionsOverlay()) {
+                if (chatInfo == null && !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay()) {
                     isReactionsAvailable = true;
                 } else {
-                    isReactionsAvailable = !isSecretChat() && chatMode != MODE_QUICK_REPLIES && !isInScheduleMode() && message.isReactionsAvailable() && (chatInfo != null && (!(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone) || chatInfo.paid_reactions_available)) && !availableReacts.isEmpty()&& !CherrygramConfig.INSTANCE.getDisableReactionsOverlay();;
+                    isReactionsAvailable = !isSecretChat() && chatMode != MODE_QUICK_REPLIES && !isInScheduleMode() && message.isReactionsAvailable() && (chatInfo != null && (!(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone) || chatInfo.paid_reactions_available)) && !availableReacts.isEmpty()&& !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay();;
                 }
             } else {
-                isReactionsAvailable = !message.isSecretMedia() && chatMode != MODE_QUICK_REPLIES && !isSecretChat() && !isInScheduleMode() && message.isReactionsAvailable() && (chatInfo != null && (!(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone) || chatInfo.paid_reactions_available) || (chatInfo == null && !ChatObject.isChannel(currentChat)) || currentUser != null) && !availableReacts.isEmpty() && !CherrygramConfig.INSTANCE.getDisableReactionsOverlay();;
+                isReactionsAvailable = !message.isSecretMedia() && chatMode != MODE_QUICK_REPLIES && !isSecretChat() && !isInScheduleMode() && message.isReactionsAvailable() && (chatInfo != null && (!(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone) || chatInfo.paid_reactions_available) || (chatInfo == null && !ChatObject.isChannel(currentChat)) || currentUser != null) && !availableReacts.isEmpty() && !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay();;
             }
             boolean showMessageSeen = !isReactionsViewAvailable && !isInScheduleMode() && currentChat != null && message.isOutOwner() && message.isSent() && !message.isEditing() && !message.isSending() && !message.isSendError() && !message.isContentUnread() && !message.isUnread() && (ConnectionsManager.getInstance(currentAccount).getCurrentTime() - message.messageOwner.date < getMessagesController().chatReadMarkExpirePeriod) && (ChatObject.isMegagroup(currentChat) || !ChatObject.isChannel(currentChat)) && chatInfo != null && chatInfo.participants_count <= getMessagesController().chatReadMarkSizeThreshold && !(message.messageOwner.action instanceof TLRPC.TL_messageActionChatJoinedByRequest) && (v instanceof ChatMessageCell);
             boolean showPrivateMessageSeen = !isReactionsViewAvailable && currentChat == null && currentEncryptedChat == null && (currentUser != null && !UserObject.isUserSelf(currentUser) && !UserObject.isReplyUser(currentUser) && !UserObject.isAnonymous(currentUser) && !currentUser.bot && !UserObject.isService(currentUser.id)) && (userInfo == null || !userInfo.read_dates_private) && !isInScheduleMode() && message.isOutOwner() && message.isSent() && !message.isEditing() && !message.isSending() && !message.isSendError() && !message.isContentUnread() && !message.isUnread() && (ConnectionsManager.getInstance(currentAccount).getCurrentTime() - message.messageOwner.date < getMessagesController().pmReadDateExpirePeriod) && !(message.messageOwner.action instanceof TLRPC.TL_messageActionChatJoinedByRequest) && (v instanceof ChatMessageCell);
@@ -29481,7 +29491,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
                 boolean showRateTranscription = selectedObject != null && selectedObject.isVoice() && selectedObject.messageOwner != null && getUserConfig().isPremium() && !TextUtils.isEmpty(selectedObject.messageOwner.voiceTranscription) && selectedObject.messageOwner != null && !selectedObject.messageOwner.voiceTranscriptionRated && selectedObject.messageOwner.voiceTranscriptionId != 0 && selectedObject.messageOwner.voiceTranscriptionOpen;
 
-                if (CherrygramConfig.INSTANCE.getShowSaveForNotifications() && !showRateTranscription && message.probablyRingtone() && currentEncryptedChat == null) {
+                if (CherrygramChatsConfig.INSTANCE.getShowSaveForNotifications() && !showRateTranscription && message.probablyRingtone() && currentEncryptedChat == null) {
                     ActionBarMenuSubItem cell = new ActionBarMenuSubItem(getParentActivity(), true, false, themeDelegate);
                     cell.setMinimumWidth(AndroidUtilities.dp(200));
                     cell.setTextAndIcon(LocaleController.getString("SaveForNotifications", R.string.SaveForNotifications), R.drawable.msg_tone_add);
@@ -32048,7 +32058,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     params.quick_reply_shortcut_id = getQuickReplyId();
                     getSendMessagesHelper().sendMessage(params);
                 }
-                getSendMessagesHelper().sendMessage(fmessages, did, CherrygramConfig.INSTANCE.getNoAuthorship(), false,true, 0);
+                getSendMessagesHelper().sendMessage(fmessages, did, CherrygramChatsConfig.INSTANCE.getNoAuthorship(), false,true, 0);
             }
             fragment.finishFragment();
             createUndoView();
@@ -36212,8 +36222,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
                 int isParticipant = participantsIDs.contains(user.id) ? ChatsHelper2.injectChatActivityAvatarArraySize(ChatActivity.this) : 0;
                 // Cherry finish
-                final boolean enableMention = CherrygramConfig.INSTANCE.getShowViewHistory() && (currentChat != null && (bottomOverlayChat == null || bottomOverlayChat.getVisibility() != View.VISIBLE) && (bottomOverlay == null || bottomOverlay.getVisibility() != View.VISIBLE));
-                final boolean enableSearchMessages = !CherrygramConfig.INSTANCE.getShowViewHistory() && (currentChat != null && (threadMessageId == 0 || isTopic) && (!ChatObject.isChannel(currentChat) || currentChat.megagroup));
+                final boolean enableMention = CherrygramChatsConfig.INSTANCE.getShowViewHistory() && (currentChat != null && (bottomOverlayChat == null || bottomOverlayChat.getVisibility() != View.VISIBLE) && (bottomOverlay == null || bottomOverlay.getVisibility() != View.VISIBLE));
+                final boolean enableSearchMessages = !CherrygramChatsConfig.INSTANCE.getShowViewHistory() && (currentChat != null && (threadMessageId == 0 || isTopic) && (!ChatObject.isChannel(currentChat) || currentChat.megagroup));
                 final AvatarPreviewer.MenuItem[] menuItems = new AvatarPreviewer.MenuItem[2 + (enableMention ? 1 : 0) + (enableSearchMessages ? 1 : 0) + isParticipant];
                 int a = 0;
                 menuItems[a++] = AvatarPreviewer.MenuItem.OPEN_PROFILE;
@@ -37617,7 +37627,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 //                        LaunchActivity.instance.checkAppUpdate(true, progressDialogCurrent);
                         LaunchActivity.instance.checkCherryUpdate(progressDialogCurrent);
                     }
-                } else if (CherrygramConfig.INSTANCE.isPlayStoreBuild()) {
+                } else if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
                     Browser.openUrl(getContext(), Extra.PLAYSTORE_APP_URL);
                 } else if (BuildVars.isHuaweiStoreApp()){
                     Browser.openUrl(getContext(), BuildVars.HUAWEI_STORE_URL);
@@ -37894,7 +37904,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 return;
             }
             fireworksOverlay.start();
-            if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                 fireworksOverlay.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
             }
         }
@@ -39188,7 +39198,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 themeDelegate.setCurrentTheme(result, themeDelegate.wallpaper,openAnimationStartTime != 0, null);
             });
         }
-        TLRPC.WallPaper wallPaper = CherrygramConfig.INSTANCE.getCustomWallpapers() ? chatThemeController.getDialogWallpaper(dialog_id) : null;
+        TLRPC.WallPaper wallPaper = chatThemeController.getDialogWallpaper(dialog_id);
         themeDelegate.setCurrentTheme(themeDelegate.chatTheme, wallPaper, openAnimationStartTime != 0, null);
     }
 
@@ -40816,11 +40826,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
     private boolean isBottomOverlaysInvisible() {
         createSearchContainer();
-        return bottomOverlayChat.getVisibility() == View.INVISIBLE && chatActivityEnterView.getVisibility() == View.INVISIBLE && bottomMessagesActionContainer.getVisibility() == View.INVISIBLE && searchContainer.getVisibility() == View.INVISIBLE && !isInPreviewMode() && !isInBubbleMode() && CherrygramConfig.INSTANCE.getHideMuteUnmuteButton();
+        return bottomOverlayChat.getVisibility() == View.INVISIBLE && chatActivityEnterView.getVisibility() == View.INVISIBLE && bottomMessagesActionContainer.getVisibility() == View.INVISIBLE && searchContainer.getVisibility() == View.INVISIBLE && !isInPreviewMode() && !isInBubbleMode() && CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton();
     }
 
     private boolean isMuteUnmuteButton() {
-        return (bottomOverlayChatText.getText() == LocaleController.getString("ChannelMute", R.string.ChannelMute) || bottomOverlayChatText.getText() == LocaleController.getString("ChannelUnmute", R.string.ChannelUnmute)) && CherrygramConfig.INSTANCE.getHideMuteUnmuteButton();
+        return (bottomOverlayChatText.getText() == LocaleController.getString("ChannelMute", R.string.ChannelMute) || bottomOverlayChatText.getText() == LocaleController.getString("ChannelUnmute", R.string.ChannelUnmute)) && CherrygramChatsConfig.INSTANCE.getHideMuteUnmuteButton();
     }
 
     private void updatePaddings() {

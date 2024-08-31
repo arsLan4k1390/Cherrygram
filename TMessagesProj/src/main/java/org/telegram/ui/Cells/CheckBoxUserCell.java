@@ -26,8 +26,6 @@ import org.telegram.ui.Components.CombinedDrawable;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Switch;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class CheckBoxUserCell extends FrameLayout {
 
     private SimpleTextView textView;

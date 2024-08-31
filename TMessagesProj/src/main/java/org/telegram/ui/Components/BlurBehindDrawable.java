@@ -20,7 +20,7 @@ import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ChatActivity;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class BlurBehindDrawable {
 
@@ -151,7 +151,7 @@ public class BlurBehindDrawable {
             wasDraw = true;
 
             if (instantCameraView != null && !instantCameraView.flipAnimationInProgress) {
-                if (CherrygramConfig.INSTANCE.getWhiteBackground()) {
+                if (CherrygramCameraConfig.INSTANCE.getWhiteBackground()) {
                     canvas.drawColor(ColorUtils.blendARGB(0x1a000000, ColorUtils.setAlphaComponent(Color.WHITE, (int) (Color.alpha(Color.WHITE) * alpha / 2f)), flashProgress));
                 } else {
                     canvas.drawColor(ColorUtils.blendARGB(ColorUtils.setAlphaComponent(Color.WHITE, (int) (Color.alpha(Color.WHITE) * alpha / 2f)), 0x1a000000, 1f - flashProgress));

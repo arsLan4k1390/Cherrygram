@@ -37,10 +37,8 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.utils.BitmapsCache;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -49,7 +47,7 @@ import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class RLottieDrawable extends BitmapDrawable implements Animatable, BitmapsCache.Cacheable {
 
@@ -1275,7 +1273,7 @@ public class RLottieDrawable extends BitmapDrawable implements Animatable, Bitma
             } else if (nextRenderingBitmap != null && (renderingBitmap == null || (timeDiff >= timeCheck && !skipFrameUpdate))) {
                 if (vibrationPattern != null && currentParentView != null && allowVibration) {
                     Integer force = vibrationPattern.get(currentFrame - 1);
-                    if (force != null && !CherrygramConfig.INSTANCE.getDisableVibration()) {
+                    if (force != null && !CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                         currentParentView.performHapticFeedback(force == 1 ? HapticFeedbackConstants.LONG_PRESS : HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                     }
                 }
