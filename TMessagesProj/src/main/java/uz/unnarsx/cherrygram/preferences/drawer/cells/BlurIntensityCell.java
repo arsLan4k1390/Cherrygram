@@ -15,7 +15,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.SeekBarView;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class BlurIntensityCell extends FrameLayout {
 
@@ -62,14 +62,14 @@ public class BlurIntensityCell extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         textPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteValueText));
-        canvas.drawText("" + CherrygramConfig.INSTANCE.getDrawerBlurIntensity(), getMeasuredWidth() - AndroidUtilities.dp(39), AndroidUtilities.dp(28), textPaint);
+        canvas.drawText("" + CherrygramAppearanceConfig.INSTANCE.getDrawerBlurIntensity(), getMeasuredWidth() - AndroidUtilities.dp(39), AndroidUtilities.dp(28), textPaint);
         canvas.drawLine(LocaleController.isRTL ? 0 : AndroidUtilities.dp(20), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? AndroidUtilities.dp(20) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), heightMeasureSpec);
-        sizeBar.setProgress((CherrygramConfig.INSTANCE.getDrawerBlurIntensity() - startIntensity) / (float) (endIntensity - startIntensity));
+        sizeBar.setProgress((CherrygramAppearanceConfig.INSTANCE.getDrawerBlurIntensity() - startIntensity) / (float) (endIntensity - startIntensity));
     }
 
     @Override

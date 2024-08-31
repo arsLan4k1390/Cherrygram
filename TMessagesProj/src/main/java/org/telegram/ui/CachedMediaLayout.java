@@ -66,8 +66,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifierLayout.ChildLayout {
 
     private static final int PAGE_TYPE_CHATS = 0;

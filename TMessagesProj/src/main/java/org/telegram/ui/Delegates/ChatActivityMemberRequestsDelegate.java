@@ -32,8 +32,6 @@ import org.telegram.ui.Components.SizeNotifierFrameLayout;
 
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class ChatActivityMemberRequestsDelegate {
 
     private final BaseFragment fragment;

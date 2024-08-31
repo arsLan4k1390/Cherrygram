@@ -29,8 +29,6 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Reactions.ReactionsUtils;
 import org.telegram.ui.Components.Switch;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class AvailableReactionCell extends FrameLayout {
     private SimpleTextView textView;
     private BackupImageView imageView;

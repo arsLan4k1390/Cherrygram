@@ -36,8 +36,6 @@ import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.FlickerLoadingView;
 import org.telegram.ui.Components.LayoutHelper;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class LocationCell extends FrameLayout {
 
     private AnimatedTextView nameTextView;

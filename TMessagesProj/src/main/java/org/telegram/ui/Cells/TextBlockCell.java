@@ -20,8 +20,6 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class TextBlockCell extends FrameLayout {
 
     private TextView textView;

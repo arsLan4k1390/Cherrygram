@@ -125,7 +125,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Stack;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.misc.Constants;
 
 public class DialogCell extends BaseCell implements StoriesListPlaceProvider.AvatarOverlaysView {
@@ -1228,7 +1229,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         } else if (chat.fake) {
                             drawScam = 2;
                             Theme.dialogs_fakeDrawable.checkText();
-                        } else if (DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0 && !CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+                        } else if (DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0 && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
                             drawPremium = true;
                             nameLayoutEllipsizeByGradient = true;
                             emojiStatus.center = LocaleController.isRTL;
@@ -1246,7 +1247,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         } else {
                             drawVerified =!forbidVerified && user.verified;
                         }
-                        drawPremium = MessagesController.getInstance(currentAccount).isPremiumUser(user) && UserConfig.getInstance(currentAccount).clientUserId != user.id && user.id != 0 && !CherrygramConfig.INSTANCE.getDisablePremiumStatuses();
+                        drawPremium = MessagesController.getInstance(currentAccount).isPremiumUser(user) && UserConfig.getInstance(currentAccount).clientUserId != user.id && user.id != 0 && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses();
                         if (drawPremium) {
                             Long emojiStatusId = UserObject.getEmojiStatusDocumentId(user);
                             emojiStatus.center = LocaleController.isRTL;
@@ -3231,7 +3232,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         if (isSliding && !swipeCanceled) {
             boolean prevValue = drawRevealBackground;
             drawRevealBackground = Math.abs(translationX) >= getMeasuredWidth() * 0.45f;
-            if (prevValue != drawRevealBackground && archiveHidden == SharedConfig.archiveHidden && !CherrygramConfig.INSTANCE.getDisableVibration()) {
+            if (prevValue != drawRevealBackground && archiveHidden == SharedConfig.archiveHidden && !CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                 try {
                     performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                 } catch (Exception ignore) {}

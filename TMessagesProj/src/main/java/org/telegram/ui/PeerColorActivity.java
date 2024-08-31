@@ -99,8 +99,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PeerColorActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private final boolean isChannel;

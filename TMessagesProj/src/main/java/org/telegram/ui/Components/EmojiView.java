@@ -144,7 +144,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class EmojiView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
@@ -2477,7 +2477,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                 } else if (event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP) {
                     backspacePressed = false;
                     if (!backspaceOnce) {
-                        if (delegate != null && delegate.onBackspace() && !CherrygramConfig.INSTANCE.getDisableVibration()) {
+                        if (delegate != null && delegate.onBackspace() && !CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                             backspaceButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                         }
                     }
@@ -2486,7 +2486,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                 return true;
             }
         };
-        backspaceButton.setHapticFeedbackEnabled(!CherrygramConfig.INSTANCE.getDisableVibration());
+        backspaceButton.setHapticFeedbackEnabled(!CherrygramChatsConfig.INSTANCE.getDisableVibration());
         backspaceButton.setImageResource(R.drawable.smiles_tab_clear);
         backspaceButton.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_emojiPanelBackspace), PorterDuff.Mode.MULTIPLY));
         backspaceButton.setScaleType(ImageView.ScaleType.CENTER);
@@ -5148,7 +5148,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
             if (!backspacePressed) {
                 return;
             }
-            if (delegate != null && delegate.onBackspace() && !CherrygramConfig.INSTANCE.getDisableVibration()) {
+            if (delegate != null && delegate.onBackspace() && !CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                 backspaceButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
             }
             backspaceOnce = true;

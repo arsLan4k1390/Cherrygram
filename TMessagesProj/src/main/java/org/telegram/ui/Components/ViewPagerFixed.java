@@ -22,7 +22,6 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.Gravity;
@@ -57,7 +56,7 @@ import org.telegram.ui.ActionBar.Theme;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ViewPagerFixed extends FrameLayout {
 
@@ -1296,7 +1295,7 @@ public class ViewPagerFixed extends FrameLayout {
         ValueAnimator tabsAnimator;
         private float animationValue;
 
-        int tabStyle = CherrygramConfig.INSTANCE.getTabStyle();
+        int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
 
         public TabsView(Context context) {
             this(context, false, 8, null);
@@ -1316,13 +1315,13 @@ public class ViewPagerFixed extends FrameLayout {
             deletePaint.setStrokeWidth(dp(1.5f));
 
             selectorDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, null);
-            float rad = AndroidUtilities.dpf2(tabStyle == CherrygramConfig.TAB_STYLE_VKUI ? 10 : tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? 30 : 3);
-            if (tabStyle == CherrygramConfig.TAB_STYLE_ROUNDED || tabStyle >= CherrygramConfig.TAB_STYLE_VKUI) {
+            float rad = AndroidUtilities.dpf2(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 10 : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 30 : 3);
+            if (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_ROUNDED || tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
                 selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
             } else {
                 selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
             }
-            selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey, resourcesProvider), tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
+            selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey, resourcesProvider), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
 
             setHorizontalScrollBarEnabled(false);
             listView = new RecyclerListView(context) {
@@ -1366,9 +1365,9 @@ public class ViewPagerFixed extends FrameLayout {
                 ((DefaultItemAnimator) listView.getItemAnimator()).setDelayAnimations(false);
             }
 
-            listView.setSelectorType(tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 100 : tabsSelectorType);
+            listView.setSelectorType(tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 100 : tabsSelectorType);
             if (tabsSelectorType < 3) listView.setSelectorRadius(6);
-            listView.setSelectorDrawableColor(tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? 0x00 : Theme.getColor(selectorColorKey, resourcesProvider));
+            listView.setSelectorDrawableColor(tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x00 : Theme.getColor(selectorColorKey, resourcesProvider));
             listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) {
                 @Override
                 public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
@@ -1659,16 +1658,16 @@ public class ViewPagerFixed extends FrameLayout {
                             indicatorWidth = (int) AndroidUtilities.lerp(lastDrawnIndicatorW, indicatorWidth, indicatorProgress2);
                         }
                         selectorDrawable.setBounds(
-                                indicatorX - (tabStyle == CherrygramConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
-                                (int) (tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(15) * (1f - hideProgress) : height - AndroidUtilities.dpr(4) + hideProgress * AndroidUtilities.dpr(4)),
-                                indicatorX + indicatorWidth + (tabStyle == CherrygramConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
-                                (int) (tabStyle >= CherrygramConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(15) * (1f - hideProgress) : height + hideProgress * AndroidUtilities.dpr(4))
+                                indicatorX - (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
+                                (int) (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(15) * (1f - hideProgress) : height - AndroidUtilities.dpr(4) + hideProgress * AndroidUtilities.dpr(4)),
+                                indicatorX + indicatorWidth + (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
+                                (int) (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(15) * (1f - hideProgress) : height + hideProgress * AndroidUtilities.dpr(4))
                         );
-                        if (tabStyle >= CherrygramConfig.TAB_STYLE_VKUI && CherrygramConfig.INSTANCE.getTabStyleStroke()) {
+                        if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI && CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
     //                    selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), 0));
                             selectorDrawable.setStroke(AndroidUtilities.dp(1), Theme.getColor(activeTextColorKey));
                         }
-                        if (tabStyle != CherrygramConfig.TAB_STYLE_TEXT)
+                        if (tabStyle != CherrygramAppearanceConfig.TAB_STYLE_TEXT)
                             selectorDrawable.draw(canvas);
                         }
                 }

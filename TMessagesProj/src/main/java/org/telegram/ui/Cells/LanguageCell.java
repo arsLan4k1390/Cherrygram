@@ -22,8 +22,6 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RadioButton;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class LanguageCell extends FrameLayout {
 
     private RadioButton radioButton;

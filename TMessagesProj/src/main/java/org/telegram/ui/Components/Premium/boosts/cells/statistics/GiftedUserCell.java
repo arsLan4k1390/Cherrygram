@@ -23,8 +23,6 @@ import org.telegram.ui.Components.LayoutHelper;
 
 import java.util.Date;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 @SuppressLint("ViewConstructor")
 public class GiftedUserCell extends UserCell {
 

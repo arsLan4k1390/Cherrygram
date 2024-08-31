@@ -73,7 +73,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ProxySettingsActivity extends BaseFragment {
 
@@ -197,7 +197,7 @@ public class ProxySettingsActivity extends BaseFragment {
 
     @Override
     public boolean isLightStatusBar() {
-        if (!CherrygramConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
+        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
         int color = getThemedColor(Theme.key_windowBackgroundWhite);
         return ColorUtils.calculateLuminance(color) > 0.7f;
     }
@@ -211,7 +211,7 @@ public class ProxySettingsActivity extends BaseFragment {
             actionBar.setOccupyStatusBar(false);
         }
 
-        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
             actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
             actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
@@ -800,7 +800,7 @@ public class ProxySettingsActivity extends BaseFragment {
         ArrayList<ThemeDescription> arrayList = new ArrayList<>();
         arrayList.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
 
-        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             arrayList.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
             arrayList.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
             arrayList.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));

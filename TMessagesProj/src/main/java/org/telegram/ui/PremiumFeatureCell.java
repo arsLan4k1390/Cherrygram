@@ -25,8 +25,6 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.LayoutHelper;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PremiumFeatureCell extends FrameLayout {
 
     private final SimpleTextView title;

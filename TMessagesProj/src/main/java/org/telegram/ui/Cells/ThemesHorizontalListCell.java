@@ -63,7 +63,7 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class ThemesHorizontalListCell extends RecyclerListView implements NotificationCenter.NotificationCenterDelegate {
 
@@ -198,7 +198,7 @@ public class ThemesHorizontalListCell extends RecyclerListView implements Notifi
                     if (action == MotionEvent.ACTION_DOWN) {
                         pressed = true;
                     } else {
-                        if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                             performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                         }
                         showOptionsForTheme(themeInfo);

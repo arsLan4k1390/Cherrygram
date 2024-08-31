@@ -2,6 +2,7 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.dpf2;
+import static org.telegram.messenger.LocaleController.getString;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -73,7 +74,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.Extra;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
@@ -150,27 +151,27 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
             if (type == PAGE_PROFILE) {
                 if (user.premium && UserObject.getProfileColorId(user) != -1) {
-                    selectedColor = CherrygramConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(user) : -1;
+                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(user) : -1;
                 } else {
-                    selectedColor = CherrygramConfig.INSTANCE.getProfileBackgroundColor() ? Constants.PROFILE_BACKGROUND_COLOR_ID_RED : -1;
+                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? Constants.PROFILE_BACKGROUND_COLOR_ID_RED : -1;
                 }
 
                 if (user.premium && UserObject.getProfileEmojiId(user) != 0) {
-                    selectedEmoji = CherrygramConfig.INSTANCE.getProfileBackgroundEmoji() ? UserObject.getProfileEmojiId(user) : 0;
+                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? UserObject.getProfileEmojiId(user) : 0;
                 } else {
-                    selectedEmoji = CherrygramConfig.INSTANCE.getProfileBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
+                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
                 }
             } else {
                 if (user.premium && UserObject.getColorId(user) != -1) {
-                    selectedColor = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : -1;
+                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(user) : -1;
                 } else {
-                    selectedColor = CherrygramConfig.INSTANCE.getReplyCustomColors() ? Constants.REPLY_BACKGROUND_COLOR_ID : -1;
+                    selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? Constants.REPLY_BACKGROUND_COLOR_ID : -1;
                 }
 
                 if (user.premium && UserObject.getEmojiId(user) != 0) {
-                    selectedEmoji = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
+                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(user) : 0;
                 } else {
-                    selectedEmoji = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
+                    selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
                 }
             }
 
@@ -249,12 +250,12 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                         case VIEW_TYPE_HEADER: {
                             HeaderCell headerCell = (HeaderCell) holder.itemView;
                             if (position == infoHeaderRow) {
-                                headerCell.setText(LocaleController.getString("Info", R.string.Info));
+                                headerCell.setText(getString(R.string.Info));
                             } else if (position == headerRow) {
                                 if (type == PAGE_MESSAGE) {
-                                    headerCell.setText(LocaleController.getString("CP_CustomizeReplyBackground", R.string.CP_CustomizeMessage));
+                                    headerCell.setText(getString(R.string.CP_CustomizeMessage));
                                 } else {
-                                    headerCell.setText(LocaleController.getString("CP_CustomizeProfileBackground", R.string.CP_CustomizeProfile));
+                                    headerCell.setText(getString(R.string.CP_CustomizeProfile));
                                 }
                             }
                             break;
@@ -263,25 +264,25 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             TextCheckCell switchCell = (TextCheckCell) holder.itemView;
                             switchCell.updateRTL();
                             if (position == timeWithSecondsSwitchRow) {
-                                switchCell.setTextAndValueAndCheck(LocaleController.getString("CP_ShowSeconds", R.string.CP_ShowSeconds), LocaleController.getString("CP_ShowSeconds_Desc", R.string.CP_ShowSeconds_Desc), CherrygramConfig.INSTANCE.getShowSeconds(), true, true);
+                                switchCell.setTextAndValueAndCheck(getString(R.string.CP_ShowSeconds), getString(R.string.CP_ShowSeconds_Desc), CherrygramAppearanceConfig.INSTANCE.getShowSeconds(), true, true);
                             } else if (position == premiumStatusSwitchRow) {
-                                switchCell.setTextAndValueAndCheck(LocaleController.getString("CP_DisablePremiumStatuses", R.string.CP_DisablePremiumStatuses), LocaleController.getString("CP_DisablePremiumStatuses_Desc", R.string.CP_DisablePremiumStatuses_Desc), CherrygramConfig.INSTANCE.getDisablePremiumStatuses(), true, true);
+                                switchCell.setTextAndValueAndCheck(getString(R.string.CP_DisablePremiumStatuses), getString(R.string.CP_DisablePremiumStatuses_Desc), CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses(), true, true);
                             } else if (position == replyBackgroundSwitchRow) {
-                                switchCell.setTextAndCheck(LocaleController.getString("CP_ReplyBackground", R.string.CP_ReplyBackground), CherrygramConfig.INSTANCE.getReplyBackground(), false);
+                                switchCell.setTextAndCheck(getString(R.string.CP_ReplyBackground), CherrygramAppearanceConfig.INSTANCE.getReplyBackground(), false);
                             } else if (position == replyColorSwitchRow) {
-                                switchCell.setTextAndCheck(LocaleController.getString("CP_ReplyCustomColors", R.string.CP_ReplyCustomColors), CherrygramConfig.INSTANCE.getReplyCustomColors(), false);
+                                switchCell.setTextAndCheck(getString(R.string.CP_ReplyCustomColors), CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors(), false);
                             } else if (position == replyEmojiSwitchRow) {
-                                switchCell.setTextAndCheck(LocaleController.getString("CP_ReplyBackgroundEmoji", R.string.CP_ReplyBackgroundEmoji), CherrygramConfig.INSTANCE.getReplyBackgroundEmoji(), false);
+                                switchCell.setTextAndCheck(getString(R.string.CP_ReplyBackgroundEmoji), CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji(), false);
                             } else if (position == channelPreviewSwitchRow) {
-                                switchCell.setTextAndCheck(LocaleController.getString("CP_ProfileChannelPreview", R.string.CP_ProfileChannelPreview), CherrygramConfig.INSTANCE.getProfileChannelPreview(), false);
+                                switchCell.setTextAndCheck(getString(R.string.CP_ProfileChannelPreview), CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview(), false);
                             } else if (position == birthdayPreviewSwitchRow) {
-                                switchCell.setTextAndCheck(LocaleController.getString("CP_ProfileBirthDatePreview", R.string.CP_ProfileBirthDatePreview), CherrygramConfig.INSTANCE.getProfileBirthDatePreview(), false);
+                                switchCell.setTextAndCheck(getString(R.string.CP_ProfileBirthDatePreview), CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview(), false);
                             } else if (position == businessPreviewSwitchRow) {
-                                switchCell.setTextAndCheck(LocaleController.getString("CP_ProfileBusinessPreview", R.string.CP_ProfileBusinessPreview), CherrygramConfig.INSTANCE.getProfileBusinessPreview(), false);
+                                switchCell.setTextAndCheck(getString(R.string.CP_ProfileBusinessPreview), CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview(), false);
                             } else if (position == profileBackgroundSwitchRow) {
-                                switchCell.setTextAndCheck(LocaleController.getString("CP_ProfileBackgroundColor", R.string.CP_ProfileBackgroundColor), CherrygramConfig.INSTANCE.getProfileBackgroundColor(), false);
+                                switchCell.setTextAndCheck(getString(R.string.CP_ProfileBackgroundColor), CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor(), false);
                             } else if (position == profileEmojiSwitchRow) {
-                                switchCell.setTextAndCheck(LocaleController.getString("CP_ProfileBackgroundEmoji", R.string.CP_ProfileBackgroundEmoji), CherrygramConfig.INSTANCE.getProfileBackgroundEmoji(), true);
+                                switchCell.setTextAndCheck(getString(R.string.CP_ProfileBackgroundEmoji), CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji(), true);
                             }
                             break;
                         }
@@ -289,7 +290,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
                             textSettingsCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                             if (position == showDcIdSwitchRow) {
-                                textSettingsCell.setTextAndValue(LocaleController.getString("AP_ShowID", R.string.AP_ShowID), CGResourcesHelper.getShowDcIdText(), true);
+                                textSettingsCell.setTextAndValue(getString(R.string.AP_ShowID), CGResourcesHelper.getShowDcIdText(), true);
                             }
                             break;
                         }
@@ -319,7 +320,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                     sb.append(CGResourcesHelper.INSTANCE.getDCGeo(me.photo.dc_id));
                                 } else {
                                     sb.append("DC: ");
-                                    sb.append(LocaleController.getString("NumberUnknown", R.string.NumberUnknown));
+                                    sb.append(getString(R.string.NumberUnknown));
                                 }
                                 detailCell.setTextAndValue("ID: " + me.id, sb, false);
 
@@ -334,11 +335,11 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                 TLRPC.UserFull meFull = MessagesController.getInstance(currentAccount).getUserFull(me.id);
                                 if (meFull != null && meFull.birthday != null) {
                                     String date = UserInfoActivity.birthdayString(meFull.birthday);
-                                    detailCell.setTextAndValue(date + "", LocaleController.getString("ProfileBirthday", R.string.ProfileBirthday), false);
+                                    detailCell.setTextAndValue(date + "", getString(R.string.ProfileBirthday), false);
                                 } else {
                                     final int age = Period.between(LocalDate.of(2022, 1, 15), LocalDate.now()).getYears();
                                     String date = LocaleController.formatPluralString("ProfileBirthdayValueYear", age, birthdayString());
-                                    detailCell.setTextAndValue(date + "", LocaleController.getString("ProfileBirthday", R.string.ProfileBirthday), false);
+                                    detailCell.setTextAndValue(date + "", getString(R.string.ProfileBirthday), false);
                                 }
                                 detailCell.textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, getResourceProvider()));
 
@@ -351,10 +352,10 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                 detailCell.setImageClickListener(v -> Extra.INSTANCE.addBirthdayToCalendar(getParentActivity(), getUserConfig().getCurrentUser().id));
                             } else if (position == businessHoursPreviewRow) {
                                 detailCell.textView.setTextColor(Theme.getColor(Theme.key_avatar_nameInMessageGreen, getResourceProvider()));
-                                detailCell.setTextAndValue(LocaleController.getString("BusinessHoursProfileNowOpen", R.string.BusinessHoursProfileNowOpen), LocaleController.getString("BusinessHoursProfile", R.string.BusinessHoursProfile), false);
+                                detailCell.setTextAndValue(getString(R.string.BusinessHoursProfileNowOpen), getString(R.string.BusinessHoursProfile), false);
                             } else if (position == businessLocationPreviewRow) {
                                 detailCell.textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, getResourceProvider()));
-                                detailCell.setTextAndValue("Cherrygram, Abu-Dhabi", LocaleController.getString("BusinessProfileLocation", R.string.BusinessProfileLocation), false);
+                                detailCell.setTextAndValue("Cherrygram, Abu-Dhabi", getString(R.string.BusinessProfileLocation), false);
                             }
                             break;
                         }
@@ -400,26 +401,26 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 final TLRPC.User me = getUserConfig().getCurrentUser();
 
                 if (position == timeWithSecondsSwitchRow) {
-                    CherrygramConfig.INSTANCE.toggleShowSeconds();
+                    CherrygramAppearanceConfig.INSTANCE.toggleShowSeconds();
                     if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getShowSeconds());
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getShowSeconds());
                     }
                     LocaleController.getInstance().recreateFormatters();
                     parentLayout.rebuildAllFragmentViews(true, true);
                 } else if (position == premiumStatusSwitchRow) {
-                    CherrygramConfig.INSTANCE.toggleDisablePremiumStatuses();
+                    CherrygramAppearanceConfig.INSTANCE.toggleDisablePremiumStatuses();
                     if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getDisablePremiumStatuses());
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses());
                     }
 
-                    if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+                    if (!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
                         profilePage.profilePreview.titleView.setRightDrawable(profilePage.profilePreview.statusEmoji);
                         profilePage.profilePreview.statusEmoji.play();
-                        profilePage.profilePreview.subtitleView.setText(LocaleController.getString(R.string.Online));
+                        profilePage.profilePreview.subtitleView.setText(getString(R.string.Online));
                     } else {
                         profilePage.profilePreview.titleView.setRightDrawable(0);
-                        String tgPremium = CherrygramConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
-                        profilePage.profilePreview.subtitleView.setText(LocaleController.getString(R.string.Online) + tgPremium);
+                        String tgPremium = CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
+                        profilePage.profilePreview.subtitleView.setText(getString(R.string.Online) + tgPremium);
                     }
 
                     updateMessages();
@@ -430,44 +431,44 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                         profilePage.updateRows();
                     }
                 } else if (position == replyBackgroundSwitchRow) {
-                    CherrygramConfig.INSTANCE.toggleReplyBackground();
+                    CherrygramAppearanceConfig.INSTANCE.toggleReplyBackground();
                     if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getReplyBackground());
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getReplyBackground());
                     }
 
                     updateMessages();
                 } else if (position == replyColorSwitchRow) {
-                    CherrygramConfig.INSTANCE.toggleReplyCustomColors();
+                    CherrygramAppearanceConfig.INSTANCE.toggleReplyCustomColors();
                     if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getReplyCustomColors());
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors());
                     }
 
                     if (me.premium && UserObject.getColorId(me) != -1) {
-                        selectedColor = CherrygramConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(me) : -1;
+                        selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? UserObject.getColorId(me) : -1;
                     } else {
-                        selectedColor = CherrygramConfig.INSTANCE.getReplyCustomColors() ? Constants.REPLY_BACKGROUND_COLOR_ID : -1;
+                        selectedColor = CherrygramAppearanceConfig.INSTANCE.getReplyCustomColors() ? Constants.REPLY_BACKGROUND_COLOR_ID : -1;
                     }
 
                     updateMessages();
                 } else if (position == replyEmojiSwitchRow) {
-                    CherrygramConfig.INSTANCE.toggleReplyBackgroundEmoji();
+                    CherrygramAppearanceConfig.INSTANCE.toggleReplyBackgroundEmoji();
                     if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getReplyBackgroundEmoji());
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji());
                     }
 
                     if (me.premium && UserObject.getEmojiId(me) != 0) {
-                        selectedEmoji = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(me) : 0;
+                        selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? UserObject.getEmojiId(me) : 0;
                     } else {
-                        selectedEmoji = CherrygramConfig.INSTANCE.getReplyBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
+                        selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
                     }
 
                     updateMessages();
                 } else if (position == channelPreviewRow) {
                     Browser.openUrl(getParentActivity(), "https://t.me/Cherry_gram");
                 } else if (position == channelPreviewSwitchRow) {
-                    CherrygramConfig.INSTANCE.toggleProfileChannelPreview();
+                    CherrygramAppearanceConfig.INSTANCE.toggleProfileChannelPreview();
                     if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getProfileChannelPreview());
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview());
                     }
 
                     listAdapter.notifyItemChanged(channelPreviewSwitchRow);
@@ -484,17 +485,17 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     ArrayList<String> configStringKeys = new ArrayList<>();
                     ArrayList<Integer> configValues = new ArrayList<>();
 
-                    configStringKeys.add(LocaleController.getString("Disable", R.string.Disable));
-                    configValues.add(CherrygramConfig.ID_DC_NONE);
+                    configStringKeys.add(getString(R.string.Disable));
+                    configValues.add(CherrygramAppearanceConfig.ID_DC_NONE);
 
                     configStringKeys.add("ID");
-                    configValues.add(CherrygramConfig.ID_ONLY);
+                    configValues.add(CherrygramAppearanceConfig.ID_ONLY);
 
                     configStringKeys.add("ID + DC");
-                    configValues.add(CherrygramConfig.ID_DC);
+                    configValues.add(CherrygramAppearanceConfig.ID_DC);
 
-                    PopupHelper.show(configStringKeys, LocaleController.getString("AP_ShowID", R.string.AP_ShowID), configValues.indexOf(CherrygramConfig.INSTANCE.getShowIDDC()), context, i -> {
-                        CherrygramConfig.INSTANCE.setShowIDDC(configValues.get(i));
+                    PopupHelper.show(configStringKeys, getString(R.string.AP_ShowID), configValues.indexOf(CherrygramAppearanceConfig.INSTANCE.getShowIDDC()), context, i -> {
+                        CherrygramAppearanceConfig.INSTANCE.setShowIDDC(configValues.get(i));
 
                         listAdapter.notifyItemChanged(channelPreviewRow);
                         listAdapter.notifyItemChanged(showDcIdSwitchRow);
@@ -508,9 +509,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                         parentLayout.rebuildAllFragmentViews(false, false);
                     });
                 } else if (position == birthdayPreviewSwitchRow) {
-                    CherrygramConfig.INSTANCE.toggleProfileBirthDatePreview();
+                    CherrygramAppearanceConfig.INSTANCE.toggleProfileBirthDatePreview();
                     if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getProfileBirthDatePreview());
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview());
                     }
 
                     listAdapter.notifyItemChanged(channelPreviewRow);
@@ -524,9 +525,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     profilePage.updateRows();
                     parentLayout.rebuildAllFragmentViews(false, false);
                 } else if (position == businessPreviewSwitchRow) {
-                    CherrygramConfig.INSTANCE.toggleProfileBusinessPreview();
+                    CherrygramAppearanceConfig.INSTANCE.toggleProfileBusinessPreview();
                     if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getProfileBusinessPreview());
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview());
                     }
 
                     listAdapter.notifyItemChanged(channelPreviewRow);
@@ -540,15 +541,15 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     profilePage.updateRows();
                     parentLayout.rebuildAllFragmentViews(false, false);
                 } else if (position == profileBackgroundSwitchRow) {
-                    CherrygramConfig.INSTANCE.toggleProfileBackgroundColor();
+                    CherrygramAppearanceConfig.INSTANCE.toggleProfileBackgroundColor();
                     if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getProfileBackgroundColor());
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor());
                     }
 
                     if (me.premium && UserObject.getProfileColorId(me) != -1) {
-                        selectedColor = CherrygramConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(me) : -1;
+                        selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? UserObject.getProfileColorId(me) : -1;
                     } else {
-                        selectedColor = CherrygramConfig.INSTANCE.getProfileBackgroundColor() ? Constants.PROFILE_BACKGROUND_COLOR_ID_RED : -1;
+                        selectedColor = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor() ? Constants.PROFILE_BACKGROUND_COLOR_ID_RED : -1;
                     }
 
                     updateMessages();
@@ -565,15 +566,15 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                         profilePage.profilePreview.overrideAvatarColor(messagePage.selectedColor);
                     }
                 } else if (position == profileEmojiSwitchRow) {
-                    CherrygramConfig.INSTANCE.toggleProfileBackgroundEmoji();
+                    CherrygramAppearanceConfig.INSTANCE.toggleProfileBackgroundEmoji();
                     if (view instanceof TextCheckCell) {
-                        ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getProfileBackgroundEmoji());
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji());
                     }
 
                     if (me.premium && UserObject.getProfileEmojiId(me) != 0) {
-                        selectedEmoji = CherrygramConfig.INSTANCE.getProfileBackgroundEmoji() ? UserObject.getProfileEmojiId(me) : 0;
+                        selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? UserObject.getProfileEmojiId(me) : 0;
                     } else {
-                        selectedEmoji = CherrygramConfig.INSTANCE.getProfileBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
+                        selectedEmoji = CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji() ? Constants.CHERRY_EMOJI_ID : 0;
                     }
 
                     updateMessages();
@@ -651,7 +652,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 // Channel preview
                 int prevChannelPreviewRow = channelPreviewRow;
                 channelPreviewRow = -1;
-                if (CherrygramConfig.INSTANCE.getProfileChannelPreview()) {
+                if (CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview()) {
                     channelPreviewRow = rowCount++;
                     profilePreviewDivisorRow = rowCount++;
                 }
@@ -668,9 +669,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
                 int prevInfoHeaderRow = infoHeaderRow;
                 infoHeaderRow = -1;
-                if (CherrygramConfig.INSTANCE.getShowIDDC() != CherrygramConfig.ID_DC_NONE
-                        || CherrygramConfig.INSTANCE.getProfileBirthDatePreview()
-                        || CherrygramConfig.INSTANCE.getProfileBusinessPreview()
+                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() != CherrygramAppearanceConfig.ID_DC_NONE
+                        || CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview()
+                        || CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview()
                 ) {
                     infoHeaderRow = rowCount++;
                 }
@@ -685,7 +686,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 // DC ID
                 int prevIdPreviewRow = idPreviewRow;
                 idPreviewRow = -1;
-                if (CherrygramConfig.INSTANCE.getShowIDDC() == CherrygramConfig.ID_ONLY) {
+                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_ONLY) {
                     idPreviewRow = rowCount++;
                 }
                 if (listAdapter != null) {
@@ -698,7 +699,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
                 int prevIdDcPreviewRow = idDcPreviewRow;
                 idDcPreviewRow = -1;
-                if (CherrygramConfig.INSTANCE.getShowIDDC() == CherrygramConfig.ID_DC) {
+                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_DC) {
                     idDcPreviewRow = rowCount++;
                 }
                 if (listAdapter != null) {
@@ -713,7 +714,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 // Birth date preview
                 int prevBirthdayPreviewRow = birthdayPreviewRow;
                 birthdayPreviewRow = -1;
-                if (CherrygramConfig.INSTANCE.getProfileBirthDatePreview()) {
+                if (CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview()) {
                     birthdayPreviewRow = rowCount++;
                 }
                 if (listAdapter != null) {
@@ -728,7 +729,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 // Business preview
                 int prevBusinessHoursPreviewRow = businessHoursPreviewRow;
                 businessHoursPreviewRow = -1;
-                if (CherrygramConfig.INSTANCE.getProfileBusinessPreview()) {
+                if (CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview()) {
                     businessHoursPreviewRow = rowCount++;
                 }
                 if (listAdapter != null) {
@@ -741,7 +742,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
                 int prevBusinessLocationPreviewRow = businessLocationPreviewRow;
                 businessLocationPreviewRow = -1;
-                if (CherrygramConfig.INSTANCE.getProfileBusinessPreview()) {
+                if (CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview()) {
                     businessLocationPreviewRow = rowCount++;
                 }
                 if (listAdapter != null) {
@@ -779,7 +780,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             msg.overrideLinkColor = selectedColor;
                             msg.overrideLinkEmoji = selectedEmoji;
                             cells[i].setAvatar(msg);
-                            if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+                            if (!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
                                 Long emojiStatusId = UserObject.getEmojiStatusDocumentId(getUserConfig().getCurrentUser());
                                 if (emojiStatusId != null) {
                                     cells[i].currentNameStatusDrawable.set(emojiStatusId, true);
@@ -980,8 +981,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
         tabsView = new FilledTabsView(context);
         tabsView.setTabs(
-                LocaleController.getString(R.string.Message),
-                LocaleController.getString(R.string.UserColorTabProfile)
+                getString(R.string.Message),
+                getString(R.string.UserColorTabProfile)
         );
         tabsView.onTabSelected(tab -> {
             if (viewPager != null) {
@@ -1219,7 +1220,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 titleView.setRightDrawableOutside(true);
             }
 
-            if (!CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) titleView.setRightDrawable(statusEmoji);
+            if (!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) titleView.setRightDrawable(statusEmoji);
             titleView.setRightDrawableOnClick(v -> statusEmoji.play());
             titleView.setTextColor(0xFFFFFFFF);
             titleView.setTextSize(20);
@@ -1245,8 +1246,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             } catch (Exception ignore) {}
 
             titleView.setText(title);
-            String tgPremium = CherrygramConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
-            subtitleView.setText(LocaleController.getString(R.string.Online) + tgPremium);
+            String tgPremium = CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
+            subtitleView.setText(getString(R.string.Online) + tgPremium);
 
             setWillNotDraw(false);
         }

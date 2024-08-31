@@ -56,7 +56,7 @@ import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.NotificationsSettingsActivity;
 import org.telegram.ui.Stories.StoriesUtilities;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 import java.util.Locale;
 
@@ -360,7 +360,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             }
             nameLockTop = AndroidUtilities.dp(21);
             drawCheck = user.verified;
-            drawPremium = !savedMessages && MessagesController.getInstance(currentAccount).isPremiumUser(user) && !CherrygramConfig.INSTANCE.getDisablePremiumStatuses();
+            drawPremium = !savedMessages && MessagesController.getInstance(currentAccount).isPremiumUser(user) && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses();
             updateStatus(drawCheck, user, null, false);
         } else if (contact != null) {
             dialog_id = 0;
@@ -627,13 +627,13 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
         if (verified) {
             statusDrawable.set(new CombinedDrawable(Theme.dialogs_verifiedDrawable, Theme.dialogs_verifiedCheckDrawable, 0, 0), animated);
             statusDrawable.setColor(null);
-        } else if (user != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(user.emoji_status) !=0 && !CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+        } else if (user != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(user.emoji_status) !=0 && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
             statusDrawable.set(DialogObject.getEmojiStatusDocumentId(user.emoji_status), animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-        } else if (chat != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0 && !CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+        } else if (chat != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0 && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
             statusDrawable.set(DialogObject.getEmojiStatusDocumentId(chat.emoji_status), animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-        } else if (user != null && !savedMessages && MessagesController.getInstance(currentAccount).isPremiumUser(user) && !CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+        } else if (user != null && !savedMessages && MessagesController.getInstance(currentAccount).isPremiumUser(user) && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
             statusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
         } else {

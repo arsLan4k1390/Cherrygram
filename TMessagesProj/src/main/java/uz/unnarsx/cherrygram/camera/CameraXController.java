@@ -74,7 +74,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutionException;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class CameraXController {
 
@@ -100,7 +100,7 @@ public class CameraXController {
     public static final int CAMERA_HDR = 2;
     public static final int CAMERA_AUTO = 3;
     public static final int CAMERA_WIDE = 4;
-    public float oldZoomSelection = CherrygramConfig.INSTANCE.getStartFromUltraWideCam() ? 0F : 5F;
+    public float oldZoomSelection = CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam() ? 0F : 5F;
     private int selectedEffect = CAMERA_NONE;
 
     public static class CameraLifecycle implements LifecycleOwner {
@@ -345,21 +345,21 @@ public class CameraXController {
         vCapture = VideoCapture.withOutput(recorder);
 
         int aspectRatio;
-        if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera4to3) {
+        if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera4to3) {
             aspectRatio = AspectRatio.RATIO_4_3;
-        } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera16to9) {
+        } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera16to9) {
             aspectRatio = AspectRatio.RATIO_16_9;
-        } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.CameraAspectDefault) {
+        } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.CameraAspectDefault) {
             aspectRatio = AspectRatio.RATIO_DEFAULT;
         } else {
             aspectRatio = AspectRatio.RATIO_16_9;
         }
 
-        boolean useImageCaptureForFrontCamera = stableFPSPreviewOnly && CherrygramConfig.INSTANCE.getCaptureTypeFront() == CherrygramConfig.CaptureType_ImageCapture;
-        boolean useImageCaptureForBackCamera = stableFPSPreviewOnly && CherrygramConfig.INSTANCE.getCaptureTypeBack() == CherrygramConfig.CaptureType_ImageCapture;
+        boolean useImageCaptureForFrontCamera = stableFPSPreviewOnly && CherrygramCameraConfig.INSTANCE.getCaptureTypeFront() == CherrygramCameraConfig.CaptureType_ImageCapture;
+        boolean useImageCaptureForBackCamera = stableFPSPreviewOnly && CherrygramCameraConfig.INSTANCE.getCaptureTypeBack() == CherrygramCameraConfig.CaptureType_ImageCapture;
         boolean useImageCaptureForBothCameras = stableFPSPreviewOnly
-                && CherrygramConfig.INSTANCE.getCaptureTypeFront() == CherrygramConfig.CaptureType_ImageCapture
-                && CherrygramConfig.INSTANCE.getCaptureTypeBack() == CherrygramConfig.CaptureType_ImageCapture;
+                && CherrygramCameraConfig.INSTANCE.getCaptureTypeFront() == CherrygramCameraConfig.CaptureType_ImageCapture
+                && CherrygramCameraConfig.INSTANCE.getCaptureTypeBack() == CherrygramCameraConfig.CaptureType_ImageCapture;
 
 
         ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder();
@@ -387,7 +387,7 @@ public class CameraXController {
                 camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, vCapture);
             }
 
-            if (CherrygramConfig.INSTANCE.getCameraStabilisation()) {
+            if (CherrygramCameraConfig.INSTANCE.getCameraStabilisation()) {
                 CaptureRequestOptions captureRequestOptions = new CaptureRequestOptions.Builder()
                         .setCaptureRequestOption(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, CameraMetadata.CONTROL_VIDEO_STABILIZATION_MODE_ON)
                         .setCaptureRequestOption(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CameraMetadata.LENS_OPTICAL_STABILIZATION_MODE_ON)

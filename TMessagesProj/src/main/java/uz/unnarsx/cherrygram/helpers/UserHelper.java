@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.helpers;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.app.Activity;
 import android.content.Intent;
 
@@ -103,11 +105,11 @@ public class UserHelper extends BaseController {
 
                     StringBuilder stringBuilder = new StringBuilder();
                     if (Objects.equals(type, "TYPE_APPROX")) {
-                        formattedDate = stringBuilder.append(LocaleController.formatString("CG_RegistrationDateApproximately", R.string.CG_RegistrationDateApproximately, date));
+                        formattedDate = stringBuilder.append(LocaleController.formatString(R.string.CG_RegistrationDateApproximately, date));
                     } else if (Objects.equals(type, "TYPE_NEWER")) {
-                        formattedDate = stringBuilder.append(LocaleController.formatString("CG_RegistrationDateNewer", R.string.CG_RegistrationDateNewer, date));
+                        formattedDate = stringBuilder.append(LocaleController.formatString(R.string.CG_RegistrationDateNewer, date));
                     } else if (Objects.equals(type, "TYPE_OLDER")) {
-                        formattedDate = stringBuilder.append(LocaleController.formatString("CG_RegistrationDateOlder", R.string.CG_RegistrationDateOlder, date));
+                        formattedDate = stringBuilder.append(LocaleController.formatString(R.string.CG_RegistrationDateOlder, date));
                     } else {
                         formattedDate = stringBuilder.append(date);
                     }
@@ -132,10 +134,10 @@ public class UserHelper extends BaseController {
 
     public StringBuilder getCreationDateSB() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(LocaleController.getString("CG_RegistrationDate", R.string.CG_RegistrationDate));
+        stringBuilder.append(getString(R.string.CG_RegistrationDate));
         stringBuilder.append('\n');
         if (formattedDate == null) {
-            stringBuilder.append(LocaleController.getString("CG_RegistrationDateFailed", R.string.CG_RegistrationDateFailed));
+            stringBuilder.append(getString(R.string.CG_RegistrationDateFailed));
         } else {
             stringBuilder.append(formattedDate);
         }

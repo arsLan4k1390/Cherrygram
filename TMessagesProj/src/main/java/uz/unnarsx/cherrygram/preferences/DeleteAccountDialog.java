@@ -1,12 +1,13 @@
 package uz.unnarsx.cherrygram.preferences;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.os.CountDownTimer;
 import android.widget.TextView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.FileLog;
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.TLRPC;
@@ -25,9 +26,9 @@ public class DeleteAccountDialog extends BaseFragment {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getParentActivity());
-        builder.setMessage(LocaleController.getString("TosDeclineDeleteAccount", R.string.TosDeclineDeleteAccount));
-        builder.setTitle(LocaleController.getString("SP_DeleteAccount", R.string.SP_DeleteAccount));
-        builder.setPositiveButton(LocaleController.getString("Deactivate", R.string.Deactivate), (dialog, which) -> {
+        builder.setMessage(getString(R.string.TosDeclineDeleteAccount));
+        builder.setTitle(getString(R.string.SP_DeleteAccount));
+        builder.setPositiveButton(getString(R.string.Deactivate), (dialog, which) -> {
             if (BuildConfig.DEBUG) return;
 
             final AlertDialog progressDialog = new AlertDialog(fragment.getParentActivity(), AlertDialog.ALERT_TYPE_SPINNER);
@@ -62,21 +63,21 @@ public class DeleteAccountDialog extends BaseFragment {
                     if (response instanceof TLRPC.TL_boolTrue) {
                         fragment.getMessagesController().performLogout(0);
                     } else if (error == null || error.code != -1000) {
-                        String errorText = LocaleController.getString("ErrorOccurred", R.string.ErrorOccurred);
+                        String errorText = getString(R.string.ErrorOccurred);
                         if (error != null) {
                             errorText += "\n" + error.text;
                         }
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(fragment.getParentActivity());
-                        builder1.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
+                        builder1.setTitle(getString(R.string.CG_AppName));
                         builder1.setMessage(errorText);
-                        builder1.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
+                        builder1.setPositiveButton(getString(R.string.OK), null);
                         builder1.show();
                     }
                 }));
             }, 20000);
             progressDialog.show();
         });
-        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+        builder.setNegativeButton(getString(R.string.Cancel), null);
         AlertDialog dialog = builder.create();
         dialog.setOnShowListener(dialog1 -> {
             var button = (TextView) dialog.getButton(AlertDialog.BUTTON_POSITIVE);

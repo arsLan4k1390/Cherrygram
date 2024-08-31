@@ -103,7 +103,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 
 public class SendMessagesHelper extends BaseController implements NotificationCenter.NotificationCenterDelegate {
 
@@ -1840,7 +1841,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     }
                     SendMessageParams sendMessageParams = SendMessageParams.of((TLRPC.TL_document) finalDocument, null, null, peer, replyToMsg, replyToTopMsg, null, null, null, null, notify, scheduleDate, 0, parentObject, sendAnimationData, false);
                     sendMessageParams.replyToStoryItem = storyItem;
-                    sendMessageParams.hasMediaSpoilers = CherrygramConfig.INSTANCE.getGifSpoilers();
+                    sendMessageParams.hasMediaSpoilers = CherrygramChatsConfig.INSTANCE.getGifSpoilers();
                     sendMessageParams.replyQuote = quote;
                     sendMessageParams.quick_reply_shortcut = quick_reply_shortcut;
                     sendMessageParams.quick_reply_shortcut_id = quick_reply_shortcut_id;
@@ -7187,9 +7188,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     }
 
     public TLRPC.TL_photo generatePhotoSizes(TLRPC.TL_photo photo, String path, Uri imageUri) {
-        int maxSize = CherrygramConfig.INSTANCE.getLargePhotos() ? 2560 : 1280;
+        int maxSize = CherrygramChatsConfig.INSTANCE.getLargePhotos() ? 2560 : 1280;
         Bitmap bitmap = ImageLoader.loadBitmap(path, imageUri, maxSize, maxSize, true);
-        if (bitmap == null && CherrygramConfig.INSTANCE.getLargePhotos()) {
+        if (bitmap == null && CherrygramChatsConfig.INSTANCE.getLargePhotos()) {
             bitmap = ImageLoader.loadBitmap(path, imageUri, 1280, 1280, true);
         }
         if (bitmap == null) {
@@ -8223,9 +8224,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             File bigFile = FileLoader.getInstance(accountInstance.getCurrentAccount()).getPathToAttach(bigSize, false);
             boolean bigExists = bigFile.exists();
             if (!smallExists || !bigExists) {
-                int maxSize = CherrygramConfig.INSTANCE.getLargePhotos() ? 2560 : 1280;
+                int maxSize = CherrygramChatsConfig.INSTANCE.getLargePhotos() ? 2560 : 1280;
                 Bitmap bitmap = ImageLoader.loadBitmap(path, uri, maxSize, maxSize, true);
-                if (bitmap == null && CherrygramConfig.INSTANCE.getLargePhotos()) {
+                if (bitmap == null && CherrygramChatsConfig.INSTANCE.getLargePhotos()) {
                     bitmap = ImageLoader.loadBitmap(path, uri, 1280, 1280, true);
                 }
                 if (bitmap == null) {
@@ -9272,7 +9273,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         int compressionsCount;
 
         float maxSize = Math.max(videoEditedInfo.originalWidth, videoEditedInfo.originalHeight);
-        if (CherrygramConfig.INSTANCE.getSendVideosAtMaxQuality()) {
+        if (CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality()) {
             if (maxSize > 3840) {
                 compressionsCount = 7;
             } else if (maxSize > 2560) {
@@ -9307,9 +9308,9 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         }
         boolean needCompress = false;
         if (new File(videoPath).length() < 1024L * 1024L * 1000L) {
-            if (selectedCompression != compressionsCount || Math.max(videoEditedInfo.originalWidth, videoEditedInfo.originalHeight) > (CherrygramConfig.INSTANCE.getSendVideosAtMaxQuality() ? 3840 : 1280)) {
+            if (selectedCompression != compressionsCount || Math.max(videoEditedInfo.originalWidth, videoEditedInfo.originalHeight) > (CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality() ? 3840 : 1280)) {
                 needCompress = true;
-                if (CherrygramConfig.INSTANCE.getSendVideosAtMaxQuality()) {
+                if (CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality()) {
                     switch (selectedCompression) {
                         case 1:
                             maxSize = 480.0f;

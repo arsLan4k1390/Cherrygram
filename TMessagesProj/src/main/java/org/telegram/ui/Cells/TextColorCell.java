@@ -13,7 +13,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import androidx.annotation.Keep;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -26,8 +25,6 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 
 import java.util.ArrayList;
-
-import uz.unnarsx.cherrygram.CherrygramConfig;
 
 public class TextColorCell extends FrameLayout {
 

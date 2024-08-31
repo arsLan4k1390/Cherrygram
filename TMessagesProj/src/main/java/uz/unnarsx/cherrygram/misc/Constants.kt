@@ -20,9 +20,9 @@ object Constants {
     const val PROFILE_BACKGROUND_COLOR_ID_RED = 14 // Red-Pink gradient
     const val REPLY_BACKGROUND_COLOR_ID = 13 // Red-Pink gradient
 
-    /**Firebase remote Config start**/
+    /** Firebase remote Config start **/
     const val Videomessages_Resolution = "videomessages_resolution"
     const val Is_Donate_Screen_Available = "is_donate_screen_available"
-    /**Firebase remote Config finish**/
+    /** Firebase remote Config finish **/
 
 }

@@ -9,7 +9,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.LocaleController
+import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
@@ -50,13 +50,13 @@ object TextFieldAlert {
 
         textLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 36))
         builder.setView(textLayout)
-        builder.setNeutralButton(LocaleController.getString("FirstNameSmall", R.string.FirstNameSmall)) { _: DialogInterface?, _: Int ->
+        builder.setNeutralButton(getString(R.string.FirstNameSmall)) { _: DialogInterface?, _: Int ->
             finish(UserObject.getFirstName(user).toString().trim())
         }
-        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK)) { _: DialogInterface?, _: Int ->
+        builder.setPositiveButton(getString(R.string.OK)) { _: DialogInterface?, _: Int ->
             finish(editText.text.toString().trim())
         }
-        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null)
+        builder.setNegativeButton(getString(R.string.Cancel), null)
         builder.show().setOnShowListener {
             editText.requestFocus()
             AndroidUtilities.showKeyboard(editText)
@@ -101,10 +101,10 @@ object TextFieldAlert {
 
         textLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 36))
         builder.setView(textLayout)
-        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK)) { _: DialogInterface?, _: Int ->
+        builder.setPositiveButton(getString(R.string.OK)) { _: DialogInterface?, _: Int ->
             finish(removeNonNumericChars(editText.text.toString().trim()))
         }
-        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null)
+        builder.setNegativeButton(getString(R.string.Cancel), null)
         builder.show().setOnShowListener {
             editText.requestFocus()
             AndroidUtilities.showKeyboard(editText)

@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.preferences.folders;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
@@ -13,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
@@ -29,7 +30,7 @@ import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.folders.cells.FoldersPreviewCell;
 
@@ -98,7 +99,7 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
         actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
         actionBar.setCastShadows(false);
 
-        actionBar.setTitle(LocaleController.getString("CP_Filters_Header", R.string.CP_Filters_Header));
+        actionBar.setTitle(getString(R.string.CP_Filters_Header));
         actionBar.setAllowOverlayTitle(false);
 
         actionBar.setOccupyStatusBar(!AndroidUtilities.isTablet());
@@ -127,25 +128,25 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
             if (position == folderNameAppHeaderRow) {
-                CherrygramConfig.INSTANCE.toggleFolderNameInHeader();
+                CherrygramAppearanceConfig.INSTANCE.toggleFolderNameInHeader();
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getFolderNameInHeader());
+                    ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader());
                 }
                 parentLayout.rebuildAllFragmentViews(false, false);
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
             } else if (position == hideAllChatsTabRow) {
-                CherrygramConfig.INSTANCE.toggleTabsHideAllChats();
+                CherrygramAppearanceConfig.INSTANCE.toggleTabsHideAllChats();
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getTabsHideAllChats());
+                    ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats());
                 }
                 foldersPreviewCell.updateAllChatsTabName(true);
                 parentLayout.rebuildAllFragmentViews(false, false);
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
                 getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
             } else if (position == hideCounterRow) {
-                CherrygramConfig.INSTANCE.toggleTabsNoUnread();
+                CherrygramAppearanceConfig.INSTANCE.toggleTabsNoUnread();
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getTabsNoUnread());
+                    ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread());
                 }
                 foldersPreviewCell.updateTabCounter(true);
                 parentLayout.rebuildAllFragmentViews(false, false);
@@ -154,15 +155,15 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
                 ArrayList<String> arrayList = new ArrayList<>();
                 ArrayList<Integer> types = new ArrayList<>();
 
-                arrayList.add(LocaleController.getString("CG_FoldersTypeIconsTitles", R.string.CG_FoldersTypeIconsTitles));
-                types.add(CherrygramConfig.TAB_TYPE_MIX);
-                arrayList.add(LocaleController.getString("CG_FoldersTypeTitles", R.string.CG_FoldersTypeTitles));
-                types.add(CherrygramConfig.TAB_TYPE_TEXT);
-                arrayList.add(LocaleController.getString("CG_FoldersTypeIcons", R.string.CG_FoldersTypeIcons));
-                types.add(CherrygramConfig.TAB_TYPE_ICON);
+                arrayList.add(getString(R.string.CG_FoldersTypeIconsTitles));
+                types.add(CherrygramAppearanceConfig.TAB_TYPE_MIX);
+                arrayList.add(getString(R.string.CG_FoldersTypeTitles));
+                types.add(CherrygramAppearanceConfig.TAB_TYPE_TEXT);
+                arrayList.add(getString(R.string.CG_FoldersTypeIcons));
+                types.add(CherrygramAppearanceConfig.TAB_TYPE_ICON);
 
-                PopupHelper.show(arrayList, LocaleController.getString("CG_FoldersType_Header", R.string.CG_FoldersType_Header), types.indexOf(CherrygramConfig.INSTANCE.getTabMode()), context, i -> {
-                    CherrygramConfig.INSTANCE.setTabMode(types.get(i));
+                PopupHelper.show(arrayList, getString(R.string.CG_FoldersType_Header), types.indexOf(CherrygramAppearanceConfig.INSTANCE.getTabMode()), context, i -> {
+                    CherrygramAppearanceConfig.INSTANCE.setTabMode(types.get(i));
 
                     foldersPreviewCell.updateTabIcons(true);
                     foldersPreviewCell.updateTabTitle(true);
@@ -174,23 +175,23 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
                 ArrayList<String> configStringKeys = new ArrayList<>();
                 ArrayList<Integer> configValues = new ArrayList<>();
 
-                configStringKeys.add(LocaleController.getString("AP_Tab_Style_Default", R.string.AP_Tab_Style_Default));
-                configValues.add(CherrygramConfig.TAB_STYLE_DEFAULT);
+                configStringKeys.add(getString(R.string.AP_Tab_Style_Default));
+                configValues.add(CherrygramAppearanceConfig.TAB_STYLE_DEFAULT);
 
-                configStringKeys.add(LocaleController.getString("AP_Tab_Style_Rounded", R.string.AP_Tab_Style_Rounded));
-                configValues.add(CherrygramConfig.TAB_STYLE_ROUNDED);
+                configStringKeys.add(getString(R.string.AP_Tab_Style_Rounded));
+                configValues.add(CherrygramAppearanceConfig.TAB_STYLE_ROUNDED);
 
-                configStringKeys.add(LocaleController.getString("AP_Tab_Style_Text", R.string.AP_Tab_Style_Text));
-                configValues.add(CherrygramConfig.TAB_STYLE_TEXT);
+                configStringKeys.add(getString(R.string.AP_Tab_Style_Text));
+                configValues.add(CherrygramAppearanceConfig.TAB_STYLE_TEXT);
 
                 configStringKeys.add("VKUI");
-                configValues.add(CherrygramConfig.TAB_STYLE_VKUI);
+                configValues.add(CherrygramAppearanceConfig.TAB_STYLE_VKUI);
 
-                configStringKeys.add(LocaleController.getString("AP_Tab_Style_Pills", R.string.AP_Tab_Style_Pills));
-                configValues.add(CherrygramConfig.TAB_STYLE_PILLS);
+                configStringKeys.add(getString(R.string.AP_Tab_Style_Pills));
+                configValues.add(CherrygramAppearanceConfig.TAB_STYLE_PILLS);
 
-                PopupHelper.show(configStringKeys, LocaleController.getString("AP_Tab_Style", R.string.AP_Tab_Style), configValues.indexOf(CherrygramConfig.INSTANCE.getTabStyle()), context, i -> {
-                    CherrygramConfig.INSTANCE.setTabStyle(configValues.get(i));
+                PopupHelper.show(configStringKeys, getString(R.string.AP_Tab_Style), configValues.indexOf(CherrygramAppearanceConfig.INSTANCE.getTabStyle()), context, i -> {
+                    CherrygramAppearanceConfig.INSTANCE.setTabStyle(configValues.get(i));
 
                     foldersPreviewCell.updateTabStyle(true);
                     listAdapter.notifyItemChanged(tabStyleRow);
@@ -199,9 +200,9 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
                     updateRowsId(false);
                 });
             } else if (position == addStrokeRow) {
-                CherrygramConfig.INSTANCE.toggleTabStyleStroke();
+                CherrygramAppearanceConfig.INSTANCE.toggleTabStyleStroke();
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramConfig.INSTANCE.getTabStyleStroke());
+                    ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke());
                 }
                 foldersPreviewCell.updateTabStroke(true);
                 parentLayout.rebuildAllFragmentViews(false, false);
@@ -228,7 +229,7 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
 
         int prevAddStrokeRow = addStrokeRow;
         addStrokeRow = -1;
-        if (CherrygramConfig.INSTANCE.getTabStyle() >= CherrygramConfig.TAB_STYLE_VKUI) addStrokeRow = rowCount++;
+        if (CherrygramAppearanceConfig.INSTANCE.getTabStyle() >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) addStrokeRow = rowCount++;
         if (listAdapter != null) {
             if (prevAddStrokeRow == -1 && addStrokeRow != -1) {
                 listAdapter.notifyItemInserted(addStrokeRow);
@@ -271,20 +272,20 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
                 case VIEW_TYPE_HEADER:
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
                     if (position == foldersHeaderRow) {
-                        headerCell.setText(LocaleController.getString("CallVideoPreviewTitle", R.string.CallVideoPreviewTitle));
+                        headerCell.setText(getString(R.string.CallVideoPreviewTitle));
                     }
                     break;
                 case VIEW_TYPE_SWITCH:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
                     textCheckCell.setEnabled(true, null);
                     if (position == folderNameAppHeaderRow) {
-                        textCheckCell.setTextAndValueAndCheck(LocaleController.getString("AP_FolderNameInHeader", R.string.AP_FolderNameInHeader), LocaleController.getString("AP_FolderNameInHeader_Desc", R.string.AP_FolderNameInHeader_Desc), CherrygramConfig.INSTANCE.getFolderNameInHeader(), true, true);
+                        textCheckCell.setTextAndValueAndCheck(getString(R.string.AP_FolderNameInHeader), getString(R.string.AP_FolderNameInHeader_Desc), CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader(), true, true);
                     } else if (position == hideAllChatsTabRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString("CP_NewTabs_RemoveAllChats", R.string.CP_NewTabs_RemoveAllChats), CherrygramConfig.INSTANCE.getTabsHideAllChats(), true);
+                        textCheckCell.setTextAndCheck(getString(R.string.CP_NewTabs_RemoveAllChats), CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats(), true);
                     } else if (position == hideCounterRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString("CP_NewTabs_NoCounter", R.string.CP_NewTabs_NoCounter), CherrygramConfig.INSTANCE.getTabsNoUnread(), true);
+                        textCheckCell.setTextAndCheck(getString(R.string.CP_NewTabs_NoCounter), CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread(), true);
                     } else if (position == addStrokeRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString("AP_Tab_Style_Stroke", R.string.AP_Tab_Style_Stroke), CherrygramConfig.INSTANCE.getTabStyleStroke(), true);
+                        textCheckCell.setTextAndCheck(getString(R.string.AP_Tab_Style_Stroke), CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke(), true);
                     }
                     break;
                 case VIEW_TYPE_TEXT_SETTING:
@@ -292,40 +293,40 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
                     textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                     if (position == tabIconTypeRow) {
                         String value;
-                        switch (CherrygramConfig.INSTANCE.getTabMode()) {
-                            case CherrygramConfig.TAB_TYPE_MIX:
-                                value = LocaleController.getString("CG_FoldersTypeIconsTitles", R.string.CG_FoldersTypeIconsTitles);
+                        switch (CherrygramAppearanceConfig.INSTANCE.getTabMode()) {
+                            case CherrygramAppearanceConfig.TAB_TYPE_MIX:
+                                value = getString(R.string.CG_FoldersTypeIconsTitles);
                                 break;
-                            case CherrygramConfig.TAB_TYPE_ICON:
-                                value = LocaleController.getString("CG_FoldersTypeIcons", R.string.CG_FoldersTypeIcons);
+                            case CherrygramAppearanceConfig.TAB_TYPE_ICON:
+                                value = getString(R.string.CG_FoldersTypeIcons);
                                 break;
                             default:
-                            case CherrygramConfig.TAB_TYPE_TEXT:
-                                value = LocaleController.getString("CG_FoldersTypeTitles", R.string.CG_FoldersTypeTitles);
+                            case CherrygramAppearanceConfig.TAB_TYPE_TEXT:
+                                value = getString(R.string.CG_FoldersTypeTitles);
                                 break;
                         }
-                        textCell.setTextAndValue(LocaleController.getString("CG_FoldersType_Header", R.string.CG_FoldersType_Header), value, true);
+                        textCell.setTextAndValue(getString(R.string.CG_FoldersType_Header), value, true);
                     } else if (position == tabStyleRow) {
                         String value;
-                        switch (CherrygramConfig.INSTANCE.getTabStyle()) {
-                            case CherrygramConfig.TAB_STYLE_DEFAULT:
-                                value = LocaleController.getString("AP_Tab_Style_Default", R.string.AP_Tab_Style_Default);
+                        switch (CherrygramAppearanceConfig.INSTANCE.getTabStyle()) {
+                            case CherrygramAppearanceConfig.TAB_STYLE_DEFAULT:
+                                value = getString(R.string.AP_Tab_Style_Default);
                                 break;
-                            case CherrygramConfig.TAB_STYLE_TEXT:
-                                value = LocaleController.getString("AP_Tab_Style_Text", R.string.AP_Tab_Style_Text);
+                            case CherrygramAppearanceConfig.TAB_STYLE_TEXT:
+                                value = getString(R.string.AP_Tab_Style_Text);
                                 break;
-                            case CherrygramConfig.TAB_STYLE_VKUI:
+                            case CherrygramAppearanceConfig.TAB_STYLE_VKUI:
                                 value = "VKUI";
                                 break;
-                            case CherrygramConfig.TAB_STYLE_PILLS:
-                                value = LocaleController.getString("AP_Tab_Style_Pills", R.string.AP_Tab_Style_Pills);
+                            case CherrygramAppearanceConfig.TAB_STYLE_PILLS:
+                                value = getString(R.string.AP_Tab_Style_Pills);
                                 break;
                             default:
-                            case CherrygramConfig.TAB_STYLE_ROUNDED:
-                                value = LocaleController.getString("AP_Tab_Style_Rounded", R.string.AP_Tab_Style_Rounded);
+                            case CherrygramAppearanceConfig.TAB_STYLE_ROUNDED:
+                                value = getString(R.string.AP_Tab_Style_Rounded);
                                 break;
                         }
-                        textCell.setTextAndValue(LocaleController.getString("AP_Tab_Style", R.string.AP_Tab_Style), value, true);
+                        textCell.setTextAndValue(getString(R.string.AP_Tab_Style), value, true);
                     }
                     break;
             }

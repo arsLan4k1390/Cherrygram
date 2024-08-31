@@ -117,7 +117,7 @@
  }
 
 # Keep Cherrygram fields name
--keepnames class uz.unnarsx.cherrygram.CherrygramConfig { <fields>; }
+-keepnames class uz.unnarsx.cherrygram.core.configs.* { <fields>; }
 
 # Keep all class member names of CameraX
 -keep class androidx.camera.extensions.** { *; }

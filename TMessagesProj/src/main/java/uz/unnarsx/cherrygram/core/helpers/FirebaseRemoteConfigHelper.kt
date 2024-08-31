@@ -9,7 +9,9 @@ import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.BuildVars
 import org.telegram.messenger.FileLog
-import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
 import uz.unnarsx.cherrygram.misc.Constants
 import kotlin.coroutines.resume
 
@@ -36,21 +38,21 @@ object FirebaseRemoteConfigHelper {
     }
 
     suspend fun initRemoteConfig() = withContext(Dispatchers.IO) {
-        val fetchInterval = if (CherrygramConfig.isDevBuild()) 10800 else 43200 // 12 hours
+        val fetchInterval = if (CherrygramCoreConfig.isDevBuild()) 10800 else 43200 // 12 hours
 
         activate(fetchInterval.toLong())
             .onSuccess {
                 if (it.getLong(Constants.Videomessages_Resolution) != 0L) {
                     setRoundVideoResolution(it.getLong(Constants.Videomessages_Resolution))
                 }
-                if (CherrygramConfig.isDevBuild() || CherrygramConfig.showRPCErrors) {
+                if (CherrygramCoreConfig.isDevBuild() || CherrygramDebugConfig.showRPCErrors) {
                     AndroidUtilities.runOnUIThread {
                         Toast.makeText(ApplicationLoader.applicationContext, "Fetch and activate succeeded", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
             .onFailure {
-                if (CherrygramConfig.isDevBuild() || CherrygramConfig.showRPCErrors) {
+                if (CherrygramCoreConfig.isDevBuild() || CherrygramDebugConfig.showRPCErrors) {
                     AndroidUtilities.runOnUIThread {
                         Toast.makeText(ApplicationLoader.applicationContext, "Fetch failed", Toast.LENGTH_SHORT).show()
                     }
@@ -64,14 +66,14 @@ object FirebaseRemoteConfigHelper {
     }
 
     private fun setRoundVideoResolution(resolution: Long) {
-        if (CherrygramConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
-            FileLog.d("Old videomessages resolution:" + CherrygramConfig.videoMessagesResolution)
+        if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
+            FileLog.d("Old videomessages resolution:" + CherrygramCameraConfig.videoMessagesResolution)
         }
 
-        CherrygramConfig.videoMessagesResolution = resolution.toInt()
+        CherrygramCameraConfig.videoMessagesResolution = resolution.toInt()
 
-        if (CherrygramConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
-            FileLog.d("New videomessages resolution:" + CherrygramConfig.videoMessagesResolution)
+        if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
+            FileLog.d("New videomessages resolution:" + CherrygramCameraConfig.videoMessagesResolution)
         }
     }
 

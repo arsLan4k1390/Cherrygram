@@ -135,8 +135,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class TopicsFragment extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ChatActivityInterface, RightSlidingDialogContainer.BaseFragmentWithFullscreen {
 
     private final static int BOTTOM_BUTTON_TYPE_JOIN = 0;

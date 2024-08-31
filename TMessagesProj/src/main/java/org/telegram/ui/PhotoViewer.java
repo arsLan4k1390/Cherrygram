@@ -198,7 +198,6 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.Cells.ChatActionCell;
 import org.telegram.ui.Cells.CheckBoxCell;
 import org.telegram.ui.Cells.PhotoPickerPhotoCell;
 import org.telegram.ui.Cells.TextSelectionHelper;
@@ -286,7 +285,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.IDN;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -297,14 +295,16 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
 @SuppressLint("WrongConstant")
 @SuppressWarnings("unchecked")
 public class PhotoViewer implements NotificationCenter.NotificationCenterDelegate, GestureDetector2.OnGestureListener, GestureDetector2.OnDoubleTapListener {
 
-    private static boolean centerTitle = CherrygramConfig.INSTANCE.getCenterTitle();
+    private static boolean centerTitle = CherrygramAppearanceConfig.INSTANCE.getCenterTitle();
     private final static float ZOOM_SCALE = 0.1f;
     private final static int MARK_DEFERRED_IMAGE_LOADING = 1;
 
@@ -5088,7 +5088,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     }
 
 //                    final boolean[] deleteForAll = new boolean[1];
-                    final boolean[] deleteForAll = {CherrygramConfig.INSTANCE.getDeleteForAll()};
+                    final boolean[] deleteForAll = {CherrygramChatsConfig.INSTANCE.getDeleteForAll()};
                     if (currentMessageObject != null && !currentMessageObject.scheduled) {
                         long dialogId = currentMessageObject.getDialogId();
                         if (!DialogObject.isEncryptedDialog(dialogId)) {
@@ -5119,9 +5119,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                                         CheckBoxCell cell = new CheckBoxCell(parentActivity, 1, resourcesProvider);
                                         cell.setBackgroundDrawable(Theme.getSelectorDrawable(false));
                                         if (currentChat != null) {
-                                            cell.setText(getString("DeleteForAll", R.string.DeleteForAll), "", CherrygramConfig.INSTANCE.getDeleteForAll(), false);
+                                            cell.setText(getString("DeleteForAll", R.string.DeleteForAll), "", CherrygramChatsConfig.INSTANCE.getDeleteForAll(), false);
                                         } else {
-                                            cell.setText(LocaleController.formatString("DeleteForUser", R.string.DeleteForUser, UserObject.getFirstName(currentUser)), "", CherrygramConfig.INSTANCE.getDeleteForAll(), false);
+                                            cell.setText(LocaleController.formatString("DeleteForUser", R.string.DeleteForUser, UserObject.getFirstName(currentUser)), "", CherrygramChatsConfig.INSTANCE.getDeleteForAll(), false);
                                         }
                                         cell.setPadding(LocaleController.isRTL ? dp(16) : dp(8), 0, LocaleController.isRTL ? dp(8) : dp(16), 0);
                                         frameLayout.addView(cell, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.TOP | Gravity.LEFT, 0, 0, 0, 0));
@@ -6604,7 +6604,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             int[] location = new int[2];
             view.getLocationInWindow(location);
             sendPopupWindow.showAtLocation(view, Gravity.LEFT | Gravity.TOP, location[0] + view.getMeasuredWidth() - sendPopupLayout.getMeasuredWidth() + dp(14), location[1] - sendPopupLayout.getMeasuredHeight() - dp(18));
-            if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                 view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
             }
 
@@ -12981,7 +12981,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.dialogPhotosUpdate, dialogPhotos);
             }
         }
-        if (currentMessageObject != null && (CherrygramConfig.INSTANCE.getPlayGIFsAsVideos() && currentMessageObject.isGif() || currentMessageObject.isVideo()) || currentBotInlineResult != null && (currentBotInlineResult.type.equals("video") || MessageObject.isVideoDocument(currentBotInlineResult.document)) || (pageBlocksAdapter != null && (pageBlocksAdapter.isVideo(index) || pageBlocksAdapter.isHardwarePlayer(index))) || (sendPhotoType == SELECT_TYPE_NO_SELECT && ((MediaController.PhotoEntry)imagesArrLocals.get(index)).isVideo)) {
+        if (currentMessageObject != null && (CherrygramDebugConfig.INSTANCE.getPlayGIFsAsVideos() && currentMessageObject.isGif() || currentMessageObject.isVideo()) || currentBotInlineResult != null && (currentBotInlineResult.type.equals("video") || MessageObject.isVideoDocument(currentBotInlineResult.document)) || (pageBlocksAdapter != null && (pageBlocksAdapter.isVideo(index) || pageBlocksAdapter.isHardwarePlayer(index))) || (sendPhotoType == SELECT_TYPE_NO_SELECT && ((MediaController.PhotoEntry)imagesArrLocals.get(index)).isVideo)) {
             playerAutoStarted = true;
             onActionClick(false);
         } else if (!imagesArrLocals.isEmpty()) {
@@ -13069,7 +13069,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
             boolean isInvoice = newMessageObject.isInvoice();
             boolean noforwards = MessagesController.getInstance(currentAccount).isChatNoForwards(newMessageObject.getChatId()) || (newMessageObject.messageOwner != null && newMessageObject.messageOwner.noforwards) || newMessageObject.hasRevealedExtendedMedia();
-            if (isVideo || CherrygramConfig.INSTANCE.getPlayGIFsAsVideos() && newMessageObject.isGif()) {
+            if (isVideo || CherrygramDebugConfig.INSTANCE.getPlayGIFsAsVideos() && newMessageObject.isGif()) {
                 bottomLayout.setVisibility(View.VISIBLE);
                 bottomLayout.setTag(1);
             } else {
@@ -15842,7 +15842,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             if (messageObject != null) {
                 currentAnimation = object.allowTakeAnimation ? object.imageReceiver.getAnimation() : null;
                 if (currentAnimation != null) {
-                    if (messageObject.isVideo() || CherrygramConfig.INSTANCE.getPlayGIFsAsVideos() && messageObject.isGif()) {
+                    if (messageObject.isVideo() || CherrygramDebugConfig.INSTANCE.getPlayGIFsAsVideos() && messageObject.isGif()) {
                         object.imageReceiver.setAllowStartAnimation(false);
                         object.imageReceiver.stopAnimation();
                         if (MediaController.getInstance().isPlayingMessage(messageObject)) {
@@ -16968,7 +16968,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         if (photoPaintView != null) {
             photoPaintView.onResume();
         }
-        if (pausedOnPause && CherrygramConfig.INSTANCE.getAutoPauseVideo() && videoPlayer != null && !videoPlayer.isPlaying()) {
+        if (pausedOnPause && CherrygramChatsConfig.INSTANCE.getAutoPauseVideo() && videoPlayer != null && !videoPlayer.isPlaying()) {
             pausedOnPause = false;
             videoPlayer.play();
         }
@@ -16987,7 +16987,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         if (videoPlayer != null && playerLooping) {
             videoPlayer.setLooping(false);
         }
-        if (CherrygramConfig.INSTANCE.getAutoPauseVideo() && videoPlayer != null && videoPlayer.isPlaying()) {
+        if (CherrygramChatsConfig.INSTANCE.getAutoPauseVideo() && videoPlayer != null && videoPlayer.isPlaying()) {
             pausedOnPause = true;
             videoPlayer.pause();
         }
@@ -17600,7 +17600,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     }
 
     private boolean shouldMessageObjectAutoPlayed(MessageObject messageObject) {
-        return messageObject != null && (messageObject.isVideo() || CherrygramConfig.INSTANCE.getPlayGIFsAsVideos() && messageObject.isGif()) && (messageObject.mediaExists || messageObject.attachPathExists || messageObject.canStreamVideo() && SharedConfig.streamMedia) && SharedConfig.isAutoplayVideo();
+        return messageObject != null && (messageObject.isVideo() || CherrygramDebugConfig.INSTANCE.getPlayGIFsAsVideos() && messageObject.isGif()) && (messageObject.mediaExists || messageObject.attachPathExists || messageObject.canStreamVideo() && SharedConfig.streamMedia) && SharedConfig.isAutoplayVideo();
     }
 
     private boolean shouldIndexAutoPlayed(int index) {
@@ -18672,7 +18672,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 file = FileLoader.getInstance(currentAccount).getPathToMessage(currentMessageObject.messageOwner);
                 if (!file.exists()) {
                     file = null;
-                    if (SharedConfig.streamMedia && !DialogObject.isEncryptedDialog(currentMessageObject.getDialogId()) && (currentMessageObject.isVideo() && currentMessageObject.canStreamVideo() || CherrygramConfig.INSTANCE.getPlayGIFsAsVideos() && currentMessageObject.isGif())) {
+                    if (SharedConfig.streamMedia && !DialogObject.isEncryptedDialog(currentMessageObject.getDialogId()) && (currentMessageObject.isVideo() && currentMessageObject.canStreamVideo() || CherrygramDebugConfig.INSTANCE.getPlayGIFsAsVideos() && currentMessageObject.isGif())) {
                         try {
                             int reference = FileLoader.getInstance(currentMessageObject.currentAccount).getFileReference(currentMessageObject);
                             FileLoader.getInstance(currentAccount).loadFile(currentMessageObject.getDocument(), currentMessageObject, FileLoader.PRIORITY_NORMAL, 0);
@@ -18798,7 +18798,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             float x = e.getX();
             int side = Math.min(135, containerView.getMeasuredWidth() / 8);
             if (x < side || x > containerView.getMeasuredWidth() - side) {
-                return currentMessageObject == null || (CherrygramConfig.INSTANCE.getPlayGIFsAsVideos() && currentMessageObject.isGif() || currentMessageObject.isVideo() || photoViewerWebView != null && photoViewerWebView.isControllable()) && (SystemClock.elapsedRealtime() - lastPhotoSetTime) >= 500 && canDoubleTapSeekVideo(e);
+                return currentMessageObject == null || (CherrygramDebugConfig.INSTANCE.getPlayGIFsAsVideos() && currentMessageObject.isGif() || currentMessageObject.isVideo() || photoViewerWebView != null && photoViewerWebView.isControllable()) && (SystemClock.elapsedRealtime() - lastPhotoSetTime) >= 500 && canDoubleTapSeekVideo(e);
             }
         }
         return true;
@@ -19722,7 +19722,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         while (compressionsCount < 8) {
             int selectedCompression = preferences.getInt(String.format(Locale.US, "compress_video_%d", compressionsCount), -1);
             if (selectedCompression >= 0) {
-                if (CherrygramConfig.INSTANCE.getSendVideosAtMaxQuality()) {
+                if (CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality()) {
                     return Math.max(selectedCompression, maxCompression);
                 } else {
                     return Math.min(selectedCompression, maxCompression);
@@ -19730,7 +19730,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             }
             compressionsCount++;
         }
-        if (CherrygramConfig.INSTANCE.getSendVideosAtMaxQuality()) {
+        if (CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality()) {
             return Math.max(maxCompression, Math.round(DownloadController.getInstance(currentAccount).getMaxVideoBitrate() / (100f / compressionsCount)) - 1);
         } else {
             return Math.min(maxCompression, Math.round(DownloadController.getInstance(currentAccount).getMaxVideoBitrate() / (100f / compressionsCount)) - 1);
@@ -20616,7 +20616,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     }
 
     private int getDoubleTapDuration() {
-        return CherrygramConfig.INSTANCE.getVideoSeekDuration() * 1000;
+        return CherrygramChatsConfig.INSTANCE.getVideoSeekDuration() * 1000;
     }
 
     private String getUserAvatarDate() {

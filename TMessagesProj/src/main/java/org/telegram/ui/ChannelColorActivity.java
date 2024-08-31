@@ -101,7 +101,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ChannelColorActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -321,7 +321,7 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
 
     @Override
     public boolean isLightStatusBar() {
-        if (!CherrygramConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
+        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
         int color = getThemedColor(Theme.key_windowBackgroundWhite);
         return ColorUtils.calculateLuminance(color) > 0.7f;
     }
@@ -361,7 +361,7 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
             }
         });
 
-        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
             actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
             actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);

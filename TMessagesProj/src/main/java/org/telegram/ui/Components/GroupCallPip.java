@@ -40,7 +40,7 @@ import org.telegram.ui.GroupCallActivity;
 
 import static android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class GroupCallPip implements NotificationCenter.NotificationCenterDelegate {
 
@@ -132,7 +132,7 @@ public class GroupCallPip implements NotificationCenter.NotificationCenterDelega
                             return;
                         }
                         AndroidUtilities.runOnUIThread(micRunnable, 90);
-                        if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                             performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                         }
                         pressed = true;
@@ -258,7 +258,7 @@ public class GroupCallPip implements NotificationCenter.NotificationCenterDelega
                         if (pressed) {
                             if (VoIPService.getSharedInstance() != null) {
                                 VoIPService.getSharedInstance().setMicMute(true, false, false);
-                                if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                                     performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                                 }
                             }
@@ -895,7 +895,7 @@ public class GroupCallPip implements NotificationCenter.NotificationCenterDelega
                 iconView.playAnimation();
             }
             if (prepare) {
-                if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                     button.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                 }
             }

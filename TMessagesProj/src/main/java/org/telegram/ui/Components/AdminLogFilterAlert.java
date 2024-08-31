@@ -41,8 +41,6 @@ import org.telegram.ui.ContentPreviewViewer;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class AdminLogFilterAlert extends BottomSheet {
 
     public interface AdminLogFilterAlertDelegate {

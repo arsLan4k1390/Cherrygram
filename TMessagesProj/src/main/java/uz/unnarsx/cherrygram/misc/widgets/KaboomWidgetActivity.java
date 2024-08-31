@@ -194,9 +194,9 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
                     }
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(KaboomWidgetActivity.this);
-                    builder.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
-                    builder.setMessage(LocaleController.getString("PleaseLoginPassport", R.string.PleaseLoginPassport));
-                    builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), null);
+                    builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+                    builder.setMessage(LocaleController.getString(R.string.PleaseLoginPassport));
+                    builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
                     builder.show();
 
                     return true;
@@ -270,7 +270,7 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
                         try {
                             progressDialog.dismiss();
                             if ("APP_VERSION_OUTDATED".equals(error.text)) {
-                                AlertDialog dialog = AlertsCreator.showUpdateAppAlert(KaboomWidgetActivity.this, LocaleController.getString("UpdateAppAlert", R.string.UpdateAppAlert), true);
+                                AlertDialog dialog = AlertsCreator.showUpdateAppAlert(KaboomWidgetActivity.this, LocaleController.getString(R.string.UpdateAppAlert), true);
                                 if (dialog != null) {
                                     dialog.setOnDismissListener(dialog1 -> {
                                         setResult(RESULT_FIRST_USER, new Intent().putExtra("error", error.text));

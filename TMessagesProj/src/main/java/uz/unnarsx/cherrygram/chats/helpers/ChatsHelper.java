@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.chats.helpers;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -10,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -57,6 +60,7 @@ import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
 import org.telegram.ui.Components.ScrimOptions;
 import org.telegram.ui.Components.ShareAlert;
 import org.telegram.ui.Components.UndoView;
+import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PeerColorActivity;
 
 import java.io.File;
@@ -71,7 +75,7 @@ import java.util.HashSet;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
@@ -152,7 +156,7 @@ public class ChatsHelper extends BaseController {
                 .append(hasForwards && !isMusic ? String.format("%d", messageObject.messageOwner.forwards) : "")
                 .append(isMusic ? "" : " ")
                 .append(hasForwards && !isMusic ? "• " : "")
-                .append(CherrygramConfig.INSTANCE.getShowPencilIcon() ? editedSpan : LocaleController.getString("EditedMessage", R.string.EditedMessage))
+                .append(CherrygramChatsConfig.INSTANCE.getShowPencilIcon() ? editedSpan : getString(R.string.EditedMessage))
                 .append(hasForwards && !isMusic ? " • " : " ")
                 .append(LocaleController.getInstance().getFormatterDay().format((long) (messageObject.messageOwner.date) * 1000));
         return spannableStringBuilder;
@@ -387,7 +391,7 @@ public class ChatsHelper extends BaseController {
 
     public void showPlasticCardMenu(ChatActivity chatActivity, ItemOptions options, ScrimOptions dialog, String card) {
         if (getUserConfig().getCurrentUser().phone.startsWith("998")
-                /*CherrygramConfig.INSTANCE.isDev() && (card.startsWith("9860") || card.startsWith("555536")
+                /*CherrygramChatsConfig.INSTANCE.isDev() && (card.startsWith("9860") || card.startsWith("555536")
                     || card.startsWith("429434") || card.startsWith("418783") || card.startsWith("400847") || card.startsWith("472887") || card.startsWith("406228") || card.startsWith("419813") || card.startsWith("407342")
                     || card.startsWith("8600") || card.startsWith("561468") || card.startsWith("5440") || card.startsWith("6262") || card.startsWith("6264"))*/
         ) {
@@ -395,25 +399,25 @@ public class ChatsHelper extends BaseController {
                 dialog.dismiss();
                 AndroidUtilities.addToClipboard(card);
                 Browser.openUrl(chatActivity.getParentActivity(), "https://anorbank.uz/deeplink/p2p");
-                Toast.makeText(ApplicationLoader.applicationContext, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ApplicationLoader.applicationContext, getString(R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
             });
             options.add(R.drawable.msg_payment_card, "Click P2P", () -> {
                 dialog.dismiss();
                 AndroidUtilities.addToClipboard(card);
                 Browser.openUrl(chatActivity.getParentActivity(), "https://my.click.uz/app/clickp2p/");
-                Toast.makeText(ApplicationLoader.applicationContext, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ApplicationLoader.applicationContext, getString(R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
             });
             options.add(R.drawable.msg_payment_card, "Humans P2P", () -> {
                 dialog.dismiss();
                 AndroidUtilities.addToClipboard(card);
                 Browser.openUrl(chatActivity.getParentActivity(), "https://apps.humans.uz/auth/send");
-                Toast.makeText(ApplicationLoader.applicationContext, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ApplicationLoader.applicationContext, getString(R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
             });
             options.add(R.drawable.msg_payment_card, "Uzum Bank P2P", () -> {
                 dialog.dismiss();
                 AndroidUtilities.addToClipboard(card);
                 Browser.openUrl(chatActivity.getParentActivity(), "https://uzumbank.uz/goto?action=transfer_to_card");
-                Toast.makeText(ApplicationLoader.applicationContext, LocaleController.getString("CardNumberCopied", R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ApplicationLoader.applicationContext, getString(R.string.CardNumberCopied), Toast.LENGTH_SHORT).show();
             });
             options.addGap();
         }
@@ -432,18 +436,18 @@ public class ChatsHelper extends BaseController {
     }
 
     public void makeReplyButtonClick(ChatActivity chatActivity) {
-        switch (CherrygramConfig.INSTANCE.getLeftBottomButton()) {
-            case CherrygramConfig.LEFT_BUTTON_REPLY:
+        switch (CherrygramChatsConfig.INSTANCE.getLeftBottomButton()) {
+            case CherrygramChatsConfig.LEFT_BUTTON_REPLY:
                 createReplyAction(chatActivity);
                 break;
-            case CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE:
+            case CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE:
                 createCGSaveMessagesSelected(chatActivity);
                 break;
-            case CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE:
+            case CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE:
                 createCGShareAlertSelected(chatActivity);
                 break;
             default:
-            case CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP:
+            case CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP:
                 CGFeatureHooks.switchNoAuthor(true);
                 chatActivity.openForward(false);
                 break;
@@ -454,22 +458,27 @@ public class ChatsHelper extends BaseController {
         ArrayList<String> configStringKeys = new ArrayList<>();
         ArrayList<Integer> configValues = new ArrayList<>();
 
-        configStringKeys.add(LocaleController.getString("Forward", R.string.Forward) + " " + LocaleController.getString("CG_Without_Authorship", R.string.CG_Without_Authorship));
-        configValues.add(CherrygramConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP);
+        configStringKeys.add(getString("Forward", R.string.Forward) + " " + getString("CG_Without_Authorship", R.string.CG_Without_Authorship));
+        configValues.add(CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP);
 
-        configStringKeys.add(LocaleController.getString("Reply", R.string.Reply));
-        configValues.add(CherrygramConfig.LEFT_BUTTON_REPLY);
+        configStringKeys.add(getString("Reply", R.string.Reply));
+        configValues.add(CherrygramChatsConfig.LEFT_BUTTON_REPLY);
 
-        configStringKeys.add(LocaleController.getString("CG_ToSaved", R.string.CG_ToSaved));
-        configValues.add(CherrygramConfig.LEFT_BUTTON_SAVE_MESSAGE);
+        configStringKeys.add(getString("CG_ToSaved", R.string.CG_ToSaved));
+        configValues.add(CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE);
 
-        configStringKeys.add(LocaleController.getString("DirectShare", R.string.DirectShare));
-        configValues.add(CherrygramConfig.LEFT_BUTTON_DIRECT_SHARE);
+        configStringKeys.add(getString("DirectShare", R.string.DirectShare));
+        configValues.add(CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE);
 
-        PopupHelper.show(configStringKeys, LocaleController.getString("CP_LeftBottomButtonAction", R.string.CP_LeftBottomButtonAction), configValues.indexOf(CherrygramConfig.INSTANCE.getLeftBottomButton()), chatActivity.getContext(), i -> {
-            CherrygramConfig.INSTANCE.setLeftBottomButton(configValues.get(i));
+        PopupHelper.show(configStringKeys, getString("CP_LeftBottomButtonAction", R.string.CP_LeftBottomButtonAction), configValues.indexOf(CherrygramChatsConfig.INSTANCE.getLeftBottomButton()), chatActivity.getContext(), i -> {
+            CherrygramChatsConfig.INSTANCE.setLeftBottomButton(configValues.get(i));
 
             if (chatActivity.replyButton == null) return;
+
+            if (chatActivity.bottomMessagesActionContainer != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                LaunchActivity.makeRipple(chatActivity.bottomMessagesActionContainer.getLeft(), chatActivity.bottomMessagesActionContainer.getBottom(), 5);
+            }
+
             chatActivity.replyButton.setText(CGResourcesHelper.getLeftButtonText());
             Drawable image = chatActivity.getContext().getResources().getDrawable(CGResourcesHelper.getLeftButtonDrawable()).mutate();
             image.setColorFilter(new PorterDuffColorFilter(chatActivity.getThemedColor(Theme.key_actionBarActionModeDefaultIcon), PorterDuff.Mode.MULTIPLY));
@@ -516,7 +525,7 @@ public class ChatsHelper extends BaseController {
         } catch (Exception ignore) {
             ignore.printStackTrace();
             chatActivity.clearSelectionMode();
-            Toast.makeText(chatActivity.getParentActivity(), LocaleController.getString("EP_CustomChatNotFound", R.string.EP_CustomChatNotFound), Toast.LENGTH_SHORT).show();
+            Toast.makeText(chatActivity.getParentActivity(), getString("EP_CustomChatNotFound", R.string.EP_CustomChatNotFound), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -625,41 +634,41 @@ public class ChatsHelper extends BaseController {
         ArrayList<String> configStringKeys = new ArrayList<>();
         ArrayList<Integer> configValues = new ArrayList<>();
 
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_None", R.string.CG_SearchFilter_None));
-        configValues.add(CherrygramConfig.FILTER_NONE);
+        configStringKeys.add(getString("CG_SearchFilter_None", R.string.CG_SearchFilter_None));
+        configValues.add(CherrygramChatsConfig.FILTER_NONE);
 
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Photos", R.string.CG_SearchFilter_Photos));
-        configValues.add(CherrygramConfig.FILTER_PHOTOS);
+        configStringKeys.add(getString("CG_SearchFilter_Photos", R.string.CG_SearchFilter_Photos));
+        configValues.add(CherrygramChatsConfig.FILTER_PHOTOS);
 
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Videos", R.string.CG_SearchFilter_Videos));
-        configValues.add(CherrygramConfig.FILTER_VIDEOS);
+        configStringKeys.add(getString("CG_SearchFilter_Videos", R.string.CG_SearchFilter_Videos));
+        configValues.add(CherrygramChatsConfig.FILTER_VIDEOS);
 
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_VoiceMessages", R.string.CG_SearchFilter_VoiceMessages));
-        configValues.add(CherrygramConfig.FILTER_VOICE_MESSAGES);
+        configStringKeys.add(getString("CG_SearchFilter_VoiceMessages", R.string.CG_SearchFilter_VoiceMessages));
+        configValues.add(CherrygramChatsConfig.FILTER_VOICE_MESSAGES);
 
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_VideoMessages", R.string.CG_SearchFilter_VideoMessages));
-        configValues.add(CherrygramConfig.FILTER_VIDEO_MESSAGES);
+        configStringKeys.add(getString("CG_SearchFilter_VideoMessages", R.string.CG_SearchFilter_VideoMessages));
+        configValues.add(CherrygramChatsConfig.FILTER_VIDEO_MESSAGES);
 
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Files", R.string.CG_SearchFilter_Files));
-        configValues.add(CherrygramConfig.FILTER_FILES);
+        configStringKeys.add(getString("CG_SearchFilter_Files", R.string.CG_SearchFilter_Files));
+        configValues.add(CherrygramChatsConfig.FILTER_FILES);
 
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Music", R.string.CG_SearchFilter_Music));
-        configValues.add(CherrygramConfig.FILTER_MUSIC);
+        configStringKeys.add(getString("CG_SearchFilter_Music", R.string.CG_SearchFilter_Music));
+        configValues.add(CherrygramChatsConfig.FILTER_MUSIC);
 
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_GIFs", R.string.CG_SearchFilter_GIFs));
-        configValues.add(CherrygramConfig.FILTER_GIFS);
+        configStringKeys.add(getString("CG_SearchFilter_GIFs", R.string.CG_SearchFilter_GIFs));
+        configValues.add(CherrygramChatsConfig.FILTER_GIFS);
 
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Geolocation", R.string.CG_SearchFilter_Geolocation));
-        configValues.add(CherrygramConfig.FILTER_GEO);
+        configStringKeys.add(getString("CG_SearchFilter_Geolocation", R.string.CG_SearchFilter_Geolocation));
+        configValues.add(CherrygramChatsConfig.FILTER_GEO);
 
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_Contacts", R.string.CG_SearchFilter_Contacts));
-        configValues.add(CherrygramConfig.FILTER_CONTACTS);
+        configStringKeys.add(getString("CG_SearchFilter_Contacts", R.string.CG_SearchFilter_Contacts));
+        configValues.add(CherrygramChatsConfig.FILTER_CONTACTS);
 
-        configStringKeys.add(LocaleController.getString("CG_SearchFilter_MyMentions", R.string.CG_SearchFilter_MyMentions));
-        configValues.add(CherrygramConfig.FILTER_MENTIONS);
+        configStringKeys.add(getString("CG_SearchFilter_MyMentions", R.string.CG_SearchFilter_MyMentions));
+        configValues.add(CherrygramChatsConfig.FILTER_MENTIONS);
 
-        PopupHelper.show(configStringKeys, LocaleController.getString("CG_SearchFilter", R.string.CG_SearchFilter), configValues.indexOf(CherrygramConfig.INSTANCE.getMessagesSearchFilter()), chatActivity.getContext(), i -> {
-            CherrygramConfig.INSTANCE.setMessagesSearchFilter(configValues.get(i));
+        PopupHelper.show(configStringKeys, getString("CG_SearchFilter", R.string.CG_SearchFilter), configValues.indexOf(CherrygramChatsConfig.INSTANCE.getMessagesSearchFilter()), chatActivity.getContext(), i -> {
+            CherrygramChatsConfig.INSTANCE.setMessagesSearchFilter(configValues.get(i));
 
             chatActivity.openSearchWithText(null);
             chatActivity.showMessagesSearchListView(true);

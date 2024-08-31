@@ -62,8 +62,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class ChannelBoostLayout extends FrameLayout {
 
     private final static int OVERVIEW_TYPE = 0;

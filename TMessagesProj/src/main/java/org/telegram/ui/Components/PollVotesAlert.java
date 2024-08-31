@@ -76,8 +76,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PollVotesAlert extends BottomSheet {
 
     private RecyclerListView listView;

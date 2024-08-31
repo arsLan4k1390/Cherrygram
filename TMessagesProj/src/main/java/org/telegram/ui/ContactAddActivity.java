@@ -35,7 +35,6 @@ import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.LocaleController;
@@ -69,7 +68,7 @@ import org.telegram.ui.LNavigation.NavigationExt;
 import java.io.File;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ContactAddActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ImageUpdater.ImageUpdaterDelegate {
 
@@ -171,7 +170,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
 
     @Override
     public boolean isLightStatusBar() {
-        if (!CherrygramConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
+        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
         int color = getThemedColor(Theme.key_windowBackgroundWhite);
         return ColorUtils.calculateLuminance(color) > 0.7f;
     }
@@ -188,7 +187,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
             actionBar.setTitle(LocaleController.getString("EditContact", R.string.EditContact));
         }
 
-        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
             actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
             actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
@@ -382,7 +381,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
                 checkBoxCell.setBackgroundDrawable(Theme.getSelectorDrawable(false));
                 CharSequence firstName = UserObject.getFirstName(user);
                 firstName = Emoji.replaceEmoji(firstName, infoTextView.getPaint().getFontMetricsInt(), AndroidUtilities.dp(12), false);
-                checkBoxCell.setText(AndroidUtilities.replaceCharSequence("%1$s", AndroidUtilities.replaceTags(LocaleController.getString("SharePhoneNumberWith", R.string.SharePhoneNumberWith)), firstName), "", true, false);
+                checkBoxCell.setText(AndroidUtilities.replaceCharSequence("%1$s", AndroidUtilities.replaceTags(LocaleController.getString("SharePhoneNumberWith", R.string.SharePhoneNumberWith)), firstName), "", false, false);
                 checkBoxCell.setPadding(AndroidUtilities.dp(7), 0, AndroidUtilities.dp(7), 0);
                 checkBoxCell.setOnClickListener(v -> checkBoxCell.setChecked(!checkBoxCell.isChecked(), true));
                 linearLayout.addView(checkBoxCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 10, 0, 0));
@@ -904,7 +903,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
 
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
 
-        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));

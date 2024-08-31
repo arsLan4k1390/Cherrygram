@@ -21,8 +21,6 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class ManageChatTextCell extends FrameLayout {
 
     private SimpleTextView textView;

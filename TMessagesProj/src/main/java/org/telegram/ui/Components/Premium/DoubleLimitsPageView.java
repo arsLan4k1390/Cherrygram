@@ -8,8 +8,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.Theme;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class DoubleLimitsPageView extends BaseListPageView {
 
     DoubledLimitsBottomSheet.Adapter adapter;

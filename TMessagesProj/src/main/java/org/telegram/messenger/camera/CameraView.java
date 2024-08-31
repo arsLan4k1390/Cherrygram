@@ -62,7 +62,6 @@ import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
-import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.video.MP4Builder;
 import org.telegram.messenger.video.MediaCodecVideoConvertor;
@@ -91,14 +90,15 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.camera.BaseCameraView;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 @SuppressLint("NewApi")
 public class CameraView extends BaseCameraView implements TextureView.SurfaceTextureListener, CameraController.ICameraView, CameraController.ErrorCallback  {
 
     public boolean WRITE_TO_FILE_IN_BACKGROUND = false;
-    private boolean largePhotos = CherrygramConfig.INSTANCE.getLargePhotos();
+    private boolean largePhotos = CherrygramChatsConfig.INSTANCE.getLargePhotos();
 
     public boolean isStory;
     private float scaleX, scaleY;
@@ -119,7 +119,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
     private int focusAreaSize;
     private Drawable thumbDrawable;
 
-    private final boolean useCamera2 = CherrygramConfig.INSTANCE.getCameraType() == CherrygramConfig.CAMERA_2;
+    private final boolean useCamera2 = CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2;
     private final CameraSessionWrapper[] cameraSession = new CameraSessionWrapper[2];
     private CameraSessionWrapper cameraSessionRecording;
 
@@ -721,7 +721,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             photoMaxWidth = wantedWidth = 1280;
             photoMaxHeight = wantedHeight = 720;
         } else {
-            if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera1to1 && !isStory) {
+            if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera1to1 && !isStory) {
                 aspectRatio = new Size(1, 1);
                 wantedWidth = 1080;
                 wantedHeight = 1080;
@@ -736,7 +736,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     photoMaxWidth = 1080;
                     photoMaxHeight = 1080;
                 }
-            } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera4to3 && !isStory) {
+            } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera4to3 && !isStory) {
                 aspectRatio = new Size(4, 3);
                 wantedWidth = 1280;
                 wantedHeight = 960;
@@ -751,7 +751,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     photoMaxWidth = 1920;
                     photoMaxHeight = 1440;
                 }
-            } else if (CherrygramConfig.INSTANCE.getCameraAspectRatio() == CherrygramConfig.Camera16to9) {
+            } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera16to9) {
                 aspectRatio = new Size(16, 9);
                 wantedWidth = 1280;
                 wantedHeight = 720;

@@ -9,7 +9,6 @@
 package org.telegram.ui;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -41,7 +40,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ArchivedStickersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -95,7 +94,7 @@ public class ArchivedStickersActivity extends BaseFragment implements Notificati
 
     @Override
     public boolean isLightStatusBar() {
-        if (!CherrygramConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
+        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
         int color = getThemedColor(Theme.key_windowBackgroundWhite);
         return ColorUtils.calculateLuminance(color) > 0.7f;
     }
@@ -104,7 +103,7 @@ public class ArchivedStickersActivity extends BaseFragment implements Notificati
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
 
-        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
             actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
             actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
@@ -430,7 +429,7 @@ public class ArchivedStickersActivity extends BaseFragment implements Notificati
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_BACKGROUNDFILTER, new Class[]{LoadingCell.class, TextInfoPrivacyCell.class}, null, null, null, Theme.key_windowBackgroundGrayShadow));
 
-        if (CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
             themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));

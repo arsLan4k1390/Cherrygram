@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+
 public class ChatThemeController extends BaseController {
 
     private final long reloadTimeoutMs = 2 * 60 * 60 * 1000;
@@ -299,16 +301,17 @@ public class ChatThemeController extends BaseController {
     public TLRPC.WallPaper getDialogWallpaper(long dialogId) {
         if (dialogId >= 0) {
             TLRPC.UserFull userFull = getMessagesController().getUserFull(dialogId);
-            if (userFull != null) {
+            if (userFull != null && CherrygramCoreConfig.INSTANCE.getCustomWallpapers()) {
                 return userFull.wallpaper;
             }
         } else {
             TLRPC.ChatFull chatFull = getMessagesController().getChatFull(-dialogId);
-            if (chatFull != null) {
+            if (chatFull != null && CherrygramCoreConfig.INSTANCE.getCustomWallpapers()) {
                 return chatFull.wallpaper;
             }
         }
-        String wallpaperString = getEmojiSharedPreferences().getString("chatWallpaper_" + currentAccount + "_" + dialogId, null);
+        String wallpaperString = CherrygramCoreConfig.INSTANCE.getCustomWallpapers() ?
+                getEmojiSharedPreferences().getString("chatWallpaper_" + currentAccount + "_" + dialogId, null) : Theme.getActiveTheme().pathToWallpaper;
         if (wallpaperString != null) {
             SerializedData serializedData = new SerializedData(Utilities.hexToBytes(wallpaperString));
             try {

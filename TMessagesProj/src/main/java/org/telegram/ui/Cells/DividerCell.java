@@ -19,8 +19,6 @@ import androidx.core.graphics.ColorUtils;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class DividerCell extends View {
 
     private boolean forceDarkTheme;

@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.core.crashlytics;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -16,7 +18,6 @@ import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -49,14 +50,14 @@ public class CrashReportBottomSheet extends OnceBottomSheetHelper {
         title.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
         title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
         title.setTypeface(AndroidUtilities.bold());
-        title.setText(LocaleController.getString("CG_AppCrashed", R.string.CG_AppCrashed));
+        title.setText(getString(R.string.CG_AppCrashed));
         linearLayout.addView(title, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 21, 20, 21, 0));
 
         TextView description = new TextView(activity);
         description.setGravity(Gravity.CENTER_HORIZONTAL);
         description.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         description.setTextColor(Theme.getColor(Theme.key_dialogTextGray3));
-        description.setText(LocaleController.getString("CG_AppCrashedDesc", R.string.CG_AppCrashedDesc));
+        description.setText(getString(R.string.CG_AppCrashedDesc));
         linearLayout.addView(description, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 21, 15, 21, 16));
 
         TextView buttonTextView = new TextView(activity);
@@ -64,7 +65,7 @@ public class CrashReportBottomSheet extends OnceBottomSheetHelper {
         buttonTextView.setGravity(Gravity.CENTER);
         buttonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         buttonTextView.setTypeface(AndroidUtilities.bold());
-        buttonTextView.setText(LocaleController.getString("DebugSendLogs", R.string.DebugSendLogs));
+        buttonTextView.setText(getString(R.string.DebugSendLogs));
         buttonTextView.setOnClickListener(view -> {
             try {
                 File cacheFile = Crashlytics.shareLogs();
@@ -97,7 +98,7 @@ public class CrashReportBottomSheet extends OnceBottomSheetHelper {
         textView.setGravity(Gravity.CENTER);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setTypeface(AndroidUtilities.bold());
-        textView.setText(LocaleController.getString("Cancel", R.string.Cancel));
+        textView.setText(getString(R.string.Cancel));
         textView.setTextColor(Theme.getColor(Theme.key_featuredStickers_addButton));
 
         linearLayout.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, 0, 16, 0, 16, 0));

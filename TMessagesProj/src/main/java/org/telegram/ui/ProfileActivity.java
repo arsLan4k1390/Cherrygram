@@ -224,7 +224,6 @@ import org.telegram.ui.Components.FragmentContextView;
 import org.telegram.ui.Components.HintView;
 import org.telegram.ui.Components.IdenticonDrawable;
 import org.telegram.ui.Components.ImageUpdater;
-//import org.telegram.ui.Components.InstantCameraView;
 import org.telegram.ui.Components.InstantCameraView;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.JoinGroupAlert;
@@ -239,8 +238,6 @@ import org.telegram.ui.Components.Premium.PremiumFeatureBottomSheet;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 import org.telegram.ui.Components.Premium.PremiumPreviewBottomSheet;
 import org.telegram.ui.Components.Premium.ProfilePremiumCell;
-import org.telegram.ui.Components.Premium.boosts.BoostRepository;
-import org.telegram.ui.Components.Premium.boosts.PremiumPreviewGiftToUsersBottomSheet;
 import org.telegram.ui.Components.Premium.boosts.UserSelectorBottomSheet;
 import org.telegram.ui.Components.ProfileGalleryView;
 import org.telegram.ui.Components.RLottieDrawable;
@@ -285,7 +282,6 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -300,10 +296,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.Extra;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.Extra;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
@@ -975,7 +971,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         private final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         public void setBackgroundColorId(MessagesController.PeerColor peerColor, boolean animated) {
-            if (peerColor != null && CherrygramConfig.INSTANCE.getProfileBackgroundColor()) {
+            if (peerColor != null && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
                 hasColorById = true;
                 color1 = peerColor.getBgColor1(Theme.isCurrentThemeDark());
                 color2 = peerColor.getBgColor2(Theme.isCurrentThemeDark());
@@ -1020,7 +1016,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         public void setBackgroundEmojiId(long emojiId, boolean animated) {
             emoji.set(emojiId, animated);
             emoji.setColor(emojiColor);
-            hasEmoji = (hasEmoji || emojiId != 0 && emojiId != -1) && (CherrygramConfig.INSTANCE.getProfileBackgroundEmoji());
+            hasEmoji = (hasEmoji || emojiId != 0 && emojiId != -1) && (CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji());
             invalidate();
         }
 
@@ -5884,8 +5880,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         args.putInt("nearby_distance", distance);
                     }
                     ChatActivity chatActivity = new ChatActivity(args);
-
-                    if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(user.id))) {
+                    if (getParentActivity() != null
+                            && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()
+                            && user.id != 0
+                            && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(user.id))
+                    ) {
                         CGBiometricPrompt.prompt(getParentActivity(), () -> {
                             chatActivity.setPreloadedSticker(getMediaDataController().getGreetingsSticker(), false);
                             presentFragment(chatActivity, removeFragment);
@@ -8830,9 +8829,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 numberRow = rowCount++;
                 setUsernameRow = rowCount++;
                 bioRow = rowCount++;
-                if (CherrygramConfig.INSTANCE.getShowIDDC() == CherrygramConfig.ID_ONLY) {
+                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_ONLY) {
                     idRow = rowCount++;
-                } else if (CherrygramConfig.INSTANCE.getShowIDDC() == CherrygramConfig.ID_DC) {
+                } else if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_DC) {
                     idDcRow = rowCount++;
                 }
                 settingsSectionRow = rowCount++;
@@ -8900,7 +8899,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 boolean hasInfo = userInfo != null && !TextUtils.isEmpty(userInfo.about) || user != null && !TextUtils.isEmpty(username);
                 boolean hasPhone = user != null && (!TextUtils.isEmpty(user.phone) || !TextUtils.isEmpty(vcardPhone));
 
-                if (CherrygramConfig.INSTANCE.getProfileChannelPreview() && (userInfo != null && (userInfo.flags2 & 64) != 0 && (profileChannelMessageFetcher == null || !profileChannelMessageFetcher.loaded || profileChannelMessageFetcher.messageObject != null))) {
+                if (CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview() && (userInfo != null && (userInfo.flags2 & 64) != 0 && (profileChannelMessageFetcher == null || !profileChannelMessageFetcher.loaded || profileChannelMessageFetcher.messageObject != null))) {
                     TLRPC.Chat channel = getMessagesController().getChat(userInfo.personal_channel_id);
                     if (channel != null && (ChatObject.isPublic(channel) || !ChatObject.isNotInChat(channel))) {
                         channelRow = rowCount++;
@@ -8918,19 +8917,19 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (user != null && username != null) {
                     usernameRow = rowCount++;
                 }
-                if (CherrygramConfig.INSTANCE.getShowIDDC() == CherrygramConfig.ID_ONLY) {
+                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_ONLY) {
                     idRow = rowCount++;
-                } else if (CherrygramConfig.INSTANCE.getShowIDDC() == CherrygramConfig.ID_DC) {
+                } else if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_DC) {
                     idDcRow = rowCount++;
                 }
                 if (userInfo != null) {
-                    if (userInfo.birthday != null && CherrygramConfig.INSTANCE.getProfileBirthDatePreview()) {
+                    if (userInfo.birthday != null && CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview()) {
                         birthdayRow = rowCount++;
                     }
-                    if (userInfo.business_work_hours != null && CherrygramConfig.INSTANCE.getProfileBusinessPreview()) {
+                    if (userInfo.business_work_hours != null && CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview()) {
                         bizHoursRow = rowCount++;
                     }
-                    if (userInfo.business_location != null && CherrygramConfig.INSTANCE.getProfileBusinessPreview()) {
+                    if (userInfo.business_location != null && CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview()) {
                         bizLocationRow = rowCount++;
                     }
                 }
@@ -9020,9 +9019,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     usernameRow = rowCount++;
                 }
             }
-            if (CherrygramConfig.INSTANCE.getShowIDDC() == CherrygramConfig.ID_ONLY) {
+            if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_ONLY) {
                 idRow = rowCount++;
-            } else if (CherrygramConfig.INSTANCE.getShowIDDC() == CherrygramConfig.ID_DC) {
+            } else if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_DC) {
                 idDcRow = rowCount++;
             }
 //            if (infoHeaderRow != -1) {
@@ -9213,7 +9212,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     }
 
     private Drawable getEmojiStatusDrawable(TLRPC.EmojiStatus emojiStatus, boolean switchable, boolean animated, int a) {
-        if (CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) return null;
+        if (CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) return null;
         if (emojiStatusDrawable[a] == null) {
             emojiStatusDrawable[a] = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(nameTextView[a], AndroidUtilities.dp(24), a == 0 ? AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS : AnimatedEmojiDrawable.CACHE_TYPE_KEYBOARD);
             if (fragmentViewAttached) {
@@ -9238,7 +9237,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private void updateEmojiStatusDrawableColor(float progress) {
         for (int a = 0; a < 2; ++a) {
             final int fromColor;
-            if (peerColor != null && a == 1 && CherrygramConfig.INSTANCE.getProfileBackgroundColor()) {
+            if (peerColor != null && a == 1 && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
                 fromColor = ColorUtils.blendARGB(
                     peerColor.getColor2(),
                     peerColor.hasColor6(Theme.isCurrentThemeDark()) ? peerColor.getColor5() : peerColor.getColor3(),
@@ -9376,7 +9375,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
             } else {
                 isOnline[0] = false;
-                String tgPremium = getMessagesController().isPremiumUser(user) && CherrygramConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
+                String tgPremium = getMessagesController().isPremiumUser(user) && CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
                 newString2 = LocaleController.formatUserStatus(currentAccount, user, isOnline, shortStatus ? new boolean[1] : null) + tgPremium;
                 hiddenStatusButton = user != null && !isOnline[0] && !getUserConfig().isPremium() && user.status != null && (user.status instanceof TLRPC.TL_userStatusRecently || user.status instanceof TLRPC.TL_userStatusLastMonth || user.status instanceof TLRPC.TL_userStatusLastWeek) && user.status.by_me;
                 if (onlineTextView[1] != null && !mediaHeaderVisible) {
@@ -9438,7 +9437,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         rightIconIsPremium = false;
                         nameTextView[a].setRightDrawable(getEmojiStatusDrawable(user.emoji_status, false, false, a));
                         nameTextViewRightDrawableContentDescription = LocaleController.getString(R.string.AccDescrPremium);
-                    } else if (getMessagesController().isPremiumUser(user) && !CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+                    } else if (getMessagesController().isPremiumUser(user) && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
                         rightIconIsStatus = false;
                         rightIconIsPremium = true;
                         nameTextView[a].setRightDrawable(getEmojiStatusDrawable(null, false, false, a));
@@ -9459,7 +9458,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         rightIconIsStatus = true;
                         rightIconIsPremium = false;
                         nameTextView[a].setRightDrawable(getEmojiStatusDrawable(user.emoji_status, true, true, a));
-                    } else if (getMessagesController().isPremiumUser(user) && !CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+                    } else if (getMessagesController().isPremiumUser(user) && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
                         rightIconIsStatus = false;
                         rightIconIsPremium = true;
                         nameTextView[a].setRightDrawable(getEmojiStatusDrawable(null, true, true, a));
@@ -9476,7 +9475,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         showStatusSelect();
                     });
                 }
-                if (!user.self && getMessagesController().isPremiumUser(user) && !CherrygramConfig.INSTANCE.getDisablePremiumStatuses()) {
+                if (!user.self && getMessagesController().isPremiumUser(user) && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
                     final SimpleTextView textView = nameTextView[a];
                     nameTextView[a].setRightDrawableOnClick(v -> {
                         PremiumPreviewBottomSheet premiumPreviewBottomSheet = new PremiumPreviewBottomSheet(ProfileActivity.this, currentAccount, user, resourcesProvider);
@@ -9935,7 +9934,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private final SparseIntArray adaptedColors = new SparseIntArray();
     private int applyPeerColor(int color, boolean actionBar, Boolean online) {
         if (!actionBar && isSettings()) return color;
-        if (peerColor != null && CherrygramConfig.INSTANCE.getProfileBackgroundColor()) {
+        if (peerColor != null && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
             if (!actionBar) {
                 int index = adaptedColors.indexOfKey(color);
                 if (index < 0) {
@@ -13104,7 +13103,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             int color1 = getThemedColor(Theme.key_profile_actionBackground);
             int color2 = getThemedColor(Theme.key_profile_actionPressedBackground);
             int iconColor = getThemedColor(Theme.key_profile_actionIcon);
-            if (peerColor != null && Theme.hasHue(color1) && CherrygramConfig.INSTANCE.getProfileBackgroundColor()) {
+            if (peerColor != null && Theme.hasHue(color1) && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
                 color1 = Theme.adaptHSV(peerColor.getBgColor1(false), +.05f, -.04f);
                 color2 = applyPeerColor2(color2);
                 iconColor = Color.WHITE;
@@ -13319,7 +13318,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             color = getThemedColor(Theme.key_actionBarActionModeDefault);
         } else if (mediaHeaderVisible) {
             color = getThemedColor(Theme.key_windowBackgroundWhite);
-        } else if (peerColor != null && CherrygramConfig.INSTANCE.getProfileBackgroundColor()) {
+        } else if (peerColor != null && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
             color = peerColor.getBgColor2(Theme.isCurrentThemeDark());
         } else {
             color = getThemedColor(Theme.key_actionBarDefault);

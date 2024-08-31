@@ -35,8 +35,6 @@ import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Stories.StoriesUtilities;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class ManageChatUserCell extends FrameLayout {
 
     private final BackupImageView avatarImageView;

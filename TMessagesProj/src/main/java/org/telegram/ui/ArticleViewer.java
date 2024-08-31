@@ -45,7 +45,6 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.location.LocationListener;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -215,7 +214,6 @@ import org.telegram.ui.web.WebActionBar;
 import org.telegram.ui.web.WebBrowserSettings;
 
 import java.io.File;
-import java.net.IDN;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -223,8 +221,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 
 public class ArticleViewer implements NotificationCenter.NotificationCenterDelegate {
 
@@ -1253,7 +1252,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             if (checkingForLongPress && windowView != null) {
                 checkingForLongPress = false;
                 if (pressedLink != null) {
-                    if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                         windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                     }
                     showCopyPopup(pressedLink.getSpan().getUrl());
@@ -1268,11 +1267,11 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                     } else {
                         textSelectionHelper.trySelect(pressedLinkOwnerView);
                     }
-                    if (textSelectionHelper.isInSelectionMode() && !CherrygramConfig.INSTANCE.getDisableVibration()) {
+                    if (textSelectionHelper.isInSelectionMode() && !CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                         windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                     }
                 } else if (pressedLinkOwnerLayout != null && pressedLinkOwnerView != null) {
-                    if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                         windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                     }
                     int[] location = new int[2];
@@ -4288,7 +4287,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 final long selfId = UserConfig.getInstance(currentAccount).getClientUserId();
 
                 long chatID;
-                if (CherrygramConfig.INSTANCE.getCustomChatForSavedMessages()) {
+                if (CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages()) {
                     chatID = ChatsHelper2.getCustomChatID();
                 } else {
                     chatID = selfId;
@@ -4313,7 +4312,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                     BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                     if (lastFragment != null) {
                         Bundle args = new Bundle();
-                        if (CherrygramConfig.INSTANCE.getCustomChatForSavedMessages()) {
+                        if (CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages()) {
                             if (DialogObject.isChatDialog(chatID)) {
                                 args.putLong("chat_id", -chatID);
                             } else {

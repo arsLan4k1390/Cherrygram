@@ -41,8 +41,6 @@ import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class FeaturedStickerSetInfoCell extends FrameLayout {
 
     private boolean canAddRemove;

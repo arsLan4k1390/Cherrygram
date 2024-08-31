@@ -5,7 +5,8 @@ import android.media.MediaRecorder
 import android.media.audiofx.AcousticEchoCanceler
 import android.media.audiofx.AutomaticGainControl
 import android.media.audiofx.NoiseSuppressor
-import uz.unnarsx.cherrygram.CherrygramConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
 
 object AudioEnhance {
     private var agc: AutomaticGainControl? = null
@@ -14,7 +15,7 @@ object AudioEnhance {
 
     @JvmStatic
     fun initVoiceEnhancements(audioRecord: AudioRecord) {
-        if (!CherrygramConfig.voicesAgc) return
+        if (!CherrygramChatsConfig.voicesAgc) return
 
         if (AutomaticGainControl.isAvailable()) {
             agc = AutomaticGainControl.create(audioRecord.audioSessionId)
@@ -48,35 +49,35 @@ object AudioEnhance {
 
     @JvmStatic
     fun getAudioSource(): Int {
-        val source: Int = when (CherrygramConfig.audioSource) {
-            CherrygramConfig.AUDIO_SOURCE_CAMCORDER -> {
+        val source: Int = when (CherrygramDebugConfig.audioSource) {
+            CherrygramDebugConfig.AUDIO_SOURCE_CAMCORDER -> {
                 MediaRecorder.AudioSource.CAMCORDER
             }
-            CherrygramConfig.AUDIO_SOURCE_MIC -> {
+            CherrygramDebugConfig.AUDIO_SOURCE_MIC -> {
                 MediaRecorder.AudioSource.MIC
             }
-            CherrygramConfig.AUDIO_SOURCE_REMOTE_SUBMIX -> {
+            CherrygramDebugConfig.AUDIO_SOURCE_REMOTE_SUBMIX -> {
                 MediaRecorder.AudioSource.REMOTE_SUBMIX
             }
-            CherrygramConfig.AUDIO_SOURCE_UNPROCESSED -> {
+            CherrygramDebugConfig.AUDIO_SOURCE_UNPROCESSED -> {
                 MediaRecorder.AudioSource.UNPROCESSED //Api 24
             }
-            CherrygramConfig.AUDIO_SOURCE_VOICE_CALL -> {
+            CherrygramDebugConfig.AUDIO_SOURCE_VOICE_CALL -> {
                 MediaRecorder.AudioSource.VOICE_CALL
             }
-            CherrygramConfig.AUDIO_SOURCE_VOICE_COMMUNICATION -> {
+            CherrygramDebugConfig.AUDIO_SOURCE_VOICE_COMMUNICATION -> {
                 MediaRecorder.AudioSource.VOICE_COMMUNICATION
             }
-            CherrygramConfig.AUDIO_SOURCE_VOICE_DOWNLINK -> {
+            CherrygramDebugConfig.AUDIO_SOURCE_VOICE_DOWNLINK -> {
                 MediaRecorder.AudioSource.VOICE_DOWNLINK
             }
-            CherrygramConfig.AUDIO_SOURCE_VOICE_PERFORMANCE -> {
+            CherrygramDebugConfig.AUDIO_SOURCE_VOICE_PERFORMANCE -> {
                 MediaRecorder.AudioSource.VOICE_PERFORMANCE //Api 29
             }
-            CherrygramConfig.AUDIO_SOURCE_VOICE_RECOGNITION -> {
+            CherrygramDebugConfig.AUDIO_SOURCE_VOICE_RECOGNITION -> {
                 MediaRecorder.AudioSource.VOICE_RECOGNITION
             }
-            CherrygramConfig.AUDIO_SOURCE_VOICE_UPLINK -> {
+            CherrygramDebugConfig.AUDIO_SOURCE_VOICE_UPLINK -> {
                 MediaRecorder.AudioSource.VOICE_UPLINK
             }
             else -> {

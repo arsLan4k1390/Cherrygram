@@ -121,8 +121,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class CacheControlActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private static final int VIEW_TYPE_TEXT_SETTINGS = 0;

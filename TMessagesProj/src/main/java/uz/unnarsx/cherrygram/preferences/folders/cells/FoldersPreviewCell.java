@@ -13,6 +13,7 @@ package uz.unnarsx.cherrygram.preferences.folders.cells;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.dpf2;
+import static org.telegram.messenger.LocaleController.getString;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -43,7 +44,7 @@ import org.telegram.ui.Components.LayoutHelper;
 
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.preferences.folders.helpers.FolderIconHelper;
 
 @SuppressLint("ViewConstructor")
@@ -67,19 +68,19 @@ public class FoldersPreviewCell extends FrameLayout {
     private int oldStyle, currentStyle;
     private String allChatsTabName;
     private String allChatsTabIcon;
-    int tabStyle = CherrygramConfig.INSTANCE.getTabStyle();
+    int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
 
     private ValueAnimator animator;
 
     private final String[][] filters = new String[][]{
-            {LocaleController.getString("FilterAllChats", R.string.FilterAllChats), "\uD83D\uDCAC"},
-            {LocaleController.getString("FilterGroups", R.string.FilterGroups), "\uD83D\uDC65"},
-            {LocaleController.getString("FilterBots", R.string.FilterBots), "\uD83E\uDD16"},
-            {LocaleController.getString("FilterChannels", R.string.FilterChannels), "\uD83D\uDCE2"},
-            {LocaleController.getString("FilterNameNonMuted", R.string.FilterNameNonMuted), "\uD83D\uDD14"},
-            {LocaleController.getString("FilterContacts", R.string.FilterContacts), "\uD83C\uDFE0"},
-            {LocaleController.getString("FilterUnread", R.string.FilterUnread), "\u2705"},
-            {LocaleController.getString("FilterNonContacts", R.string.FilterNonContacts), "\uD83C\uDFAD"},
+            {getString(R.string.FilterAllChats), "\uD83D\uDCAC"},
+            {getString(R.string.FilterGroups), "\uD83D\uDC65"},
+            {getString(R.string.FilterBots), "\uD83E\uDD16"},
+            {getString(R.string.FilterChannels), "\uD83D\uDCE2"},
+            {getString(R.string.FilterNameNonMuted), "\uD83D\uDD14"},
+            {getString(R.string.FilterContacts), "\uD83C\uDFE0"},
+            {getString(R.string.FilterUnread), "\u2705"},
+            {getString(R.string.FilterNonContacts), "\uD83C\uDFAD"},
     };
 
     public FoldersPreviewCell(Context context) {
@@ -104,13 +105,13 @@ public class FoldersPreviewCell extends FrameLayout {
 
                 rect.set(0, 0, w, h);
                 Theme.dialogs_onlineCirclePaint.setColor(Color.argb(20, r, g, b));
-                canvas.drawRoundRect(rect, dp(tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? 50 : 8), dp(tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? 50 : 8), Theme.dialogs_onlineCirclePaint);
+                canvas.drawRoundRect(rect, dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 50 : 8), dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 50 : 8), Theme.dialogs_onlineCirclePaint);
 
                 float stroke = outlinePaint.getStrokeWidth() / 2;
                 rect.set(stroke, stroke, w - stroke, h - stroke);
-                canvas.drawRoundRect(rect, dp(tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? 50 : 8), dp(tabStyle == CherrygramConfig.TAB_STYLE_PILLS ? 50 : 8), outlinePaint);
+                canvas.drawRoundRect(rect, dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 50 : 8), dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 50 : 8), outlinePaint);
 
-                if (CherrygramConfig.INSTANCE.getTabStyleStroke()) {
+                if (CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
                     outlinePaint2.setStyle(Paint.Style.STROKE);
                     outlinePaint2.setStrokeWidth(Math.max(5, AndroidUtilities.dp(0.5f)));
                     outlinePaint2.setColor(ColorUtils.blendARGB(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_switchTrack), 0x3F), Theme.getColor(Theme.key_windowBackgroundWhiteValueText), chipsStyleProgress));
@@ -150,7 +151,7 @@ public class FoldersPreviewCell extends FrameLayout {
                                 dpf2(8 + 15 * pillsStyleProgress),
                                 Theme.dialogs_onlineCirclePaint);
 
-                        if (tabStyle >= CherrygramConfig.TAB_STYLE_VKUI && CherrygramConfig.INSTANCE.getTabStyleStroke()) {
+                        if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI && CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
                             canvas.drawRoundRect(
                                     startX,
                                     startY + dpf2(6) * textStyleProgress - dpf2(37.5f) * chipsStyleProgress,
@@ -225,11 +226,11 @@ public class FoldersPreviewCell extends FrameLayout {
     }
 
     public void updateTabStyle(boolean animate) {
-        if (Objects.equals(currentStyle, CherrygramConfig.INSTANCE.getTabStyle()) && animate)
+        if (Objects.equals(currentStyle, CherrygramAppearanceConfig.INSTANCE.getTabStyle()) && animate)
             return;
 
         oldStyle = currentStyle;
-        currentStyle = CherrygramConfig.INSTANCE.getTabStyle();
+        currentStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
 
         if (animate) {
             ValueAnimator def = ValueAnimator.ofFloat(0f, 1f).setDuration(250);
@@ -314,7 +315,7 @@ public class FoldersPreviewCell extends FrameLayout {
     }
 
     public void updateTabTitle(boolean animate) {
-        float to = CherrygramConfig.INSTANCE.getTabMode() != 2 ? 1 : 0;
+        float to = CherrygramAppearanceConfig.INSTANCE.getTabMode() != 2 ? 1 : 0;
         if (to == titleProgress && animate)
             return;
         if (animate) {
@@ -332,7 +333,7 @@ public class FoldersPreviewCell extends FrameLayout {
     }
 
     public void updateTabIcons(boolean animate) {
-        float to = CherrygramConfig.INSTANCE.getTabMode() != 1 ? 1 : 0;
+        float to = CherrygramAppearanceConfig.INSTANCE.getTabMode() != 1 ? 1 : 0;
         if (to == iconProgress && animate)
             return;
         if (animate) {
@@ -350,7 +351,7 @@ public class FoldersPreviewCell extends FrameLayout {
     }
 
     public void updateTabCounter(boolean animate) {
-        float to = !CherrygramConfig.INSTANCE.getTabsNoUnread() ? 1 : 0;
+        float to = !CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread() ? 1 : 0;
         if (to == counterProgress && animate)
             return;
         if (animate) {
@@ -368,7 +369,7 @@ public class FoldersPreviewCell extends FrameLayout {
     }
 
     public void updateTabStroke(boolean animate) {
-        float to = CherrygramConfig.INSTANCE.getTabStyleStroke() ? 1 : 0;
+        float to = CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke() ? 1 : 0;
         if (to == strokeProgress && animate)
             return;
         if (animate) {
@@ -386,11 +387,11 @@ public class FoldersPreviewCell extends FrameLayout {
     }
 
     private String getAllChatsTabName() {
-        return CherrygramConfig.INSTANCE.getTabsHideAllChats() ? filters[6][0] : filters[0][0];
+        return CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats() ? filters[6][0] : filters[0][0];
     }
 
     private String getAllChatsTabIcon() {
-        return CherrygramConfig.INSTANCE.getTabsHideAllChats() ? filters[6][1] : filters[0][1];
+        return CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats() ? filters[6][1] : filters[0][1];
     }
 
     @Override

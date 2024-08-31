@@ -22,8 +22,6 @@ import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.LayoutHelper;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class MemberRequestCell extends FrameLayout {
 
     private final AvatarDrawable avatarDrawable = new AvatarDrawable();

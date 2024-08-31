@@ -106,8 +106,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class StoryPrivacyBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
     private ViewPagerFixed viewPager;

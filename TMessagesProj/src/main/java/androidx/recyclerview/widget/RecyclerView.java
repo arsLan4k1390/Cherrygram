@@ -97,7 +97,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.VibrateUtil;
 
 /**
@@ -7053,7 +7053,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
             try {
                 TraceCompat.beginSection(TRACE_CREATE_VIEW_TAG);
                 final VH holder = onCreateViewHolder(parent, viewType);
-                if (CherrygramConfig.INSTANCE.getDisableVibration()) {
+                if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                     VibrateUtil.disableHapticFeedback(holder.itemView);
                 }
                 if (holder.itemView.getParent() != null) {

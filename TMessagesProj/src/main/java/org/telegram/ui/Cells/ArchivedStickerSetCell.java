@@ -42,8 +42,6 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.ProgressButton;
 import org.telegram.ui.Components.ViewHelper;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 import java.util.ArrayList;
 
 @SuppressLint("ViewConstructor")

@@ -194,7 +194,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.chats.translator.BaseTranslator;
 import uz.unnarsx.cherrygram.chats.translator.Translator;
 
@@ -865,7 +867,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         @Override
         public void run() {
             if (delegate != null) {
-                if (parentActivity != null && !AndroidUtilities.isTablet() && CherrygramConfig.INSTANCE.getIconReplacement() != CherrygramConfig.ICON_REPLACE_NONE) {
+                if (parentActivity != null && !AndroidUtilities.isTablet() && CherrygramAppearanceConfig.INSTANCE.getIconReplacement() != CherrygramAppearanceConfig.ICON_REPLACE_NONE) {
                     AndroidUtilities.lockOrientation(parentActivity, ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
                 }
                 delegate.needStartRecordVideo(0, true, 0, 0, 0);
@@ -2611,7 +2613,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 }
             }
         });
-        if (CherrygramConfig.INSTANCE.getHideSendAsChannel() && UserConfig.getInstance(currentAccount).isPremium()) {
+        if (CherrygramCoreConfig.INSTANCE.getHideSendAsChannel() && UserConfig.getInstance(currentAccount).isPremium()) {
             emojiButton.setOnLongClickListener(v -> {
                 try {
                     v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
@@ -2820,7 +2822,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                             } else {
                                 delegate.needShowMediaBanHint();
                             }
-                            if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                                 performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                             }
                             sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
@@ -4099,7 +4101,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
     private void startLockTransition() {
         AnimatorSet animatorSet = new AnimatorSet();
-        if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
             performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
         }
 
@@ -4310,7 +4312,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                         if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
                             sendPopupWindow.dismiss();
                         }
-                        if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                             performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                         }
                         Translator.showTranslationTargetSelector(getContext(), true, () -> {
@@ -4369,7 +4371,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             sendPopupWindow.showAtLocation(view, Gravity.LEFT | Gravity.TOP, location[0] + view.getMeasuredWidth() - sendPopupLayout.getMeasuredWidth() + dp(8), y);
             sendPopupWindow.dimBehind();
             sendButton.invalidate();
-            if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                 try {
                     view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                 } catch (Exception ignore) {}
@@ -4566,7 +4568,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                             messageSendPreview.dismiss(false);
                             messageSendPreview = null;
                         }
-                        if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                             performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                         }
                         Translator.showTranslationTargetSelector(getContext(), true, this::translatePreSend, resourcesProvider);
@@ -7872,7 +7874,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             } catch (Exception e) {
                 FileLog.e(e);
             }
-            if (CherrygramConfig.INSTANCE.getIconReplacement() == CherrygramConfig.ICON_REPLACE_NONE) {
+            if (CherrygramAppearanceConfig.INSTANCE.getIconReplacement() == CherrygramAppearanceConfig.ICON_REPLACE_NONE) {
                 AndroidUtilities.lockOrientation(parentActivity);
             }
 
@@ -9618,7 +9620,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         if (parentFragment == null || delegate == null) {
             return;
         }
-        if (CherrygramConfig.INSTANCE.getHideSendAsChannel())
+        if (CherrygramCoreConfig.INSTANCE.getHideSendAsChannel())
             return;
         createMessageEditText();
         TLRPC.Chat chat = parentFragment.getMessagesController().getChat(-dialog_id);

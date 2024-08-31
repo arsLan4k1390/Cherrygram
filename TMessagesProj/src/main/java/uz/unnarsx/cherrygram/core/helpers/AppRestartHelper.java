@@ -43,8 +43,8 @@ public final class AppRestartHelper extends Activity {
     public static void createRestartBulletin(BaseFragment fragment) {
         BulletinFactory.of(fragment).createRestartBulletin(
                 R.raw.chats_infotip,
-                LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply),
-                LocaleController.getString("BotUnblock", R.string.BotUnblock),
+                LocaleController.getString(R.string.CG_RestartToApply),
+                LocaleController.getString(R.string.BotUnblock),
                 () -> {
                 }).show();
     }

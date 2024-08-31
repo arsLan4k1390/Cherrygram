@@ -58,7 +58,7 @@ import org.telegram.ui.LaunchActivity;
 import java.io.File;
 import java.util.Collections;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class StoriesUtilities {
 
@@ -1413,7 +1413,7 @@ public class StoriesUtilities {
         public void setColorId(int colorId, boolean animated) {
             MessagesController.PeerColors peerColors = MessagesController.getInstance(currentAccount).profilePeerColors;
             MessagesController.PeerColor peerColor = peerColors == null ? null : peerColors.getColor(colorId);
-            if (peerColor != null && CherrygramConfig.INSTANCE.getProfileBackgroundColor()) {
+            if (peerColor != null && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
                 setColors(
                     peerColor.getStoryColor1(Theme.isCurrentThemeDark()),
                     peerColor.getStoryColor2(Theme.isCurrentThemeDark()),

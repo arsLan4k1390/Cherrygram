@@ -51,8 +51,6 @@ import org.telegram.ui.Components.SuggestEmojiView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class PollEditTextCell extends FrameLayout implements SuggestEmojiView.AnchorViewDelegate {
 
     public static final int TYPE_DEFAULT = 0;

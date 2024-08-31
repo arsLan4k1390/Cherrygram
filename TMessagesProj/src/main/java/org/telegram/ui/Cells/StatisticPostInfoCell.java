@@ -43,8 +43,6 @@ import org.telegram.ui.Stories.StoriesUtilities;
 
 import java.util.Date;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 @SuppressLint("ViewConstructor")
 public class StatisticPostInfoCell extends FrameLayout {
 

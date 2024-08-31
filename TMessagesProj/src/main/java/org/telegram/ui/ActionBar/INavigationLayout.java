@@ -14,10 +14,17 @@ import android.widget.FrameLayout;
 
 import androidx.core.util.Supplier;
 
+import org.telegram.messenger.FileLog;
+import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.BackButtonMenu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
+import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 
 public interface INavigationLayout {
     int REBUILD_FLAG_REBUILD_LAST = 1, REBUILD_FLAG_REBUILD_ONLY_LAST = 2;
@@ -241,19 +248,100 @@ public interface INavigationLayout {
     }
 
     default boolean presentFragment(BaseFragment fragment) {
-        return presentFragment(new NavigationParams(fragment));
+        AtomicBoolean fragment1 = new AtomicBoolean(false);
+        if (fragment instanceof ChatActivity && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()) {
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity");
+            if (getParentActivity() != null
+                    && (
+                            fragment.arguments.getLong("user_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(fragment.arguments.getLong("user_id")))
+                            || fragment.arguments.getLong("chat_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(-fragment.arguments.getLong("chat_id")))
+                    )
+            ) {
+                CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                    fragment1.set(presentFragment(new NavigationParams(fragment)));
+                });
+            } else {
+                fragment1.set(presentFragment(new NavigationParams(fragment)));
+            }
+            return fragment1.get();
+        } else {
+            return presentFragment(new NavigationParams(fragment));
+        }
     }
 
     default boolean presentFragment(BaseFragment fragment, boolean removeLast) {
-        return presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast));
+//        return presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast)); // forwards
+        AtomicBoolean fragment1 = new AtomicBoolean(false);
+        if (fragment instanceof ChatActivity && !removeLast && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()) {
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity1");
+            if (getParentActivity() != null
+                    && (
+                            fragment.arguments.getLong("user_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(fragment.arguments.getLong("user_id")))
+                            || fragment.arguments.getLong("chat_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(-fragment.arguments.getLong("chat_id")))
+                    )
+            ) {
+                CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                    fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast)));
+                });
+            } else {
+                fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast)));
+            }
+            return fragment1.get();
+        } else {
+            return presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast));
+        }
     }
 
     default boolean presentFragmentAsPreview(BaseFragment fragment) {
-        return presentFragment(new NavigationParams(fragment).setPreview(true));
+        AtomicBoolean fragment1 = new AtomicBoolean(false);
+        if (fragment instanceof ChatActivity && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()) {
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity2");
+            if (getParentActivity() != null
+                    && (
+                            fragment.arguments.getLong("user_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(fragment.arguments.getLong("user_id")))
+                            || fragment.arguments.getLong("chat_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(-fragment.arguments.getLong("chat_id")))
+                    )
+            ) {
+                CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                    fragment1.set(presentFragment(new NavigationParams(fragment).setPreview(true)));
+                });
+            } else {
+                fragment1.set(presentFragment(new NavigationParams(fragment).setPreview(true)));
+            }
+            return fragment1.get();
+        } else {
+            return presentFragment(new NavigationParams(fragment).setPreview(true));
+        }
     }
 
     default boolean presentFragmentAsPreviewWithMenu(BaseFragment fragment, ActionBarPopupWindow.ActionBarPopupWindowLayout menuView) {
-        return presentFragment(new NavigationParams(fragment).setPreview(true).setMenuView(menuView));
+        AtomicBoolean fragment1 = new AtomicBoolean(false);
+        if (fragment instanceof ChatActivity && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()) {
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity3");
+            if (getParentActivity() != null
+                    && (
+                            fragment.arguments.getLong("user_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(fragment.arguments.getLong("user_id")))
+                            || fragment.arguments.getLong("chat_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(-fragment.arguments.getLong("chat_id")))
+                    )
+            ) {
+                CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                    fragment1.set(presentFragment(new NavigationParams(fragment).setPreview(true).setMenuView(menuView)));
+                });
+            } else {
+                fragment1.set(presentFragment(new NavigationParams(fragment).setPreview(true).setMenuView(menuView)));
+            }
+            return fragment1.get();
+        } else {
+            return presentFragment(new NavigationParams(fragment).setPreview(true).setMenuView(menuView));
+        }
     }
 
     /**
@@ -261,7 +349,27 @@ public interface INavigationLayout {
      */
     @Deprecated
     default boolean presentFragment(BaseFragment fragment, boolean removeLast, boolean forceWithoutAnimation, boolean check, boolean preview) {
-        return presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview));
+        AtomicBoolean fragment1 = new AtomicBoolean(false);
+        if (fragment instanceof ChatActivity && !check && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()) {
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity4");
+            if (getParentActivity() != null
+                    && (
+                            fragment.arguments.getLong("user_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(fragment.arguments.getLong("user_id")))
+                            || fragment.arguments.getLong("chat_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(-fragment.arguments.getLong("chat_id")))
+                    )
+            ) {
+                CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                    fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview)));
+                });
+            } else {
+                fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview)));
+            }
+            return fragment1.get();
+        } else {
+            return presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview));
+        }
     }
 
     /**
@@ -269,7 +377,27 @@ public interface INavigationLayout {
      */
     @Deprecated
     default boolean presentFragment(BaseFragment fragment, boolean removeLast, boolean forceWithoutAnimation, boolean check, boolean preview, ActionBarPopupWindow.ActionBarPopupWindowLayout menuView) {
-        return presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview).setMenuView(menuView));
+        AtomicBoolean fragment1 = new AtomicBoolean(false);
+        if (fragment instanceof ChatActivity && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()) {
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity5");
+            if (getParentActivity() != null
+                    && (
+                            fragment.arguments.getLong("user_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(fragment.arguments.getLong("user_id")))
+                            || fragment.arguments.getLong("chat_id") != 0
+                                    && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(-fragment.arguments.getLong("chat_id")))
+                    )
+            ) {
+                CGBiometricPrompt.prompt(getParentActivity(), () -> {
+                    fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview).setMenuView(menuView)));
+                });
+            } else {
+                fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview).setMenuView(menuView)));
+            }
+            return fragment1.get();
+        } else {
+            return presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview).setMenuView(menuView));
+        }
     }
 
     default void dismissDialogs() {

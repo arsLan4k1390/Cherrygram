@@ -18,7 +18,6 @@ import android.content.res.Configuration;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.util.Xml;
 
 import androidx.annotation.StringRes;
@@ -31,11 +30,9 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.RestrictedLanguagesSelectActivity;
 import org.xmlpull.v1.XmlPullParser;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -49,7 +46,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 public class LocaleController {
 
@@ -75,7 +73,7 @@ public class LocaleController {
                         lang = "en";
                     }
                     lang = lang.toLowerCase();
-                    if (CherrygramConfig.INSTANCE.getShowSeconds()) {
+                    if (CherrygramAppearanceConfig.INSTANCE.getShowSeconds()) {
                         formatterDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, is24HourFormat ? getStringInternal("formatterDay24HSec", R.string.CP_FormatterDay24HSec) : getStringInternal("formatterDay12HSec", R.string.CP_FormatterDay12HSec), is24HourFormat ? "HH:mm:ss" : "h:mm:ss a");
                     } else {
                         formatterDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, is24HourFormat ? getStringInternal("formatterDay24H", R.string.formatterDay24H) : getStringInternal("formatterDay12H", R.string.formatterDay12H), is24HourFormat ? "HH:mm" : "h:mm a");
@@ -2552,7 +2550,7 @@ public class LocaleController {
     }
 
     public static String formatShortNumber(int number, int[] rounded) {
-        if (CherrygramConfig.INSTANCE.getNoRounding()) {
+        if (CherrygramCoreConfig.INSTANCE.getNoRounding()) {
             if (rounded != null) {
                 rounded[0] = number;
             }

@@ -1,5 +1,7 @@
 package uz.unnarsx.cherrygram.core;
 
+import static org.telegram.messenger.LocaleController.getString;
+
 import android.app.Activity;
 import android.hardware.biometrics.BiometricManager;
 import android.hardware.fingerprint.FingerprintManager;
@@ -12,25 +14,25 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 
 public class CGBiometricPrompt {
 
     private static BiometricPrompt.PromptInfo createPromptInfo() {
         BiometricPrompt.PromptInfo.Builder builder = new BiometricPrompt.PromptInfo.Builder();
-        builder.setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName));
-        if (!CherrygramConfig.INSTANCE.getAllowSystemPasscode()) {
-            builder.setNegativeButtonText(LocaleController.getString("Cancel", R.string.Cancel));
+        builder.setTitle(getString(R.string.CG_AppName));
+        if (!CherrygramPrivacyConfig.INSTANCE.getAllowSystemPasscode()) {
+            builder.setNegativeButtonText(getString(R.string.Cancel));
         }
 //        builder.setAllowedAuthenticators(BIOMETRIC_STRONG | DEVICE_CREDENTIAL);
-        builder.setDeviceCredentialAllowed(CherrygramConfig.INSTANCE.getAllowSystemPasscode());
+        builder.setDeviceCredentialAllowed(CherrygramPrivacyConfig.INSTANCE.getAllowSystemPasscode());
         builder.setConfirmationRequired(false);
 
         /*return new BiometricPrompt.PromptInfo.Builder()
-                .setTitle(LocaleController.getString("CG_AppName", R.string.CG_AppName))
+                .setTitle(getString(R.string.CG_AppName))
                 .setConfirmationRequired(false)
                 .build();*/
         return builder.build();
@@ -62,20 +64,20 @@ public class CGBiometricPrompt {
         CGBiometricPrompt.callBiometricPrompt(activity, new CGBiometricPrompt.CGBiometricListener() {
             @Override
             public void onError(CharSequence msg) {
-                if (CherrygramConfig.INSTANCE.getShowRPCErrors())
+                if (CherrygramDebugConfig.INSTANCE.getShowRPCErrors())
                     Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailed() {
-                if (CherrygramConfig.INSTANCE.getShowRPCErrors())
+                if (CherrygramDebugConfig.INSTANCE.getShowRPCErrors())
                     Toast.makeText(activity, "Fail", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onSuccess(BiometricPrompt.AuthenticationResult result) {
                 successCallback.run();
-                if (CherrygramConfig.INSTANCE.getShowRPCErrors())
+                if (CherrygramDebugConfig.INSTANCE.getShowRPCErrors())
                     Toast.makeText(activity, "Success", Toast.LENGTH_SHORT).show();
             }
         });

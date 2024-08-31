@@ -242,9 +242,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.CrashReportBottomSheet;
 import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics;
 import uz.unnarsx.cherrygram.core.PermissionsUtils;
@@ -282,7 +284,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private boolean wasDrawn;
     private int fragmentContextTopPadding;
 
-    boolean askPasscode = CherrygramConfig.INSTANCE.getAskPasscodeBeforeDelete() && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged();
+    boolean askPasscode = CherrygramPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete() && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged();
 
     public MessagesStorage.TopicKey getOpenedDialogId() {
         return openedDialogId;
@@ -817,7 +819,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
                 canvas.clipRect(0, -getY() + getActionBarTop() + getActionBarFullHeight(), getMeasuredWidth(), getMeasuredHeight());
                 if (slideFragmentProgress != 1f) {
-                    if (slideFragmentLite || CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING) {
+                    if (slideFragmentLite || CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING) {
                         canvas.translate((isDrawerTransition ? 1 : -1) * dp(slideAmplitudeDp) * (1f - slideFragmentProgress), 0);
                     } else {
                         final float s = 1f - 0.05f * (1f - slideFragmentProgress);
@@ -829,7 +831,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 canvas.restore();
             } else if (child == actionBar && slideFragmentProgress != 1f) {
                 canvas.save();
-                if (slideFragmentLite || CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING) {
+                if (slideFragmentLite || CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING) {
                     canvas.translate((isDrawerTransition ? 1 : -1) * dp(slideAmplitudeDp) * (1f - slideFragmentProgress), 0);
                 } else {
                     float s = 1f - 0.05f * (1f - slideFragmentProgress);
@@ -1036,7 +1038,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 canvas.save();
                 canvas.translate(fragmentContextView.getX(), fragmentContextView.getY());
                 if (slideFragmentProgress != 1f) {
-                    if (slideFragmentLite || CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING) {
+                    if (slideFragmentLite || CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING) {
                         canvas.translate((isDrawerTransition ? 1 : -1) * dp(slideAmplitudeDp) * (1f - slideFragmentProgress), 0);
                     } else {
                         final float s = 1f - 0.05f * (1f - slideFragmentProgress);
@@ -2259,7 +2261,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 }
                                 if (!canShowHiddenArchive) {
                                     canShowHiddenArchive = true;
-                                    if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                                         performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                                     }
                                     if (parentPage.pullForegroundDrawable != null) {
@@ -3293,7 +3295,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (folderId != 0) {
                 actionBar.setTitle(actionBarDefaultTitle = LocaleController.getString("ArchivedChats", R.string.ArchivedChats));
                 actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-                if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramConfig.INSTANCE.getOverrideHeaderColor()) {
+                if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
                     actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
                     actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
                     actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
@@ -3472,7 +3474,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
                 @Override
                 public int getTabCounter(int tabId) {
-                    if (initialDialogsType == DIALOGS_TYPE_FORWARD || CherrygramConfig.INSTANCE.getTabsNoUnread()) {
+                    if (initialDialogsType == DIALOGS_TYPE_FORWARD || CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread()) {
                         return 0;
                     }
                     if (tabId == filterTabsView.getDefaultTabId()) {
@@ -3621,7 +3623,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     if (!selectedDialogs.isEmpty()) {
                         return;
                     }
-                    if (CherrygramConfig.INSTANCE.getFolderNameInHeader()) {
+                    if (CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader()) {
                         actionBar.setTitleAnimatedX(tab.isDefault ? actionBarDefaultTitle : tab.realTitle, tab.isDefault ? statusDrawable : null, forward, 250);
                     } else {
                         actionBar.setTitle(actionBarDefaultTitle, statusDrawable);
@@ -4087,7 +4089,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             if (canShowHiddenArchive != canShowInternal) {
                                 canShowHiddenArchive = canShowInternal;
                                 if (viewPage.archivePullViewState == ARCHIVE_ITEM_STATE_HIDDEN) {
-                                    if (!CherrygramConfig.INSTANCE.getDisableVibration()) {
+                                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                                         viewPage.listView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                                     }
                                     if (viewPage.pullForegroundDrawable != null) {
@@ -5022,11 +5024,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     }
                     filterOptions
                             .addIf(dialogId > 0, R.drawable.msg_discussion, LocaleController.getString("SendMessage", R.string.SendMessage), () -> {
-                                if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(dialogId))) {
-                                    CGBiometricPrompt.prompt(getParentActivity(), () -> presentFragment(ChatActivity.of(dialogId)));
-                                } else {
-                                    presentFragment(ChatActivity.of(dialogId));
-                                }
+                                presentFragment(ChatActivity.of(dialogId));
                             })
                             .addIf(dialogId > 0, R.drawable.msg_openprofile, LocaleController.getString("OpenProfile", R.string.OpenProfile), () -> {
                                 presentFragment(ProfileActivity.of(dialogId));
@@ -6760,12 +6758,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 filterTabsView.removeTabs();
                 for (int a = 0, N = filters.size(); a < N; a++) {
                     if (filters.get(a).isDefault()) {
-                        if (!CherrygramConfig.INSTANCE.getTabsHideAllChats()) filterTabsView.addTab(a, 0, LocaleController.getString("FilterAllChats", R.string.FilterAllChats), true, filters.get(a).locked, filters.get(a).emoticon);
+                        if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats()) filterTabsView.addTab(a, 0, LocaleController.getString("FilterAllChats", R.string.FilterAllChats), true, filters.get(a).locked, filters.get(a).emoticon);
                     } else {
                         filterTabsView.addTab(a, filters.get(a).localId, filters.get(a).name, false,  filters.get(a).locked, filters.get(a).emoticon);
                     }
                 }
-                if (CherrygramConfig.INSTANCE.getTabsHideAllChats() && stableId <= 0) {
+                if (CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats() && stableId <= 0) {
                     id = filterTabsView.getFirstTabId();
                     updateCurrentTab = true;
                     viewPages[0].selectedType = id;
@@ -6841,7 +6839,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 filterTabsView.resetTabId();
 
                 if (!actionBarDefaultTitle.equals(actionBar.getTitle())) {
-                    if (CherrygramConfig.INSTANCE.getFolderNameInHeader()) {
+                    if (CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader()) {
                         actionBar.setTitleAnimatedX(actionBarDefaultTitle, statusDrawable, false, 250);
                     } else {
                         actionBar.setTitle(actionBarDefaultTitle, statusDrawable);
@@ -7498,7 +7496,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
             animators.add(valueAnimator);
             searchAnimator.playTogether(animators);
-            searchAnimator.setDuration(show ? (CherrygramConfig.INSTANCE.getTabStyle() != 0 ? 50 : 220) : 180);
+            searchAnimator.setDuration(show ? (CherrygramAppearanceConfig.INSTANCE.getTabStyle() != 0 ? 50 : 220) : 180);
             searchAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT);
 
             if (filterTabsViewIsVisible) {
@@ -8138,13 +8136,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else if (searchString != null) {
                 if (getMessagesController().checkCanOpenChat(args, DialogsActivity.this)) {
                     getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
-                    if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(dialogId))) {
-                        Bundle finalArgs = args;
-                        MessageObject finalMsg = msg;
-                        CGBiometricPrompt.prompt(getParentActivity(), () -> presentFragment(highlightFoundQuote(new ChatActivity(finalArgs), finalMsg)));
-                    } else {
-                        presentFragment(highlightFoundQuote(new ChatActivity(args), msg));
-                    }
+                    presentFragment(highlightFoundQuote(new ChatActivity(args), msg));
                 }
             } else {
                 slowedReloadAfterDialogClick = true;
@@ -8155,38 +8147,20 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     if (chat != null && chat.forum && topicId == 0) {
                         if (!LiteMode.isEnabled(LiteMode.FLAG_CHAT_FORUM_TWOCOLUMN)) {
                             if (needOpenChatActivity) {
-                                if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(dialogId))) {
-                                    Bundle finalArgs = args;
-                                    MessageObject finalMsg = msg;
-                                    CGBiometricPrompt.prompt(getParentActivity(), () -> presentFragment(highlightFoundQuote(new ChatActivity(finalArgs), finalMsg)));
-                                } else {
-                                    presentFragment(highlightFoundQuote(new ChatActivity(args), msg));
-                                }
+                                presentFragment(highlightFoundQuote(new ChatActivity(args), msg));
                             } else {
                                 presentFragment(new TopicsFragment(args));
                             }
                         } else {
                             if (!canOpenInRightSlidingView) {
                                 if (needOpenChatActivity) {
-                                    if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(dialogId))) {
-                                        Bundle finalArgs = args;
-                                        MessageObject finalMsg = msg;
-                                        CGBiometricPrompt.prompt(getParentActivity(), () -> presentFragment(highlightFoundQuote(new ChatActivity(finalArgs), finalMsg)));
-                                    } else {
-                                        presentFragment(highlightFoundQuote(new ChatActivity(args), msg));
-                                    }
+                                    presentFragment(highlightFoundQuote(new ChatActivity(args), msg));
                                 } else {
                                     presentFragment(new TopicsFragment(args));
                                 }
                             } else if (!searching) {
                                 if (needOpenChatActivity) {
-                                    if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(dialogId))) {
-                                        Bundle finalArgs = args;
-                                        MessageObject finalMsg = msg;
-                                        CGBiometricPrompt.prompt(getParentActivity(), () -> presentFragment(highlightFoundQuote(new ChatActivity(finalArgs), finalMsg)));
-                                    } else {
-                                        presentFragment(highlightFoundQuote(new ChatActivity(args), msg));
-                                    }
+                                    presentFragment(highlightFoundQuote(new ChatActivity(args), msg));
                                 } else {
                                     if (rightSlidingDialogContainer.currentFragment != null && ((TopicsFragment) rightSlidingDialogContainer.currentFragment).getDialogId() == dialogId) {
                                         rightSlidingDialogContainer.finishPreview();
@@ -8218,14 +8192,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                                 rightSlidingDialogContainer.finishPreview();
                             }
                         }
-                        if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(dialogId))) {
-                            MessageObject finalMsg = msg;
-                            CGBiometricPrompt.prompt(getParentActivity(), () -> {
-                                presentFragment(highlightFoundQuote(chatActivity, finalMsg));
-                            });
-                        } else {
-                            presentFragment(highlightFoundQuote(chatActivity, msg));
-                        }
+                        presentFragment(highlightFoundQuote(chatActivity, msg));
                     }
                 }
             }
@@ -8785,46 +8752,24 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         previewMenu[0].addView(deleteItem);
 
         if (getMessagesController().checkCanOpenChat(args, DialogsActivity.this)) {
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(dialogId))) {
-                CGBiometricPrompt.prompt(getParentActivity(), () -> {
-                    if (searchString != null) {
-                        getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
-                    }
-                    prepareBlurBitmap();
-                    parentLayout.setHighlightActionButtons(true);
-                    if (AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y) {
-                        presentFragmentAsPreview(chatActivity[0] = new ChatActivity(args));
-                    } else {
-                        presentFragmentAsPreviewWithMenu(chatActivity[0] = new ChatActivity(args), previewMenu[0]);
-                        if (chatActivity[0] != null) {
-                            chatActivity[0].allowExpandPreviewByClick = false;
-                            try {
-                                chatActivity[0].getAvatarContainer().getAvatarImageView().performAccessibilityAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
-                            } catch (Exception ignore) {
-                            }
-                        }
-                    }
-                });
-            } else {
-                if (searchString != null) {
-                    getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
-                }
-                prepareBlurBitmap();
-                parentLayout.setHighlightActionButtons(true);
-                if (AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y) {
-                    presentFragmentAsPreview(chatActivity[0] = new ChatActivity(args));
-                } else {
-                    presentFragmentAsPreviewWithMenu(chatActivity[0] = new ChatActivity(args), previewMenu[0]);
-                    if (chatActivity[0] != null) {
-                        chatActivity[0].allowExpandPreviewByClick = false;
-                        try {
-                            chatActivity[0].getAvatarContainer().getAvatarImageView().performAccessibilityAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
-                        } catch (Exception ignore) {
-                        }
-                    }
-                }
-                return true;
+            if (searchString != null) {
+                getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
             }
+            prepareBlurBitmap();
+            parentLayout.setHighlightActionButtons(true);
+            if (AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y) {
+                presentFragmentAsPreview(chatActivity[0] = new ChatActivity(args));
+            } else {
+                presentFragmentAsPreviewWithMenu(chatActivity[0] = new ChatActivity(args), previewMenu[0]);
+                if (chatActivity[0] != null) {
+                    chatActivity[0].allowExpandPreviewByClick = false;
+                    try {
+                        chatActivity[0].getAvatarContainer().getAvatarImageView().performAccessibilityAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+            return true;
         }
         return false;
     }
@@ -12586,7 +12531,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             fragmentView.invalidate();
         }
 
-        if (slideFragmentLite || CherrygramConfig.INSTANCE.getSpringAnimation() == CherrygramConfig.ANIMATION_SPRING) {
+        if (slideFragmentLite || CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING) {
             if (filterTabsView != null) {
                 filterTabsView.getListView().setTranslationX((isDrawerTransition ? 1 : -1) * dp(slideAmplitudeDp) * (1f - slideFragmentProgress));
                 filterTabsView.invalidate();
@@ -12998,43 +12943,21 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     } else {
                         args.putLong("chat_id", -did);
                     }
-                    if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(did))) {
-                        CGBiometricPrompt.prompt(getParentActivity(), () -> {
-                            closeSearch();
-                            if (AndroidUtilities.isTablet() && viewPages != null) {
-                                for (int a = 0; a < viewPages.length; a++) {
-                                    viewPages[a].dialogsAdapter.setOpenedDialogId(openedDialogId.dialogId = did);
-                                }
-                                updateVisibleRows(MessagesController.UPDATE_MASK_SELECT_DIALOG);
-                            }
-                            if (searchString != null) {
-                                if (getMessagesController().checkCanOpenChat(args, DialogsActivity.this)) {
-                                    getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
-                                    presentFragment(new ChatActivity(args));
-                                }
-                            } else {
-                                if (getMessagesController().checkCanOpenChat(args, DialogsActivity.this)) {
-                                    presentFragment(new ChatActivity(args));
-                                }
-                            }
-                        });
-                    } else {
-                        closeSearch();
-                        if (AndroidUtilities.isTablet() && viewPages != null) {
-                            for (int a = 0; a < viewPages.length; a++) {
-                                viewPages[a].dialogsAdapter.setOpenedDialogId(openedDialogId.dialogId = did);
-                            }
-                            updateVisibleRows(MessagesController.UPDATE_MASK_SELECT_DIALOG);
+                    closeSearch();
+                    if (AndroidUtilities.isTablet() && viewPages != null) {
+                        for (int a = 0; a < viewPages.length; a++) {
+                            viewPages[a].dialogsAdapter.setOpenedDialogId(openedDialogId.dialogId = did);
                         }
-                        if (searchString != null) {
-                            if (getMessagesController().checkCanOpenChat(args, DialogsActivity.this)) {
-                                getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
-                                presentFragment(new ChatActivity(args));
-                            }
-                        } else {
-                            if (getMessagesController().checkCanOpenChat(args, DialogsActivity.this)) {
-                                presentFragment(new ChatActivity(args));
-                            }
+                        updateVisibleRows(MessagesController.UPDATE_MASK_SELECT_DIALOG);
+                    }
+                    if (searchString != null) {
+                        if (getMessagesController().checkCanOpenChat(args, DialogsActivity.this)) {
+                            getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
+                            presentFragment(new ChatActivity(args));
+                        }
+                    } else {
+                        if (getMessagesController().checkCanOpenChat(args, DialogsActivity.this)) {
+                            presentFragment(new ChatActivity(args));
                         }
                     }
                 }
@@ -13118,11 +13041,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 args.putLong("chat_id", ((TLRPC.Chat) obj).id);
                 ChatActivity chatActivity = new ChatActivity(args);
                 chatActivity.setNextChannels(searchViewPager.channelsSearchAdapter.getNextChannels(position));
-                if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(((TLRPC.Chat) obj).id))) {
-                    CGBiometricPrompt.prompt(getParentActivity(), () -> presentFragment(chatActivity));
-                } else {
-                    presentFragment(chatActivity);
-                }
+                presentFragment(chatActivity);
             } else if (obj instanceof MessageObject) {
                 MessageObject msg = (MessageObject) obj;
                 Bundle args = new Bundle();

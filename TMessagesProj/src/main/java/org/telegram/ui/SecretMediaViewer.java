@@ -128,8 +128,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
-
 public class SecretMediaViewer implements NotificationCenter.NotificationCenterDelegate, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
     private class FrameLayoutDrawer extends FrameLayout {

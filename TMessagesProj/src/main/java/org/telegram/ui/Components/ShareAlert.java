@@ -121,7 +121,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class ShareAlert extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
@@ -493,7 +493,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
     public ShareAlert(final Context context, ChatActivity fragment, ArrayList<MessageObject> messages, final String text, final String text2, boolean channel, final String copyLink, final String copyLink2, boolean fullScreen, boolean forCall, boolean includeStory, Theme.ResourcesProvider resourcesProvider) {
         super(context, true, resourcesProvider);
         this.resourcesProvider = resourcesProvider;
-        this.includeStory = includeStory && CherrygramConfig.INSTANCE.getShareDrawStoryButton();
+        this.includeStory = includeStory && CherrygramChatsConfig.INSTANCE.getShareDrawStoryButton();
 
         parentActivity = AndroidUtilities.findActivity(context);
 
@@ -3375,13 +3375,13 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                     replyTopMsg.isTopicMainMessage = true;
                 }
                 if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                    SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, replyTopMsg, replyTopMsg, null, true, entities, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false));
+                    SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, replyTopMsg, replyTopMsg, null, true, entities, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false));
                 }
                 int result;
-                if (CherrygramConfig.INSTANCE.getForwardNoAuthorship() || CherrygramConfig.INSTANCE.getForwardWithoutCaptions()) {
-                    result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, true, CherrygramConfig.INSTANCE.getForwardWithoutCaptions(), CherrygramConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg);
+                if (CherrygramChatsConfig.INSTANCE.getForwardNoAuthorship() || CherrygramChatsConfig.INSTANCE.getForwardWithoutCaptions()) {
+                    result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, true, CherrygramChatsConfig.INSTANCE.getForwardWithoutCaptions(), CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg);
                 } else {
-                    result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, false, false, CherrygramConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg);
+                    result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, false, false, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg);
                 }
                 if (result != 0) {
                     removeKeys.add(key);
@@ -3420,15 +3420,15 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                     SendMessagesHelper.SendMessageParams params;
                     if (storyItem == null) {
                         if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                            params = SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, null, replyTopMsg, null, true, entities, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false);
+                            params = SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, null, replyTopMsg, null, true, entities, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false);
                         } else {
-                            params = SendMessagesHelper.SendMessageParams.of(sendingText[num], key, null, replyTopMsg, null, true, null, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false);
+                            params = SendMessagesHelper.SendMessageParams.of(sendingText[num], key, null, replyTopMsg, null, true, null, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false);
                         }
                     } else {
                         if (frameLayout2.getTag() != null && commentTextView.length() > 0 && text[0] != null) {
-                            SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(text[0].toString(), key, null, replyTopMsg, null, true, null, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false));
+                            SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(text[0].toString(), key, null, replyTopMsg, null, true, null, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false));
                         }
-                        params = SendMessagesHelper.SendMessageParams.of(null, key, null, replyTopMsg, null, true, null, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false);
+                        params = SendMessagesHelper.SendMessageParams.of(null, key, null, replyTopMsg, null, true, null, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false);
                         params.sendingStory = storyItem;
                     }
                     SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
@@ -3440,9 +3440,9 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                     MessageObject replyTopMsg = topic != null ? new MessageObject(currentAccount, topic.topicStartMessage, false, false) : null;
 
                     if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, null, replyTopMsg, null, true, entities, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false));
+                        SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, null, replyTopMsg, null, true, entities, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false));
                     }
-                    SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(sendingText[num], key, null, replyTopMsg, null, true, null, null, null, CherrygramConfig.INSTANCE.getForwardNotify(), 0, null, false));
+                    SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(sendingText[num], key, null, replyTopMsg, null, true, null, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false));
                 }
             }
             onSend(selectedDialogs, 1, selectedDialogTopics.get(selectedDialogs.valueAt(0)));

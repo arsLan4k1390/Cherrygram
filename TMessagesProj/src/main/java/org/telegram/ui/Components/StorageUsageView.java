@@ -20,7 +20,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.voip.CellFlickerDrawable;
 
-import uz.unnarsx.cherrygram.CherrygramConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class StorageUsageView extends FrameLayout {
 
@@ -215,7 +215,7 @@ public class StorageUsageView extends FrameLayout {
             }
             calculatingTextView.setVisibility(View.GONE);
             if (totalSize > 0) {
-                divider.setVisibility(CherrygramConfig.INSTANCE.getDisableDividers() ? GONE : VISIBLE);
+                divider.setVisibility(CherrygramAppearanceConfig.INSTANCE.getDisableDividers() ? GONE : VISIBLE);
                 textSettingsCell.setVisibility(VISIBLE);
                 telegramCacheTextView.setVisibility(View.VISIBLE);
                 telegramDatabaseTextView.setVisibility(GONE);
