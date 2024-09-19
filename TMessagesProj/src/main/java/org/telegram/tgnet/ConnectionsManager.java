@@ -10,12 +10,6 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Base64;
 
-import com.google.android.gms.tasks.Task;
-import com.google.android.play.core.integrity.IntegrityManager;
-import com.google.android.play.core.integrity.IntegrityManagerFactory;
-import com.google.android.play.core.integrity.IntegrityTokenRequest;
-import com.google.android.play.core.integrity.IntegrityTokenResponse;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.telegram.messenger.AccountInstance;
@@ -37,7 +31,6 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.StatsController;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
-import org.telegram.ui.LoginActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -379,7 +372,7 @@ public class ConnectionsManager extends BaseController {
                         if (BuildVars.LOGS_ENABLED && error.code != -2000) {
                             FileLog.e(object + " got error " + error.code + " " + error.text);
                         }
-                        if (CherrygramDebugConfig.INSTANCE.getShowRPCErrors() && !CherrygramCoreConfig.INSTANCE.isStableBuild() && !CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
+                        if (CherrygramDebugConfig.INSTANCE.getShowRPCErrors() && !CherrygramCoreConfig.INSTANCE.isStandaloneStableBuild() && !CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
                             ErrorDatabaseHelper.showErrorToast(object, errorText);
                         }
                     }
@@ -1410,29 +1403,32 @@ public class ConnectionsManager extends BaseController {
 
     public static long lastPremiumFloodWaitShown = 0;
     public static void onPremiumFloodWait(final int currentAccount, final int requestToken, boolean isUpload) {
-        Utilities.stageQueue.postRunnable(() -> {
+        AndroidUtilities.runOnUIThread(() -> {
             if (UserConfig.selectedAccount != currentAccount) {
                 return;
             }
-
-            boolean updated = false;
-            if (isUpload) {
-                FileUploadOperation operation = FileLoader.getInstance(currentAccount).findUploadOperationByRequestToken(requestToken);
-                if (operation != null) {
-                    updated = !operation.caughtPremiumFloodWait;
-                    operation.caughtPremiumFloodWait = true;
+            FileLoader.getInstance(currentAccount).getFileLoaderQueue().postRunnable(() -> {
+                boolean updated = false;
+                if (isUpload) {
+                    FileUploadOperation operation = FileLoader.getInstance(currentAccount).findUploadOperationByRequestToken(requestToken);
+                    if (operation != null) {
+                        updated = !operation.caughtPremiumFloodWait;
+                        operation.caughtPremiumFloodWait = true;
+                    }
+                } else {
+                    FileLoadOperation operation = FileLoader.getInstance(currentAccount).findLoadOperationByRequestToken(requestToken);
+                    if (operation != null) {
+                        updated = !operation.caughtPremiumFloodWait;
+                        operation.caughtPremiumFloodWait = true;
+                    }
                 }
-            } else {
-                FileLoadOperation operation = FileLoader.getInstance(currentAccount).findLoadOperationByRequestToken(requestToken);
-                if (operation != null) {
-                    updated = !operation.caughtPremiumFloodWait;
-                    operation.caughtPremiumFloodWait = true;
-                }
-            }
-
-            if (updated) {
-                AndroidUtilities.runOnUIThread(() -> NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.premiumFloodWaitReceived));
-            }
+                final boolean finalUpdated = updated;
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (finalUpdated) {
+                        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.premiumFloodWaitReceived);
+                    }
+                });
+            });
         });
     }
 
@@ -1440,37 +1436,7 @@ public class ConnectionsManager extends BaseController {
         AndroidUtilities.runOnUIThread(() -> {
             long start = System.currentTimeMillis();
             FileLog.d("account"+currentAccount+": server requests integrity classic check with project = "+project+" nonce = " + nonce);
-            IntegrityManager integrityManager = IntegrityManagerFactory.create(ApplicationLoader.applicationContext);
-            final long project_id;
-            try {
-                project_id = Long.parseLong(project);
-            } catch (Exception e) {
-                FileLog.d("account"+currentAccount+": integrity check failes to parse project id");
-                native_receivedIntegrityCheckClassic(currentAccount, requestToken, nonce, "PLAYINTEGRITY_FAILED_EXCEPTION_NOPROJECT");
-                return;
-            }
-            Task<IntegrityTokenResponse> integrityTokenResponse = integrityManager.requestIntegrityToken(IntegrityTokenRequest.builder().setNonce(nonce).setCloudProjectNumber(project_id).build());
-            integrityTokenResponse
-                .addOnSuccessListener(r -> {
-                    final String token = r.token();
-
-                    if (token == null) {
-                        FileLog.e("account"+currentAccount+": integrity check gave null token in " + (System.currentTimeMillis() - start) + "ms");
-                        native_receivedIntegrityCheckClassic(currentAccount, requestToken, nonce, "PLAYINTEGRITY_FAILED_EXCEPTION_NULL");
-                        return;
-                    }
-
-                    FileLog.d("account"+currentAccount+": integrity check successfully gave token: " + token + " in " + (System.currentTimeMillis() - start) + "ms");
-                    try {
-                        native_receivedIntegrityCheckClassic(currentAccount, requestToken, nonce, token);
-                    } catch (Exception e) {
-                        FileLog.e("receivedIntegrityCheckClassic failed", e);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    FileLog.e("account"+currentAccount+": integrity check failed to give a token in " + (System.currentTimeMillis() - start) + "ms", e);
-                    native_receivedIntegrityCheckClassic(currentAccount, requestToken, nonce, "PLAYINTEGRITY_FAILED_EXCEPTION_" + LoginActivity.errorString(e));
-                });
+            native_receivedIntegrityCheckClassic(currentAccount, requestToken, nonce, "PLAYINTEGRITY_FAILED_EXCEPTION_NULL");
         });
     }
 }

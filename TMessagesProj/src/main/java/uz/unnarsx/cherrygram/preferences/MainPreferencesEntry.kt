@@ -8,9 +8,7 @@ import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.misc.CherrygramExtras
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper
-import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
@@ -67,8 +65,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
 
         category(getString(R.string.LocalOther)) {
             textIcon {
-                isAvailable = /*!CherrygramConfig.isPlayStoreBuild()*/ ApplicationLoader.checkPlayServices() && FirebaseRemoteConfigHelper.isFeatureEnabled(Constants.Is_Donate_Screen_Available) ||
-                        CherrygramCoreConfig.isDevBuild() || CherrygramCoreConfig.isStableBuild() || CherrygramCoreConfig.isBetaBuild() || CherrygramCoreConfig.isPremiumBuild()
+                isAvailable = ApplicationLoader.isStandaloneBuild()
 
                 icon = R.drawable.heart_angle_solar
                 title = getString(R.string.DP_Donate)

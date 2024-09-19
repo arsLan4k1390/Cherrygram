@@ -97,6 +97,7 @@
     <!--Chats screen-->
 
     <!--Misc-->
+    <string name="CG_UnknownCherrySettingsOption">There is no such Cherry Settings option.</string>
     <string name="CG_Restart">Restart app</string>
     <string name="CG_RestartToApply">Restart app to apply changes</string>
     <string name="CG_PushService">Cherrygram Push Service.</string>
@@ -311,9 +312,11 @@
     <string name="CP_SystemCameraDesc">Access directly the system camera (not applicable for video messages).</string>
 
     <string name="CP_CameraAspectRatio">Camera aspect ratio</string>
+    <string name="CP_CenterCameraControlButtons">Center control buttons</string>
+    <string name="CP_CenterCameraControlButtons_Desc">Center switch camera and flashlight buttons.</string>
     <string name="CP_RearCam">Use rear camera</string>
     <string name="CP_RearCam_Desc">Instead of front camera for video messages</string>
-    <string name="CP_CaptureType_Desc">Use \"VideoCapture\" by default. \nSelect \"ImageCapture\" (reduces quality) only if Cherrygram freezes for a second before starting to record a video message.</string>
+    <string name="CP_CaptureType_Desc">Use \"VideoCapture\" by default. \nSelect \"ImageCapture\" (reduces quality) only if Cherrygram freezes for a second before starting to record a video message. Moreover, ImageCapture supports video effects.</string>
     <string name="CP_DisableCam">Disable cam in media attach menu</string>
     <string name="CP_DisableCam_Desc">The camera button will be available next to the gallery button. \nPressing the button will open the Telegram camera, and holding it will launch the system camera.</string>
 

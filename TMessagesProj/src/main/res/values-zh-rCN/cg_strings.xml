@@ -3,9 +3,14 @@
     <!-- by t.me/arsLan-->
     <string name="CG_FollowChannelLink">订阅 @Cherry_Gram！</string>
     <string name="CG_FollowChannelTitle">订阅官方频道</string>
-    <string name="CG_FollowChannelInfo">加入我们的频道以随时了解 Cherrygram 的所有新闻和功能！</string>
+    <string name="CG_FollowChannelInfo">加入频道，随时了解Cherrygram的所有新闻和功能更新！</string>
     <string name="CG_DoNotRemindAgain">不再提醒</string>
     <!--Telegram screens-->
+    <string name="CG_RegistrationDate">注册日期：</string>
+    <string name="CG_RegistrationDateNewer">比 %s 更新</string>
+    <string name="CG_RegistrationDateOlder">比 %s 更老</string>
+    <string name="CG_RegistrationDateApproximately">大约 %s</string>
+    <string name="CG_RegistrationDateFailed">无法获得注册日期。</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">扫码登录</string>
     <string name="CG_QRLoginMessage">使用另一个设备扫描二维码登录</string>
@@ -43,6 +48,7 @@
     <string name="CG_ViewUserHistory">消息历史</string>
     <string name="CG_ToSaved">收藏消息</string>
     <string name="CG_CreateMention">创建提及</string>
+    <string name="CG_CreateCode">创建代码</string>
     <string name="CG_CreateCodeLanguage">语言</string>
     <string name="CG_FwdMenu_EnableNoForward">移除转发来源</string>
     <string name="CG_FwdMenu_DisableNoForward">显示转发来源</string>
@@ -51,6 +57,14 @@
     <string name="CG_FwdMenu_Notify">通知</string>
     <string name="CG_FwdMenu_EnableCaptions">显示字幕</string>
     <string name="CG_FwdMenu_DisableCaptions">隐藏字幕</string>
+    <string name="CG_CopyTitle">复制标题</string>
+    <string name="CG_CopyCallback">复制回调数据</string>
+    <string name="CG_CopyInlineQuery">复制内嵌查询</string>
+    <string name="CG_CopyID">复制用户 ID</string>
+    <!--Location screen-->
+    <string name="CG_LocationPermission">Cherrygram 需要访问您的位置，以便您可以与您的朋友分享它。 现在您将被要求允许您使用您的位置(当应用程序打开时)。</string>
+    <string name="CG_LocationPermission_Desc">但是，如果您希望 Cherrygram 关闭时您的位置在后台也能共享给您的好友，可以使用“实时定位”功能。 在同意使用实时定位功能之前，您的位置将不会在后台显示。</string>
+    <!--Location screen-->
     <!--Search filter-->
     <string name="CG_SearchFilter">筛选搜索结果</string>
     <string name="CG_SearchFilter_None">无结果</string>
@@ -67,6 +81,7 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_UnknownCherrySettingsOption">没有这样的 Cherry 设置选项</string>
     <string name="CG_Restart">重启应用</string>
     <string name="CG_RestartToApply">重启应用生效</string>
     <string name="CG_PushService">Cherrygram 推送服务</string>
@@ -197,6 +212,7 @@
     <string name="CP_Header_Messages">信息</string>
     <string name="CP_Slider_StickerAmplifier">调整贴纸大小</string>
     <string name="CP_TimeOnStick">隐藏贴纸时间</string>
+    <string name="CP_ChatMenuShortcuts">聊天菜单快捷方式</string>
     <string name="CP_AdminActions">管理员快捷方式</string>
     <string name="CP_MessageMenu">消息菜单自定义</string>
     <string name="AP_CenterChatsTitle">聊天中标题栏居中</string>
@@ -252,10 +268,19 @@
     <string name="CP_CameraTypeSystem">系统相机</string>
     <string name="CP_SystemCameraDesc">使用系统相机（视频消息不可用）</string>
     <string name="CP_CameraAspectRatio">相机宽高比</string>
+    <string name="CP_CenterCameraControlButtons">居中控制按钮</string>
+    <string name="CP_CenterCameraControlButtons_Desc">居中切换摄像头和手电筒按钮</string>
     <string name="CP_RearCam">使用后置相机</string>
     <string name="CP_RearCam_Desc">视频消息不使用前置相机</string>
+    <string name="CP_CaptureType_Desc">默认使用\"视频捕获\"。 \n当 Cherrygram 在开始录制视频消息之前被系统卡顿一秒时，可以选择\"图像捕获\"（减少质量）缓解。</string>
     <string name="CP_DisableCam">在媒体菜单中禁用相机</string>
     <string name="CP_DisableCam_Desc">如果媒体菜单打开过慢，请打开本功能</string>
+    <string name="CP_Header_Videomessages">视频信息</string>
+    <string name="CP_ExposureSliderPosition">曝光滑动位置</string>
+    <string name="CP_ZoomSliderPosition_Bottom">底部</string>
+    <string name="CP_ZoomSliderPosition_Right">右</string>
+    <string name="CP_ZoomSliderPosition_Left">左</string>
+    <string name="CP_Exposure">曝光</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">实验</string>
@@ -283,6 +308,15 @@
     <string name="SP_GoogleAnalytics_Desc">开启此功能后，所有的崩溃日志和统计数据都会上传至 “console.firebase.google.com”，供给开发者分析和优化本应用</string>
     <string name="SP_CleanOld">删除旧缓存 (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">删除成功</string>
+    <string name="SP_AskPinForChats">打开聊天前需要进行身份认证</string>
+    <string name="SP_AskPinForChats_Desc">打开特殊聊天需要进行 身份认证。可以在聊天室内的更多功能里面开启此功能。</string>
+    <string name="SP_AskPin">需要密码</string>
+    <string name="SP_DoNotAskPin">无需密码</string>
+    <string name="SP_AskPinBeforeDelete">删除聊天前需要进行 身份认证。</string>
+    <string name="SP_AskPinBeforeDelete_Desc">如果您想要删除聊天或者清除历史，需要进行身份认证。该功能需要您在手机设置中启用密码和指纹识别等功能</string>
+    <string name="SP_AllowUseSystemPasscode">允许使用系统 PIN码/手势图案</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">指纹确认对话框 中的 \"取消\" 按钮将取代为 \"Pin码/手势图案\" 按钮，您能够使用 系统密码管理器 来解锁 Cherrygram。</string>
+    <string name="SP_TestFingerprint">测试指纹</string>
     <string name="SP_Category_Account">帐号</string>
     <string name="SP_DeleteAccount">删除 Telegram 账号</string>
     <!--Security Preferences-->
@@ -309,6 +343,7 @@
     <string name="UP_Download">下载</string>
     <!--Updates Preferences-->
     <!--Donations-->
+    <string name="DP_RateUs">给 Cherrygram 评分</string>
     <string name="DP_Donate">捐赠</string>
     <string name="DP_Donate_Method">选择付款方法</string>
     <!--Donations-->

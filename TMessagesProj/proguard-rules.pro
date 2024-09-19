@@ -155,10 +155,17 @@
     public boolean isLayoutSuppressed();
 }
 
+-dontwarn com.google.j2objc.annotations.RetainedWith
+-dontwarn com.google.j2objc.annotations.Weak
 -dontwarn org.jetbrains.annotations.NotNull
 -dontwarn org.jetbrains.annotations.Nullable
 -dontwarn androidx.camera.extensions.**
 -dontwarn javax.script.**
+-dontwarn java.beans.ConstructorProperties
+-dontwarn java.beans.Transient
+-dontwarn com.google.android.gms.auth.api.R$drawable
+-dontwarn com.google.firebase.messaging.R$drawable
+-dontwarn java.lang.invoke.StringConcatFactory
 
 -dontwarn a.a.a.a.a.a
 -dontwarn android.telephony.HwTelephonyManager

@@ -14,6 +14,7 @@ import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.google.android.exoplayer2.util.Util;
@@ -110,7 +111,7 @@ public class UpdaterUtils {
     }
 
     public static void checkUpdates(BaseFragment fragment, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound, Browser.Progress progress) {
-        if (CherrygramCoreConfig.INSTANCE.isPremiumBuild()) return;
+        if (CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) return;
         if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) return;
 
         if (checkingForUpdates || id != 1L || (System.currentTimeMillis() - CherrygramCoreConfig.INSTANCE.getUpdateScheduleTimestamp() < updateCheckInterval && !manual))
@@ -142,19 +143,23 @@ public class UpdaterUtils {
                 if (arr.length() == 0)
                     return;
 
-                String link, installedApkType = CGResourcesHelper.INSTANCE.getAbiCode();
                 String[] supportedTypes = {"arm64-v8a", "armeabi-v7a", "x86", "x86_64", "universal"};
                 loop:
                 for (int i = 0; i < arr.length(); i++) {
-                    downloadURL = link = arr.getJSONObject(i).getString("browser_download_url");
-                    //Log.d ("DownloadLink", downloadURL);
-                    if (ApplicationLoader.isHuaweiStoreBuild()) {
-                        downloadURL = link.replace("Cherrygram-", "Cherrygram-Huawei-");
-                        //Log.d ("DownloadLinkHuawei", downloadURL);
+                    String link = "";
+                    if (ApplicationLoader.isStandaloneBuild() && !ApplicationLoader.isHuaweiStoreBuild()) {
+                        link = arr.getJSONObject(i).getString("browser_download_url");
+                        downloadURL = link;
+                        FileLog.d ("DownloadLink: " + downloadURL);
+                    } else if (ApplicationLoader.isStandaloneBuild() && ApplicationLoader.isHuaweiStoreBuild()) {
+                        link = arr.getJSONObject(i).getString("browser_download_url")
+                                .replace("Cherrygram-", "Cherrygram-Huawei-");
+                        downloadURL = link;
+                        FileLog.d ("DownloadLinkHuawei: " + downloadURL);
                     }
                     size = AndroidUtilities.formatFileSize(arr.getJSONObject(i).getLong("size"));
                     for (String type : supportedTypes) {
-                        if (link.contains(type) && Objects.equals(installedApkType, type)) {
+                        if (link.contains(type) && Objects.equals(CGResourcesHelper.INSTANCE.getAbiCode(), type)) {
                             break loop;
                         }
                     }
@@ -201,7 +206,11 @@ public class UpdaterUtils {
             var intentFilter = new IntentFilter();
             intentFilter.addAction("android.intent.action.DOWNLOAD_COMPLETE");
             intentFilter.addAction("android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED");
-            Util.registerReceiverNotExported(context, downloadBroadcastReceiver, intentFilter, Util.createHandlerForCurrentOrMainLooper());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ContextCompat.registerReceiver(context, downloadBroadcastReceiver, intentFilter, ContextCompat.RECEIVER_EXPORTED);
+            } else  {
+                Util.registerReceiverNotExported(context, downloadBroadcastReceiver, intentFilter, Util.createHandlerForCurrentOrMainLooper());
+            }
         } else {
             installApk(context, apkFile.getAbsolutePath());
         }

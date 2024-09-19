@@ -24,10 +24,13 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.Theme;
 
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+
 public class PremiumGradient {
 
     private final PremiumGradientTools mainGradient = new PremiumGradientTools(Theme.key_premiumGradient1, Theme.key_premiumGradient2, Theme.key_premiumGradient3, Theme.key_premiumGradient4);
     private final PremiumGradientTools goldGradient = new PremiumGradientTools(Theme.key_starsGradient1, Theme.key_starsGradient2, -1);
+    private final PremiumGradientTools cherryGradient = new PremiumGradientTools(Theme.key_cgGradient1, Theme.key_cgGradient2, -1);
 //    private final GradientTools grayGradient = new GradientTools(Theme.key_windowBackgroundWhiteGrayText7, Theme.key_windowBackgroundWhiteGrayText7, Theme.key_windowBackgroundWhiteGrayText7);
     private final Paint mainGradientPaint = mainGradient.paint;
     Paint lockedPremiumPaint;
@@ -43,6 +46,7 @@ public class PremiumGradient {
     public InternalDrawable premiumStarMenuDrawable2;
     public InternalDrawable premiumStarMenuDrawableGray;
     public InternalDrawable goldenStarMenuDrawable;
+    public InternalDrawable cgSettingsMenuDrawable;
 
     private int lastStarColor;
 
@@ -57,6 +61,9 @@ public class PremiumGradient {
         premiumStarDrawableMini = ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_liststar).mutate();
         premiumStarMenuDrawable = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_settings_premium));
         goldenStarMenuDrawable = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_settings_premium), goldGradient);
+        cgSettingsMenuDrawable = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext,
+                CGResourcesHelper.INSTANCE.isAnyOfBraIconsEnabled() ? R.drawable.cg_notification_bra : R.drawable.cg_notification), cherryGradient
+        );
         premiumStarMenuDrawable2 = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_normal));
 //        premiumStarMenuDrawableGray = createGradientDrawable(ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_settings_premium), grayGradient);
         premiumStarColoredDrawable = ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_liststar).mutate();

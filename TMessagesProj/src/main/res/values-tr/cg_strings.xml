@@ -3,7 +3,7 @@
     <!-- by t.me/arsLan-->
     <string name="CG_FollowChannelLink">\@Cherry_Gram\'a abone olun!</string>
     <string name="CG_FollowChannelTitle">Resmi kanala abone olun</string>
-    <string name="CG_FollowChannelInfo">Cherrygram\'ın tüm haberleri ve özelliklerinden haberdar olmak için kanalımıza katılın!</string>
+    <string name="CG_FollowChannelInfo">Cherrygram\'ın tüm haber ve özelliklerinden haberdar olmak için kanala katılın!</string>
     <string name="CG_DoNotRemindAgain">Bir daha hatırlatma</string>
     <!--Telegram screens-->
     <string name="CG_RegistrationDate">Kayıt tarihi:</string>
@@ -81,6 +81,7 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_UnknownCherrySettingsOption">Böyle bir Cherry Ayarları seçeneği yoktur.</string>
     <string name="CG_Restart">Uygulamayı yeniden başlat</string>
     <string name="CG_RestartToApply">Değişiklikleri uygulamak için uygulamayı yeniden başlatın</string>
     <string name="CG_PushService">Cherrygram Bildirim Servisi.</string>
@@ -267,6 +268,8 @@
     <string name="CP_CameraTypeSystem">Sistem</string>
     <string name="CP_SystemCameraDesc">Doğrudan sistem kamerasına erişin (video mesajları için geçerli değildir).</string>
     <string name="CP_CameraAspectRatio">Kamera en boy oranı</string>
+    <string name="CP_CenterCameraControlButtons">Merkez kontrol düğmeleri</string>
+    <string name="CP_CenterCameraControlButtons_Desc">Kamera ve el feneri düğmelerini ortalayın.</string>
     <string name="CP_RearCam">Arka kamerayı kullan</string>
     <string name="CP_RearCam_Desc">Video mesajları için ön kamera yerine</string>
     <string name="CP_CaptureType_Desc">Varsayılan olarak \"VideoCapture\" kullanın. \nCherrygram bir video mesajı kaydetmeye başlamadan önce bir saniye donuyorsa, sadece \"ImageCapture\"ı seçin (kaliteyi düşürür).</string>
@@ -305,6 +308,10 @@
     <string name="SP_GoogleAnalytics_Desc">Bunu etkinleştirerek, tüm uygulama çökme ve istatistikleri geliştirici tarafından daha fazla inceleme için \"console.firebase.google.com\" adresine raporlanacaktır.</string>
     <string name="SP_CleanOld">Eski önbelleği kaldır (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Başarıyla kaldırıldı</string>
+    <string name="SP_AskPinForChats">Sohbet açmak için biyometrik onay iste</string>
+    <string name="SP_AskPinForChats_Desc">Belirli bir sohbeti açmak için sistem şifresi (parmak izi, yüz kimliği, PIN veya desen) gerekecektir. Etkinleştirmek için sohbetin içindeki 3 noktaya dokunun.</string>
+    <string name="SP_AskPin">Şifre gerektir</string>
+    <string name="SP_DoNotAskPin">Şifre gerektirme</string>
     <string name="SP_AskPinBeforeDelete">Bir sohbeti silmeden önce biyometrik onay iste.</string>
     <string name="SP_AskPinBeforeDelete_Desc">Bir sohbeti silmek veya geçmişi temizlemek isterseniz, biyometrik onay gerekecek. Sistem PIN kodu ve biyometrik onay etkin olmalıdır.</string>
     <string name="SP_AllowUseSystemPasscode">Sistem PIN/Desen kullanımına izin ver</string>

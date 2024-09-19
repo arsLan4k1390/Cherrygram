@@ -45,11 +45,11 @@ public class CameraXUtils {
     }
 
     public static boolean isCurrentCameraCameraX() {
-        return /*isCameraXSupported() &&*/ CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_X;
+        return isCameraXSupported() && CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_X;
     }
 
     public static boolean isCurrentCameraNotCameraX() {
-        return /*!isCameraXSupported() ||*/ CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_X;
+        return !isCameraXSupported() || CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_X;
     }
 
     /*public static int getDefaultCamera() { // Used for Config

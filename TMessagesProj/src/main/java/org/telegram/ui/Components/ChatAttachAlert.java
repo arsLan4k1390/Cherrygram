@@ -333,7 +333,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
                             DialogsActivity dialogsActivity = new DialogsActivity(args);
                             OverlayActionBarLayoutDialog overlayActionBarLayoutDialog = new OverlayActionBarLayoutDialog(getContext(), resourcesProvider);
-                            dialogsActivity.setDelegate((fragment, dids, message1, param, topicsFragment) -> {
+                            dialogsActivity.setDelegate((fragment, dids, message1, param, notify, scheduleDate, topicsFragment) -> {
                                 long did = dids.get(0).dialogId;
 
                                 Bundle args1 = new Bundle();
@@ -362,7 +362,12 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     }
 
                     @Override
-                    public void onSetupMainButton(boolean isVisible, boolean isActive, String text, int color, int textColor, boolean isProgressVisible) {
+                    public void onSetupSecondaryButton(boolean isVisible, boolean isActive, String text, int color, int textColor, boolean isProgressVisible, boolean hasShineEffect, String position) {
+
+                    }
+
+                    @Override
+                    public void onSetupMainButton(boolean isVisible, boolean isActive, String text, int color, int textColor, boolean isProgressVisible, boolean hasShineEffect) {
                         if (currentAttachLayout != webViewLayout || !webViewLayout.isBotButtonAvailable() && startCommand == null) {
                             return;
                         }
@@ -4975,7 +4980,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         attachButton.setTextAndIcon(1, getString("ChatGallery", R.string.ChatGallery), Theme.chat_attachButtonDrawables[0], Theme.key_chat_attachGalleryBackground, Theme.key_chat_attachGalleryText);
                         attachButton.setTag(1);
                     } else if (position == cameraButton) {
-                        attachButton.setTextAndIcon(1390, LocaleController.getString("ChatCamera", R.string.ChatCamera), Theme.chat_attachCameraButton, Theme.key_chat_attachGalleryBackground, Theme.key_chat_attachGalleryText);
+                        attachButton.setTextAndIcon(1390, LocaleController.getString(R.string.VoipCamera), Theme.chat_attachCameraButton, Theme.key_chat_attachGalleryBackground, Theme.key_chat_attachGalleryText);
                         attachButton.setTag(1390);
                     } else if (position == documentButton) {
                         attachButton.setTextAndIcon(4, getString("ChatDocument", R.string.ChatDocument), Theme.chat_attachButtonDrawables[2], Theme.key_chat_attachFileBackground, Theme.key_chat_attachFileText);

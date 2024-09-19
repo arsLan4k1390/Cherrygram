@@ -218,7 +218,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
 
                 contract({
                     return@contract listOf(
-                        Pair(CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP, getString(R.string.Forward) + getString(R.string.CG_Without_Authorship)),
+                        Pair(CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP, getString(R.string.Forward) + " " + getString(R.string.CG_Without_Authorship)),
                         Pair(CherrygramChatsConfig.LEFT_BUTTON_REPLY, getString(R.string.Reply)),
                         Pair(CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE, getString(R.string.CG_ToSaved)),
                         Pair(CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE, getString(R.string.DirectShare))
@@ -228,7 +228,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                         CherrygramChatsConfig.LEFT_BUTTON_REPLY -> getString(R.string.Reply)
                         CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE -> getString(R.string.CG_ToSaved)
                         CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE -> getString(R.string.DirectShare)
-                        else -> getString(R.string.Forward) + getString(R.string.CG_Without_Authorship)
+                        else -> getString(R.string.Forward) + " " + getString(R.string.CG_Without_Authorship)
                     }
                 }) {
                     CherrygramChatsConfig.leftBottomButton = it

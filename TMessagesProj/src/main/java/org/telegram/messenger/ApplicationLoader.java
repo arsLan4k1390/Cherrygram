@@ -140,7 +140,7 @@ public class ApplicationLoader extends Application {
     }
 
     public static boolean isStandaloneBuild() {
-        return !CherrygramCoreConfig.INSTANCE.isPlayStoreBuild();
+        return applicationLoaderInstance.isStandalone();
     }
 
     protected boolean isHuaweiBuild() {
@@ -148,7 +148,7 @@ public class ApplicationLoader extends Application {
     }
 
     protected boolean isStandalone() {
-        return !CherrygramCoreConfig.INSTANCE.isPlayStoreBuild();
+        return false;
     }
 
     public static File getFilesDirFixed() {
@@ -332,9 +332,9 @@ public class ApplicationLoader extends Application {
         SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
         boolean enabled;
         if (preferences.contains("pushService")) {
-            enabled = MessagesController.getGlobalNotificationsSettings().getBoolean("pushService", true);
+            enabled = preferences.getBoolean("pushService", true);
         } else {
-            enabled = MessagesController.getGlobalNotificationsSettings().getBoolean("keepAliveService", false);
+            enabled = preferences.getBoolean("keepAliveService", false);
         }
         if (enabled) {
             try {

@@ -81,6 +81,7 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_UnknownCherrySettingsOption">There is no such Cherry Settings option.</string>
     <string name="CG_Restart">Перезапустити додаток</string>
     <string name="CG_RestartToApply">Перезавантажте додаток для застосування змін</string>
     <string name="CG_PushService">Сервіс повідомлень Cherrygram.</string>
@@ -267,6 +268,8 @@
     <string name="CP_CameraTypeSystem">Системна</string>
     <string name="CP_SystemCameraDesc">Дозволяє отримати прямий доступ до системної камери (не застосовується в відеоповідомленнях).</string>
     <string name="CP_CameraAspectRatio">Співвідношення сторін камери</string>
+    <string name="CP_CenterCameraControlButtons">Center control buttons</string>
+    <string name="CP_CenterCameraControlButtons_Desc">Center switch camera and flashlight buttons.</string>
     <string name="CP_RearCam">Використовувати задню камеру</string>
     <string name="CP_RearCam_Desc">Замість фронтальної камери під час запису відеоповідомлень</string>
     <string name="CP_CaptureType_Desc">За замовчуванням використовує «VideoCapture». \nВиберіть «ImageCapture» (знижує якість), лише якщо Cherrygram зависає на секунду перед тим, як почати записувати відеоповідомлення.</string>
@@ -305,6 +308,10 @@
     <string name="SP_GoogleAnalytics_Desc">Якщо ввімкнути це, усі збої програми та статистичні дані надсилатимуться на \"console.firebase.google.com\" для подальшого перегляду розробником.</string>
     <string name="SP_CleanOld">Видалити старий кеш (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Видалено успішно</string>
+    <string name="SP_AskPinForChats">Запит біометричного підтвердження для відкриття чату</string>
+    <string name="SP_AskPinForChats_Desc">Системний пароль (відбиток пальця, face iD, PIN-код або шаблон) буде необхідний для відкриття певного чату. Щоб увімкнути, натисніть на 3 крапки всередині чату.</string>
+    <string name="SP_AskPin">Запит пароля</string>
+    <string name="SP_DoNotAskPin">Не запитувати пароль</string>
     <string name="SP_AskPinBeforeDelete">Запит біометрики перед видаленням чату.</string>
     <string name="SP_AskPinBeforeDelete_Desc">Якщо Ви хочете видалити чат або очистити історію, потрібне буде підтвердження біометрики. В системі повинно бути активне підтвердження паролю та біометрики.</string>
     <string name="SP_AllowUseSystemPasscode">Дозволити використовувати системний PIN/Графічний ключ</string>

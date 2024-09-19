@@ -508,7 +508,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 }
 
                 final boolean isLandscape = AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y;
-                final int subtitleTranslation = dp((haveSubtitle ? 30 : 33) - (isLandscape ? 6 : 0) + (centerTitle ? 3 : 0));
+                final int subtitleTranslation = dp((haveSubtitle ? 30 : 33) - (isLandscape ? (AndroidUtilities.isTablet() ? -4 : 6) : 0) + (centerTitle ? 3 : 0));
 
                 if (animated) {
                     ArrayList<Animator> arrayList = new ArrayList<>();
@@ -4999,7 +4999,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                         final ArrayList<MessageObject> fmessages = new ArrayList<>();
                         fmessages.add(currentMessageObject);
                         final ChatActivity parentChatActivityFinal = parentChatActivity;
-                        fragment.setDelegate((fragment1, dids, message, param, topicsFragment) -> {
+                        fragment.setDelegate((fragment1, dids, message, param, notify, scheduleDate, topicsFragment) -> {
                             if (dids.size() > 1 || dids.get(0).dialogId == UserConfig.getInstance(currentAccount).getClientUserId() || message != null) {
                                 for (int a = 0; a < dids.size(); a++) {
                                     long did = dids.get(a).dialogId;
@@ -5543,15 +5543,15 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         menuItem.setContentDescription(getString("AccDescrMoreOptions", R.string.AccDescrMoreOptions));
         allMediaItem = menuItem.addSubItem(gallery_menu_showall, R.drawable.msg_media, getString(R.string.ShowAllMedia));
         allMediaItem.setColors(0xfffafafa, 0xfffafafa);
-        menuItem.addSubItem(gallery_menu_pip2, R.drawable.ic_goinline, LocaleController.getString("AccDescrPipMode", R.string.AccDescrPipMode)).setColors(0xfffafafa, 0xfffafafa);
+        menuItem.addSubItem(gallery_menu_pip2, R.drawable.ic_goinline, getString(R.string.AccDescrPipMode)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_savegif, R.drawable.msg_gif, getString("SaveToGIFs", R.string.SaveToGIFs)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_showinchat, R.drawable.msg_message, getString("ShowInChat", R.string.ShowInChat)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_save, R.drawable.msg_gallery, getString("SaveToGallery", R.string.SaveToGallery)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_reply, R.drawable.menu_reply, getString(R.string.Reply)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_share, R.drawable.msg_shareout, getString("ShareFile", R.string.ShareFile)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_masks2, R.drawable.msg_sticker, getString("ShowStickers", R.string.ShowStickers)).setColors(0xfffafafa, 0xfffafafa);
-        menuItem.addSubItem(gallery_menu_paint2, R.drawable.msg_header_draw, LocaleController.getString("EditPhoto", R.string.EditPhoto)).setColors(0xfffafafa, 0xfffafafa);
-        //menuItem.addSubItem(gallery_menu_edit_avatar, R.drawable.photo_paint, LocaleController.getString("EditPhoto", R.string.EditPhoto)).setColors(0xfffafafa, 0xfffafafa);
+        menuItem.addSubItem(gallery_menu_paint2, R.drawable.msg_header_draw, getString(R.string.EditPhoto)).setColors(0xfffafafa, 0xfffafafa);
+        //menuItem.addSubItem(gallery_menu_edit_avatar, R.drawable.photo_paint, getString(R.string.EditPhoto)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_set_as_main, R.drawable.msg_openprofile, getString("SetAsMain", R.string.SetAsMain)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_translate, R.drawable.msg_translate, getString(R.string.TranslateMessage)).setColors(0xfffafafa, 0xfffafafa);
         menuItem.addSubItem(gallery_menu_hide_translation, R.drawable.msg_translate, getString(R.string.HideTranslation)).setColors(0xfffafafa, 0xfffafafa);
@@ -13415,7 +13415,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     title = chat.title;
 
                     TLRPC.ChatFull chatFull = MessagesController.getInstance(currentAccount).getChatFull(-avatarsDialogId);
-                    if (avatar.date != 0) {
+                    if (avatar != null && avatar.date != 0) {
                         subtitle = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(avatar.date));
                     } else if (chatFull != null && chatFull.chat_photo != null && chatFull.chat_photo.date != 0) {
                         subtitle = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(chatFull.chat_photo.date));
@@ -19996,7 +19996,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
     private RenderNode renderNode;
 
     public static boolean BLUR_RENDERNODE() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && SharedConfig.useNewBlur && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && SharedConfig.useNewBlur && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH && !AndroidUtilities.makingGlobalBlurBitmap;
     }
 
     private void drawCaptionBlur(Canvas canvas, BlurringShader.StoryBlurDrawer drawer, int bgColor, int overlayColor, boolean clip, boolean allowTransparent, boolean allowCrossfade) {
@@ -20628,7 +20628,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             date = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(avatar.date));
         } else if (userFull != null && userFull.fallback_photo != null && userFull.fallback_photo.date != 0) {
             date = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(userFull.fallback_photo.date)
-            + " | " + LocaleController.getString("PublicPhoto", R.string.PublicPhoto)
+            + " | " + getString(R.string.FallbackTooltip)
             );
         }
         return date;
@@ -20650,7 +20650,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 });
             }));
 
-            subtitle += " | " + LocaleController.getString("CG_OpenEmojiPack", R.string.CG_OpenEmojiPack);
+            subtitle += " | " + getString(R.string.CG_OpenEmojiPack);
         } else if (emojiMarkup instanceof TLRPC.TL_videoSizeStickerMarkup) {
             long access_hash = ((TLRPC.TL_videoSizeStickerMarkup) emojiMarkup).stickerset.access_hash;
             long documentId = ((TLRPC.TL_videoSizeStickerMarkup) emojiMarkup).stickerset.id;
@@ -20664,7 +20664,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 alert.show();
             });
 
-            subtitle += " | " + LocaleController.getString("CG_OpenStickerPack", R.string.CG_OpenStickerPack);
+            subtitle += " | " + getString(R.string.CG_OpenStickerPack);
         }
 
         actionBarContainer.setSubtitle(subtitle, true);
@@ -20986,7 +20986,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 //            infoText.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider));
 //            infoText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
 //            infoText.setMaxWidth(AndroidUtilities.dp(240));
-//            infoText.setText(LocaleController.getString(R.string.SponsoredMessageInfo));
+//            infoText.setText(getString(R.string.SponsoredMessageInfo));
 //            infoText.setPadding(LocaleController.isRTL ? 0 : AndroidUtilities.dp(43), 0, LocaleController.isRTL ? AndroidUtilities.dp(43) : 0, 0);
 //            sponsoredAbout.addView(infoText, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL));
 //
@@ -21038,7 +21038,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     if (parentFragment instanceof ChatActivity) {
                         ((ChatActivity) parentFragment).logSponsoredClicked(currentMessageObject);
                     }
-                    Browser.openUrl(activityContext, currentMessageObject.sponsoredUrl, true, false);
+                    Browser.openUrl(activityContext, Uri.parse(currentMessageObject.sponsoredUrl), true, false, false, null, null, false, MessagesController.getInstance(currentAccount).sponsoredLinksInappAllow);
                 });
                 textView.setOnLongClickListener(e -> {
                     if (currentMessageObject == null) {
@@ -21062,7 +21062,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 textView.setBackground(Theme.createRadSelectorDrawable(getThemedColor(Theme.key_dialogButtonSelector), 0, currentMessageObject.sponsoredAdditionalInfo == null ? 6 : 0));
                 textView.setOnClickListener(e -> {
                     if (AndroidUtilities.addToClipboard(currentMessageObject.sponsoredInfo)) {
-                        BulletinFactory.of(Bulletin.BulletinWindow.make(activityContext), resourcesProvider).createCopyBulletin(LocaleController.getString(R.string.TextCopied)).show();
+                        BulletinFactory.of(Bulletin.BulletinWindow.make(activityContext), resourcesProvider).createCopyBulletin(getString(R.string.TextCopied)).show();
                     }
                 });
                 sections.add(textView);
@@ -21078,7 +21078,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 textView.setBackground(Theme.createRadSelectorDrawable(getThemedColor(Theme.key_dialogButtonSelector), 0, 6));
                 textView.setOnClickListener(e -> {
                     if (AndroidUtilities.addToClipboard(currentMessageObject.sponsoredAdditionalInfo)) {
-                        BulletinFactory.of(Bulletin.BulletinWindow.make(activityContext), resourcesProvider).createCopyBulletin(LocaleController.getString(R.string.TextCopied)).show();
+                        BulletinFactory.of(Bulletin.BulletinWindow.make(activityContext), resourcesProvider).createCopyBulletin(getString(R.string.TextCopied)).show();
                     }
                 });
                 sections.add(textView);
@@ -21102,7 +21102,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             o.add(R.drawable.msg_block2, getString(R.string.HideAd), () -> {
                 if (UserConfig.getInstance(account).isPremium()) {
                     BulletinFactory.of(containerView, resourcesProvider)
-                            .createAdReportedBulletin(LocaleController.getString(R.string.AdHidden))
+                            .createAdReportedBulletin(getString(R.string.AdHidden))
                             .show();
                     MessagesController.getInstance(account).disableAds(true);
                     if (parentFragment instanceof ChatActivity) {
@@ -21127,7 +21127,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 o.add(R.drawable.msg_cancel, getString(R.string.RemoveAds), () -> {
                     if (UserConfig.getInstance(account).isPremium()) {
                         BulletinFactory.of(containerView, resourcesProvider)
-                                .createAdReportedBulletin(LocaleController.getString(R.string.AdHidden))
+                                .createAdReportedBulletin(getString(R.string.AdHidden))
                                 .show();
                         MessagesController.getInstance(account).disableAds(true);
                         if (parentFragment instanceof ChatActivity) {
@@ -21197,7 +21197,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             }
             closePhoto(true, false);
             if (currentMessageObject.sponsoredUrl != null) {
-                Browser.openUrl(LaunchActivity.instance != null ? LaunchActivity.instance : activityContext, Uri.parse(currentMessageObject.sponsoredUrl), true, false, false, null, null, false);
+                Browser.openUrl(LaunchActivity.instance != null ? LaunchActivity.instance : activityContext, Uri.parse(currentMessageObject.sponsoredUrl), true, false, false, null, null, false, MessagesController.getInstance(currentAccount).sponsoredLinksInappAllow);
             }
         });
     }

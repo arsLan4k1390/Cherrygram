@@ -25,11 +25,11 @@ object CGResourcesHelper {
 
     /** About app start **/
     fun getAppName(): String {
-        if (CherrygramCoreConfig.isStableBuild() || CherrygramCoreConfig.isPlayStoreBuild()) {
+        if (CherrygramCoreConfig.isStandaloneStableBuild() || CherrygramCoreConfig.isPlayStoreBuild()) {
             return "Cherrygram"
-        } else if (CherrygramCoreConfig.isBetaBuild()) {
+        } else if (CherrygramCoreConfig.isStandaloneBetaBuild()) {
             return "Cherrygram Beta"
-        } else if (CherrygramCoreConfig.isPremiumBuild()) {
+        } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
             return "Cherrygram Premium"
         } else if (CherrygramCoreConfig.isDevBuild()) {
             return "Cherrygram Dev"
@@ -38,13 +38,13 @@ object CGResourcesHelper {
     }
 
     fun getBuildType(): String {
-        if (CherrygramCoreConfig.isStableBuild()) {
+        if (CherrygramCoreConfig.isStandaloneStableBuild()) {
             return getString(R.string.UP_BTRelease)
         } else if (CherrygramCoreConfig.isPlayStoreBuild()) {
             return "Play Store"
-        } else if (CherrygramCoreConfig.isBetaBuild()) {
+        } else if (CherrygramCoreConfig.isStandaloneBetaBuild()) {
             return getString(R.string.UP_BTBeta)
-        } else if (CherrygramCoreConfig.isPremiumBuild()) {
+        } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
             return "Premium"
         } else if (CherrygramCoreConfig.isDevBuild()) {
             return "Dev"
@@ -105,6 +105,31 @@ object CGResourcesHelper {
             CherrygramCameraConfig.Camera1to1 -> "1:1"
             CherrygramCameraConfig.Camera4to3 -> "4:3"
             CherrygramCameraConfig.Camera16to9 -> "16:9"
+            else -> getString(R.string.Default)
+        }
+    }
+
+    @JvmStatic
+    fun getCameraXFpsRange(): String { //CameraPreferences.java:\CameraX FPS
+        return when (CherrygramCameraConfig.cameraXFpsRange) {
+            CherrygramCameraConfig.CameraXFpsRange25to30 -> "25-30"
+            CherrygramCameraConfig.CameraXFpsRange30to60 -> "30-60"
+            CherrygramCameraConfig.CameraXFpsRange60to60 -> "60-60"
+            else -> getString(R.string.Default)
+        }
+    }
+
+    @JvmStatic
+    fun getCameraXCameraEffect(): String { //CameraPreferences.java:\CameraX Camera effect
+        return when (CherrygramCameraConfig.cameraXCameraEffect) {
+            CherrygramCameraConfig.CONTROL_EFFECT_MODE_MONO -> "MONO"
+            CherrygramCameraConfig.CONTROL_EFFECT_MODE_NEGATIVE -> "NEGATIVE"
+            CherrygramCameraConfig.CONTROL_EFFECT_MODE_SOLARIZE -> "SOLARIZE"
+            CherrygramCameraConfig.CONTROL_EFFECT_MODE_SEPIA -> "SEPIA"
+            CherrygramCameraConfig.CONTROL_EFFECT_MODE_POSTERIZE -> "POSTERIZE"
+            CherrygramCameraConfig.CONTROL_EFFECT_MODE_WHITEBOARD -> "WHITEBOARD"
+            CherrygramCameraConfig.CONTROL_EFFECT_MODE_BLACKBOARD -> "BLACKBOARD"
+            CherrygramCameraConfig.CONTROL_EFFECT_MODE_AQUA -> "AQUA"
             else -> getString(R.string.Default)
         }
     }
@@ -197,12 +222,15 @@ object CGResourcesHelper {
         return if (CherrygramCoreConfig.oldNotificationIcon) {
             R.drawable.notification
         } else {
-            return if (LauncherIconController.isEnabled(LauncherIconController.LauncherIcon.DARK_CHERRY_BRA)
+            return if (isAnyOfBraIconsEnabled()) R.drawable.cg_notification_bra else R.drawable.cg_notification
+        }
+    }
+
+    fun isAnyOfBraIconsEnabled(): Boolean {
+        return (LauncherIconController.isEnabled(LauncherIconController.LauncherIcon.DARK_CHERRY_BRA)
                 || LauncherIconController.isEnabled(LauncherIconController.LauncherIcon.WHITE_CHERRY_BRA)
                 || LauncherIconController.isEnabled(LauncherIconController.LauncherIcon.VIOLET_SUNSET_CHERRY_BRA)
-            )
-                R.drawable.cg_notification_bra else R.drawable.cg_notification
-        }
+        )
     }
 
     @JvmStatic

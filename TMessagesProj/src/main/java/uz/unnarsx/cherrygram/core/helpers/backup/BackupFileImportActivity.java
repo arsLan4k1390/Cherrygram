@@ -19,6 +19,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Environment;
 import android.text.InputFilter;
 import android.text.TextPaint;
@@ -219,7 +220,11 @@ public class BackupFileImportActivity extends BaseFragment {
             filter.addAction(Intent.ACTION_MEDIA_UNMOUNTABLE);
             filter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
             filter.addDataScheme("file");
-            ApplicationLoader.applicationContext.registerReceiver(receiver, filter);
+            if (Build.VERSION.SDK_INT >= 33) {
+                ApplicationLoader.applicationContext.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                ApplicationLoader.applicationContext.registerReceiver(receiver, filter);
+            }
         }
 
         actionBar.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground));
@@ -696,7 +701,7 @@ public class BackupFileImportActivity extends BaseFragment {
             }
             if (sizeLimit != 0) {
                 if (item.file.length() > sizeLimit) {
-                    showErrorBox(LocaleController.formatString(R.string.FileUploadLimit, AndroidUtilities.formatFileSize(sizeLimit)));
+                    showErrorBox("FileUploadLimit");
                     return false;
                 }
             }
@@ -940,8 +945,8 @@ public class BackupFileImportActivity extends BaseFragment {
     }
 
     private void updateEmptyView() {
-        emptyTitleTextView.setText(getString(R.string.NoFilesFound));
-        emptySubtitleTextView.setText(getString(R.string.NoFilesInfo));
+        emptyTitleTextView.setText("NoFilesFound");
+        emptySubtitleTextView.setText("NoFilesInfo");
         emptyView.setGravity(Gravity.CENTER);
         emptyView.setPadding(0, 0, 0, 0);
         emptySubtitleTextView.setPadding(AndroidUtilities.dp(40), 0, AndroidUtilities.dp(40), AndroidUtilities.dp(128));

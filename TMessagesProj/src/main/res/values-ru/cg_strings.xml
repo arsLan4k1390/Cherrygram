@@ -95,6 +95,7 @@
     <!--Chats screen-->
 
     <!--Misc-->
+    <string name="CG_UnknownCherrySettingsOption">Такого параметра Cherry нет.</string>
     <string name="CG_Restart">Перезапустить приложение</string>
     <string name="CG_RestartToApply">Перезапустите приложение</string>
     <string name="CG_PushService">Сервис уведомлений Cherrygram.</string>
@@ -298,9 +299,11 @@
     <string name="CP_SystemCameraDesc">Позволяет получить доступ напрямую к системной камере (не применимо к видеосообщениям).</string>
 
     <string name="CP_CameraAspectRatio">Соотношение сторон камеры</string>
+    <string name="CP_CenterCameraControlButtons">Центрировать кнопки управления</string>
+    <string name="CP_CenterCameraControlButtons_Desc">Центрирование кнопок смены камеры и фонарика.</string>
     <string name="CP_RearCam">Использовать заднюю камеру</string>
     <string name="CP_RearCam_Desc">Вместо фронтальной камеры при записи видеосообщений</string>
-    <string name="CP_CaptureType_Desc">\"VideoCapture\" используется по умолчанию. \nВыбирайте \"ImageCapture\" (ухудшает качество) только если Cherrygram зависает на секунду до начала записи видеосообщения.</string>
+    <string name="CP_CaptureType_Desc">\"VideoCapture\" используется по умолчанию. \nВыбирайте \"ImageCapture\" (ухудшает качество) только если Cherrygram зависает на секунду до начала записи видеосообщения. Более того, ImageCapture поддерживает видеоэффекты.</string>
     <string name="CP_DisableCam">Отключить камеру в меню выбора фото</string>
     <string name="CP_DisableCam_Desc">Кнопка камеры будет доступна рядом с кнопкой галереи. \nНажатие на кнопку откроет камеру Telegram, а зажатие запустит системную камеру.</string>
 

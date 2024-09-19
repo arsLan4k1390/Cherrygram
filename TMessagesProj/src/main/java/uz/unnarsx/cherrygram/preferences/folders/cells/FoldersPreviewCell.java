@@ -79,7 +79,6 @@ public class FoldersPreviewCell extends FrameLayout {
             {getString(R.string.FilterChannels), "\uD83D\uDCE2"},
             {getString(R.string.FilterNameNonMuted), "\uD83D\uDD14"},
             {getString(R.string.FilterContacts), "\uD83C\uDFE0"},
-            {getString(R.string.FilterUnread), "\u2705"},
             {getString(R.string.FilterNonContacts), "\uD83C\uDFAD"},
     };
 

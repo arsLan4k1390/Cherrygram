@@ -20,6 +20,8 @@ public class ThemeColors {
         defaultColors[key_alwaysWhite] = Color.WHITE;
         defaultColors[key_alwaysGray] = 0xff999999;
         defaultColors[key_alwaysGrayDarkTheme] = 0xff656660;
+        defaultColors[key_cgGradient1] = 0xffA33156;
+        defaultColors[key_cgGradient2] = 0xffE54C7F;
 
         defaultColors[key_wallpaperFileOffset] = 0;
         defaultColors[key_dialogBackground] = 0xffffffff;
@@ -800,6 +802,8 @@ public class ThemeColors {
         defaultColors[key_iv_ab_progress] = 0xff50a8eb;
         defaultColors[key_iv_navigationBackground] = 0xfff0f0f0;
 
+        defaultColors[key_reactionStarSelector] = 0x40F0AB1F;
+
         return defaultColors;
     }
 
@@ -1558,6 +1562,7 @@ public class ThemeColors {
         colorKeysMap.put(key_iv_backgroundGray, "iv_backgroundGray");
         colorKeysMap.put(key_iv_navigationBackground, "iv_navigationBackground");
         colorKeysMap.put(key_iv_ab_progress, "iv_ab_progress");
+        colorKeysMap.put(key_reactionStarSelector, "reactionStarSelector");
         return colorKeysMap;
     }
 

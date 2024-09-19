@@ -32,7 +32,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen("Debug // WIP") {
         category("Misc") {
             switch {
-                isAvailable = !CherrygramCoreConfig.isStableBuild() && !CherrygramCoreConfig.isPlayStoreBuild()
+                isAvailable = !CherrygramCoreConfig.isStandaloneStableBuild() && !CherrygramCoreConfig.isPlayStoreBuild()
                 title = "Toast all RPC errors *"
                 description = "you'll see RPC errors from Telegram's backend as toast messages."
 

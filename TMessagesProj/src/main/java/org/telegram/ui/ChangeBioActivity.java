@@ -73,7 +73,7 @@ public class ChangeBioActivity extends BaseFragment {
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
-        actionBar.setTitle(LocaleController.getString("UserBio", R.string.UserBio));
+        actionBar.setTitle(LocaleController.getString(R.string.UserBio));
 
         if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
@@ -98,7 +98,7 @@ public class ChangeBioActivity extends BaseFragment {
 
         ActionBarMenu menu = actionBar.createMenu();
         doneButton = menu.addItemWithWidth(done_button, R.drawable.ic_ab_done, AndroidUtilities.dp(56));
-        doneButton.setContentDescription(LocaleController.getString("Done", R.string.Done));
+        doneButton.setContentDescription(LocaleController.getString(R.string.Done));
 
         fragmentView = new LinearLayout(context);
         LinearLayout linearLayout = (LinearLayout) fragmentView;
@@ -106,7 +106,7 @@ public class ChangeBioActivity extends BaseFragment {
         fragmentView.setOnTouchListener((v, event) -> true);
 
         firstNameFieldContainer = new OutlineTextContainerView(context);
-        firstNameFieldContainer.setText(LocaleController.getString("UserBio", R.string.UserBio));
+        firstNameFieldContainer.setText(LocaleController.getString(R.string.UserBio));
         linearLayout.addView(firstNameFieldContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 24, 24, 24, 0));
 
         firstNameField = new EditTextBoldCursor(context) {
@@ -183,18 +183,18 @@ public class ChangeBioActivity extends BaseFragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                firstNameFieldContainer.setText(String.format("%s (%d)", LocaleController.getString("UserBio", R.string.UserBio), getMessagesController().getAboutLimit() - Character.codePointCount(s, 0, s.length())));
+                firstNameFieldContainer.setText(String.format("%s (%d)", LocaleController.getString(R.string.UserBio), getMessagesController().getAboutLimit() - Character.codePointCount(s, 0, s.length())));
             }
         });
 
-        firstNameFieldContainer.setText(String.format("%s (%d)", LocaleController.getString("UserBio", R.string.UserBio), getMessagesController().getAboutLimit()));
+        firstNameFieldContainer.setText(String.format("%s (%d)", LocaleController.getString(R.string.UserBio), getMessagesController().getAboutLimit()));
 
         helpTextView = new TextView(context);
         helpTextView.setFocusable(true);
         helpTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         helpTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText8));
         helpTextView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
-        helpTextView.setText(AndroidUtilities.replaceTags(LocaleController.getString("UserBioInfo", R.string.UserBioInfo)));
+        helpTextView.setText(AndroidUtilities.replaceTags(LocaleController.getString(R.string.UserBioInfo)));
         linearLayout.addView(helpTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT, 24, 10, 24, 0));
 
         TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(UserConfig.getInstance(currentAccount).getClientUserId());

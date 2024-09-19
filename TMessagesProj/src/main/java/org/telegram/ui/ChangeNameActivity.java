@@ -73,7 +73,7 @@ public class ChangeNameActivity extends BaseFragment {
         actionBar.setItemsColor(Theme.getColor(Theme.key_actionBarDefaultIcon, resourcesProvider), false);
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
-        actionBar.setTitle(LocaleController.getString("EditName", R.string.EditName));
+        actionBar.setTitle(LocaleController.getString(R.string.EditName));
 
         if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
@@ -100,7 +100,7 @@ public class ChangeNameActivity extends BaseFragment {
         });
 
         ActionBarMenu menu = actionBar.createMenu();
-        doneButton = menu.addItemWithWidth(done_button, R.drawable.ic_ab_done, AndroidUtilities.dp(56), LocaleController.getString("Done", R.string.Done));
+        doneButton = menu.addItemWithWidth(done_button, R.drawable.ic_ab_done, AndroidUtilities.dp(56), LocaleController.getString(R.string.Done));
 
         TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(UserConfig.getInstance(currentAccount).getClientUserId());
         if (user == null) {
@@ -114,7 +114,7 @@ public class ChangeNameActivity extends BaseFragment {
         fragmentView.setOnTouchListener((v, event) -> true);
 
         firstNameFieldContainer = new OutlineTextContainerView(context);
-        firstNameFieldContainer.setText(LocaleController.getString("FirstName", R.string.FirstName));
+        firstNameFieldContainer.setText(LocaleController.getString(R.string.FirstName));
         linearLayout.addView(firstNameFieldContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 24, 24, 24, 0));
 
         firstNameField = new EditTextBoldCursor(context) {
@@ -149,7 +149,7 @@ public class ChangeNameActivity extends BaseFragment {
         });
 
         lastNameFieldContainer = new OutlineTextContainerView(context);
-        lastNameFieldContainer.setText(LocaleController.getString("LastName", R.string.LastName));
+        lastNameFieldContainer.setText(LocaleController.getString(R.string.LastName));
         linearLayout.addView(lastNameFieldContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 24, 24, 24, 0));
 
         lastNameField = new EditTextBoldCursor(context) {

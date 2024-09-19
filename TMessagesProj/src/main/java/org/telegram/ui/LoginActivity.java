@@ -101,11 +101,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.Task;
-import com.google.android.play.core.integrity.IntegrityManager;
-import com.google.android.play.core.integrity.IntegrityManagerFactory;
-import com.google.android.play.core.integrity.IntegrityTokenRequest;
-import com.google.android.play.core.integrity.IntegrityTokenResponse;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
@@ -3782,7 +3777,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
             FrameLayout centerContainer = null;
             if (currentType == AUTH_TYPE_MISSED_CALL) {
-                titleTextView.setText(overrideTitle != null ? overrideTitle : getString("MissedCallDescriptionTitle", R.string.MissedCallDescriptionTitle));
+                titleTextView.setText(overrideTitle != null ? overrideTitle : getString(R.string.MissedCallDescriptionTitle));
 
                 FrameLayout frameLayout = new FrameLayout(context);
                 missedCallArrowIcon = new ImageView(context);
@@ -3800,7 +3795,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 missedCallDescriptionSubtitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 missedCallDescriptionSubtitle.setGravity(Gravity.CENTER_HORIZONTAL);
                 missedCallDescriptionSubtitle.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-                missedCallDescriptionSubtitle.setText(AndroidUtilities.replaceTags(getString("MissedCallDescriptionSubtitle", R.string.MissedCallDescriptionSubtitle)));
+                missedCallDescriptionSubtitle.setText(AndroidUtilities.replaceTags(getString(R.string.MissedCallDescriptionSubtitle)));
 
                 addView(missedCallDescriptionSubtitle, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 36, 16, 36, 0));
 
@@ -3829,7 +3824,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 missedCallDescriptionSubtitle2.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
                 missedCallDescriptionSubtitle2.setGravity(Gravity.CENTER_HORIZONTAL);
                 missedCallDescriptionSubtitle2.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-                missedCallDescriptionSubtitle2.setText(AndroidUtilities.replaceTags(getString("MissedCallDescriptionSubtitle2", R.string.MissedCallDescriptionSubtitle2)));
+                missedCallDescriptionSubtitle2.setText(AndroidUtilities.replaceTags(getString(R.string.MissedCallDescriptionSubtitle2)));
 
                 addView(missedCallDescriptionSubtitle2, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 36, 28, 36, 12));
             } else if (currentType == AUTH_TYPE_FLASH_CALL) {
@@ -6352,7 +6347,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             signInWithGoogleView.setMaxLines(2);
 
             SpannableStringBuilder str = new SpannableStringBuilder("d ");
-            Drawable dr = ContextCompat.getDrawable(context, com.google.firebase.messaging.R.drawable.googleg_standard_color_18);
+            Drawable dr = ContextCompat.getDrawable(context, R.drawable.android_camera_icon);
             dr.setBounds(0, AndroidUtilities.dp(9), AndroidUtilities.dp(18), AndroidUtilities.dp(18 + 9));
             str.setSpan(new ImageSpan(dr, ImageSpan.ALIGN_BOTTOM), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             str.setSpan(new ReplacementSpan() {

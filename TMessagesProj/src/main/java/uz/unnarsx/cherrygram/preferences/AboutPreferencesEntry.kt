@@ -48,7 +48,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                         detail = UpdaterUtils.getLastCheckUpdateTime()
 
                         Browser.openUrl(bf.context, Extra.PLAYSTORE_APP_URL)
-                    } else if (CherrygramCoreConfig.isPremiumBuild()) {
+                    } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
                         // Fuckoff :)
                     } else {
                         UpdaterBottomSheet.showAlert(bf.context, bf, false, null)
@@ -95,18 +95,18 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                isAvailable = !CherrygramCoreConfig.isPremiumBuild()
+                isAvailable = !CherrygramCoreConfig.isStandalonePremiumBuild()
                 icon = R.drawable.github_logo_white
                 title = getString(R.string.CGP_Source)
 
-                value = if (CherrygramCoreConfig.isBetaBuild() || CherrygramCoreConfig.isDevBuild()) {
+                value = if (CherrygramCoreConfig.isStandaloneBetaBuild() || CherrygramCoreConfig.isDevBuild()) {
                     "GitHub"
                 } else {
                     "commit " + BuildConfig.GIT_COMMIT_HASH.substring(0, 8)
                 }
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    if (CherrygramCoreConfig.isBetaBuild() || CherrygramCoreConfig.isDevBuild()) {
+                    if (CherrygramCoreConfig.isStandaloneBetaBuild() || CherrygramCoreConfig.isDevBuild()) {
                         Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/")
                     } else {
                         Browser.openUrl(bf.parentActivity, "https://github.com/arsLan4k1390/Cherrygram/commit/" + BuildConfig.GIT_COMMIT_HASH)

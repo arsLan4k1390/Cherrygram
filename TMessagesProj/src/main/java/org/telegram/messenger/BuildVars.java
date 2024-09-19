@@ -79,7 +79,7 @@ public class BuildVars {
             betaApp = ApplicationLoader.applicationContext != null && "org.telegram.messenger.beta".equals(ApplicationLoader.applicationContext.getPackageName());
         }
         return betaApp;*/
-        return CherrygramCoreConfig.INSTANCE.isBetaBuild();
+        return CherrygramCoreConfig.INSTANCE.isStandaloneBetaBuild();
     }
 
 

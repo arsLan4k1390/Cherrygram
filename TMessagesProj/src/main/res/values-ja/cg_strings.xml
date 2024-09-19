@@ -3,7 +3,7 @@
     <!-- by t.me/arsLan-->
     <string name="CG_FollowChannelLink">\@Cherry_Gram を購読する!</string>
     <string name="CG_FollowChannelTitle">公式チャンネルを購読する</string>
-    <string name="CG_FollowChannelInfo">Cherrygramのニュースや最新情報を入手しましょう!</string>
+    <string name="CG_FollowChannelInfo">チャンネルに参加して、Cherrygramのニュースや機能の最新情報を入手しましょう!</string>
     <string name="CG_DoNotRemindAgain">今後は表示しない</string>
     <!--Telegram screens-->
     <string name="CG_RegistrationDate">アカウント登録日:</string>
@@ -57,6 +57,10 @@
     <string name="CG_FwdMenu_Notify">通知する</string>
     <string name="CG_FwdMenu_EnableCaptions">字幕を有効化する</string>
     <string name="CG_FwdMenu_DisableCaptions">字幕を非表示</string>
+    <string name="CG_CopyTitle">タイトルをコピー</string>
+    <string name="CG_CopyCallback">コールバックデータをコピー</string>
+    <string name="CG_CopyInlineQuery">インラインクエリをコピー</string>
+    <string name="CG_CopyID">ユーザーIDをコピー</string>
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygramは、あなたの位置情報を友人と共有するために、位置情報へのアクセスを必要とします。位置情報の使用を許可するかどうかを確認します(アプリが開いている間)。</string>
     <string name="CG_LocationPermission_Desc">ただし、Cherrygramを終了してバックグラウンドになっている間にあなたの位置情報を友人に知らせたい場合は、「ライブロケーション」機能にアクセスしてください。 ライブロケーション機能を使用することに同意するまでは、位置情報をバックグラウンドで送信しません。</string>
@@ -77,6 +81,7 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_UnknownCherrySettingsOption">Cherrygram の設定オプションにはありません。</string>
     <string name="CG_Restart">アプリを再起動</string>
     <string name="CG_RestartToApply">アプリを再起動後に適用されます</string>
     <string name="CG_PushService">Cherrygramプッシュサービス</string>
@@ -238,7 +243,7 @@
     <string name="CP_PlayVideo">音量ボタンをタップで動画を再生する</string>
     <string name="CP_PlayVideo_Desc">音量ボタンをタップするとチャット内の動画が再生されます。</string>
     <string name="CP_AutoPauseVideo">ビデオを自動で一時停止</string>
-    <string name="CP_AutoPauseVideo_Desc">画面をロックまたは背景に切り替え時</string>
+    <string name="CP_AutoPauseVideo_Desc">画面をロックまたは背景に切り替え時に一時停止します。</string>
     <string name="CP_DisableVibration">バイブレーションを無効化</string>
     <string name="CP_VideoSeekDuration">ダブルタップで動画をシーク (秒単位)</string>
     <string name="CP_Header_Notification">通知</string>
@@ -263,10 +268,12 @@
     <string name="CP_CameraTypeSystem">システム</string>
     <string name="CP_SystemCameraDesc">システムのカメラに直接アクセスします (ビデオメッセージには適用されません)。</string>
     <string name="CP_CameraAspectRatio">カメラのアスペクト比</string>
+    <string name="CP_CenterCameraControlButtons">中央のコントロールボタン</string>
+    <string name="CP_CenterCameraControlButtons_Desc">中央のボタンをカメラとフラッシュライトに切り替えます。</string>
     <string name="CP_RearCam">リアカメラを使用する</string>
     <string name="CP_RearCam_Desc">ビデオメッセージでフロントカメラの代替として使用可能にします。</string>
     <string name="CP_CaptureType_Desc">デフォルトでは｢動画のキャプチャ｣を使用してください。\nCherrygramがビデオメッセージの録画を開始する前に一瞬フリーズする場合のみ｢画像のキャプチャ｣(画質が落ちます)を選択してください。</string>
-    <string name="CP_DisableCam">メディア選択メニューでのカメラを無効化</string>
+    <string name="CP_DisableCam">メディア選択でのカメラを無効化</string>
     <string name="CP_DisableCam_Desc">ギャラリーボタンの隣にカメラボタンが表示されます。\nボタンを押すことでTelegramのカメラを開きます。ボタンを押し続けるとシステムのカメラが起動します。</string>
     <string name="CP_Header_Videomessages">ビデオメッセージ</string>
     <string name="CP_ExposureSliderPosition">露光スライダーの位置</string>
@@ -301,7 +308,11 @@
     <string name="SP_GoogleAnalytics_Desc">これを有効化することですべてのアプリのクラッシュや統計情報が、｢console.firebase.google.com｣に送信されます。開発者が問題の修正などを効率良く行えるようになります。</string>
     <string name="SP_CleanOld">/sdcard/Telegram のキャッシュを削除</string>
     <string name="SP_RemovedS">削除に成功しました</string>
-    <string name="SP_AskPinBeforeDelete">削除時に指紋認証を要求する</string>
+    <string name="SP_AskPinForChats">チャットを開くには生体認証が必要です</string>
+    <string name="SP_AskPinForChats_Desc">特定のチャットを開くには、システムパスワード(指紋認証、顔認証、PIN、パターン)が必要です。有効にするには、チャット内で3つの点をタップしてください。</string>
+    <string name="SP_AskPin">パスワードを要求する</string>
+    <string name="SP_DoNotAskPin">パスワードを要求しない</string>
+    <string name="SP_AskPinBeforeDelete">チャットを削除する前に生体認証での確認を要求します。</string>
     <string name="SP_AskPinBeforeDelete_Desc">チャットまたは履歴を削除する場合に指紋認証を要求します。パスコードと指紋認証を設定している必要があります。</string>
     <string name="SP_AllowUseSystemPasscode">PINまたはパターンの使用を許可する</string>
     <string name="SP_AllowUseSystemPasscode_Desc">指紋認証のダイアログの｢キャンセル｣のボタンを｢PIN/パターン｣のボタンに置き換えることで、システムパスを使用してCherrygramのロックを解除できるようになります。</string>

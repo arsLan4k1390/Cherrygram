@@ -12,20 +12,17 @@ configurations {
 }
 
 configurations.configureEach {
-    exclude group: 'com.google.firebase', module: 'firebase-core'
     exclude group: 'androidx.recyclerview', module: 'recyclerview'
 }
 
 dependencies {
     implementation project(':TMessagesProj')
-    implementation 'androidx.fragment:fragment-ktx:1.6.2'
+    implementation 'androidx.fragment:fragment:1.8.3'
     implementation 'androidx.multidex:multidex:2.0.1'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     implementation files('../TMessagesProj/libs/libgsaverification-client.aar')
 
-    implementation platform('com.google.firebase:firebase-bom:32.3.1')
     implementation 'com.google.firebase:firebase-messaging'
-
     implementation 'com.huawei.hms:push:6.11.0.300'
     implementation 'com.huawei.hms:maps:6.11.0.304'
     implementation 'com.huawei.hms:location:6.11.0.301'
@@ -34,10 +31,9 @@ dependencies {
 ext.abiCodes = ['universal': 0, 'armeabi-v7a': 1, 'arm64-v8a': 5, x86: 2, x86_64: 6]
 
 android {
-    compileSdk 33
-    buildToolsVersion = '33.0.0'
+    compileSdk 34
+    buildToolsVersion = '34.0.0'
 
-    namespace 'org.telegram.messenger.huawei'
     defaultConfig.applicationId = APP_PACKAGE
 
     sourceSets.main.jniLibs.srcDirs = ['../TMessagesProj/jni/']
@@ -49,8 +45,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_14
+        targetCompatibility JavaVersion.VERSION_14
 
         coreLibraryDesugaringEnabled true
     }
@@ -71,16 +67,11 @@ android {
         }
     }
 
-    packagingOptions {
-        exclude "DebugProbesKt.bin"
-    }
-
     buildTypes {
         debug {
             debuggable true
             jniDebuggable true
             signingConfig signingConfigs.release
-            //applicationIdSuffix ".beta"
             minifyEnabled false
             shrinkResources false
             multiDexEnabled true
@@ -92,7 +83,7 @@ android {
             jniDebuggable false
             signingConfig signingConfigs.release
             minifyEnabled true
-            shrinkResources true
+            shrinkResources false
             multiDexEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
@@ -148,7 +139,7 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionName APP_VERSION_NAME
         ndkVersion "21.4.7075529"
 
@@ -166,6 +157,11 @@ android {
 
     buildFeatures {
         buildConfig = true
+    }
+    namespace 'org.telegram.messenger.huawei'
+
+    lintOptions {
+        checkReleaseBuilds false
     }
 
     bundle {

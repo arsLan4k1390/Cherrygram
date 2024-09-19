@@ -21,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 import androidx.camera.camera2.interop.Camera2CameraControl;
 import androidx.camera.camera2.interop.CaptureRequestOptions;
-import androidx.camera.core.AspectRatio;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraInfoUnavailableException;
 import androidx.camera.core.CameraSelector;
@@ -313,6 +312,9 @@ public class CameraXController {
         android.util.Size targetSize = getVideoBestSize();
         Preview.Builder previewBuilder = new Preview.Builder();
         previewBuilder.setTargetResolution(targetSize);
+        if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() != CherrygramCameraConfig.CameraXFpsRangeDefault) {
+            previewBuilder.setTargetFrameRate(VideoMessagesHelper.getCameraXFpsRange());
+        }
         if (!isFrontface && selectedEffect == CAMERA_WIDE) {
             cameraSelector = CameraXUtils.getDefaultWideAngleCamera(provider);
         } else {
@@ -341,19 +343,9 @@ public class CameraXController {
         QualitySelector selector = QualitySelector.from(quality, FallbackStrategy.higherQualityOrLowerThan(quality));
         Recorder recorder = new Recorder.Builder()
                 .setQualitySelector(selector)
+                .setAspectRatio(VideoMessagesHelper.getCameraXAspectRatio())
                 .build();
         vCapture = VideoCapture.withOutput(recorder);
-
-        int aspectRatio;
-        if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera4to3) {
-            aspectRatio = AspectRatio.RATIO_4_3;
-        } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera16to9) {
-            aspectRatio = AspectRatio.RATIO_16_9;
-        } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.CameraAspectDefault) {
-            aspectRatio = AspectRatio.RATIO_DEFAULT;
-        } else {
-            aspectRatio = AspectRatio.RATIO_16_9;
-        }
 
         boolean useImageCaptureForFrontCamera = stableFPSPreviewOnly && CherrygramCameraConfig.INSTANCE.getCaptureTypeFront() == CherrygramCameraConfig.CaptureType_ImageCapture;
         boolean useImageCaptureForBackCamera = stableFPSPreviewOnly && CherrygramCameraConfig.INSTANCE.getCaptureTypeBack() == CherrygramCameraConfig.CaptureType_ImageCapture;
@@ -361,10 +353,9 @@ public class CameraXController {
                 && CherrygramCameraConfig.INSTANCE.getCaptureTypeFront() == CherrygramCameraConfig.CaptureType_ImageCapture
                 && CherrygramCameraConfig.INSTANCE.getCaptureTypeBack() == CherrygramCameraConfig.CaptureType_ImageCapture;
 
-
         ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder();
         iCaptureBuilder.setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY);
-        iCaptureBuilder.setTargetAspectRatio(aspectRatio);
+        iCaptureBuilder.setTargetAspectRatio(VideoMessagesHelper.getCameraXAspectRatio());
         if (useImageCaptureForFrontCamera ||useImageCaptureForBackCamera ||useImageCaptureForBothCameras) iCaptureBuilder.setCaptureType(UseCaseConfigFactory.CaptureType.VIDEO_CAPTURE);
         iCaptureBuilder.build(); // need to build because attach camera crashes
 
@@ -387,14 +378,26 @@ public class CameraXController {
                 camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, vCapture);
             }
 
-            if (CherrygramCameraConfig.INSTANCE.getCameraStabilisation()) {
-                CaptureRequestOptions captureRequestOptions = new CaptureRequestOptions.Builder()
-                        .setCaptureRequestOption(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, CameraMetadata.CONTROL_VIDEO_STABILIZATION_MODE_ON)
-                        .setCaptureRequestOption(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CameraMetadata.LENS_OPTICAL_STABILIZATION_MODE_ON)
-                        .build();
+            if (CherrygramCameraConfig.INSTANCE.getCameraStabilisation()
+                    || CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() != CherrygramCameraConfig.CameraXFpsRangeDefault
+            ) {
+                CaptureRequestOptions.Builder captureRequestOptions = new CaptureRequestOptions.Builder();
+
+                if (CherrygramCameraConfig.INSTANCE.getCameraStabilisation()) {
+                    captureRequestOptions.setCaptureRequestOption(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, CameraMetadata.CONTROL_VIDEO_STABILIZATION_MODE_ON);
+                    captureRequestOptions.setCaptureRequestOption(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CameraMetadata.LENS_OPTICAL_STABILIZATION_MODE_ON);
+                }
+
+                if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() != CherrygramCameraConfig.CameraXFpsRangeDefault) {
+                    captureRequestOptions.setCaptureRequestOption(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, VideoMessagesHelper.getCameraXFpsRange());
+                }
+
+                if (useImageCaptureForFrontCamera || useImageCaptureForBackCamera || useImageCaptureForBothCameras) {
+                    captureRequestOptions.setCaptureRequestOption(CaptureRequest.CONTROL_EFFECT_MODE, CherrygramCameraConfig.INSTANCE.getCameraXCameraEffect());
+                }
 
                 Camera2CameraControl cameraControl = Camera2CameraControl.from(camera.getCameraControl());
-                cameraControl.setCaptureRequestOptions(captureRequestOptions);
+                cameraControl.setCaptureRequestOptions(captureRequestOptions.build());
             }
         } else {
             iCapture = iCaptureBuilder.build();
@@ -420,7 +423,7 @@ public class CameraXController {
 
     public float resetZoom() {
         if (camera != null) {
-            camera.getCameraControl().setZoomRatio(1.0f);
+            camera.getCameraControl().setLinearZoom(0f);
             ZoomState zoomStateLiveData = camera.getCameraInfo().getZoomState().getValue();
             if (zoomStateLiveData != null) {
                 oldZoomSelection = zoomStateLiveData.getLinearZoom();

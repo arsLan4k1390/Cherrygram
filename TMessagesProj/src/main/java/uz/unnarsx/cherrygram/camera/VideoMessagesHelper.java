@@ -9,10 +9,12 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.graphics.SurfaceTexture;
+import android.util.Range;
 import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 
+import androidx.camera.core.AspectRatio;
 import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
 import androidx.camera.core.SurfaceOrientedMeteringPointFactory;
@@ -233,6 +235,32 @@ public class VideoMessagesHelper {
                 instantCameraView.evControlView.setVisibility(View.INVISIBLE);
             }, 3000);
         }
+    }
+
+    public static Range<Integer> getCameraXFpsRange() {
+        Range<Integer> fpsRange = new Range<>(30, 30);
+        if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange25to30) {
+            fpsRange = new Range<>(25, 30);
+        } else if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange30to60) {
+            fpsRange = new Range<>(30, 60);
+        } else if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange60to60) {
+            fpsRange = new Range<>(60, 60);
+        }
+        return fpsRange;
+    }
+
+    public static int getCameraXAspectRatio() {
+        int aspectRatio;
+        if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera4to3) {
+            aspectRatio = AspectRatio.RATIO_4_3;
+        } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera16to9) {
+            aspectRatio = AspectRatio.RATIO_16_9;
+        } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.CameraAspectDefault) {
+            aspectRatio = AspectRatio.RATIO_DEFAULT;
+        } else {
+            aspectRatio = AspectRatio.RATIO_16_9;
+        }
+        return aspectRatio;
     }
 
 }

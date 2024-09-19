@@ -487,6 +487,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         forceBackgroundVisible = false;
 
         if (windowManager != null && windowView != null && windowView.getParent() == null) {
+            AndroidUtilities.setPreferredMaxRefreshRate(windowManager, windowView, windowLayoutParams);
             windowManager.addView(windowView, windowLayoutParams);
         }
 
@@ -548,6 +549,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         videoTextureHolder.active = false;
 
         if (windowManager != null && windowView != null && windowView.getParent() == null) {
+            AndroidUtilities.setPreferredMaxRefreshRate(windowManager, windowView, windowLayoutParams);
             windowManager.addView(windowView, windowLayoutParams);
         }
 
@@ -605,6 +607,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         forceBackgroundVisible = false;
 
         if (windowManager != null && windowView != null && windowView.getParent() == null) {
+            AndroidUtilities.setPreferredMaxRefreshRate(windowManager, windowView, windowLayoutParams);
             windowManager.addView(windowView, windowLayoutParams);
         }
 
@@ -664,6 +667,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         forceBackgroundVisible = false;
 
         if (windowManager != null && windowView != null && windowView.getParent() == null) {
+            AndroidUtilities.setPreferredMaxRefreshRate(windowManager, windowView, windowLayoutParams);
             windowManager.addView(windowView, windowLayoutParams);
         }
 
@@ -724,6 +728,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         forceBackgroundVisible = false;
 
         if (windowManager != null && windowView != null && windowView.getParent() == null) {
+            AndroidUtilities.setPreferredMaxRefreshRate(windowManager, windowView, windowLayoutParams);
             windowManager.addView(windowView, windowLayoutParams);
         }
 
@@ -2235,7 +2240,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                         }, startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
                 }
-                Bulletin bulletin = BulletinFactory.of(captionContainer, resourcesProvider).createSimpleBulletin(R.raw.caption_limit, getString("CaptionPremiumTitle"), text);
+                Bulletin bulletin = BulletinFactory.of(captionContainer, resourcesProvider).createSimpleBulletin(R.raw.caption_limit, getString(R.string.CaptionPremiumTitle), text);
                 bulletin.tag = 2;
                 bulletin.setDuration(5000);
                 bulletin.show(false);
@@ -2411,7 +2416,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         captionContainer.addView(coverTimelineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, TimelineView.heightDp(), Gravity.FILL_HORIZONTAL | Gravity.BOTTOM, 0, 0, 0, 6));
 
         backButton = new FlashViews.ImageViewInvertable(context);
-        backButton.setContentDescription(getString("AccDescrGoBack", R.string.AccDescrGoBack));
+        backButton.setContentDescription(getString(R.string.AccDescrGoBack));
         backButton.setScaleType(ImageView.ScaleType.CENTER);
         backButton.setImageResource(R.drawable.msg_photo_back);
         backButton.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY));
@@ -2657,6 +2662,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                 AndroidUtilities.runOnUIThread(() -> {
                     if (!outputEntry.isEditingCover && privacySheet != null && previewView != null) {
                         previewView.getCoverBitmap(bitmap -> {
+                            if (outputEntry == null) return;
                             AndroidUtilities.recycleBitmap(outputEntry.coverBitmap);
                             outputEntry.coverBitmap = bitmap;
                             if (privacySheet == null) return;
@@ -2742,7 +2748,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                     ((Spannable) text).getSpans(0, text.length(), TextStyleSpan.class).length > 0 ||
                             ((Spannable) text).getSpans(0, text.length(), URLSpan.class).length > 0
             )) {
-                BulletinFactory.of(windowView, resourcesProvider).createSimpleBulletin(R.raw.voip_invite, premiumText(getString("StoryPremiumFormatting", R.string.StoryPremiumFormatting))).show(true);
+                BulletinFactory.of(windowView, resourcesProvider).createSimpleBulletin(R.raw.voip_invite, premiumText(getString(R.string.StoryPremiumFormatting))).show(true);
                 AndroidUtilities.shakeViewSpring(captionEdit, shiftDp = -shiftDp);
                 return;
             }
@@ -2795,6 +2801,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                 if (previewView != null && !outputEntry.coverSet && currentPage != PAGE_COVER) {
                     outputEntry.cover = previewView.getCurrentPosition();
                     previewView.getCoverBitmap(bitmap -> {
+                        if (outputEntry == null) return;
                         if (outputEntry.coverBitmap != null) {
                             outputEntry.coverBitmap.recycle();
                         }
@@ -3090,16 +3097,16 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         switch (mode) {
             case Camera.Parameters.FLASH_MODE_ON:
                 resId = R.drawable.media_photo_flash_on2;
-                flashButton.setContentDescription(getString("AccDescrCameraFlashOn", R.string.AccDescrCameraFlashOn));
+                flashButton.setContentDescription(getString(R.string.AccDescrCameraFlashOn));
                 break;
             case Camera.Parameters.FLASH_MODE_AUTO:
                 resId = R.drawable.media_photo_flash_auto2;
-                flashButton.setContentDescription(getString("AccDescrCameraFlashAuto", R.string.AccDescrCameraFlashAuto));
+                flashButton.setContentDescription(getString(R.string.AccDescrCameraFlashAuto));
                 break;
             default:
             case Camera.Parameters.FLASH_MODE_OFF:
                 resId = R.drawable.media_photo_flash_off2;
-                flashButton.setContentDescription(getString("AccDescrCameraFlashOff", R.string.AccDescrCameraFlashOff));
+                flashButton.setContentDescription(getString(R.string.AccDescrCameraFlashOff));
                 break;
         }
         flashButton.setIcon(flashButtonResId = resId, animated && flashButtonResId != resId);
@@ -3313,7 +3320,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
             }, () /* onVideoStart */ -> {
                 whenStarted.run();
 
-                hintTextView.setText(byLongPress ? getString("StoryHintSwipeToZoom", R.string.StoryHintSwipeToZoom) : getString("StoryHintPinchToZoom", R.string.StoryHintPinchToZoom), false);
+                hintTextView.setText(getString(byLongPress ? R.string.StoryHintSwipeToZoom : R.string.StoryHintPinchToZoom), false);
                 animateRecording(true, true);
                 setAwakeLock(true);
 
@@ -3331,7 +3338,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
 
         @Override
         public void onVideoRecordLocked() {
-            hintTextView.setText(getString("StoryHintPinchToZoom", R.string.StoryHintPinchToZoom), true);
+            hintTextView.setText(getString(R.string.StoryHintPinchToZoom), true);
         }
 
         @Override
@@ -4190,7 +4197,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
             }
             previewAlreadySet = false;
             captionEdit.editText.getEditText().setOnPremiumMenuLockClickListener(MessagesController.getInstance(currentAccount).storyEntitiesAllowed() ? null : () -> {
-                BulletinFactory.of(windowView, resourcesProvider).createSimpleBulletin(R.raw.voip_invite, premiumText(getString("StoryPremiumFormatting", R.string.StoryPremiumFormatting))).show(true);
+                BulletinFactory.of(windowView, resourcesProvider).createSimpleBulletin(R.raw.voip_invite, premiumText(getString(R.string.StoryPremiumFormatting))).show(true);
             });
             if (outputEntry != null && (outputEntry.isDraft || outputEntry.isEdit || isReposting)) {
                 if (outputEntry.paintFile != null) {
@@ -5727,10 +5734,10 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
 
     private void showDismissEntry() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), resourcesProvider);
-        builder.setTitle(getString("DiscardChanges", R.string.DiscardChanges));
-        builder.setMessage(getString("PhotoEditorDiscardAlert", R.string.PhotoEditorDiscardAlert));
+        builder.setTitle(getString(R.string.DiscardChanges));
+        builder.setMessage(getString(R.string.PhotoEditorDiscardAlert));
         if (outputEntry != null && !outputEntry.isEdit) {
-            builder.setNeutralButton(outputEntry.isDraft ? getString("StoryKeepDraft") : getString("StorySaveDraft"), (di, i) -> {
+            builder.setNeutralButton(getString(outputEntry.isDraft ? R.string.StoryKeepDraft : R.string.StorySaveDraft), (di, i) -> {
                 if (outputEntry == null) {
                     return;
                 }
@@ -5754,7 +5761,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                 navigateTo(PAGE_CAMERA, true);
             });
         }
-        builder.setPositiveButton(outputEntry != null && outputEntry.isDraft && !outputEntry.isEdit ? getString("StoryDeleteDraft") : getString("Discard", R.string.Discard), (dialogInterface, i) -> {
+        builder.setPositiveButton(outputEntry != null && outputEntry.isDraft && !outputEntry.isEdit ? getString(R.string.StoryDeleteDraft) : getString(R.string.Discard), (dialogInterface, i) -> {
             if (outputEntry != null && !(outputEntry.isEdit || outputEntry.isRepost && !outputEntry.isRepostMessage) && outputEntry.isDraft) {
                 MessagesController.getInstance(currentAccount).getStoriesController().getDraftsController().delete(outputEntry);
                 outputEntry = null;
@@ -5765,7 +5772,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                 navigateTo(PAGE_CAMERA, true);
             }
         });
-        builder.setNegativeButton(getString("Cancel", R.string.Cancel), null);
+        builder.setNegativeButton(getString(R.string.Cancel), null);
         AlertDialog dialog = builder.create();
         dialog.show();
         View positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
@@ -5821,8 +5828,8 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                 if (activity.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                     new AlertDialog.Builder(getContext(), resourcesProvider)
                         .setTopAnimation(R.raw.permission_request_camera, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, Theme.getColor(Theme.key_dialogTopBackground))
-                        .setMessage(AndroidUtilities.replaceTags(getString("PermissionNoCameraWithHint", R.string.PermissionNoCameraWithHint)))
-                        .setPositiveButton(getString("PermissionOpenSettings", R.string.PermissionOpenSettings), (dialogInterface, i) -> {
+                        .setMessage(AndroidUtilities.replaceTags(getString(R.string.PermissionNoCameraWithHint)))
+                        .setPositiveButton(getString(R.string.PermissionOpenSettings), (dialogInterface, i) -> {
                             try {
                                 Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                                 intent.setData(Uri.parse("package:" + ApplicationLoader.applicationContext.getPackageName()));
@@ -5831,7 +5838,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                                 FileLog.e(e);
                             }
                         })
-                        .setNegativeButton(getString("ContactsPermissionAlertNotNow", R.string.ContactsPermissionAlertNotNow), null)
+                        .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), null)
                         .create()
                         .show();
                     return;
@@ -5952,7 +5959,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                 new AlertDialog.Builder(getContext(), resourcesProvider)
                     .setTopAnimation(R.raw.permission_request_folder, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, Theme.getColor(Theme.key_dialogTopBackground))
                     .setMessage(AndroidUtilities.replaceTags(getString(R.string.PermissionStorageWithHint)))
-                    .setPositiveButton(getString("PermissionOpenSettings", R.string.PermissionOpenSettings), (dialogInterface, i) -> {
+                    .setPositiveButton(getString(R.string.PermissionOpenSettings), (dialogInterface, i) -> {
                         try {
                             Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                             intent.setData(Uri.parse("package:" + ApplicationLoader.applicationContext.getPackageName()));
@@ -5961,7 +5968,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                             FileLog.e(e);
                         }
                     })
-                    .setNegativeButton(getString("ContactsPermissionAlertNotNow", R.string.ContactsPermissionAlertNotNow), null)
+                    .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), null)
                     .create()
                     .show();
             }
@@ -5969,8 +5976,8 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
             if (!granted) {
                 new AlertDialog.Builder(getContext(), resourcesProvider)
                     .setTopAnimation(R.raw.permission_request_camera, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, Theme.getColor(Theme.key_dialogTopBackground))
-                    .setMessage(AndroidUtilities.replaceTags(getString("PermissionNoCameraMicVideo", R.string.PermissionNoCameraMicVideo)))
-                    .setPositiveButton(getString("PermissionOpenSettings", R.string.PermissionOpenSettings), (dialogInterface, i) -> {
+                    .setMessage(AndroidUtilities.replaceTags(getString(R.string.PermissionNoCameraMicVideo)))
+                    .setPositiveButton(getString(R.string.PermissionOpenSettings), (dialogInterface, i) -> {
                         try {
                             Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                             intent.setData(Uri.parse("package:" + ApplicationLoader.applicationContext.getPackageName()));
@@ -5979,7 +5986,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                             FileLog.e(e);
                         }
                     })
-                    .setNegativeButton(getString("ContactsPermissionAlertNotNow", R.string.ContactsPermissionAlertNotNow), null)
+                    .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), null)
                     .create()
                     .show();
             }
@@ -5987,8 +5994,8 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
             if (!granted) {
                 new AlertDialog.Builder(getContext(), resourcesProvider)
                     .setTopAnimation(R.raw.permission_request_folder, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, Theme.getColor(Theme.key_dialogTopBackground))
-                    .setMessage(AndroidUtilities.replaceTags(getString("PermissionNoAudioStorageStory", R.string.PermissionNoAudioStorageStory)))
-                    .setPositiveButton(getString("PermissionOpenSettings", R.string.PermissionOpenSettings), (dialogInterface, i) -> {
+                    .setMessage(AndroidUtilities.replaceTags(getString(R.string.PermissionNoAudioStorageStory)))
+                    .setPositiveButton(getString(R.string.PermissionOpenSettings), (dialogInterface, i) -> {
                         try {
                             Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                             intent.setData(Uri.parse("package:" + ApplicationLoader.applicationContext.getPackageName()));
@@ -5997,7 +6004,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
                             FileLog.e(e);
                         }
                     })
-                    .setNegativeButton(getString("ContactsPermissionAlertNotNow", R.string.ContactsPermissionAlertNotNow), null)
+                    .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), null)
                     .create()
                     .show();
             }

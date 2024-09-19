@@ -257,6 +257,7 @@ public class NotificationCenter {
     public static final int availableEffectsUpdate = totalEvents++;
     public static final int starOptionsLoaded = totalEvents++;
     public static final int starGiftOptionsLoaded = totalEvents++;
+    public static final int starGiveawayOptionsLoaded = totalEvents++;
     public static final int starBalanceUpdated = totalEvents++;
     public static final int starTransactionsLoaded = totalEvents++;
     public static final int starSubscriptionsLoaded = totalEvents++;
@@ -330,6 +331,7 @@ public class NotificationCenter {
     public static final int userEmojiStatusUpdated = totalEvents++;
     public static final int requestPermissions = totalEvents++;
     public static final int permissionsGranted = totalEvents++;
+    public static final int activityPermissionsGranted = totalEvents++;
     public static final int topicsDidLoaded = totalEvents++;
     public static final int chatSwithcedToForum = totalEvents++;
     public static final int didUpdateGlobalAutoDeleteTimer = totalEvents++;

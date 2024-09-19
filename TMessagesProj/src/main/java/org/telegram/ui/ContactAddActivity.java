@@ -182,9 +182,9 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
         if (addContact) {
-            actionBar.setTitle(LocaleController.getString("NewContact", R.string.NewContact));
+            actionBar.setTitle(LocaleController.getString(R.string.NewContact));
         } else {
-            actionBar.setTitle(LocaleController.getString("EditContact", R.string.EditContact));
+            actionBar.setTitle(LocaleController.getString(R.string.EditContact));
         }
 
         if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
@@ -224,7 +224,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
         });
 
         ActionBarMenu menu = actionBar.createMenu();
-        doneButton = menu.addItem(done_button, LocaleController.getString("Done", R.string.Done).toUpperCase());
+        doneButton = menu.addItem(done_button, LocaleController.getString(R.string.Done).toUpperCase());
 
         fragmentView = new ScrollView(context);
         fragmentView.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
@@ -285,7 +285,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
         frameLayout.addView(onlineTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL ? 0 : 80, 32, LocaleController.isRTL ? 80 : 0, 0));
 
         firstNameFieldContainer = new OutlineTextContainerView(context);
-        firstNameFieldContainer.setText(LocaleController.getString("FirstName", R.string.FirstName));
+        firstNameFieldContainer.setText(LocaleController.getString(R.string.FirstName));
         linearLayout.addView(firstNameFieldContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 24, 24, 24, 0));
 
         firstNameField = new EditTextBoldCursor(context) {
@@ -321,7 +321,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
         });
 
         lastNameFieldContainer = new OutlineTextContainerView(context);
-        lastNameFieldContainer.setText(LocaleController.getString("LastName", R.string.LastName));
+        lastNameFieldContainer.setText(LocaleController.getString(R.string.LastName));
         linearLayout.addView(lastNameFieldContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 24, 24, 24, 0));
 
         lastNameField = new EditTextBoldCursor(context) {
@@ -381,7 +381,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
                 checkBoxCell.setBackgroundDrawable(Theme.getSelectorDrawable(false));
                 CharSequence firstName = UserObject.getFirstName(user);
                 firstName = Emoji.replaceEmoji(firstName, infoTextView.getPaint().getFontMetricsInt(), AndroidUtilities.dp(12), false);
-                checkBoxCell.setText(AndroidUtilities.replaceCharSequence("%1$s", AndroidUtilities.replaceTags(LocaleController.getString("SharePhoneNumberWith", R.string.SharePhoneNumberWith)), firstName), "", false, false);
+                checkBoxCell.setText(AndroidUtilities.replaceCharSequence("%1$s", AndroidUtilities.replaceTags(LocaleController.getString(R.string.SharePhoneNumberWith)), firstName), "", false, false);
                 checkBoxCell.setPadding(AndroidUtilities.dp(7), 0, AndroidUtilities.dp(7), 0);
                 checkBoxCell.setOnClickListener(v -> checkBoxCell.setChecked(!checkBoxCell.isChecked(), true));
                 linearLayout.addView(checkBoxCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 10, 0, 0));
@@ -466,15 +466,15 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
             }
             oldAvatarView.setForUserOrChat(user.photo, avatarDrawable);
             oldPhotoCell.addView(oldAvatarView, LayoutHelper.createFrame(30, 30, Gravity.CENTER_VERTICAL, 21, 0, 21, 0));
-            oldPhotoCell.setText(LocaleController.getString("ResetToOriginalPhoto", R.string.ResetToOriginalPhoto), false);
+            oldPhotoCell.setText(LocaleController.getString(R.string.ResetToOriginalPhoto), false);
             oldPhotoCell.getImageView().setVisibility(View.VISIBLE);
             oldPhotoCell.setBackgroundDrawable(Theme.getSelectorDrawable(false));
             oldPhotoCell.setColors(Theme.key_windowBackgroundWhiteBlueIcon, Theme.key_windowBackgroundWhiteBlueButton);
             oldPhotoCell.setOnClickListener(v -> {
                 AlertsCreator.createSimpleAlert(context,
-                        LocaleController.getString("ResetToOriginalPhotoTitle", R.string.ResetToOriginalPhotoTitle),
+                        LocaleController.getString(R.string.ResetToOriginalPhotoTitle),
                         LocaleController.formatString("ResetToOriginalPhotoMessage", R.string.ResetToOriginalPhotoMessage, user.first_name),
-                        LocaleController.getString("Reset", R.string.Reset), () -> {
+                        LocaleController.getString(R.string.Reset), () -> {
                             avatar = null;
                             sendPhotoChangedRequest(null, null,null, null, null, 0, TYPE_SET);
 
@@ -594,10 +594,10 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
             return;
         }
         if (TextUtils.isEmpty(getPhone())) {
-            nameTextView.setText(LocaleController.getString("MobileHidden", R.string.MobileHidden));
+            nameTextView.setText(LocaleController.getString(R.string.MobileHidden));
             CharSequence firstName = UserObject.getFirstName(user);
             firstName = Emoji.replaceEmoji(firstName, infoTextView.getPaint().getFontMetricsInt(), AndroidUtilities.dp(12), false);
-            infoTextView.setText(AndroidUtilities.replaceCharSequence("%1$s", AndroidUtilities.replaceTags(LocaleController.getString("MobileHiddenExceptionInfo", R.string.MobileHiddenExceptionInfo)), firstName));
+            infoTextView.setText(AndroidUtilities.replaceCharSequence("%1$s", AndroidUtilities.replaceTags(LocaleController.getString(R.string.MobileHiddenExceptionInfo)), firstName));
         } else {
             nameTextView.setText(PhoneFormat.getInstance().format("+" + getPhone()));
             if (needAddException) {

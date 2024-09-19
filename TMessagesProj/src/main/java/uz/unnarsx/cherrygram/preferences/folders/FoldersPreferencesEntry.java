@@ -272,7 +272,7 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
                 case VIEW_TYPE_HEADER:
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
                     if (position == foldersHeaderRow) {
-                        headerCell.setText(getString(R.string.CallVideoPreviewTitle));
+                        headerCell.setText(getString(R.string.ProfileBotPreviewTab));
                     }
                     break;
                 case VIEW_TYPE_SWITCH:

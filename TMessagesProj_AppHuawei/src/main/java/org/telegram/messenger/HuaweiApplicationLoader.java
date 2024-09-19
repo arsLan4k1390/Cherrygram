@@ -43,4 +43,9 @@ public class HuaweiApplicationLoader extends ApplicationLoader {
     protected String onGetApplicationId() {
         return BuildConfig.APPLICATION_ID;
     }
+
+    @Override
+    protected boolean isStandalone() {
+        return true;
+    }
 }

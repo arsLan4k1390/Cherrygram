@@ -53,13 +53,13 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     /** Animations and Premium Features finish **/
 
     /** OTA start **/
-    var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isBetaBuild())
+    var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isStandaloneBetaBuild())
     fun toggleInstallBetas() {
         installBetas = !installBetas
         putBoolean("CG_Install_Beta_Ver", installBetas)
     }
 
-    var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", isStableBuild() || isBetaBuild() || isDevBuild())
+    var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", isStandaloneStableBuild() || isStandaloneBetaBuild() || isDevBuild())
     fun toggleAutoOTA() {
         autoOTA = !autoOTA
         putBoolean("CG_Auto_OTA", autoOTA)
@@ -78,11 +78,11 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     /** Launch icons (Telegram Chats Settings) finish **/
 
     /** Cherrygram build types start **/
-    fun isStableBuild(): Boolean {
-        return true
+    fun isStandaloneStableBuild(): Boolean {
+        return ApplicationLoader.isStandaloneBuild() && !isDevBuild() && !isStandalonePremiumBuild() && !isStandaloneBetaBuild()
     }
 
-    fun isBetaBuild(): Boolean {
+    fun isStandaloneBetaBuild(): Boolean {
         return false
     }
 
@@ -90,12 +90,12 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
         return false
     }
 
-    fun isPremiumBuild(): Boolean {
+    fun isStandalonePremiumBuild(): Boolean {
         return false
     }
 
     fun isPlayStoreBuild(): Boolean {
-        return false
+        return !ApplicationLoader.isStandaloneBuild()
     }
     /** Cherrygram build types finish **/
 

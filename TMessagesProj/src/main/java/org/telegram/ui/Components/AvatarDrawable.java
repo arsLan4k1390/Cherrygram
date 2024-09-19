@@ -98,7 +98,9 @@ public class AvatarDrawable extends Drawable {
     public static final int AVATAR_TYPE_MY_NOTES = 22;
     public static final int AVATAR_TYPE_EXISTING_CHATS = 23;
     public static final int AVATAR_TYPE_NEW_CHATS = 24;
-    public static final int AVATAR_TYPE_EBLAN = 25;
+    public static final int AVATAR_TYPE_PREMIUM = 25;
+    public static final int AVATAR_TYPE_STARS = 26;
+    public static final int AVATAR_TYPE_EBLAN = 27;
 
     /**
      * Matches {@link org.telegram.ui.Components.AvatarConstructorFragment#defaultColors}
@@ -268,6 +270,14 @@ public class AvatarDrawable extends Drawable {
             hasGradient = true;
             color = getThemedColor(Theme.keys_avatar_background[getColorIndex(5)]);
             color2 = getThemedColor(Theme.keys_avatar_background2[getColorIndex(5)]);
+        } else if (avatarType == AVATAR_TYPE_PREMIUM) {
+            hasGradient = true;
+            color = getThemedColor(Theme.keys_avatar_background[getColorIndex(2)]);
+            color2 = getThemedColor(Theme.keys_avatar_background2[getColorIndex(2)]);
+        } else if (avatarType == AVATAR_TYPE_STARS) {
+            hasGradient = true;
+            color = getThemedColor(Theme.keys_avatar_background[getColorIndex(1)]);
+            color2 = getThemedColor(Theme.keys_avatar_background2[getColorIndex(1)]);
         } else if (avatarType == AVATAR_TYPE_FILTER_CONTACTS) {
             hasGradient = true;
             color = getThemedColor(Theme.keys_avatar_background[getColorIndex(5)]);
@@ -634,8 +644,12 @@ public class AvatarDrawable extends Drawable {
                 drawable = Theme.avatarDrawables[21];
             } else if (avatarType == AVATAR_TYPE_NEW_CHATS) {
                 drawable = Theme.avatarDrawables[20];
-            } else if (avatarType == AVATAR_TYPE_EBLAN) {
+            } else if (avatarType == AVATAR_TYPE_PREMIUM) {
                 drawable = Theme.avatarDrawables[22];
+            } else if (avatarType == AVATAR_TYPE_STARS) {
+                drawable = Theme.avatarDrawables[23];
+            } else if (avatarType == AVATAR_TYPE_EBLAN) {
+                drawable = Theme.avatarDrawables[24];
             } else {
                 drawable = Theme.avatarDrawables[9];
             }

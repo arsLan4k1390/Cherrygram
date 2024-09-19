@@ -62,10 +62,38 @@ object CherrygramCameraConfig: CoroutineScope by CoroutineScope(
         putBoolean("CP_StartFromUltraWideCam", startFromUltraWideCam)
     }
 
+    /** CameraX FPS start **/
+    const val CameraXFpsRangeDefault = 0
+    const val CameraXFpsRange25to30 = 1
+    const val CameraXFpsRange30to60 = 2
+    const val CameraXFpsRange60to60 = 3
+    var cameraXFpsRange by sharedPreferences.int("CP_CameraXFpsRange", CameraXFpsRangeDefault)
+    /** CameraX FPS finish **/
+
+    /** CameraX camera effects start **/
+    const val CONTROL_EFFECT_MODE_OFF = 0
+    const val CONTROL_EFFECT_MODE_MONO = 1
+    const val CONTROL_EFFECT_MODE_NEGATIVE = 2
+    const val CONTROL_EFFECT_MODE_SOLARIZE = 3
+    const val CONTROL_EFFECT_MODE_SEPIA = 4
+    const val CONTROL_EFFECT_MODE_POSTERIZE = 5
+    const val CONTROL_EFFECT_MODE_WHITEBOARD = 6
+    const val CONTROL_EFFECT_MODE_BLACKBOARD = 7
+    const val CONTROL_EFFECT_MODE_AQUA = 8
+    var cameraXCameraEffect by sharedPreferences.int("CP_CameraXCameraEffect", CONTROL_EFFECT_MODE_OFF)
+    private var tweakAvailableEffectsArray by sharedPreferences.boolean("tweakAvailableEffectsArray", false)
+    /** CameraX camera effects finish **/
+
     var cameraStabilisation by sharedPreferences.boolean("CP_CameraStabilisation", false)
     fun toggleCameraStabilisation() {
         cameraStabilisation = !cameraStabilisation
         putBoolean("CP_CameraStabilisation", cameraStabilisation)
+    }
+
+    var centerCameraControlButtons by sharedPreferences.boolean("CP_CenterCameraControlButtons", true)
+    fun toggleCenterCameraControlButtons() {
+        centerCameraControlButtons = !centerCameraControlButtons
+        putBoolean("CP_CenterCameraControlButtons", centerCameraControlButtons)
     }
 
     const val EXPOSURE_SLIDER_NONE = 0

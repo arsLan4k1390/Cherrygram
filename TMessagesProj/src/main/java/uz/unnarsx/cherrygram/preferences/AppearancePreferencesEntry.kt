@@ -71,6 +71,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             textIcon {
                 title = getString(R.string.EP_CustomAppTitle)
                 value = MessagesController.getMainSettings(UserConfig.selectedAccount).getString("CG_AppName", getString(R.string.CG_AppName))
+                divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
                     val defaultValue = getString(R.string.CG_AppName)
@@ -136,6 +137,8 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             textIcon {
                 title = getString(R.string.CP_ProfileReplyBackground)
                 icon = R.drawable.msg_customize
+                divider = true
+
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(MessagesAndProfilesPreferencesEntry())
                 }
@@ -144,6 +147,8 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
             textIcon {
                 title = getString(R.string.CP_Filters_Header)
                 icon = R.drawable.msg_folders
+                divider = true
+
                 listener = TGKitTextIconRow.TGTIListener {
                     it.presentFragment(FoldersPreferencesEntry())
                 }

@@ -220,12 +220,6 @@ object CherrygramAppearanceConfig: CoroutineScope by CoroutineScope(
         putBoolean("AP_CreateGroupDrawerButton", createGroupDrawerButton)
     }
 
-    var secretChatDrawerButton by sharedPreferences.boolean("AP_SecretChatDrawerButton", false)
-    fun toggleSecretChatDrawerButton() {
-        secretChatDrawerButton = !secretChatDrawerButton
-        putBoolean("AP_SecretChatDrawerButton", secretChatDrawerButton)
-    }
-
     var createChannelDrawerButton by sharedPreferences.boolean("AP_CreateChannelDrawerButton", false)
     fun toggleCreateChannelDrawerButton() {
         createChannelDrawerButton = !createChannelDrawerButton
@@ -256,12 +250,6 @@ object CherrygramAppearanceConfig: CoroutineScope by CoroutineScope(
         putBoolean("AP_ArchivedChatsDrawerButton", archivedChatsDrawerButton)
     }
 
-    var peopleNearbyDrawerButton by sharedPreferences.boolean("AP_PeopleNearbyDrawerButton", false)
-    fun togglePeopleNearbyDrawerButton() {
-        peopleNearbyDrawerButton = !peopleNearbyDrawerButton
-        putBoolean("AP_PeopleNearbyDrawerButton", peopleNearbyDrawerButton)
-    }
-
     var scanQRDrawerButton by sharedPreferences.boolean("AP_ScanQRDrawerButton", true)
     fun toggleScanQRDrawerButton() {
         scanQRDrawerButton = !scanQRDrawerButton
@@ -272,12 +260,6 @@ object CherrygramAppearanceConfig: CoroutineScope by CoroutineScope(
     fun toggleCGPreferencesDrawerButton() {
         cGPreferencesDrawerButton = !cGPreferencesDrawerButton
         putBoolean("AP_CGPreferencesDrawerButton", cGPreferencesDrawerButton)
-    }
-
-    var cgPremiumDrawerButton by sharedPreferences.boolean("AP_CgPremiumDrawerButton", false)
-    fun toggleCgPremiumDrawerButton() {
-        cgPremiumDrawerButton = !cgPremiumDrawerButton
-        putBoolean("AP_CgPremiumDrawerButton", cgPremiumDrawerButton)
     }
     /** Drawer buttons finish **/
     /** Drawer finish **/

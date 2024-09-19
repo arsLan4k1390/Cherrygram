@@ -192,13 +192,11 @@ public class BackupHelper {
 //        mainconfig.add("AP_MyStoriesDrawerButton");
         mainconfig.add("AP_MyProfileDrawerButton");
         mainconfig.add("AP_CreateGroupDrawerButton");
-        mainconfig.add("AP_SecretChatDrawerButton");
         mainconfig.add("AP_CreateChannelDrawerButton");
         mainconfig.add("AP_ContactsDrawerButton");
         mainconfig.add("AP_CallsDrawerButton");
         mainconfig.add("AP_SavedMessagesDrawerButton");
         mainconfig.add("AP_ArchivedChatsDrawerButton");
-        mainconfig.add("AP_PeopleNearbyDrawerButton");
         mainconfig.add("AP_ScanQRDrawerButton");
         mainconfig.add("AP_CGPreferencesDrawerButton");
         mainconfig.add("AP_DrawerEventType");
