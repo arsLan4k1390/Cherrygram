@@ -277,6 +277,7 @@ public class AndroidUtilities {
     public static int navigationBarHeight = 0;
     public static boolean firstConfigurationWas;
     public static float density = 1;
+    public static int densityDpi = 380;
     public static Point displaySize = new Point();
     public static float screenRefreshRate = 60;
     public static float screenMaxRefreshRate = 60;
@@ -507,6 +508,17 @@ public class AndroidUtilities {
         return spannableStringBuilder;
     }
 
+    public static Activity getActivity() {
+        return getActivity(null);
+    }
+
+    public static Activity getActivity(Context context) {
+        Activity activity = findActivity(context);
+        if (activity == null || activity.isFinishing()) activity = LaunchActivity.instance;
+        if (activity == null || activity.isFinishing()) activity = findActivity(ApplicationLoader.applicationContext);
+        return activity;
+    }
+
     public static Activity findActivity(Context context) {
         if (context instanceof Activity) {
             return (Activity) context;
@@ -540,7 +552,7 @@ public class AndroidUtilities {
             index = startIndex;
         }
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
-        if (index >= 0) {
+        if (runnable != null && index >= 0) {
             if (type == REPLACING_TAG_TYPE_LINK_NBSP) {
                 spannableStringBuilder.replace(index, index + len, AndroidUtilities.replaceMultipleCharSequence(" ", spannableStringBuilder.subSequence(index, index + len), " "));
             }
@@ -579,6 +591,43 @@ public class AndroidUtilities {
             }
         }
         return spannableStringBuilder;
+    }
+
+    public static SpannableStringBuilder makeClickable(String str, int type, Runnable runnable, Theme.ResourcesProvider resourcesProvider) {
+        SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
+        if (type == REPLACING_TAG_TYPE_LINK || type == REPLACING_TAG_TYPE_LINK_NBSP || type == REPLACING_TAG_TYPE_LINKBOLD || type == REPLACING_TAG_TYPE_UNDERLINE) {
+            spannableStringBuilder.setSpan(new ClickableSpan() {
+                @Override
+                public void updateDrawState(@NonNull TextPaint ds) {
+                    super.updateDrawState(ds);
+                    ds.setUnderlineText(type == REPLACING_TAG_TYPE_UNDERLINE);
+                    if (type == REPLACING_TAG_TYPE_LINKBOLD) {
+                        ds.setTypeface(AndroidUtilities.bold());
+                    }
+                }
+                @Override
+                public void onClick(@NonNull View view) {
+                    if (runnable != null) {
+                        runnable.run();
+                    }
+                }
+            }, 0, spannableStringBuilder.length(), 0);
+        } else {
+            spannableStringBuilder.setSpan(new CharacterStyle() {
+                @Override
+                public void updateDrawState(TextPaint textPaint) {
+                    textPaint.setTypeface(AndroidUtilities.bold());
+                    int wasAlpha = textPaint.getAlpha();
+                    textPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText, resourcesProvider));
+                    textPaint.setAlpha(wasAlpha);
+                }
+            }, 0, spannableStringBuilder.length(), 0);
+        }
+        return spannableStringBuilder;
+    }
+
+    public static SpannableStringBuilder makeClickable(String str, Runnable runnable) {
+        return makeClickable(str, 0, runnable, null);
     }
 
 
@@ -2596,6 +2645,7 @@ public class AndroidUtilities {
         try {
             float oldDensity = density;
             density = context.getResources().getDisplayMetrics().density;
+            densityDpi = context.getResources().getDisplayMetrics().densityDpi;
             float newDensity = density;
             if (firstConfigurationWas && Math.abs(oldDensity - newDensity) > 0.001) {
                 Theme.reloadAllResources(context);
@@ -2651,6 +2701,7 @@ public class AndroidUtilities {
             }
             fillStatusBarHeight(context, true);
             if (BuildVars.LOGS_ENABLED) {
+                FileLog.e("densityDpi = " + densityDpi);
                 FileLog.e("density = " + density + " display size = " + displaySize.x + " " + displaySize.y + " " + displayMetrics.xdpi + "x" + displayMetrics.ydpi + ", screen layout: " + configuration.screenLayout + ", statusbar height: " + statusBarHeight + ", navbar height: " + navigationBarHeight);
             }
             ViewConfiguration vc = ViewConfiguration.get(context);

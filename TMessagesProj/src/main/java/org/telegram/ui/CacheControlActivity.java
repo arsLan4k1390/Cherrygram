@@ -3240,7 +3240,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private void kaboomDurov(Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
         builder.setTitle("Kaboom");
-        builder.setMessage(LocaleController.getString("CG_Kaboom", R.string.CG_Kaboom));
+        builder.setMessage(LocaleController.getString(R.string.CG_Kaboom));
         builder.setPositiveButton("Kaboom!", (dialogInterface, i) -> {
             try {
                 if (Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT) {

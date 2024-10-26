@@ -2146,7 +2146,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                                 return;
                             }
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                            builder.setTitle(getString("CG_AppName", R.string.CG_AppName));
+                            builder.setTitle(getString(R.string.CG_AppName));
                             builder.setMessage(getString("IncorrectTheme", R.string.IncorrectTheme));
                             builder.setPositiveButton(getString("OK", R.string.OK), null);
                             showDialog(builder.create());
@@ -2161,7 +2161,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                                 return;
                             }
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                            builder.setTitle(getString("CG_AppName", R.string.CG_AppName));
+                            builder.setTitle(getString(R.string.CG_AppName));
                             builder.setMessage(getString("IncorrectLocalization", R.string.IncorrectLocalization));
                             builder.setPositiveButton(getString("OK", R.string.OK), null);
                             showDialog(builder.create());
@@ -2283,7 +2283,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                 getConnectionsManager().sendRequest(req, (res, err) -> {
                     AndroidUtilities.runOnUIThread(() -> {
                         if (res instanceof TLRPC.TL_boolTrue) {
-                            BulletinFactory.of(this).createSimpleBulletin(R.raw.msg_antispam, getString("ChannelAntiSpamFalsePositiveReported", R.string.ChannelAntiSpamFalsePositiveReported)).show();
+                            BulletinFactory.of(this).createSimpleBulletin(R.raw.msg_antispam, getString(R.string.ChannelAntiSpamFalsePositiveReported)).show();
                         } else if (res instanceof TLRPC.TL_boolFalse) {
                             BulletinFactory.of(this).createSimpleBulletin(R.raw.error, getString("UnknownError", R.string.UnknownError)).show();
                         } else {
@@ -2755,7 +2755,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-        builder.setTitle(getString("CG_AppName", R.string.CG_AppName));
+        builder.setTitle(getString(R.string.CG_AppName));
         builder.setPositiveButton(getString("OK", R.string.OK), null);
         if (message.type == MessageObject.TYPE_VIDEO) {
             builder.setMessage(getString("NoPlayerInstalled", R.string.NoPlayerInstalled));

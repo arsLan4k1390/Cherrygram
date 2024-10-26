@@ -16,6 +16,7 @@ import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -239,7 +240,7 @@ public class SlideControlView extends View {
 
     @SuppressWarnings("SuspiciousNameCombination")
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         int cx = getMeasuredWidth() / 2;
         int cy = getMeasuredHeight() / 2;
         boolean isPortrait = getMeasuredWidth() > getMeasuredHeight();

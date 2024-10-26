@@ -43,18 +43,22 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Bulletin;
+import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CheckBox2;
 import org.telegram.ui.Components.CheckBoxSquare;
+import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.ScaleStateListAnimator;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.NotificationsSettingsActivity;
+import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.Stories.StoriesListPlaceProvider;
 import org.telegram.ui.Stories.StoriesUtilities;
 
@@ -105,6 +109,16 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         public void openStory(long dialogId, Runnable onDone) {
             UserCell.this.openStory(dialogId, onDone);
         }
+
+        @Override
+        public void onLongPress() {
+            BaseFragment fragment = LaunchActivity.getLastFragment();
+            TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
+
+            if (fragment != null && storyParams != null && storyParams.child != null && user != null) {
+                showContactItems(fragment, storyParams.child, user);
+            }
+        }
     };
 
     public void openStory(long dialogId, Runnable runnable) {
@@ -118,22 +132,22 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
     protected long dialogId;
 
     public UserCell(Context context, int padding, int checkbox, boolean admin) {
-        this(context, padding, checkbox, admin, false, null, false);
+        this(context, padding, checkbox, admin, false, null, false, false);
     }
 
     public UserCell(Context context, int padding, int checkbox, boolean admin, Theme.ResourcesProvider resourcesProvider) {
-        this(context, padding, checkbox, admin, false, resourcesProvider, false);
+        this(context, padding, checkbox, admin, false, resourcesProvider, false, false);
     }
 
     public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton) {
-        this(context, padding, checkbox, admin, needAddButton, null, false);
+        this(context, padding, checkbox, admin, needAddButton, null, false, false);
     }
 
-    public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton, boolean needMutualIcon) {
-        this(context, padding, checkbox, admin, needAddButton, null, needMutualIcon);
+    public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton, boolean needMutualIcon, boolean allowLongPress) {
+        this(context, padding, checkbox, admin, needAddButton, null, needMutualIcon, allowLongPress);
     }
 
-    public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton, Theme.ResourcesProvider resourcesProvider, boolean needMutualIcon) {
+    public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton, Theme.ResourcesProvider resourcesProvider, boolean needMutualIcon, boolean allowLongPress) {
         super(context);
         this.resourcesProvider = resourcesProvider;
 
@@ -163,6 +177,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             protected void onDraw(Canvas canvas) {
                 if (storiable) {
                     storyParams.originalAvatarRect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+                    storyParams.allowLongress = allowLongPress;
                     StoriesUtilities.drawAvatarWithStory(dialogId, canvas, imageReceiver, storyParams);
                 } else {
                     super.onDraw(canvas);
@@ -177,6 +192,22 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                 return super.onTouchEvent(event);
             }
         };
+        avatarImageView.setOnClickListener(v -> {
+            BaseFragment fragment = LaunchActivity.getLastFragment();
+            
+            if (fragment != null) fragment.presentFragment(ProfileActivity.of(dialogId));
+        });
+        if (allowLongPress) {
+            avatarImageView.setOnLongClickListener(v -> {
+                BaseFragment fragment = LaunchActivity.getLastFragment();
+                TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
+
+                if (fragment != null && user != null) {
+                    showContactItems(fragment, v, user);
+                }
+                return true;
+            });
+        }
         avatarImageView.setRoundRadius(dp(24));
         addView(avatarImageView, LayoutHelper.createFrame(46, 46, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL ? 0 : 7 + padding, 6, LocaleController.isRTL ? 7 + padding : 0, 0));
         setClipChildren(false);
@@ -590,7 +621,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             }
             nameTextView.setText(name);
         }
-        if (currentUser != null && MessagesController.getInstance(currentAccount).isPremiumUser(currentUser) && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+        if (currentUser != null && MessagesController.getInstance(currentAccount).isPremiumUser(currentUser) && !MessagesController.getInstance(currentAccount).premiumFeaturesBlocked() && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
             if (currentUser.emoji_status instanceof TLRPC.TL_emojiStatusUntil && ((TLRPC.TL_emojiStatusUntil) currentUser.emoji_status).until > (int) (System.currentTimeMillis() / 1000)) {
                 emojiStatus.set(((TLRPC.TL_emojiStatusUntil) currentUser.emoji_status).document_id, false);
                 emojiStatus.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
@@ -791,5 +822,33 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             }
             closeView.setOnClickListener(onClick);
         }
+    }
+
+    private void showContactItems(BaseFragment fragment, View view, TLRPC.User user) {
+        ItemOptions filterOptions = ItemOptions.makeOptions(fragment, view)
+                .setViewAdditionalOffsets(0, AndroidUtilities.dp(8), 0, 0)
+                .setScrimViewBackground(Theme.createRoundRectDrawable(0, 0, Theme.getColor(Theme.key_windowBackgroundWhite)))
+
+                .add(R.drawable.msg_discussion, LocaleController.getString(R.string.SendMessage),
+                        () -> fragment.presentFragment(ChatActivity.of(dialogId))
+                )
+                .add(R.drawable.msg_openprofile, LocaleController.getString(R.string.OpenProfile),
+                        () -> fragment.presentFragment(ProfileActivity.of(dialogId))
+                )
+                .addIf(user.username != null, R.drawable.msg_mention, LocaleController.getString(R.string.ProfileCopyUsername), () -> {
+                    AndroidUtilities.addToClipboard("@" + user.username);
+                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.UsernameCopied)).show();
+                })
+                .addIf(user.phone != null, R.drawable.msg_calls, LocaleController.getString(R.string.FragmentPhoneCopy), () -> {
+                    AndroidUtilities.addToClipboard("+" + user.phone);
+                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.PhoneCopied)).show();
+                })
+                .addIf(user.id != 0, R.drawable.msg_copy, LocaleController.getString(R.string.CG_CopyID), () -> {
+                    AndroidUtilities.addToClipboard("" + user.id);
+                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.TextCopied)).show();
+                });
+
+        filterOptions.setGravity(Gravity.RIGHT)
+                .show();
     }
 }

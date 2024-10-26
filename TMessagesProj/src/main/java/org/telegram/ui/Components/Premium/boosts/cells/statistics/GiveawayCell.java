@@ -33,7 +33,7 @@ public class GiveawayCell extends UserCell {
     }
 
     public GiveawayCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton, Theme.ResourcesProvider resourcesProvider) {
-        super(context, padding, checkbox, admin, needAddButton, resourcesProvider, false);
+        super(context, padding, checkbox, admin, needAddButton, resourcesProvider, false, false);
         init(context);
     }
 

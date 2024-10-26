@@ -374,7 +374,12 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         if (CameraXUtils.isCurrentCameraCameraX()) {
             zoomControlView.setVisibility(View.VISIBLE);
             zoomControlView.setAlpha(1.0f);
-            addView(zoomControlView, LayoutHelper.createFrame(AndroidUtilities.dp(105), AndroidUtilities.dp(10), Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 0, 0, 0, AndroidUtilities.dp(20)));
+            addView(zoomControlView, LayoutHelper.createFrame(
+                    AndroidUtilities.dp(videoMessagesHelper.getSliderW()),
+                    AndroidUtilities.dp(videoMessagesHelper.getSliderH()),
+                    Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM,
+                    0, 0, 0, AndroidUtilities.dp(videoMessagesHelper.getSliderBM()))
+            );
             zoomControlView.setDelegate(zoom -> videoMessagesHelper.setZoomForSlider(cameraZoom = zoom));
         }
 
@@ -412,8 +417,8 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                 centerCameraControlButtons ? Gravity.CENTER | Gravity.BOTTOM : Gravity.LEFT | Gravity.BOTTOM,
                 centerCameraControlButtons ? 0 : 8,
                 0,
-                centerCameraControlButtons ? dp(10) : 0,
-                centerCameraControlButtons ? dp(2) : 0)
+                centerCameraControlButtons ? dp(videoMessagesHelper.getControlButtonsMargin()) : 0,
+                centerCameraControlButtons ? AndroidUtilities.displaySize.x == 720 ? dp(4) : dp(2) : 0)
         );
         switchCameraButton.setOnClickListener(v -> {
             if (CameraXUtils.isCurrentCameraNotCameraX()) {
@@ -487,10 +492,10 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         flashButton.setScaleType(ImageView.ScaleType.CENTER);
         addView(flashButton, LayoutHelper.createFrame(62, 62,
                 centerCameraControlButtons ? Gravity.CENTER | Gravity.BOTTOM : Gravity.LEFT | Gravity.BOTTOM,
-                centerCameraControlButtons ? dp(10) : 62 - 4,
+                centerCameraControlButtons ? dp(videoMessagesHelper.getControlButtonsMargin()) : 62 - 4,
                 0,
                 0,
-                centerCameraControlButtons ? dp(2) : 0)
+                centerCameraControlButtons ? AndroidUtilities.displaySize.x == 720 ? dp(4) : dp(2) : 0)
         );
         flashButton.setOnClickListener(v -> {
             flashing = !flashing;
@@ -2467,8 +2472,14 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                         }
                         long timestamp;
                         if (shouldUseTimestamp) {
-                            audioRecorder.getTimestamp(audioTimestamp, AudioTimestamp.TIMEBASE_MONOTONIC);
-                            timestamp = audioTimestamp.nanoTime / 1000;
+                            try {
+                                audioRecorder.getTimestamp(audioTimestamp, AudioTimestamp.TIMEBASE_MONOTONIC);
+                                timestamp = audioTimestamp.nanoTime / 1000;
+                            } catch (Exception e) {
+                                FileLog.e(e);
+                                shouldUseTimestamp = false;
+                                timestamp = audioPresentationTimeUs = System.nanoTime() / 1000;
+                            }
                         } else {
                             timestamp = audioPresentationTimeUs;
                         }

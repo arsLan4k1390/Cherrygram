@@ -28,7 +28,7 @@ object CherrygramExtras : CoroutineScope by MainScope() {
         } catch (ignored: InterruptedException) { }
     }
 
-    private const val channelUsername = "Cherry_gram"
+    private val channelUsername = Constants.CG_CHANNEL_USERNAME
     @JvmStatic
     fun postCheckFollowChannel(ctx: Context, currentAccount: Int) = AndroidUtilities.runOnUIThread {
 

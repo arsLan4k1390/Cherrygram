@@ -1859,7 +1859,7 @@ public class StoriesController {
                     messageObject.videoEditedInfo = info;
                     duration = info.estimatedDuration / 1000L;
                     if (messageObject.videoEditedInfo.needConvert()) {
-                        MediaController.getInstance().scheduleVideoConvert(messageObject, false, false);
+                        MediaController.getInstance().scheduleVideoConvert(messageObject, false, false, false);
                     } else {
                         boolean rename = new File(messageObject.videoEditedInfo.originalPath).renameTo(new File(path));
                         if (rename) {

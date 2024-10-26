@@ -5397,10 +5397,10 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
     private Dialog createLocationRequiredDialog(Context ctx, Activity activity, OnPermissionNotGranted onPermissionNotGranted, OnPermissionGranted onPermissionGranted) {
         StringBuilder sb = new StringBuilder();
-        sb.append(AndroidUtilities.replaceTags(LocaleController.getString("CG_LocationPermission", R.string.CG_LocationPermission)));
+        sb.append(AndroidUtilities.replaceTags(LocaleController.getString(R.string.CG_LocationPermission)));
         sb.append("\n");
         sb.append("\n");
-        sb.append(AndroidUtilities.replaceTags(LocaleController.getString("CG_LocationPermission_Desc", R.string.CG_LocationPermission_Desc)));
+        sb.append(AndroidUtilities.replaceTags(LocaleController.getString(R.string.CG_LocationPermission_Desc)));
 
         return new AlertDialog.Builder(ctx)
                 .setMessage(sb)

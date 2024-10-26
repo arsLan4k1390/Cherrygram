@@ -272,7 +272,7 @@
     <string name="CP_CenterCameraControlButtons_Desc">Kamera ve el feneri düğmelerini ortalayın.</string>
     <string name="CP_RearCam">Arka kamerayı kullan</string>
     <string name="CP_RearCam_Desc">Video mesajları için ön kamera yerine</string>
-    <string name="CP_CaptureType_Desc">Varsayılan olarak \"VideoCapture\" kullanın. \nCherrygram bir video mesajı kaydetmeye başlamadan önce bir saniye donuyorsa, sadece \"ImageCapture\"ı seçin (kaliteyi düşürür).</string>
+    <string name="CP_CaptureType_Desc">Varsayılan olarak \"VideoCapture\" kullanın. \n\"ImageCapture\"ı (kaliteyi düşürür) yalnızca Cherrygram video mesajı kaydetmeye başlamadan önce bir saniye donarsa seçin. Ayrıca, ImageCapture video efektlerini destekler.</string>
     <string name="CP_DisableCam">Medya ekleme menüsünde kamerayı devre dışı bırak</string>
     <string name="CP_DisableCam_Desc">Kamera düğmesi galeri düğmesinin yanında olacak. \nDüğmeye basmak Telegram kamerasını açacak, basılı tutmak ise sistem kamerasını başlatacak.</string>
     <string name="CP_Header_Videomessages">Video mesajları</string>
@@ -308,11 +308,13 @@
     <string name="SP_GoogleAnalytics_Desc">Bunu etkinleştirerek, tüm uygulama çökme ve istatistikleri geliştirici tarafından daha fazla inceleme için \"console.firebase.google.com\" adresine raporlanacaktır.</string>
     <string name="SP_CleanOld">Eski önbelleği kaldır (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Başarıyla kaldırıldı</string>
-    <string name="SP_AskPinForChats">Sohbet açmak için biyometrik onay iste</string>
-    <string name="SP_AskPinForChats_Desc">Belirli bir sohbeti açmak için sistem şifresi (parmak izi, yüz kimliği, PIN veya desen) gerekecektir. Etkinleştirmek için sohbetin içindeki 3 noktaya dokunun.</string>
+    <string name="SP_AskPinForChats">Bir sohbeti açmak için biyometrik doğrulama gerektir</string>
+    <string name="SP_AskPinForChats_Desc">Belirli sohbetlere erişmek için sistem şifresi (parmak izi, yüz tanıma, PIN veya desen) gerekecektir. Etkinleştirmek için, sohbetin içindeki 3 noktaya dokunun.</string>
+    <string name="SP_AskPinForArchive">Arşivi açmak için biyometrik doğrulama gerektir</string>
+    <string name="SP_AskPinForArchive_Desc">Arşivlenmiş sohbetlere erişmek için sistem şifresi (parmak izi, yüz tanıma, PIN veya desen) gerekecektir.</string>
     <string name="SP_AskPin">Şifre gerektir</string>
     <string name="SP_DoNotAskPin">Şifre gerektirme</string>
-    <string name="SP_AskPinBeforeDelete">Bir sohbeti silmeden önce biyometrik onay iste.</string>
+    <string name="SP_AskPinBeforeDelete">Sohbetleri silmek için biyometrik doğrulama gerektir</string>
     <string name="SP_AskPinBeforeDelete_Desc">Bir sohbeti silmek veya geçmişi temizlemek isterseniz, biyometrik onay gerekecek. Sistem PIN kodu ve biyometrik onay etkin olmalıdır.</string>
     <string name="SP_AllowUseSystemPasscode">Sistem PIN/Desen kullanımına izin ver</string>
     <string name="SP_AllowUseSystemPasscode_Desc">Parmak izi onay ekranındaki \"İptal\" düğmesi \"Pin/Desen\" düğmesi ile değiştirilecek ve Cherrygram\'i açmak için sistem geçişini kullanabileceksiniz.</string>

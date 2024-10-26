@@ -6,7 +6,6 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.URLSpan
 import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.LocaleController.getString
@@ -52,20 +51,13 @@ object CGResourcesHelper {
         return "Unknown"
     }
 
-    @Suppress("DEPRECATION")
     fun getAbiCode(): String {
-        var abi = ""
+        var abi: String
         try {
-            when (ApplicationLoader.applicationContext.packageManager.getPackageInfo(
-                ApplicationLoader.applicationContext.packageName, 0).versionCode % 10) {
-                1, 3 -> abi = "armeabi-v7a"
-                2, 4 -> abi = "x86"
-                5, 7 -> abi = "arm64-v8a"
-                6, 8 -> abi = "x86_64"
-                0, 9 -> abi = "universal"
-            }
-        } catch (e: java.lang.Exception) {
+            abi = Build.SUPPORTED_ABIS[0]
+        } catch (e: Exception) {
             FileLog.e(e)
+            abi = "universal"
         }
         return abi
     }
@@ -83,6 +75,7 @@ object CGResourcesHelper {
     }
 
     @JvmStatic
+    @SuppressWarnings("deprecation")
     fun getCameraAdvise(): CharSequence {
         val advise: String = when (CherrygramCameraConfig.cameraType) {
             CherrygramCameraConfig.TELEGRAM_CAMERA -> getString(R.string.CP_DefaultCameraDesc)
@@ -97,6 +90,21 @@ object CGResourcesHelper {
             SpannableString(Html.fromHtml(advise))
         }
         return getUrlNoUnderlineText(htmlParsed)
+    }
+
+    private fun getUrlNoUnderlineText(charSequence: CharSequence): CharSequence {
+        val spannable: Spannable = SpannableString(charSequence)
+        val spans = spannable.getSpans(0, charSequence.length, URLSpan::class.java)
+        for (urlSpan in spans) {
+            var span = urlSpan
+            val start = spannable.getSpanStart(span)
+            val end = spannable.getSpanEnd(span)
+            spannable.removeSpan(span)
+            span = object : URLSpanNoUnderline(span.url) {
+            }
+            spannable.setSpan(span, start, end, 0)
+        }
+        return spannable
     }
 
     @JvmStatic
@@ -284,21 +292,6 @@ object CGResourcesHelper {
             )
         } catch (ignore: Exception) { }
         return "LOC_ERR"
-    }
-
-    fun getUrlNoUnderlineText(charSequence: CharSequence): CharSequence {
-        val spannable: Spannable = SpannableString(charSequence)
-        val spans = spannable.getSpans(0, charSequence.length, URLSpan::class.java)
-        for (urlSpan in spans) {
-            var span = urlSpan
-            val start = spannable.getSpanStart(span)
-            val end = spannable.getSpanEnd(span)
-            spannable.removeSpan(span)
-            span = object : URLSpanNoUnderline(span.url) {
-            }
-            spannable.setSpan(span, start, end, 0)
-        }
-        return spannable
     }
     /** Misc finish **/
 }

@@ -2506,7 +2506,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             spannableStringBuilder = new SpannableStringBuilder();
             spannableStringBuilder.append("..").setSpan(new ColoredImageSpan(ContextCompat.getDrawable(context, R.drawable.msg_qr_mini)), 0, 1, 0);
             spannableStringBuilder.setSpan(new DialogCell.FixedWidthSpan(AndroidUtilities.dp(8)), 1, 2, 0);
-            spannableStringBuilder.append(LocaleController.getString("CG_QRLoginTitle", R.string.CG_QRLoginTitle));
+            spannableStringBuilder.append(LocaleController.getString(R.string.CG_QRLoginTitle));
             spannableStringBuilder.append(".").setSpan(new DialogCell.FixedWidthSpan(AndroidUtilities.dp(5)), spannableStringBuilder.length() - 1, spannableStringBuilder.length(), 0);
             qrButton.setText(spannableStringBuilder);
             qrButton.setOnClickListener(view -> exportLoginToken(true));
@@ -3538,14 +3538,14 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                             titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
                             titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
                             titleTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-                            titleTextView.setText(LocaleController.getString("CG_QRLoginTitle", R.string.CG_QRLoginTitle));
+                            titleTextView.setText(LocaleController.getString(R.string.CG_QRLoginTitle));
                             linearLayout.addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 24, 8, 0));
 
                             TextView descriptionTextView = new TextView(context);
                             descriptionTextView.setGravity(Gravity.CENTER_HORIZONTAL);
                             descriptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
                             descriptionTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-                            descriptionTextView.setText(LocaleController.getString("CG_QRLoginMessage", R.string.CG_QRLoginMessage));
+                            descriptionTextView.setText(LocaleController.getString(R.string.CG_QRLoginMessage));
                             descriptionTextView.setPadding(0, AndroidUtilities.dp(8), 0, 0);
                             linearLayout.addView(descriptionTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 0, 8, 0));
 

@@ -14,6 +14,7 @@ import android.os.Build;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.Extra;
+import uz.unnarsx.cherrygram.misc.Constants;
 
 import com.android.billingclient.api.ProductDetails;
 
@@ -45,11 +46,16 @@ public class BuildVars {
     static {
         APP_ID = Extra.APP_ID;
         APP_HASH = Extra.APP_HASH;
-        PLAYSTORE_APP_URL = Extra.PLAYSTORE_APP_URL;
-        HUAWEI_STORE_URL = Extra.PLAYSTORE_APP_URL;
+        PLAYSTORE_APP_URL = Constants.UPDATE_APP_URL;
+        HUAWEI_STORE_URL = Constants.UPDATE_APP_URL;
         if (ApplicationLoader.applicationContext != null) {
             SharedPreferences sharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("systemConfig", Context.MODE_PRIVATE);
-            LOGS_ENABLED = DEBUG_VERSION || sharedPreferences.getBoolean("logsEnabled", false);
+            LOGS_ENABLED = DEBUG_VERSION || sharedPreferences.getBoolean("logsEnabled", DEBUG_VERSION);
+            if (LOGS_ENABLED) {
+                Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+                    FileLog.fatal(exception, true);
+                });
+            }
         }
     }
 

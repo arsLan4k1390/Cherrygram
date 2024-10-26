@@ -12,9 +12,9 @@ import org.telegram.ui.LaunchActivity;
 
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.Extra;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.updater.UpdaterBottomSheet;
+import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry;
@@ -58,7 +58,7 @@ public class DeeplinkHelper {
                 }
                 case "cg_update", "cg_upgrade", "update", "upgrade" -> {
                     if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
-                        Browser.openUrl(fragment.getContext(), Extra.PLAYSTORE_APP_URL);
+                        Browser.openUrl(fragment.getContext(), Constants.UPDATE_APP_URL);
                         return;
                     } else if (CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) {
                         // Fuckoff :)
@@ -71,7 +71,7 @@ public class DeeplinkHelper {
                 }
                 case "cg_updates", "updates" -> {
                     if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
-                        Browser.openUrl(fragment.getContext(), Extra.PLAYSTORE_APP_URL);
+                        Browser.openUrl(fragment.getContext(), Constants.UPDATE_APP_URL);
                     } else if (CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) {
                         // Fuckoff :)
                         unknown.run();

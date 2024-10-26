@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.telegram.messenger.ApplicationLoader
-import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 
@@ -57,9 +56,5 @@ object CherrygramDebugConfig: CoroutineScope by CoroutineScope(
     var sendVideosAtMaxQuality by sharedPreferences.boolean("sendVideosMaxQuality", false)
     var playGIFsAsVideos by sharedPreferences.boolean("CP_PlayGIFsAsVideos", true)
     /** Chats finish **/
-
-    init {
-        CherrygramToasts.init(sharedPreferences)
-    }
 
 }

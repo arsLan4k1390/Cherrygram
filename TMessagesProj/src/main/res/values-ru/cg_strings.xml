@@ -344,12 +344,14 @@
     <string name="SP_CleanOld">Очистить старый кэш (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Успешно удалено</string>
 
-    <string name="SP_AskPinForChats">Запрашивать пароль перед открытием чатов</string>
-    <string name="SP_AskPinForChats_Desc">Для открытия определенного чата потребуется системный пароль (отпечаток, скан лица, PIN или граф. ключ). Чтобы включить, нажмите на 3 точки внутри нужного чата.</string>
+    <string name="SP_AskPinForChats">Запрос биометрии для открытия чатов</string>
+    <string name="SP_AskPinForChats_Desc">Для доступа к определенным чатам потребуется системный пароль (отпечаток, скан лица, PIN или граф. ключ). Чтобы включить, нажмите на 3 точки внутри нужного чата.</string>
+    <string name="SP_AskPinForArchive">Запрос биометрии для открытия архива</string>
+    <string name="SP_AskPinForArchive_Desc">Для доступа к архивированным чатам потребуется системный пароль (отпечаток, скан лица, PIN или граф. ключ).</string>
     <string name="SP_AskPin">Запрашивать пароль</string>
     <string name="SP_DoNotAskPin">Не запрашивать пароль</string>
 
-    <string name="SP_AskPinBeforeDelete">Запрашивать биметрическое подтверждение перед удалением чата.</string>
+    <string name="SP_AskPinBeforeDelete">Запрос биометрии для удаления чатов</string>
     <string name="SP_AskPinBeforeDelete_Desc">Если вы хотите удалить чат или очистить историю, потребуется биометрическое подтверждение. Пароль и биометрическое подтверждение в системе должны быть включены.</string>
 
     <string name="SP_AllowUseSystemPasscode">Использовать системный PIN/Граф. ключ</string>

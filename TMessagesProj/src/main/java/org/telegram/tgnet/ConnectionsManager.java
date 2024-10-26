@@ -347,14 +347,15 @@ public class ConnectionsManager extends BaseController {
                 startRequestTime = System.currentTimeMillis();
             }
             long finalStartRequestTime = startRequestTime;
-            listen(requestToken, (response, errorCode, errorText, networkType, timestamp, requestMsgId) -> {
+            listen(requestToken, (response, errorCode, errorText, networkType, timestamp, requestMsgId, dcId) -> {
                 try {
                     TLObject resp = null;
                     TLRPC.TL_error error = null;
-
+                    int responseSize = 0;
                     if (response != 0) {
                         NativeByteBuffer buff = NativeByteBuffer.wrap(response);
                         buff.reused = true;
+                        responseSize = buff.limit();
                         int magic = buff.readInt32(true);
                         try {
                             resp = object.deserializeResponse(buff, magic, true);
@@ -461,14 +462,14 @@ public class ConnectionsManager extends BaseController {
         }
     }
 
-    public static void onRequestComplete(int currentAccount, int requestToken, long response, int errorCode, String errorText, int networkType, long timestamp, long requestMsgId) {
+    public static void onRequestComplete(int currentAccount, int requestToken, long response, int errorCode, String errorText, int networkType, long timestamp, long requestMsgId, int dcId) {
         ConnectionsManager connectionsManager = getInstance(currentAccount);
         if (connectionsManager == null) return;
         RequestCallbacks callbacks = connectionsManager.requestCallbacks.get(requestToken);
         connectionsManager.requestCallbacks.remove(requestToken);
         if (callbacks != null) {
             if (callbacks.onComplete != null) {
-                callbacks.onComplete.run(response, errorCode, errorText, networkType, timestamp, requestMsgId);
+                callbacks.onComplete.run(response, errorCode, errorText, networkType, timestamp, requestMsgId, dcId);
             }
             FileLog.d("{rc} onRequestComplete(" + currentAccount + ", " + requestToken + "): found request " + requestToken + ", " + connectionsManager.requestCallbacks.size() + " requests' callbacks");
         } else {
@@ -1407,7 +1408,7 @@ public class ConnectionsManager extends BaseController {
             if (UserConfig.selectedAccount != currentAccount) {
                 return;
             }
-            FileLoader.getInstance(currentAccount).getFileLoaderQueue().postRunnable(() -> {
+            AndroidUtilities.runOnUIThread(() -> {
                 boolean updated = false;
                 if (isUpload) {
                     FileUploadOperation operation = FileLoader.getInstance(currentAccount).findUploadOperationByRequestToken(requestToken);
@@ -1423,11 +1424,9 @@ public class ConnectionsManager extends BaseController {
                     }
                 }
                 final boolean finalUpdated = updated;
-                AndroidUtilities.runOnUIThread(() -> {
-                    if (finalUpdated) {
-                        NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.premiumFloodWaitReceived);
-                    }
-                });
+                if (finalUpdated) {
+                    NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.premiumFloodWaitReceived);
+                }
             });
         });
     }

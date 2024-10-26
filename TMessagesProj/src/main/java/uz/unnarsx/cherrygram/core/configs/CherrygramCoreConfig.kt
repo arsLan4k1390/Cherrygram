@@ -10,7 +10,6 @@ import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
-import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.long
 
@@ -100,8 +99,6 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     /** Cherrygram build types finish **/
 
     init {
-        CherrygramToasts.init(sharedPreferences)
-
         launch {
             if (ApplicationLoader.checkPlayServices()) FirebaseRemoteConfigHelper.initRemoteConfig()
         }

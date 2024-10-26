@@ -272,7 +272,7 @@
     <string name="CP_CenterCameraControlButtons_Desc">Центрирајте прекидач камере и дугмад за батеријску лампу.</string>
     <string name="CP_RearCam">Користи задњу камеру</string>
     <string name="CP_RearCam_Desc">Уместо предње камере за видео-поруке</string>
-    <string name="CP_CaptureType_Desc">Подразумевано користите „VideoCapture”. \nИзаберите „ImageCapture” (смањује квалитет) само ако се Cherrygram замрзне на секунд пре него што почне снимати видео-поруку.</string>
+    <string name="CP_CaptureType_Desc">Подразумевано користите „VideoCapture”. \nИзаберите „ImageCapture” (смањује квалитет) само ако се Cherrygram замрзне на секунд пре него што почне снимати видео-поруку. Штавише, „ImageCapture” подржава видео ефекте.</string>
     <string name="CP_DisableCam">Онемогући камеру у менију за прилагање медија</string>
     <string name="CP_DisableCam_Desc">Дугме камере ће бити доступно поред дугмета за галерију. \nПритиском на дугме отвориће се камера апликације Telegram, а дугим притиском отвориће се системска камера.</string>
     <string name="CP_Header_Videomessages">Видео-поруке</string>
@@ -308,11 +308,13 @@
     <string name="SP_GoogleAnalytics_Desc">Ако ово омогућите, сва отказивања апликације и статистике биће пријављени на „console.firebase.google.com” ради даљег прегледа од стране програмера.</string>
     <string name="SP_CleanOld">Уклони стару кеш меморију (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Успешно уклоњено</string>
-    <string name="SP_AskPinForChats">Захтевај биометријску аутентификацију за отварање ћаскања</string>
-    <string name="SP_AskPinForChats_Desc">Системска лозинка (отисак прста, откључавање лицем, PIN или шаблон) ће бити потребна за отварање одређеног ћаскања. Да бисте омогућили, додирните 3 тачке унутар ћаскања.</string>
+    <string name="SP_AskPinForChats">Захтевај биометријску потврду за отварање ћаскања</string>
+    <string name="SP_AskPinForChats_Desc">Системска лозинка (отисак прста, откључавање лицем, PIN или шаблон) ће бити потребна за приступање одређеним ћаскањима. Да бисте омогућили, додирните 3 тачке унутар ћаскања.</string>
+    <string name="SP_AskPinForArchive">Захтевај биометријску потврду за отварање архиве</string>
+    <string name="SP_AskPinForArchive_Desc">Системска лозинка (отисак прста, идентификација лица, PIN или шаблон) ће бити потребна за приступ архивираним ћаскањима.</string>
     <string name="SP_AskPin">Захтевај лозинку</string>
     <string name="SP_DoNotAskPin">Не захтевај лозинку</string>
-    <string name="SP_AskPinBeforeDelete">Захтевај биометријску аутентификацију пре брисања ћаскања.</string>
+    <string name="SP_AskPinBeforeDelete">Захтевај биометријску потврду за брисање ћаскања</string>
     <string name="SP_AskPinBeforeDelete_Desc">Ако желите да избришете ћаскање или очистите историју, биће потребна биометријска потврда. Лозинка и биометријска потврда у систему морају бити омогућени.</string>
     <string name="SP_AllowUseSystemPasscode">Омогући коришћење системског PIN-а/шаблона</string>
     <string name="SP_AllowUseSystemPasscode_Desc">Дугме „Откажи” у дијалогу за потврду отиска прста биће замењено дугметом „PIN/шаблон” и моћи ћете да користите системску пропусницу да откључате Cherrygram.</string>

@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelLink">Inscreva-se para @Cherry_Gram!</string>
     <string name="CG_FollowChannelTitle">Subscrever o canal oficial</string>
-    <string name="CG_FollowChannelInfo">Inscreva-se no nosso canal para ficar a par de todas as novidades e características do Cherrygram!</string>
+    <string name="CG_FollowChannelInfo">Entre no canal para ficar por dentro de todas as novidades e recursos do Cherrygram!</string>
     <string name="CG_DoNotRemindAgain">Não voltar a lembrar</string>
     <!--Telegram screens-->
+    <string name="CG_RegistrationDate">Data de registro:</string>
+    <string name="CG_RegistrationDateNewer">Mais recente que %s</string>
+    <string name="CG_RegistrationDateOlder">Mais antigo que %s</string>
+    <string name="CG_RegistrationDateApproximately">Aproximadamente %s</string>
+    <string name="CG_RegistrationDateFailed">Falha ao obter a data de registro.</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Aceder com Código QR</string>
     <string name="CG_QRLoginMessage">Digitalize o QRCode com outro dispositivo para iniciar sessão.</string>
@@ -42,6 +48,8 @@
     <string name="CG_ViewUserHistory">Histórico de mensagens</string>
     <string name="CG_ToSaved">Guardar mensagem</string>
     <string name="CG_CreateMention">Criar menção</string>
+    <string name="CG_CreateCode">Criar Código</string>
+    <string name="CG_CreateCodeLanguage">Idioma</string>
     <string name="CG_FwdMenu_EnableNoForward">Desativar autoria encaminhada</string>
     <string name="CG_FwdMenu_DisableNoForward">Habilitar encaminhar autoria</string>
     <string name="CG_Without_Authorship">Sem autoria</string>
@@ -49,8 +57,31 @@
     <string name="CG_FwdMenu_Notify">Notificar</string>
     <string name="CG_FwdMenu_EnableCaptions">Ativar legendas</string>
     <string name="CG_FwdMenu_DisableCaptions">Ocultar legendas</string>
+    <string name="CG_CopyTitle">Copiar Título</string>
+    <string name="CG_CopyCallback">Copiar dados de retorno de chamada</string>
+    <string name="CG_CopyInlineQuery">Copiar Consulta Inline</string>
+    <string name="CG_CopyID">Copiar o ID do usuário</string>
+    <!--Location screen-->
+    <string name="CG_LocationPermission">O Cherrygram precisa acessar sua localização para que você possa compartilhá-la com seus amigos. Agora você será solicitado a permitir que sua localização seja usada (enquanto o aplicativo estiver aberto).</string>
+    <string name="CG_LocationPermission_Desc">No entanto, se você deseja que sua localização esteja disponível para seus amigos, enquanto Cherrygram está fechado e em segundo plano, vá para o recurso \"Localização em tempo real\". Até você concordar em usar o recurso de Localização tempo real, sua localização não estará disponível em segundo plano.</string>
+    <!--Location screen-->
+    <!--Search filter-->
+    <string name="CG_SearchFilter">Filtrar resultados de pesquisa</string>
+    <string name="CG_SearchFilter_None">Nenhum</string>
+    <string name="CG_SearchFilter_Photos">Fotos</string>
+    <string name="CG_SearchFilter_Videos">Vídeos</string>
+    <string name="CG_SearchFilter_VoiceMessages">Mensagens de voz</string>
+    <string name="CG_SearchFilter_VideoMessages">Mensagens de vídeo</string>
+    <string name="CG_SearchFilter_Files">Arquivos/Documentos</string>
+    <string name="CG_SearchFilter_Music">Músicas</string>
+    <string name="CG_SearchFilter_GIFs">GIFs</string>
+    <string name="CG_SearchFilter_Geolocation">Geolocalização</string>
+    <string name="CG_SearchFilter_Contacts">Contatos</string>
+    <string name="CG_SearchFilter_MyMentions">Minhas menções</string>
+    <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_UnknownCherrySettingsOption">Essa opção de Configurações Cherry não existe.</string>
     <string name="CG_Restart">Reiniciar aplicação</string>
     <string name="CG_RestartToApply">Reiniciar para aplicar alterações</string>
     <string name="CG_PushService">Serviço de Notificações do Cherrygram.</string>
@@ -79,6 +110,8 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CG_ReplyContainsEmojiPack">Esta resposta contém **%s** emoji</string>
     <string name="CG_GetEmojiPack">Obter emoji</string>
     <string name="CG_ProfileBackground">Aplicar perfil de fundo</string>
+    <string name="CG_MessageContainsCustomReactions_one">Reações contém emoji personalizado \n do pacote %1$d.</string>
+    <string name="CG_MessageContainsCustomReactions_other">Reações contém emojis personalizados \n dos pacotes %1$d.</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -107,7 +140,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_ChangeIcon_Default">Por defeito</string>
     <string name="AP_ChangeIcon_Dark">Escuro</string>
     <string name="AP_ChangeIcon_White">Branco</string>
-    <string name="AP_ChangeIcon_Laguna">Laguna</string>
+    <string name="AP_ChangeIcon_Laguna">Lagoa</string>
     <string name="AP_ChangeIcon_Green">Verde</string>
     <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
     <string name="AP_ChangeIcon_Sunset">Pôr do sol</string>
@@ -129,6 +162,9 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_PremAndAnim_Header">Animações e Recursos Premium</string>
     <string name="CP_ProfileReplyBackground">Mensagens e perfis</string>
     <string name="CP_CustomizeProfile">Personalizar perfil</string>
+    <string name="CP_ProfileChannelPreview">Canal pessoal</string>
+    <string name="CP_ProfileBirthDatePreview">Data de Nascimento</string>
+    <string name="CP_ProfileBusinessPreview">Horário comercial e localização</string>
     <string name="CP_ProfileBackgroundColor">Fundo no perfil</string>
     <string name="CP_ProfileBackgroundEmoji">Emoji no fundo do perfil</string>
     <string name="CP_CustomizeMessage">Personalizar uma mensagem</string>
@@ -136,6 +172,8 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_ReplyCustomColors">Cores personalizadas na pré-visualização de respostas e ligações</string>
     <string name="CP_ReplyBackgroundEmoji">Emoji nas respostas e pré-visualização de ligações</string>
     <string name="CP_HideStories">Ocultar Stories</string>
+    <string name="CP_CustomWallpapers">Fundo personalizado nos bate-papos</string>
+    <string name="CP_CustomWallpapers_Desc">Configurar papéis de parede personalizados em chats/grupos/canais definidos por usuários premium/canais impulsionados</string>
     <string name="CP_DisableAnimAvatars">Desativar avatares animados</string>
     <string name="CP_DisableReactionsOverlay">Desativar sobreposição de reações</string>
     <string name="CP_DisableReactionsOverlay_Desc">Isto irá desativar a sobreposição de popups com as reações disponíveis</string>
@@ -154,7 +192,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_Tab_Style">Estilo de pestaña</string>
     <string name="AP_Tab_Style_Default">Por defeito</string>
     <string name="AP_Tab_Style_Rounded">Arredondado</string>
-    <string name="AP_Tab_Style_Text">Text</string>
+    <string name="AP_Tab_Style_Text">Texto</string>
     <string name="AP_Tab_Style_Pills">Comprimidos</string>
     <string name="AP_Tab_Style_Stroke">Adicionar traço</string>
     <string name="AP_DrawerCategory">Gaveta</string>
@@ -166,14 +204,20 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_DrawerBlurIntensity">Intensidade do desfoque</string>
     <string name="AP_DrawerIconPack_Header">Conjunto de ícones de gaveta</string>
     <string name="AP_DrawerButtonsCategory">Botões de gaveta</string>
+    <string name="AP_HideUserPhone_Show">Toque para mostrar</string>
+    <string name="AP_HideUserPhone_Copy">Pressione e segure para copiar</string>
     <string name="AP_MutualContacts_Description">Este é um contacto mútuo.</string>
     <string name="AP_ShowID">Mostrar ID e DC no perfil</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Conversas</string>
+    <string name="CP_Header_Messages">Mensagens</string>
     <string name="CP_Slider_StickerAmplifier">Amplificador de tamanho de autocolante</string>
     <string name="CP_TimeOnStick">Ocultar o tempo em autocolantes no chat</string>
+    <string name="CP_ChatMenuShortcuts">Atalhos do menu em chat</string>
+    <string name="CP_AdminActions">Atalhos de administrador</string>
     <string name="CP_MessageMenu">Menu de mensagens</string>
+    <string name="AP_CenterChatsTitle">Centralizar título em chats</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de conversas não lidas</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Ativar o contador de conversas não lidas no botão de trás no chat aberto</string>
     <string name="CP_NoRounding">Desativar arredondamento numérico</string>
@@ -184,14 +228,18 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_ShowSeconds">Formatar a hora com segundos</string>
     <string name="CP_LeftBottomButtonAction">Ação do botão esquerdo</string>
     <string name="CP_DoubleTapAction">Ação de duplo toque</string>
+    <string name="CG_MsgSlideAction">Ação ao deslizar mensagem</string>
     <string name="CP_DisableSwipeToNext">Desativar transição para o próximo canal</string>
     <string name="CP_DisableSwipeToNext_Desc">Desativar mudança para o próximo canal ao rolar através de qualquer canal</string>
     <string name="CP_HideMuteUnmuteButton">Esconder o botão inferior em canais</string>
     <string name="CP_HideKbdOnScroll">Ocultar o teclado no scroll</string>
     <string name="CP_HideSendAsChannel">Ocultar \"Enviar como canal\"</string>
+    <string name="CP_HideSendAsChannelDesc">Você pode acessar o ementa clicando e pressionando em Emoji/Adesivos/GIFs</string>
     <string name="CP_Slider_RecentEmojisAmplifier">Contador de emojis recentes (reinicie o aplicativo para aplicar)</string>
     <string name="CP_Slider_RecentStickersAmplifier">Contador de emojis recentes (reinicie o aplicativo para aplicar)</string>
     <string name="CP_Header_Record">Multimédia</string>
+    <string name="CP_SpoilersOnMedia">Efeito de spoiler</string>
+    <string name="CP_SpoilersOnMedia_Desc">O efeito de spoiler em fotos e vídeos não será exibido se o recurso estiver desativado.</string>
     <string name="CP_VoiceEnhancements">Melhorias de Voz</string>
     <string name="CP_VoiceEnhancements_Desc">Supressão de ruído e Normalização de Voz</string>
     <string name="CP_PlayVideo">Reproduzir vídeo ao clicar no botão de volume</string>
@@ -210,16 +258,31 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Câmara</string>
     <string name="CP_CameraType">Tipo de câmera</string>
+    <string name="CP_Camera2Desc">Todos os recursos que estão ocultos quando o Câmera2 estiver ativado não funcionarão com a Câmera2 habilitada.</string>
+    <string name="CP_CameraStabilisation">Estabilização da câmera</string>
+    <string name="CP_CameraUW">Iniciar pelo UW</string>
+    <string name="CP_CameraUW_Desc">Gravação de mensagens de vídeo serão iniciadas pela Câmera Ultra Wide (se a API do seu dispositivo suporta isso)</string>
+    <string name="CP_CameraDualCamera">Câmera dupla</string>
+    <string name="CP_CameraDualCamera_Desc">Captura a mensagem de vídeo em ambas as câmeras para uma troca mais rápida entre as câmeras durante a gravação. Usa mais bateria.</string>
     <string name="CP_DefaultCameraDesc">Use a câmara interna do Telegram.</string>
     <string name="CP_CameraXDesc">CameraX só é suportado em <![CDATA[<a href="https://developer.android.com/training/camerax/devices">dispositivos seleccionados</a>]]>, efeitos e suporte de lentes depende do seu fabricante.</string>
     <string name="CP_CameraQuality">Qualidade da Câmara</string>
     <string name="CP_CameraTypeSystem">Sistema</string>
     <string name="CP_SystemCameraDesc">Acessar diretamente a câmara do sistema (não aplicável às mensagens de vídeo).</string>
     <string name="CP_CameraAspectRatio">Razão de aspeto da câmara</string>
+    <string name="CP_CenterCameraControlButtons">Centralizar botões de controle</string>
+    <string name="CP_CenterCameraControlButtons_Desc">Centralizar os botões de câmera e lanterna.</string>
     <string name="CP_RearCam">Use a câmara traseira</string>
     <string name="CP_RearCam_Desc">Em vez de câmara frontal para mensagens de vídeo</string>
+    <string name="CP_CaptureType_Desc">Usa \"Captura de Vídeo\" por padrão. \nSelecionar \"Captura de Imagem\" (reduz a qualidade) apenas se Cherrygram congelar por um segundo antes de começar a gravar uma mensagem de vídeo. Além disso, Captura de Imagem suporta efeitos de vídeo.</string>
     <string name="CP_DisableCam">Desativar câmara no menu de anexação de mídia</string>
     <string name="CP_DisableCam_Desc">Ativar se os media anexarem desfasamentos de menu</string>
+    <string name="CP_Header_Videomessages">Mensagens de vídeo</string>
+    <string name="CP_ExposureSliderPosition">Exibição da posição do controle deslizante</string>
+    <string name="CP_ZoomSliderPosition_Bottom">Lateral abaixo</string>
+    <string name="CP_ZoomSliderPosition_Right">À direita</string>
+    <string name="CP_ZoomSliderPosition_Left">À esquerda</string>
+    <string name="CP_Exposure">Exibição</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">Experimental</string>
@@ -247,6 +310,17 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="SP_GoogleAnalytics_Desc">Ao ativar esta opção, todas as falhas e estatísticas da aplicação serão comunicadas a \"console.firebase.google.com\" para análise posterior pelo programador.</string>
     <string name="SP_CleanOld">Remover cache antiga (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">Removido com sucesso</string>
+    <string name="SP_AskPinForChats">Exigir a biometria para abrir um chat</string>
+    <string name="SP_AskPinForChats_Desc">A senha do sistema (impressão digital, reconhecimento facial, PIN ou padrão) será necessária para acessar as conversas específicas. Para ativar, toque nos 3 pontos dentro do chat.</string>
+    <string name="SP_AskPinForArchive">Exigir biometria para abrir um arquivo</string>
+    <string name="SP_AskPinForArchive_Desc">A senha do sistema (impressão digital, reconhecimento facial, PIN ou padrão) será necessária para acessar os chats arquivados.</string>
+    <string name="SP_AskPin">Exigir senha</string>
+    <string name="SP_DoNotAskPin">Não exigir senha</string>
+    <string name="SP_AskPinBeforeDelete">Exigir a biometria para excluir chats</string>
+    <string name="SP_AskPinBeforeDelete_Desc">Se você quiser excluir um chat ou limpar o histórico, a confirmação biométrica será necessária. Senha e confirmação biométrica no sistema precisam ser habilitadas.</string>
+    <string name="SP_AllowUseSystemPasscode">Permitir o uso do PIN/Padrão do sistema</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">Botão \"Cancelar\" na caixa de diálogo de confirmação de impressão digital será substituído pelo botão \"PIN/Padrão\" e você será capaz de usar a senha do sistema para desbloquear o Cherrygram.</string>
+    <string name="SP_TestFingerprint">Testar biometria</string>
     <string name="SP_Category_Account">Conta</string>
     <string name="SP_DeleteAccount">Excluir conta do Telegram</string>
     <!--Security Preferences-->
@@ -269,9 +343,11 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="UP_Version">Versão</string>
     <string name="UP_UpdateSize">Tamanho da atualização</string>
     <string name="UP_Changelog">Registo de alterações:</string>
+    <string name="UP_ChangelogRead">Toque para ler</string>
     <string name="UP_Download">Transferir</string>
     <!--Updates Preferences-->
     <!--Donations-->
+    <string name="DP_RateUs">Avalie Cherrygram</string>
     <string name="DP_Donate">Faça um donativo</string>
     <string name="DP_Donate_Method">Escolher o método</string>
     <!--Donations-->

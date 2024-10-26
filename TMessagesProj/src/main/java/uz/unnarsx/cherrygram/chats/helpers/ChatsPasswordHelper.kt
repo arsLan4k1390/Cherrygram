@@ -35,7 +35,7 @@ object ChatsPasswordHelper {
     }
 
     fun checkLockedChatsEntities(messageObject: MessageObject, original: java.util.ArrayList<MessageEntity>?): java.util.ArrayList<MessageEntity>? {
-        return if (askPasscodeForChats && messageObject.messageOwner.message != null
+        return if (shouldRequireBiometricsToOpenChats && messageObject.messageOwner.message != null
             && messageObject.chatId != 0L && (
                     getArrayList(Passcode_Array)!!.contains(messageObject.chatId.toString())
                     || getArrayList(Passcode_Array)!!.contains("-" + messageObject.chatId.toString())
@@ -57,7 +57,26 @@ object ChatsPasswordHelper {
         return checkLockedChatsEntities(messageObject, messageObject.messageOwner.entities)
     }
 
-    var askPasscodeForChats =
-        CherrygramPrivacyConfig.askForPasscodeBeforeOpenChat && getArrayList(Passcode_Array) != null && !getArrayList(Passcode_Array)!!.isEmpty()
+    private var spoilerChars: CharArray = charArrayOf(
+        '⠌', '⡢', '⢑', '⠨', '⠥', '⠮', '⡑'
+    )
+
+    fun replaceStringToSpoilers(chatTitle: String?): String? {
+        if (chatTitle == null) {
+            return null
+        }
+        return if (CherrygramPrivacyConfig.askBiometricsToOpenArchive) {
+            val stringBuilder = StringBuilder(chatTitle)
+            for (j in chatTitle.indices) {
+                stringBuilder.setCharAt(j, spoilerChars[j % spoilerChars.size])
+            }
+            stringBuilder.toString()
+        } else {
+            chatTitle
+        }
+    }
+
+    var shouldRequireBiometricsToOpenChats =
+        CherrygramPrivacyConfig.askBiometricsToOpenChat && getArrayList(Passcode_Array) != null && !getArrayList(Passcode_Array)!!.isEmpty()
                 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 }

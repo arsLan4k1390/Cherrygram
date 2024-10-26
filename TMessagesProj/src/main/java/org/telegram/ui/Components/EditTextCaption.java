@@ -741,7 +741,7 @@ public class EditTextCaption extends EditTextBoldCursor {
     //Cherrygram
     public void makeSelectedCode() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(LocaleController.getString("CG_CreateCode", R.string.CG_CreateCode));
+        builder.setTitle(LocaleController.getString(R.string.CG_CreateCode));
 
         final EditTextBoldCursor editText = new EditTextBoldCursor(getContext()) {
             @Override
@@ -751,7 +751,7 @@ public class EditTextCaption extends EditTextBoldCursor {
         };
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
         editText.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-        editText.setHintText(LocaleController.getString("CG_CreateCodeLanguage", R.string.CG_CreateCodeLanguage));
+        editText.setHintText(LocaleController.getString(R.string.CG_CreateCodeLanguage));
         editText.setHeaderHintColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader));
         editText.setSingleLine(true);
         editText.setFocusable(true);
@@ -829,7 +829,7 @@ public class EditTextCaption extends EditTextBoldCursor {
 
     public void makeSelectedMention() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(LocaleController.getString("CG_CreateMention", R.string.CG_CreateMention));
+        builder.setTitle(LocaleController.getString(R.string.CG_CreateMention));
 
         final EditTextBoldCursor editText = new EditTextBoldCursor(getContext()) {
             @Override

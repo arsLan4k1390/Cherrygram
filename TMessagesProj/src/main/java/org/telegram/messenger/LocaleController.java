@@ -4019,7 +4019,7 @@ public class LocaleController {
             if (dateDay == day && year == dateYear) {
                 int diff = (int) (ConnectionsManager.getInstance(UserConfig.selectedAccount).getCurrentTime() - date / 1000) / 60;
                 if (diff < 1) {
-                    return LocaleController.getString("CG_LastSeenNow", R.string.CG_LastSeenNow);
+                    return LocaleController.getString(R.string.CG_LastSeenNow);
                 } else if (diff < 60) {
                     return LocaleController.formatPluralString("CG_LastSeenMinutes", diff);
                 } else {

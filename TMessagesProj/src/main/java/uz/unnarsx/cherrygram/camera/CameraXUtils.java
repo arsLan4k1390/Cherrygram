@@ -204,7 +204,7 @@ public class CameraXUtils {
                             foundWideAngleOnPrimaryCamera = true;
                         }
                         float[] listLensAngle = cameraCharacteristics.get(LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
-                        if (listLensAngle.length > 0) {
+                        if (listLensAngle != null && listLensAngle.length > 0) {
                             if (listLensAngle[0] < 3.0f && listLensAngle[0] < lowestAngledCamera) {
                                 lowestAngledCamera = listLensAngle[0];
                                 cameraId = id;

@@ -223,7 +223,7 @@ public class UpdaterUtils {
         var install = new Intent(Intent.ACTION_VIEW);
         Uri fileUri;
         if (Build.VERSION.SDK_INT >= 24) {
-            fileUri = FileProvider.getUriForFile(context, "uz.unnarsx.cherrygram" + ".provider", file);
+            fileUri = FileProvider.getUriForFile(context, Constants.PACKAGE_NAME + ".provider", file);
         } else {
             fileUri = Uri.fromFile(file);
         }

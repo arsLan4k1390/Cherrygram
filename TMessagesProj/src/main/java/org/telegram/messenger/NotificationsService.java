@@ -32,7 +32,7 @@ public class NotificationsService extends Service {
 
         if (CherrygramExperimentalConfig.INSTANCE.getResidentNotification()) {
             NotificationChannelCompat channel = new NotificationChannelCompat.Builder("cherrygramPush", NotificationManagerCompat.IMPORTANCE_DEFAULT)
-                    .setName(LocaleController.getString("CG_PushService", R.string.CG_PushService))
+                    .setName(LocaleController.getString(R.string.CG_PushService))
                     .setLightsEnabled(false)
                     .setVibrationEnabled(false)
                     .setSound(null, null)
@@ -45,7 +45,7 @@ public class NotificationsService extends Service {
                             .setSmallIcon(CGResourcesHelper.getResidentNotificationIcon())
                             .setShowWhen(false)
                             .setOngoing(true)
-                            .setContentText(LocaleController.getString("CG_PushService", R.string.CG_PushService))
+                            .setContentText(LocaleController.getString(R.string.CG_PushService))
                             .setCategory(NotificationCompat.CATEGORY_STATUS)
                             .build());
             //Log.d("cherryPush2", "Started foreground");

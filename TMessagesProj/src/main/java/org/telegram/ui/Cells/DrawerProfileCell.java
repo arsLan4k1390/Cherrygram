@@ -598,7 +598,12 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         } else {
             nameTextView.setTextColor(Theme.getColor(Theme.key_chats_menuName));
         }
-        if (CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar() && DrawerBitmapHelper.currentAccountBitmap != null) {
+        if (CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar()
+                && DrawerBitmapHelper.currentAccountBitmap != null
+                && DrawerBitmapHelper.currentAccountBitmap.getBitmap() != null
+                && DrawerBitmapHelper.currentAccountBitmap.getBitmap().getWidth() != 0
+                && DrawerBitmapHelper.currentAccountBitmap.getBitmap().getHeight() != 0
+        ) {
             backgroundDrawable = DrawerBitmapHelper.currentAccountBitmap;
             useImageBackground = true;
         }

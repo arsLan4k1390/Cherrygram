@@ -14,7 +14,6 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.Components.LayoutHelper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class EffectSelectorView extends LinearLayout {
@@ -141,7 +140,7 @@ public class EffectSelectorView extends LinearLayout {
                 DisplayCutout cutout = windowInsets.getDisplayCutout();
                 if (cutout != null) {
                     List<Rect> boundRect = cutout.getBoundingRects();
-                    if (boundRect.size() > 0) {
+                    if (!boundRect.isEmpty()) {
                         if (getOrientation() == HORIZONTAL) {
                             notchSize = boundRect.get(0).bottom;
                         } else {

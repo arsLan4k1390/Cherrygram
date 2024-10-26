@@ -52,13 +52,13 @@ public class CherrygramChatMenuInjector {
     }
 
     public static void injectCherrygramShortcuts(ActionBarMenuItem headerItem, TLRPC.Chat currentChat, TLRPC.User currentUser) {
-        boolean isAnyButtonEnabled = CherrygramPrivacyConfig.INSTANCE.getAskForPasscodeBeforeOpenChat() || CherrygramChatsConfig.INSTANCE.getShortcut_JumpToBegin()
+        boolean isAnyButtonEnabled = CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramChatsConfig.INSTANCE.getShortcut_JumpToBegin()
                 || CherrygramChatsConfig.INSTANCE.getShortcut_DeleteAll() || CherrygramChatsConfig.INSTANCE.getShortcut_SavedMessages()
                 || CherrygramChatsConfig.INSTANCE.getShortcut_Blur() || CherrygramChatsConfig.INSTANCE.getShortcut_Browser();
 
         if (isAnyButtonEnabled) headerItem.lazilyAddColoredGap();
 
-        if (CherrygramPrivacyConfig.INSTANCE.getAskForPasscodeBeforeOpenChat() && ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats()) {
+        if (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() && ChatsPasswordHelper.INSTANCE.getShouldRequireBiometricsToOpenChats()) {
             if (
                     currentUser != null && currentUser.id != 0 && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(currentUser.id))
                     || currentChat != null && currentChat.id != 0 && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(-currentChat.id))

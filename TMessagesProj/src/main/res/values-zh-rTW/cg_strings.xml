@@ -272,7 +272,7 @@
     <string name="CP_CenterCameraControlButtons_Desc">置中切換相機和手電筒按鈕</string>
     <string name="CP_RearCam">使用後置鏡頭</string>
     <string name="CP_RearCam_Desc">視訊訊息不使用前置鏡頭</string>
-    <string name="CP_CaptureType_Desc">預設使用「VideoCapture」。 \n只有當 Cherrygram 在開始錄製影片訊息之前，被系統凍結一秒鐘的話，才選擇「ImageCapture」（品質會被降低）。</string>
+    <string name="CP_CaptureType_Desc">預設使用「VideoCapture」。 \n只有當 Cherrygram 在開始錄製影片訊息之前，被系統凍結一秒鐘的話，才選擇「ImageCapture」（品質會被降低）。此外，ImageCapture 還支援視訊效果。</string>
     <string name="CP_DisableCam">在多媒體選單中停用相機</string>
     <string name="CP_DisableCam_Desc">如果多媒體選單開啟過慢，請開啟本功能</string>
     <string name="CP_Header_Videomessages">視訊訊息</string>
@@ -308,11 +308,13 @@
     <string name="SP_GoogleAnalytics_Desc">啟用此功能後，所有的當機日誌和統計資料都會上傳至「console.firebase.google.com」，以供開發人員分析和改善應用程式。</string>
     <string name="SP_CleanOld">刪除舊快取 (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">刪除成功</string>
-    <string name="SP_AskPinForChats">需要生物辨識確認才能開啟對話</string>
+    <string name="SP_AskPinForChats">需要生物辨識才能開啟對話</string>
     <string name="SP_AskPinForChats_Desc">開啟某些特定對話可能需要輸入密碼/進行生物辨識確認 (如指紋、Face ID、PIN 碼或圖案解鎖)。如要啟用對話鎖定功能，可以按一下在對話的右上角三個點。</string>
+    <string name="SP_AskPinForArchive">需要生物辨識才能開啟已封存對話</string>
+    <string name="SP_AskPinForArchive_Desc">開啟已封存對話可能需要輸入密碼/進行生物辨識確認 (如指紋、Face ID、PIN 碼或圖案解鎖)。</string>
     <string name="SP_AskPin">需要密碼</string>
     <string name="SP_DoNotAskPin">無需密碼</string>
-    <string name="SP_AskPinBeforeDelete">刪除對話之前需要生物辨識確認</string>
+    <string name="SP_AskPinBeforeDelete">需要生物辨識才能刪除對話</string>
     <string name="SP_AskPinBeforeDelete_Desc">如果您想刪除對話或清除歷史記錄，則需要進行生物辨識確認。您需要事先在手機系統設定中，啟用密碼和生物辨識功能。</string>
     <string name="SP_AllowUseSystemPasscode">允許使用系統 PIN 碼/解鎖圖案</string>
     <string name="SP_AllowUseSystemPasscode_Desc">指紋確認對話方塊中的「取消」按鈕將被「Pin碼/解鎖圖案」按鈕取代，您將能夠使用系統密碼管理器解鎖 Cherrygram。</string>

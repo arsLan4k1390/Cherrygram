@@ -518,8 +518,8 @@ public class UndoView extends FrameLayout {
         infoTextView.setMovementMethod(null);
 
         if (currentAction == ACTION_NEED_RESTART) {
-            infoTextView.setText(LocaleController.getString("CG_RestartToApply", R.string.CG_RestartToApply));
-            undoTextView.setText(LocaleController.getString("BotUnblock", R.string.BotUnblock));
+            infoTextView.setText(LocaleController.getString(R.string.CG_RestartToApply));
+            undoTextView.setText(LocaleController.getString(R.string.BotUnblock));
 
             layoutParams.leftMargin = AndroidUtilities.dp(58);
             layoutParams.topMargin = AndroidUtilities.dp(13);

@@ -20,8 +20,6 @@ dependencies {
     implementation files('../TMessagesProj/libs/libgsaverification-client.aar')
 }
 
-ext.abiCodes = ['universal': 0, 'armeabi-v7a': 1, 'arm64-v8a': 5, x86: 2, x86_64: 6]
-
 android {
     compileSdk 34
     buildToolsVersion = '34.0.0'
@@ -80,7 +78,7 @@ android {
             minifyEnabled true
             shrinkResources false
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro', '../TMessagesProj/proguard-rules-beta.pro'
             ndk.debugSymbolLevel = 'FULL'
         }
 
@@ -163,8 +161,7 @@ android {
             def abi = output.getFilter('ABI')
             if (abi == null) abi = 'universal'
             outputFileName = "Cherrygram-PlayStore-${APP_VERSION_NAME_CHERRY}-TG-${defaultConfig.versionName}-${abi}.apk"
-            def abiVersionCode = project.ext.abiCodes.get(abi)
-            output.versionCodeOverride = defaultConfig.versionCode * 10 + abiVersionCode
+            output.versionCodeOverride = defaultConfig.versionCode * 10
         }
     }
 

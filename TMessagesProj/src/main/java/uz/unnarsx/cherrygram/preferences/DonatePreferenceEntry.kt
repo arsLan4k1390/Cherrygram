@@ -129,7 +129,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    AndroidUtilities.addToClipboard("EQCVVayzZkpm4LoHi9yuJQFjxRqi2qM4o0dqMLvZnXOFFE-3")
+                    AndroidUtilities.addToClipboard("UQCVVayzZkpm4LoHi9yuJQFjxRqi2qM4o0dqMLvZnXOFFBJy")
                     Toast.makeText(bf.parentActivity, getString(R.string.TextCopied), Toast.LENGTH_SHORT).show()
                 }
             }
@@ -138,7 +138,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 title = "TON Coin // @wallet"
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    AndroidUtilities.addToClipboard("UQBDb7Px1bDnNyGniB38ZjW3tx2kP3cQL7VcF9XzWvMS3sAa")
+                    AndroidUtilities.addToClipboard("UQDtmki3j8Ic0Dm_DVfi8zixp37jQLyLnZi00NfdEYuGeAp2")
                     Toast.makeText(bf.parentActivity, getString(R.string.TextCopied), Toast.LENGTH_SHORT).show()
                 }
             }
@@ -147,7 +147,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 title = "NOT Coin // @wallet"
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    AndroidUtilities.addToClipboard("UQBDb7Px1bDnNyGniB38ZjW3tx2kP3cQL7VcF9XzWvMS3sAa")
+                    AndroidUtilities.addToClipboard("UQDtmki3j8Ic0Dm_DVfi8zixp37jQLyLnZi00NfdEYuGeAp2")
                     Toast.makeText(bf.parentActivity, getString(R.string.TextCopied), Toast.LENGTH_SHORT).show()
                 }
             }
@@ -156,7 +156,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 title = "USDT (TRC20) // @wallet"
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    AndroidUtilities.addToClipboard("TU61MLJEcQqXCqqvAk651kPieCdUSMsjvf")
+                    AndroidUtilities.addToClipboard("TRffgZpaV51kqwXiKAkBkTwv9yremEs6sf")
                     Toast.makeText(bf.parentActivity, getString(R.string.TextCopied), Toast.LENGTH_SHORT).show()
                 }
             }
@@ -165,7 +165,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 title = "Bitcoin (BTC) // @wallet"
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    AndroidUtilities.addToClipboard("1FsXkKKCpPF5EszZCd4KwhJhjGSjmwzqQZ")
+                    AndroidUtilities.addToClipboard("158BXPmSGEcKXpYhVeKU11ETEgsSn4eMt7")
                     Toast.makeText(bf.parentActivity, getString(R.string.TextCopied), Toast.LENGTH_SHORT).show()
                 }
             }

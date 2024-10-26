@@ -397,15 +397,11 @@ public class CameraXView extends BaseCameraView {
     }
 
     public String mapFlashMode(int result) {
-        switch (result) {
-            case ImageCapture.FLASH_MODE_ON:
-                return "on";
-            case ImageCapture.FLASH_MODE_OFF:
-                return "off";
-            case ImageCapture.FLASH_MODE_AUTO:
-            default:
-                return "auto";
-        }
+        return switch (result) {
+            case ImageCapture.FLASH_MODE_ON -> "on";
+            case ImageCapture.FLASH_MODE_OFF -> "off";
+            default -> "auto";
+        };
     }
 
     public boolean isFlashAvailable() {

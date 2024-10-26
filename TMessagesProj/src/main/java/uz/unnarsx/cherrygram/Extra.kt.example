@@ -1,16 +1,15 @@
 package uz.unnarsx.cherrygram
 
+import android.app.Activity
+import org.telegram.ui.ActionBar.BaseFragment
+
 object Extra {
     // https://core.telegram.org/api/obtaining_api_id
-    const val APP_ID = 0123
-    const val APP_HASH = ""
+    const val APP_ID = 12345678
+    const val APP_HASH = "abcdefg"
 
     // https://developers.google.com/identity/sms-retriever/verify#computing_your_apps_hash_string
     const val SMS_HASH = ""
-
-    const val PLAYSTORE_APP_URL = ""
-
-    const val PACKAGE_HASH = ""
 
     fun getRegistrationDate(fragment: BaseFragment, parentActivity: Activity, userId: Long) {
 
@@ -19,4 +18,5 @@ object Extra {
     fun addBirthdayToCalendar(parentActivity: Activity, userId: Long) {
 
     }
+
 }

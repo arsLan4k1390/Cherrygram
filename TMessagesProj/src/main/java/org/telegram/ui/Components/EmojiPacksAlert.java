@@ -1669,7 +1669,7 @@ public class EmojiPacksAlert extends BottomSheet implements NotificationCenter.N
                 addView(optionsButton, LayoutHelper.createFrame(40, 40, Gravity.TOP | Gravity.RIGHT, 0, 5, 5 - backgroundPaddingLeft / AndroidUtilities.density, 0));
                 optionsButton.addSubItem(1, R.drawable.msg_share, LocaleController.getString(R.string.StickersShare));
                 optionsButton.addSubItem(2, R.drawable.msg_link, LocaleController.getString(R.string.CopyLink));
-                optionsButton.addSubItem(3, R.drawable.msg_info, LocaleController.getString("CG_CopySetId", R.string.CG_CopySetId));
+                optionsButton.addSubItem(3, R.drawable.msg_info, LocaleController.getString(R.string.CG_CopySetId));
                 optionsButton.setOnClickListener(v -> optionsButton.toggleSubMenu());
                 optionsButton.setDelegate(EmojiPacksAlert.this::onSubItemClick);
                 optionsButton.setContentDescription(LocaleController.getString(R.string.AccDescrMoreOptions));

@@ -11,7 +11,6 @@ import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.SolarIconReplace
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.VkIconReplace
-import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 
@@ -268,9 +267,5 @@ object CherrygramAppearanceConfig: CoroutineScope by CoroutineScope(
     var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false)
     var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false)
     /** Snowflakes finish **/
-
-    init {
-        CherrygramToasts.init(sharedPreferences)
-    }
 
 }

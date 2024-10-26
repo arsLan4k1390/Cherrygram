@@ -748,7 +748,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         gridView.setFastScrollVisible(true);
         gridView.getFastScroll().setAlpha(0f);
         gridView.getFastScroll().usePadding = false;
-        gridView.setAdapter(adapter = new PhotoAttachAdapter(context, /*needCamera &&*/ !disableAttachCamera));
+        gridView.setAdapter(adapter = new PhotoAttachAdapter(context, needCamera && !disableAttachCamera));
         adapter.createCache();
         gridView.setClipToPadding(false);
         gridView.setItemAnimator(null);

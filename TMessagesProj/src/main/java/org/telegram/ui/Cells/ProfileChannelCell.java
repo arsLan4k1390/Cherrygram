@@ -74,7 +74,7 @@ public class ProfileChannelCell extends FrameLayout {
         headerLayout.addView(subscribersView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 17, Gravity.LEFT | Gravity.TOP, 4, 2, 4, 0));
 
         dialogCell = new DialogCell(null, context, false, true, UserConfig.selectedAccount, resourcesProvider);
-        dialogCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+        dialogCell.setBackgroundColor(0);
         dialogCell.setDialogCellDelegate(new DialogCell.DialogCellDelegate() {
             @Override
             public void onButtonClicked(DialogCell dialogCell) {
@@ -238,8 +238,8 @@ public class ProfileChannelCell extends FrameLayout {
         ArrayList<DialogCell.CustomDialog> dialogs = new ArrayList<>();
 
         DialogCell.CustomDialog customDialog = new DialogCell.CustomDialog();
-        customDialog.name = LocaleController.getString("CG_AppName", R.string.CG_AppName) + " \uD83C\uDF52";
-        customDialog.message = LocaleController.getString("CG_FollowChannelInfo", R.string.CG_FollowChannelInfo);
+        customDialog.name = LocaleController.getString(R.string.CG_AppName) + " \uD83C\uDF52";
+        customDialog.message = LocaleController.getString(R.string.CG_FollowChannelInfo);
         customDialog.id = 1390;
         customDialog.unread_count = 0;
         customDialog.pinned = false;

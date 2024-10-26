@@ -9,7 +9,6 @@ import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.SharedConfig
 import uz.unnarsx.cherrygram.chats.helpers.StickersHelper
-import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.string
@@ -300,8 +299,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Misc finish **/
 
     init {
-        CherrygramToasts.init(sharedPreferences)
-
         launch {
             if (!CherrygramCoreConfig.isPlayStoreBuild()) StickersHelper.getStickerSetIDs()
             StickersHelper.copyStickerFromAssets()

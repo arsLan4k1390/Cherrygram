@@ -937,12 +937,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             }
             String title;
             if (currentChat != null) {
-                title = currentChat.title.replace('\n', ' ');
+                title = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(currentChat.title.replace('\n', ' '));
             } else if (currentUser != null) {
                 if (UserObject.isDeleted(currentUser)) {
-                    title = LocaleController.getString(R.string.HiddenName);
+                    title = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(LocaleController.getString(R.string.HiddenName));
                 } else {
-                    title = AndroidUtilities.removeDiacritics(ContactsController.formatName(currentUser.first_name, currentUser.last_name).replace('\n', ' '));
+                    title = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(
+                            AndroidUtilities.removeDiacritics(ContactsController.formatName(currentUser.first_name, currentUser.last_name).replace('\n', ' '))
+                    );
                 }
             } else {
                 continue;
@@ -1493,7 +1495,12 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                             if (!isSavedDialog && user != null && user.self && !message.isOutOwner()) {
                                 triedMessageName = AndroidUtilities.removeDiacritics(getMessageNameString());
                             }
-                            if (isSavedDialog && user != null && !user.self && message != null && message.isOutOwner() || triedMessageName != null || chat != null && chat.id > 0 && (fromChat == null || fromChat.id != chat.id) && (!ChatObject.isChannel(chat) || ChatObject.isMegagroup(chat)) && !ForumUtilities.isTopicCreateMessage(message)) {
+                            if (
+                                isSavedDialog && user != null && !user.self && message != null && message.isOutOwner() ||
+                                triedMessageName != null ||
+                                chat != null && chat.id > 0 && (fromChat == null || fromChat.id != chat.id) && (!ChatObject.isChannel(chat) || ChatObject.isMegagroup(chat)) && !ForumUtilities.isTopicCreateMessage(message) ||
+                                user != null && user.id == UserObject.VERIFY && message != null && message.getForwardedFromId() != null
+                            ) {
                                 messageNameString = AndroidUtilities.removeDiacritics(triedMessageName != null ? triedMessageName : getMessageNameString());
                                 if (chat != null && chat.forum && !isTopic && !useFromUserAsAvatar) {
                                     CharSequence topicName = MessagesController.getInstance(currentAccount).getTopicsController().getTopicIconName(chat, message, currentMessagePaint);
@@ -5095,6 +5102,19 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 return AndroidUtilities.removeDiacritics(fromChat.title.replace("\n", ""));
             }
             return null;
+        } else if (currentDialogId == UserObject.VERIFY && message != null && message.messageOwner != null && message.messageOwner.fwd_from != null) {
+            if (message.messageOwner.fwd_from.from_name != null) {
+                return AndroidUtilities.removeDiacritics(message.messageOwner.fwd_from.from_name);
+            } else {
+                long did = DialogObject.getPeerDialogId(message.messageOwner.fwd_from.from_id);
+                if (DialogObject.isUserDialog(did)) {
+                    fromUser = MessagesController.getInstance(currentAccount).getUser(did);
+                    return UserObject.getUserName(fromUser);
+                } else {
+                    fromChat = MessagesController.getInstance(currentAccount).getChat(-did);
+                    return fromChat == null ? "" : fromChat.title;
+                }
+            }
         } else if (message.isOutOwner() && fromUser != null) {
             return LocaleController.getString(R.string.FromYou);
         } else if (!isSavedDialog && message != null && message.messageOwner != null && message.messageOwner.from_id instanceof TLRPC.TL_peerUser && (user = MessagesController.getInstance(currentAccount).getUser(message.messageOwner.from_id.user_id)) != null) {

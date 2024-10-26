@@ -51,6 +51,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uz.unnarsx.cherrygram.misc.Constants;
+
 public class ContactsController extends BaseController {
 
     private Account systemAccount;
@@ -366,7 +368,7 @@ public class ContactsController extends BaseController {
     }
 
     public String getInviteText(int contacts) {
-        String link = inviteLink == null ? "https://t.me/Cherry_gram" : inviteLink;
+        String link = Constants.CG_CHANNEL_URL;
         if (contacts <= 1) {
             return LocaleController.formatString("InviteText2", R.string.InviteText2, link);
         } else {
@@ -415,7 +417,7 @@ public class ContactsController extends BaseController {
                 readContacts();
                 if (systemAccount == null) {
                     try {
-                        systemAccount = new Account("" + getUserConfig().getClientUserId(), "org.telegram.messenger");
+                        systemAccount = new Account("" + getUserConfig().getClientUserId(), "uz.unnarsx.cherrygram");
                         am.addAccountExplicitly(systemAccount, "", null);
                     } catch (Exception ignore) {
 
@@ -523,7 +525,7 @@ public class ContactsController extends BaseController {
 
                     }
                     try {
-                        systemAccount = new Account("" + getUserConfig().getClientUserId(), "org.telegram.messenger");
+                        systemAccount = new Account("" + getUserConfig().getClientUserId(), "uz.unnarsx.cherrygram");
                         am.addAccountExplicitly(systemAccount, "", null);
                     } catch (Exception ignore) {
 

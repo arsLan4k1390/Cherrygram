@@ -217,14 +217,11 @@ public class CameraXController {
     }
 
     private int getNextFlashMode(int legacyMode) {
-        switch (legacyMode) {
-            case ImageCapture.FLASH_MODE_AUTO:
-                return ImageCapture.FLASH_MODE_ON;
-            case ImageCapture.FLASH_MODE_ON:
-                return ImageCapture.FLASH_MODE_OFF;
-            default:
-                return ImageCapture.FLASH_MODE_AUTO;
-        }
+        return switch (legacyMode) {
+            case ImageCapture.FLASH_MODE_AUTO -> ImageCapture.FLASH_MODE_ON;
+            case ImageCapture.FLASH_MODE_ON -> ImageCapture.FLASH_MODE_OFF;
+            default -> ImageCapture.FLASH_MODE_AUTO;
+        };
     }
 
     public int setNextFlashMode() {

@@ -83,16 +83,12 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
     }
 
     private static String getPerformanceClassString() {
-        switch (SharedConfig.getDevicePerformanceClass()) {
-            case SharedConfig.PERFORMANCE_CLASS_LOW:
-                return "LOW";
-            case SharedConfig.PERFORMANCE_CLASS_AVERAGE:
-                return "AVERAGE";
-            case SharedConfig.PERFORMANCE_CLASS_HIGH:
-                return "HIGH";
-            default:
-                return "UNKNOWN";
-        }
+        return switch (SharedConfig.getDevicePerformanceClass()) {
+            case SharedConfig.PERFORMANCE_CLASS_LOW -> "LOW";
+            case SharedConfig.PERFORMANCE_CLASS_AVERAGE -> "AVERAGE";
+            case SharedConfig.PERFORMANCE_CLASS_HIGH -> "HIGH";
+            default -> "UNKNOWN";
+        };
     }
 
     public static String getCrashReportMessage() {

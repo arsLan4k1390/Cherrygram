@@ -6,9 +6,6 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.tgnet.TLObject;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 public class ErrorDatabaseHelper {
     public static String getMethodName(TLObject method) {
         var name = method.toString();

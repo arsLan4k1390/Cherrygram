@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.telegram.messenger.ApplicationLoader
-import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 
@@ -65,9 +64,5 @@ object CherrygramExperimentalConfig: CoroutineScope by CoroutineScope(
         putBoolean("EP_SlowNetworkMode", slowNetworkMode)
     }
     /** Network finish **/
-
-    init {
-        CherrygramToasts.init(sharedPreferences)
-    }
 
 }

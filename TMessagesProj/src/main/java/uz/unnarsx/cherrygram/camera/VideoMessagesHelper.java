@@ -237,6 +237,42 @@ public class VideoMessagesHelper {
         }
     }
 
+    public int getSliderW() {
+        return switch (AndroidUtilities.displaySize.x) {
+            case 1440 -> AndroidUtilities.densityDpi > 560 ? 85 : 105;
+            case 1080 -> AndroidUtilities.densityDpi > 420 ? 115 : 140;
+            case 720 -> AndroidUtilities.densityDpi > 280 ? 175 : 210;
+            default -> AndroidUtilities.densityDpi > 420 ? 120 : 145;
+        };
+    }
+
+    public int getSliderH() {
+        return switch (AndroidUtilities.displaySize.x) {
+            case 1440 -> 10;
+            case 1080 -> 20;
+            case 720 -> 35;
+            default -> 25;
+        };
+    }
+
+    public int getSliderBM() {
+        return switch (AndroidUtilities.displaySize.x) {
+            case 1440 -> 20;
+            case 1080 -> 23;
+            case 720 -> 32;
+            default -> 25;
+        };
+    }
+
+    public int getControlButtonsMargin() {
+        return switch (AndroidUtilities.displaySize.x) {
+            case 1440 -> 10;
+            case 1080 -> 13;
+            case 720 -> 20;
+            default -> 15;
+        };
+    }
+
     public static Range<Integer> getCameraXFpsRange() {
         Range<Integer> fpsRange = new Range<>(30, 30);
         if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange25to30) {

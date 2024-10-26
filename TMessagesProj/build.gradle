@@ -90,6 +90,7 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }
 
+//def isWindows = String.valueOf(DefaultNativePlatform.currentOperatingSystem.toFamilyName() == OperatingSystemFamily.WINDOWS)
 android {
     kotlinOptions {
         jvmTarget = '14'
@@ -157,7 +158,7 @@ android {
 //            minifyEnabled false
 //            shrinkResources false
 //            multiDexEnabled true
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro', '../TMessagesProj/proguard-rules-beta.pro'
 //            ndk.debugSymbolLevel = 'FULL'
             buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"" + APP_VERSION_NAME_CHERRY + "\""
             buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
@@ -173,20 +174,25 @@ android {
 //            ndk.debugSymbolLevel = 'FULL'
             buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"" + APP_VERSION_NAME_CHERRY + "\""
             buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
+//            buildConfigField "String", "APP_CENTER_HASH", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "false"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
+//            buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
         }
 
         release {
 //            jniDebuggable false
 //            minifyEnabled true
+//            shrinkResources false
 //            multiDexEnabled true
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
 //            ndk.debugSymbolLevel = 'FULL'
             buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"" + APP_VERSION_NAME_CHERRY + "\""
             buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
+//            buildConfigField "String", "APP_CENTER_HASH", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "false"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
+//            buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
         }
     }
     namespace 'org.telegram.messenger'

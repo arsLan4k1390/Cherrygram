@@ -6,9 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.SharedConfig
 import uz.unnarsx.cherrygram.camera.CameraXUtils
-import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 
@@ -34,7 +32,7 @@ object CherrygramCameraConfig: CoroutineScope by CoroutineScope(
     /** Camera type finish **/
 
     /** Camera start **/
-    var disableAttachCamera by sharedPreferences.boolean("CP_DisableCam", SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW)
+    var disableAttachCamera by sharedPreferences.boolean("CP_DisableCam", true)
     fun toggleDisableAttachCamera() {
         disableAttachCamera = !disableAttachCamera
         putBoolean("CP_DisableCam", disableAttachCamera)
@@ -116,9 +114,5 @@ object CherrygramCameraConfig: CoroutineScope by CoroutineScope(
     var whiteBackground by sharedPreferences.boolean("CG_WhiteBG", false)
     var videoMessagesResolution by sharedPreferences.int("CG_Round_Video_Resolution", 512)
     /** Videomessages finish **/
-
-    init {
-        CherrygramToasts.init(sharedPreferences)
-    }
 
 }

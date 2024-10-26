@@ -61,12 +61,25 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     description = getString(R.string.SP_AskPinForChats_Desc)
 
                     contract({
-                        return@contract CherrygramPrivacyConfig.askForPasscodeBeforeOpenChat
+                        return@contract CherrygramPrivacyConfig.askBiometricsToOpenChat
                     }) {
                         CGBiometricPrompt.prompt(bf.parentActivity) {
-                            CherrygramPrivacyConfig.askForPasscodeBeforeOpenChat = it
+                            CherrygramPrivacyConfig.askBiometricsToOpenChat = it
                             bf.parentLayout.rebuildAllFragmentViews(true, true)
                             AppRestartHelper.createRestartBulletin(bf)
+                        }
+                    }
+                }
+                switch {
+                    title = getString(R.string.SP_AskPinForArchive)
+                    description = getString(R.string.SP_AskPinForArchive_Desc)
+
+                    contract({
+                        return@contract CherrygramPrivacyConfig.askBiometricsToOpenArchive
+                    }) {
+                        CGBiometricPrompt.prompt(bf.parentActivity) {
+                            CherrygramPrivacyConfig.askBiometricsToOpenArchive = it
+                            bf.parentLayout.rebuildAllFragmentViews(true, true)
                         }
                     }
                 }

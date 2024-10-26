@@ -464,7 +464,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
                     updateMessages();
                 } else if (position == channelPreviewRow) {
-                    Browser.openUrl(getParentActivity(), "https://t.me/Cherry_gram");
+                    Browser.openUrl(getParentActivity(), Constants.CG_CHANNEL_URL);
                 } else if (position == channelPreviewSwitchRow) {
                     CherrygramAppearanceConfig.INSTANCE.toggleProfileChannelPreview();
                     if (view instanceof TextCheckCell) {

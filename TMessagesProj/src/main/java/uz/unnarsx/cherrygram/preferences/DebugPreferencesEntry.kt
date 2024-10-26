@@ -89,15 +89,6 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = "Bot tabs 3d effect"
-
-                contract({
-                    return@contract SharedConfig.botTabs3DEffect
-                }) {
-                    SharedConfig.setBotTabs3DEffect(!SharedConfig.botTabs3DEffect)
-                }
-            }
-            switch {
                 title = "Swipe inside a bot to close *"
                 description = "When you swipe down (accidentally or intentionally), web-view just gets closed while you just want to scroll something in the mini-app"
 

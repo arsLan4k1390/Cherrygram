@@ -11,7 +11,6 @@ import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
-import uz.unnarsx.cherrygram.helpers.CherrygramToasts
 import uz.unnarsx.cherrygram.preferences.boolean
 
 object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
@@ -26,15 +25,14 @@ object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
     /** Privacy finish **/
 
     /** Passcode lock start **/
-    var askForPasscodeBeforeOpenChat by sharedPreferences.boolean("askForPasscodeBeforeOpenChat", false)
+    var askBiometricsToOpenChat by sharedPreferences.boolean("SP_AskBiometricsToOpenChat", false)
+    var askBiometricsToOpenArchive by sharedPreferences.boolean("SP_AskBiometricsToOpenArchive", false)
     private var tweakPasscodeChatsArray by sharedPreferences.boolean("tweakPasscodeChatsArray", false)
     var askPasscodeBeforeDelete by sharedPreferences.boolean("SP_AskPinBeforeDelete", false)
     var allowSystemPasscode by sharedPreferences.boolean("SP_AllowSystemPasscode", false)
     /** Passcode lock finish **/
 
     init {
-        CherrygramToasts.init(sharedPreferences)
-
         launch {
             if (googleAnalytics && ApplicationLoader.checkPlayServices()) {
                 FirebaseAnalyticsHelper.start(ApplicationLoader.applicationContext)

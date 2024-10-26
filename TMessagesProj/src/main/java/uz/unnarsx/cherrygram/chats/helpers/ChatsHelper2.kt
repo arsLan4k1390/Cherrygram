@@ -1,5 +1,6 @@
 package uz.unnarsx.cherrygram.chats.helpers
 
+import android.text.TextUtils
 import android.view.View
 import android.widget.FrameLayout
 import org.telegram.messenger.AndroidUtilities
@@ -18,8 +19,8 @@ import org.telegram.ui.Components.BulletinFactory
 import org.telegram.ui.Components.ShareAlert
 import org.telegram.ui.Components.TranslateAlert2
 import org.telegram.ui.Components.UndoView
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
@@ -41,8 +42,8 @@ object ChatsHelper2 {
     }
 
     @JvmStatic
-    fun injectChatActivityAvatarArrayItems(cf: ChatActivity, arr: Array<AvatarPreviewer.MenuItem>, enableMention: Boolean, enableSearchMessages: Boolean) {
-        var startPos = if (enableMention || enableSearchMessages) 3 else 2
+    fun injectChatActivityAvatarArrayItems(cf: ChatActivity, arr: Array<AvatarPreviewer.MenuItem>, enableMention: Boolean,  enableSearchMessages: Boolean, enableCopyUsername: Boolean, enableCopyId: Boolean) {
+        var startPos = if (enableMention || enableSearchMessages || enableCopyUsername || enableCopyId) 6 else 5
 
         if (ChatObject.canBlockUsers(cf.currentChat)) {
             arr[startPos] = AvatarPreviewer.MenuItem.CG_KICK
@@ -99,6 +100,27 @@ object ChatsHelper2 {
 
             else -> {}
         }
+    }
+
+    @JvmStatic
+    fun getActiveUsername(user: TLRPC.User): String {
+        var username: String? = null
+        var usernames = ArrayList<TLRPC.TL_username?>()
+        usernames.addAll(user.usernames)
+        if (!TextUtils.isEmpty(user.username)) {
+            username = user.username
+        }
+        usernames = ArrayList(user.usernames)
+        if (TextUtils.isEmpty(username)) {
+            for (i in usernames.indices) {
+                val u: TLRPC.TL_username? = usernames[i]
+                if (u != null && u.active && !TextUtils.isEmpty(u.username)) {
+                    username = u.username
+                    break
+                }
+            }
+        }
+        return username ?: ""
     }
     /** Avatar admin actions finish **/
 
@@ -224,6 +246,8 @@ object ChatsHelper2 {
                 "Date: " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.date.toLong()),
                 R.drawable.msg_calendar2
             ) {
+                AndroidUtilities.addToClipboard(CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.date.toLong()))
+                BulletinFactory.of(field, null).createCopyBulletin(getString(R.string.TextCopied)).show()
                 currentPopup?.dismiss()
                 currentPopup = null
             }
@@ -241,7 +265,7 @@ object ChatsHelper2 {
             }
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE -> {
                 // Save message
-                val id = ChatsHelper2.getCustomChatID()
+                val id = getCustomChatID()
 
                 cf.sendMessagesHelper.sendMessage(arrayListOf(msg), id, false, false, true, 0)
 

@@ -11,7 +11,6 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.BulletinFactory
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
-import uz.unnarsx.cherrygram.Extra
 import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics
 import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
@@ -47,7 +46,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                         CherrygramCoreConfig.lastUpdateCheckTime = System.currentTimeMillis()
                         detail = UpdaterUtils.getLastCheckUpdateTime()
 
-                        Browser.openUrl(bf.context, Extra.PLAYSTORE_APP_URL)
+                        Browser.openUrl(bf.context, Constants.UPDATE_APP_URL)
                     } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
                         // Fuckoff :)
                     } else {
@@ -79,19 +78,19 @@ class AboutPreferencesEntry : BasePreferencesEntry {
             textIcon {
                 icon = R.drawable.msg_channel_solar
                 title = getString(R.string.CGP_ToChannel)
-                value = "@Cherry_gram"
+                value = "@${Constants.CG_CHANNEL_USERNAME}"
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    Browser.openUrl(bf.parentActivity, "https://t.me/Cherry_gram")
+                    bf.messagesController.openByUserName(Constants.CG_CHANNEL_USERNAME, bf, 1);
                 }
             }
             textIcon {
                 icon = R.drawable.msg_discuss_solar
                 title = getString(R.string.CGP_ToChat)
-                value = "@CherrygramSupport"
+                value = "@${Constants.CG_CHAT_USERNAME}"
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    Browser.openUrl(bf.parentActivity, "https://t.me/CherrygramSupport")
+                    bf.messagesController.openByUserName(Constants.CG_CHAT_USERNAME, bf, 1);
                 }
             }
             textIcon {

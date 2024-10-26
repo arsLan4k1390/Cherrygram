@@ -159,6 +159,8 @@ public class AvatarPreviewer {
         OPEN_GROUP("OpenGroup2", R.string.OpenGroup2, R.drawable.msg_discussion),
         SEND_MESSAGE("SendMessage", R.string.SendMessage, R.drawable.msg_discussion),
         MENTION("Mention", R.string.Mention, R.drawable.msg_mention),
+        CG_COPY_USERNAME("ProfileCopyUsername", R.string.ProfileCopyUsername, R.drawable.msg_mention),
+        CG_COPY_ID("CG_CopyID", R.string.CG_CopyID, R.drawable.msg_copy),
         SEARCH_MESSAGES("AvatarPreviewSearchMessages", R.string.AvatarPreviewSearchMessages, R.drawable.msg_search),
         CG_KICK("KickFromGroup", R.string.KickFromGroup, R.drawable.msg_remove),
         CG_CHANGE_PERMS("ChangePermissions", R.string.ChangePermissions, R.drawable.msg_permissions),

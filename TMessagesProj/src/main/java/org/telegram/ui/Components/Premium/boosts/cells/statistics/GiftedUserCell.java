@@ -49,7 +49,7 @@ public class GiftedUserCell extends UserCell {
     }
 
     public GiftedUserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton, Theme.ResourcesProvider resourcesProvider) {
-        super(context, padding, checkbox, admin, needAddButton, resourcesProvider, false);
+        super(context, padding, checkbox, admin, needAddButton, resourcesProvider, false, false);
         init();
     }
 

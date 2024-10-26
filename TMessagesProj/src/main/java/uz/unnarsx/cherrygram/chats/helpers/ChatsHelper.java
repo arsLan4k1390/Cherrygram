@@ -523,7 +523,6 @@ public class ChatsHelper extends BaseController {
                 chatActivity.getUndoView().showWithAction(chatID, UndoView.ACTION_FWD_MESSAGES, messages.size());
             }
         } catch (Exception ignore) {
-            ignore.printStackTrace();
             chatActivity.clearSelectionMode();
             Toast.makeText(chatActivity.getParentActivity(), getString(R.string.EP_CustomChatNotFound), Toast.LENGTH_SHORT).show();
         }
