@@ -239,7 +239,6 @@ import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator;
 import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
-import uz.unnarsx.cherrygram.core.updater.UpdaterUtils;
 import uz.unnarsx.cherrygram.core.icons.CGUIResources;
 import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics;
 
@@ -1044,9 +1043,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         }
 
         if (CherrygramCoreConfig.INSTANCE.getAutoOTA()) {
-            try {
-                UpdaterUtils.checkUpdates(actionBarLayout.getFragmentStack().size() > 0 ? actionBarLayout.getFragmentStack().get(0) : layersActionBarLayout.getFragmentStack().get(0), false);
-            } catch (Exception ignored) {}
+            checkCgUpdates(getSafeLastFragment(), null, false);
         }
         if (!CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) CherrygramExtras.postCheckFollowChannel(this, currentAccount);
         ChatsHelper2.checkCustomChatID(currentAccount);
@@ -6632,6 +6629,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             showUpdateActivity(UserConfig.selectedAccount, SharedConfig.pendingAppUpdate, true);
         }
         checkAppUpdate(false, null);*/
+//        if (CherrygramCoreConfig.INSTANCE.getAutoOTA()) { // triggers GitHub a lot
+//            checkCgUpdates(getSafeLastFragment(), null, false);
+//        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             ApplicationLoader.canDrawOverlays = Settings.canDrawOverlays(this);
@@ -8292,13 +8292,28 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         drawerLayoutAdapter.notifyDataSetChanged();
     }
 
-
-    public void checkCherryUpdate(Browser.Progress progress) {
-        if (progress != null) progress.init();
-        BaseFragment fragment = actionBarLayout.getFragmentStack().get(0);
-        if (fragment != null) {
-            UpdaterUtils.checkUpdates(fragment, true, () -> showBulletin(factory -> factory.createErrorBulletin(LocaleController.getString("UP_Not_Found", R.string.UP_Not_Found))), null, progress);
+    public void checkCgUpdates(BaseFragment fragment, Browser.Progress progress, boolean manual) {
+        if (fragment == null) {
+            fragment = actionBarLayout.getFragmentStack().get(0);
         }
+        if (fragment == null) {
+            return;
+        }
+
+        if (manual) { // Used for deeplinks and unsupported messages
+            if (progress != null) progress.init();
+            ApplicationLoader.applicationLoaderInstance.checkCgUpdatesManually(fragment, this, progress);
+        } else {
+            ApplicationLoader.applicationLoaderInstance.checkCgUpdates(fragment);
+        }
+    }
+
+    public void showCgUpdaterSettings(Context context, BaseFragment fragment) {
+        ApplicationLoader.applicationLoaderInstance.showUpdaterSettings(context, fragment);
+    }
+
+    public String getLastCheckUpdateTime() {
+        return getString(R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramCoreConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true);
     }
 
     private void openCameraScanActivity() {

@@ -25,7 +25,6 @@ import java.util.Calendar;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.Extra;
-import uz.unnarsx.cherrygram.core.updater.UpdaterUtils;
 
 public class UserHelper extends BaseController {
 
@@ -69,7 +68,7 @@ public class UserHelper extends BaseController {
                 URL url = new URL(uri);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("POST");
-                con.setRequestProperty("User-Agent", UpdaterUtils.formatUserAgent());
+                con.setRequestProperty("User-Agent", NetworkHelper.formatUserAgent());
                 con.setRequestProperty("X-Api-Key", secret);
 
                 // For POST only - START

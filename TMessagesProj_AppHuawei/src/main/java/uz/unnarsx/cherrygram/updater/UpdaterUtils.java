@@ -1,6 +1,4 @@
-package uz.unnarsx.cherrygram.core.updater;
-
-import static org.telegram.messenger.LocaleController.getString;
+package uz.unnarsx.cherrygram.updater;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
@@ -25,7 +23,6 @@ import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.R;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -94,10 +91,6 @@ public class UpdaterUtils {
         }
     }
 
-    public static void checkUpdates(BaseFragment fragment, boolean manual) {
-        checkUpdates(fragment, manual, null, null, null);
-    }
-
     public interface OnUpdateNotFound {
         void run();
     }
@@ -106,13 +99,16 @@ public class UpdaterUtils {
         void run();
     }
 
-    public static void checkUpdates(BaseFragment fragment, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound) {
-        checkUpdates(fragment, manual, onUpdateNotFound, onUpdateFound, null);
+    public static void checkUpdates(BaseFragment fragment, boolean manual) {
+        checkUpdates(fragment, manual, null, null, null);
     }
+
+    /*public static void checkUpdates(BaseFragment fragment, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound) {
+        checkUpdates(fragment, manual, onUpdateNotFound, onUpdateFound, null);
+    }*/
 
     public static void checkUpdates(BaseFragment fragment, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound, Browser.Progress progress) {
         if (CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) return;
-        if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) return;
 
         if (checkingForUpdates || id != 1L || (System.currentTimeMillis() - CherrygramCoreConfig.INSTANCE.getUpdateScheduleTimestamp() < updateCheckInterval && !manual))
             return;
@@ -122,7 +118,7 @@ public class UpdaterUtils {
             CherrygramCoreConfig.INSTANCE.getLastUpdateCheckTime();
             CherrygramCoreConfig.INSTANCE.setLastUpdateCheckTime(System.currentTimeMillis());
             try {
-                var connection = (HttpURLConnection) new URI(uri).toURL().openConnection();
+                HttpURLConnection connection = (HttpURLConnection) new URI(uri).toURL().openConnection();
                 if (CherrygramCoreConfig.INSTANCE.getInstallBetas()) {
                     connection = (HttpURLConnection) new URI(betauri).toURL().openConnection();
                 }
@@ -130,15 +126,15 @@ public class UpdaterUtils {
                 connection.setRequestProperty("User-Agent", formatUserAgent());
                 connection.setRequestProperty("Content-Type", "application/json");
 
-                var textBuilder = new StringBuilder();
+                StringBuilder textBuilder = new StringBuilder();
                 try (Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8))) {
                     int c;
                     while ((c = reader.read()) != -1)
                         textBuilder.append((char) c);
                 }
 
-                var obj = new JSONObject(textBuilder.toString());
-                var arr = obj.getJSONArray("assets");
+                JSONObject obj = new JSONObject(textBuilder.toString());
+                org.json.JSONArray arr = obj.getJSONArray("assets");
 
                 if (arr.length() == 0)
                     return;
@@ -146,17 +142,12 @@ public class UpdaterUtils {
                 String[] supportedTypes = {"arm64-v8a", "armeabi-v7a", "x86", "x86_64", "universal"};
                 loop:
                 for (int i = 0; i < arr.length(); i++) {
-                    String link = "";
-                    if (ApplicationLoader.isStandaloneBuild() && !ApplicationLoader.isHuaweiStoreBuild()) {
-                        link = arr.getJSONObject(i).getString("browser_download_url");
-                        downloadURL = link;
-                        FileLog.d ("DownloadLink: " + downloadURL);
-                    } else if (ApplicationLoader.isStandaloneBuild() && ApplicationLoader.isHuaweiStoreBuild()) {
-                        link = arr.getJSONObject(i).getString("browser_download_url")
-                                .replace("Cherrygram-", "Cherrygram-Huawei-");
-                        downloadURL = link;
-                        FileLog.d ("DownloadLinkHuawei: " + downloadURL);
-                    }
+                    String link;
+                    link = arr.getJSONObject(i).getString("browser_download_url")
+                            .replace("Cherrygram-", "Cherrygram-Huawei-");
+                    downloadURL = link;
+                    if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d ("DownloadLinkHuawei: " + downloadURL);
+
                     size = AndroidUtilities.formatFileSize(arr.getJSONObject(i).getLong("size"));
                     for (String type : supportedTypes) {
                         if (link.contains(type) && Objects.equals(CGResourcesHelper.INSTANCE.getAbiCode(), type)) {
@@ -192,18 +183,18 @@ public class UpdaterUtils {
 
     public static void downloadApk(Context context, String link, String title) {
         if (context != null && !updateDownloaded) {
-            var request = new DownloadManager.Request(Uri.parse(link));
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(link));
 
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);
             request.setTitle(title);
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             request.setDestinationInExternalFilesDir(context, "ota/" + version, "update.apk");
 
-            var manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+            DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
             id = manager.enqueue(request);
 
-            var downloadBroadcastReceiver = new DownloadReceiver();
-            var intentFilter = new IntentFilter();
+            DownloadReceiver downloadBroadcastReceiver = new DownloadReceiver();
+            IntentFilter intentFilter = new IntentFilter();
             intentFilter.addAction("android.intent.action.DOWNLOAD_COMPLETE");
             intentFilter.addAction("android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -217,10 +208,10 @@ public class UpdaterUtils {
     }
 
     public static void installApk(Context context, String path) {
-        var file = new File(path);
+        File file = new File(path);
         if (!file.exists())
             return;
-        var install = new Intent(Intent.ACTION_VIEW);
+        Intent install = new Intent(Intent.ACTION_VIEW);
         Uri fileUri;
         if (Build.VERSION.SDK_INT >= 24) {
             fileUri = FileProvider.getUriForFile(context, Constants.PACKAGE_NAME + ".provider", file);
@@ -264,7 +255,7 @@ public class UpdaterUtils {
 
     public static long getMillisFromDate(String d, String format) {
         @SuppressLint("SimpleDateFormat")
-        var sdf = new SimpleDateFormat(format);
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
         try {
             Date date = sdf.parse(d);
             assert date != null;
@@ -383,7 +374,8 @@ public class UpdaterUtils {
         }
     }
 
-    public static String getLastCheckUpdateTime() {
+    /*public static String getLastCheckUpdateTime() {
         return getString(R.string.UP_LastCheck) + ": " + LocaleController.formatDateTime(CherrygramCoreConfig.INSTANCE.getLastUpdateCheckTime() / 1000, true);
-    }
+    }*/
+
 }

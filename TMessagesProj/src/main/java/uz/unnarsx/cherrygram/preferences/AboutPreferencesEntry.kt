@@ -10,6 +10,7 @@ import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.BulletinFactory
+import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics
 import uz.unnarsx.cherrygram.misc.Constants
@@ -21,8 +22,6 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextDetailRow
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
-import uz.unnarsx.cherrygram.core.updater.UpdaterBottomSheet
-import uz.unnarsx.cherrygram.core.updater.UpdaterUtils
 
 class AboutPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.CGP_Header_About)) {
@@ -39,18 +38,18 @@ class AboutPreferencesEntry : BasePreferencesEntry {
             textDetail {
                 icon = R.drawable.sync_outline_28
                 title = getString(R.string.UP_Category_Updates)
-                detail = UpdaterUtils.getLastCheckUpdateTime()
+                detail = LaunchActivity.instance.lastCheckUpdateTime
 
                 listener = TGKitTextDetailRow.TGTDListener {
                     if (CherrygramCoreConfig.isPlayStoreBuild()) {
                         CherrygramCoreConfig.lastUpdateCheckTime = System.currentTimeMillis()
-                        detail = UpdaterUtils.getLastCheckUpdateTime()
+                        detail = LaunchActivity.instance.lastCheckUpdateTime
 
                         Browser.openUrl(bf.context, Constants.UPDATE_APP_URL)
                     } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
                         // Fuckoff :)
                     } else {
-                        UpdaterBottomSheet.showAlert(bf.context, bf, false, null)
+                        LaunchActivity.instance.showCgUpdaterSettings(bf.context, bf)
                     }
                 }
             }

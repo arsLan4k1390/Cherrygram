@@ -268,7 +268,7 @@ public interface INavigationLayout {
                 fragment1.set(presentFragment(new NavigationParams(fragment)));
             }
             return fragment1.get();
-        } else if (fragment instanceof DialogsActivity && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive()) {
+        } else if (fragment instanceof DialogsActivity && ChatsPasswordHelper.INSTANCE.getShouldRequireBiometricsToOpenArchive()) {
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is dialogs activity");
             if (getParentActivity() != null
                     && fragment.arguments.getInt("folderId") != 0

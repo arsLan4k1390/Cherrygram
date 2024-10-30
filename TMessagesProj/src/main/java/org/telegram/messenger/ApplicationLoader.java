@@ -38,13 +38,16 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.json.JSONObject;
+import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.voip.VideoCapturerDevice;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.ActionBarLayout;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Adapters.DrawerLayoutAdapter;
 import org.telegram.ui.Components.ForegroundDetector;
 import org.telegram.ui.IUpdateLayout;
+import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.LauncherIconController;
 
 import java.io.File;
@@ -688,4 +691,18 @@ public class ApplicationLoader extends Application {
     public BaseFragment openSettings(int n) {
         return null;
     }
+
+
+    public boolean checkCgUpdates(BaseFragment fragment) {
+        return false;
+    }
+
+    public boolean checkCgUpdatesManually(BaseFragment fragment, LaunchActivity launchActivity, Browser.Progress progress) {
+        return false;
+    }
+
+    public boolean showUpdaterSettings(Context context, BaseFragment fragment) {
+        return false;
+    }
+
 }

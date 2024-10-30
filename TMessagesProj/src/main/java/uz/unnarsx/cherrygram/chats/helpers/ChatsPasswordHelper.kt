@@ -79,4 +79,9 @@ object ChatsPasswordHelper {
     var shouldRequireBiometricsToOpenChats =
         CherrygramPrivacyConfig.askBiometricsToOpenChat && getArrayList(Passcode_Array) != null && !getArrayList(Passcode_Array)!!.isEmpty()
                 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+
+    var shouldRequireBiometricsToOpenArchive =
+        CherrygramPrivacyConfig.askBiometricsToOpenArchive
+                && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+
 }

@@ -80,7 +80,7 @@ public class DrawerActionCell extends FrameLayout {
         boolean error = currentError;
         if (!error && currentId == 8) {
             Set<String> suggestions = MessagesController.getInstance(UserConfig.selectedAccount).pendingSuggestions;
-            error = suggestions.contains("VALIDATE_PHONE_NUMBER") || suggestions.contains("VALIDATE_PASSWORD");
+            error = /*suggestions.contains("VALIDATE_PHONE_NUMBER") ||*/ suggestions.contains("VALIDATE_PASSWORD");
         }
         if (error) {
             int countTop = AndroidUtilities.dp(12.5f);

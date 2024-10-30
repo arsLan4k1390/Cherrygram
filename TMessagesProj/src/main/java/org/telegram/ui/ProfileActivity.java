@@ -559,10 +559,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     public int birthdayRow;
     private int setUsernameRow;
     private int bioRow;
-    private int phoneSuggestionSectionRow;
+//    private int phoneSuggestionSectionRow;
     private int graceSuggestionRow;
     private int graceSuggestionSectionRow;
-    private int phoneSuggestionRow;
+//    private int phoneSuggestionRow;
     private int passwordSuggestionSectionRow;
     private int passwordSuggestionRow;
     private int settingsSectionRow;
@@ -7864,10 +7864,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             updateListAnimated(false);
         } else if (id == NotificationCenter.newSuggestionsAvailable) {
             int prevRow1 = passwordSuggestionRow;
-            int prevRow2 = phoneSuggestionRow;
+//            int prevRow2 = phoneSuggestionRow;
             int prevRow3 = graceSuggestionRow;
             updateRowsIds();
-            if (prevRow1 != passwordSuggestionRow || prevRow2 != phoneSuggestionRow || prevRow3 != graceSuggestionRow) {
+            if (prevRow1 != passwordSuggestionRow || /*prevRow2 != phoneSuggestionRow ||*/ prevRow3 != graceSuggestionRow) {
                 listAdapter.notifyDataSetChanged();
             }
         } else if (id == NotificationCenter.topicsDidLoaded) {
@@ -8741,8 +8741,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         bioRow = -1;
         channelRow = -1;
         channelDividerRow = -1;
-        phoneSuggestionSectionRow = -1;
-        phoneSuggestionRow = -1;
+        /*phoneSuggestionSectionRow = -1;
+        phoneSuggestionRow = -1;*/
         passwordSuggestionSectionRow = -1;
         graceSuggestionRow = -1;
         graceSuggestionSectionRow = -1;
@@ -8894,10 +8894,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (suggestions.contains("PREMIUM_GRACE")) {
                     graceSuggestionRow = rowCount++;
                     graceSuggestionSectionRow = rowCount++;
-                } else if (suggestions.contains("VALIDATE_PHONE_NUMBER")) {
+                } /*else if (suggestions.contains("VALIDATE_PHONE_NUMBER")) {
                     phoneSuggestionRow = rowCount++;
                     phoneSuggestionSectionRow = rowCount++;
-                } else if (suggestions.contains("VALIDATE_PASSWORD")) {
+                }*/ else if (suggestions.contains("VALIDATE_PASSWORD")) {
                     passwordSuggestionRow = rowCount++;
                     passwordSuggestionSectionRow = rowCount++;
                 }
@@ -11833,9 +11833,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     SettingsSuggestionCell suggestionCell = (SettingsSuggestionCell) holder.itemView;
                     if (position == passwordSuggestionRow) {
                         suggestionCell.setType(SettingsSuggestionCell.TYPE_PASSWORD);
-                    } else if (position == phoneSuggestionRow) {
+                    } /*else if (position == phoneSuggestionRow) {
                         suggestionCell.setType(SettingsSuggestionCell.TYPE_PHONE);
-                    } else if (position == graceSuggestionRow) {
+                    }*/ else if (position == graceSuggestionRow) {
                         suggestionCell.setType(SettingsSuggestionCell.TYPE_GRACE);
                     }
                     break;
@@ -12044,7 +12044,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else if (position == lastSectionRow || position == membersSectionRow || position == cgShadowRow ||
                     position == secretSettingsSectionRow || position == settingsSectionRow || position == devicesSectionRow ||
                     position == helpSectionCell || position == setAvatarSectionRow || position == passwordSuggestionSectionRow ||
-                    position == phoneSuggestionSectionRow || position == premiumSectionsRow || position == reportDividerRow ||
+                    /*position == phoneSuggestionSectionRow ||*/ position == premiumSectionsRow || position == reportDividerRow ||
                     position == channelDividerRow || position == graceSuggestionSectionRow || position == balanceDividerRow
             ) {
                 return VIEW_TYPE_SHADOW;
@@ -12058,7 +12058,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 return VIEW_TYPE_SHARED_MEDIA;
             } else if (position == versionRow) {
                 return VIEW_TYPE_VERSION;
-            } else if (position == passwordSuggestionRow || position == phoneSuggestionRow || position == graceSuggestionRow) {
+            } else if (position == passwordSuggestionRow || /*position == phoneSuggestionRow ||*/ position == graceSuggestionRow) {
                 return VIEW_TYPE_SUGGESTION;
             } else if (position == addToGroupInfoRow) {
                 return VIEW_TYPE_ADDTOGROUP_INFO;
@@ -13298,8 +13298,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             put(++pointer, numberRow, sparseIntArray);
             put(++pointer, setUsernameRow, sparseIntArray);
             put(++pointer, bioRow, sparseIntArray);
-            put(++pointer, phoneSuggestionRow, sparseIntArray);
-            put(++pointer, phoneSuggestionSectionRow, sparseIntArray);
+            /*put(++pointer, phoneSuggestionRow, sparseIntArray);
+            put(++pointer, phoneSuggestionSectionRow, sparseIntArray);*/
             put(++pointer, passwordSuggestionRow, sparseIntArray);
             put(++pointer, passwordSuggestionSectionRow, sparseIntArray);
             put(++pointer, graceSuggestionRow, sparseIntArray);

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import androidx.core.content.FileProvider;
 
 import org.json.JSONObject;
+import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.web.BuildConfig;
 import org.telegram.messenger.web.R;
 import org.telegram.tgnet.ConnectionsManager;
@@ -33,6 +34,9 @@ import org.telegram.ui.SMSSubscribeSheet;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import uz.unnarsx.cherrygram.core.updater.UpdaterBottomSheet;
+import uz.unnarsx.cherrygram.core.updater.UpdaterUtils;
 
 public class ApplicationLoaderImpl extends ApplicationLoader {
     @Override
@@ -290,4 +294,31 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
         }
         return null;
     }
+
+    @Override
+    public boolean checkCgUpdates(BaseFragment fragment) {
+        try {
+            UpdaterUtils.checkUpdates(fragment, false);
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean checkCgUpdatesManually(BaseFragment fragment, LaunchActivity launchActivity, Browser.Progress progress) {
+        UpdaterUtils.checkUpdates(fragment, true, () -> launchActivity.showBulletin(factory -> factory.createErrorBulletin(LocaleController.getString(R.string.UP_Not_Found))), null, progress);
+        return true;
+    }
+
+    @Override
+    public boolean showUpdaterSettings(Context context, BaseFragment fragment) {
+        try {
+            UpdaterBottomSheet.showAlert(context, fragment, false, null);
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        return true;
+    }
+
 }

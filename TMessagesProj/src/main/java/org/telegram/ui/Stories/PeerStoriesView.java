@@ -3571,9 +3571,9 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider), 30))
         );
         buttonTextView.setOnClickListener(v -> {
-            if (ApplicationLoader.isStandaloneBuild() || BuildVars.isHuaweiStoreApp()) {
+            if (ApplicationLoader.isStandaloneBuild()) {
                 if (LaunchActivity.instance != null) {
-                    LaunchActivity.instance.checkCherryUpdate(null);
+                    LaunchActivity.instance.checkCgUpdates(null, null, true);
                 }
             } /*else if (BuildVars.isHuaweiStoreApp()){
                 Browser.openUrl(getContext(), BuildVars.HUAWEI_STORE_URL);

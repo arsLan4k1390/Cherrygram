@@ -435,7 +435,9 @@ public class ChatsHelper extends BaseController {
         item.setVisibility(t ? View.VISIBLE : View.GONE);
     }
 
-    public void makeReplyButtonClick(ChatActivity chatActivity) {
+    public void makeReplyButtonClick(ChatActivity chatActivity, boolean noForwards) {
+        if (noForwards) createReplyAction(chatActivity);
+
         switch (CherrygramChatsConfig.INSTANCE.getLeftBottomButton()) {
             case CherrygramChatsConfig.LEFT_BUTTON_REPLY:
                 createReplyAction(chatActivity);
@@ -454,7 +456,7 @@ public class ChatsHelper extends BaseController {
         }
     }
 
-    public void makeReplyButtonLongClick(ChatActivity chatActivity) {
+    public void makeReplyButtonLongClick(ChatActivity chatActivity, boolean noForwards) {
         ArrayList<String> configStringKeys = new ArrayList<>();
         ArrayList<Integer> configValues = new ArrayList<>();
 
@@ -479,8 +481,9 @@ public class ChatsHelper extends BaseController {
                 LaunchActivity.makeRipple(chatActivity.bottomMessagesActionContainer.getLeft(), chatActivity.bottomMessagesActionContainer.getBottom(), 5);
             }
 
-            chatActivity.replyButton.setText(CGResourcesHelper.getLeftButtonText());
-            Drawable image = chatActivity.getContext().getResources().getDrawable(CGResourcesHelper.getLeftButtonDrawable()).mutate();
+            chatActivity.replyButton.setText(CGResourcesHelper.getLeftButtonText(noForwards));
+
+            Drawable image = chatActivity.getContext().getResources().getDrawable(CGResourcesHelper.getLeftButtonDrawable(noForwards)).mutate();
             image.setColorFilter(new PorterDuffColorFilter(chatActivity.getThemedColor(Theme.key_actionBarActionModeDefaultIcon), PorterDuff.Mode.MULTIPLY));
             chatActivity.replyButton.setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
         });

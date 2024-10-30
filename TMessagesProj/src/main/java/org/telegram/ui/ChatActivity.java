@@ -9353,10 +9353,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         if (replyButton != null || getContext() == null) {
             return;
         }
+        boolean noForwards = getMessagesController().isChatNoForwards(currentChat) || currentChat != null && currentChat.noforwards;
 
         if (!isInsideContainer) {
             replyButton = new TextView(getContext());
-            replyButton.setText(CGResourcesHelper.getLeftButtonText());
+            replyButton.setText(CGResourcesHelper.getLeftButtonText(noForwards));
             replyButton.setGravity(Gravity.CENTER_VERTICAL);
             replyButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             replyButton.setPadding(AndroidUtilities.dp(14), 0, AndroidUtilities.dp(21), 0);
@@ -9364,11 +9365,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             replyButton.setTextColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon));
             replyButton.setCompoundDrawablePadding(AndroidUtilities.dp(7));
             replyButton.setTypeface(AndroidUtilities.bold());
-            Drawable image = getContext().getResources().getDrawable(CGResourcesHelper.getLeftButtonDrawable()).mutate();
+            Drawable image = getContext().getResources().getDrawable(CGResourcesHelper.getLeftButtonDrawable(noForwards)).mutate();
             image.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), PorterDuff.Mode.MULTIPLY));
             replyButton.setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
             replyButton.setOnClickListener(v -> {
-                getChatsHelper().makeReplyButtonClick(this);
+                getChatsHelper().makeReplyButtonClick(this, noForwards);
                 /*MessageObject messageObject = null;
                 for (int a = 1; a >= 0; a--) {
                     if (messageObject == null && selectedMessagesIds[a].size() != 0) {
@@ -9386,15 +9387,17 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 updateVisibleRows();
                 updateSelectedMessageReactions();*/
             });
+            bottomMessagesActionContainer.addView(replyButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP));
 
-            replyButton.setOnLongClickListener(v -> {
-                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                }
-                getChatsHelper().makeReplyButtonLongClick(this);
-                return false;
-            });
-            if (!getMessagesController().isChatNoForwards(currentChat)) bottomMessagesActionContainer.addView(replyButton, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP));
+            if (!noForwards && replyButton != null) {
+                replyButton.setOnLongClickListener(v -> {
+                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
+                        v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                    }
+                    getChatsHelper().makeReplyButtonLongClick(this, noForwards);
+                    return false;
+                });
+            }
         }
 
         forwardButton = new TextView(getContext());
@@ -18311,8 +18314,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     }
 
                     int newVisibility;
+                    boolean noForwards = getMessagesController().isChatNoForwards(currentChat) || currentChat != null && currentChat.noforwards;
 
-                    if ((chatMode == MODE_SCHEDULED || !allowChatActions || selectedMessagesIds[0].size() != 0 && selectedMessagesIds[1].size() != 0) && CherrygramChatsConfig.INSTANCE.getLeftBottomButton() == CherrygramChatsConfig.LEFT_BUTTON_REPLY) {
+                    if ((chatMode == MODE_SCHEDULED || !allowChatActions || selectedMessagesIds[0].size() != 0 && selectedMessagesIds[1].size() != 0) && (CherrygramChatsConfig.INSTANCE.getLeftBottomButton() == CherrygramChatsConfig.LEFT_BUTTON_REPLY || noForwards)) {
                         newVisibility = View.GONE;
                     } else if (selectedCount == 1) {
                         newVisibility = View.VISIBLE;
@@ -18330,7 +18334,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             for (int b = 0, N = selectedMessagesIds[a].size(); b < N; b++) {
                                 MessageObject message = selectedMessagesIds[a].valueAt(b);
                                 long groupId = message.getGroupId();
-                                if ((groupId == 0 || lastGroupId != 0 && lastGroupId != groupId || (ChatObject.isForum(currentChat) && !canSendMessageToTopic(message))) && CherrygramChatsConfig.INSTANCE.getLeftBottomButton() == CherrygramChatsConfig.LEFT_BUTTON_REPLY) {
+                                if ((groupId == 0 || lastGroupId != 0 && lastGroupId != groupId || (ChatObject.isForum(currentChat) && !canSendMessageToTopic(message))) && (CherrygramChatsConfig.INSTANCE.getLeftBottomButton() == CherrygramChatsConfig.LEFT_BUTTON_REPLY || noForwards)) {
                                     newVisibility = View.GONE;
                                     break;
                                 }
@@ -37749,7 +37753,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 };
                 BoostDialogs.openGiveAwayStatusDialog(messageObject, progressDialogCurrent, getContext(), getResourceProvider());
             } else if (type == 21) {
-                if (ApplicationLoader.isStandaloneBuild() || BuildVars.isHuaweiStoreApp()) {
+                if (ApplicationLoader.isStandaloneBuild()) {
                     if (LaunchActivity.instance != null) {
                         if (progressDialogCurrent != null) {
                             progressDialogCurrent.cancel(true);
@@ -37770,7 +37774,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 }
                             }
                         };
-                        LaunchActivity.instance.checkCherryUpdate(progressDialogCurrent);
+                        LaunchActivity.instance.checkCgUpdates(null, progressDialogCurrent, true);
                     }
                 } /*else if (BuildVars.isHuaweiStoreApp()){
                     Browser.openUrl(getContext(), BuildVars.HUAWEI_STORE_URL);

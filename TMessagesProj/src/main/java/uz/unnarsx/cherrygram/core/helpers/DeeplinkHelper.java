@@ -13,7 +13,6 @@ import org.telegram.ui.LaunchActivity;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.updater.UpdaterBottomSheet;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry;
@@ -65,7 +64,7 @@ public class DeeplinkHelper {
                         unknown.run();
                         return;
                     } else {
-                        LaunchActivity.instance.checkCherryUpdate(progress);
+                        LaunchActivity.instance.checkCgUpdates(fragment, progress, true);
                         return;
                     }
                 }
@@ -77,7 +76,7 @@ public class DeeplinkHelper {
                         unknown.run();
                         return;
                     } else if (!CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) {
-                        UpdaterBottomSheet.showAlert(fragment.getContext(), fragment, false, null);
+                        LaunchActivity.instance.showCgUpdaterSettings(fragment.getContext(), fragment);
                     }
                     return;
                 }

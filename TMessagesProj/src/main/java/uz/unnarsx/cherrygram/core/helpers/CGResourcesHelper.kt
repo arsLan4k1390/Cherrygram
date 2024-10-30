@@ -172,7 +172,9 @@ object CGResourcesHelper {
 
     /** Chats start **/
     @JvmStatic
-    fun getLeftButtonText(): String {
+    fun getLeftButtonText(noForwards: Boolean): String {
+        if (noForwards) return getString(R.string.Reply)
+
         return when (CherrygramChatsConfig.leftBottomButton) {
             CherrygramChatsConfig.LEFT_BUTTON_REPLY -> getString(R.string.Reply)
             CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE -> getString(R.string.CG_ToSaved)
@@ -182,7 +184,9 @@ object CGResourcesHelper {
     }
 
     @JvmStatic
-    fun getLeftButtonDrawable(): Int {
+    fun getLeftButtonDrawable(noForwards: Boolean): Int {
+        if (noForwards) return R.drawable.input_reply
+
         return when (CherrygramChatsConfig.leftBottomButton) {
             CherrygramChatsConfig.LEFT_BUTTON_REPLY -> R.drawable.input_reply
             CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE -> R.drawable.msg_saved
