@@ -26,7 +26,9 @@ import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.SpannableStringLight;
 import org.telegram.ui.Components.UpdateAppAlertDialog;
+import org.telegram.ui.Components.UpdateButton;
 import org.telegram.ui.Components.UpdateLayout;
+import org.telegram.ui.IUpdateButton;
 import org.telegram.ui.IUpdateLayout;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.SMSStatsActivity;
@@ -117,6 +119,12 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
     @Override
     public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenu, ViewGroup sideMenuContainer) {
 //        return new UpdateLayout(activity, sideMenu, sideMenuContainer);
+        return null;
+    }
+
+    @Override
+    public IUpdateButton takeUpdateButton(Context context) {
+//        return new UpdateButton(context);
         return null;
     }
 
@@ -312,9 +320,9 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
     }
 
     @Override
-    public boolean showUpdaterSettings(Context context, BaseFragment fragment) {
+    public boolean showUpdaterSettings(BaseFragment fragment) {
         try {
-            UpdaterBottomSheet.showAlert(context, fragment, false, null);
+            UpdaterBottomSheet.showAlert(fragment, false, null);
         } catch (Exception e) {
             FileLog.e(e);
         }

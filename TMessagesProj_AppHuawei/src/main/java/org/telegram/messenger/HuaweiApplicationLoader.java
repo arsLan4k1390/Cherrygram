@@ -74,9 +74,9 @@ public class HuaweiApplicationLoader extends ApplicationLoader {
     }
 
     @Override
-    public boolean showUpdaterSettings(Context context, BaseFragment fragment) {
+    public boolean showUpdaterSettings(BaseFragment fragment) {
         try {
-            UpdaterBottomSheet.showAlert(context, fragment, false, null);
+            UpdaterBottomSheet.showAlert(fragment, false, null);
         } catch (Exception e) {
             FileLog.e(e);
         }

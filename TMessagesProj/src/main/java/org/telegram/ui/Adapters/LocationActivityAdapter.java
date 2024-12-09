@@ -283,6 +283,10 @@ public class LocationActivityAdapter extends BaseLocationAdapter implements Loca
 
     }
 
+    protected void onCopyCoordinatesClick() {
+
+    }
+
     public void fetchLocationAddress() {
         if (locationType == ChatAttachAlertLocationLayout.LOCATION_TYPE_BIZ) {
             Location location;
@@ -426,6 +430,7 @@ public class LocationActivityAdapter extends BaseLocationAdapter implements Loca
             case VIEW_TYPE_DIRECTION: {
                 LocationDirectionCell cell = new LocationDirectionCell(mContext, resourcesProvider);
                 cell.setOnButtonClick(v -> onDirectionClick());
+                cell.setOnCoordinatesButtonClick(v -> onCopyCoordinatesClick());
                 view = cell;
                 break;
             }

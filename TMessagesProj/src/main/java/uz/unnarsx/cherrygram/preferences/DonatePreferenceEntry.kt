@@ -8,6 +8,7 @@ import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
@@ -171,5 +172,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
             }
 
         }
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("donates_screen")
     }
 }

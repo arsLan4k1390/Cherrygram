@@ -76,6 +76,7 @@
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygram нужен доступ к вашему местоположению, дабы вы смогли поделиться им с вашими друзьями. Сейчас будет запрос на разрешение использования вашего местоположения (пока приложение открыто).</string>
     <string name="CG_LocationPermission_Desc">Однако, если вы хотите, чтобы ваше местоположение было доступно вашим друзьям, пока Cherrygram закрыт и находится в фоновом режиме, то перейдите к функции \"Live Location\". До тех пор, пока вы не дадите свое согласие на использование функции Live Location, ваше местоположение в фоновом режиме будет недоступно.</string>
+    <string name="CG_Copy_Coordinates">Координаты</string>
     <!--Location screen-->
 
     <!--Search filter-->
@@ -190,7 +191,12 @@
     <string name="CP_ReplyBackground">Фон в ответах</string>
     <string name="CP_ReplyCustomColors">Кастомные цвета в ответах и превью ссылок</string>
     <string name="CP_ReplyBackgroundEmoji">Эмодзи в ответах и превью ссылок</string>
-    <string name="CP_HideStories">Скрыть Истории</string>
+    <string name="CP_HideStories">Скрыть Истории (локально)</string>
+    <string name="CP_HideStories_Desc">Истории исчезнут из списка чатов и из профилей.</string>
+    <string name="CP_ArchiveStoriesFromUsers">Архивировать истории контактов</string>
+    <string name="CP_ArchiveStoriesFromUsers_Desc">Истории контактов будут автоматически архивироваться и перемещаться в ваш архив. Работает во всех приложениях, использующих API Telegram.</string>
+    <string name="CP_ArchiveStoriesFromChannels">Архивировать истории каналов</string>
+    <string name="CP_ArchiveStoriesFromChannels_Desc">Истории из каналов и групп будут автоматически архивироваться и перемещаться в ваш архив. Работает во всех приложениях, использующих API Telegram.</string>
     <string name="CP_CustomWallpapers">Кастомный фон в чатах</string>
     <string name="CP_CustomWallpapers_Desc">Настройка кастомных обоев в чатах/группах/каналах, установленных премиум-пользователями или забущенными каналами</string>
     <string name="CP_DisableAnimAvatars">Отключить активные видеоаватары</string>
@@ -348,6 +354,8 @@
     <string name="SP_AskPinForChats_Desc">Для доступа к определенным чатам потребуется системный пароль (отпечаток, скан лица, PIN или граф. ключ). Чтобы включить, нажмите на 3 точки внутри нужного чата.</string>
     <string name="SP_AskPinForArchive">Запрос биометрии для открытия архива</string>
     <string name="SP_AskPinForArchive_Desc">Для доступа к архивированным чатам потребуется системный пароль (отпечаток, скан лица, PIN или граф. ключ).</string>
+    <string name="SP_HideArchive">Скрыть архив из списка чатов</string>
+    <string name="SP_HideArchive_Desc">Архив будет замаскирован под канал Cherrygram. \nВы сможете открыть архив из бокового меню или долгим нажатием на кнопку поиска.</string>
     <string name="SP_AskPin">Запрашивать пароль</string>
     <string name="SP_DoNotAskPin">Не запрашивать пароль</string>
 

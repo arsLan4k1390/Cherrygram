@@ -30,6 +30,8 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Stories.recorder.HintView2;
 import org.telegram.ui.TopicsFragment;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
+
 public class PullForegroundDrawable {
 
     public final static float SNAP_HEIGHT = 0.85f;
@@ -39,9 +41,9 @@ public class PullForegroundDrawable {
     public final static long minPullingTime = 200L;
     public int scrollDy;
 
-    private int backgroundColorKey = Theme.key_chats_archivePullDownBackground;
-    private int backgroundActiveColorKey = Theme.key_chats_archivePullDownBackgroundActive;
-    private int avatarBackgroundColorKey = Theme.key_avatar_backgroundArchivedHidden;
+    private int backgroundColorKey = CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList() ? Theme.key_cgGradient1 : Theme.key_chats_archivePullDownBackground;
+    private int backgroundActiveColorKey = CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList() ? Theme.key_cgGradient2 : Theme.key_chats_archivePullDownBackgroundActive;
+    private int avatarBackgroundColorKey = CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList() ? Theme.key_cgGradient2 : Theme.key_avatar_backgroundArchivedHidden;
     private boolean changeAvatarColor = true;
 
     private final Paint paintSecondary = new Paint(Paint.ANTI_ALIAS_FLAG);

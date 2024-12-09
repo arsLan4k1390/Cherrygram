@@ -31,6 +31,7 @@ import org.telegram.ui.Components.RecyclerListView;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.folders.cells.FoldersPreviewCell;
 
@@ -208,6 +209,8 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
                 parentLayout.rebuildAllFragmentViews(false, false);
             }
         });
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("folders_preferences_screen");
 
         return fragmentView;
     }

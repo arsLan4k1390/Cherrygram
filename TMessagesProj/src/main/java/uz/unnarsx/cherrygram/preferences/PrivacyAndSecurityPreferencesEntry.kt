@@ -3,12 +3,15 @@ package uz.unnarsx.cherrygram.preferences
 import android.os.Build
 import android.os.Environment
 import android.widget.Toast
+import org.telegram.messenger.FingerprintController
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
@@ -53,64 +56,83 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
             }
         }
 
-        val askPasscode = Build.VERSION.SDK_INT >= 23
-        if (askPasscode) {
-            category(getString(R.string.Passcode)) {
-                switch {
-                    title = getString(R.string.SP_AskPinForChats)
-                    description = getString(R.string.SP_AskPinForChats_Desc)
+        category(getString(R.string.CP_Header_Chats)) {
+            switch {
+                title = getString(R.string.SP_HideArchive)
+                description = getString(R.string.SP_HideArchive_Desc)
 
-                    contract({
-                        return@contract CherrygramPrivacyConfig.askBiometricsToOpenChat
-                    }) {
-                        CGBiometricPrompt.prompt(bf.parentActivity) {
-                            CherrygramPrivacyConfig.askBiometricsToOpenChat = it
-                            bf.parentLayout.rebuildAllFragmentViews(true, true)
-                            AppRestartHelper.createRestartBulletin(bf)
-                        }
+                contract({
+                    return@contract CherrygramPrivacyConfig.hideArchiveFromChatsList
+                }) {
+                    CherrygramPrivacyConfig.hideArchiveFromChatsList = it
+                    if (!CherrygramAppearanceConfig.archivedChatsDrawerButton) CherrygramAppearanceConfig.archivedChatsDrawerButton = true
+                    AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
+            switch {
+                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+
+                title = getString(R.string.SP_AskPinForArchive)
+                description = getString(R.string.SP_AskPinForArchive_Desc)
+
+                contract({
+                    return@contract CherrygramPrivacyConfig.askBiometricsToOpenArchive
+                }) {
+                    CGBiometricPrompt.prompt(bf.parentActivity) {
+                        CherrygramPrivacyConfig.askBiometricsToOpenArchive = it
+                        bf.parentLayout.rebuildAllFragmentViews(true, true)
                     }
                 }
-                switch {
-                    title = getString(R.string.SP_AskPinForArchive)
-                    description = getString(R.string.SP_AskPinForArchive_Desc)
+            }
+            switch {
+                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
-                    contract({
-                        return@contract CherrygramPrivacyConfig.askBiometricsToOpenArchive
-                    }) {
-                        CGBiometricPrompt.prompt(bf.parentActivity) {
-                            CherrygramPrivacyConfig.askBiometricsToOpenArchive = it
-                            bf.parentLayout.rebuildAllFragmentViews(true, true)
-                        }
-                    }
-                }
-                switch {
-                    title = getString(R.string.SP_AskPinBeforeDelete)
-                    description = getString(R.string.SP_AskPinBeforeDelete_Desc)
+                title = getString(R.string.SP_AskPinForChats)
+                description = getString(R.string.SP_AskPinForChats_Desc)
 
-                    contract({
-                        return@contract CherrygramPrivacyConfig.askPasscodeBeforeDelete
-                    }) {
-                        CherrygramPrivacyConfig.askPasscodeBeforeDelete = it
+                contract({
+                    return@contract CherrygramPrivacyConfig.askBiometricsToOpenChat
+                }) {
+                    CGBiometricPrompt.prompt(bf.parentActivity) {
+                        CherrygramPrivacyConfig.askBiometricsToOpenChat = it
+                        bf.parentLayout.rebuildAllFragmentViews(true, true)
                         AppRestartHelper.createRestartBulletin(bf)
                     }
                 }
-                switch {
-                    title = getString(R.string.SP_AllowUseSystemPasscode)
-                    description = getString(R.string.SP_AllowUseSystemPasscode_Desc)
+            }
+            switch {
+                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
-                    contract({
-                        return@contract CherrygramPrivacyConfig.allowSystemPasscode
-                    }) {
-                        CherrygramPrivacyConfig.allowSystemPasscode = it
-                    }
+                title = getString(R.string.SP_AskPinBeforeDelete)
+                description = getString(R.string.SP_AskPinBeforeDelete_Desc)
+
+                contract({
+                    return@contract CherrygramPrivacyConfig.askPasscodeBeforeDelete
+                }) {
+                    CherrygramPrivacyConfig.askPasscodeBeforeDelete = it
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
-                textIcon {
-                    title = getString(R.string.SP_TestFingerprint)
-                    icon = R.drawable.fingerprint
+            }
+            switch {
+                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
-                    listener = TGKitTextIconRow.TGTIListener {
-                        CGBiometricPrompt.prompt(bf.parentActivity) { AppRestartHelper.createDebugSuccessBulletin(bf) }
-                    }
+                title = getString(R.string.SP_AllowUseSystemPasscode)
+                description = getString(R.string.SP_AllowUseSystemPasscode_Desc)
+
+                contract({
+                    return@contract CherrygramPrivacyConfig.allowSystemPasscode
+                }) {
+                    CherrygramPrivacyConfig.allowSystemPasscode = it
+                }
+            }
+            textIcon {
+                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+
+                title = getString(R.string.SP_TestFingerprint)
+                icon = R.drawable.fingerprint
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    CGBiometricPrompt.prompt(bf.parentActivity) { AppRestartHelper.createDebugSuccessBulletin(bf) }
                 }
             }
         }
@@ -125,5 +147,6 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
             }
         }
 
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("privacy_preferences_screen")
     }
 }

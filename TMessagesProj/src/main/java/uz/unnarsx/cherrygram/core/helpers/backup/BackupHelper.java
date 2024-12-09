@@ -152,35 +152,52 @@ public class BackupHelper {
         mainconfig.add("lang_code");*/
 
         //cherry
+        /** General start **/
         mainconfig.add("CP_NoRounding");
-        mainconfig.add("CP_ShowSeconds");
         mainconfig.add("AP_SystemEmoji");
         mainconfig.add("AP_SystemFonts");
         mainconfig.add("AP_Old_Notification_Icon");
-        mainconfig.add("CP_ProfileChannelPreview");
-        mainconfig.add("AP_ShowID_DC");
-        mainconfig.add("CP_ProfileBirthDatePreview");
-        mainconfig.add("CP_ProfileBackgroundColor");
-        mainconfig.add("CP_ProfileBackgroundEmoji");
-        mainconfig.add("CP_ReplyBackground");
-        mainconfig.add("CP_ReplyCustomColors");
-        mainconfig.add("CP_ReplyBackgroundEmoji");
+
         mainconfig.add("CP_HideStories");
+        mainconfig.add("CP_ArchiveStoriesFromUsers");
+        mainconfig.add("CP_ArchiveStoriesFromChannels");
         mainconfig.add("CP_CustomWallpapers");
         mainconfig.add("CP_DisableAnimAvatars");
         mainconfig.add("CP_DisableReactionsOverlay");
         mainconfig.add("CP_DisableReactionAnim");
-        mainconfig.add("CP_DisablePremiumStatuses");
         mainconfig.add("CP_DisablePremStickAnim");
         mainconfig.add("CP_DisablePremStickAutoPlay");
         mainconfig.add("CP_HideSendAsChannel");
+        /** General finish **/
+
+        /** Appearance start **/
         mainconfig.add("AP_Icon_Replacements");
         mainconfig.add("AP_OneUI_SwitchStyle");
+        mainconfig.add("AP_DisableDividers");
         mainconfig.add("AP_CenterTitle");
         mainconfig.add("AP_ToolBarShadow");
-        mainconfig.add("AP_DisableDividers");
         mainconfig.add("AP_OverrideHeaderColor");
         mainconfig.add("AP_FlatNavBar");
+
+        mainconfig.add("CP_ShowSeconds");
+        mainconfig.add("CP_DisablePremiumStatuses");
+        mainconfig.add("CP_ReplyBackground");
+        mainconfig.add("CP_ReplyCustomColors");
+        mainconfig.add("CP_ReplyBackgroundEmoji");
+        mainconfig.add("CP_ProfileChannelPreview");
+        mainconfig.add("AP_ShowID_DC");
+        mainconfig.add("CP_ProfileBirthDatePreview");
+        mainconfig.add("CP_ProfileBusinessPreview");
+        mainconfig.add("CP_ProfileBackgroundColor");
+        mainconfig.add("CP_ProfileBackgroundEmoji");
+
+        mainconfig.add("AP_FolderNameInHeader");
+        mainconfig.add("CP_NewTabs_RemoveAllChats");
+        mainconfig.add("CP_NewTabs_NoCounter");
+        mainconfig.add("AP_TabMode");
+        mainconfig.add("AP_TabStyle");
+        mainconfig.add("AP_TabStyleAddStroke");
+
         mainconfig.add("AP_DrawSnowInDrawer");
         mainconfig.add("AP_DrawerAvatar");
         mainconfig.add("AP_DrawerSmallAvatar");
@@ -188,6 +205,7 @@ public class BackupHelper {
         mainconfig.add("AP_DrawerGradient");
         mainconfig.add("AP_DrawerBlur");
         mainconfig.add("AP_DrawerBlur_Intensity");
+
         mainconfig.add("AP_ChangeStatusDrawerButton");
 //        mainconfig.add("AP_MyStoriesDrawerButton");
         mainconfig.add("AP_MyProfileDrawerButton");
@@ -200,29 +218,45 @@ public class BackupHelper {
         mainconfig.add("AP_ScanQRDrawerButton");
         mainconfig.add("AP_CGPreferencesDrawerButton");
         mainconfig.add("AP_DrawerEventType");
-        mainconfig.add("AP_FolderNameInHeader");
-        mainconfig.add("CP_NewTabs_RemoveAllChats");
-        mainconfig.add("CP_NewTabs_NoCounter");
-        mainconfig.add("AP_TabMode");
-        mainconfig.add("AP_TabStyle");
-        mainconfig.add("AP_TabStyleAddStroke");
+
         mainconfig.add("AP_DrawSnowInActionBar");
         mainconfig.add("AP_DrawSnowInChat");
-        mainconfig.add("CP_Slider_StickerAmplifier");
+        /** Appearance finish **/
+
+        /** Chats start **/
         mainconfig.add("CP_TimeOnStick");
+        mainconfig.add("CP_Slider_StickerAmplifier");
+
         mainconfig.add("CP_Shortcut_JumpToBegin");
         mainconfig.add("CP_Shortcut_DeleteAll");
         mainconfig.add("CP_Shortcut_SavedMessages");
         mainconfig.add("CP_Shortcut_Blur");
         mainconfig.add("CP_Shortcut_Browser");
+
         mainconfig.add("CP_Admins_Reactions");
         mainconfig.add("CP_Admins_Permissions");
         mainconfig.add("CP_Admins_Administrators");
         mainconfig.add("CP_Admins_Members");
         mainconfig.add("CP_Admins_Statistics");
         mainconfig.add("CP_Admins_RecentActions");
+
+        mainconfig.add("AP_CenterChatTitle");
+        mainconfig.add("CP_UnreadBadgeOnBackButton");
+        mainconfig.add("CP_ConfirmCalls");
+        mainconfig.add("CP_HideKbdOnScroll");
+        mainconfig.add("CP_DisableSwipeToNext");
+        mainconfig.add("CP_HideMuteUnmuteButton");
+        mainconfig.add("CP_Slider_RecentEmojisAmplifier");
+        mainconfig.add("CP_Slider_RecentStickersAmplifier");
+
         mainconfig.add("CP_ShareDrawStoryButton");
         mainconfig.add("CP_UsersDrawShareButton");
+        mainconfig.add("CP_SupergroupsDrawShareButton");
+        mainconfig.add("CP_ChannelsDrawShareButton");
+        mainconfig.add("CP_BotsDrawShareButton");
+        mainconfig.add("CP_StickersDrawShareButton");
+
+        mainconfig.add("CP_ShowSaveForNotifications");
         mainconfig.add("CP_ShowReply");
         mainconfig.add("CP_ShowCopyPhoto");
         mainconfig.add("CP_ShowCopyPhotoAsSticker");
@@ -233,49 +267,66 @@ public class BackupHelper {
         mainconfig.add("CP_ShowSaveMessage");
         mainconfig.add("CP_ShowReport");
         mainconfig.add("CP_ShowJSON");
-        mainconfig.add("CP_SupergroupsDrawShareButton");
-        mainconfig.add("CP_ChannelsDrawShareButton");
-        mainconfig.add("CP_BotsDrawShareButton");
-        mainconfig.add("CP_StickersDrawShareButton");
-        mainconfig.add("AP_CenterChatTitle");
-        mainconfig.add("CP_UnreadBadgeOnBackButton");
-        mainconfig.add("CP_ConfirmCalls");
+
         mainconfig.add("CP_DeleteForAll");
         mainconfig.add("CP_ForwardMsgDate");
         mainconfig.add("AP_PencilIcon");
         mainconfig.add("CP_LeftBottomButtonAction");
-        mainconfig.add("CP_MessageSlideAction");
         mainconfig.add("CP_DoubleTapAction");
-        mainconfig.add("CP_HideKbdOnScroll");
-        mainconfig.add("CP_DisableSwipeToNext");
-        mainconfig.add("CP_HideMuteUnmuteButton");
-        mainconfig.add("CP_Slider_RecentEmojisAmplifier");
-        mainconfig.add("CP_Slider_RecentStickersAmplifier");
+        mainconfig.add("CP_MessageSlideAction");
+
+        mainconfig.add("CP_LargePhotos");
         mainconfig.add("CP_SpoilersOnMedia");
         mainconfig.add("CP_VoicesAGC");
         mainconfig.add("CP_PlayVideo");
         mainconfig.add("CP_AutoPauseVideo");
         mainconfig.add("CP_DisableVibration");
         mainconfig.add("CP_VideoSeekDuration");
+
         mainconfig.add("CP_Notification_Sound");
         mainconfig.add("CP_VibrationInChats");
         mainconfig.add("CP_SilenceNonContacts");
+        /** Chats finish **/
+
+        /** Camera start **/
         mainconfig.add("CP_CameraType");
-        mainconfig.add("CP_CameraXOptimizedMode");
         mainconfig.add("CP_DisableCam");
-        mainconfig.add("CP_RearCam");
-        mainconfig.add("CP_CameraStabilisation");
-        mainconfig.add("CP_StartFromUltraWideCam");
+        mainconfig.add("CP_UseDualCamera");
         mainconfig.add("CP_CameraAspectRatio");
+        mainconfig.add("CP_StartFromUltraWideCam");
+//        mainconfig.add("CP_CameraXFpsRange");
+//        mainconfig.add("CP_CameraXCameraEffect");
+        mainconfig.add("CP_CameraStabilisation");
+        mainconfig.add("CP_CenterCameraControlButtons");
+        mainconfig.add("CP_ExposureSlider");
+        mainconfig.add("CP_RearCam");
+//        mainconfig.add("CP_CaptureTypeFront");
+//        mainconfig.add("CP_CaptureTypeBack");
+        /** Camera finish **/
+
+        /** Privacy start **/
         mainconfig.add("SP_NoProxyPromo");
-        mainconfig.add("SP_GoogleAnalytics");
-        mainconfig.add("EP_UseLNavigation");
-        mainconfig.add("CP_LargePhotos");
+//        mainconfig.add("SP_GoogleAnalytics");
+//        mainconfig.add("SP_AskBiometricsToOpenChat");
+//        mainconfig.add("SP_AskBiometricsToOpenArchive");
+//        mainconfig.add("SP_AskPinBeforeDelete");
+//        mainconfig.add("SP_AllowSystemPasscode");
+        /** Privacy finish **/
+
+        /** Experimental start **/
+        mainconfig.add("EP_SpringAnimation");
+        mainconfig.add("EP_ActionbarCrossfade");
         mainconfig.add("CG_ResidentNotification");
+        mainconfig.add("CP_CustomChatForSavedMessages");
+        mainconfig.add("CP_CustomChatIDSM");
         mainconfig.add("EP_DownloadSpeedBoost");
         mainconfig.add("EP_UploadSpeedBoost");
         mainconfig.add("EP_SlowNetworkMode");
+        /** Experimental finish **/
+
+        /** Misc start **/
         mainconfig.add("AP_Filter_Launcher_Icon");
+        /** Misc finish **/
         //cherry
 
         spToJSON("mainconfig", configJson, mainconfig::contains);

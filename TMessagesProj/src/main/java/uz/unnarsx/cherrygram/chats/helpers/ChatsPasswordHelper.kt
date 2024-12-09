@@ -61,14 +61,14 @@ object ChatsPasswordHelper {
         '⠌', '⡢', '⢑', '⠨', '⠥', '⠮', '⡑'
     )
 
-    fun replaceStringToSpoilers(chatTitle: String?): String? {
+    fun replaceStringToSpoilers(chatTitle: String?, phoneNumber: Boolean): String? {
         if (chatTitle == null) {
             return null
         }
-        return if (CherrygramPrivacyConfig.askBiometricsToOpenArchive) {
+        return if (CherrygramPrivacyConfig.askBiometricsToOpenArchive || phoneNumber) {
             val stringBuilder = StringBuilder(chatTitle)
-            for (j in chatTitle.indices) {
-                stringBuilder.setCharAt(j, spoilerChars[j % spoilerChars.size])
+            for (i in chatTitle.indices) {
+                stringBuilder.setCharAt(i, spoilerChars[i % spoilerChars.size])
             }
             stringBuilder.toString()
         } else {

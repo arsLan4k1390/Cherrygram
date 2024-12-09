@@ -41,6 +41,7 @@ import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class CameraPreferencesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
@@ -328,6 +329,8 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 });
             }
         });
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("camera_preferences_screen");
 
         return fragmentView;
     }

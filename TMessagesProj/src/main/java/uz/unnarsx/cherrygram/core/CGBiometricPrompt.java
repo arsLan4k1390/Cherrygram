@@ -14,7 +14,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
+import org.telegram.messenger.support.fingerprint.FingerprintManagerCompat;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
@@ -105,7 +107,13 @@ public class CGBiometricPrompt {
         } else if (Build.VERSION.SDK_INT >= 23) {
             FingerprintManager fingerprintManager = ApplicationLoader.applicationContext.getSystemService(FingerprintManager.class);
             if (fingerprintManager == null) {
-                return false;
+                try {
+                    FingerprintManagerCompat fingerprintManagerCompat = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
+                    return fingerprintManagerCompat.isHardwareDetected() && fingerprintManagerCompat.hasEnrolledFingerprints();
+                } catch (Throwable e) {
+                    FileLog.e(e);
+                    return false;
+                }
             }
             return fingerprintManager.isHardwareDetected() && fingerprintManager.hasEnrolledFingerprints();
         }

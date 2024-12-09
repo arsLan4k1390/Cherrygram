@@ -15,6 +15,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics
 import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textDetail
@@ -49,7 +50,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                     } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
                         // Fuckoff :)
                     } else {
-                        LaunchActivity.instance.showCgUpdaterSettings(bf.context, bf)
+                        LaunchActivity.instance.showCgUpdaterSettings(bf)
                     }
                 }
             }
@@ -141,5 +142,6 @@ class AboutPreferencesEntry : BasePreferencesEntry {
             }*/
         }
 
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("about_preferences_screen")
     }
 }

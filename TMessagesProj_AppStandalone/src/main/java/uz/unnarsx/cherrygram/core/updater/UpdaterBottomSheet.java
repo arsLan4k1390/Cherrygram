@@ -245,16 +245,11 @@ public class UpdaterBottomSheet extends BottomSheet {
         BulletinFactory.of(getContainer(), null).createCopyBulletin(getString(R.string.TextCopied)).show();
     }
 
-    public static UpdaterBottomSheet showAlert(Context context, BaseFragment fragment, boolean available, UpdaterUtils.Update update) {
-        UpdaterBottomSheet alert = new UpdaterBottomSheet(context, available, update);
+    public static void showAlert(BaseFragment fragment, boolean available, UpdaterUtils.Update update) {
+        UpdaterBottomSheet alert = new UpdaterBottomSheet(fragment.getContext(), available, update);
         alert.setFragment(fragment);
-        if (fragment != null) {
-            if (fragment.getParentActivity() != null) {
-                fragment.showDialog(alert);
-            }
-        } else {
-            alert.show();
+        if (fragment.getParentActivity() != null) {
+            fragment.showDialog(alert);
         }
-        return alert;
     }
 }

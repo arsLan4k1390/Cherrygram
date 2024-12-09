@@ -19,6 +19,7 @@ import org.telegram.ui.RestrictedLanguagesSelectActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.hint
@@ -86,16 +87,6 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                         null
                     )
                     builder.show()
-                }
-            }
-            switch {
-                title = "Swipe inside a bot to close *"
-                description = "When you swipe down (accidentally or intentionally), web-view just gets closed while you just want to scroll something in the mini-app"
-
-                contract({
-                    return@contract CherrygramDebugConfig.swipeInsideBotToClose
-                }) {
-                    CherrygramDebugConfig.swipeInsideBotToClose = it
                 }
             }
         }
@@ -286,5 +277,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
             }
             hint("* Cherrygram's feature.")
         }
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("debug_preferences_screen")
     }
 }

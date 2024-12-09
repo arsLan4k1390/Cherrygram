@@ -26,6 +26,7 @@ import org.telegram.ui.Components.SeekBarView;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 
 public class BlurPreferencesBottomSheet extends BottomSheet {
 
@@ -82,6 +83,8 @@ public class BlurPreferencesBottomSheet extends BottomSheet {
         ScrollView scrollView = new ScrollView(context);
         scrollView.addView(linearLayout);
         setCustomView(scrollView);
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("blur_preferences_screen");
     }
 
     private class BlurIntensityCell extends FrameLayout {

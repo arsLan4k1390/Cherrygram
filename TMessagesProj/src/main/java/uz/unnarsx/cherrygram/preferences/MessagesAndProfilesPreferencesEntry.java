@@ -76,6 +76,7 @@ import java.util.Calendar;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.Extra;
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
@@ -1017,6 +1018,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         colorBar.updateColors();
 
         fragmentView = contentView = frameLayout;
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("msgs_and_profiles_preferences_screen");
+
         return contentView;
     }
 

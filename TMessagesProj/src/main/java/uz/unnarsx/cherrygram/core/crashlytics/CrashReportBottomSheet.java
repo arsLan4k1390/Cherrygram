@@ -28,6 +28,7 @@ import org.telegram.ui.LaunchActivity;
 import java.io.File;
 import java.io.IOException;
 
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.helpers.ui.OnceBottomSheetHelper;
 
 public class CrashReportBottomSheet extends OnceBottomSheetHelper {
@@ -111,6 +112,8 @@ public class CrashReportBottomSheet extends OnceBottomSheetHelper {
         ScrollView scrollView = new ScrollView(activity);
         scrollView.addView(frameLayout);
         setCustomView(scrollView);
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("crash_screen");
     }
 
     public static void checkBottomSheet(BaseFragment fragment) {

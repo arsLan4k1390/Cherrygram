@@ -8,6 +8,7 @@ import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.misc.CherrygramExtras
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
@@ -117,6 +118,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 }
             }
         }
-    }
 
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("main_preferences_screen")
+    }
 }

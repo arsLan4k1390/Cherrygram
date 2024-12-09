@@ -253,7 +253,11 @@ public class AvatarDrawable extends Drawable {
         rotate45Background = false;
         hasAdvancedGradient = false;
         hasGradient = false;
-        if (avatarType == AVATAR_TYPE_REGISTER) {
+        if (avatarType == AVATAR_TYPE_EBLAN) {
+            hasGradient = true;
+            color = getThemedColor(Theme.key_cgGradient1);
+            color2 = getThemedColor(Theme.key_cgGradient2);
+        } else if (avatarType == AVATAR_TYPE_REGISTER) {
             color = color2 = Theme.getColor(Theme.key_chats_actionBackground);
         } else if (avatarType == AVATAR_TYPE_ARCHIVED) {
             color = color2 = getThemedColor(Theme.key_avatar_backgroundArchivedHidden);
@@ -604,7 +608,9 @@ public class AvatarDrawable extends Drawable {
         } else if (avatarType != 0) {
             Drawable drawable;
 
-            if (avatarType == AVATAR_TYPE_SAVED) {
+            if (avatarType == AVATAR_TYPE_EBLAN) {
+                drawable = Theme.avatarDrawables[24];
+            } else if (avatarType == AVATAR_TYPE_SAVED) {
                 drawable = Theme.avatarDrawables[0];
             } else if (avatarType == AVATAR_TYPE_FILTER_CONTACTS) {
                 drawable = Theme.avatarDrawables[2];
@@ -648,8 +654,6 @@ public class AvatarDrawable extends Drawable {
                 drawable = Theme.avatarDrawables[22];
             } else if (avatarType == AVATAR_TYPE_STARS) {
                 drawable = Theme.avatarDrawables[23];
-            } else if (avatarType == AVATAR_TYPE_EBLAN) {
-                drawable = Theme.avatarDrawables[24];
             } else {
                 drawable = Theme.avatarDrawables[9];
             }

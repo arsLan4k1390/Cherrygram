@@ -20,7 +20,7 @@ public class CombinedDrawable extends Drawable implements Drawable.Callback {
 
     private Drawable background;
     private Drawable icon;
-    private int left;
+    public int left;
     private int top;
     private int iconWidth;
     private int iconHeight;

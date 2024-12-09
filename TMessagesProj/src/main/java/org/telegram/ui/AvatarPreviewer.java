@@ -45,7 +45,6 @@ import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedFileDrawable;
-import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
@@ -73,7 +72,7 @@ public class AvatarPreviewer {
     }
 
     public static boolean canPreview(Data data) {
-        return /*data != null && (data.imageLocation != null || data.thumbImageLocation != null)*/ true;
+        return data != null && (data.imageLocation != null || data.thumbImageLocation != null);
     }
 
     private ViewGroup view;
@@ -159,8 +158,6 @@ public class AvatarPreviewer {
         OPEN_GROUP("OpenGroup2", R.string.OpenGroup2, R.drawable.msg_discussion),
         SEND_MESSAGE("SendMessage", R.string.SendMessage, R.drawable.msg_discussion),
         MENTION("Mention", R.string.Mention, R.drawable.msg_mention),
-        CG_COPY_USERNAME("ProfileCopyUsername", R.string.ProfileCopyUsername, R.drawable.msg_mention),
-        CG_COPY_ID("CG_CopyID", R.string.CG_CopyID, R.drawable.msg_copy),
         SEARCH_MESSAGES("AvatarPreviewSearchMessages", R.string.AvatarPreviewSearchMessages, R.drawable.msg_search),
         CG_KICK("KickFromGroup", R.string.KickFromGroup, R.drawable.msg_remove),
         CG_CHANGE_PERMS("ChangePermissions", R.string.ChangePermissions, R.drawable.msg_permissions),
@@ -532,11 +529,7 @@ public class AvatarPreviewer {
                 });
             }
 
-            if (data.videoLocation != null || data.videoFilter != null || data.imageLocation != null || data.imageFilter != null || data.thumbImageLocation != null || data.thumbImageFilter != null || data.thumb != null) {
-                avatarView.setImage(UserConfig.selectedAccount, data.videoLocation, data.videoFilter, data.imageLocation, data.imageFilter, data.thumbImageLocation, data.thumbImageFilter, data.thumb, data.parentObject);
-            } else {
-                avatarView.setImage(UserConfig.selectedAccount);
-            }
+            avatarView.setImage(UserConfig.selectedAccount, data.videoLocation, data.videoFilter, data.imageLocation, data.imageFilter, data.thumbImageLocation, data.thumbImageFilter, data.thumb, data.parentObject);
 
             menu.removeInnerViews();
             for (int i = 0; i < menuItems.length; i++) {
@@ -623,7 +616,6 @@ public class AvatarPreviewer {
 
     private static class AvatarView extends FrameLayout {
         private BackupImageView backupImageView;
-        private AvatarDrawable avatarDrawable = new AvatarDrawable();
 
         private final RadialProgress2 radialProgress;
         private boolean showProgress;
@@ -647,13 +639,6 @@ public class AvatarPreviewer {
             radialProgress.setOverrideAlpha(0.0f);
             radialProgress.setIcon(MediaActionDrawable.ICON_EMPTY, false, false);
             radialProgress.setColors(0x42000000, 0x42000000, Color.WHITE, Color.WHITE);
-        }
-
-        public void setImage(int currentAccount) {
-            avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_EBLAN);
-            backupImageView.getImageReceiver().setImage(null, null, avatarDrawable, null, null, 0);
-            backupImageView.getImageReceiver().setCurrentAccount(currentAccount);
-            backupImageView.onNewImageSet();
         }
 
         public void setImage(int currentAccount, ImageLocation mediaLocation, String mediaFilter, ImageLocation imageLocation, String imageFilter, ImageLocation thumbLocation, String thumbFilter, BitmapDrawable thumb, Object parentObject) {

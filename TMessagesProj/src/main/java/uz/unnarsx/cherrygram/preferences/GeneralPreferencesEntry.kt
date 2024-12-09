@@ -6,6 +6,7 @@ import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
@@ -62,6 +63,28 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramCoreConfig.hideStories
                 }) {
                     CherrygramCoreConfig.hideStories = it
+                }
+            }
+            switch {
+                title = getString(R.string.CP_ArchiveStoriesFromUsers)
+                description = getString(R.string.CP_ArchiveStoriesFromUsers_Desc)
+
+                contract({
+                    return@contract CherrygramCoreConfig.archiveStoriesFromUsers
+                }) {
+                    CherrygramCoreConfig.archiveStoriesFromUsers = it
+                    AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
+            switch {
+                title = getString(R.string.CP_ArchiveStoriesFromChannels)
+                description = getString(R.string.CP_ArchiveStoriesFromChannels_Desc)
+
+                contract({
+                    return@contract CherrygramCoreConfig.archiveStoriesFromChannels
+                }) {
+                    CherrygramCoreConfig.archiveStoriesFromChannels = it
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -140,5 +163,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
             }
 
         }
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("general_preferences_screen")
     }
 }

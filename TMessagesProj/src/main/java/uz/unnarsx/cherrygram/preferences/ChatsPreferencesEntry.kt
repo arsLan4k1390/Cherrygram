@@ -9,6 +9,7 @@ import org.telegram.ui.ActionBar.BaseFragment
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.VibrateUtil
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
@@ -454,5 +455,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
         }
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("chats_preferences_screen")
     }
 }

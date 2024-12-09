@@ -42,6 +42,8 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** Animations and Premium Features start **/
     var hideStories by sharedPreferences.boolean("CP_HideStories", false)
+    var archiveStoriesFromUsers by sharedPreferences.boolean("CP_ArchiveStoriesFromUsers", false)
+    var archiveStoriesFromChannels by sharedPreferences.boolean("CP_ArchiveStoriesFromChannels", false)
     var customWallpapers by sharedPreferences.boolean("CP_CustomWallpapers", true)
     var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
     var disableReactionsOverlay by sharedPreferences.boolean("CP_DisableReactionsOverlay", false)

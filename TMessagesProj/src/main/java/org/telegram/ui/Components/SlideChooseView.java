@@ -47,6 +47,7 @@ public class SlideChooseView extends View {
     private Drawable[] leftDrawables;
 
     private int selectedIndex;
+    private int minIndex = Integer.MIN_VALUE;
     private float selectedIndexTouch;
     private AnimatedFloat selectedIndexAnimatedHolder = new AnimatedFloat(this, 120, CubicBezierInterpolator.DEFAULT);
     private AnimatedFloat movingAnimatedHolder = new AnimatedFloat(this, 150, CubicBezierInterpolator.DEFAULT);
@@ -120,6 +121,19 @@ public class SlideChooseView extends View {
         requestLayout();
     }
 
+    public void setMinAllowedIndex(int index) {
+        if (index != -1 && optionsStr != null) {
+            index = Math.min(index, optionsStr.length - 1);
+        }
+        if (minIndex != index) {
+            minIndex = index;
+            if (selectedIndex < index) {
+                selectedIndex = index;
+            }
+            invalidate();
+        }
+    }
+
     public void setDashedFrom(int from) {
         dashedFrom = from;
     }
@@ -135,6 +149,9 @@ public class SlideChooseView extends View {
         boolean isClose = Math.abs(indexTouch - Math.round(indexTouch)) < .35f;
         if (isClose) {
             indexTouch = Math.round(indexTouch);
+        }
+        if (minIndex != Integer.MIN_VALUE) {
+            indexTouch = Math.max(indexTouch, minIndex);
         }
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             xTouchDown = x;
@@ -215,7 +232,7 @@ public class SlideChooseView extends View {
             int cx = sideSide + (lineSize + gapSize * 2 + circleSize) * a + circleSize / 2;
             float t = Math.max(0, 1f - Math.abs(a - selectedIndexAnimated));
             float ut = MathUtils.clamp(selectedIndexAnimated - a + 1f, 0, 1);
-            int color = ColorUtils.blendARGB(getThemedColor(Theme.key_switchTrack), getThemedColor(Theme.key_switchTrackChecked), ut);
+            int color = ColorUtils.blendARGB(getThemedColor(Theme.key_switchTrack), Theme.multAlpha(getThemedColor(Theme.key_switchTrackChecked), minIndex != Integer.MIN_VALUE && a <= minIndex ? .50f : 1.0f), ut);
             if (!allowSlide) {
                 color = AndroidUtilities.getTransparentColor(color, 0.5f);
             }

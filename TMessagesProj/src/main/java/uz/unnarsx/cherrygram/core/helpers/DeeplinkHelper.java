@@ -76,7 +76,7 @@ public class DeeplinkHelper {
                         unknown.run();
                         return;
                     } else if (!CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) {
-                        LaunchActivity.instance.showCgUpdaterSettings(fragment.getContext(), fragment);
+                        LaunchActivity.instance.showCgUpdaterSettings(fragment);
                     }
                     return;
                 }

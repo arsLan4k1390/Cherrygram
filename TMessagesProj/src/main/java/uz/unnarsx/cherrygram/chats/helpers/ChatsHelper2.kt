@@ -1,6 +1,7 @@
 package uz.unnarsx.cherrygram.chats.helpers
 
 import android.text.TextUtils
+import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import org.telegram.messenger.AndroidUtilities
@@ -13,9 +14,11 @@ import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.ActionBarPopupWindow
 import org.telegram.ui.AvatarPreviewer
+import org.telegram.ui.Cells.ChatMessageCell
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.ChatRightsEditActivity
 import org.telegram.ui.Components.BulletinFactory
+import org.telegram.ui.Components.ItemOptions
 import org.telegram.ui.Components.ShareAlert
 import org.telegram.ui.Components.TranslateAlert2
 import org.telegram.ui.Components.UndoView
@@ -42,8 +45,8 @@ object ChatsHelper2 {
     }
 
     @JvmStatic
-    fun injectChatActivityAvatarArrayItems(cf: ChatActivity, arr: Array<AvatarPreviewer.MenuItem>, enableMention: Boolean,  enableSearchMessages: Boolean, enableCopyUsername: Boolean, enableCopyId: Boolean) {
-        var startPos = if (enableMention || enableSearchMessages || enableCopyUsername || enableCopyId) 6 else 5
+    fun injectChatActivityAvatarArrayItems(cf: ChatActivity, arr: Array<AvatarPreviewer.MenuItem>, enableMention: Boolean,  enableSearchMessages: Boolean) {
+        var startPos = if (enableMention || enableSearchMessages) 3 else 2
 
         if (ChatObject.canBlockUsers(cf.currentChat)) {
             arr[startPos] = AvatarPreviewer.MenuItem.CG_KICK
@@ -62,7 +65,7 @@ object ChatsHelper2 {
     }
 
     @JvmStatic
-    fun injectChatActivityAvatarOnClick(cf: ChatActivity, item: AvatarPreviewer.MenuItem, user: TLRPC.User) {
+    fun injectChatActivityAvatarOnClick(cf: ChatActivity, item: AvatarPreviewer.MenuItem, user: TLRPC.User, participantsIDs: ArrayList<Long>) {
         when (item) {
             AvatarPreviewer.MenuItem.CG_KICK -> {
                 cf.messagesController.deleteParticipantFromChat(cf.currentChat.id, cf.messagesController.getUser(user.id), cf.currentChatInfo)
@@ -100,10 +103,104 @@ object ChatsHelper2 {
 
             else -> {}
         }
+        participantsIDs.clear()
     }
 
     @JvmStatic
-    fun getActiveUsername(user: TLRPC.User): String {
+    fun injectChatActivityAvatarOnClickNew(
+        chatActivity: ChatActivity, chatMessageCellDelegate: ChatActivity.ChatMessageCellDelegate, cell: ChatMessageCell, user: TLRPC.User,
+        enableMention: Boolean, enableSearchMessages: Boolean, isChatParticipant: Boolean,
+        participantsIDs: ArrayList<Long>
+    ) {
+        ItemOptions.makeOptions(chatActivity, cell)
+            /*.add(R.drawable.msg_openprofile, getString(R.string.OpenProfile)) {
+                chatMessageCellDelegate.openProfile(user)
+            }*/
+            .add(R.drawable.msg_discussion, getString(R.string.SendMessage)) {
+                chatMessageCellDelegate.openDialog(cell, user)
+            }
+            .addIf(enableMention, R.drawable.msg_mention, getString(R.string.Mention)) {
+                chatMessageCellDelegate.appendMention(user)
+            }
+            .addIf(enableSearchMessages, R.drawable.msg_search, getString(R.string.AvatarPreviewSearchMessages)) {
+                chatActivity.openSearchWithUser(user)
+            }
+            .addIf(ChatObject.canBlockUsers(chatActivity.currentChat) && isChatParticipant, R.drawable.msg_remove, getString(R.string.KickFromGroup)) {
+                chatActivity.messagesController.deleteParticipantFromChat(
+                    chatActivity.currentChat.id,
+                    chatActivity.messagesController.getUser(user.id),
+                    chatActivity.currentChatInfo
+                )
+            }
+            .addIf(ChatObject.hasAdminRights(chatActivity.currentChat) && isChatParticipant, R.drawable.msg_permissions, getString(R.string.ChangePermissions)) {
+                val action = 1 // Change permissions
+
+                val chatParticipant = chatActivity.currentChatInfo.participants.participants.filter {
+                    it.user_id == user.id
+                }[0]
+
+                var channelParticipant: TLRPC.ChannelParticipant? = null
+
+                if (ChatObject.isChannel(chatActivity.currentChat)) {
+                    channelParticipant = (chatParticipant as TLRPC.TL_chatChannelParticipant).channelParticipant
+                } else {
+                    chatParticipant is TLRPC.TL_chatParticipantAdmin
+                }
+
+                val frag = ChatRightsEditActivity(
+                    user.id,
+                    chatActivity.currentChatInfo.id,
+                    channelParticipant?.admin_rights,
+                    chatActivity.currentChat.default_banned_rights,
+                    channelParticipant?.banned_rights,
+                    channelParticipant?.rank,
+                    action,
+                    true,
+                    false,
+                    null
+                )
+                chatActivity.presentFragment(frag)
+            }
+            .addIf(ChatObject.canAddAdmins(chatActivity.currentChat) && isChatParticipant, R.drawable.msg_admins, getString(R.string.EditAdminRights)) {
+                val action = 0 // Change admin rights
+
+                val chatParticipant = chatActivity.currentChatInfo.participants.participants.filter {
+                    it.user_id == user.id
+                }[0]
+
+                var channelParticipant: TLRPC.ChannelParticipant? = null
+
+                if (ChatObject.isChannel(chatActivity.currentChat)) {
+                    channelParticipant = (chatParticipant as TLRPC.TL_chatChannelParticipant).channelParticipant
+                } else {
+                    chatParticipant is TLRPC.TL_chatParticipantAdmin
+                }
+
+                val frag = ChatRightsEditActivity(
+                    user.id,
+                    chatActivity.currentChatInfo.id,
+                    channelParticipant?.admin_rights,
+                    chatActivity.currentChat.default_banned_rights,
+                    channelParticipant?.banned_rights,
+                    channelParticipant?.rank,
+                    action,
+                    true,
+                    false,
+                    null
+                )
+                chatActivity.presentFragment(frag)
+            }
+            .setDrawScrim(false)
+            .setGravity(Gravity.LEFT)
+            .forceBottom(true)
+            .translate(0f, -AndroidUtilities.dp(48f).toFloat())
+            .show()
+        participantsIDs.clear()
+    }
+
+    @JvmStatic
+    fun getActiveUsername(userId: Long): String {
+        val user: TLRPC.User = MessagesController.getInstance(UserConfig.selectedAccount).getUser(userId)
         var username: String? = null
         var usernames = ArrayList<TLRPC.TL_username?>()
         usernames.addAll(user.usernames)

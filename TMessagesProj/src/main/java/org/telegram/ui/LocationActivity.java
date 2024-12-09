@@ -111,6 +111,7 @@ import org.telegram.ui.Cells.SharingLiveLocationCell;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
+import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.ChatAttachAlertLocationLayout;
 import org.telegram.ui.Components.CombinedDrawable;
 import org.telegram.ui.Components.CubicBezierInterpolator;
@@ -998,6 +999,17 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             @Override
             protected void onDirectionClick() {
                 openDirections(null);
+            }
+
+            @Override
+            protected void onCopyCoordinatesClick() {
+                if (messageObject != null) {
+                    String lat = String.valueOf(messageObject.messageOwner.media.geo.lat);
+                    String lon = String.valueOf(messageObject.messageOwner.media.geo._long);
+                    if (AndroidUtilities.addToClipboard(lat + "," + lon)) {
+                        BulletinFactory.of(getParentLayout().getLastFragment()).createCopyBulletin(LocaleController.getString(R.string.TextCopied)).show();
+                    }
+                }
             }
 
             private boolean firstSet = true;

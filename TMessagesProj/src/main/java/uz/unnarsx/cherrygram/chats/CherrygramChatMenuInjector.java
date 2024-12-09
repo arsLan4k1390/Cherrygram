@@ -32,7 +32,7 @@ public class CherrygramChatMenuInjector {
             attach.setOnClickListener(view -> {
                 headerItem.closeSubMenu();
                 if (chatAttachAlert != null) {
-                    chatAttachAlert.setEditingMessageObject(null);
+                    chatAttachAlert.setEditingMessageObject(0, null);
                 }
                 chatActivityEnterView.getAttachButton().performClick();
             });

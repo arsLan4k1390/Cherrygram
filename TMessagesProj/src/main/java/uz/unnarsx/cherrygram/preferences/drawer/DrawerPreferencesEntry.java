@@ -30,6 +30,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.preferences.drawer.cells.BlurIntensityCell;
 import uz.unnarsx.cherrygram.preferences.drawer.cells.DrawerProfilePreviewCell;
 import uz.unnarsx.cherrygram.preferences.drawer.cells.ThemeSelectorDrawerCell;
@@ -172,6 +173,9 @@ public class DrawerPreferencesEntry extends BaseFragment {
                 AlertDialogSwitchers.showDrawerIconsAlert(this);
             }
         });
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("drawer_preferences_screen");
+
         return fragmentView;
     }
 

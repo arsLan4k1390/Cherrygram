@@ -24,6 +24,9 @@
 -keep class com.google.android.exoplayer2.metadata.flac.PictureFrame { *; }
 -keep class com.google.android.exoplayer2.decoder.SimpleDecoderOutputBuffer { *; }
 -keep class org.telegram.ui.Stories.recorder.FfmpegAudioWaveformLoader { *; }
+-keepclassmembers class ** {
+    @android.webkit.JavascriptInterface <methods>;
+}
 
 # https://developers.google.com/ml-kit/known-issues#android_issues
 -keep class com.google.mlkit.nl.languageid.internal.LanguageIdentificationJni { *; }
@@ -118,6 +121,7 @@
 
 # Keep Cherrygram fields name
 -keepnames class uz.unnarsx.cherrygram.core.configs.* { <fields>; }
+-keep class kotlinx.coroutines.android.** {*;}
 
 # Keep all class member names of CameraX
 -keep class androidx.camera.extensions.** { *; }

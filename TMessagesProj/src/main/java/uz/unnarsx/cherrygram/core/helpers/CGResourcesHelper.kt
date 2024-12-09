@@ -238,6 +238,11 @@ object CGResourcesHelper {
         }
     }
 
+    @JvmStatic
+    fun getResidentNotificationIcon(): Int {
+        return if (CherrygramCoreConfig.oldNotificationIcon) R.drawable.cg_notification else R.drawable.notification
+    }
+
     fun isAnyOfBraIconsEnabled(): Boolean {
         return (LauncherIconController.isEnabled(LauncherIconController.LauncherIcon.DARK_CHERRY_BRA)
                 || LauncherIconController.isEnabled(LauncherIconController.LauncherIcon.WHITE_CHERRY_BRA)
@@ -245,10 +250,6 @@ object CGResourcesHelper {
         )
     }
 
-    @JvmStatic
-    fun getResidentNotificationIcon(): Int {
-        return if (CherrygramCoreConfig.oldNotificationIcon) R.drawable.cg_notification else R.drawable.notification
-    }
 
     @JvmStatic
     fun getDownloadSpeedBoostText(): String { // ExperimentalPreferences.java:\Download speed boost

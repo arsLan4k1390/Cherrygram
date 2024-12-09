@@ -162,7 +162,7 @@ public class UpdaterUtils {
                 if (update.isNew() && fragment != null && fragment.getContext() != null) {
                     checkDirs();
                     AndroidUtilities.runOnUIThread(() -> {
-                        UpdaterBottomSheet.showAlert(fragment.getContext(), fragment, true, update);
+                        UpdaterBottomSheet.showAlert(fragment, true, update);
                         if (onUpdateFound != null)
                             onUpdateFound.run();
                         if (progress != null) progress.end();
@@ -326,7 +326,7 @@ public class UpdaterUtils {
                     }
                 }
                 cursor.close();
-            } else if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action)) {
+            } else if (context != null && DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action)) {
                 try {
                     Intent viewDownloadIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
                     viewDownloadIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

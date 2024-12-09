@@ -42,9 +42,9 @@ object CherrygramAppearanceConfig: CoroutineScope by CoroutineScope(
     }
 
     var oneUI_SwitchStyle by sharedPreferences.boolean("AP_OneUI_SwitchStyle", true)
+    var disableDividers by sharedPreferences.boolean("AP_DisableDividers", true)
     var centerTitle by sharedPreferences.boolean("AP_CenterTitle", true)
     var disableToolBarShadow by sharedPreferences.boolean("AP_ToolBarShadow", true)
-    var disableDividers by sharedPreferences.boolean("AP_DisableDividers", true)
     var overrideHeaderColor by sharedPreferences.boolean("AP_OverrideHeaderColor", true)
     var flatNavbar by sharedPreferences.boolean("AP_FlatNavBar", true)
     /** Redesign finish **/
@@ -192,7 +192,6 @@ object CherrygramAppearanceConfig: CoroutineScope by CoroutineScope(
     }
 
     var drawerBlurIntensity by sharedPreferences.int("AP_DrawerBlur_Intensity", 50)
-    var eventType by sharedPreferences.int("AP_DrawerEventType", 0)
 
     /** Drawer buttons start **/
     var changeStatusDrawerButton by sharedPreferences.boolean("AP_ChangeStatusDrawerButton", true)
@@ -261,6 +260,9 @@ object CherrygramAppearanceConfig: CoroutineScope by CoroutineScope(
         putBoolean("AP_CGPreferencesDrawerButton", cGPreferencesDrawerButton)
     }
     /** Drawer buttons finish **/
+
+    var eventType by sharedPreferences.int("AP_DrawerEventType", 0)
+
     /** Drawer finish **/
 
     /** Snowflakes start **/

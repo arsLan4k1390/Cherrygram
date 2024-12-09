@@ -846,7 +846,7 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
         Bulletin.UndoButton viewButton = new Bulletin.UndoButton(chatActivity.getParentActivity(), true, chatActivity.getResourceProvider());
         layout.setButton(viewButton);
         viewButton.setUndoAction(() -> {
-            StickersAlert alert = new StickersAlert(chatActivity.getParentActivity(), chatActivity, messageObject.getInputStickerSet(), null, chatActivity.chatActivityEnterView, chatActivity.getResourceProvider());
+            StickersAlert alert = new StickersAlert(chatActivity.getParentActivity(), chatActivity, messageObject.getInputStickerSet(), null, chatActivity.chatActivityEnterView, chatActivity.getResourceProvider(), false);
             alert.setCalcMandatoryInsets(chatActivity.isKeyboardVisible());
             chatActivity.showDialog(alert);
         });

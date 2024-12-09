@@ -190,7 +190,6 @@ public class PollEditTextCell extends FrameLayout implements SuggestEmojiView.An
             moveImageView.setScaleType(ImageView.ScaleType.CENTER);
             moveImageView.setOnClickListener(onChangeIcon);
             moveImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.MULTIPLY));
-            moveImageView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
             addView(moveImageView, LayoutHelper.createFrame(48, 48, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 8, 2, 8, 0));
         } else {
             int endMargin = type == TYPE_EMOJI ? 80: 19;

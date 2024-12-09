@@ -78,6 +78,7 @@
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygram needs access to your location so you can share it with your friends. You will now be asked to allow your location to be used (while the app is open).</string>
     <string name="CG_LocationPermission_Desc">However, if you want your location to be available to your friends while Cherrygram is closed and in the background, then go to the \"Live Location\" feature. Until you agree to use the Live Location feature, your location will not be available in the background.</string>
+    <string name="CG_Copy_Coordinates">Coordinates</string>
     <!--Location screen-->
 
     <!--Search filter-->
@@ -197,7 +198,12 @@
     <string name="CP_ReplyBackground">Background in replies</string>
     <string name="CP_ReplyCustomColors">Custom colors in replies and links preview</string>
     <string name="CP_ReplyBackgroundEmoji">Emoji in replies and links preview</string>
-    <string name="CP_HideStories">Hide Stories</string>
+    <string name="CP_HideStories">Hide Stories (locally)</string>
+    <string name="CP_HideStories_Desc">Stories will disappear from your chats list and from profiles.</string>
+    <string name="CP_ArchiveStoriesFromUsers">Archive stories from contacts</string>
+    <string name="CP_ArchiveStoriesFromUsers_Desc">Stories from contacts will be automatically archived and moved to your archive. Works across all apps that use the Telegram API.</string>
+    <string name="CP_ArchiveStoriesFromChannels">Archive stories from channels</string>
+    <string name="CP_ArchiveStoriesFromChannels_Desc">Stories from channels and groups will be automatically archived and moved to your archive. Works across all apps that use the Telegram API.</string>
     <string name="CP_CustomWallpapers">Custom background in chats</string>
     <string name="CP_CustomWallpapers_Desc">Configure custom wallpapers in chats/groups/channels set by premium users/boosted channels</string>
     <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
@@ -361,6 +367,8 @@
     <string name="SP_AskPinForChats_Desc">System password (fingerprint, face id, PIN or pattern) will be required to access specific chats. To enable, tap on 3 dots inside the chat.</string>
     <string name="SP_AskPinForArchive">Require biometrics to open an archive</string>
     <string name="SP_AskPinForArchive_Desc">System password (fingerprint, face id, PIN or pattern) will be required to access archived chats.</string>
+    <string name="SP_HideArchive">Hide archive from chats list</string>
+    <string name="SP_HideArchive_Desc">The archive will be masked as Cherrygram channel. \nYou will be able to open archive from drawer or by long tap on search button.</string>
     <string name="SP_AskPin">Require password</string>
     <string name="SP_DoNotAskPin">Don\'t require password</string>
 

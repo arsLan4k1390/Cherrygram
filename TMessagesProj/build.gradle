@@ -60,7 +60,6 @@ dependencies {
     }
 
     //Cherrygram
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
     implementation 'com.google.android.play:review:2.0.2'
@@ -219,7 +218,7 @@ def getProps(String propName) {
 task checkVisibility {
     doFirst {
         def isPrivateBuild = project.gradle.startParameter.taskNames.find {
-            it.contains("HA_private") || it.contains("Debug") || it.contains("Release")
+            it.contains("HA_private") || it.contains("HA_hardcore") || it.contains("Debug") || it.contains("Release")
         }
         def isPublicAllowed = !project.hasProperty("IS_PRIVATE") || !project.property("IS_PRIVATE").toBoolean()
         if (!isPrivateBuild && !isPublicAllowed) {

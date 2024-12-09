@@ -12,6 +12,7 @@ import org.telegram.messenger.FileLog
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
 import uz.unnarsx.cherrygram.misc.Constants
 import kotlin.coroutines.resume
 
@@ -45,6 +46,8 @@ object FirebaseRemoteConfigHelper {
                 if (it.getLong(Constants.Videomessages_Resolution) != 0L) {
                     setRoundVideoResolution(it.getLong(Constants.Videomessages_Resolution))
                 }
+                toggleReTgCheck(it.getBoolean(Constants.Re_Tg_Check))
+
                 if (CherrygramCoreConfig.isDevBuild() || CherrygramDebugConfig.showRPCErrors) {
                     AndroidUtilities.runOnUIThread {
                         Toast.makeText(ApplicationLoader.applicationContext, "Fetch and activate succeeded", Toast.LENGTH_SHORT).show()
@@ -62,7 +65,11 @@ object FirebaseRemoteConfigHelper {
     }
 
     fun isFeatureEnabled(featureFlag: String?): Boolean {
-        return FirebaseRemoteConfig.getInstance().getBoolean(featureFlag!!)
+        return if (ApplicationLoader.checkPlayServices()) {
+            FirebaseRemoteConfig.getInstance().getBoolean(featureFlag!!)
+        } else {
+            false
+        }
     }
 
     private fun setRoundVideoResolution(resolution: Long) {
@@ -74,6 +81,18 @@ object FirebaseRemoteConfigHelper {
 
         if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
             FileLog.d("New videomessages resolution:" + CherrygramCameraConfig.videoMessagesResolution)
+        }
+    }
+
+    private fun toggleReTgCheck(enable: Boolean) {
+        if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
+            FileLog.d("Old reTg value:" + CherrygramPrivacyConfig.reTgCheck)
+        }
+
+        CherrygramPrivacyConfig.reTgCheck = enable
+
+        if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
+            FileLog.d("New reTg value:" + CherrygramPrivacyConfig.reTgCheck)
         }
     }
 

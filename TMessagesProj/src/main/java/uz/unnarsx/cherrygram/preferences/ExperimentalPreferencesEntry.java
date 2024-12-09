@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert;
 
@@ -212,6 +213,8 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 AppRestartHelper.createRestartBulletin(this);
             }
         });
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("experimental_preferences_screen");
 
         return fragmentView;
     }

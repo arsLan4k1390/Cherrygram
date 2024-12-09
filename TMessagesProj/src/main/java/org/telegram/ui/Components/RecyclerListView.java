@@ -1595,7 +1595,7 @@ public class RecyclerListView extends RecyclerView {
     @Override
     public void setVerticalScrollBarEnabled(boolean verticalScrollBarEnabled) {
         if (attributes != null) {
-            super.setVerticalScrollBarEnabled(verticalScrollBarEnabled);
+            super.setVerticalScrollBarEnabled(false);
         }
     }
 

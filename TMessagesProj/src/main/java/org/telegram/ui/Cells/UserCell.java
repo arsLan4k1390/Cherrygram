@@ -829,11 +829,11 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                 .setViewAdditionalOffsets(0, AndroidUtilities.dp(8), 0, 0)
                 .setScrimViewBackground(Theme.createRoundRectDrawable(0, 0, Theme.getColor(Theme.key_windowBackgroundWhite)))
 
-                .add(R.drawable.msg_discussion, LocaleController.getString(R.string.SendMessage),
-                        () -> fragment.presentFragment(ChatActivity.of(dialogId))
-                )
                 .add(R.drawable.msg_openprofile, LocaleController.getString(R.string.OpenProfile),
                         () -> fragment.presentFragment(ProfileActivity.of(dialogId))
+                )
+                .add(R.drawable.msg_discussion, LocaleController.getString(R.string.SendMessage),
+                        () -> fragment.presentFragment(ChatActivity.of(dialogId))
                 )
                 .addIf(user.username != null, R.drawable.msg_mention, LocaleController.getString(R.string.ProfileCopyUsername), () -> {
                     AndroidUtilities.addToClipboard("@" + user.username);
@@ -843,7 +843,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                     AndroidUtilities.addToClipboard("+" + user.phone);
                     BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.PhoneCopied)).show();
                 })
-                .addIf(user.id != 0, R.drawable.msg_copy, LocaleController.getString(R.string.CG_CopyID), () -> {
+                .addIf(fragment instanceof ProfileActivity && user.id != 0, R.drawable.msg_copy, LocaleController.getString(R.string.CG_CopyID), () -> {
                     AndroidUtilities.addToClipboard("" + user.id);
                     BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.TextCopied)).show();
                 });

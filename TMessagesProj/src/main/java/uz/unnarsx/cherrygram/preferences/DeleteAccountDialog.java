@@ -18,6 +18,8 @@ import org.telegram.ui.ActionBar.Theme;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
+
 public class DeleteAccountDialog extends BaseFragment {
 
     public static void showDeleteAccountDialog(BaseFragment fragment) {
@@ -99,5 +101,6 @@ public class DeleteAccountDialog extends BaseFragment {
         });
         fragment.showDialog(dialog);
 
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("delete_account_dialog");
     }
 }

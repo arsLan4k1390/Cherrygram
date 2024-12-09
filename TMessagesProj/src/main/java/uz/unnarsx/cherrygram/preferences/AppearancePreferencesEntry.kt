@@ -10,6 +10,7 @@ import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.DialogsActivity
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
+import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert
 import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.folders.FoldersPreferencesEntry
@@ -183,5 +184,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
         }
+
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("appearance_preferences_screen")
     }
 }

@@ -766,7 +766,7 @@ public class SharedConfig {
     }
 
     public static boolean isAppUpdateAvailable() {
-        if (pendingAppUpdate == null || pendingAppUpdate.document == null || !ApplicationLoader.isStandaloneBuild()) {
+        /*if (pendingAppUpdate == null || pendingAppUpdate.document == null || !ApplicationLoader.isStandaloneBuild()) {
             return false;
         }
         int currentVersion;
@@ -777,7 +777,8 @@ public class SharedConfig {
             FileLog.e(e);
             currentVersion = buildVersion();
         }
-        return pendingAppUpdateBuildVersion == currentVersion;
+        return pendingAppUpdateBuildVersion == currentVersion;*/
+        return false;
     }
 
     public static boolean setNewAppVersionAvailable(TLRPC.TL_help_appUpdate update) {

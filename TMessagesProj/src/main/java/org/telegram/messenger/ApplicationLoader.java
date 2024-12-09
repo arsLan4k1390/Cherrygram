@@ -46,6 +46,7 @@ import org.telegram.ui.ActionBar.ActionBarLayout;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Adapters.DrawerLayoutAdapter;
 import org.telegram.ui.Components.ForegroundDetector;
+import org.telegram.ui.IUpdateButton;
 import org.telegram.ui.IUpdateLayout;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.LauncherIconController;
@@ -316,6 +317,7 @@ public class ApplicationLoader extends Application {
             } catch (Exception e) {
                 FileLog.e(e);
             }
+            FileLog.d("device = manufacturer=" + Build.MANUFACTURER + ", device=" + Build.DEVICE + ", model=" + Build.MODEL + ", product=" + Build.PRODUCT);
         }
         if (applicationContext == null) {
             applicationContext = getApplicationContext();
@@ -652,6 +654,10 @@ public class ApplicationLoader extends Application {
         return null;
     }
 
+    public IUpdateButton takeUpdateButton(Context context) {
+        return null;
+    }
+
     public TLRPC.Update parseTLUpdate(int constructor) {
         return null;
     }
@@ -701,7 +707,7 @@ public class ApplicationLoader extends Application {
         return false;
     }
 
-    public boolean showUpdaterSettings(Context context, BaseFragment fragment) {
+    public boolean showUpdaterSettings(BaseFragment fragment) {
         return false;
     }
 

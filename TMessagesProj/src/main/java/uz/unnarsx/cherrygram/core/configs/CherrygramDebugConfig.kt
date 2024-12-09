@@ -25,7 +25,6 @@ object CherrygramDebugConfig: CoroutineScope by CoroutineScope(
     /** Misc start **/
     var showRPCErrors by sharedPreferences.boolean("EP_ShowRPCErrors", false)
     var oldTimeStyle by sharedPreferences.boolean("CP_OldTimeStyle", false)
-    var swipeInsideBotToClose by sharedPreferences.boolean("swipeToClose", false)
     /** Misc finish **/
 
     /** Blur start **/

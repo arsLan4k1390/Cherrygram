@@ -79,7 +79,6 @@ object CherrygramCameraConfig: CoroutineScope by CoroutineScope(
     const val CONTROL_EFFECT_MODE_BLACKBOARD = 7
     const val CONTROL_EFFECT_MODE_AQUA = 8
     var cameraXCameraEffect by sharedPreferences.int("CP_CameraXCameraEffect", CONTROL_EFFECT_MODE_OFF)
-    private var tweakAvailableEffectsArray by sharedPreferences.boolean("tweakAvailableEffectsArray", false)
     /** CameraX camera effects finish **/
 
     var cameraStabilisation by sharedPreferences.boolean("CP_CameraStabilisation", false)

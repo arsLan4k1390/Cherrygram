@@ -1406,6 +1406,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
     }
 
     private static final int TRANSLATE = 3;
+    private static final int SEARCH = 4;
     private ActionMode.Callback createActionCallback() {
         final ActionMode.Callback callback = new ActionMode.Callback() {
             @Override
@@ -1414,6 +1415,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                 menu.add(Menu.NONE, R.id.menu_quote, 1, LocaleController.getString(R.string.Quote));
                 menu.add(Menu.NONE, android.R.id.selectAll, 2, android.R.string.selectAll);
                 menu.add(Menu.NONE, TRANSLATE, 3, LocaleController.getString(R.string.TranslateMessage));
+                menu.add(Menu.NONE, SEARCH, 4, LocaleController.getString(R.string.AvatarPreviewSearchMessages));
                 return true;
             }
 
@@ -1433,6 +1435,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                     } else {
                         menu.getItem(2).setVisible(true);
                     }
+                    menu.getItem(SEARCH).setVisible(canCopy());
                 }
                 menu.getItem(3).setVisible(LanguageDetector.hasSupport() && getSelectedText() != null);
                 if (/*onTranslateListener != null &&*/ LanguageDetector.hasSupport() && getSelectedText() != null) {
@@ -1497,6 +1500,9 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                 } else if (itemId == R.id.menu_quote) {
                     quoteText();
                     hideActions();
+                    return true;
+                } else if (itemId == SEARCH) {
+                    searchText(getSelectedText());
                     return true;
                 } else {
                     clear();
@@ -3380,4 +3386,9 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
     protected boolean canCopy() {
         return true;
     }
+
+    protected void searchText(CharSequence selectedText) {
+
+    }
+
 }
