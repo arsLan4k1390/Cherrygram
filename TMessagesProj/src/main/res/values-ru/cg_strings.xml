@@ -39,6 +39,7 @@
     <string name="CG_ChooseFolderIcon">Выберите иконку</string>
     <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
     <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
+    <string name="CG_SwipeToUnarchive">Свайп влево для разархивации</string>
     <!--Telegram Folders Settings-->
 
     <!--Chats screen-->
@@ -153,6 +154,7 @@
     <string name="AP_RedesignCategory">Редизайн</string>
     <string name="AP_IconReplacements">Замена иконок</string>
     <string name="AP_Old_Notification_Icon">Стандартная иконка уведомлений (Telegram)</string>
+    <string name="AP_Tablet_Mode">Режим планшета</string>
     <string name="AP_ChangeIconFilter">Использовать иконки Telegram</string>
     <string name="AP_ChangeIcon_Cherry_NY">Новогодняя</string>
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
@@ -241,7 +243,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Диалоги</string>
     <string name="CP_Header_Messages">Сообщения</string>
-    <string name="CP_Slider_StickerAmplifier">Размер стикеров</string>
     <string name="CP_TimeOnStick">Скрыть время отправки на стикерах</string>
 
     <string name="CP_ChatMenuShortcuts">Действия в меню чата</string>
@@ -270,6 +271,9 @@
     <string name="CP_Slider_RecentStickersAmplifier">Счетчик недавних стикеров (требуется перезапуск приложения)</string>
 
     <string name="CP_Header_Record">Медиа</string>
+    <string name="CP_Messages_Size">Размер пузыря сообщений</string>
+    <string name="CP_Slider_MediaAmplifier">Фото и видео</string>
+    <string name="CP_Slider_MediaAmplifier_Hint">Не работает с альбомами</string>
     <string name="CP_SpoilersOnMedia">Эффект спойлера</string>
     <string name="CP_SpoilersOnMedia_Desc">Эффект спойлера на фото и видео не будет отображен если функция отключена.</string>
     <string name="CP_VoiceEnhancements">Улучшения звука</string>
@@ -309,7 +313,6 @@
     <string name="CP_CenterCameraControlButtons_Desc">Центрирование кнопок смены камеры и фонарика.</string>
     <string name="CP_RearCam">Использовать заднюю камеру</string>
     <string name="CP_RearCam_Desc">Вместо фронтальной камеры при записи видеосообщений</string>
-    <string name="CP_CaptureType_Desc">\"VideoCapture\" используется по умолчанию. \nВыбирайте \"ImageCapture\" (ухудшает качество) только если Cherrygram зависает на секунду до начала записи видеосообщения. Более того, ImageCapture поддерживает видеоэффекты.</string>
     <string name="CP_DisableCam">Отключить камеру в меню выбора фото</string>
     <string name="CP_DisableCam_Desc">Кнопка камеры будет доступна рядом с кнопкой галереи. \nНажатие на кнопку откроет камеру Telegram, а зажатие запустит системную камеру.</string>
 

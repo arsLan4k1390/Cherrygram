@@ -65,10 +65,11 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Enable/Disable system emoji,
 - Enable/Disable system fonts,
 - Default notification icon (Telegram),
+- Tablet mode,
 - Enable/Disable Telegram Stories in app header,
+- Automatically archive stories from contacts and channels,
 - Enable/Disable animated avatars,
-- Enable/Disable reactions overlay,
-- Enable/Disable reactions animation,
+- Enable/Disable reactions overlay or reactions animation,
 - Enable/Disable taps on premium stickers,
 - Enable/Disable premium stickers auto-play,
 - Enable/Disable "Send as channel" button.
@@ -77,11 +78,9 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - VKUI/Solar icons in app,
 - One UI (Samsung) Switchers style,
 - Center title in action bar,
-- Enable/Disable toolbar shadow,
-- Enable/Disable dividers,
+- Enable/Disable toolbar shadow or dividers,
 - Overriding header color,
-- Snow in App Header,
-- Snow in Chats.
+- Snow in App Header and Chats.
 
 *Messages and profiles Preferences:*
 - Show seconds in timestamps,
@@ -109,9 +108,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Drawer icons set.
 
 *Cherrygram Chats Preferences:*
-- Hide time on stickers,
-- Stickers size amplifier (changer),
-- Admin shortcuts in chats,
+- Configure admin shortcuts in chats,
 - Center chat title like on IOS,
 - Showing unread chats counter on "Back" button like on IOS,
 - Ask before a call,
@@ -122,6 +119,8 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Recent stickers counter (amplifier),
 - Direct Share button (Select where to show the button),
 - Configure message menu,
+- Configure messages bubble size (Photos/Videos, Stickers and GIFs),
+- Hide time on stickers,
 - Use "Delete for all" by default,
 - Show forwarded message date,
 - Pencil icon for edited messages instead of "edited",
@@ -134,8 +133,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Enable/Disable playing video on volume button click,
 - Auto pause video while switching to the background,
 - Disable in-app vibration,
-- Double tap to seek videos,
-- Enable/Disable proximity sensor actions,
+- Double tap to seek videos duration,
 - Enable/Disable incoming message sound or choose between IOS and Android,
 - Enable/Disable vibration in chats and choose vibration intensity,
 - Silence notifications from non-contacts.
@@ -144,7 +142,9 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Camera Type (Default, CameraX or System camera),
 - Disable camera in attachments menu,
 - Default camera for video messages,
-- Custom camera aspect ratio for video-messages (1:1, 4:3 or 16:9).
+- Custom camera aspect ratio for video-messages (1:1, 4:3 or 16:9),
+- Camera stabilisation in videomessages,
+- Exposure and zoom slider in videomessages.
 
 *Cherrygram Experimental Preferences:*
 - Enable/Disable spring animations for app navigation,
@@ -158,7 +158,11 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 *Cherrygram Security Preferences:*
 - Enable/Disable Google Analytics,
 - Delete old cache folder (/sdcard/Telegram),
-- Delete your Telegram account.
+- Delete your Telegram account,
+- Hide archive from chats list,
+- Require biometrics to open archive,
+- Require biometrics to open specific chats,
+- Require biometrics to delete chats.
 
 ## API, Protocol documentation
 
@@ -178,8 +182,7 @@ MTproto protocol manuals: https://core.telegram.org/mtproto
 
 
 ## Thanks to:
-- [Catogram](https://github.com/Catogram/Catogram)
-- [Nekogram](https://gitlab.com/Nekogram/Nekogram) and [Nekogram X](https://github.com/NekoX-Dev/NekoX)
+- [Catogram](https://github.com/Catogram/Catogram) and [Nekogram](https://gitlab.com/Nekogram/Nekogram)
+- [exteraGram](https://github.com/exteraSquad/exteraGram) and [OwlGram](https://github.com/OwlGramDev/OwlGram)
 - [OwlGram](https://github.com/OwlGramDev/OwlGram) and [exteraGram](https://github.com/exteraSquad/exteraGram)
-- [Telegraher](https://github.com/nikitasius/Telegraher)
-- [Telegram Monet](https://github.com/c3r5b8/Telegram-Monet)
+- [Telegraher](https://github.com/nikitasius/Telegraher) and [Telegram Monet](https://github.com/c3r5b8/Telegram-Monet)

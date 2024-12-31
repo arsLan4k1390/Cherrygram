@@ -128,44 +128,12 @@ object CGResourcesHelper {
     }
 
     @JvmStatic
-    fun getCameraXCameraEffect(): String { //CameraPreferences.java:\CameraX Camera effect
-        return when (CherrygramCameraConfig.cameraXCameraEffect) {
-            CherrygramCameraConfig.CONTROL_EFFECT_MODE_MONO -> "MONO"
-            CherrygramCameraConfig.CONTROL_EFFECT_MODE_NEGATIVE -> "NEGATIVE"
-            CherrygramCameraConfig.CONTROL_EFFECT_MODE_SOLARIZE -> "SOLARIZE"
-            CherrygramCameraConfig.CONTROL_EFFECT_MODE_SEPIA -> "SEPIA"
-            CherrygramCameraConfig.CONTROL_EFFECT_MODE_POSTERIZE -> "POSTERIZE"
-            CherrygramCameraConfig.CONTROL_EFFECT_MODE_WHITEBOARD -> "WHITEBOARD"
-            CherrygramCameraConfig.CONTROL_EFFECT_MODE_BLACKBOARD -> "BLACKBOARD"
-            CherrygramCameraConfig.CONTROL_EFFECT_MODE_AQUA -> "AQUA"
-            else -> getString(R.string.Default)
-        }
-    }
-
-    @JvmStatic
     fun getExposureSliderPosition(): String { // CameraPreferences.java:\Exposure slider
         return when (CherrygramCameraConfig.exposureSlider) {
 //            CherrygramCameraConfig.EXPOSURE_SLIDER_BOTTOM -> getString(R.string.CP_ZoomSliderPosition_Bottom)
             CherrygramCameraConfig.EXPOSURE_SLIDER_RIGHT -> getString(R.string.CP_ZoomSliderPosition_Right)
 //            CherrygramCameraConfig.EXPOSURE_SLIDER_LEFT -> getString(R.string.CP_ZoomSliderPosition_Left)
             else -> getString(R.string.Disable)
-        }
-    }
-
-
-    @JvmStatic
-    fun getCameraCaptureTypeFront(): String { // CameraPreferences.java:\Camera capture type
-        return when (CherrygramCameraConfig.captureTypeFront) {
-            CherrygramCameraConfig.CaptureType_ImageCapture -> "ImageCapture"
-            else -> "VideoCapture"
-        }
-    }
-
-    @JvmStatic
-    fun getCameraCaptureTypeBack(): String { // CameraPreferences.java:\Camera capture type
-        return when (CherrygramCameraConfig.captureTypeBack) {
-            CherrygramCameraConfig.CaptureType_ImageCapture -> "ImageCapture"
-            else -> "VideoCapture"
         }
     }
     /** Camera finish **/

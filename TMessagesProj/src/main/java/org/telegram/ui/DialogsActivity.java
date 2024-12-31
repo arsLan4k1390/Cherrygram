@@ -35,15 +35,12 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Matrix;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Shader;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -60,7 +57,6 @@ import android.transition.TransitionManager;
 import android.util.LongSparseArray;
 import android.util.Property;
 import android.util.StateSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.KeyEvent;
@@ -128,8 +124,8 @@ import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.XiaomiUtilities;
 import org.telegram.messenger.browser.Browser;
+import org.telegram.tgnet.AccountInstanceNew;
 import org.telegram.tgnet.ConnectionsManager;
-import org.telegram.tgnet.ConnectionsManagerImpl;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
@@ -212,7 +208,6 @@ import org.telegram.ui.Components.FragmentContextView;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.JoinGroupAlert;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.MediaActionDrawable;
 import org.telegram.ui.Components.MediaActivity;
 import org.telegram.ui.Components.NumberTextView;
 import org.telegram.ui.Components.PacmanAnimation;
@@ -223,7 +218,6 @@ import org.telegram.ui.Components.ProxyDrawable;
 import org.telegram.ui.Components.PullForegroundDrawable;
 import org.telegram.ui.Components.RLottieDrawable;
 import org.telegram.ui.Components.RLottieImageView;
-import org.telegram.ui.Components.RadialProgress2;
 import org.telegram.ui.Components.RadialProgressView;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
 import org.telegram.ui.Components.RecyclerAnimationScrollHelper;
@@ -244,7 +238,6 @@ import org.telegram.ui.Stories.UserListPoller;
 import org.telegram.ui.Stories.recorder.HintView2;
 import org.telegram.ui.Stories.recorder.StoryRecorder;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1371,7 +1364,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             ) && (
                             initialDialogsType == DIALOGS_TYPE_FORWARD ||
                                     SharedConfig.getChatSwipeAction(currentAccount) == SwipeGestureSettingsView.SWIPE_GESTURE_FOLDERS ||
-                                    SharedConfig.getChatSwipeAction(currentAccount) == SwipeGestureSettingsView.SWIPE_GESTURE_ARCHIVE &&
+                                    SharedConfig.getChatSwipeAction(currentAccount) == SwipeGestureSettingsView.SWIPE_GESTURE_ARCHIVE && CherrygramChatsConfig.INSTANCE.getUnarchiveOnSwipe() &&
                                             viewPages[0] != null && (viewPages[0].dialogsAdapter.getDialogsType() == 7 || viewPages[0].dialogsAdapter.getDialogsType() == 8))
             ) {
                 if (ev != null) {
@@ -2465,8 +2458,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     }
                     swipeFolderBack = false;
                     swipingFolder = (canSwipeBack && !DialogObject.isFolderDialogId(dialogCell.getDialogId())) || (SharedConfig.archiveHidden && DialogObject.isFolderDialogId(dialogCell.getDialogId()));
-                    dialogCell.setSliding(true);
-                    return makeMovementFlags(0, ItemTouchHelper.LEFT);
+                    if (folderId == 1 && !CherrygramChatsConfig.INSTANCE.getUnarchiveOnSwipe()) {
+                        dialogCell.setSliding(false);
+                    } else {
+                        dialogCell.setSliding(true);
+                        return makeMovementFlags(0, ItemTouchHelper.LEFT);
+                    }
                 }
             }
             return 0;
@@ -5448,7 +5445,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
                 }
             };
-            ConnectionsManagerImpl.INSTANCE.checkConnectionInstance(suspendResult);
+            AccountInstanceNew.INSTANCE.checkLoggedAccountsInstances(suspendResult);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !PermissionsUtils.isBluetoothPermissionGranted()) {
@@ -8738,17 +8735,19 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             previewMenu[0].addView(muteItem);
         }
 
-        ActionBarMenuSubItem deleteItem = new ActionBarMenuSubItem(getParentActivity(), false, true);
-        deleteItem.setIconColor(getThemedColor(Theme.key_text_RedRegular));
-        deleteItem.setTextColor(getThemedColor(Theme.key_text_RedBold));
-        deleteItem.setSelectorColor(Theme.multAlpha(getThemedColor(Theme.key_text_RedBold), .12f));
-        deleteItem.setTextAndIcon(LocaleController.getString(R.string.Delete), R.drawable.msg_delete);
-        deleteItem.setMinimumWidth(160);
-        deleteItem.setOnClickListener(e -> {
-            performSelectedDialogsAction(dialogIdArray, delete, false, false);
-            finishPreviewFragment();
-        });
-        previewMenu[0].addView(deleteItem);
+        if (dialogId != Constants.Cherrygram_Owner && dialogId != 553511970L) {
+            ActionBarMenuSubItem deleteItem = new ActionBarMenuSubItem(getParentActivity(), false, true);
+            deleteItem.setIconColor(getThemedColor(Theme.key_text_RedRegular));
+            deleteItem.setTextColor(getThemedColor(Theme.key_text_RedBold));
+            deleteItem.setSelectorColor(Theme.multAlpha(getThemedColor(Theme.key_text_RedBold), .12f));
+            deleteItem.setTextAndIcon(LocaleController.getString(R.string.Delete), R.drawable.msg_delete);
+            deleteItem.setMinimumWidth(160);
+            deleteItem.setOnClickListener(e -> {
+                performSelectedDialogsAction(dialogIdArray, delete, false, false);
+                finishPreviewFragment();
+            });
+            previewMenu[0].addView(deleteItem);
+        }
 
         if (getMessagesController().checkCanOpenChat(args, DialogsActivity.this)) {
             if (searchString != null) {
@@ -9156,6 +9155,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 return;
             }
         } else if ((action == delete || action == clear) && count > 1 && alert) {
+            if (selectedDialogs.contains(Constants.Cherrygram_Owner) || selectedDialogs.contains(553511970L)) {
+                return;
+            }
             boolean hasDialogsToRevoke = false;
             HashSet<Long> dialogsIdsPossibleToRevoke = new HashSet<>();
             boolean canRevokePmInbox = MessagesController.getInstance(currentAccount).canRevokePmInbox;
@@ -9304,6 +9306,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     markAsUnread(selectedDialog);
                 }
             } else if (action == delete || action == clear) {
+                if (dialog.id == Constants.Cherrygram_Owner || dialog.id == 553511970L) {
+                    return;
+                }
                 if (count == 1) {
                     if (action == delete && canDeletePsaSelected) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());

@@ -6430,6 +6430,56 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 });
             }
+
+            if (!user.phone.isEmpty()) {
+                FrameLayout gap = new FrameLayout(getContext());
+                gap.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuSeparator, resourcesProvider));
+                popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
+
+                TextView phoneInfoView = new TextView(getContext());
+                phoneInfoView.setPadding(AndroidUtilities.dp(13), AndroidUtilities.dp(8), AndroidUtilities.dp(13), AndroidUtilities.dp(8));
+                phoneInfoView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+                phoneInfoView.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider));
+                phoneInfoView.setLinkTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteValueText, resourcesProvider));
+                phoneInfoView.setBackground(Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_dialogButtonSelector, resourcesProvider), 0,6));
+
+                String phoneNumber = user.phone;
+                isFragmentPhoneNumber = phoneNumber != null && phoneNumber.matches("888\\d{8}");
+
+                String phoneInfoString = LocaleController.getString(isFragmentPhoneNumber ? R.string.AnonymousNumber : R.string.PhoneMobile) +
+                        ": " +
+                        "*" +
+                        PhoneFormat.getInstance().format("+" + phoneNumber) +
+                        "*";
+
+                SpannableStringBuilder spanned = new SpannableStringBuilder(AndroidUtilities.replaceTags(phoneInfoString));
+
+                int startIndex = TextUtils.indexOf(spanned, '*');
+                int lastIndex = TextUtils.lastIndexOf(spanned, '*');
+                if (startIndex != -1 && lastIndex != -1 && startIndex != lastIndex) {
+                    spanned.replace(lastIndex, lastIndex + 1, "");
+                    spanned.replace(startIndex, startIndex + 1, "");
+                    spanned.setSpan(new TypefaceSpan(AndroidUtilities.bold()), startIndex, lastIndex - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    spanned.setSpan(new ForegroundColorSpan(phoneInfoView.getLinkTextColors().getDefaultColor()), startIndex, lastIndex - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                }
+
+                phoneInfoView.setText(spanned);
+                phoneInfoView.setOnClickListener(v -> {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:+" + phoneNumber));
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        getParentActivity().startActivityForResult(intent, 500);
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                    }
+                    popupWindowRef.get().dismiss();
+                });
+
+                gap.setTag(R.id.fit_width_tag, 1);
+                phoneInfoView.setTag(R.id.fit_width_tag, 1);
+                popupLayout.addView(phoneInfoView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+            }
+
             if (isFragmentPhoneNumber) {
                 FrameLayout gap = new FrameLayout(getContext());
                 gap.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuSeparator, resourcesProvider));
@@ -11446,11 +11496,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         if (user != null && !TextUtils.isEmpty(vcardPhone)) {
                             text = PhoneFormat.getInstance().format("+" + vcardPhone);
                             phoneNumber = vcardPhone;
-                        } else if (user != null && !TextUtils.isEmpty(user.phone) && user.id != 0 && user.id != getUserConfig().clientUserId) {
-                            text = PhoneFormat.getInstance().format("+" + user.phone);
-                            phoneNumber = user.phone;
-                        } else if (user != null && !TextUtils.isEmpty(user.phone) && user.id != 0 && user.id == getUserConfig().clientUserId) {
-                            text = PhoneFormat.getInstance().format("+ " + ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(user.phone, true));
+                        } else if (user != null && !TextUtils.isEmpty(user.phone)) {
+                            text = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(
+                                    PhoneFormat.getInstance().format("+ " + user.phone),
+                                    true
+                            );
                             phoneNumber = user.phone;
                         } else {
                             text = LocaleController.getString(R.string.PhoneHidden);
@@ -11547,7 +11597,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         AtomicReference<String> value = new AtomicReference<>();
 
                         if (user != null && user.phone != null && user.phone.length() != 0) {
-                            value.set(PhoneFormat.getInstance().format("+ " + ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(user.phone, true)));
+                            value.set(ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(
+                                    PhoneFormat.getInstance().format("+ " + user.phone),
+                                    true
+                            ));
                         } else {
                             value.set(getString(R.string.NumberUnknown));
                         }

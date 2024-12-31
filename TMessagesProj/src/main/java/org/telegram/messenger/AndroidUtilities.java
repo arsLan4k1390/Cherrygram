@@ -2841,6 +2841,9 @@ public class AndroidUtilities {
     }
 
     public static boolean isTabletForce() {
+        if (CherrygramCoreConfig.INSTANCE.getTabletMode() != CherrygramCoreConfig.TABLET_MODE_AUTO) {
+            return CherrygramCoreConfig.INSTANCE.getTabletMode() == CherrygramCoreConfig.TABLET_MODE_ENABLE;
+        }
         return ApplicationLoader.applicationContext != null && ApplicationLoader.applicationContext.getResources().getBoolean(R.bool.isTablet);
     }
 
@@ -2868,7 +2871,7 @@ public class AndroidUtilities {
     }
 
     public static boolean isTablet() {
-        return isTabletInternal() && !SharedConfig.forceDisableTabletMode;
+        return isTabletInternal() /*&& !SharedConfig.forceDisableTabletMode*/;
     }
 
     public static boolean isSmallScreen() {

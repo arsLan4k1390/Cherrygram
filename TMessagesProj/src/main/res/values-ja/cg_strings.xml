@@ -210,7 +210,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">チャット</string>
     <string name="CP_Header_Messages">メッセージ</string>
-    <string name="CP_Slider_StickerAmplifier">ステッカーサイズの調整</string>
     <string name="CP_TimeOnStick">ステッカーの時間表示を無効化</string>
     <string name="CP_ChatMenuShortcuts">チャットメニューのショートカット</string>
     <string name="CP_AdminActions">管理者のショートカット</string>
@@ -272,7 +271,6 @@
     <string name="CP_CenterCameraControlButtons_Desc">中央のボタンをカメラとフラッシュライトに切り替えます。</string>
     <string name="CP_RearCam">リアカメラを使用する</string>
     <string name="CP_RearCam_Desc">ビデオメッセージでフロントカメラの代替として使用可能にします。</string>
-    <string name="CP_CaptureType_Desc">デフォルトで「動画キャプチャ」を使用します。\nビデオメッセージの録画の開始時にCherrygramが一瞬フリーズしてしまう場合でのみ、「画像キャプチャ(低品質)」を選択してください。画像キャプチャは動画の効果をサポートしています。</string>
     <string name="CP_DisableCam">メディア選択でのカメラを無効化</string>
     <string name="CP_DisableCam_Desc">ギャラリーボタンの隣にカメラボタンが表示されます。\nボタンを押すことでTelegramのカメラを開きます。ボタンを押し続けるとシステムのカメラが起動します。</string>
     <string name="CP_Header_Videomessages">ビデオメッセージ</string>

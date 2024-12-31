@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.SharedConfig
 import uz.unnarsx.cherrygram.camera.CameraXUtils
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
@@ -65,21 +66,9 @@ object CherrygramCameraConfig: CoroutineScope by CoroutineScope(
     const val CameraXFpsRange25to30 = 1
     const val CameraXFpsRange30to60 = 2
     const val CameraXFpsRange60to60 = 3
-    var cameraXFpsRange by sharedPreferences.int("CP_CameraXFpsRange", CameraXFpsRangeDefault)
+    var cameraXFpsRange by sharedPreferences.int("CP_CameraXFpsRange",
+        if (SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE) CameraXFpsRange25to30 else CameraXFpsRangeDefault)
     /** CameraX FPS finish **/
-
-    /** CameraX camera effects start **/
-    const val CONTROL_EFFECT_MODE_OFF = 0
-    const val CONTROL_EFFECT_MODE_MONO = 1
-    const val CONTROL_EFFECT_MODE_NEGATIVE = 2
-    const val CONTROL_EFFECT_MODE_SOLARIZE = 3
-    const val CONTROL_EFFECT_MODE_SEPIA = 4
-    const val CONTROL_EFFECT_MODE_POSTERIZE = 5
-    const val CONTROL_EFFECT_MODE_WHITEBOARD = 6
-    const val CONTROL_EFFECT_MODE_BLACKBOARD = 7
-    const val CONTROL_EFFECT_MODE_AQUA = 8
-    var cameraXCameraEffect by sharedPreferences.int("CP_CameraXCameraEffect", CONTROL_EFFECT_MODE_OFF)
-    /** CameraX camera effects finish **/
 
     var cameraStabilisation by sharedPreferences.boolean("CP_CameraStabilisation", false)
     fun toggleCameraStabilisation() {
@@ -104,11 +93,6 @@ object CherrygramCameraConfig: CoroutineScope by CoroutineScope(
         rearCam = !rearCam
         putBoolean("CP_RearCam", rearCam)
     }
-
-    const val CaptureType_VideoCapture = 0
-    const val CaptureType_ImageCapture = 1
-    var captureTypeFront by sharedPreferences.int("CP_CaptureTypeFront", CaptureType_VideoCapture)
-    var captureTypeBack by sharedPreferences.int("CP_CaptureTypeBack", CaptureType_VideoCapture)
 
     var whiteBackground by sharedPreferences.boolean("CG_WhiteBG", false)
     var videoMessagesResolution by sharedPreferences.int("CG_Round_Video_Resolution", 512)

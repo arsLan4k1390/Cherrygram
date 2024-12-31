@@ -32,7 +32,6 @@ import androidx.camera.core.MeteringPoint;
 import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
 import androidx.camera.core.ZoomState;
-import androidx.camera.core.impl.UseCaseConfigFactory;
 import androidx.camera.core.impl.utils.Exif;
 import androidx.camera.core.internal.compat.workaround.ExifRotationAvailability;
 import androidx.camera.extensions.ExtensionMode;
@@ -344,17 +343,9 @@ public class CameraXController {
                 .build();
         vCapture = VideoCapture.withOutput(recorder);
 
-        boolean useImageCaptureForFrontCamera = stableFPSPreviewOnly && CherrygramCameraConfig.INSTANCE.getCaptureTypeFront() == CherrygramCameraConfig.CaptureType_ImageCapture;
-        boolean useImageCaptureForBackCamera = stableFPSPreviewOnly && CherrygramCameraConfig.INSTANCE.getCaptureTypeBack() == CherrygramCameraConfig.CaptureType_ImageCapture;
-        boolean useImageCaptureForBothCameras = stableFPSPreviewOnly
-                && CherrygramCameraConfig.INSTANCE.getCaptureTypeFront() == CherrygramCameraConfig.CaptureType_ImageCapture
-                && CherrygramCameraConfig.INSTANCE.getCaptureTypeBack() == CherrygramCameraConfig.CaptureType_ImageCapture;
-
-        ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder();
-        iCaptureBuilder.setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY);
-        iCaptureBuilder.setTargetAspectRatio(VideoMessagesHelper.getCameraXAspectRatio());
-        if (useImageCaptureForFrontCamera ||useImageCaptureForBackCamera ||useImageCaptureForBothCameras) iCaptureBuilder.setCaptureType(UseCaseConfigFactory.CaptureType.VIDEO_CAPTURE);
-        iCaptureBuilder.build(); // need to build because attach camera crashes
+        ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .setTargetAspectRatio(VideoMessagesHelper.getCameraXAspectRatio());
 
         provider.unbindAll();
         previewUseCase = previewBuilder.build();
@@ -362,18 +353,7 @@ public class CameraXController {
 
         if (lifecycle.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) return;
         if (stableFPSPreviewOnly) {
-            if (useImageCaptureForBothCameras) {
-                iCapture = iCaptureBuilder.build();
-                camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, iCapture);
-            } else if (useImageCaptureForFrontCamera) {
-                iCapture = iCaptureBuilder.build();
-                camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, isFrontface() ? iCapture : vCapture);
-            } else if (useImageCaptureForBackCamera) {
-                iCapture = iCaptureBuilder.build();
-                camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, isFrontface() ? vCapture : iCapture);
-            } else {
-                camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, vCapture);
-            }
+            camera = provider.bindToLifecycle(lifecycle, cameraSelector, previewUseCase, vCapture);
 
             if (CherrygramCameraConfig.INSTANCE.getCameraStabilisation()
                     || CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() != CherrygramCameraConfig.CameraXFpsRangeDefault
@@ -387,10 +367,6 @@ public class CameraXController {
 
                 if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() != CherrygramCameraConfig.CameraXFpsRangeDefault) {
                     captureRequestOptions.setCaptureRequestOption(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, VideoMessagesHelper.getCameraXFpsRange());
-                }
-
-                if (useImageCaptureForFrontCamera || useImageCaptureForBackCamera || useImageCaptureForBothCameras) {
-                    captureRequestOptions.setCaptureRequestOption(CaptureRequest.CONTROL_EFFECT_MODE, CherrygramCameraConfig.INSTANCE.getCameraXCameraEffect());
                 }
 
                 Camera2CameraControl cameraControl = Camera2CameraControl.from(camera.getCameraControl());
@@ -474,7 +450,7 @@ public class CameraXController {
 
         FocusMeteringAction action = new FocusMeteringAction
                 .Builder(point, FocusMeteringAction.FLAG_AE | FocusMeteringAction.FLAG_AF | FocusMeteringAction.FLAG_AWB)
-                //.disableAutoCancel()
+//                .disableAutoCancel()
                 .build();
 
         camera.getCameraControl().startFocusAndMetering(action);

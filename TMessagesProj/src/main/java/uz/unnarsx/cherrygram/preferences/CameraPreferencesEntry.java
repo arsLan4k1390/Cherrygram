@@ -63,14 +63,10 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
     private int cameraUseDualCameraRow;
     private int startFromUltraWideRow;
     private int cameraXFpsRangeRow;
-    private int cameraXCameraEffectsRow;
     private int cameraStabilisationRow;
     private int exposureSliderRow;
     private int cameraControlButtonsRow;
     private int rearCamRow;
-    private int captureTypeFrontRow;
-    private int captureTypeBackRow;
-    private int captureTypeAdviseRow;
 
     public LinearLayoutManager layoutManager;
 
@@ -193,7 +189,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 }
 
                 listAdapter.notifyItemChanged(rearCamRow);
-                updateRowsId(false);
+                updateRowsId(true);
                 parentLayout.rebuildAllFragmentViews(false, false);
             } else if (position == startFromUltraWideRow) {
                 CherrygramCameraConfig.INSTANCE.toggleStartFromUltraWideCam();
@@ -220,42 +216,6 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                     CherrygramCameraConfig.INSTANCE.setCameraXFpsRange(configValues.get(i));
 
                     listAdapter.notifyItemChanged(cameraXFpsRangeRow);
-                });
-            } else if (position == cameraXCameraEffectsRow) {
-                ArrayList<String> configStringKeys = new ArrayList<>();
-                ArrayList<Integer> configValues = new ArrayList<>();
-
-                configStringKeys.add("MONO");
-                configValues.add(CherrygramCameraConfig.CONTROL_EFFECT_MODE_MONO);
-
-                configStringKeys.add("NEGATIVE");
-                configValues.add(CherrygramCameraConfig.CONTROL_EFFECT_MODE_NEGATIVE);
-
-                configStringKeys.add("SOLARIZE");
-                configValues.add(CherrygramCameraConfig.CONTROL_EFFECT_MODE_SOLARIZE);
-
-                configStringKeys.add("SEPIA");
-                configValues.add(CherrygramCameraConfig.CONTROL_EFFECT_MODE_SEPIA);
-
-                configStringKeys.add("POSTERIZE");
-                configValues.add(CherrygramCameraConfig.CONTROL_EFFECT_MODE_POSTERIZE);
-
-                configStringKeys.add("WHITEBOARD");
-                configValues.add(CherrygramCameraConfig.CONTROL_EFFECT_MODE_WHITEBOARD);
-
-                configStringKeys.add("BLACKBOARD");
-                configValues.add(CherrygramCameraConfig.CONTROL_EFFECT_MODE_BLACKBOARD);
-
-                configStringKeys.add("AQUA");
-                configValues.add(CherrygramCameraConfig.CONTROL_EFFECT_MODE_AQUA);
-
-                configStringKeys.add(getString(R.string.Default));
-                configValues.add(CherrygramCameraConfig.CONTROL_EFFECT_MODE_OFF);
-
-                PopupHelper.show(configStringKeys, "Effect", configValues.indexOf(CherrygramCameraConfig.INSTANCE.getCameraXCameraEffect()), context, i -> {
-                    CherrygramCameraConfig.INSTANCE.setCameraXCameraEffect(configValues.get(i));
-
-                    listAdapter.notifyItemChanged(cameraXCameraEffectsRow);
                 });
             } else if (position == cameraStabilisationRow) {
                 CherrygramCameraConfig.INSTANCE.toggleCameraStabilisation();
@@ -293,40 +253,6 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getRearCam());
                 }
-            } else if (position == captureTypeFrontRow) {
-                ArrayList<String> configStringKeys = new ArrayList<>();
-                ArrayList<Integer> configValues = new ArrayList<>();
-
-                configStringKeys.add("ImageCapture");
-                configValues.add(CherrygramCameraConfig.CaptureType_ImageCapture);
-
-                configStringKeys.add("VideoCapture");
-                configValues.add(CherrygramCameraConfig.CaptureType_VideoCapture);
-
-                PopupHelper.show(configStringKeys, "Capture type (Front camera)", configValues.indexOf(CherrygramCameraConfig.INSTANCE.getCaptureTypeFront()), context, i -> {
-                    CherrygramCameraConfig.INSTANCE.setCaptureTypeFront(configValues.get(i));
-
-                    listAdapter.notifyItemChanged(captureTypeFrontRow);
-                    listAdapter.notifyItemChanged(cameraXCameraEffectsRow);
-                    updateRowsId(true);
-                });
-            } else if (position == captureTypeBackRow) {
-                ArrayList<String> configStringKeys = new ArrayList<>();
-                ArrayList<Integer> configValues = new ArrayList<>();
-
-                configStringKeys.add("ImageCapture");
-                configValues.add(CherrygramCameraConfig.CaptureType_ImageCapture);
-
-                configStringKeys.add("VideoCapture");
-                configValues.add(CherrygramCameraConfig.CaptureType_VideoCapture);
-
-                PopupHelper.show(configStringKeys, "Capture type (Back camera)", configValues.indexOf(CherrygramCameraConfig.INSTANCE.getCaptureTypeBack()), context, i -> {
-                    CherrygramCameraConfig.INSTANCE.setCaptureTypeBack(configValues.get(i));
-
-                    listAdapter.notifyItemChanged(captureTypeBackRow);
-                    listAdapter.notifyItemChanged(cameraXCameraEffectsRow);
-                    updateRowsId(true);
-                });
             }
         });
 
@@ -375,18 +301,11 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
         if (CameraXUtils.isCurrentCameraCameraX()) {
             startFromUltraWideRow = rowCount++;
             cameraXFpsRangeRow = rowCount++;
-            if (CherrygramCameraConfig.INSTANCE.getCaptureTypeFront() == CherrygramCameraConfig.CaptureType_ImageCapture
-                    || CherrygramCameraConfig.INSTANCE.getCaptureTypeBack() == CherrygramCameraConfig.CaptureType_ImageCapture) {
-                cameraXCameraEffectsRow = rowCount++;
-            } else {
-                cameraXCameraEffectsRow = -1;
-            }
             cameraStabilisationRow = rowCount++;
             exposureSliderRow = rowCount++;
         } else {
             startFromUltraWideRow = -1;
             cameraXFpsRangeRow = -1;
-            cameraXCameraEffectsRow = -1;
             cameraStabilisationRow = -1;
             exposureSliderRow = -1;
         }
@@ -397,16 +316,6 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
             rearCamRow = -1;
         } else {
             rearCamRow = rowCount++;;
-        }
-
-        if (CameraXUtils.isCurrentCameraCameraX()) {
-            captureTypeFrontRow = rowCount++;
-            captureTypeBackRow = rowCount++;
-            captureTypeAdviseRow = rowCount++;
-        } else {
-            captureTypeFrontRow = -1;
-            captureTypeBackRow = -1;
-            captureTypeAdviseRow = -1;
         }
 
         if (listAdapter != null && notify) {
@@ -472,8 +381,6 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                     TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
                     if (position == cameraAdviseRow) {
                         textInfoPrivacyCell.setText(CGResourcesHelper.getCameraAdvise());
-                    } else if (position == captureTypeAdviseRow) {
-                        textInfoPrivacyCell.setText(getString(R.string.CP_CaptureType_Desc));
                     }
                     break;
                 case 7:
@@ -487,14 +394,8 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                         textSettingsCell.setTextAndValue(getString(R.string.CP_CameraQuality), CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p", true);
                     } else if (position == cameraXFpsRangeRow) {
                         textCell.setTextAndValue("FPS", CGResourcesHelper.getCameraXFpsRange(), true);
-                    } else if (position == cameraXCameraEffectsRow) {
-                        textCell.setTextAndValue("Effect", CGResourcesHelper.getCameraXCameraEffect(), true);
                     } else if (position == exposureSliderRow) {
                         textCell.setTextAndValue(getString(R.string.CP_ExposureSliderPosition), CGResourcesHelper.getExposureSliderPosition(), true);
-                    } else if (position == captureTypeFrontRow) {
-                        textCell.setTextAndValue("Capture type (Front camera)", CGResourcesHelper.getCameraCaptureTypeFront(), false);
-                    } else if (position == captureTypeBackRow) {
-                        textCell.setTextAndValue("Capture type (Back camera)", CGResourcesHelper.getCameraCaptureTypeBack(), false);
                     }
                     break;
             }
@@ -539,14 +440,11 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                             listAdapter.notifyItemChanged(cameraUseDualCameraRow);
                             listAdapter.notifyItemChanged(startFromUltraWideRow);
                             listAdapter.notifyItemChanged(cameraXFpsRangeRow);
-                            listAdapter.notifyItemChanged(cameraXCameraEffectsRow);
                             listAdapter.notifyItemChanged(cameraStabilisationRow);
                             listAdapter.notifyItemChanged(exposureSliderRow);
                             listAdapter.notifyItemChanged(cameraControlButtonsRow);
+
                             listAdapter.notifyItemChanged(rearCamRow);
-                            listAdapter.notifyItemChanged(captureTypeFrontRow);
-                            listAdapter.notifyItemChanged(captureTypeBackRow);
-                            listAdapter.notifyItemChanged(captureTypeAdviseRow);
                         }
                     };
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
@@ -578,9 +476,9 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 return 3;
             } else if (position == cameraTypeSelectorRow) {
                 return 5;
-            } else if (position == cameraAdviseRow || position == captureTypeAdviseRow) {
+            } else if (position == cameraAdviseRow) {
                 return 6;
-            } else if (position == cameraAspectRatioRow || position == cameraXQualityRow || position == cameraXFpsRangeRow || position == cameraXCameraEffectsRow || position == exposureSliderRow || position == captureTypeFrontRow || position == captureTypeBackRow) {
+            } else if (position == cameraAspectRatioRow || position == cameraXQualityRow || position == cameraXFpsRangeRow || position == exposureSliderRow) {
                 return 7;
             }
             return 1;

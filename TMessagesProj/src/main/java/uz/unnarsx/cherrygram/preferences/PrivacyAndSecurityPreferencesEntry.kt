@@ -81,6 +81,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     CGBiometricPrompt.prompt(bf.parentActivity) {
                         CherrygramPrivacyConfig.askBiometricsToOpenArchive = it
                         bf.parentLayout.rebuildAllFragmentViews(true, true)
+                        AppRestartHelper.createRestartBulletin(bf)
                     }
                 }
             }

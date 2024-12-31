@@ -2518,7 +2518,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         if (!parentAlert.destroyed && parentAlert.isShowing() && deviceHasGoodCamera && parentAlert.getBackDrawable().getAlpha() != 0 && !cameraOpened) {
             showCamera();
         }
-        if ((CameraXUtils.isCurrentCameraCameraX()) && cameraOpened && needRebindCamera) {
+        if ((CameraXUtils.isCurrentCameraCameraX()) && cameraOpened && needRebindCamera && (CameraXView) cameraView != null) {
             ((CameraXView) cameraView).rebind();
         }
     }

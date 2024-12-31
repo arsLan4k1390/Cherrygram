@@ -29,6 +29,10 @@ public class FirebaseAnalyticsHelper {
     }
 
     public static void trackEvent(String eventName, Bundle bundle) {
+        if (firebaseAnalytics == null) {
+            return;
+        }
+
         /*bundle.remove("debug_event");
         bundle.remove("firebase_event_origin");
         bundle.remove("firebase_screen_class");

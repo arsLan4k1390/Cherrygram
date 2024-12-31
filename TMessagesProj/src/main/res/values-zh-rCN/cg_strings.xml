@@ -210,7 +210,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">聊天</string>
     <string name="CP_Header_Messages">信息</string>
-    <string name="CP_Slider_StickerAmplifier">调整贴纸大小</string>
     <string name="CP_TimeOnStick">隐藏贴纸时间</string>
     <string name="CP_ChatMenuShortcuts">聊天菜单快捷方式</string>
     <string name="CP_AdminActions">管理员快捷方式</string>
@@ -272,7 +271,6 @@
     <string name="CP_CenterCameraControlButtons_Desc">居中切换摄像头和手电筒按钮</string>
     <string name="CP_RearCam">使用后置相机</string>
     <string name="CP_RearCam_Desc">视频消息不使用前置相机</string>
-    <string name="CP_CaptureType_Desc">默认使用\"视频捕获\"。 \n当 Cherrygram 在开始录制视频消息之前被系统卡顿一秒时，可以选择\"图像捕获\"（减少质量）缓解。</string>
     <string name="CP_DisableCam">在媒体菜单中禁用相机</string>
     <string name="CP_DisableCam_Desc">如果媒体菜单打开过慢，请打开本功能</string>
     <string name="CP_Header_Videomessages">视频信息</string>

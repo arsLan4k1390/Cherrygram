@@ -201,7 +201,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
     <string name="CP_Header_Messages">Nachrichten</string>
-    <string name="CP_Slider_StickerAmplifier">Stickergrößenverstärker</string>
     <string name="CP_TimeOnStick">Zeit auf Stickern im Chat verbergen</string>
     <string name="CP_ChatMenuShortcuts">Chat-Menü-Shortcuts</string>
     <string name="CP_AdminActions">Admin-Shortcuts</string>
@@ -261,7 +260,6 @@
     <string name="CP_CameraAspectRatio">Kamera-Seitenverhältnis</string>
     <string name="CP_RearCam">Hintere Kamera verwenden</string>
     <string name="CP_RearCam_Desc">Anstelle der Frontkamera für Video-Nachrichten</string>
-    <string name="CP_CaptureType_Desc">Use \"VideoCapture\" by default. \nSelect \"ImageCapture\" (reduces quality) only if Cherrygram freezes for a second before starting to record a video message.</string>
     <string name="CP_DisableCam">Deaktiviere Kamera im Medien-Menü</string>
     <string name="CP_DisableCam_Desc">Enable if media attach menu lags</string>
     <string name="CP_Header_Videomessages">Videomessages</string>

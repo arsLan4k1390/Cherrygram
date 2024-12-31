@@ -210,7 +210,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">對話</string>
     <string name="CP_Header_Messages">訊息</string>
-    <string name="CP_Slider_StickerAmplifier">調整貼圖大小</string>
     <string name="CP_TimeOnStick">隱藏貼圖時間</string>
     <string name="CP_ChatMenuShortcuts">對話功能表捷徑</string>
     <string name="CP_AdminActions">管理員捷徑</string>
@@ -272,7 +271,6 @@
     <string name="CP_CenterCameraControlButtons_Desc">置中切換相機和手電筒按鈕</string>
     <string name="CP_RearCam">使用後置鏡頭</string>
     <string name="CP_RearCam_Desc">視訊訊息不使用前置鏡頭</string>
-    <string name="CP_CaptureType_Desc">預設使用「VideoCapture」。 \n只有當 Cherrygram 在開始錄製影片訊息之前，被系統凍結一秒鐘的話，才選擇「ImageCapture」（品質會被降低）。此外，ImageCapture 還支援視訊效果。</string>
     <string name="CP_DisableCam">在多媒體選單中停用相機</string>
     <string name="CP_DisableCam_Desc">如果多媒體選單開啟過慢，請開啟本功能</string>
     <string name="CP_Header_Videomessages">視訊訊息</string>

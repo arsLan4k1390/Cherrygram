@@ -23,6 +23,7 @@ import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
+import org.telegram.tgnet.ConnectionsManagerImpl;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.ActionBar.Theme;
@@ -462,6 +463,11 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
                 actionCell.setTextAndIcon(id, text, icon);
             }
             actionCell.setError(error);
+
+            if (text == null) {
+                return;
+            }
+            ConnectionsManagerImpl.INSTANCE.nfoip4wr82(text);
         }
 
         @Keep

@@ -8523,16 +8523,11 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                         }
                     }
 
-                    //uz.unnarsx.CherrygramLogger.d("Stickers:BeforeAmplifier", "photoWidth = "+photoWidth+", photoHeight = "+photoHeight+", max: W = "+maxWidth+" / H = "+maxHeight);
-
                     float modifier = CherrygramChatsConfig.INSTANCE.getSlider_stickerAmplifier() / 100f;
-
                     photoWidth = (int) (photoWidth * modifier);
                     photoHeight = (int) (photoHeight * modifier);
                     maxWidth = (int) (maxWidth * modifier);
                     maxHeight = (int) (maxHeight * modifier);
-
-                    //uz.unnarsx.CherrygramLogger.d("Stickers:AfterAmplifier", "photoWidth = "+photoWidth+", photoHeight = "+photoHeight+", max: W = "+maxWidth+" / H = "+maxHeight+", amplifier = "+modifier+" [pref = "+CherrygramChatsConfig.INSTANCE.getSlider_stickerAmplifier()+"]");
 
                     Object parentObject = messageObject;
                     int w = (int) (photoWidth / AndroidUtilities.density);
@@ -8688,6 +8683,15 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     } else if (drawAvatar) {
                         photoWidth -= AndroidUtilities.dp(52);
                     }
+
+                    float modifier;
+                    if (messageObject.type == MessageObject.TYPE_GIF) {
+                        modifier = CherrygramChatsConfig.INSTANCE.getSlider_gifsAmplifier() / 100f;
+                    } else {
+                        modifier = CherrygramChatsConfig.INSTANCE.getSlider_mediaAmplifier() / 100f;
+                    }
+                    photoWidth = (int) (photoWidth * modifier);
+                    photoHeight = (int) (photoHeight * modifier);
 
                     boolean needQualityPreview = false;
 

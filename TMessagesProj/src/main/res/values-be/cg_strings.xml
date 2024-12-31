@@ -205,7 +205,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Чаты</string>
     <string name="CP_Header_Messages">Паведамленні</string>
-    <string name="CP_Slider_StickerAmplifier">Памер стыкераў</string>
     <string name="CP_TimeOnStick">Схаваць час на стыкерах у чаце</string>
     <string name="CP_ChatMenuShortcuts">Ярлыкі дзеянняў ў меню чата</string>
     <string name="CP_AdminActions">Дзеянні для кіраўнікоў</string>
@@ -265,7 +264,6 @@
     <string name="CP_CameraAspectRatio">Суадносіны бакоў камеры</string>
     <string name="CP_RearCam">Выкарыстоўваць заднюю камеру</string>
     <string name="CP_RearCam_Desc">Заміж франтальнай камеры пры запісе відэапаведамленняў</string>
-    <string name="CP_CaptureType_Desc">Выкарыстоўваюць \"Захоп відэа\" па змаўчанні. \nАбярыце \"Захоп выявы\" (змяншае якасць) толькі калі Cherrygram завісае на секунду перад запісам відэапаведамлення.</string>
     <string name="CP_DisableCam">Адключыць камеру ў меню выбару фота</string>
     <string name="CP_DisableCam_Desc">Уключыце гэта калі меню тармозіць</string>
     <string name="CP_Header_Videomessages">Відэапаведамленні</string>

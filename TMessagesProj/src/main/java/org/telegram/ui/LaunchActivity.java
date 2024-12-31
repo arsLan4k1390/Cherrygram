@@ -6717,7 +6717,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
     public static Runnable whenResumed;
 
-    private void invalidateTabletMode() {
+    public void invalidateTabletMode() {
         Boolean wasTablet = AndroidUtilities.getWasTablet();
         if (wasTablet == null) {
             return;

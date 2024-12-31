@@ -195,7 +195,6 @@
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">گفتگوها</string>
-    <string name="CP_Slider_StickerAmplifier">تنظیم‌کننده اندازه استیکر</string>
     <string name="CP_TimeOnStick">پنهان‌سازی ساعت روی استیکرها در چت</string>
     <string name="CP_MessageMenu">منوی پیام</string>
     <string name="CP_UnreadBadgeOnBackButton">نمایش شمارنده چت های خوانده نشده</string>

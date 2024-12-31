@@ -27,8 +27,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     }
 
     /** Stickers start **/
-    var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
-    var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
     /** Stickers finish **/
 
     /** Chats start **/
@@ -219,6 +217,13 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     }
     /** Message menu finish **/
 
+    /** Messages size start **/
+    var slider_mediaAmplifier by sharedPreferences.int("CP_Slider_MediaAmplifier", 100)
+    var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
+    var slider_gifsAmplifier by sharedPreferences.int("CP_Slider_GifsAmplifier", 100)
+    /** Messages size finish **/
+
+    var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
     var deleteForAll by sharedPreferences.boolean("CP_DeleteForAll", false)
     var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", true)
     var showPencilIcon by sharedPreferences.boolean("AP_PencilIcon", true)
@@ -296,6 +301,12 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     const val FILTER_MENTIONS = 10
     var messagesSearchFilter by sharedPreferences.int("messagesSearchFilter", FILTER_NONE)
     /** Search Filter finish **/
+
+    var unarchiveOnSwipe by sharedPreferences.boolean("CG_UnarchiveOnSwipe", false)
+    fun toggleUnarchiveOnSwipe() {
+        unarchiveOnSwipe = !unarchiveOnSwipe
+        putBoolean("CG_UnarchiveOnSwipe", unarchiveOnSwipe)
+    }
     /** Misc finish **/
 
     init {

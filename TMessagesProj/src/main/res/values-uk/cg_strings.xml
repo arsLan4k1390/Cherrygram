@@ -210,7 +210,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Діалоги</string>
     <string name="CP_Header_Messages">Повідомлення</string>
-    <string name="CP_Slider_StickerAmplifier">Розмір стікерів</string>
     <string name="CP_TimeOnStick">Приховати час відправки на стікерах</string>
     <string name="CP_ChatMenuShortcuts">Ярлики меню чату</string>
     <string name="CP_AdminActions">Швидкі адмін-дії</string>
@@ -272,7 +271,6 @@
     <string name="CP_CenterCameraControlButtons_Desc">Center switch camera and flashlight buttons.</string>
     <string name="CP_RearCam">Використовувати задню камеру</string>
     <string name="CP_RearCam_Desc">Замість фронтальної камери під час запису відеоповідомлень</string>
-    <string name="CP_CaptureType_Desc">За замовчуванням використовує «VideoCapture». \nВиберіть «ImageCapture» (знижує якість), лише якщо Cherrygram зависає на секунду перед тим, як почати записувати відеоповідомлення.</string>
     <string name="CP_DisableCam">Вимкнути камеру в меню вибору фото</string>
     <string name="CP_DisableCam_Desc">Кнопка камери буде доступна поруч із кнопкою галереї. \nНатискання кнопки відкриє Telegram камеру, та утримання її запустить системну камеру.</string>
     <string name="CP_Header_Videomessages">Відеоповідомлення</string>

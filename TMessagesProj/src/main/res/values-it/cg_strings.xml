@@ -160,7 +160,6 @@
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chat</string>
-    <string name="CP_Slider_StickerAmplifier">Aumento dimensioni sticker</string>
     <string name="CP_TimeOnStick">Nascondi orario su sticker in chat</string>
     <string name="CP_MessageMenu">Menù dei messaggi</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostra contatore chat non lette</string>

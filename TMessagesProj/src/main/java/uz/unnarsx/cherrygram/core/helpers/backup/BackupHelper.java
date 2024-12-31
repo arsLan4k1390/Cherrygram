@@ -157,6 +157,7 @@ public class BackupHelper {
         mainconfig.add("AP_SystemEmoji");
         mainconfig.add("AP_SystemFonts");
         mainconfig.add("AP_Old_Notification_Icon");
+        mainconfig.add("AP_Tablet_Mode");
 
         mainconfig.add("CP_HideStories");
         mainconfig.add("CP_ArchiveStoriesFromUsers");
@@ -224,9 +225,6 @@ public class BackupHelper {
         /** Appearance finish **/
 
         /** Chats start **/
-        mainconfig.add("CP_TimeOnStick");
-        mainconfig.add("CP_Slider_StickerAmplifier");
-
         mainconfig.add("CP_Shortcut_JumpToBegin");
         mainconfig.add("CP_Shortcut_DeleteAll");
         mainconfig.add("CP_Shortcut_SavedMessages");
@@ -268,6 +266,11 @@ public class BackupHelper {
         mainconfig.add("CP_ShowReport");
         mainconfig.add("CP_ShowJSON");
 
+        mainconfig.add("CP_Slider_MediaAmplifier");
+        mainconfig.add("CP_Slider_StickerAmplifier");
+        mainconfig.add("CP_Slider_GifsAmplifier");
+
+        mainconfig.add("CP_TimeOnStick");
         mainconfig.add("CP_DeleteForAll");
         mainconfig.add("CP_ForwardMsgDate");
         mainconfig.add("AP_PencilIcon");
@@ -286,6 +289,7 @@ public class BackupHelper {
         mainconfig.add("CP_Notification_Sound");
         mainconfig.add("CP_VibrationInChats");
         mainconfig.add("CP_SilenceNonContacts");
+        mainconfig.add("CG_UnarchiveOnSwipe");
         /** Chats finish **/
 
         /** Camera start **/
@@ -295,20 +299,18 @@ public class BackupHelper {
         mainconfig.add("CP_CameraAspectRatio");
         mainconfig.add("CP_StartFromUltraWideCam");
 //        mainconfig.add("CP_CameraXFpsRange");
-//        mainconfig.add("CP_CameraXCameraEffect");
         mainconfig.add("CP_CameraStabilisation");
         mainconfig.add("CP_CenterCameraControlButtons");
         mainconfig.add("CP_ExposureSlider");
         mainconfig.add("CP_RearCam");
-//        mainconfig.add("CP_CaptureTypeFront");
-//        mainconfig.add("CP_CaptureTypeBack");
         /** Camera finish **/
 
         /** Privacy start **/
         mainconfig.add("SP_NoProxyPromo");
 //        mainconfig.add("SP_GoogleAnalytics");
-//        mainconfig.add("SP_AskBiometricsToOpenChat");
+        mainconfig.add("SP_HideArchiveFromChatsList");
 //        mainconfig.add("SP_AskBiometricsToOpenArchive");
+//        mainconfig.add("SP_AskBiometricsToOpenChat");
 //        mainconfig.add("SP_AskPinBeforeDelete");
 //        mainconfig.add("SP_AllowSystemPasscode");
         /** Privacy finish **/

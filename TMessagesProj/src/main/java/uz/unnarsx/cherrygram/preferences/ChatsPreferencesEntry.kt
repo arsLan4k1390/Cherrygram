@@ -24,40 +24,6 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class ChatsPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.CP_Header_Chats)) {
-        category(getString(R.string.AccDescrStickers)) {
-            switch {
-                title = getString(R.string.CP_TimeOnStick)
-
-                contract({
-                    return@contract CherrygramChatsConfig.hideStickerTime
-                }) {
-                    CherrygramChatsConfig.hideStickerTime = it
-                }
-            }
-        }
-        category(getString(R.string.CP_Slider_StickerAmplifier)) {
-            slider {
-                contract = object : TGSLContract {
-                    override fun setValue(value: Int) {
-                        CherrygramChatsConfig.slider_stickerAmplifier = value
-                    }
-
-                    override fun getPreferenceValue(): Int {
-                        return CherrygramChatsConfig.slider_stickerAmplifier
-                    }
-
-                    override fun getMin(): Int {
-                        return 50
-                    }
-
-                    override fun getMax(): Int {
-                        return 100
-                    }
-                }
-            }
-
-        }
-
         category(getString(R.string.CP_Header_Chats)) {
             textIcon {
                 title = getString(R.string.CP_ChatMenuShortcuts)
@@ -186,6 +152,23 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     AlertDialogSwitchers.showChatMenuIconsAlert(bf)
                 }
                 divider = true
+            }
+            textIcon {
+                title = getString(R.string.CP_Messages_Size)
+                icon = R.drawable.msg_photo_settings
+                listener = TGKitTextIconRow.TGTIListener {
+                    AlertDialogSwitchers.showMessageSize(bf)
+                }
+                divider = true
+            }
+            switch {
+                title = getString(R.string.CP_TimeOnStick)
+
+                contract({
+                    return@contract CherrygramChatsConfig.hideStickerTime
+                }) {
+                    CherrygramChatsConfig.hideStickerTime = it
+                }
             }
             switch {
                 title = getString(R.string.CP_DeleteForAll)

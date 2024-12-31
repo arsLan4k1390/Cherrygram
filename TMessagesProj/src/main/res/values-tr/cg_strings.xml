@@ -210,7 +210,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Sohbetler</string>
     <string name="CP_Header_Messages">Mesajlar</string>
-    <string name="CP_Slider_StickerAmplifier">Çıkartma boyutu çarpanı</string>
     <string name="CP_TimeOnStick">Sohbetteki çıkartmalarda zamanı gizle</string>
     <string name="CP_ChatMenuShortcuts">Sohbet menüsü kısayolları</string>
     <string name="CP_AdminActions">Yönetici kısayolları</string>
@@ -272,7 +271,6 @@
     <string name="CP_CenterCameraControlButtons_Desc">Kamera ve el feneri düğmelerini ortalayın.</string>
     <string name="CP_RearCam">Arka kamerayı kullan</string>
     <string name="CP_RearCam_Desc">Video mesajları için ön kamera yerine</string>
-    <string name="CP_CaptureType_Desc">Varsayılan olarak \"VideoCapture\" kullanın. \n\"ImageCapture\"ı (kaliteyi düşürür) yalnızca Cherrygram video mesajı kaydetmeye başlamadan önce bir saniye donarsa seçin. Ayrıca, ImageCapture video efektlerini destekler.</string>
     <string name="CP_DisableCam">Medya ekleme menüsünde kamerayı devre dışı bırak</string>
     <string name="CP_DisableCam_Desc">Kamera düğmesi galeri düğmesinin yanında olacak. \nDüğmeye basmak Telegram kamerasını açacak, basılı tutmak ise sistem kamerasını başlatacak.</string>
     <string name="CP_Header_Videomessages">Video mesajları</string>

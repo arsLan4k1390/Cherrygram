@@ -4314,7 +4314,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             if (currentUser != null && currentUser.self && getDialogId() != UserObject.VERIFY) {
                 headerItem.lazilyAddSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
             }
-            if (!isTopic) {
+            boolean isDeleteButtonAvailable = getDialogId() != Constants.Cherrygram_Owner && getDialogId() != 553511970L;
+            if (!isTopic && isDeleteButtonAvailable) {
                 clearHistoryItem = headerItem.lazilyAddSubItem(clear_history, R.drawable.msg_clear, LocaleController.getString(R.string.ClearHistory));
             }
             boolean addedSettings = false;
@@ -4340,7 +4341,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_block2, LocaleController.getString(R.string.DeleteAndBlock)).setColors(getThemedColor(Theme.key_text_RedRegular), getThemedColor(Theme.key_text_RedRegular));
                         updateBotButtons();
                     } else {
-                        headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_delete, LocaleController.getString(R.string.DeleteChatUser));
+                        if (isDeleteButtonAvailable) headerItem.lazilyAddSubItem(delete_chat, R.drawable.msg_delete, LocaleController.getString(R.string.DeleteChatUser));
                     }
                 }
             }
@@ -32648,8 +32649,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (messageTextToTranslate == null && selectedObject.isPoll()) {
                     try {
                         TLRPC.Poll poll = ((TLRPC.TL_messageMediaPoll) selectedObject.messageOwner.media).poll;
-                        StringBuilder pollText = new StringBuilder();
-                        pollText = new StringBuilder(poll.question.text).append("\n");
+                        StringBuilder pollText = new StringBuilder(poll.question.text).append("\n");
                         for (TLRPC.PollAnswer answer : poll.answers)
                             pollText.append("\n\uD83D\uDD18 ").append(answer.text == null ? "" : answer.text.text);
                         messageTextToTranslate = pollText.toString();

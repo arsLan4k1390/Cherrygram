@@ -210,7 +210,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Ћаскања</string>
     <string name="CP_Header_Messages">Поруке</string>
-    <string name="CP_Slider_StickerAmplifier">Појачало величине налепница</string>
     <string name="CP_TimeOnStick">Сакриј време на налепницама у ћаскању</string>
     <string name="CP_ChatMenuShortcuts">Пречице менија ћаскања</string>
     <string name="CP_AdminActions">Пречице администратора</string>
@@ -272,7 +271,6 @@
     <string name="CP_CenterCameraControlButtons_Desc">Центрирајте прекидач камере и дугмад за батеријску лампу.</string>
     <string name="CP_RearCam">Користи задњу камеру</string>
     <string name="CP_RearCam_Desc">Уместо предње камере за видео-поруке</string>
-    <string name="CP_CaptureType_Desc">Подразумевано користите „VideoCapture”. \nИзаберите „ImageCapture” (смањује квалитет) само ако се Cherrygram замрзне на секунд пре него што почне снимати видео-поруку. Штавише, „ImageCapture” подржава видео ефекте.</string>
     <string name="CP_DisableCam">Онемогући камеру у менију за прилагање медија</string>
     <string name="CP_DisableCam_Desc">Дугме камере ће бити доступно поред дугмета за галерију. \nПритиском на дугме отвориће се камера апликације Telegram, а дугим притиском отвориће се системска камера.</string>
     <string name="CP_Header_Videomessages">Видео-поруке</string>

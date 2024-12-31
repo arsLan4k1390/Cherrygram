@@ -41,6 +41,7 @@
     <string name="CG_ChooseFolderIcon">Choose an Icon</string>
     <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
     <string name="CP_NewTabs_NoCounter_Desc">This will hide unread messages counter</string>
+    <string name="CG_SwipeToUnarchive">Swipe left to unarchive</string>
     <!--Telegram Folders Settings-->
 
     <!--Chats screen-->
@@ -155,6 +156,7 @@
     <string name="AP_RedesignCategory">Redesign</string>
     <string name="AP_IconReplacements">Icon replacements</string>
     <string name="AP_Old_Notification_Icon">Default notification icon (Telegram)</string>
+    <string name="AP_Tablet_Mode">Tablet mode</string>
     <string name="AP_ChangeIconFilter">Use Telegram icons</string>
     <string name="AP_ChangeIcon_Cherry" translatable="false">Cherry</string>
     <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
@@ -248,7 +250,6 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
     <string name="CP_Header_Messages">Messages</string>
-    <string name="CP_Slider_StickerAmplifier">Sticker size amplifier</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
 
     <string name="CP_ChatMenuShortcuts">Chat menu shortcuts</string>
@@ -281,6 +282,9 @@
     <string name="CP_Slider_RecentStickersAmplifier">Recent stickers counter (restart app to apply)</string>
 
     <string name="CP_Header_Record">Media</string>
+    <string name="CP_Messages_Size">Messages bubble size</string>
+    <string name="CP_Slider_MediaAmplifier">Photos and videos</string>
+    <string name="CP_Slider_MediaAmplifier_Hint">Does not work with albums (grouped media)</string>
     <string name="CP_SpoilersOnMedia">Spoiler effect</string>
     <string name="CP_SpoilersOnMedia_Desc">Spoiler effect on photos and videos will not be shown if the feature is disabled.</string>
     <string name="CP_VoiceEnhancements">Voice Enhancements</string>
@@ -320,7 +324,6 @@
     <string name="CP_CenterCameraControlButtons_Desc">Center switch camera and flashlight buttons.</string>
     <string name="CP_RearCam">Use rear camera</string>
     <string name="CP_RearCam_Desc">Instead of front camera for video messages</string>
-    <string name="CP_CaptureType_Desc">Use \"VideoCapture\" by default. \nSelect \"ImageCapture\" (reduces quality) only if Cherrygram freezes for a second before starting to record a video message. Moreover, ImageCapture supports video effects.</string>
     <string name="CP_DisableCam">Disable cam in media attach menu</string>
     <string name="CP_DisableCam_Desc">The camera button will be available next to the gallery button. \nPressing the button will open the Telegram camera, and holding it will launch the system camera.</string>
 

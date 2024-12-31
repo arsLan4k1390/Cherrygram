@@ -37,6 +37,8 @@ import org.telegram.ui.Components.RecyclerListView;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+
 public class ArchiveSettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private RecyclerListView listView;
@@ -113,6 +115,10 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
                 settings.archive_and_mute_new_noncontact_peers = !settings.archive_and_mute_new_noncontact_peers;
                 ((TextCheckCell) view).setChecked(settings.archive_and_mute_new_noncontact_peers);
                 changed = true;
+            } else if (item.id == 10) {
+                CherrygramChatsConfig.INSTANCE.toggleUnarchiveOnSwipe();
+                ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getUnarchiveOnSwipe());
+                changed = true;
             }
         });
 
@@ -147,6 +153,9 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
         items.add(new ItemInner(VIEW_TYPE_HEADER, 6, LocaleController.getString("NewChatsFromNonContacts")));
         items.add(new ItemInner(VIEW_TYPE_CHECK, 7, LocaleController.getString("NewChatsFromNonContactsCheck")));
         items.add(new ItemInner(VIEW_TYPE_SHADOW, 8, LocaleController.getString("ArchiveAndMuteInfo")));
+
+        items.add(new ItemInner(VIEW_TYPE_HEADER, 9, LocaleController.getString(R.string.CG_AppName)));
+        items.add(new ItemInner(VIEW_TYPE_CHECK, 10, LocaleController.getString(R.string.CG_SwipeToUnarchive)));
 
         if (adapter == null) {
             return;
@@ -232,6 +241,9 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
                 } else if (item.id == 7) {
                     checked = settings.archive_and_mute_new_noncontact_peers;
                     cell.setCheckBoxIcon(getUserConfig().isPremium() || getMessagesController().autoarchiveAvailable ? 0 : R.drawable.permission_locked);
+                } else if (item.id == 10) {
+                    checked = CherrygramChatsConfig.INSTANCE.getUnarchiveOnSwipe();
+                    cell.setCheckBoxIcon(0);
                 } else {
                     return;
                 }
@@ -298,6 +310,8 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
                         ((TextCheckCell) child).setChecked(settings.keep_archived_folders);
                     } else if (item.id == 7) {
                         ((TextCheckCell) child).setChecked(settings.archive_and_mute_new_noncontact_peers);
+                    } else if (item.id == 10) {
+                        ((TextCheckCell) child).setChecked(CherrygramChatsConfig.INSTANCE.getUnarchiveOnSwipe());
                     }
                 }
             }

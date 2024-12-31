@@ -1,14 +1,17 @@
 package uz.unnarsx.cherrygram.preferences
 
+import androidx.core.util.Pair
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.list
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 
@@ -51,6 +54,29 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                 }) {
                     CherrygramCoreConfig.oldNotificationIcon = it
                     AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
+            list {
+                title = getString(R.string.AP_Tablet_Mode)
+
+                contract({
+                    return@contract listOf(
+                        Pair(CherrygramCoreConfig.TABLET_MODE_AUTO, getString(R.string.QualityAuto)),
+                        Pair(CherrygramCoreConfig.TABLET_MODE_ENABLE, getString(R.string.EP_DownloadSpeedBoostAverage)),
+                        Pair(CherrygramCoreConfig.TABLET_MODE_DISABLE, getString(R.string.EP_DownloadSpeedBoostNone))
+                    )
+                }, {
+                    return@contract when (CherrygramCoreConfig.tabletMode) {
+                        CherrygramCoreConfig.TABLET_MODE_ENABLE -> getString(R.string.EP_DownloadSpeedBoostAverage)
+                        CherrygramCoreConfig.TABLET_MODE_DISABLE -> getString(R.string.EP_DownloadSpeedBoostNone)
+                        else -> getString(R.string.QualityAuto)
+                    }
+                }) {
+                    CherrygramCoreConfig.tabletMode = it
+                    AndroidUtilities.resetTabletFlag()
+                    if (bf.parentActivity is LaunchActivity) {
+                        (bf.parentActivity as LaunchActivity).invalidateTabletMode()
+                    }
                 }
             }
         }

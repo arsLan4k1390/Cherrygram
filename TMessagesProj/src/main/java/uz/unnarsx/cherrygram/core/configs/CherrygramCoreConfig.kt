@@ -11,6 +11,7 @@ import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
 import uz.unnarsx.cherrygram.preferences.boolean
+import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 
 object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
@@ -38,6 +39,11 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var systemEmoji by sharedPreferences.boolean("AP_SystemEmoji", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
+
+    const val TABLET_MODE_ENABLE = 0
+    const val TABLET_MODE_DISABLE = 1
+    const val TABLET_MODE_AUTO = 2
+    var tabletMode by sharedPreferences.int("AP_Tablet_Mode", TABLET_MODE_AUTO)
     /** General finish **/
 
     /** Animations and Premium Features start **/
