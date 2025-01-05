@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.huawei.agconnect'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
+
+import okhttp3.*
+
+import java.util.concurrent.TimeUnit
 
 repositories {
     mavenCentral()
@@ -176,5 +182,90 @@ android {
     }
 }
 
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
+def fileName = "Cherrygram-Huawei-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-arm64-v8a.apk"
+def apkFilePath = "${projectDir}/afat/release/${fileName}"
+
+def fileName2 = "Cherrygram-Huawei-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-armeabi-v7a.apk"
+def apkFilePath2 = "${projectDir}/afat/release/${fileName2}"
+
+tasks.register('copyFiles', Copy) {
+    from "${projectDir}/afat/release/"
+    include '**/*.apk'
+    exclude 'baselineProfiles/**'
+    into "C:/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
+}
+
+tasks.register('sendApk') {
+    doLast {
+        def file = new File(apkFilePath)
+        def file2 = new File(apkFilePath2)
+
+        if (!file.exists() && !file2.exists()) {
+            println "APK file not found: $apkFilePath"
+            println "APK file not found: $apkFilePath2"
+            return
+        }
+
+        println "Sending APK to Cherrygram Support..."
+
+        try {
+            sendApkToTelegram(file)
+            sendApkToTelegram(file2)
+        } catch (Exception e) {
+            println "Error sending APK: ${e.message}"
+            e.printStackTrace()
+        }
+    }
+}
+
+void sendApkToTelegram(File file) {
+    OkHttpClient client = new OkHttpClient.Builder()
+            .connectTimeout(90, TimeUnit.SECONDS)
+            .build()
+
+    def fileCaption
+    if (file.name.contains("arm64-v8a")) {
+        fileCaption = "*arm64-v8a*"
+    } else if (file.name.contains("armeabi-v7a")) {
+        fileCaption = "*armeabi-v7a*"
+    } else {
+        fileCaption = "*universal*"
+    }
+
+    def requestBody = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("chat_id", TELEGRAM_CHAT_ID)
+            .addFormDataPart("document", file.name,
+                    RequestBody.create(MediaType.parse("application/vnd.android.package-archive"), file)
+            )
+            .addFormDataPart("caption", fileCaption)
+            .addFormDataPart("parse_mode", "Markdown")
+            .build()
+
+    def request = new Request.Builder()
+            .url("https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument")
+            .post(requestBody)
+            .build()
+
+    println "Uploading file: ${file.name}, size: ${file.length()} bytes"
+
+    client.newCall(request).execute().withCloseable { response ->
+        if (response.isSuccessful()) {
+            println "APK successfully sent to Cherrygram Support!"
+        } else {
+            throw new RuntimeException("HTTP ${response.code()} - ${response.message()}")
+        }
+    }
+}
+
+tasks.configureEach { task ->
+    if (task.name == 'extractProguardFiles') {
+        task.doFirst {
+            delete "${projectDir}/afat/release/"
+        }
+    }
+    if (task.name == 'assembleAfatRelease') {
+        sendApk.mustRunAfter copyFiles
+        task.finalizedBy 'copyFiles', 'sendApk'
+    }
+}

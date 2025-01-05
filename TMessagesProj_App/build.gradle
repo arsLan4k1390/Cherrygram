@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
 
 repositories {
     mavenCentral()
@@ -214,5 +216,19 @@ android {
     }
 }
 
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'com.google.firebase.crashlytics'
+tasks.register('copyFiles', Copy) {
+    from "${projectDir}/afat/release/"
+    include '**/*.aab'
+    into "C:/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
+}
+
+tasks.configureEach { task ->
+    if (task.name == 'extractProguardFiles') {
+        task.doFirst {
+            delete "${projectDir}/afat/release/"
+        }
+    }
+    if (task.name == 'bundleAfatRelease') {
+        task.finalizedBy 'copyFiles'
+    }
+}
