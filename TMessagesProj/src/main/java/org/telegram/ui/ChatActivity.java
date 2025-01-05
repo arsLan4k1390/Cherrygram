@@ -32663,8 +32663,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     messageTextToTranslate = null; // message fully consists of emojis, do not translate
                 }
 
+                boolean noforwards = getMessagesController().isChatNoForwards(currentChat) || selectedObject.messageOwner.noforwards || getDialogId() == UserObject.VERIFY;
+                boolean noforwardsOrPaidMedia = noforwards || selectedObject.type == MessageObject.TYPE_PAID_MEDIA;
+
                 ArrayList<TLRPC.MessageEntity> entities = selectedObject != null && selectedObject.messageOwner != null ? selectedObject.messageOwner.entities : null;
-                TranslateAlert2.showAlert(getContext(), this, currentAccount, fromLang, toLang, messageTextToTranslate, entities, false, null, () -> dimBehindView(false));
+                TranslateAlert2.showAlert(getContext(), this, currentAccount, fromLang, toLang, messageTextToTranslate, entities, noforwardsOrPaidMedia, null, () -> dimBehindView(false));
                 dimBehindView(true);
                 break;
             }

@@ -1,3 +1,12 @@
+/**
+ * This is the source code of Cherrygram for Android.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ * Please, be respectful and credit the original author if you use this code.
+ *
+ * Copyright github.com/arsLan4k1390, 2022-2025.
+ */
+
 package uz.unnarsx.cherrygram.core.configs
 
 import android.app.Activity
@@ -37,6 +46,7 @@ object CherrygramDebugConfig: CoroutineScope by CoroutineScope(
     /** Blur finish **/
 
     /** Chats start **/
+    var editTextSuggestionsFix by sharedPreferences.boolean("editTextSuggestionsFix", false)
     /** Microphone Audio Source start **/
     const val AUDIO_SOURCE_DEFAULT = 0
     const val AUDIO_SOURCE_CAMCORDER = 1

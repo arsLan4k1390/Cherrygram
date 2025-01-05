@@ -98,6 +98,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
+
 public class SendGiftSheet extends BottomSheetWithRecyclerListView {
 
     private final int currentAccount;
@@ -272,7 +274,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView {
 
             }
         };
-        messageEdit.editTextEmoji.getEditText().addTextChangedListener(new EditTextSuggestionsFix());
+        if (CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix()) messageEdit.editTextEmoji.getEditText().addTextChangedListener(new EditTextSuggestionsFix());
         messageEdit.editTextEmoji.allowEmojisForNonPremium(true);
         messageEdit.setShowLimitWhenNear(50);
         setEditTextEmoji(messageEdit.editTextEmoji);

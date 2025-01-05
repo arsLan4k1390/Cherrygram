@@ -49,9 +49,11 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LanguageDetector;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
+import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
+import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -1614,14 +1616,22 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
         if (!isInSelectionMode()) {
             return;
         }
-        CharSequence str = getSelectedText();
-        if (str == null) {
+
+        MessageObject messageObject = null;
+        if (selectedView instanceof ChatMessageCell) {
+            messageObject = ((ChatMessageCell) selectedView).getMessageObject();
+        }
+        if (messageObject == null) {
             return;
         }
 
-        String fromLang = str.toString();
+        MessagesController mc = MessagesController.getInstance(UserConfig.selectedAccount);
+        boolean noforwards = mc.isChatNoForwards(messageObject.getChatId()) || messageObject.messageOwner.noforwards || messageObject.getDialogId() == UserObject.VERIFY;
+        boolean noforwardsOrPaidMedia = noforwards || messageObject.type == MessageObject.TYPE_PAID_MEDIA;
+
+        String fromLang = messageObject.messageOwner.originalLanguage;
         String toLang = TranslateAlert2.getToLanguage();
-        TranslateAlert2 alert = TranslateAlert2.showAlert(parentView.getContext(), baseFragment, UserConfig.selectedAccount, fromLang, toLang, str.toString(), null, false, null, this::showActions);
+        TranslateAlert2 alert = TranslateAlert2.showAlert(parentView.getContext(), baseFragment, UserConfig.selectedAccount, fromLang, toLang, messageObject.messageOwner.message, null, noforwardsOrPaidMedia, null, this::showActions);
         alert.setDimBehindAlpha(100);
         alert.setDimBehind(true);
         clear(true);

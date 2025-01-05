@@ -198,6 +198,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.chats.translator.BaseTranslator;
 import uz.unnarsx.cherrygram.chats.translator.Translator;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 
 public class ChatActivityEnterView extends BlurredFrameLayout implements NotificationCenter.NotificationCenterDelegate, SizeNotifierFrameLayout.SizeNotifierFrameLayoutDelegate, StickersAlert.StickersAlertDelegate, SuggestEmojiView.AnchorViewDelegate {
 
@@ -5391,7 +5392,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 }
             }
         });
-        messageEditText.addTextChangedListener(new EditTextSuggestionsFix());
+        if (CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix()) messageEditText.addTextChangedListener(new EditTextSuggestionsFix());
         messageEditText.setEnabled(messageEditTextEnabled);
         if (messageEditTextWatchers != null) {
             for (TextWatcher textWatcher : messageEditTextWatchers) {
