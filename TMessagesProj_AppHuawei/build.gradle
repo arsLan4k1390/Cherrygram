@@ -1,11 +1,13 @@
+import okhttp3.*
+
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.concurrent.TimeUnit
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.huawei.agconnect'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
-
-import okhttp3.*
-
-import java.util.concurrent.TimeUnit
 
 repositories {
     mavenCentral()
@@ -182,18 +184,58 @@ android {
     }
 }
 
-def fileName = "Cherrygram-Huawei-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-arm64-v8a.apk"
-def apkFilePath = "${projectDir}/afat/release/${fileName}"
+/** *
+ *
+ * CI/CD is used for sending APKs to Telegram and copying them to Desktop
+ *
+ * **/
 
-def fileName2 = "Cherrygram-Huawei-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-armeabi-v7a.apk"
-def apkFilePath2 = "${projectDir}/afat/release/${fileName2}"
+static def isWindows() {
+    def osName = System.getProperty('os.name').toLowerCase()
+    return osName.contains('win')
+}
+
+static def isMacOS() {
+    def osName = System.getProperty('os.name').toLowerCase()
+    return osName.contains('mac')
+}
+
+static def isWindowsOrMacOS() {
+    def osName = System.getProperty('os.name').toLowerCase()
+    return osName.contains('win') || osName.contains('mac')
+}
+
+static def getOSName() {
+    def buildHost
+    if (isWindows()) {
+        buildHost = 'Windows'
+    } else if (isMacOS()) {
+        buildHost = 'macOS'
+    } else {
+        buildHost = 'Unknown'
+    }
+    return buildHost
+}
+
+def desktopPath
+if (isWindows()) {
+    desktopPath = "C:/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
+} else if (isMacOS()) {
+    desktopPath = "/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
+}
 
 tasks.register('copyFiles', Copy) {
     from "${projectDir}/afat/release/"
     include '**/*.apk'
     exclude 'baselineProfiles/**'
-    into "C:/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
+    into desktopPath
 }
+
+def fileName = "Cherrygram-Huawei-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-arm64-v8a.apk"
+def apkFilePath = "${projectDir}/afat/release/${fileName}"
+
+def fileName2 = "Cherrygram-Huawei-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-armeabi-v7a.apk"
+def apkFilePath2 = "${projectDir}/afat/release/${fileName2}"
 
 tasks.register('sendApk') {
     doLast {
@@ -223,13 +265,27 @@ void sendApkToTelegram(File file) {
             .connectTimeout(90, TimeUnit.SECONDS)
             .build()
 
+
+    def currentDateAndTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"))
+    def buildDate = "Build date: *" + currentDateAndTime + "*\n"
+
+    def buildHost = "\nBuilt on: *${getOSName()}*"
+
+    def currentRepo = 'git rev-parse --show-toplevel'.execute().text.trim().split('/').last()
+    def currentBranch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
+    def projectName = "\n \nProject: *${currentRepo}*" + "/${currentBranch}"
+
+    def lastCommitAuthor = 'git log -1 --pretty=%an'.execute().text.trim()
+    def author = "\nTriggered by: *${lastCommitAuthor}*"
+
+
     def fileCaption
     if (file.name.contains("arm64-v8a")) {
-        fileCaption = "*arm64-v8a*"
+        fileCaption = buildDate + "Architecture: *arm64-v8a*" + buildHost + projectName + author
     } else if (file.name.contains("armeabi-v7a")) {
-        fileCaption = "*armeabi-v7a*"
+        fileCaption = buildDate + "Architecture: *armeabi-v7a*" + buildHost + projectName + author
     } else {
-        fileCaption = "*universal*"
+        fileCaption = buildDate + "Architecture: *universal*" + buildHost + projectName + author
     }
 
     def requestBody = new MultipartBody.Builder()
@@ -264,8 +320,13 @@ tasks.configureEach { task ->
             delete "${projectDir}/afat/release/"
         }
     }
+
     if (task.name == 'assembleAfatRelease') {
-        sendApk.mustRunAfter copyFiles
-        task.finalizedBy 'copyFiles', 'sendApk'
+        if (isWindowsOrMacOS()) {
+            sendApk.mustRunAfter copyFiles
+            task.finalizedBy 'copyFiles', 'sendApk'
+        } else {
+            task.finalizedBy 'sendApk'
+        }
     }
 }

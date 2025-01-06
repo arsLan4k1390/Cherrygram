@@ -216,10 +216,38 @@ android {
     }
 }
 
+/** *
+ *
+ * CI/CD is used for copying APKs to Desktop
+ *
+ * **/
+
+static def isWindows() {
+    def osName = System.getProperty('os.name').toLowerCase()
+    return osName.contains('win')
+}
+
+static def isMacOS() {
+    def osName = System.getProperty('os.name').toLowerCase()
+    return osName.contains('mac')
+}
+
+static def isWindowsOrMacOS() {
+    def osName = System.getProperty('os.name').toLowerCase()
+    return osName.contains('win') || osName.contains('mac')
+}
+
+def desktopPath
+if (isWindows()) {
+    desktopPath = "C:/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
+} else if (isMacOS()) {
+    desktopPath = "/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
+}
+
 tasks.register('copyFiles', Copy) {
     from "${projectDir}/afat/release/"
     include '**/*.aab'
-    into "C:/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
+    into desktopPath
 }
 
 tasks.configureEach { task ->
@@ -228,7 +256,10 @@ tasks.configureEach { task ->
             delete "${projectDir}/afat/release/"
         }
     }
+
     if (task.name == 'bundleAfatRelease') {
-        task.finalizedBy 'copyFiles'
+        if (isWindowsOrMacOS()) {
+            task.finalizedBy 'copyFiles'
+        }
     }
 }
