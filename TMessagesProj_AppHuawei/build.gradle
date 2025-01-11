@@ -285,9 +285,10 @@ void sendApkToTelegram(File file) {
             .connectTimeout(90, TimeUnit.SECONDS)
             .build()
 
+    def appVersion = "App version: *${APP_VERSION_NAME_CHERRY} // ${APP_VERSION_NAME} (${APP_VERSION_CODE})*"
 
     def currentDateAndTime = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"))
-    def buildDate = "Build date (UTC): *" + currentDateAndTime + "*\n"
+    def buildDate = "\n \nBuild date (UTC): *" + currentDateAndTime + "*\n"
 
     def buildHost = "\nBuilt on: *${getOSName()}*"
 
@@ -301,11 +302,11 @@ void sendApkToTelegram(File file) {
 
     def fileCaption
     if (file.name.contains("arm64-v8a")) {
-        fileCaption = buildDate + "Architecture: *arm64-v8a*" + buildHost + projectName + author
+        fileCaption = appVersion + buildDate + "Architecture: *arm64-v8a*" + buildHost + projectName + author
     } else if (file.name.contains("armeabi-v7a")) {
-        fileCaption = buildDate + "Architecture: *armeabi-v7a*" + buildHost + projectName + author
+        fileCaption = appVersion + buildDate + "Architecture: *armeabi-v7a*" + buildHost + projectName + author
     } else {
-        fileCaption = buildDate + "Architecture: *universal*" + buildHost + projectName + author
+        fileCaption = appVersion + buildDate + "Architecture: *universal*" + buildHost + projectName + author
     }
 
     def requestBody = new MultipartBody.Builder()
