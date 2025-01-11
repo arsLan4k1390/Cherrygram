@@ -1,3 +1,6 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
@@ -221,6 +224,23 @@ android {
  * CI/CD is used for copying APKs to Desktop
  *
  * **/
+
+static def loadEnv(filePath) {
+    def env = [:]
+    Files.lines(Paths.get(filePath)).each { line ->
+        if (line && !line.startsWith("#")) {
+            def (key, value) = line.split('=', 2)
+            env[key.trim()] = value?.trim()
+        }
+    }
+    return env
+}
+
+def env = loadEnv("${project.rootDir}/secrets_for_ci.env")
+
+env.each { key, value ->
+    ext."$key" = value
+}
 
 static def isWindows() {
     def osName = System.getProperty('os.name').toLowerCase()

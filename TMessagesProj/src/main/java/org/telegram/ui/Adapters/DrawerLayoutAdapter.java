@@ -9,7 +9,6 @@
 package org.telegram.ui.Adapters;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -23,7 +22,7 @@ import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
-import org.telegram.tgnet.ConnectionsManagerImpl;
+import org.telegram.messenger.KotlinFragmentsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.ActionBar.Theme;
@@ -467,7 +466,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             if (text == null) {
                 return;
             }
-            ConnectionsManagerImpl.INSTANCE.nfoip4wr82(text);
+            KotlinFragmentsManager.INSTANCE.vnwpoih23nkjhqj(text);
         }
 
         @Keep

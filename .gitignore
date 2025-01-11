@@ -6,11 +6,11 @@ build/
 obj/
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/helpers/UserInfoHelper.java
-/TMessagesProj/src/main/java/org/telegram/tgnet/AccountInstanceNew.kt
-/TMessagesProj/src/main/java/org/telegram/tgnet/ConnectionsManagerImpl.kt
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/helpers/UserHelper.java
+/TMessagesProj/src/main/java/org/telegram/messenger/AutoBackupUserAgent.kt
+/TMessagesProj/src/main/java/org/telegram/messenger/KotlinFragmentsManager.kt
+/TMessagesProj/src/main/java/org/telegram/messenger/SamsungDatastore.kt
 /TMessagesProj/src/main/java/org/telegram/tgnet/ConnectionManagerDelegate.java
-/TMessagesProj/src/main/java/org/telegram/tgnet/ResultCallbackDatastore.kt
 *.iml
 local.properties
 TMessagesProj/.cxx/
@@ -26,3 +26,4 @@ Keytool.zip
 Cherrygram.jks
 mykey.jks
 actions-runner
+secrets_for_ci.env

@@ -20,6 +20,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -42,10 +43,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.CodeHighlighting;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.NotificationCenter;
@@ -66,6 +70,7 @@ import org.telegram.ui.Components.RecyclerListView;
 import java.io.IOException;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class JsonBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
@@ -84,7 +89,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
     private TextView buttonTextView;
     private ImageView copyButton;
 
-    private BaseFragment fragment;
+    public BaseFragment fragment;
 
     private JsonBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider, MessageObject messageObject, TLRPC.Chat currentChat) {
         super(context, false, resourcesProvider);
@@ -239,26 +244,34 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
     }
 
     public void colorizeJson(MessageObject messageObject) {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-            String jsonString = mapper.writeValueAsString(messageObject.messageOwner);
+        String jsonString = "";
 
-            final SpannableString[] sb = new SpannableString[1];
-            new CountDownTimer(400, 100) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    sb[0] = CodeHighlighting.getHighlighted(jsonString, "json");
-                }
-
-                @Override
-                public void onFinish() {
-                    textView.setText(sb[0]);
-                }
-            }.start();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (isJacksonSupportedAndEnabled()) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.enable(SerializationFeature.INDENT_OUTPUT);
+                jsonString = mapper.writeValueAsString(messageObject.messageOwner);
+            } catch (IOException e) {
+                FileLog.e(e);
+            }
+        } else {
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+            jsonString = gson.toJson(messageObject.messageOwner);
         }
+
+        final SpannableString[] sb = new SpannableString[1];
+        String finalJsonString = jsonString;
+        new CountDownTimer(400, 100) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                sb[0] = CodeHighlighting.getHighlighted(finalJsonString, "json");
+            }
+
+            @Override
+            public void onFinish() {
+                textView.setText(sb[0]);
+            }
+        }.start();
         adapter.updateMainView(textViewContainer);
     }
 
@@ -417,16 +430,10 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         public TextView messageIdTextView;
         private ImageView menuIconImageView;
 
-        private View backgroundView;
-
         private View shadow;
 
         public HeaderView(Context context, MessageObject messageObject) {
             super(context);
-
-            backgroundView = new View(context);
-            backgroundView.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
-            addView(backgroundView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 44, Gravity.TOP | Gravity.FILL_HORIZONTAL, 0,  12, 0, 0));
 
             backButton = new ImageView(context);
             backButton.setScaleType(ImageView.ScaleType.CENTER);
@@ -478,10 +485,15 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             subtitleView.setPivotY(0);
 
             messageIdTextView = new TextView(context);
-            messageIdTextView.setLines(1);
+            messageIdTextView.setLines(2);
             messageIdTextView.setTextColor(getThemedColor(Theme.key_player_actionBarSubtitle));
             messageIdTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            messageIdTextView.setText("message ID: " + messageId);
+            StringBuilder sb = new StringBuilder();
+            sb.append("message ID: ");
+            sb.append(messageId);
+            sb.append("\nJSON Library: ");
+            sb.append(isJacksonSupportedAndEnabled() ? "Jackson" : "Google GSON");
+            messageIdTextView.setText(sb);
             messageIdTextView.setPadding(0, dp(2), 0, dp(2));
             messageIdTextView.setOnClickListener(v -> {
                 AndroidUtilities.addToClipboard(String.valueOf(messageId));
@@ -494,7 +506,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
                 subtitleView.addView(messageIdTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 0, 5, 4, 0));
             }
 
-            addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 22, 43, 22, 0));
+            addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 22, 34, 22, 0));
             shadow = new View(context);
             shadow.setBackgroundColor(getThemedColor(Theme.key_dialogShadowLine));
             shadow.setAlpha(0);
@@ -590,7 +602,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             Bulletin.addDelegate(this, new Bulletin.Delegate() {
                 @Override
                 public int getBottomOffset(int tag) {
-                    return AndroidUtilities.dp(16 + 48 + 16);
+                    return dp(16 + 48 + 16);
                 }
             });
         }
@@ -629,6 +641,13 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             buttonShadowView.animate().cancel();
             buttonShadowView.animate().alpha(show ? 1f : 0f).setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT).setDuration(320).start();
         }
+    }
+
+    public boolean isJacksonSupportedAndEnabled() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && CherrygramChatsConfig.INSTANCE.getJacksonJSON_Provider()) {
+            CherrygramChatsConfig.INSTANCE.setJacksonJSON_Provider(false);
+        }
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && CherrygramChatsConfig.INSTANCE.getJacksonJSON_Provider();
     }
 
     public static JsonBottomSheet showAlert(Context context, BaseFragment fragment, MessageObject messageObject, TLRPC.Chat currentChat) {

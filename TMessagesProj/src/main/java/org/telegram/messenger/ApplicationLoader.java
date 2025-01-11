@@ -42,7 +42,6 @@ import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.voip.VideoCapturerDevice;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.ui.ActionBar.ActionBarLayout;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Adapters.DrawerLayoutAdapter;
 import org.telegram.ui.Components.ForegroundDetector;
@@ -59,7 +58,6 @@ import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import org.telegram.tgnet.ConnectionsManagerImpl;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 
@@ -247,7 +245,7 @@ public class ApplicationLoader extends Application {
 
                 }
             };
-            ConnectionsManagerImpl.INSTANCE.checkConnection(suspendResult);
+            KotlinFragmentsManager.INSTANCE.checkConnection(suspendResult);
         }
         SharedPrefsHelper.init(applicationContext);
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) { //TODO improve account

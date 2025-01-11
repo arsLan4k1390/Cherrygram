@@ -55,6 +55,7 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
+import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.FloatingActionMode;
@@ -1629,9 +1630,16 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
         boolean noforwards = mc.isChatNoForwards(messageObject.getChatId()) || messageObject.messageOwner.noforwards || messageObject.getDialogId() == UserObject.VERIFY;
         boolean noforwardsOrPaidMedia = noforwards || messageObject.type == MessageObject.TYPE_PAID_MEDIA;
 
+        CharSequence str = getSelectedText();
+        if (str == null) {
+            return;
+        }
+
         String fromLang = messageObject.messageOwner.originalLanguage;
         String toLang = TranslateAlert2.getToLanguage();
-        TranslateAlert2 alert = TranslateAlert2.showAlert(parentView.getContext(), baseFragment, UserConfig.selectedAccount, fromLang, toLang, messageObject.messageOwner.message, null, noforwardsOrPaidMedia, null, this::showActions);
+        ArrayList<TLRPC.MessageEntity> entities = messageObject.messageOwner != null ? messageObject.messageOwner.entities : null;
+
+        TranslateAlert2 alert = TranslateAlert2.showAlert(parentView.getContext(), baseFragment, UserConfig.selectedAccount, fromLang, toLang, str, entities, noforwardsOrPaidMedia, null, this::showActions);
         alert.setDimBehindAlpha(100);
         alert.setDimBehind(true);
         clear(true);

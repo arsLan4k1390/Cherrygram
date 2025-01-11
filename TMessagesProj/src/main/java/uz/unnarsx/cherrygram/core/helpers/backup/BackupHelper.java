@@ -274,6 +274,7 @@ public class BackupHelper {
         mainconfig.add("CP_ShowSaveMessage");
         mainconfig.add("CP_ShowReport");
         mainconfig.add("CP_ShowJSON");
+        mainconfig.add("CP_JacksonJSON_Provider");
 
         mainconfig.add("CP_Slider_MediaAmplifier");
         mainconfig.add("CP_Slider_StickerAmplifier");

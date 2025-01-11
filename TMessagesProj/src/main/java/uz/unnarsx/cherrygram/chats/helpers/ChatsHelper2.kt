@@ -9,6 +9,7 @@
 
 package uz.unnarsx.cherrygram.chats.helpers
 
+import android.os.Build
 import android.text.TextUtils
 import android.view.Gravity
 import android.view.View
@@ -304,7 +305,7 @@ object ChatsHelper2 {
 
     /** Direct share menu start **/
     private var currentPopup: ActionBarPopupWindow? = null
-    @JvmStatic
+    @JvmStatic //TODO Move to ItemOptions.java
     fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {
         currentPopup = ActionBarPopupWindowHelper.createPopupWindow(sa.container, field, sa.context, listOf(
             ActionBarPopupWindowHelper.PopupItem(
@@ -345,9 +346,25 @@ object ChatsHelper2 {
     /** Direct share menu finish **/
 
     /** JSON menu start **/
-    @JvmStatic
+    @JvmStatic //TODO Move to ItemOptions.java
     fun showJsonMenu(sa: JsonBottomSheet, field: FrameLayout, messageObject: MessageObject) {
         currentPopup = ActionBarPopupWindowHelper.createPopupWindow(sa.container, field, sa.context, listOf(
+            ActionBarPopupWindowHelper.PopupItem(
+                if (sa.isJacksonSupportedAndEnabled) "Switch to GSON" else "Switch to Jackson",
+                R.drawable.msg_info
+            ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    CherrygramChatsConfig.jacksonJSON_Provider = !CherrygramChatsConfig.jacksonJSON_Provider
+                    sa.dismiss()
+                    JsonBottomSheet.showAlert(sa.context, sa.fragment, messageObject, null)
+                } else {
+                    BulletinFactory.of(sa.container, null)
+                        .createSimpleBulletin(R.raw.error, "Jackson library is supported on Android 8 and newer.")
+                        .show()
+                }
+                currentPopup?.dismiss()
+                currentPopup = null
+            },
             ActionBarPopupWindowHelper.PopupItem(
                 "Date: " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.date.toLong()),
                 R.drawable.msg_calendar2

@@ -1,6 +1,9 @@
 import okhttp3.*
 
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
@@ -190,6 +193,23 @@ android {
  *
  * **/
 
+static def loadEnv(filePath) {
+    def env = [:]
+    Files.lines(Paths.get(filePath)).each { line ->
+        if (line && !line.startsWith("#")) {
+            def (key, value) = line.split('=', 2)
+            env[key.trim()] = value?.trim()
+        }
+    }
+    return env
+}
+
+def env = loadEnv("${project.rootDir}/secrets_for_ci.env")
+
+env.each { key, value ->
+    ext."$key" = value
+}
+
 static def isWindows() {
     def osName = System.getProperty('os.name').toLowerCase()
     return osName.contains('win')
@@ -266,8 +286,8 @@ void sendApkToTelegram(File file) {
             .build()
 
 
-    def currentDateAndTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"))
-    def buildDate = "Build date: *" + currentDateAndTime + "*\n"
+    def currentDateAndTime = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"))
+    def buildDate = "Build date (UTC): *" + currentDateAndTime + "*\n"
 
     def buildHost = "\nBuilt on: *${getOSName()}*"
 
@@ -290,7 +310,7 @@ void sendApkToTelegram(File file) {
 
     def requestBody = new MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart("chat_id", TELEGRAM_CHAT_ID)
+            .addFormDataPart("chat_id", "${TELEGRAM_CHAT_ID}")
             .addFormDataPart("document", file.name,
                     RequestBody.create(MediaType.parse("application/vnd.android.package-archive"), file)
             )

@@ -4024,11 +4024,13 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
         if (CameraXUtils.isCurrentCameraCameraX() && evControlView != null && recording && videoMessagesHelper.cameraXController != null) {
             evControlView.setVisibility(View.VISIBLE);
             videoMessagesHelper.showExposureControls(this, true);
-//            videoMessagesHelper.cameraXController.focusToPoint((int) ev.getX(), (int) ev.getY());
-            cameraContainer.getLocationOnScreen(position);
-            float viewX = ev.getRawX() - position[0];
-            float viewY = ev.getRawY() - position[1];
-            videoMessagesHelper.cameraXController.focusToPoint((int) viewX, (int) viewY);
+            if (!isInPinchToZoomTouchMode) {
+//                videoMessagesHelper.cameraXController.focusToPoint((int) ev.getX(), (int) ev.getY());
+                cameraContainer.getLocationOnScreen(position);
+                float viewX = ev.getRawX() - position[0];
+                float viewY = ev.getRawY() - position[1];
+                videoMessagesHelper.cameraXController.focusToPoint((int) viewX, (int) viewY);
+            }
         }
         return true;
     }

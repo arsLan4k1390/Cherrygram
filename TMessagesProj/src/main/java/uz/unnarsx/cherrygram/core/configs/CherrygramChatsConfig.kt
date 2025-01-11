@@ -11,6 +11,7 @@ package uz.unnarsx.cherrygram.core.configs
 
 import android.app.Activity
 import android.content.SharedPreferences
+import android.os.Build
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -224,6 +225,8 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
         showJSON = !showJSON
         putBoolean("CP_ShowJSON", showJSON)
     }
+
+    var jacksonJSON_Provider by sharedPreferences.boolean("CP_JacksonJSON_Provider", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
     /** Message menu finish **/
 
     /** Messages size start **/

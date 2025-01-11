@@ -61,7 +61,7 @@ dependencies {
 
     //Cherrygram
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
     implementation 'com.google.android.play:review:2.0.2'
     implementation 'com.google.firebase:firebase-analytics:22.1.2'
     implementation 'com.google.firebase:firebase-crashlytics:19.3.0'
