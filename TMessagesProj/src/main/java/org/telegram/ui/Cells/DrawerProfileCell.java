@@ -797,7 +797,9 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             gradientBackground.setVisibility(INVISIBLE);
         }
         applyBackground(true);
-        if (CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar()) DrawerBitmapHelper.setAccountBitmap(user);
+        if (CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar()) {
+            DrawerBitmapHelper.setAccountBitmap(user);
+        }
         updateRightDrawable = true;
     }
 

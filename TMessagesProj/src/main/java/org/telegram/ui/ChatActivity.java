@@ -9452,7 +9452,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                         v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                     }
-                    getChatsHelper().makeReplyButtonLongClick(this, noForwards);
+                    getChatsHelper().makeReplyButtonLongClick(this, noForwards, getResourceProvider());
                     return false;
                 });
             }
@@ -32450,7 +32450,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             case OPTION_DETAILS: {
                 if (selectedObject != null) {
                     JsonBottomSheet.getMessageId(selectedObject);
-                    JsonBottomSheet.showAlert(getContext(), this, selectedObject, currentChat);
+                    JsonBottomSheet.showAlert(getContext(), getResourceProvider(), this, selectedObject, currentChat);
                     dimBehindView(true);
                 }
                 break;

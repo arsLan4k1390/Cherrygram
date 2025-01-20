@@ -39,11 +39,11 @@ object DrawerBitmapHelper : CoroutineScope by CoroutineScope(
 
     @JvmStatic
     fun setAccountBitmap(user: TLRPC.User) {
+        val userFull = MessagesController.getInstance(UserConfig.selectedAccount).getUserFull(user.id)
         try {
-            val userFull = MessagesController.getInstance(UserConfig.selectedAccount).getUserFull(user.id)
             var photo: File? = null
 
-            if (user.photo != null && user.photo.photo_big != null) {
+            if (user?.photo != null && user.photo.photo_big != null) {
                 photo = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(user.photo.photo_big, true)
             } else if (userFull?.profile_photo != null) {
                 photo = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(userFull.profile_photo, true)
@@ -61,10 +61,9 @@ object DrawerBitmapHelper : CoroutineScope by CoroutineScope(
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
 
-            val userFull = MessagesController.getInstance(UserConfig.selectedAccount).getUserFull(user.id) ?: return
             val size: TLRPC.PhotoSize?
 
-            if (userFull.profile_photo != null && userFull.profile_photo.sizes.isNotEmpty()) {
+            if (userFull?.profile_photo != null && userFull.profile_photo.sizes.isNotEmpty()) {
                 size = FileLoader.getClosestPhotoSizeWithSize(userFull.profile_photo.sizes, Int.MAX_VALUE)
                 if (size == null) return
                 FileLoader.getInstance(UserConfig.selectedAccount).loadFile(
@@ -74,7 +73,7 @@ object DrawerBitmapHelper : CoroutineScope by CoroutineScope(
                     FileLoader.PRIORITY_HIGH,
                     1
                 )
-            } else if (userFull.fallback_photo != null && userFull.fallback_photo.sizes.isNotEmpty()) {
+            } else if (userFull?.fallback_photo != null && userFull.fallback_photo.sizes.isNotEmpty()) {
                 size = FileLoader.getClosestPhotoSizeWithSize(userFull.fallback_photo.sizes, Int.MAX_VALUE)
                 if (size == null) return
                 FileLoader.getInstance(UserConfig.selectedAccount).loadFile(

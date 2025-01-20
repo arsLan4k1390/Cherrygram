@@ -364,7 +364,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             menuIconImageView.setScaleType(ImageView.ScaleType.CENTER);
             menuIconImageView.setImageResource(R.drawable.ic_ab_other);
             menuIconImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogSearchIcon), PorterDuff.Mode.MULTIPLY));
-            menuIconImageView.setOnClickListener((v) -> ChatsHelper2.showForwardMenu(ShareAlert.this, SearchField.this));
+            menuIconImageView.setOnClickListener((v) -> ChatsHelper2.showForwardMenu(ShareAlert.this, resourcesProvider,SearchField.this));
 
             addView(menuIconImageView, LayoutHelper.createFrame(36, 36, Gravity.RIGHT | Gravity.TOP, 0, 11, 16, 0));
 

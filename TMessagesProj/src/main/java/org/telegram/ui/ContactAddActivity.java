@@ -284,7 +284,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
         onlineTextView.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT));
         frameLayout.addView(onlineTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL ? 0 : 80, 32, LocaleController.isRTL ? 80 : 0, 0));
 
-        firstNameFieldContainer = new OutlineTextContainerView(context);
+        firstNameFieldContainer = new OutlineTextContainerView(context, resourcesProvider);
         firstNameFieldContainer.setText(LocaleController.getString(R.string.FirstName));
         linearLayout.addView(firstNameFieldContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 24, 24, 24, 0));
 
@@ -320,7 +320,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
             return false;
         });
 
-        lastNameFieldContainer = new OutlineTextContainerView(context);
+        lastNameFieldContainer = new OutlineTextContainerView(context, resourcesProvider);
         lastNameFieldContainer.setText(LocaleController.getString(R.string.LastName));
         linearLayout.addView(lastNameFieldContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 24, 24, 24, 0));
 

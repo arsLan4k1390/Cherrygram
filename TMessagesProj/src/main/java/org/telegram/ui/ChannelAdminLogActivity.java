@@ -2334,7 +2334,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             }
             case OPTION_DETAILS: {
                 JsonBottomSheet.getMessageId(selectedObject);
-                JsonBottomSheet.showAlert(getContext(), this, selectedObject, currentChat);
+                JsonBottomSheet.showAlert(getContext(), getResourceProvider(), this, selectedObject, currentChat);
                 break;
             }
         }

@@ -22,7 +22,7 @@ import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
-import org.telegram.ui.ActionBar.ActionBarPopupWindow
+import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.AvatarPreviewer
 import org.telegram.ui.Cells.ChatMessageCell
 import org.telegram.ui.ChatActivity
@@ -38,7 +38,6 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 import uz.unnarsx.cherrygram.core.helpers.LocalVerificationsHelper
-import uz.unnarsx.cherrygram.helpers.ui.ActionBarPopupWindowHelper
 
 object ChatsHelper2 {
 
@@ -304,77 +303,66 @@ object ChatsHelper2 {
     /** Custom chat id for Saved Messages finish **/
 
     /** Direct share menu start **/
-    private var currentPopup: ActionBarPopupWindow? = null
-    @JvmStatic //TODO Move to ItemOptions.java
-    fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {
-        currentPopup = ActionBarPopupWindowHelper.createPopupWindow(sa.container, field, sa.context, listOf(
-            ActionBarPopupWindowHelper.PopupItem(
+    @JvmStatic
+    fun showForwardMenu(sa: ShareAlert, rp: Theme.ResourcesProvider, field: FrameLayout) {
+        ItemOptions.makeOptions(sa.container, rp, field)
+            .add(R.drawable.msg_forward,
                 if (CherrygramChatsConfig.forwardNoAuthorship)
                     getString(R.string.CG_FwdMenu_DisableNoForward)
-                else getString(R.string.CG_FwdMenu_EnableNoForward),
-                R.drawable.msg_forward
+                else getString(R.string.CG_FwdMenu_EnableNoForward)
             ) {
-                // Toggle!
                 CherrygramChatsConfig.forwardNoAuthorship = !CherrygramChatsConfig.forwardNoAuthorship
-                currentPopup?.dismiss()
-                currentPopup = null
-            },
-            ActionBarPopupWindowHelper.PopupItem(
+            }
+            .add(R.drawable.msg_edit,
                 if (CherrygramChatsConfig.forwardWithoutCaptions)
                     getString(R.string.CG_FwdMenu_EnableCaptions)
-                else getString(R.string.CG_FwdMenu_DisableCaptions),
-                R.drawable.msg_edit
+                else getString(R.string.CG_FwdMenu_DisableCaptions)
             ) {
-                // Toggle!
                 CherrygramChatsConfig.forwardWithoutCaptions = !CherrygramChatsConfig.forwardWithoutCaptions
-                currentPopup?.dismiss()
-                currentPopup = null
-            },
-            ActionBarPopupWindowHelper.PopupItem(
+            }
+            .add(R.drawable.input_notify_on,
                 if (CherrygramChatsConfig.forwardNotify)
                     getString(R.string.CG_FwdMenu_NoNotify)
-                else getString(R.string.CG_FwdMenu_Notify),
-                R.drawable.input_notify_on
+                else getString(R.string.CG_FwdMenu_Notify)
             ) {
-                // Toggle!
                 CherrygramChatsConfig.forwardNotify = !CherrygramChatsConfig.forwardNotify
-                currentPopup?.dismiss()
-                currentPopup = null
-            },
-        ))
+            }
+
+            .setDimAlpha(100)
+            .translate(-AndroidUtilities.dp(15f).toFloat(), 0f)
+            .show()
     }
     /** Direct share menu finish **/
 
     /** JSON menu start **/
-    @JvmStatic //TODO Move to ItemOptions.java
+    @JvmStatic
     fun showJsonMenu(sa: JsonBottomSheet, field: FrameLayout, messageObject: MessageObject) {
-        currentPopup = ActionBarPopupWindowHelper.createPopupWindow(sa.container, field, sa.context, listOf(
-            ActionBarPopupWindowHelper.PopupItem(
-                if (sa.isJacksonSupportedAndEnabled) "Switch to GSON" else "Switch to Jackson",
-                R.drawable.msg_info
+        ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
+            .add(R.drawable.msg_info,
+                if (sa.isJacksonSupportedAndEnabled) "Switch to GSON" else "Switch to Jackson"
             ) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     CherrygramChatsConfig.jacksonJSON_Provider = !CherrygramChatsConfig.jacksonJSON_Provider
                     sa.dismiss()
-                    JsonBottomSheet.showAlert(sa.context, sa.fragment, messageObject, null)
+                    JsonBottomSheet.showAlert(sa.context, sa.resourcesProvider, sa.fragment, messageObject, null)
                 } else {
-                    BulletinFactory.of(sa.container, null)
+                    BulletinFactory.of(sa.container, sa.resourcesProvider)
                         .createSimpleBulletin(R.raw.error, "Jackson library is supported on Android 8 and newer.")
                         .show()
                 }
-                currentPopup?.dismiss()
-                currentPopup = null
-            },
-            ActionBarPopupWindowHelper.PopupItem(
+            }
+            .add(R.drawable.msg_calendar2,
                 "Date: " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.date.toLong()),
-                R.drawable.msg_calendar2
             ) {
                 AndroidUtilities.addToClipboard(CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.date.toLong()))
-                BulletinFactory.of(field, null).createCopyBulletin(getString(R.string.TextCopied)).show()
-                currentPopup?.dismiss()
-                currentPopup = null
+                BulletinFactory.of(sa.container, sa.resourcesProvider)
+                    .createCopyBulletin(getString(R.string.TextCopied))
+                    .show()
             }
-        ))
+
+            .setDimAlpha(100)
+            .translate(-AndroidUtilities.dp(15f).toFloat(), 0f)
+            .show()
     }
     /** JSON menu finish **/
 

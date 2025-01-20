@@ -465,7 +465,7 @@ public class ChatsHelper extends BaseController {
         }
     }
 
-    public void makeReplyButtonLongClick(ChatActivity chatActivity, boolean noForwards) {
+    public void makeReplyButtonLongClick(ChatActivity chatActivity, boolean noForwards, Theme.ResourcesProvider resourcesProvider) {
         ArrayList<String> configStringKeys = new ArrayList<>();
         ArrayList<Integer> configValues = new ArrayList<>();
 
@@ -495,7 +495,7 @@ public class ChatsHelper extends BaseController {
             Drawable image = chatActivity.getContext().getResources().getDrawable(CGResourcesHelper.getLeftButtonDrawable(noForwards)).mutate();
             image.setColorFilter(new PorterDuffColorFilter(chatActivity.getThemedColor(Theme.key_actionBarActionModeDefaultIcon), PorterDuff.Mode.MULTIPLY));
             chatActivity.replyButton.setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
-        });
+        }, resourcesProvider);
     }
 
     private void createReplyAction(ChatActivity chatActivity) {

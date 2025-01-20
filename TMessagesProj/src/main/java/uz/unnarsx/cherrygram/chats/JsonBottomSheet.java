@@ -89,10 +89,12 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
     private TextView buttonTextView;
     private ImageView copyButton;
 
+    public Theme.ResourcesProvider resourcesProvider;
     public BaseFragment fragment;
 
     private JsonBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider, MessageObject messageObject, TLRPC.Chat currentChat) {
         super(context, false, resourcesProvider);
+        this.resourcesProvider = resourcesProvider;
 
         backgroundPaddingLeft = 0;
 
@@ -122,7 +124,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
 
         textViewContainer.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-        listView = new RecyclerListView(context) {
+        listView = new RecyclerListView(context, resourcesProvider) {
             @Override
             public boolean dispatchTouchEvent(MotionEvent ev) {
                 if (ev.getAction() == MotionEvent.ACTION_DOWN && ev.getY() < getSheetTop() - getTop()) {
@@ -196,19 +198,19 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         buttonTextView.setGravity(Gravity.CENTER_HORIZONTAL);
         buttonTextView.setEllipsize(TextUtils.TruncateAt.END);
         buttonTextView.setGravity(Gravity.CENTER);
-        buttonTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
+        buttonTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
         buttonTextView.setTypeface(AndroidUtilities.bold());
         buttonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         buttonTextView.setText(getString(R.string.Close));
-        buttonTextView.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
+        buttonTextView.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
         buttonTextView.setOnClickListener(e -> dismiss());
         buttonView.addView(buttonTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
         copyButton = new ImageView(context);
         copyButton.setScaleType(ImageView.ScaleType.CENTER);
         copyButton.setImageResource(R.drawable.msg_copy);
-        copyButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_buttonText), PorterDuff.Mode.MULTIPLY));
-        copyButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
+        copyButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+        copyButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
         copyButton.setOnClickListener(v -> {
             if (isNoForwards) {
                 if (ChatObject.isChannel(currentChat) && !currentChat.megagroup) {
@@ -445,10 +447,10 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             addView(backButton, LayoutHelper.createFrame(54, 54, Gravity.TOP, 1, 1, 1, 1));
 
             menuIconImageView = new ImageView(context);
-            menuIconImageView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_actionBarActionModeDefaultSelector), 1));
+            menuIconImageView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_actionBarActionModeDefaultSelector, resourcesProvider), 1));
             menuIconImageView.setScaleType(ImageView.ScaleType.CENTER);
             menuIconImageView.setImageResource(R.drawable.ic_ab_other);
-            menuIconImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogSearchIcon), PorterDuff.Mode.MULTIPLY));
+            menuIconImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogSearchIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
             menuIconImageView.setOnClickListener((v) -> ChatsHelper2.showJsonMenu(JsonBottomSheet.this, headerView, messageObject));
             addView(menuIconImageView, LayoutHelper.createFrame(36, 36, Gravity.RIGHT | Gravity.TOP, 0, 11, 16, 0));
 
@@ -650,8 +652,8 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && CherrygramChatsConfig.INSTANCE.getJacksonJSON_Provider();
     }
 
-    public static JsonBottomSheet showAlert(Context context, BaseFragment fragment, MessageObject messageObject, TLRPC.Chat currentChat) {
-        JsonBottomSheet alert = new JsonBottomSheet(context, null, messageObject, currentChat);
+    public static JsonBottomSheet showAlert(Context context, Theme.ResourcesProvider resourcesProvider, BaseFragment fragment, MessageObject messageObject, TLRPC.Chat currentChat) {
+        JsonBottomSheet alert = new JsonBottomSheet(context, resourcesProvider, messageObject, currentChat);
         if (fragment != null) {
             if (fragment.getParentActivity() != null) {
                 fragment.showDialog(alert);
