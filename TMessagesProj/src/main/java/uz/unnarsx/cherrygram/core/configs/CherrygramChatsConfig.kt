@@ -172,6 +172,12 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
         putBoolean("CP_ShowReply", showReply)
     }
 
+    var showGeminiReply by sharedPreferences.boolean("CP_ShowGeminiReply", true)
+    fun toggleShowGeminiReply() {
+        showGeminiReply = !showGeminiReply
+        putBoolean("CP_ShowGeminiReply", showGeminiReply)
+    }
+
     var showCopyPhoto by sharedPreferences.boolean("CP_ShowCopyPhoto", true)
     fun toggleShowCopyPhoto() {
         showCopyPhoto = !showCopyPhoto

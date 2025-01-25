@@ -25,6 +25,14 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 // Because manual editing of drklo's sources harms your mental health.
 public class CherrygramMessageMenuInjector {
 
+    public static void injectGemini(ArrayList<CharSequence> items, final ArrayList<Integer> options, ArrayList<Integer> icons) {
+        if (CherrygramChatsConfig.INSTANCE.getShowGeminiReply()) {
+            items.add(getString(R.string.EP_GeminiAI_Header));
+            options.add(ChatActivity.OPTION_REPLY_GEMINI);
+            icons.add(R.drawable.magic_stick_solar);
+        }
+    }
+
     public static void injectCopyPhoto(ArrayList<CharSequence> items, final ArrayList<Integer> options, ArrayList<Integer> icons) {
         if (CherrygramChatsConfig.INSTANCE.getShowCopyPhoto()) {
             items.add(getString(R.string.CG_CopyPhoto));

@@ -683,7 +683,7 @@ public class ChatsHelper extends BaseController {
 
             chatActivity.openSearchWithText(null);
             chatActivity.showMessagesSearchListView(true);
-        });
+        }, chatActivity.getResourceProvider());
     }
 
     private static final CharsetDecoder textDecoder = StandardCharsets.UTF_8.newDecoder();

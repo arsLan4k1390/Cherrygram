@@ -11,6 +11,7 @@ package uz.unnarsx.cherrygram.core.configs
 
 import android.app.Activity
 import android.content.SharedPreferences
+import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -117,7 +118,10 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     init {
         launch {
-            if (ApplicationLoader.checkPlayServices()) FirebaseRemoteConfigHelper.initRemoteConfig()
+            if (ApplicationLoader.checkPlayServices()) {
+                FirebaseApp.initializeApp(ApplicationLoader.applicationContext)
+                FirebaseRemoteConfigHelper.initRemoteConfig()
+            }
         }
     }
 

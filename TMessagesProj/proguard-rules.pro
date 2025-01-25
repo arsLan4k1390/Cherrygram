@@ -99,8 +99,6 @@
 -keep class com.huawei.updatesdk.**{ *; }
 -keep class com.huawei.hms.**{ *; }
 
--keep class com.fasterxml.jackson.**{ *; }
-
 -keep class org.telegram.messenger.voip.* { *; }
 -keep class org.telegram.messenger.AnimatedFileDrawableStream { <methods>; }
 -keep class org.telegram.SQLite.SQLiteException { <methods>; }
@@ -122,6 +120,30 @@
 # Keep Cherrygram fields name
 -keepnames class uz.unnarsx.cherrygram.core.configs.* { <fields>; }
 -keep class kotlinx.coroutines.android.** {*;}
+
+-keep class com.fasterxml.jackson.**{ *; }
+
+# Prevent proguard from stripping interface information from TypeAdapter, TypeAdapterFactory,
+# JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
+-keep class * extends com.google.gson.TypeAdapter
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
+# Prevent R8 from leaving Data object members always null
+-keepclasseswithmembers class * {
+    <init>(...);
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+# Retain generic signatures of TypeToken and its subclasses with R8 version 3.0 and higher.
+-keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
+-keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
+
+-keepnames class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO.* { <fields>; }
+-keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO.** {*;}
+-keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO$Response { *; }
+-keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO$Candidate { *; }
+-keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO$Content { *; }
+-keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO$Part { *; }
 
 # Keep all class member names of CameraX
 -keep class androidx.camera.extensions.** { *; }

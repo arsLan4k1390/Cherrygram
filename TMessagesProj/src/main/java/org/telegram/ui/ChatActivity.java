@@ -290,6 +290,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import uz.unnarsx.cherrygram.chats.gemini.GeminiHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
@@ -1131,6 +1132,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     public final static int OPTION_ASK_PASSCODE = 2024;
     public final static int OPTION_DO_NOT_ASK_PASSCODE = 2025;
     public final static int OPTION_OPEN_TELEGRAM_BROWSER = 2026;
+    public final static int OPTION_REPLY_GEMINI = 2027;
 
     private final static int[] allowedNotificationsDuringChatListAnimations = new int[]{
             NotificationCenter.messagesRead,
@@ -29348,6 +29350,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
                         }
+                        CherrygramMessageMenuInjector.injectGemini(items, options, icons);
                         if (!isThreadChat() && chatMode != MODE_SCHEDULED && primaryMessage != null && primaryMessage.hasReplies() && currentChat.megagroup && primaryMessage.canViewThread()) {
                             items.add(LocaleController.formatPluralString("ViewReplies", primaryMessage.getRepliesCount()));
                             options.add(OPTION_VIEW_REPLIES_OR_THREAD);
@@ -29393,6 +29396,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
                         }
+                        CherrygramMessageMenuInjector.injectGemini(items, options, icons);
                     }
                     if (CG_AllowViewHistory) {
                         CherrygramMessageMenuInjector.injectViewHistory(items, options, icons);
@@ -29437,6 +29441,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
                         }
+                        CherrygramMessageMenuInjector.injectGemini(items, options, icons);
                         if ((selectedObject.type == MessageObject.TYPE_TEXT || selectedObject.isDice() || selectedObject.isAnimatedEmoji() || selectedObject.isAnimatedEmojiStickers() || getMessageCaption(selectedObject, selectedObjectGroup) != null) && !noforwardsOrPaidMedia && !selectedObject.sponsoredCanReport) {
                             items.add(LocaleController.getString(R.string.Copy));
                             options.add(OPTION_COPY);
@@ -29736,6 +29741,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
                         }
+                        CherrygramMessageMenuInjector.injectGemini(items, options, icons);
                         if ((selectedObject.type == MessageObject.TYPE_TEXT || selectedObject.isAnimatedEmoji() || selectedObject.isAnimatedEmojiStickers() || getMessageCaption(selectedObject, selectedObjectGroup) != null) && !noforwardsOrPaidMedia) {
                             items.add(LocaleController.getString(R.string.Copy));
                             options.add(OPTION_COPY);
@@ -32078,6 +32084,15 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } else {
                     showFieldPanelForReply(selectedObject);
                 }
+                break;
+            }
+            case OPTION_REPLY_GEMINI: {
+                if (selectedObject == null && selectedObject.messageOwner == null && selectedObject.messageOwner.message == null) {
+                    return;
+                }
+
+                showFieldPanelForReply(selectedObject);
+                GeminiHelper.INSTANCE.showLoading(getParentActivity(), chatActivityEnterView, selectedObject.messageOwner.message);
                 break;
             }
             case OPTION_ADD_TO_STICKERS_OR_MASKS: {

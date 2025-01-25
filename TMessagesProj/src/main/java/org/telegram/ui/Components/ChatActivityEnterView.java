@@ -193,6 +193,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.chats.gemini.GeminiHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
@@ -581,7 +582,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     boolean shiftPressed = false;
 
     @Nullable
-    protected EditTextCaption messageEditText;
+    public EditTextCaption messageEditText;
     private SlowModeBtn slowModeButton;
     private int slowModeTimer;
     private Runnable updateSlowModeRunnable;
@@ -4329,6 +4330,27 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     sendPopupLayout.addView(preSentTranslateButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
                 }
 
+                if (messageEditText.getText().length() > 0) {
+                    ActionBarMenuSubItem geminiButton = new ActionBarMenuSubItem(getContext(), false, false, resourcesProvider);
+                    geminiButton.setTextAndIcon(getString(R.string.EP_GeminiAI_Header), R.drawable.msg_bot);
+                    geminiButton.setMinimumWidth(AndroidUtilities.dp(196));
+                    geminiButton.setOnClickListener(v -> {
+                        if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
+                            sendPopupWindow.dismiss();
+                        }
+                        geminiPreSend();
+                    });
+
+                    geminiButton.setOnLongClickListener(v -> {
+                        if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
+                            sendPopupWindow.dismiss();
+                        }
+                        GeminiHelper.showGeminiModelSelector(getContext(), resourcesProvider, null, 0, null);
+                        return false;
+                    });
+                    sendPopupLayout.addView(geminiButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+                }
+
                 sendPopupLayout.setupRadialSelectors(getThemedColor(Theme.key_dialogButtonSelector));
 
                 sendPopupWindow = new ActionBarPopupWindow(sendPopupLayout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT) {
@@ -4586,6 +4608,29 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     }
             );
         }
+
+        if (messageEditText.getText().length() > 0) {
+            options.add(R.drawable.msg_bot, getString(R.string.EP_GeminiAI_Header),
+                    () -> {
+                        if (messageSendPreview != null) {
+                            messageSendPreview.dismiss(false);
+                            messageSendPreview = null;
+                        }
+                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
+                            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                        }
+                        GeminiHelper.showGeminiModelSelector(getContext(), resourcesProvider, null, 0, null);
+                    },
+                    () -> {
+                        geminiPreSend();
+                        if (messageSendPreview != null) {
+                            messageSendPreview.dismiss(false);
+                            messageSendPreview = null;
+                        }
+                    }
+            );
+        }
+
         options.setupSelectors();
         if (sendWhenOnlineButton != null) {
             TLRPC.User user = parentFragment == null ? null : parentFragment.getCurrentUser();
@@ -12753,6 +12798,10 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             });
             messageEditText.setText(BaseTranslator.stringFromTranslation(text.translation));
         });
+    }
+
+    public void geminiPreSend() {
+        GeminiHelper.INSTANCE.showLoading(getParentFragment().getParentActivity(), this, messageEditText.getText().toString());
     }
 
     private void createSenderView() {

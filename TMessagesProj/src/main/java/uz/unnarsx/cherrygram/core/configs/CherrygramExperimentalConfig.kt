@@ -17,6 +17,7 @@ import kotlinx.coroutines.SupervisorJob
 import org.telegram.messenger.ApplicationLoader
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
+import uz.unnarsx.cherrygram.preferences.string
 
 object CherrygramExperimentalConfig: CoroutineScope by CoroutineScope(
     context = SupervisorJob() + Dispatchers.Main.immediate
@@ -72,6 +73,15 @@ object CherrygramExperimentalConfig: CoroutineScope by CoroutineScope(
         slowNetworkMode = !slowNetworkMode
         putBoolean("EP_SlowNetworkMode", slowNetworkMode)
     }
+
+    const val GEMINI_MODEL_1_5_FLASH = 0
+    const val GEMINI_MODEL_1_5_FLASH_8B = 1
+    const val GEMINI_MODEL_1_5_PRO = 2
+    const val GEMINI_MODEL_2_0_EXP = 3
+    const val GEMINI_MODEL_2_0_ADVANCED = 4
+    const val GEMINI_MODEL_2_0_FLASH_THINKING = 5
+    var geminiModelName by sharedPreferences.int("EP_GeminiModel", GEMINI_MODEL_1_5_FLASH_8B)
+    var geminiApiKey by sharedPreferences.string("EP_GeminiApiKey", "yourKey12345")
     /** Network finish **/
 
 }

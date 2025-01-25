@@ -354,6 +354,10 @@
     <string name="EP_DownloadSpeedBoostExtreme">Extreme</string>
     <string name="EP_UploadloadSpeedBoost">Upload speed boost</string>
     <string name="EP_SlowNetworkMode">Slow network mode</string>
+    <string name="EP_GeminiAI_Header" translatable="false">Gemini AI</string>
+    <string name="EP_GeminiAI_Model">Gemini Model</string>
+    <string name="EP_GeminiAI_API_Key">Gemini API Key</string>
+    <string name="EP_GeminiAI_Desc">You can obtain the API Key here: <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]>.</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->

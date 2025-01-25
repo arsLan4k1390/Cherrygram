@@ -237,6 +237,41 @@ object CGResourcesHelper {
         }
     }
 
+    fun getGeminiModel(): String {
+        return when (CherrygramExperimentalConfig.geminiModelName) {
+            CherrygramExperimentalConfig.GEMINI_MODEL_1_5_PRO -> {
+                "gemini-1.5-pro"
+            }
+            CherrygramExperimentalConfig.GEMINI_MODEL_1_5_FLASH -> {
+                "gemini-1.5-flash"
+            }
+            CherrygramExperimentalConfig.GEMINI_MODEL_2_0_EXP -> {
+                "gemini-2.0-flash-exp"
+            }
+            CherrygramExperimentalConfig.GEMINI_MODEL_2_0_ADVANCED -> {
+                "gemini-exp-1206"
+            }
+            CherrygramExperimentalConfig.GEMINI_MODEL_2_0_FLASH_THINKING -> {
+                "gemini-2.0-flash-thinking-exp-01-21"
+            }
+
+            else -> "gemini-1.5-flash-8b"
+        }
+    }
+
+    @JvmStatic
+    @SuppressWarnings("deprecation")
+    fun getGeminiAdvice(): CharSequence {
+        val advise = getString(R.string.EP_GeminiAI_Desc)
+
+        val htmlParsed: Spannable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY))
+        } else {
+            SpannableString(Html.fromHtml(advise))
+        }
+        return getUrlNoUnderlineText(htmlParsed)
+    }
+
     @JvmStatic
     fun getShowDcIdText(): String { // MessagesAndProfilesPreferencesEntry.java:\Show dc id
         return when (CherrygramAppearanceConfig.showIDDC) {

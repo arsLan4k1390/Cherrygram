@@ -342,6 +342,9 @@
     <string name="EP_DownloadSpeedBoostExtreme">Экстра</string>
     <string name="EP_UploadloadSpeedBoost">Увеличение скорости отдачи</string>
     <string name="EP_SlowNetworkMode">Режим медленной сети</string>
+    <string name="EP_GeminiAI_Model">Модель Gemini</string>
+    <string name="EP_GeminiAI_API_Key">API Ключ Gemini</string>
+    <string name="EP_GeminiAI_Desc">Вы можете получить свой ключ тут: <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]>.</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->

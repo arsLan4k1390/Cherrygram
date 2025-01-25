@@ -48,6 +48,7 @@ import java.util.stream.Stream;
 import uz.unnarsx.cherrygram.camera.CameraTypeSelector;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
@@ -309,12 +310,12 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
 
         if (CameraXUtils.isCurrentCameraCameraX()) {
             startFromUltraWideRow = rowCount++;
-            cameraXFpsRangeRow = rowCount++;
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) cameraXFpsRangeRow = rowCount++;
             cameraStabilisationRow = rowCount++;
             exposureSliderRow = rowCount++;
         } else {
             startFromUltraWideRow = -1;
-            cameraXFpsRangeRow = -1;
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) cameraXFpsRangeRow = -1;
             cameraStabilisationRow = -1;
             exposureSliderRow = -1;
         }
@@ -448,7 +449,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                             listAdapter.notifyItemChanged(cameraXQualityRow);
                             listAdapter.notifyItemChanged(cameraUseDualCameraRow);
                             listAdapter.notifyItemChanged(startFromUltraWideRow);
-                            listAdapter.notifyItemChanged(cameraXFpsRangeRow);
+                            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) listAdapter.notifyItemChanged(cameraXFpsRangeRow);
                             listAdapter.notifyItemChanged(cameraStabilisationRow);
                             listAdapter.notifyItemChanged(exposureSliderRow);
                             listAdapter.notifyItemChanged(cameraControlButtonsRow);
