@@ -9,6 +9,7 @@
 
 package uz.unnarsx.cherrygram.chats.gemini
 
+@Deprecated("Not used anymore, use GeminiSDKImplementation.Java")
 data object GeminiDTO {
 
     data class Response(

@@ -11,6 +11,7 @@ package uz.unnarsx.cherrygram.chats.gemini
 
 import com.google.gson.annotations.SerializedName
 
+@Deprecated("Not used anymore, use GeminiSDKImplementation.Java")
 class GeminiErrorDTO {
 
     data class ErrorResponse(

@@ -13963,6 +13963,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             //Show upload date and time of avatars.
             if (avatarsDialogId != 0) {
                 TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(avatarsDialogId);
+                TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(avatarsDialogId);
                 TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-avatarsDialogId);
                 TLRPC.Photo avatar = avatarsArr.get(switchingToIndex);
 
@@ -13979,18 +13980,17 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     }
                 } else if (avatarsDialogId >= 0) {
                     title = UserObject.getUserName(user);
-                    subtitle = getUserAvatarDate();
+                    subtitle = getUserAvatarDate(userFull);
                     actionBarContainer.setSubtitle(subtitle, animated);
 
                     if (!AndroidUtilities.isTablet() && avatarsDialogId != 0) {
-                        TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(avatarsDialogId);
                         boolean hasVideoAvatar = userFull != null && userFull.profile_photo != null && (avatar != null && !avatar.video_sizes.isEmpty() || userFull != null && !userFull.profile_photo.video_sizes.isEmpty());
                         boolean hasPublicVideoAvatar = userFull != null && userFull.fallback_photo != null && !userFull.fallback_photo.video_sizes.isEmpty();
 
                         if (hasVideoAvatar) {
-                            fetchSetId(FileLoader.getEmojiMarkup(avatar.video_sizes));
+                            fetchSetId(FileLoader.getEmojiMarkup(avatar.video_sizes), userFull);
                         } else if (hasPublicVideoAvatar) {
-                            fetchSetId(FileLoader.getEmojiMarkup(userFull.fallback_photo.video_sizes));
+                            fetchSetId(FileLoader.getEmojiMarkup(userFull.fallback_photo.video_sizes), userFull);
                         }
                     }
                 } else if (chat != null) {
@@ -21300,9 +21300,8 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         return CherrygramChatsConfig.INSTANCE.getVideoSeekDuration() * 1000;
     }
 
-    private String getUserAvatarDate() {
+    private String getUserAvatarDate(TLRPC.UserFull userFull) {
         TLRPC.Photo avatar = avatarsArr.get(switchingToIndex);
-        TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(avatarsDialogId);
 
         String date = "";
         if (avatar != null && avatar.date != 0) {
@@ -21311,12 +21310,16 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             date = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(userFull.fallback_photo.date)
             + " | " + getString(R.string.FallbackTooltip)
             );
+        } else if (userFull != null && userFull.personal_photo != null && userFull.personal_photo.date != 0) {
+            date = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(userFull.personal_photo.date)
+                    + " | " + getString(R.string.CustomAvatarTooltip)
+            );
         }
         return date;
     }
 
-    private void fetchSetId(TLRPC.VideoSize emojiMarkup) {
-        CharSequence subtitle = getUserAvatarDate();
+    private void fetchSetId(TLRPC.VideoSize emojiMarkup, TLRPC.UserFull userFull) {
+        CharSequence subtitle = getUserAvatarDate(userFull);
 //        actionBarContainer.setSubtitle(subtitle, true);
 
         if (emojiMarkup instanceof TLRPC.TL_videoSizeEmojiMarkup) {

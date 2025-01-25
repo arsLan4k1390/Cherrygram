@@ -290,7 +290,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import uz.unnarsx.cherrygram.chats.gemini.GeminiHelper;
+import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
@@ -6642,7 +6642,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
         contentView.addView(chatListView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-        if (getDialogId() != getUserConfig().getClientUserId()) {
+        if (getDialogId() != getUserConfig().getClientUserId() && !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay()) {
             selectionReactionsOverlay = new ChatSelectionReactionMenuOverlay(this, context);
             contentView.addView(selectionReactionsOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         }
@@ -29350,7 +29350,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
                         }
-                        CherrygramMessageMenuInjector.injectGemini(items, options, icons);
+                        CherrygramMessageMenuInjector.injectGemini(selectedObject, items, options, icons);
                         if (!isThreadChat() && chatMode != MODE_SCHEDULED && primaryMessage != null && primaryMessage.hasReplies() && currentChat.megagroup && primaryMessage.canViewThread()) {
                             items.add(LocaleController.formatPluralString("ViewReplies", primaryMessage.getRepliesCount()));
                             options.add(OPTION_VIEW_REPLIES_OR_THREAD);
@@ -29396,7 +29396,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
                         }
-                        CherrygramMessageMenuInjector.injectGemini(items, options, icons);
+                        CherrygramMessageMenuInjector.injectGemini(selectedObject, items, options, icons);
                     }
                     if (CG_AllowViewHistory) {
                         CherrygramMessageMenuInjector.injectViewHistory(items, options, icons);
@@ -29441,7 +29441,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
                         }
-                        CherrygramMessageMenuInjector.injectGemini(items, options, icons);
+                        CherrygramMessageMenuInjector.injectGemini(selectedObject, items, options, icons);
                         if ((selectedObject.type == MessageObject.TYPE_TEXT || selectedObject.isDice() || selectedObject.isAnimatedEmoji() || selectedObject.isAnimatedEmojiStickers() || getMessageCaption(selectedObject, selectedObjectGroup) != null) && !noforwardsOrPaidMedia && !selectedObject.sponsoredCanReport) {
                             items.add(LocaleController.getString(R.string.Copy));
                             options.add(OPTION_COPY);
@@ -29741,7 +29741,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             options.add(OPTION_REPLY);
                             icons.add(R.drawable.menu_reply);
                         }
-                        CherrygramMessageMenuInjector.injectGemini(items, options, icons);
+                        CherrygramMessageMenuInjector.injectGemini(selectedObject, items, options, icons);
                         if ((selectedObject.type == MessageObject.TYPE_TEXT || selectedObject.isAnimatedEmoji() || selectedObject.isAnimatedEmojiStickers() || getMessageCaption(selectedObject, selectedObjectGroup) != null) && !noforwardsOrPaidMedia) {
                             items.add(LocaleController.getString(R.string.Copy));
                             options.add(OPTION_COPY);
@@ -29869,17 +29869,17 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             Rect rect = new Rect();
 
             List<TLRPC.TL_availableReaction> availableReacts = getMediaDataController().getEnabledReactionsList();
-            boolean isReactionsViewAvailable = !isSecretChat() && !isInScheduleMode() && currentUser == null && primaryMessage.hasReactions() && (!ChatObject.isChannel(currentChat) || currentChat.megagroup) && !availableReacts.isEmpty() && primaryMessage.messageOwner.reactions.can_see_list && !primaryMessage.isSecretMedia() && !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay();
+            boolean isReactionsViewAvailable = !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay() && !isSecretChat() && !isInScheduleMode() && currentUser == null && primaryMessage.hasReactions() && (!ChatObject.isChannel(currentChat) || currentChat.megagroup) && !availableReacts.isEmpty() && primaryMessage.messageOwner.reactions.can_see_list && !primaryMessage.isSecretMedia();
             boolean isReactionsAvailable;
             if (message.isForwardedChannelPost()) {
                 TLRPC.ChatFull chatInfo = getMessagesController().getChatFull(-message.getFromChatId());
-                if (chatInfo == null && !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay()) {
-                    isReactionsAvailable = true;
+                if (chatInfo == null ) {
+                    isReactionsAvailable = !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay();
                 } else {
-                    isReactionsAvailable = !isSecretChat() && chatMode != MODE_QUICK_REPLIES && !isInScheduleMode() && primaryMessage.isReactionsAvailable() && (chatInfo != null && (!(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone) || chatInfo.paid_reactions_available)) && !availableReacts.isEmpty()&& !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay();;
+                    isReactionsAvailable = !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay() && !isSecretChat() && chatMode != MODE_QUICK_REPLIES && !isInScheduleMode() && primaryMessage.isReactionsAvailable() && (chatInfo != null && (!(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone) || chatInfo.paid_reactions_available)) && !availableReacts.isEmpty();
                 }
             } else {
-                isReactionsAvailable = !message.isSecretMedia() && chatMode != MODE_QUICK_REPLIES && !isSecretChat() && !isInScheduleMode() && primaryMessage.isReactionsAvailable() && (chatInfo != null && (!(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone) || chatInfo.paid_reactions_available) || (chatInfo == null && !ChatObject.isChannel(currentChat)) || currentUser != null) && !availableReacts.isEmpty() && !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay();;
+                isReactionsAvailable = !CherrygramCoreConfig.INSTANCE.getDisableReactionsOverlay() && !message.isSecretMedia() && chatMode != MODE_QUICK_REPLIES && !isSecretChat() && !isInScheduleMode() && primaryMessage.isReactionsAvailable() && (chatInfo != null && (!(chatInfo.available_reactions instanceof TLRPC.TL_chatReactionsNone) || chatInfo.paid_reactions_available) || (chatInfo == null && !ChatObject.isChannel(currentChat)) || currentUser != null) && !availableReacts.isEmpty();
             }
             boolean showMessageSeen = !isReactionsViewAvailable && !isInScheduleMode() && currentChat != null && message.isOutOwner() && message.isSent() && !message.isEditing() && !message.isSending() && !message.isSendError() && !message.isContentUnread() && !message.isUnread() && (ConnectionsManager.getInstance(currentAccount).getCurrentTime() - message.messageOwner.date < getMessagesController().chatReadMarkExpirePeriod) && (ChatObject.isMegagroup(currentChat) || !ChatObject.isChannel(currentChat)) && chatInfo != null && chatInfo.participants_count <= getMessagesController().chatReadMarkSizeThreshold && !(message.messageOwner.action instanceof TLRPC.TL_messageActionChatJoinedByRequest) && (v instanceof ChatMessageCell);
             boolean showPrivateMessageSeen = !isReactionsViewAvailable && currentChat == null && currentEncryptedChat == null && (currentUser != null && !UserObject.isUserSelf(currentUser) && !UserObject.isReplyUser(currentUser) && !UserObject.isAnonymous(currentUser) && !currentUser.bot && !UserObject.isService(currentUser.id)) && (userInfo == null || !userInfo.read_dates_private) && !isInScheduleMode() && message.isOutOwner() && message.isSent() && !message.isEditing() && !message.isSending() && !message.isSendError() && !message.isContentUnread() && !message.isUnread() && (ConnectionsManager.getInstance(currentAccount).getCurrentTime() - message.messageOwner.date < getMessagesController().pmReadDateExpirePeriod) && !(message.messageOwner.action instanceof TLRPC.TL_messageActionChatJoinedByRequest) && (v instanceof ChatMessageCell);
@@ -32092,7 +32092,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
 
                 showFieldPanelForReply(selectedObject);
-                GeminiHelper.INSTANCE.showLoading(getParentActivity(), chatActivityEnterView, selectedObject.messageOwner.message);
+                GeminiSDKImplementation.initGeminiConfig(getParentActivity(), getContext(), chatActivityEnterView, selectedObject.messageOwner.message);
                 break;
             }
             case OPTION_ADD_TO_STICKERS_OR_MASKS: {

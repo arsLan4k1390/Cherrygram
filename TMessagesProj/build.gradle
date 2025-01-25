@@ -65,6 +65,7 @@ dependencies {
     implementation 'com.google.android.play:review:2.0.2'
     implementation 'com.google.firebase:firebase-analytics:22.1.2'
     implementation 'com.google.firebase:firebase-crashlytics:19.3.0'
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
 
     // CameraX Implementation
     def camerax_version = "1.4.1"

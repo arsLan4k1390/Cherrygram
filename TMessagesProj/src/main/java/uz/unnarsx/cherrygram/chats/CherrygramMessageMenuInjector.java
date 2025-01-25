@@ -11,6 +11,8 @@ package uz.unnarsx.cherrygram.chats;
 
 import static org.telegram.messenger.LocaleController.getString;
 
+import android.text.TextUtils;
+
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserObject;
@@ -25,8 +27,11 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 // Because manual editing of drklo's sources harms your mental health.
 public class CherrygramMessageMenuInjector {
 
-    public static void injectGemini(ArrayList<CharSequence> items, final ArrayList<Integer> options, ArrayList<Integer> icons) {
-        if (CherrygramChatsConfig.INSTANCE.getShowGeminiReply()) {
+    public static void injectGemini(MessageObject selectedObject, ArrayList<CharSequence> items, final ArrayList<Integer> options, ArrayList<Integer> icons) {
+        if (CherrygramChatsConfig.INSTANCE.getShowGeminiReply()
+                && selectedObject != null && selectedObject.messageOwner != null
+                && selectedObject.messageOwner.message != null && !TextUtils.isEmpty(selectedObject.messageOwner.message)
+        ) {
             items.add(getString(R.string.EP_GeminiAI_Header));
             options.add(ChatActivity.OPTION_REPLY_GEMINI);
             icons.add(R.drawable.magic_stick_solar);

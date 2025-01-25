@@ -194,6 +194,7 @@ import java.util.List;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.chats.gemini.GeminiHelper;
+import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
@@ -12801,7 +12802,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
     }
 
     public void geminiPreSend() {
-        GeminiHelper.INSTANCE.showLoading(getParentFragment().getParentActivity(), this, messageEditText.getText().toString());
+        GeminiSDKImplementation.initGeminiConfig(getParentFragment().getParentActivity(), getContext(), this, messageEditText.getText().toString());
     }
 
     private void createSenderView() {

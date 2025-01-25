@@ -38,7 +38,7 @@ import java.net.URL
 
 object GeminiHelper: CoroutineScope by MainScope() {
 
-    interface OnResponseNotReceived {
+    /*interface OnResponseNotReceived {
         fun run(geminiErrorAnswer: String)
     }
 
@@ -123,6 +123,7 @@ object GeminiHelper: CoroutineScope by MainScope() {
         )
     }
 
+    @Deprecated("Not used anymore, use GeminiSDKImplementation.Java")
     fun showLoading(activity: Activity, messageInput: ChatActivityEnterView, textToInput: String) {
         val progressDialog = AlertDialog(activity, AlertDialog.ALERT_TYPE_SPINNER)
 
@@ -187,7 +188,7 @@ object GeminiHelper: CoroutineScope by MainScope() {
         val gson = Gson()
         val response = gson.fromJson(jsonString, GeminiErrorDTO.ErrorResponse::class.java)
         return response
-    }
+    }*/
 
     @JvmStatic
     fun showGeminiModelSelector(context: Context, resourcesProvider: ResourcesProvider?, listAdapter: ExperimentalPreferencesEntry.ListAdapter?, geminiModelRow: Int, view: View?) {
