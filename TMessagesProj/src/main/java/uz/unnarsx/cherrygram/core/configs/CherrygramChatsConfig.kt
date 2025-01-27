@@ -116,6 +116,12 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var hideKeyboardOnScroll by sharedPreferences.boolean("CP_HideKbdOnScroll", false)
     var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
     var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
+
+    /** Gemini AI start **/
+    var geminiApiKey by sharedPreferences.string("CP_GeminiApiKey", "yourKey12345")
+    var geminiModelName by sharedPreferences.string("CP_GeminiModelName", "gemini-1.5-flash")
+    /** Gemini AI finish **/
+
     var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
     var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
     /** Chats finish **/

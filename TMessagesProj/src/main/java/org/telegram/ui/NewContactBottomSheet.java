@@ -128,7 +128,7 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
         contentLayout.addView(frameLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 0));
 
 
-        firstNameField = new OutlineEditText(context);
+        firstNameField = new OutlineEditText(context, resourcesProvider);
         firstNameField.getEditText().setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
         firstNameField.getEditText().setImeOptions(EditorInfo.IME_ACTION_NEXT);
         firstNameField.setHint(LocaleController.getString(R.string.FirstName));
@@ -146,7 +146,7 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
             return false;
         });
 
-        lastNameField = new OutlineEditText(context);
+        lastNameField = new OutlineEditText(context, resourcesProvider);
         lastNameField.setBackground(null);
         lastNameField.getEditText().setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
         lastNameField.getEditText().setImeOptions(EditorInfo.IME_ACTION_NEXT);

@@ -25,6 +25,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 ## Changes:
 
 *Addons:*
+- Gemini AI,
 - Flashlight support for video messages (both cameras),
 - OTA updates,
 - Material You (Monet) themes and app icon,

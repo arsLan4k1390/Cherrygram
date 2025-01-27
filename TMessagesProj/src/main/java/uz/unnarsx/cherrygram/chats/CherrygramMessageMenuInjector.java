@@ -32,7 +32,7 @@ public class CherrygramMessageMenuInjector {
                 && selectedObject != null && selectedObject.messageOwner != null
                 && selectedObject.messageOwner.message != null && !TextUtils.isEmpty(selectedObject.messageOwner.message)
         ) {
-            items.add(getString(R.string.EP_GeminiAI_Header));
+            items.add(getString(R.string.CP_GeminiAI_Header));
             options.add(ChatActivity.OPTION_REPLY_GEMINI);
             icons.add(R.drawable.magic_stick_solar);
         }

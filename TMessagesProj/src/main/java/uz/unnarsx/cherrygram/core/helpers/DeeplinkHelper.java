@@ -21,6 +21,7 @@ import org.telegram.ui.LaunchActivity;
 
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.chats.gemini.GeminiPreferencesBottomSheet;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
@@ -91,6 +92,11 @@ public class DeeplinkHelper {
                 }
                 case "cg_username_limits" -> {
                     fragment.showDialog(new LimitReachedBottomSheet(fragment, fragment.getContext(), LimitReachedBottomSheet.TYPE_PUBLIC_LINKS, fragment.getCurrentAccount(), fragment.getResourceProvider()));
+                    return;
+                }
+                case "cg_gemini" -> {
+                    GeminiPreferencesBottomSheet geminiPreferencesBottomSheet = new GeminiPreferencesBottomSheet(fragment, fragment.getContext(), fragment.getResourceProvider());
+                    geminiPreferencesBottomSheet.show();
                     return;
                 }
                 default -> {

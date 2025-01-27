@@ -19,7 +19,7 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 fun tgKitScreen(name: String, block: TGKitScreen.() -> Unit) = TGKitSettings(name, mutableListOf<TGKitCategory>().apply(block))
 
-fun TGKitScreen.category(name: String, block: TGKitPreferences.() -> Unit) = add(
+fun TGKitScreen.category(name: String?, block: TGKitPreferences.() -> Unit) = add(
         TGKitCategory(name, mutableListOf<TGKitPreference>().apply(block))
 )
 

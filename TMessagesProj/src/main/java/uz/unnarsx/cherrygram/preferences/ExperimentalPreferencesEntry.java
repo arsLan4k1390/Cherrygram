@@ -14,7 +14,6 @@ import static org.telegram.messenger.LocaleController.getString;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -36,14 +35,12 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCheckCell;
-import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.chats.gemini.GeminiHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
@@ -70,11 +67,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     private int uploadSpeedBoostRow;
     private int slowNetworkMode;
     private int networkDivisorRow;
-
-    private int geminiHeaderRow;
-    private int geminiModelRow;
-    private int geminiKeyInputRow;
-    private int geminiAdviseRow;
 
     protected Theme.ResourcesProvider resourcesProvider;
 
@@ -229,31 +221,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     ((TextCheckCell) view).setChecked(CherrygramExperimentalConfig.INSTANCE.getSlowNetworkMode());
                 }
                 AppRestartHelper.createRestartBulletin(this);
-            } else if (position == geminiModelRow) {
-                GeminiHelper.showGeminiModelSelector(getContext(), resourcesProvider, listAdapter, geminiModelRow, view);
-            } else if (position == geminiKeyInputRow) {
-                TextFieldAlert.createFieldAlertForGemini(
-                        context,
-                        getString(R.string.EP_GeminiAI_API_Key),
-                        CherrygramExperimentalConfig.INSTANCE.getGeminiApiKey(),
-                        (result) -> {
-                            if (result.isEmpty()) {
-                                result = CherrygramExperimentalConfig.INSTANCE.getGeminiApiKey();
-                            }
-                            if (result.trim().length() < 10) {
-                                CherrygramExperimentalConfig.INSTANCE.setGeminiApiKey("Enter a valid key!");
-                                if (view instanceof TextSettingsCell) {
-                                    ((TextSettingsCell) view).getValueTextView().setText("Enter a valid key!");
-                                }
-                            } else {
-                                CherrygramExperimentalConfig.INSTANCE.setGeminiApiKey(result);
-                                if (view instanceof TextSettingsCell) {
-                                    ((TextSettingsCell) view).getValueTextView().setText(result);
-                                }
-                            }
-                            return null;
-                        }
-                );
             }
         });
 
@@ -301,11 +268,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         slowNetworkMode = rowCount++;
         networkDivisorRow = rowCount++;
 
-        geminiHeaderRow = rowCount++;
-        geminiModelRow = rowCount++;
-        geminiKeyInputRow = rowCount++;
-        geminiAdviseRow = rowCount++;
-
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
         }
@@ -344,8 +306,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                         headerCell.setText(getString(R.string.General));
                     } else if (position == networkHeaderRow) {
                         headerCell.setText(getString(R.string.EP_Network));
-                    } else if (position == geminiHeaderRow) {
-                        headerCell.setText(getString(R.string.EP_GeminiAI_Header));
                     }
                     break;
                 case 3:
@@ -387,18 +347,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                         textCell.setTextAndValue(t, v, false);
                     } else if (position == downloadSpeedBoostRow) {
                         textCell.setTextAndValue(getString(R.string.EP_DownloadSpeedBoost), CGResourcesHelper.getDownloadSpeedBoostText(), true);
-                    } else if (position == geminiModelRow) {
-                        textCell.setTextAndValue(getString(R.string.EP_GeminiAI_Model), CGResourcesHelper.INSTANCE.getGeminiModel(), true);
-                    } else if (position == geminiKeyInputRow) {
-                        String t = getString(R.string.EP_GeminiAI_API_Key);
-                        String v = CherrygramExperimentalConfig.INSTANCE.getGeminiApiKey().trim().substring(0, 10) + "...";
-                        textCell.setTextAndValue(t, v, false);
-                    }
-                    break;
-                case 5:
-                    TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
-                    if (position == geminiAdviseRow) {
-                        textInfoPrivacyCell.setText(CGResourcesHelper.getGeminiAdvice());
                     }
                     break;
             }
@@ -427,10 +375,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     view = new TextSettingsCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
-                case 5:
-                    view = new TextInfoPrivacyCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
                 default:
                     view = new ShadowSectionCell(mContext);
                     break;
@@ -443,14 +387,12 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         public int getItemViewType(int position) {
             if (position == experimentalSettingsDivisor || position == networkDivisorRow) {
                 return 1;
-            } else if (position == experimentalHeaderRow || position == networkHeaderRow || position == geminiHeaderRow) {
+            } else if (position == experimentalHeaderRow || position == networkHeaderRow) {
                 return 2;
             } else if (position == actionbarCrossfadeRow || position == residentNotificationRow || position == customChatRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
                 return 3;
-            } else if (position == springAnimationRow || position == customChatIdRow || position == downloadSpeedBoostRow || position == geminiModelRow || position == geminiKeyInputRow) {
+            } else if (position == springAnimationRow || position == customChatIdRow || position == downloadSpeedBoostRow) {
                 return 4;
-            } else if (position == geminiAdviseRow) {
-                return 5;
             }
             return 1;
         }

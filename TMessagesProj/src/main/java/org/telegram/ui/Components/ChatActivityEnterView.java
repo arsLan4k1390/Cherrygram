@@ -4333,21 +4333,13 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
                 if (messageEditText.getText().length() > 0) {
                     ActionBarMenuSubItem geminiButton = new ActionBarMenuSubItem(getContext(), false, false, resourcesProvider);
-                    geminiButton.setTextAndIcon(getString(R.string.EP_GeminiAI_Header), R.drawable.msg_bot);
+                    geminiButton.setTextAndIcon(getString(R.string.CP_GeminiAI_Header), R.drawable.magic_stick_solar);
                     geminiButton.setMinimumWidth(AndroidUtilities.dp(196));
                     geminiButton.setOnClickListener(v -> {
                         if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
                             sendPopupWindow.dismiss();
                         }
                         geminiPreSend();
-                    });
-
-                    geminiButton.setOnLongClickListener(v -> {
-                        if (sendPopupWindow != null && sendPopupWindow.isShowing()) {
-                            sendPopupWindow.dismiss();
-                        }
-                        GeminiHelper.showGeminiModelSelector(getContext(), resourcesProvider, null, 0, null);
-                        return false;
                     });
                     sendPopupLayout.addView(geminiButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
                 }
@@ -4611,17 +4603,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         }
 
         if (messageEditText.getText().length() > 0) {
-            options.add(R.drawable.msg_bot, getString(R.string.EP_GeminiAI_Header),
-                    () -> {
-                        if (messageSendPreview != null) {
-                            messageSendPreview.dismiss(false);
-                            messageSendPreview = null;
-                        }
-                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                        }
-                        GeminiHelper.showGeminiModelSelector(getContext(), resourcesProvider, null, 0, null);
-                    },
+            options.add(R.drawable.magic_stick_solar, getString(R.string.CP_GeminiAI_Header),
                     () -> {
                         geminiPreSend();
                         if (messageSendPreview != null) {

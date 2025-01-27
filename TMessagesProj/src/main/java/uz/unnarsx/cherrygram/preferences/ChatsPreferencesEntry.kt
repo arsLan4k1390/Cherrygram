@@ -15,6 +15,7 @@ import androidx.core.util.Pair
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
+import uz.unnarsx.cherrygram.chats.gemini.GeminiPreferencesBottomSheet
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.VibrateUtil
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
@@ -97,6 +98,17 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramChatsConfig.hideMuteUnmuteButton
                 }) {
                     CherrygramChatsConfig.hideMuteUnmuteButton = it
+                }
+            }
+        }
+
+        category(null) {
+            textIcon {
+                title = getString(R.string.CP_GeminiAI_Header)
+                icon = R.drawable.magic_stick_solar
+                listener = TGKitTextIconRow.TGTIListener {
+                    val fragment = GeminiPreferencesBottomSheet(bf, bf.context, bf.resourceProvider)
+                    fragment.show()
                 }
             }
         }

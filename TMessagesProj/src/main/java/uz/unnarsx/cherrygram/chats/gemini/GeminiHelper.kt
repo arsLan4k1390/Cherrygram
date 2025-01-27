@@ -36,6 +36,7 @@ import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
+@Deprecated("Not used anymore, use GeminiSDKImplementation.Java")
 object GeminiHelper: CoroutineScope by MainScope() {
 
     /*interface OnResponseNotReceived {
@@ -188,7 +189,7 @@ object GeminiHelper: CoroutineScope by MainScope() {
         val gson = Gson()
         val response = gson.fromJson(jsonString, GeminiErrorDTO.ErrorResponse::class.java)
         return response
-    }*/
+    }
 
     @JvmStatic
     fun showGeminiModelSelector(context: Context, resourcesProvider: ResourcesProvider?, listAdapter: ExperimentalPreferencesEntry.ListAdapter?, geminiModelRow: Int, view: View?) {
@@ -215,7 +216,7 @@ object GeminiHelper: CoroutineScope by MainScope() {
 
         PopupHelper.show(
             configStringKeys,
-            getString(R.string.EP_GeminiAI_Model),
+            getString(R.string.CP_GeminiAI_Model),
             configValues.indexOf(CherrygramExperimentalConfig.geminiModelName),
             context,
             { i: Int ->
@@ -229,6 +230,6 @@ object GeminiHelper: CoroutineScope by MainScope() {
             },
             resourcesProvider
         )
-    }
+    }*/
 
 }

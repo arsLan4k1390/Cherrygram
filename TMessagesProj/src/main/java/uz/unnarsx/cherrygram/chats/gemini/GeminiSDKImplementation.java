@@ -41,8 +41,7 @@ import org.telegram.ui.Components.ChatActivityEnterView;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class GeminiSDKImplementation {
 
@@ -56,16 +55,16 @@ public class GeminiSDKImplementation {
         if (parentActivity == null && context == null && chatActivityEnterView == null && chatActivityEnterView.messageEditText == null) return;
 
         GenerationConfig.Builder configBuilder = new GenerationConfig.Builder();
-        configBuilder.temperature = 0.15f;
-        configBuilder.topK = 32;
-        configBuilder.topP = 1f;
+//        configBuilder.temperature = 0.15f;
+//        configBuilder.topK = 32;
+//        configBuilder.topP = 1f;
         configBuilder.maxOutputTokens = 4096;
 
         ArrayList<SafetySetting> safetySettings = new ArrayList<>();
-        safetySettings.add(new SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.MEDIUM_AND_ABOVE));
-        safetySettings.add(new SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.MEDIUM_AND_ABOVE));
-        safetySettings.add(new SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.MEDIUM_AND_ABOVE));
-        safetySettings.add(new SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.MEDIUM_AND_ABOVE));
+        safetySettings.add(new SafetySetting(HarmCategory.HARASSMENT, BlockThreshold.NONE));
+        safetySettings.add(new SafetySetting(HarmCategory.HATE_SPEECH, BlockThreshold.NONE));
+        safetySettings.add(new SafetySetting(HarmCategory.SEXUALLY_EXPLICIT, BlockThreshold.NONE));
+        safetySettings.add(new SafetySetting(HarmCategory.DANGEROUS_CONTENT, BlockThreshold.NONE));
 
         createGenerativeModel(
                 configBuilder,
@@ -88,8 +87,8 @@ public class GeminiSDKImplementation {
     ) {
 
         GenerativeModel gm = new GenerativeModel(
-                CGResourcesHelper.INSTANCE.getGeminiModel(),
-                CherrygramExperimentalConfig.INSTANCE.getGeminiApiKey(),
+                CherrygramChatsConfig.INSTANCE.getGeminiModelName(),
+                CherrygramChatsConfig.INSTANCE.getGeminiApiKey(),
                 configBuilder.build(),
                 safetySettings
         );
@@ -150,10 +149,9 @@ public class GeminiSDKImplementation {
                     });
 
                     BulletinFactory.global()
-                            .createSuccessBulletin(getString(R.string.OK), chatActivityEnterView.getParentFragment().getResourceProvider())
+                            .createSuccessBulletin(getString(R.string.YourPasswordSuccess), chatActivityEnterView.getParentFragment().getResourceProvider())
                             .setDuration(Bulletin.DURATION_SHORT)
                             .show();
-
 
                     chatActivityEnterView.messageEditText.setText(resultText.substring(0, resultText.length() - 1));
                 }
@@ -178,9 +176,9 @@ public class GeminiSDKImplementation {
                     // throws an "com.google.ai.client.generativeai.type.ServerException: Unexpected Response"
 
                     new AlertDialog.Builder(context, AlertDialog.ALERT_TYPE_MESSAGE, chatActivityEnterView.getParentFragment().getResourceProvider())
-                            .setTitle(getString(R.string.EP_GeminiAI_Header))
+                            .setTitle(getString(R.string.CP_GeminiAI_Header))
                             .setMessage(ex.getMessage())
-                            .setPositiveButton(getString(R.string.OK), null)
+                            .setPositiveButton(getString(R.string.UnknownError), null)
                             .create()
                             .show();
                 } else {

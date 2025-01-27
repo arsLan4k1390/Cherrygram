@@ -128,7 +128,7 @@ object TextFieldAlert {
         editText.layoutParams = layoutParams
     }
 
-    @JvmStatic
+    /*@JvmStatic
     fun createFieldAlertForGemini(
         context: Context,
         title: String,
@@ -173,7 +173,7 @@ object TextFieldAlert {
         layoutParams.leftMargin = AndroidUtilities.dp(24f)
         layoutParams.rightMargin = layoutParams.leftMargin
         editText.layoutParams = layoutParams
-    }
+    }*/
 
     private fun removeNonNumericChars(input: String): String {
         return input.replace(Regex("[^0-9-]"), "")

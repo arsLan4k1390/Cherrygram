@@ -81,7 +81,7 @@ public class TGKitSettingsFragment extends BaseFragment {
 
     private void initSettings() {
         for (TGKitCategory category : settings.categories) {
-            positions.put(rowCount++, new TGKitHeaderRow(category.name));
+            if (category.name != null) positions.put(rowCount++, new TGKitHeaderRow(category.name));
             for (TGKitPreference preference : category.preferences) {
                 if (preference.isAvailable) positions.put(rowCount++, preference);
             }

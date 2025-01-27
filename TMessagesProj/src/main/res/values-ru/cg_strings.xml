@@ -267,6 +267,17 @@
     <string name="CP_HideSendAsChannel">Скрыть \"Отправить как канал\"</string>
     <string name="CP_HideSendAsChannelDesc">Вы сможете попасть в это меню путем зажатия кнопки Эмодзи/Стикеры/GIFки</string>
 
+    <string name="CP_GeminiAI_API_Key">API ключ Gemini</string>
+    <string name="CP_GeminiAI_API_Key_Desc">Посетите <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]>, чтобы получить API ключ.</string>
+    <string name="CP_GeminiAI_Model">Код модели Gemini</string>
+    <string name="CP_GeminiAI_Model_Desc">Посетите <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]>, чтобы получить список доступных моделей.</string>
+    <string name="CP_GeminiAI_Sample">Например:</string>
+    <string name="CP_GeminiAI_Instruction">Чтобы воспользоваться Gemini,
+        необходимо заполнить все значения на этом экране.
+        \n\nПосле этого перейдите в любой чат, введите сообщение и зажмите кнопку отправки сообщений.
+        \n\nТакже, вы можете ответить на сообщение с помощью AI. Для этого нажмите на любое текстовое сообщение в чате.
+    </string>
+
     <string name="CP_Slider_RecentEmojisAmplifier">Счетчик недавних эмодзи (требуется перезапуск приложения)</string>
     <string name="CP_Slider_RecentStickersAmplifier">Счетчик недавних стикеров (требуется перезапуск приложения)</string>
 
@@ -342,9 +353,6 @@
     <string name="EP_DownloadSpeedBoostExtreme">Экстра</string>
     <string name="EP_UploadloadSpeedBoost">Увеличение скорости отдачи</string>
     <string name="EP_SlowNetworkMode">Режим медленной сети</string>
-    <string name="EP_GeminiAI_Model">Модель Gemini</string>
-    <string name="EP_GeminiAI_API_Key">API Ключ Gemini</string>
-    <string name="EP_GeminiAI_Desc">Вы можете получить свой ключ тут: <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]>.</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->

@@ -479,7 +479,7 @@ public class AlertDialogSwitchers {
                     break;
                 }
                 case 2: {
-                    textCell.setTextAndCheckAndIcon(getString(R.string.EP_GeminiAI_Header), CherrygramChatsConfig.INSTANCE.getShowGeminiReply(), R.drawable.magic_stick_solar, false);
+                    textCell.setTextAndCheckAndIcon(getString(R.string.CP_GeminiAI_Header), CherrygramChatsConfig.INSTANCE.getShowGeminiReply(), R.drawable.magic_stick_solar, false);
                     break;
                 }
                 case 3: {

@@ -278,6 +278,18 @@
     <string name="CP_HideSendAsChannel">Hide \"Send as channel\"</string>
     <string name="CP_HideSendAsChannelDesc">You can access the menu by long click on Emoji/Stickers/GIFs button</string>
 
+    <string name="CP_GeminiAI_Header" translatable="false">Gemini AI</string>
+    <string name="CP_GeminiAI_API_Key">Gemini API key</string>
+    <string name="CP_GeminiAI_API_Key_Desc">Visit <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]> to obtain the API Key.</string>
+    <string name="CP_GeminiAI_Model">Gemini model code</string>
+    <string name="CP_GeminiAI_Model_Desc">Visit <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]> to get the list of available models.</string>
+    <string name="CP_GeminiAI_Sample">Sample:</string>
+    <string name="CP_GeminiAI_Instruction">To use the Gemini,
+        you need to fill in all the values on this screen.
+        \n\nAfter that, open any chat, type a message and hold down the send message button.
+        \n\nMoreover, you can reply to a message using AI as well. To do this, click on any text message in the chat.
+    </string>
+
     <string name="CP_Slider_RecentEmojisAmplifier">Recent emojis counter (restart app to apply)</string>
     <string name="CP_Slider_RecentStickersAmplifier">Recent stickers counter (restart app to apply)</string>
 
@@ -354,10 +366,6 @@
     <string name="EP_DownloadSpeedBoostExtreme">Extreme</string>
     <string name="EP_UploadloadSpeedBoost">Upload speed boost</string>
     <string name="EP_SlowNetworkMode">Slow network mode</string>
-    <string name="EP_GeminiAI_Header" translatable="false">Gemini AI</string>
-    <string name="EP_GeminiAI_Model">Gemini Model</string>
-    <string name="EP_GeminiAI_API_Key">Gemini API Key</string>
-    <string name="EP_GeminiAI_Desc">You can obtain the API Key here: <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]>.</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->
