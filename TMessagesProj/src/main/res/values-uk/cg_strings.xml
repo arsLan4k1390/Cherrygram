@@ -34,6 +34,7 @@
     <string name="CG_ChooseFolderIcon">Виберіть іконку</string>
     <string name="CP_NewTabs_NoCounter">Приховати лічильник на вкладках</string>
     <string name="CP_NewTabs_NoCounter_Desc">Приховує лічильник кількості непрочитаних повідомлень</string>
+    <string name="CG_SwipeToUnarchive">Проведіть вліво для розархівування</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">До початку</string>
@@ -64,6 +65,7 @@
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygram потребує доступу до вашого розташування, щоб ви могли поділитися ним з друзями. Вам буде запропоновано дозволити використання вашого місцезнаходження (при відкритті додатку).</string>
     <string name="CG_LocationPermission_Desc">Проте, якщо ви хочете, щоб ваше місце розташування було доступним вашим друзям, а Cherrygram закритий та у фоновому режимі, тоді перейдіть на функцію \"Поточне розташування\". Поки ви не погоджуєтеся використовувати функцію Live Location, ваше місцезнаходження не буде доступне у фоновому режимі.</string>
+    <string name="CG_Copy_Coordinates">Координати</string>
     <!--Location screen-->
     <!--Search filter-->
     <string name="CG_SearchFilter">Фільтрувати результати пошуку</string>
@@ -81,7 +83,7 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
-    <string name="CG_UnknownCherrySettingsOption">There is no such Cherry Settings option.</string>
+    <string name="CG_UnknownCherrySettingsOption">Немає такого параметра Cherry.</string>
     <string name="CG_Restart">Перезапустити додаток</string>
     <string name="CG_RestartToApply">Перезавантажте додаток для застосування змін</string>
     <string name="CG_PushService">Сервіс повідомлень Cherrygram.</string>
@@ -133,6 +135,7 @@
     <string name="AP_RedesignCategory">Редизайн</string>
     <string name="AP_IconReplacements">Заміна іконок</string>
     <string name="AP_Old_Notification_Icon">Стандартна іконка повідомлень (Telegram)</string>
+    <string name="AP_Tablet_Mode">Режим планшета</string>
     <string name="AP_ChangeIconFilter">Використовувати іконки Telegram</string>
     <string name="AP_ChangeIcon_Cherry_NY">Новий Рік</string>
     <string name="AP_ChangeIcon_Default">По замовчуванню</string>
@@ -169,7 +172,12 @@
     <string name="CP_ReplyBackground">Задній план у відповідях</string>
     <string name="CP_ReplyCustomColors">Користувацькі кольори у відповідях, і попередньому перегляді посилань</string>
     <string name="CP_ReplyBackgroundEmoji">Емодзі у відповідях і попередньому перегляді посилань</string>
-    <string name="CP_HideStories">Приховати історії</string>
+    <string name="CP_HideStories">Приховати історії (локально)</string>
+    <string name="CP_HideStories_Desc">Історії зникнуть з вашого списку чатів та з профілів.</string>
+    <string name="CP_ArchiveStoriesFromUsers">Архівувати історії контактів</string>
+    <string name="CP_ArchiveStoriesFromUsers_Desc">Історії контактів будуть автоматично архівовані й переміщені у ваш архів. Працює з усіма додатками, які використовують Telegram API.</string>
+    <string name="CP_ArchiveStoriesFromChannels">Архівувати історії каналів</string>
+    <string name="CP_ArchiveStoriesFromChannels_Desc">Історії з каналів та груп будуть автоматично архівовані, та переміщені у ваш архів. Працює по всім додаткам, які використовують Telegram API.</string>
     <string name="CP_CustomWallpapers">Користувацький задній план у чатах</string>
     <string name="CP_CustomWallpapers_Desc">Налаштуйте власні шпалери в чатах/групах/каналах, встановлених преміум-користувачами/прокачаними каналами</string>
     <string name="CP_DisableAnimAvatars">Вимкнути анімовані аватарки</string>
@@ -232,9 +240,22 @@
     <string name="CP_HideKbdOnScroll">Приховати клавіатуру під час прокрутки</string>
     <string name="CP_HideSendAsChannel">Приховати \"Відправити як канал\"</string>
     <string name="CP_HideSendAsChannelDesc">Ви можете отримати доступ до меню довгим натисканням на кнопку Emoji/Stickers/GIF-зображення</string>
+    <string name="CP_GeminiAI_API_Key">API ключ Gemini</string>
+    <string name="CP_GeminiAI_API_Key_Desc">Відвідайте <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]>, щоб отримати API ключ.</string>
+    <string name="CP_GeminiAI_Model">Код моделі Gemini</string>
+    <string name="CP_GeminiAI_Model_Desc">Відвідайте <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]>, щоб отримати список доступних моделей.</string>
+    <string name="CP_GeminiAI_Sample">Наприклад:</string>
+    <string name="CP_GeminiAI_Instruction">Щоб скористатися Gemini,
+        вам потрібно заповнити всі значення на цьому екрані.
+        \n\nПісля цього відкрийте будь-який чат, введіть повідомлення та утримуйте кнопку надсилання повідомлення.
+        \n\nБільше того, ви можете відповісти на повідомлення за допомогою AI. Для цього натисніть будь-яке текстове повідомлення в чаті.
+    </string>
     <string name="CP_Slider_RecentEmojisAmplifier">Лічильник нещодавніх емодзі (потрібен перезапуск додатку)</string>
     <string name="CP_Slider_RecentStickersAmplifier">Лічильник нещодавніх стікерів (потрібен перезапуск додатку)</string>
     <string name="CP_Header_Record">Медіа</string>
+    <string name="CP_Messages_Size">Розмір бульбашок повідомлень</string>
+    <string name="CP_Slider_MediaAmplifier">Фото та відео</string>
+    <string name="CP_Slider_MediaAmplifier_Hint">Не працює з альбомами (згруповані)</string>
     <string name="CP_SpoilersOnMedia">Спойлер-ефект</string>
     <string name="CP_SpoilersOnMedia_Desc">Спойлер ефект на фотографії та відео не буде показано, якщо ця функція вимкнена.</string>
     <string name="CP_VoiceEnhancements">Покращення звуку</string>
@@ -267,8 +288,8 @@
     <string name="CP_CameraTypeSystem">Системна</string>
     <string name="CP_SystemCameraDesc">Дозволяє отримати прямий доступ до системної камери (не застосовується в відеоповідомленнях).</string>
     <string name="CP_CameraAspectRatio">Співвідношення сторін камери</string>
-    <string name="CP_CenterCameraControlButtons">Center control buttons</string>
-    <string name="CP_CenterCameraControlButtons_Desc">Center switch camera and flashlight buttons.</string>
+    <string name="CP_CenterCameraControlButtons">Центрувати кнопки керування</string>
+    <string name="CP_CenterCameraControlButtons_Desc">Центрувати перемикач камери та кнопку спалаху.</string>
     <string name="CP_RearCam">Використовувати задню камеру</string>
     <string name="CP_RearCam_Desc">Замість фронтальної камери під час запису відеоповідомлень</string>
     <string name="CP_DisableCam">Вимкнути камеру в меню вибору фото</string>
@@ -308,9 +329,13 @@
     <string name="SP_RemovedS">Видалено успішно</string>
     <string name="SP_AskPinForChats">Запит біометричного підтвердження для відкриття чату</string>
     <string name="SP_AskPinForChats_Desc">Системний пароль (відбиток пальця, face iD, PIN-код або шаблон) буде необхідний для відкриття певного чату. Щоб увімкнути, натисніть на 3 крапки всередині чату.</string>
+    <string name="SP_AskPinForArchive">Запит біометричного підтвердження для відкриття архіву</string>
+    <string name="SP_AskPinForArchive_Desc">Системний пароль (відбиток пальця, номер обличчя, PIN або шаблон) буде необхідний для доступу до архівних чатів.</string>
+    <string name="SP_HideArchive">Приховати архів зі списку чатів</string>
+    <string name="SP_HideArchive_Desc">Архів буде замасковано під канал Cherrygram. \nВи зможете відкрити архів з бічного меню або довгим натисканням на кнопку пошуку.</string>
     <string name="SP_AskPin">Запит пароля</string>
     <string name="SP_DoNotAskPin">Не запитувати пароль</string>
-    <string name="SP_AskPinBeforeDelete">Запит біометрики перед видаленням чату.</string>
+    <string name="SP_AskPinBeforeDelete">Запит біометричного підтвердження для видалення чатів</string>
     <string name="SP_AskPinBeforeDelete_Desc">Якщо Ви хочете видалити чат або очистити історію, потрібне буде підтвердження біометрики. В системі повинно бути активне підтвердження паролю та біометрики.</string>
     <string name="SP_AllowUseSystemPasscode">Дозволити використовувати системний PIN/Графічний ключ</string>
     <string name="SP_AllowUseSystemPasscode_Desc">\"Скасувати\" на діалоговому вікні підтвердження відбитку пальця, буде замінено кнопкою \"Pin/Графічний ключ\", і ви зможете використати системний шлях для розблокування Cherrygram.</string>

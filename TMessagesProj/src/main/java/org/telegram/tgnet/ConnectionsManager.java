@@ -12,6 +12,8 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import androidx.annotation.Keep;
+
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 
 import org.json.JSONArray;
@@ -35,6 +37,7 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.StatsController;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
+import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.Components.VideoPlayer;
 
 import java.io.ByteArrayOutputStream;
@@ -945,7 +948,6 @@ public class ConnectionsManager extends BaseController {
     public static native void native_setLangCode(int currentAccount, String langCode);
     public static native void native_setRegId(int currentAccount, String regId);
     public static native void native_setSystemLangCode(int currentAccount, String langCode);
-    public static native void native_seSystemLangCode(int currentAccount, String langCode);
     public static native void native_setJava(boolean useJavaByteBuffers);
     public static native void native_setPushConnectionEnabled(int currentAccount, boolean value);
     public static native void native_applyDnsConfig(int currentAccount, long address, String phone, int date);
@@ -954,7 +956,6 @@ public class ConnectionsManager extends BaseController {
     public static native void native_discardConnection(int currentAccount, int datacenterId, int connectionType);
     public static native void native_failNotRunningRequest(int currentAccount, int token);
     public static native void native_receivedIntegrityCheckClassic(int currentAccount, int requestToken, String nonce, String token);
-
     public static native boolean native_isGoodPrime(byte[] prime, int g);
 
     public static int generateClassGuid() {
@@ -1426,6 +1427,7 @@ public class ConnectionsManager extends BaseController {
     }
 
     public static long lastPremiumFloodWaitShown = 0;
+    @Keep
     public static void onPremiumFloodWait(final int currentAccount, final int requestToken, boolean isUpload) {
         AndroidUtilities.runOnUIThread(() -> {
             if (UserConfig.selectedAccount != currentAccount) {
@@ -1454,6 +1456,7 @@ public class ConnectionsManager extends BaseController {
         });
     }
 
+    @Keep
     public static void onIntegrityCheckClassic(final int currentAccount, final int requestToken, final String project, final String nonce) {
         AndroidUtilities.runOnUIThread(() -> {
             long start = System.currentTimeMillis();

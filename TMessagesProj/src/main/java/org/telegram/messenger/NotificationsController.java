@@ -68,6 +68,7 @@ import androidx.core.graphics.drawable.IconCompat;
 import org.telegram.messenger.support.LongSparseIntArray;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.BubbleActivity;
 import org.telegram.ui.Components.AvatarDrawable;
@@ -92,7 +93,6 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.VibrateUtil;
@@ -1806,6 +1806,9 @@ public class NotificationsController extends BaseController {
         } else {
             boolean isChannel = ChatObject.isChannel(chat) && !chat.megagroup;
             if (dialogPreviewEnabled && (chat_id == 0 && fromId != 0 && preferences.getBoolean("EnablePreviewAll", true) || chat_id != 0 && (!isChannel && preferences.getBoolean("EnablePreviewGroup", true) || isChannel && preferences.getBoolean("EnablePreviewChannel", true)))) {
+//                if (ChatsPasswordHelper.INSTANCE.isChatLocked(messageObject)) { // TODO: Investigate
+//                    return replaceSpoilers(messageObject);
+//                }
                 if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
                     userName[0] = null;
                     if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetSameChatWallPaper) {
@@ -2437,6 +2440,9 @@ public class NotificationsController extends BaseController {
         } else {
             if (chatId == 0 && fromId != 0) {
                 if (dialogPreviewEnabled && preferences.getBoolean("EnablePreviewAll", true)) {
+//                    if (ChatsPasswordHelper.INSTANCE.isChatLocked(messageObject)) { // TODO: Investigate
+//                        return replaceSpoilers(messageObject);
+//                    }
                     if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
                         if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetSameChatWallPaper) {
                             msg = LocaleController.getString(R.string.WallpaperSameNotification);
@@ -2576,6 +2582,9 @@ public class NotificationsController extends BaseController {
             } else if (chatId != 0) {
                 boolean isChannel = ChatObject.isChannel(chat) && !chat.megagroup;
                 if (dialogPreviewEnabled && (!isChannel && preferences.getBoolean("EnablePreviewGroup", true) || isChannel && preferences.getBoolean("EnablePreviewChannel", true))) {
+//                    if (ChatsPasswordHelper.INSTANCE.isChatLocked(messageObject)) { // TODO: Investigate
+//                        return replaceSpoilers(messageObject);
+//                    }
                     if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
                         if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionChatAddUser) {
                             long singleUserId = messageObject.messageOwner.action.user_id;
@@ -4110,8 +4119,10 @@ public class NotificationsController extends BaseController {
                 mBuilder.setContentText(message);
                 if (!allowSummary) {
                     detailText = message;
+                    mBuilder.setStyle(new NotificationCompat.BigTextStyle().setBigContentTitle(name)/*.setSummaryText(message)*/);
+                } else {
+                    mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(message));
                 }
-                mBuilder.setStyle(new NotificationCompat.BigTextStyle().bigText(message));
             } else {
                 mBuilder.setContentText(detailText);
                 NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
@@ -5224,7 +5235,11 @@ public class NotificationsController extends BaseController {
                                     }, 20_000);
 
                                     if (!TextUtils.isEmpty(messageObject.caption)) {
-                                        messagingStyle.addMessage(messageObject.caption, ((long) messageObject.messageOwner.date) * 1000, person);
+                                        String finalText = messageObject.caption.toString();
+                                        if (ChatsPasswordHelper.INSTANCE.isChatLocked(lastMessageObject)) {
+                                            finalText = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(messageObject.caption.toString(), true);
+                                        }
+                                        messagingStyle.addMessage(finalText, ((long) messageObject.messageOwner.date) * 1000, person);
                                     }
                                     setPhoto = true;
                                 }
@@ -5790,7 +5805,7 @@ public class NotificationsController extends BaseController {
             return;
         }
         SharedPreferences preferences = getAccountInstance().getNotificationsSettings();
-        TLRPC.TL_account_updateNotifySettings req = new TLRPC.TL_account_updateNotifySettings();
+        TL_account.updateNotifySettings req = new TL_account.updateNotifySettings();
         req.settings = new TLRPC.TL_inputPeerNotifySettings();
 
         final String key = NotificationsController.getSharedPrefKey(dialogId, topicId);
@@ -5860,22 +5875,22 @@ public class NotificationsController extends BaseController {
     public void updateServerNotificationsSettings(int type) {
         SharedPreferences preferences = getAccountInstance().getNotificationsSettings();
         if (type == TYPE_REACTIONS_MESSAGES || type == TYPE_REACTIONS_STORIES) {
-            TLRPC.TL_account_setReactionsNotifySettings req = new TLRPC.TL_account_setReactionsNotifySettings();
-            req.settings = new TLRPC.TL_reactionsNotifySettings();
+            TL_account.setReactionsNotifySettings req = new TL_account.setReactionsNotifySettings();
+            req.settings = new TL_account.TL_reactionsNotifySettings();
             if (preferences.getBoolean("EnableReactionsMessages", true)) {
                 req.settings.flags |= 1;
                 if (preferences.getBoolean("EnableReactionsMessagesContacts", false)) {
-                    req.settings.messages_notify_from = new TLRPC.TL_reactionNotificationsFromContacts();
+                    req.settings.messages_notify_from = new TL_account.TL_reactionNotificationsFromContacts();
                 } else {
-                    req.settings.messages_notify_from = new TLRPC.TL_reactionNotificationsFromAll();
+                    req.settings.messages_notify_from = new TL_account.TL_reactionNotificationsFromAll();
                 }
             }
             if (preferences.getBoolean("EnableReactionsStories", true)) {
                 req.settings.flags |= 2;
                 if (preferences.getBoolean("EnableReactionsStoriesContacts", false)) {
-                    req.settings.stories_notify_from = new TLRPC.TL_reactionNotificationsFromContacts();
+                    req.settings.stories_notify_from = new TL_account.TL_reactionNotificationsFromContacts();
                 } else {
-                    req.settings.stories_notify_from = new TLRPC.TL_reactionNotificationsFromAll();
+                    req.settings.stories_notify_from = new TL_account.TL_reactionNotificationsFromAll();
                 }
             }
             req.settings.show_previews = preferences.getBoolean("EnableReactionsPreview", true);
@@ -5884,7 +5899,7 @@ public class NotificationsController extends BaseController {
             return;
         }
 
-        TLRPC.TL_account_updateNotifySettings req = new TLRPC.TL_account_updateNotifySettings();
+        TL_account.updateNotifySettings req = new TL_account.updateNotifySettings();
         req.settings = new TLRPC.TL_inputPeerNotifySettings();
         req.settings.flags = 5;
         if (type == TYPE_GROUP) {

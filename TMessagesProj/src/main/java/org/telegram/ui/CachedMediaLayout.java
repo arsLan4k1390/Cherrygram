@@ -976,7 +976,7 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
         }
 
         @Override
-        public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index, boolean needPreview) {
+        public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index, boolean needPreview, boolean closing) {
             SharedPhotoVideoCell2 cell = getCellForIndex(index);
             if (cell != null) {
                 int[] coords = new int[2];

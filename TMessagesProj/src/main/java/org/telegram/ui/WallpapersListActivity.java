@@ -61,6 +61,7 @@ import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
@@ -568,7 +569,7 @@ public class WallpapersListActivity extends BaseFragment implements Notification
                             }
                             deleteCount[0]++;
                             TLRPC.WallPaper wallPaper = (TLRPC.WallPaper) object;
-                            TLRPC.TL_account_saveWallPaper req = new TLRPC.TL_account_saveWallPaper();
+                            TL_account.saveWallPaper req = new TL_account.saveWallPaper();
                             req.settings = new TLRPC.TL_wallPaperSettings();
                             req.unsave = true;
 
@@ -806,7 +807,7 @@ public class WallpapersListActivity extends BaseFragment implements Notification
                     progressDialog = new AlertDialog(getParentActivity(), AlertDialog.ALERT_TYPE_SPINNER);
                     progressDialog.setCanCancel(false);
                     progressDialog.show();
-                    TLRPC.TL_account_resetWallPapers req = new TLRPC.TL_account_resetWallPapers();
+                    TL_account.resetWallPapers req = new TL_account.resetWallPapers();
                     ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> loadWallpapers(false)));
                 });
                 builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
@@ -1154,11 +1155,11 @@ public class WallpapersListActivity extends BaseFragment implements Notification
                 acc = MediaDataController.calcHash(acc, wallPaper.id);
             }
         }
-        TLRPC.TL_account_getWallPapers req = new TLRPC.TL_account_getWallPapers();
+        TL_account.getWallPapers req = new TL_account.getWallPapers();
         req.hash = acc;
         int reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-            if (response instanceof TLRPC.TL_account_wallPapers) {
-                TLRPC.TL_account_wallPapers res = (TLRPC.TL_account_wallPapers) response;
+            if (response instanceof TL_account.TL_wallPapers) {
+                TL_account.TL_wallPapers res = (TL_account.TL_wallPapers) response;
                 patterns.clear();
                 patternsDict.clear();
                 if (currentType != TYPE_COLOR && currentType != TYPE_CHANNEL_PATTERNS) {

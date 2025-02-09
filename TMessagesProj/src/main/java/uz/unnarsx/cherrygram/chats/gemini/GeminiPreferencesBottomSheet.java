@@ -16,6 +16,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Vibrator;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -36,86 +37,98 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
+import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
+import org.telegram.ui.Components.AnimatedTextView;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.OutlineEditText;
 import org.telegram.ui.Stories.recorder.HintView2;
-
-import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
 public class GeminiPreferencesBottomSheet extends BottomSheet {
 
-    private LinearLayout contentLayout;
+    private BaseFragment fragment;
+    private LinearLayout linearLayout;
 
     private OutlineEditText geminiApiKeyField;
     private OutlineEditText geminiModelNameField;
 
-    private final BaseFragment parentFragment;
-
-    public GeminiPreferencesBottomSheet(BaseFragment parentFragment, Context context, Theme.ResourcesProvider resourcesProvider) {
-        super(context, true, resourcesProvider);
+    public GeminiPreferencesBottomSheet(Context context) {
+        super(context, true);
+        setOpenNoDelay(true);
         fixNavigationBar();
-        waitingKeyboard = true;
         smoothKeyboardAnimationEnabled = true;
-        this.parentFragment = parentFragment;
-        setCustomView(createView(getContext(), resourcesProvider));
-        setTitle(getString(R.string.CP_GeminiAI_Header), true);
-    }
 
-    public View createView(Context context, Theme.ResourcesProvider resourcesProvider) {
-        contentLayout = new LinearLayout(context);
-        contentLayout.setPadding(dp(20), dp(5), dp(20), 0);
-        contentLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
 
-        InputFilter filter = (source, start, end, dest, dstart, dend) -> {
-            for (int i = start; i < end; i++) {
-                if (Character.isWhitespace(source.charAt(i))) {
-                    return "";
-                }
+        FrameLayout header = new FrameLayout(context);
+        linearLayout.addView(header, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 21, 6, 0, 3));
+
+        SimpleTextView nameView = new SimpleTextView(context);
+        nameView.setTextSize(20);
+        nameView.setTypeface(AndroidUtilities.bold());
+        nameView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        nameView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
+        nameView.setText(getString(R.string.CP_GeminiAI_Header));
+        header.addView(nameView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 30, Gravity.LEFT, 0, 6, 0, 0));
+
+        AnimatedTextView betaHeader = new AnimatedTextView(context, true, false, false) {
+            Drawable backgroundDrawable = Theme.createRoundRectDrawable(AndroidUtilities.dp(4), Theme.multAlpha(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader), 0.15f));
+
+            @Override
+            protected void onDraw(Canvas canvas) {
+                backgroundDrawable.setBounds(0, 0, (int) (getPaddingLeft() + getDrawable().getCurrentWidth() + getPaddingRight()), getMeasuredHeight());
+                backgroundDrawable.draw(canvas);
+
+                super.onDraw(canvas);
             }
-            return null;
         };
+        betaHeader.setText("BETA");
+        betaHeader.setTypeface(AndroidUtilities.bold());
+        betaHeader.setPadding(AndroidUtilities.dp(5), AndroidUtilities.dp(2), AndroidUtilities.dp(5), AndroidUtilities.dp(2));
+        betaHeader.setTextSize(AndroidUtilities.dp(10));
+        betaHeader.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader));
+        header.addView(betaHeader, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 17, Gravity.CENTER_VERTICAL, 95, 12, 0, 0));
 
         geminiApiKeyField = new OutlineEditText(context, resourcesProvider);
         geminiApiKeyField.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         geminiApiKeyField.getEditText().setImeOptions(EditorInfo.IME_ACTION_NEXT);
         geminiApiKeyField.setHint(getString(R.string.CP_GeminiAI_API_Key));
         geminiApiKeyField.getEditText().setSingleLine(false);
-        geminiApiKeyField.getEditText().setFilters(new InputFilter[] { filter });
+        geminiApiKeyField.getEditText().setFilters(getInputFilter());
         geminiApiKeyField.getEditText().setText(CherrygramChatsConfig.INSTANCE.getGeminiApiKey());
-        contentLayout.addView(geminiApiKeyField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 80, Gravity.LEFT | Gravity.TOP, 0, 0, 0, 0));
+        linearLayout.addView(geminiApiKeyField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 80, 0, 16, 15, 16, 3));
 
         TextInfoPrivacyCell geminiApiKeyAdviceCell = new TextInfoPrivacyCell(context, dp(1), resourcesProvider);
         geminiApiKeyAdviceCell.setText(CGResourcesHelper.getGeminiApiKeyAdvice());
-        contentLayout.addView(geminiApiKeyAdviceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 0, 3, 0, 0));
+        linearLayout.addView(geminiApiKeyAdviceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, 0, 16, 0));
 
         View geminiApiKeyAdviceCellDivider = new View(context) {
             @Override
-            protected void onDraw(@NonNull Canvas canvas) {
+            protected void onDraw(Canvas canvas) {
                 super.onDraw(canvas);
                 canvas.drawLine(0, AndroidUtilities.dp(1), getMeasuredWidth(), AndroidUtilities.dp(1), Theme.dividerPaint);
             }
         };
-        contentLayout.addView(geminiApiKeyAdviceCellDivider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1)));
+        linearLayout.addView(geminiApiKeyAdviceCellDivider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1), 0, 16, 0, 16, 0));
 
         geminiModelNameField = new OutlineEditText(context, resourcesProvider);
         geminiModelNameField.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         geminiModelNameField.getEditText().setImeOptions(EditorInfo.IME_ACTION_DONE);
         geminiModelNameField.setHint(getString(R.string.CP_GeminiAI_Model));
         geminiModelNameField.getEditText().setSingleLine(true);
-        geminiModelNameField.getEditText().setFilters(new InputFilter[] { filter });
+        geminiModelNameField.getEditText().setFilters(getInputFilter());
         geminiModelNameField.getEditText().setHint(getString(R.string.CP_GeminiAI_Sample) + " gemini-1.5-flash");
         geminiModelNameField.getEditText().setText(CherrygramChatsConfig.INSTANCE.getGeminiModelName());
-        contentLayout.addView(geminiModelNameField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 58, Gravity.LEFT | Gravity.TOP, 0, 10, 0, 0));
+        linearLayout.addView(geminiModelNameField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 58, 0, 16, 15, 16, 3));
 
         TextInfoPrivacyCell geminiModelAdviceCell = new TextInfoPrivacyCell(context, dp(1), resourcesProvider);
         geminiModelAdviceCell.setText(CGResourcesHelper.getGeminiModelNameAdvice());
-        contentLayout.addView(geminiModelAdviceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 0, 3, 0, 0));
+        linearLayout.addView(geminiModelAdviceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, 0, 16, 0));
 
         View geminiModelAdviceCellDivider = new View(context) {
             @Override
@@ -124,21 +137,22 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
                 canvas.drawLine(0, AndroidUtilities.dp(1), getMeasuredWidth(), AndroidUtilities.dp(1), Theme.dividerPaint);
             }
         };
-        contentLayout.addView(geminiModelAdviceCellDivider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1)));
+        linearLayout.addView(geminiModelAdviceCellDivider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1), 0, 16, 0, 16, 0));
 
         FrameLayout buttonView = new FrameLayout(context);
-        buttonView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourcesProvider));
+        buttonView.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
 
         TextView doneButton = new TextView(context);
         doneButton.setEllipsize(TextUtils.TruncateAt.END);
+        doneButton.setGravity(Gravity.CENTER_HORIZONTAL);
         doneButton.setGravity(Gravity.CENTER);
-        doneButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
         doneButton.setText(getString(R.string.Done));
-        doneButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
-        doneButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         doneButton.setTypeface(AndroidUtilities.bold());
+        doneButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        doneButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
+        doneButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
         doneButton.setOnClickListener(v -> doOnDone());
-        buttonView.addView(doneButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.LEFT, 0, 0, dp(16), 0));
+        buttonView.addView(doneButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
         HintView2 hintView = new HintView2(context, HintView2.DIRECTION_BOTTOM)
                 .setRounding(10)
@@ -157,24 +171,39 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         infoButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider), PorterDuff.Mode.MULTIPLY));
         infoButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
         infoButton.setOnClickListener(v -> hintView.show());
-        buttonView.addView(infoButton, LayoutHelper.createFrame(48, 48, Gravity.BOTTOM | Gravity.RIGHT, 0, 0, 0, 0));
+        buttonView.addView(infoButton, LayoutHelper.createFrame(48, 48, Gravity.BOTTOM | Gravity.RIGHT, 0, 16, 16, 16));
 
-        contentLayout.addView(buttonView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, 0, 0, 16, 0, 16));
+        linearLayout.addView(buttonView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
 
-        ScrollView fragmentView = new ScrollView(context);
-        fragmentView.setVerticalScrollBarEnabled(false);
-        fragmentView.addView(contentLayout, LayoutHelper.createScroll(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
+        ScrollView scrollView = new ScrollView(context);
+        scrollView.setVerticalScrollBarEnabled(false);
+        scrollView.addView(linearLayout);
+        setCustomView(scrollView);
+    }
 
-        return fragmentView;
+    public void setFragment(BaseFragment fragment) {
+        this.fragment = fragment;
+    }
+
+    private InputFilter[] getInputFilter() {
+        InputFilter filter = (source, start, end, dest, dstart, dend) -> {
+            for (int i = start; i < end; i++) {
+                if (Character.isWhitespace(source.charAt(i))) {
+                    return "";
+                }
+            }
+            return null;
+        };
+        return new InputFilter[] { filter };
     }
 
     private void doOnDone() {
-        if (parentFragment == null || parentFragment.getParentActivity() == null) {
+        if (fragment == null || fragment.getParentActivity() == null) {
             return;
         }
 
         if (geminiApiKeyField.getEditText().length() == 0) {
-            Vibrator v = (Vibrator) parentFragment.getParentActivity().getSystemService(Context.VIBRATOR_SERVICE);
+            Vibrator v = (Vibrator) fragment.getParentActivity().getSystemService(Context.VIBRATOR_SERVICE);
             if (v != null) {
                 v.vibrate(200);
             }
@@ -186,7 +215,7 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         );
 
         if (geminiModelNameField.getEditText().length() == 0) {
-            Vibrator v = (Vibrator) parentFragment.getParentActivity().getSystemService(Context.VIBRATOR_SERVICE);
+            Vibrator v = (Vibrator) fragment.getParentActivity().getSystemService(Context.VIBRATOR_SERVICE);
             if (v != null) {
                 v.vibrate(200);
             }
@@ -208,26 +237,21 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
     }
 
     @Override
-    public ArrayList<ThemeDescription> getThemeDescriptions() {
-        ArrayList<ThemeDescription> themeDescriptions = new ArrayList<>();
-
-        themeDescriptions.add(new ThemeDescription(geminiApiKeyField, ThemeDescription.FLAG_TEXTCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-        themeDescriptions.add(new ThemeDescription(geminiApiKeyField, ThemeDescription.FLAG_HINTTEXTCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteHintText));
-        themeDescriptions.add(new ThemeDescription(geminiApiKeyField, ThemeDescription.FLAG_BACKGROUNDFILTER, null, null, null, null, Theme.key_windowBackgroundWhiteInputField));
-        themeDescriptions.add(new ThemeDescription(geminiApiKeyField, ThemeDescription.FLAG_BACKGROUNDFILTER | ThemeDescription.FLAG_DRAWABLESELECTEDSTATE, null, null, null, null, Theme.key_windowBackgroundWhiteInputFieldActivated));
-
-        themeDescriptions.add(new ThemeDescription(geminiModelNameField, ThemeDescription.FLAG_TEXTCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-        themeDescriptions.add(new ThemeDescription(geminiModelNameField, ThemeDescription.FLAG_HINTTEXTCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteHintText));
-        themeDescriptions.add(new ThemeDescription(geminiModelNameField, ThemeDescription.FLAG_BACKGROUNDFILTER, null, null, null, null, Theme.key_windowBackgroundWhiteInputField));
-        themeDescriptions.add(new ThemeDescription(geminiModelNameField, ThemeDescription.FLAG_BACKGROUNDFILTER | ThemeDescription.FLAG_DRAWABLESELECTEDSTATE, null, null, null, null, Theme.key_windowBackgroundWhiteInputFieldActivated));
-
-        return themeDescriptions;
-    }
-
-    @Override
     public void dismiss() {
         super.dismiss();
-        AndroidUtilities.runOnUIThread(() -> AndroidUtilities.hideKeyboard(contentLayout), 50);
+        AndroidUtilities.runOnUIThread(() -> AndroidUtilities.hideKeyboard(linearLayout), 50);
     }
 
+    public static GeminiPreferencesBottomSheet showAlert(BaseFragment fragment) {
+        GeminiPreferencesBottomSheet alert = new GeminiPreferencesBottomSheet(fragment.getContext());
+        if (fragment != null) {
+            if (fragment.getParentActivity() != null) {
+                fragment.showDialog(alert);
+            }
+            alert.setFragment(fragment);
+        } else {
+            alert.show();
+        }
+        return alert;
+    }
 }

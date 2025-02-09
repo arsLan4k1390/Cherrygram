@@ -289,6 +289,7 @@
         \n\nAfter that, open any chat, type a message and hold down the send message button.
         \n\nMoreover, you can reply to a message using AI as well. To do this, click on any text message in the chat.
     </string>
+    <string name="CP_GeminiAI_ExtractText">Extract Text (OCR)</string>
 
     <string name="CP_Slider_RecentEmojisAmplifier">Recent emojis counter (restart app to apply)</string>
     <string name="CP_Slider_RecentStickersAmplifier">Recent stickers counter (restart app to apply)</string>

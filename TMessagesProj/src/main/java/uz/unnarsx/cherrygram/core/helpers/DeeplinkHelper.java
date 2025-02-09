@@ -95,8 +95,7 @@ public class DeeplinkHelper {
                     return;
                 }
                 case "cg_gemini" -> {
-                    GeminiPreferencesBottomSheet geminiPreferencesBottomSheet = new GeminiPreferencesBottomSheet(fragment, fragment.getContext(), fragment.getResourceProvider());
-                    geminiPreferencesBottomSheet.show();
+                    GeminiPreferencesBottomSheet.showAlert(fragment);
                     return;
                 }
                 default -> {

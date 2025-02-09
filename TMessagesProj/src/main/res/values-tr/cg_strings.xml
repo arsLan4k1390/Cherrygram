@@ -34,6 +34,7 @@
     <string name="CG_ChooseFolderIcon">Bir Simge Seçin</string>
     <string name="CP_NewTabs_NoCounter">Sekmelerde sayacı gizle</string>
     <string name="CP_NewTabs_NoCounter_Desc">Bu, okunmamış mesaj sayacını gizleyecektir</string>
+    <string name="CG_SwipeToUnarchive">Arşivden çıkarmak için sola kaydırın</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">Başa git</string>
@@ -64,6 +65,7 @@
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygram\'in konumunuzu arkadaşlarınızla paylaşabilmeniz için konum erişimine ihtiyacı var. Şimdi konumunuzun kullanılmasına izin vermeniz istenecek (uygulama açıkken).</string>
     <string name="CG_LocationPermission_Desc">Bununla birlikte, Cherrygram kapalıyken ve arka planda çalışırken konumunuzun arkadaşlarınıza açık olmasını istiyorsanız, \"Canlı Konum\" özelliğine gidin. Canlı Konum özelliğini kullanmayı kabul edene kadar konumunuz arka planda kullanılamayacaktır.</string>
+    <string name="CG_Copy_Coordinates">Koordinatlar</string>
     <!--Location screen-->
     <!--Search filter-->
     <string name="CG_SearchFilter">Arama sonuçlarını filtrele</string>
@@ -133,6 +135,7 @@
     <string name="AP_RedesignCategory">Yeniden Tasarım</string>
     <string name="AP_IconReplacements">Simge değişimleri</string>
     <string name="AP_Old_Notification_Icon">Varsayılan bildirim simgesi (Telegram)</string>
+    <string name="AP_Tablet_Mode">Tablet modu</string>
     <string name="AP_ChangeIconFilter">Telegram simgelerini kullan</string>
     <string name="AP_ChangeIcon_Cherry_NY">Yeni Yıl</string>
     <string name="AP_ChangeIcon_Default">Varsayılan</string>
@@ -169,7 +172,12 @@
     <string name="CP_ReplyBackground">Yanıtlardaki arka plan</string>
     <string name="CP_ReplyCustomColors">Yanıtlarda ve bağlantı önizlemelerinde özel renkler</string>
     <string name="CP_ReplyBackgroundEmoji">Yanıtlarda ve bağlantı önizlemelerinde emoji</string>
-    <string name="CP_HideStories">Hikayeleri Gizle</string>
+    <string name="CP_HideStories">Hikayeleri Sakla (yerel olarak)</string>
+    <string name="CP_HideStories_Desc">Hikayeler, sohbetler listenizden ve profillerden kaybolacaktır.</string>
+    <string name="CP_ArchiveStoriesFromUsers">Kişilerden gelen hikayeleri arşivle</string>
+    <string name="CP_ArchiveStoriesFromUsers_Desc">Kişilerden gelen hikayeler otomatik olarak arşivlenecek ve arşivinize taşınacaktır. Telegram API\'sini kullanan tüm uygulamalarda çalışır.</string>
+    <string name="CP_ArchiveStoriesFromChannels">Kanallardan gelen hikayeleri arşivle</string>
+    <string name="CP_ArchiveStoriesFromChannels_Desc">Kanallardan ve gruplardan gelen hikayeler otomatik olarak arşivlenecek ve arşivinize taşınacaktır. Telegram API\'sini kullanan tüm uygulamalarda çalışır.</string>
     <string name="CP_CustomWallpapers">Sohbetlerde özel arka plan</string>
     <string name="CP_CustomWallpapers_Desc">Premium kullanıcılar/desteklenen kanallar tarafından ayarlanan sohbetler/gruplar/kanallardaki özel duvar kağıtlarını yapılandırın</string>
     <string name="CP_DisableAnimAvatars">Hareketli avatarları devre dışı bırak</string>
@@ -232,9 +240,22 @@
     <string name="CP_HideKbdOnScroll">Kaydırırken klavyeyi gizle</string>
     <string name="CP_HideSendAsChannel">\"Kanal olarak gönder\"i gizle</string>
     <string name="CP_HideSendAsChannelDesc">Emoji/Çıkartma/GIF düğmesine uzun basarak menüye erişebilirsiniz</string>
+    <string name="CP_GeminiAI_API_Key">Gemini API Anahtarı</string>
+    <string name="CP_GeminiAI_API_Key_Desc">API Anahtarını almak için <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]> adresini ziyaret edin.</string>
+    <string name="CP_GeminiAI_Model">Gemini model kodu</string>
+    <string name="CP_GeminiAI_Model_Desc">Mevcut modellerin listesini almak için <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]> adresini ziyaret edin.</string>
+    <string name="CP_GeminiAI_Sample">Örnek:</string>
+    <string name="CP_GeminiAI_Instruction">Gemini\'yi kullanmak için,
+        bu ekrandaki tüm değerleri doldurmanız gerekir.
+        \n\nBundan sonra, herhangi bir sohbeti açın, bir mesaj yazın ve mesaj gönder düğmesini basılı tutun.
+        \n\nAyrıca, AI kullanarak da bir mesajı yanıtlayabilirsiniz. Bunu yapmak için, sohbetteki herhangi bir metin mesajına tıklayın.
+    </string>
     <string name="CP_Slider_RecentEmojisAmplifier">Son kullanılan emoji sayısı (uygulamak için yeniden başlat)</string>
     <string name="CP_Slider_RecentStickersAmplifier">Son kullanılan çıkartma sayısı (uygulamak için yeniden başlat)</string>
     <string name="CP_Header_Record">Medya</string>
+    <string name="CP_Messages_Size">Mesaj kabarcık boyutu</string>
+    <string name="CP_Slider_MediaAmplifier">Fotoğraflar ve videolar</string>
+    <string name="CP_Slider_MediaAmplifier_Hint">Albümlerle çalışmaz (gruplandırılmış medya)</string>
     <string name="CP_SpoilersOnMedia">Spoiler efekti</string>
     <string name="CP_SpoilersOnMedia_Desc">Özellik devre dışı bırakılırsa fotoğraf ve videolardaki spoiler efekti gösterilmeyecek.</string>
     <string name="CP_VoiceEnhancements">Ses İyileştirmeleri</string>
@@ -310,6 +331,8 @@
     <string name="SP_AskPinForChats_Desc">Belirli sohbetlere erişmek için sistem şifresi (parmak izi, yüz tanıma, PIN veya desen) gerekecektir. Etkinleştirmek için, sohbetin içindeki 3 noktaya dokunun.</string>
     <string name="SP_AskPinForArchive">Arşivi açmak için biyometrik doğrulama gerektir</string>
     <string name="SP_AskPinForArchive_Desc">Arşivlenmiş sohbetlere erişmek için sistem şifresi (parmak izi, yüz tanıma, PIN veya desen) gerekecektir.</string>
+    <string name="SP_HideArchive">Arşivi sohbet listesinde gizle</string>
+    <string name="SP_HideArchive_Desc">Arşiv Cherrygram kanalı olarak maskelenecektir. \nArşivi çekmeceden veya arama düğmesine uzun dokunarak açabileceksiniz.</string>
     <string name="SP_AskPin">Şifre gerektir</string>
     <string name="SP_DoNotAskPin">Şifre gerektirme</string>
     <string name="SP_AskPinBeforeDelete">Sohbetleri silmek için biyometrik doğrulama gerektir</string>

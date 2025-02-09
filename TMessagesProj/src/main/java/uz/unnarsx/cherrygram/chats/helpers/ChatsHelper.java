@@ -53,6 +53,7 @@ import org.telegram.messenger.Utilities;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -314,7 +315,7 @@ public class ChatsHelper extends BaseController {
         int colorId = getEmojiBackgroundFromReply(selectedObject, MessagesController.getInstance(UserConfig.selectedAccount).getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
         TLRPC.User me = UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser();
 
-        TLRPC.TL_account_updateColor req = new TLRPC.TL_account_updateColor();
+        TL_account.updateColor req = new TL_account.updateColor();
         if (me.color == null) {
             me.color = new TLRPC.TL_peerColor();
             me.flags2 |= 256;
@@ -399,7 +400,10 @@ public class ChatsHelper extends BaseController {
     }
 
     public void showPlasticCardMenu(ChatActivity chatActivity, ItemOptions options, ScrimOptions dialog, String card) {
-        if (getUserConfig().getCurrentUser().phone.startsWith("998")
+        if (getUserConfig() != null
+                && getUserConfig().getCurrentUser() != null
+                && getUserConfig().getCurrentUser().phone != null
+                && getUserConfig().getCurrentUser().phone.startsWith("998")
                 /*CherrygramChatsConfig.INSTANCE.isDev() && (card.startsWith("9860") || card.startsWith("555536")
                     || card.startsWith("429434") || card.startsWith("418783") || card.startsWith("400847") || card.startsWith("472887") || card.startsWith("406228") || card.startsWith("419813") || card.startsWith("407342")
                     || card.startsWith("8600") || card.startsWith("561468") || card.startsWith("5440") || card.startsWith("6262") || card.startsWith("6264"))*/
@@ -614,7 +618,7 @@ public class ChatsHelper extends BaseController {
         chatActivity.updatePinnedMessageView(true);
         chatActivity.updateVisibleRows();
 
-        chatActivity.showDialog(new ShareAlert(chatActivity.getContext(), chatActivity, fmessages, null, null, ChatObject.isChannel(chatActivity.getCurrentChat()), null, null, false, false, false, themeDelegate) {
+        chatActivity.showDialog(new ShareAlert(chatActivity.getContext(), chatActivity, fmessages, null, null, ChatObject.isChannel(chatActivity.getCurrentChat()), null, null, false, false, false, null, themeDelegate) {
             @Override
             public void dismissInternal() {
                 super.dismissInternal();

@@ -30,10 +30,11 @@
     <string name="CG_FoldersType_Header">タブアイコンの種類</string>
     <string name="CG_FoldersTypeTitles">タイトルのみ</string>
     <string name="CG_FoldersTypeIcons">アイコンのみ</string>
-    <string name="CG_FoldersTypeIconsTitles">タイトル付きのアイコン</string>
+    <string name="CG_FoldersTypeIconsTitles">タイトルとアイコン</string>
     <string name="CG_ChooseFolderIcon">アイコンを選択してください</string>
     <string name="CP_NewTabs_NoCounter">タブのカウンターを非表示</string>
     <string name="CP_NewTabs_NoCounter_Desc">未読メッセージのカウンターを非表示にします。</string>
+    <string name="CG_SwipeToUnarchive">左にスワイプでアーカイブを解除</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">最初に戻る</string>
@@ -64,6 +65,7 @@
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygramは、あなたの位置情報を友人と共有するために、位置情報へのアクセスを必要とします。位置情報の使用を許可するかどうかを確認します(アプリが開いている間)。</string>
     <string name="CG_LocationPermission_Desc">ただし、Cherrygramを終了してバックグラウンドになっている間にあなたの位置情報を友人に知らせたい場合は、「ライブロケーション」機能にアクセスしてください。 ライブロケーション機能を使用することに同意するまでは、位置情報をバックグラウンドで送信しません。</string>
+    <string name="CG_Copy_Coordinates">座標</string>
     <!--Location screen-->
     <!--Search filter-->
     <string name="CG_SearchFilter">検索結果をフィルター</string>
@@ -133,6 +135,7 @@
     <string name="AP_RedesignCategory">再設計</string>
     <string name="AP_IconReplacements">アイコンの置換</string>
     <string name="AP_Old_Notification_Icon">デフォルトの通知アイコン (Telegram)</string>
+    <string name="AP_Tablet_Mode">タブレットモード</string>
     <string name="AP_ChangeIconFilter">Telegramアイコンを使用する</string>
     <string name="AP_ChangeIcon_Cherry_NY">新年</string>
     <string name="AP_ChangeIcon_Default">デフォルト</string>
@@ -143,8 +146,8 @@
     <string name="AP_ChangeIcon_Lavanda">ラベンダー</string>
     <string name="AP_ChangeIcon_Sunset">サンセット</string>
     <string name="AP_ChangeIcon_Sunrise">サンライズ</string>
-    <string name="AP_IconReplacement_VKUI">VKUIアイコン</string>
-    <string name="AP_IconReplacement_Solar">Solarアイコン 作者: @Design480</string>
+    <string name="AP_IconReplacement_VKUI">VKUI</string>
+    <string name="AP_IconReplacement_Solar">Solar - @Design480</string>
     <string name="AP_IconReplacement_Default">デフォルト</string>
     <string name="AP_OneUI_Switch_Style">OneUIの切り替えスタイル</string>
     <string name="AP_SystemEmoji">システムの絵文字を使用する</string>
@@ -169,7 +172,12 @@
     <string name="CP_ReplyBackground">返信の背景</string>
     <string name="CP_ReplyCustomColors">返信とリンクのプレビューの色を変更</string>
     <string name="CP_ReplyBackgroundEmoji">返信とリンクのプレビューの絵文字</string>
-    <string name="CP_HideStories">ストーリーを非表示</string>
+    <string name="CP_HideStories">ストーリーを隠す (ローカル)</string>
+    <string name="CP_HideStories_Desc">チャットの一覧とプロフィールからストーリーを隠します。</string>
+    <string name="CP_ArchiveStoriesFromUsers">連絡先からのストーリーをアーカイブにする</string>
+    <string name="CP_ArchiveStoriesFromUsers_Desc">連絡先からのストーリーを自動的にアーカイブに移動します。Telegram APIを使用するすべてのアプリで動作します。</string>
+    <string name="CP_ArchiveStoriesFromChannels">チャンネルからストーリーをアーカイブにする</string>
+    <string name="CP_ArchiveStoriesFromChannels_Desc">チャンネルとグループ内のストーリーを自動的にアーカイブに移動します。Telegram APIを使用するすべてのアプリで動作します。</string>
     <string name="CP_CustomWallpapers">チャットのカスタム背景</string>
     <string name="CP_CustomWallpapers_Desc">プレミアムユーザー、ブーストされたチャンネル、チャット、グループ、チャンネルにカスタム壁紙を設定します。</string>
     <string name="CP_DisableAnimAvatars">アニメーションアバターを無効化</string>
@@ -232,9 +240,22 @@
     <string name="CP_HideKbdOnScroll">スクロール時にキーボードを非表示</string>
     <string name="CP_HideSendAsChannel">｢チャンネルとして送信｣を非表示</string>
     <string name="CP_HideSendAsChannelDesc">絵文字、ステッカー、GIFボタンを長押しでメニューにアクセスできます。</string>
+    <string name="CP_GeminiAI_API_Key">Gemini API キー</string>
+    <string name="CP_GeminiAI_API_Key_Desc">API キーを取得にするには、<![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]>を開いてください。</string>
+    <string name="CP_GeminiAI_Model">Gemini モデルコード</string>
+    <string name="CP_GeminiAI_Model_Desc">利用可能なモデルの一覧を取得するには、<![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]>を開いてください。</string>
+    <string name="CP_GeminiAI_Sample">サンプル:</string>
+    <string name="CP_GeminiAI_Instruction">Geminiを使用するには
+        この画面のすべての値をすべて入力する必要があります。
+        \n\nその後に任意のチャットを開いてメッセージを入力し、メッセージ送信ボタンを押し続けます。
+        \n\nさらに、AIを使用してメッセージに返信することもできます。これを行うには、チャット内の任意のテキストメッセージをタップします。
+    </string>
     <string name="CP_Slider_RecentEmojisAmplifier">最近の絵文字カウンター (アプリを再起動後に適用されます)</string>
     <string name="CP_Slider_RecentStickersAmplifier">最近のステッカーカウンター (アプリを再起動後に適用されます)</string>
     <string name="CP_Header_Record">メディア</string>
+    <string name="CP_Messages_Size">メッセージバブルのサイズ</string>
+    <string name="CP_Slider_MediaAmplifier">写真と動画</string>
+    <string name="CP_Slider_MediaAmplifier_Hint">アルバムでは動作しません (グループされたメディア)</string>
     <string name="CP_SpoilersOnMedia">ネタバレの効果</string>
     <string name="CP_SpoilersOnMedia_Desc">この機能が無効化されている場合は、写真や動画のネタバレの効果が表示されません。</string>
     <string name="CP_VoiceEnhancements">音声の強化</string>
@@ -306,13 +327,15 @@
     <string name="SP_GoogleAnalytics_Desc">これを有効化することですべてのアプリのクラッシュや統計情報が、｢console.firebase.google.com｣に送信されます。開発者が問題の修正などを効率良く行えるようになります。</string>
     <string name="SP_CleanOld">/sdcard/Telegram のキャッシュを削除</string>
     <string name="SP_RemovedS">削除に成功しました</string>
-    <string name="SP_AskPinForChats">チャットを開始時に生体認証を要求する</string>
+    <string name="SP_AskPinForChats">チャットを開始時に生体認証を要求</string>
     <string name="SP_AskPinForChats_Desc">特定のチャットにアクセスするときにシステムパスワード(指紋認証、顔認証、PIN、またはパターン)が必要になります。有効化するには、チャット内の 3つのドットをタップします。</string>
-    <string name="SP_AskPinForArchive">アーカイブを開くときに生体認証を要求する</string>
+    <string name="SP_AskPinForArchive">アーカイブの展開時に生体認証を要求</string>
     <string name="SP_AskPinForArchive_Desc">アーカイブされたチャットにアクセスするときにシステムパスワード(指紋認証、顔認証、PIN、またはパターン)が必要です。</string>
-    <string name="SP_AskPin">パスワードを要求する</string>
+    <string name="SP_HideArchive">チャット一覧からアーカイブを非表示</string>
+    <string name="SP_HideArchive_Desc">アーカイブはCherrygramチャンネルとしてマスクされます。\nドロワーからまたは検索ボタンを長押しでアーカイブを開くことができます。</string>
+    <string name="SP_AskPin">パスワードを要求</string>
     <string name="SP_DoNotAskPin">パスワードを要求しない</string>
-    <string name="SP_AskPinBeforeDelete">チャットを削除時に生体認証を要求する</string>
+    <string name="SP_AskPinBeforeDelete">チャットを削除時に生体認証を要求</string>
     <string name="SP_AskPinBeforeDelete_Desc">チャットまたは履歴を削除する場合に指紋認証を要求します。パスコードと指紋認証を設定している必要があります。</string>
     <string name="SP_AllowUseSystemPasscode">PINまたはパターンの使用を許可する</string>
     <string name="SP_AllowUseSystemPasscode_Desc">指紋認証のダイアログの｢キャンセル｣のボタンを｢PIN/パターン｣のボタンに置き換えることで、システムパスを使用してCherrygramのロックを解除できるようになります。</string>

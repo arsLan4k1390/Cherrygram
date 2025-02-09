@@ -254,8 +254,8 @@ public class BackupHelper {
         mainconfig.add("CP_DisableSwipeToNext");
         mainconfig.add("CP_HideMuteUnmuteButton");
 
-        mainconfig.add("EP_GeminiApiKey");
-        mainconfig.add("EP_GeminiModelName");
+        mainconfig.add("CP_GeminiApiKey");
+        mainconfig.add("CP_GeminiModelName");
 
         mainconfig.add("CP_Slider_RecentEmojisAmplifier");
         mainconfig.add("CP_Slider_RecentStickersAmplifier");

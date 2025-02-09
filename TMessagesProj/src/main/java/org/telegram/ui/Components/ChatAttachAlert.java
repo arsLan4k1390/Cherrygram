@@ -842,6 +842,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
     protected int avatarPicker;
     protected boolean avatarSearch;
+    protected Utilities.Callback0Return<PhotoViewer.PlaceProviderObject> avatarWithBulletin;
     protected boolean typeButtonsAvailable;
 
     private boolean stories;
@@ -2786,7 +2787,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     for (int i = 0; i < spans.length; i++) {
                         editable.removeSpan(spans[i]);
                     }
-                    Emoji.replaceEmoji(editable, commentTextView.getEditText().getPaint().getFontMetricsInt(), dp(20), false);
+                    Emoji.replaceEmoji(editable, commentTextView.getEditText().getPaint().getFontMetricsInt(), false);
                     processChange = false;
                 }
                 int beforeLimit;
@@ -2913,7 +2914,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     for (int i = 0; i < spans.length; i++) {
                         editable.removeSpan(spans[i]);
                     }
-                    Emoji.replaceEmoji(editable, topCommentTextView.getEditText().getPaint().getFontMetricsInt(), dp(20), false);
+                    Emoji.replaceEmoji(editable, topCommentTextView.getEditText().getPaint().getFontMetricsInt(), false);
                     processChange = false;
                 }
                 int beforeLimit;
@@ -3466,7 +3467,9 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             messageSendPreview.show();
 
             if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                try {
+                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                } catch (Exception ignored) {}
             }
 
             return true;
@@ -4788,6 +4791,8 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 }
                 if (needMoreItem) {
                     animators.add(ObjectAnimator.ofFloat(selectedMenuItem, View.ALPHA, show ? 1.0f : 0.0f));
+                    animators.add(ObjectAnimator.ofFloat(selectedMenuItem, View.SCALE_X, show ? 1.0f : 0.6f));
+                    animators.add(ObjectAnimator.ofFloat(selectedMenuItem, View.SCALE_Y, show ? 1.0f : 0.6f));
                 }
                 actionBarAnimation.playTogether(animators);
                 actionBarAnimation.addListener(new AnimatorListenerAdapter() {
@@ -5180,9 +5185,10 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         stories = value;
     }
 
-    public void setAvatarPicker(int type, boolean search) {
+    public void setAvatarPicker(int type, boolean search, Utilities.Callback0Return<PhotoViewer.PlaceProviderObject> withBulletinClosingAnimation) {
         avatarPicker = type;
         avatarSearch = search;
+        avatarWithBulletin = withBulletinClosingAnimation;
         if (avatarPicker != 0) {
             typeButtonsAvailable = false;
             if (currentAttachLayout == null || currentAttachLayout == photoLayout) {
@@ -5705,7 +5711,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             SpannableStringBuilder builder = new SpannableStringBuilder(getCommentView().getText());
             builder.replace(start, start + len, text);
             if (parseEmoji) {
-                Emoji.replaceEmoji(builder, getCommentView().getEditText().getPaint().getFontMetricsInt(), dp(20), false);
+                Emoji.replaceEmoji(builder, getCommentView().getEditText().getPaint().getFontMetricsInt(), false);
             }
             getCommentView().setText(builder);
             getCommentView().setSelection(start + text.length());

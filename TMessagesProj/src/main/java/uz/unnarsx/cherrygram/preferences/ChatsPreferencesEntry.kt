@@ -107,8 +107,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 title = getString(R.string.CP_GeminiAI_Header)
                 icon = R.drawable.magic_stick_solar
                 listener = TGKitTextIconRow.TGTIListener {
-                    val fragment = GeminiPreferencesBottomSheet(bf, bf.context, bf.resourceProvider)
-                    fragment.show()
+                    GeminiPreferencesBottomSheet.showAlert(bf)
                 }
             }
         }

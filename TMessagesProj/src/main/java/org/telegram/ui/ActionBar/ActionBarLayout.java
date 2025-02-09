@@ -2253,7 +2253,9 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         });
         animatorSet.start();
         if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+            try {
+                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+            } catch (Exception ignore) {}
         }
 
         fragment.setInPreviewMode(false);

@@ -62,6 +62,15 @@ object ChatsPasswordHelper {
         }
     }
 
+    fun isChatLocked(messageObject: MessageObject): Boolean {
+        return shouldRequireBiometricsToOpenChats && messageObject.messageOwner.message != null
+            && messageObject.chatId != 0L && (
+                    getArrayList(Passcode_Array)!!.contains(messageObject.chatId.toString())
+                            || getArrayList(Passcode_Array)!!.contains("-" + messageObject.chatId.toString())
+                    )
+            && !messageObject.isStoryReactionPush && !messageObject.isStoryPush && !messageObject.isStoryMentionPush && !messageObject.isStoryPushHidden
+    }
+
     fun checkLockedChatsEntities(messageObject: MessageObject): java.util.ArrayList<MessageEntity>? {
         return checkLockedChatsEntities(messageObject, messageObject.messageOwner.entities)
     }
@@ -70,18 +79,18 @@ object ChatsPasswordHelper {
         '⠌', '⡢', '⢑', '⠨', '⠥', '⠮', '⡑'
     )
 
-    fun replaceStringToSpoilers(chatTitle: String?, phoneNumber: Boolean): String? {
-        if (chatTitle == null) {
+    fun replaceStringToSpoilers(originalText: String?, force: Boolean): String? {
+        if (originalText == null) {
             return null
         }
-        return if (CherrygramPrivacyConfig.askBiometricsToOpenArchive || phoneNumber) {
-            val stringBuilder = StringBuilder(chatTitle)
-            for (i in chatTitle.indices) {
+        return if (CherrygramPrivacyConfig.askBiometricsToOpenArchive || force) {
+            val stringBuilder = StringBuilder(originalText)
+            for (i in originalText.indices) {
                 stringBuilder.setCharAt(i, spoilerChars[i % spoilerChars.size])
             }
             stringBuilder.toString()
         } else {
-            chatTitle
+            originalText
         }
     }
 

@@ -73,8 +73,9 @@ object CherrygramCameraConfig: CoroutineScope by CoroutineScope(
     /** CameraX FPS start **/
     const val CameraXFpsRangeDefault = 0
     const val CameraXFpsRange25to30 = 1
-    const val CameraXFpsRange30to60 = 2
-    const val CameraXFpsRange60to60 = 3
+    const val CameraXFpsRange30to30 = 2
+    const val CameraXFpsRange30to60 = 3
+    const val CameraXFpsRange60to60 = 4
     var cameraXFpsRange by sharedPreferences.int("CP_CameraXFpsRangeNew",
         if (SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE) CameraXFpsRange25to30 else CameraXFpsRangeDefault)
     /** CameraX FPS finish **/

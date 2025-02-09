@@ -6,6 +6,8 @@ import static org.telegram.ui.Components.EditTextEmoji.STYLE_GIFT;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.Editable;
@@ -23,6 +25,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,6 +35,7 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedColor;
+import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AnimatedTextView;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.EditTextCaption;
@@ -44,8 +48,11 @@ import org.telegram.ui.Components.TypefaceSpan;
 public class EditEmojiTextCell extends FrameLayout {
 
     private boolean ignoreEditText;
-    public final EditTextEmoji editTextEmoji;
+    public EditTextEmoji editTextEmoji;
     private int maxLength;
+
+    private ImageView[] iconImageView = new ImageView[2];
+    private View codeDividerView;
 
     private boolean showLimitWhenEmpty;
     private int showLimitWhenNear = -1;
@@ -54,7 +61,9 @@ public class EditEmojiTextCell extends FrameLayout {
     public boolean autofocused;
     private boolean focused;
 
-    final AnimatedColor limitColor;
+    private boolean allowEntities = true;
+
+    AnimatedColor limitColor;
     private int limitCount;
     final AnimatedTextView.AnimatedTextDrawable limit = new AnimatedTextView.AnimatedTextDrawable(false, true, true); {
         limit.setAnimationProperties(.2f, 0, 160, CubicBezierInterpolator.EASE_OUT_QUINT);
@@ -107,6 +116,23 @@ public class EditEmojiTextCell extends FrameLayout {
         this(context, parent, hint, multiline, -1, style, null);
     }
 
+    public int emojiCacheType() {
+        return AnimatedEmojiDrawable.getCacheTypeForEnterView();
+    }
+
+    public void setEmojiViewCacheType(int cacheType) {
+        editTextEmoji.setEmojiViewCacheType(cacheType);
+    }
+
+    public EditEmojiTextCell setAllowEntities(boolean allow) {
+        allowEntities = allow;
+        return this;
+    }
+
+    public EditEmojiTextCell(Context context, SizeNotifierFrameLayout parent, String hint, boolean multiline, int maxLength, int style, Theme.ResourcesProvider resourceProvider) {
+        this(context, parent, hint, multiline, maxLength, style, resourceProvider, null);
+    }
+
     public EditEmojiTextCell(
         Context context,
         SizeNotifierFrameLayout parent,
@@ -114,7 +140,8 @@ public class EditEmojiTextCell extends FrameLayout {
         boolean multiline,
         int maxLength,
         int style,
-        Theme.ResourcesProvider resourceProvider
+        Theme.ResourcesProvider resourceProvider,
+        OnClickListener onIconChangeListener
     ) {
         super(context);
         this.maxLength = maxLength;
@@ -136,7 +163,8 @@ public class EditEmojiTextCell extends FrameLayout {
                     limit.setTextColor(limitColor.set(Theme.getColor(limitCount <= 0 ? Theme.key_text_RedRegular : Theme.key_dialogSearchHint, resourceProvider)));
                 }
                 int h = Math.min(dp(48), getHeight());
-                limit.setBounds(getScrollX(), getHeight() - h, getScrollX() + getWidth() - dp(12), getHeight());
+                final float ty = multiline ? 0 : -dp(1);
+                limit.setBounds(getScrollX(), ty + getHeight() - h, getScrollX() + getWidth() - dp(12 + (!multiline ? 44 : 0)), ty + getHeight());
                 limit.draw(canvas);
             }
 
@@ -156,13 +184,22 @@ public class EditEmojiTextCell extends FrameLayout {
                 stringBuilder = new SpannableStringBuilder(getString(R.string.Italic));
                 stringBuilder.setSpan(new TypefaceSpan(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM_ITALIC)), 0, stringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 menu.add(R.id.menu_groupbolditalic, R.id.menu_italic, order++, stringBuilder);
-//                menu.add(R.id.menu_groupbolditalic, R.id.menu_link, order++, getString(R.string.CreateLink));
                 stringBuilder = new SpannableStringBuilder(LocaleController.getString(R.string.Strike));
                 TextStyleSpan.TextStyleRun run = new TextStyleSpan.TextStyleRun();
                 run.flags |= TextStyleSpan.FLAG_STYLE_STRIKE;
                 stringBuilder.setSpan(new TextStyleSpan(run), 0, stringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 menu.add(R.id.menu_groupbolditalic, R.id.menu_strike, order++, stringBuilder);
                 menu.add(R.id.menu_groupbolditalic, R.id.menu_regular, order++, getString(R.string.Regular));
+            }
+
+            @Override
+            protected boolean allowEntities() {
+                return allowEntities && super.allowEntities();
+            }
+
+            @Override
+            public int emojiCacheType() {
+                return EditEmojiTextCell.this.emojiCacheType();
             }
         };
         final EditTextCaption editText = editTextEmoji.getEditText();
@@ -240,7 +277,45 @@ public class EditEmojiTextCell extends FrameLayout {
         });
         addView(editTextEmoji, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP));
 
+        if (onIconChangeListener != null) {
+            setOnChangeIconListener(onIconChangeListener);
+        }
+
         updateLimitText();
+    }
+
+    public void setOnChangeIconListener(OnClickListener listener) {
+        editTextEmoji.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.RIGHT | Gravity.TOP, 72 - 7 - 21, 0, 0, 0));
+
+        codeDividerView = new View(getContext());
+        codeDividerView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhiteInputField));
+        LinearLayout.LayoutParams params = LayoutHelper.createLinear(0, LayoutHelper.MATCH_PARENT, 54, 10, 8, 10);
+        params.width = Math.max(4, AndroidUtilities.dp(0.5f));
+        params.height = Math.max(90, AndroidUtilities.dp(0.5f));
+        addView(codeDividerView, params);
+
+        for (int i = 0; i < iconImageView.length; i++) {
+            iconImageView[i] = new ImageView(getContext());
+            iconImageView[i].setFocusable(true);
+            iconImageView[i].setVisibility(i == 0 ? VISIBLE : GONE);
+            iconImageView[i].setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_stickers_menuSelector)));
+            iconImageView[i].setScaleType(ImageView.ScaleType.CENTER);
+            iconImageView[i].setOnClickListener(listener);
+            iconImageView[i].setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon), PorterDuff.Mode.MULTIPLY));
+            iconImageView[i].setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+            addView(iconImageView[i], LayoutHelper.createFrame(48, 48, Gravity.LEFT | Gravity.CENTER_VERTICAL, 12, 0, 8, 0));
+        }
+    }
+
+    public void setIcon(int icon, boolean animated) {
+        iconImageView[animated ? 1 : 0].setImageResource(icon);
+        if (animated) {
+            ImageView tmp = iconImageView[0];
+            iconImageView[0] = iconImageView[1];
+            iconImageView[1] = tmp;
+        }
+        AndroidUtilities.updateViewVisibilityAnimated(iconImageView[0], true, 0.5f, animated);
+        AndroidUtilities.updateViewVisibilityAnimated(iconImageView[1], false, 0.5f, animated);
     }
 
     public void setText(CharSequence text) {
@@ -283,5 +358,10 @@ public class EditEmojiTextCell extends FrameLayout {
                     Theme.dividerPaint
             );
         }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), heightMeasureSpec);
     }
 }

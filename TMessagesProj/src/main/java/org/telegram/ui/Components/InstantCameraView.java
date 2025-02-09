@@ -3469,9 +3469,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
                         try {
                             performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                        } catch (Exception ignore) {
-
-                        }
+                        } catch (Exception ignore) {}
                     }
                     if (!AndroidUtilities.isTablet() && CherrygramAppearanceConfig.INSTANCE.getIconReplacement() != CherrygramAppearanceConfig.ICON_REPLACE_NONE) {
                         AndroidUtilities.lockOrientation(delegate.getParentActivity(), ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);

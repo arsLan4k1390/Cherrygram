@@ -34,6 +34,7 @@
     <string name="CG_ChooseFolderIcon">选择图标</string>
     <string name="CP_NewTabs_NoCounter">隐藏Tab栏数字</string>
     <string name="CP_NewTabs_NoCounter_Desc">隐藏未读消息数量</string>
+    <string name="CG_SwipeToUnarchive">向左滑动即可取消归档</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">首条消息</string>
@@ -64,6 +65,7 @@
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygram 需要访问您的位置，以便您可以与您的朋友分享它。 现在您将被要求允许您使用您的位置(当应用程序打开时)。</string>
     <string name="CG_LocationPermission_Desc">但是，如果您希望 Cherrygram 关闭时您的位置在后台也能共享给您的好友，可以使用“实时定位”功能。 在同意使用实时定位功能之前，您的位置将不会在后台显示。</string>
+    <string name="CG_Copy_Coordinates">坐标</string>
     <!--Location screen-->
     <!--Search filter-->
     <string name="CG_SearchFilter">筛选搜索结果</string>
@@ -133,6 +135,7 @@
     <string name="AP_RedesignCategory">应用界面</string>
     <string name="AP_IconReplacements">替换图标</string>
     <string name="AP_Old_Notification_Icon">默认通知图标 (Telegram)</string>
+    <string name="AP_Tablet_Mode">平板模式</string>
     <string name="AP_ChangeIconFilter">使用 Telegram 原始图标</string>
     <string name="AP_ChangeIcon_Cherry_NY">新年</string>
     <string name="AP_ChangeIcon_Default">默认</string>
@@ -169,7 +172,12 @@
     <string name="CP_ReplyBackground">回复中的背景</string>
     <string name="CP_ReplyCustomColors">自定义回复和链接预览的颜色</string>
     <string name="CP_ReplyBackgroundEmoji">回复和链接预览中的表情</string>
-    <string name="CP_HideStories">隐藏动态</string>
+    <string name="CP_HideStories">隐藏故事（本地）</string>
+    <string name="CP_HideStories_Desc">故事将从您的聊天列表和个人资料中消失。</string>
+    <string name="CP_ArchiveStoriesFromUsers">归档联系人的故事</string>
+    <string name="CP_ArchiveStoriesFromUsers_Desc">联系人的故事将自动归档并移至您的归档中。适用于所有使用 Telegram API 的应用程序。</string>
+    <string name="CP_ArchiveStoriesFromChannels">归档频道中的故事</string>
+    <string name="CP_ArchiveStoriesFromChannels_Desc">来自频道和群组的故事将自动归档并移至您的归档中。适用于所有使用 Telegram API 的应用程序。</string>
     <string name="CP_CustomWallpapers">自定义聊天背景</string>
     <string name="CP_CustomWallpapers_Desc">配置高级用户/增强频道设置的聊天/群组/频道中的自定义壁纸</string>
     <string name="CP_DisableAnimAvatars">禁用动态头像</string>
@@ -232,9 +240,22 @@
     <string name="CP_HideKbdOnScroll">滚动浏览时收起键盘</string>
     <string name="CP_HideSendAsChannel">隐藏频道身份发送按钮</string>
     <string name="CP_HideSendAsChannelDesc">您可以通过长按Emoji/贴纸/GIF按钮打开以频道身份发送的菜单</string>
+    <string name="CP_GeminiAI_API_Key">Gemini API 密钥</string>
+    <string name="CP_GeminiAI_API_Key_Desc">请访问 <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]> 以获取 API 密钥。</string>
+    <string name="CP_GeminiAI_Model">Gemini 模型 型号</string>
+    <string name="CP_GeminiAI_Model_Desc">请访问 <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]> 以获取可用型号的列表。</string>
+    <string name="CP_GeminiAI_Sample">示例：</string>
+    <string name="CP_GeminiAI_Instruction">为了使用 Gemini，
+        您需要填写此屏幕上的所有值。
+        \n\n之后，打开任何聊天，输入消息并按住发送消息按钮。
+        \n\n此外，您也可以使用 AI 回复消息。 要执行此操作，请单击聊天中的任何文本消息。
+    </string>
     <string name="CP_Slider_RecentEmojisAmplifier">最近使用的 Emojis 数量（重启应用生效）</string>
     <string name="CP_Slider_RecentStickersAmplifier">最近使用的贴纸数量（重启应用生效）</string>
     <string name="CP_Header_Record">媒体</string>
+    <string name="CP_Messages_Size">消息气泡大小</string>
+    <string name="CP_Slider_MediaAmplifier">照片和视频</string>
+    <string name="CP_Slider_MediaAmplifier_Hint">不适用于相册（分组媒体）</string>
     <string name="CP_SpoilersOnMedia">干扰效果</string>
     <string name="CP_SpoilersOnMedia_Desc">禁用此功能后将不再显示对照片和视频的干扰效果</string>
     <string name="CP_VoiceEnhancements">语音增强</string>
@@ -306,11 +327,15 @@
     <string name="SP_GoogleAnalytics_Desc">开启此功能后，所有的崩溃日志和统计数据都会上传至 “console.firebase.google.com”，供给开发者分析和优化本应用</string>
     <string name="SP_CleanOld">删除旧缓存 (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">删除成功</string>
-    <string name="SP_AskPinForChats">打开聊天前需要进行身份认证</string>
-    <string name="SP_AskPinForChats_Desc">打开特殊聊天需要进行 身份认证。可以在聊天室内的更多功能里面开启此功能。</string>
+    <string name="SP_AskPinForChats">需要生物识别才能打开聊天</string>
+    <string name="SP_AskPinForChats_Desc">需要系统密码（指纹、面部识别码、PIN 码或图案）才能访问特定聊天。要启用，请点击聊天中的 3 个点。</string>
+    <string name="SP_AskPinForArchive">需要生物识别才能打开归案</string>
+    <string name="SP_AskPinForArchive_Desc">需要系统密码（指纹、面部识别码、PIN 码或图案）才能访问归档的聊天记录。</string>
+    <string name="SP_HideArchive">从聊天列表中隐藏归档</string>
+    <string name="SP_HideArchive_Desc">该归档将被屏蔽为 Cherrygram 频道。 \n您将能够从抽屉或长按搜索按钮打开归档。</string>
     <string name="SP_AskPin">需要密码</string>
     <string name="SP_DoNotAskPin">无需密码</string>
-    <string name="SP_AskPinBeforeDelete">删除聊天前需要进行 身份认证。</string>
+    <string name="SP_AskPinBeforeDelete">需要生物识别才能删除聊天记录</string>
     <string name="SP_AskPinBeforeDelete_Desc">如果您想要删除聊天或者清除历史，需要进行身份认证。该功能需要您在手机设置中启用密码和指纹识别等功能</string>
     <string name="SP_AllowUseSystemPasscode">允许使用系统 PIN码/手势图案</string>
     <string name="SP_AllowUseSystemPasscode_Desc">指纹确认对话框 中的 \"取消\" 按钮将取代为 \"Pin码/手势图案\" 按钮，您能够使用 系统密码管理器 来解锁 Cherrygram。</string>

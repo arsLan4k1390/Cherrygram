@@ -195,7 +195,7 @@ public class TextDetailCell extends FrameLayout {
     }
 
     public void setTextWithEmojiAndValue(CharSequence text, CharSequence value, boolean divider) {
-        textView.setText(Emoji.replaceEmoji(text, textView.getPaint().getFontMetricsInt(), dp(14), false));
+        textView.setText(Emoji.replaceEmoji(text, textView.getPaint().getFontMetricsInt(), false));
         valueTextView.setText(value);
         needDivider = divider;
         setWillNotDraw(!divider);

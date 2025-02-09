@@ -286,6 +286,8 @@ public class VideoMessagesHelper {
         Range<Integer> fpsRange = new Range<>(30, 30);
         if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange25to30) {
             fpsRange = new Range<>(25, 30);
+        } else if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange30to30) {
+            fpsRange = new Range<>(30, 30);
         } else if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange30to60) {
             fpsRange = new Range<>(30, 60);
         } else if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange60to60) {

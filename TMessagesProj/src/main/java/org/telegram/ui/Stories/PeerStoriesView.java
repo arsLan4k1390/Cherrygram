@@ -10,7 +10,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -2146,7 +2145,9 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 counterChanged = true;
             }
             storiesLikeButton.setReaction(ReactionsLayoutInBubble.VisibleReaction.fromTL(currentStory.storyItem.sent_reaction));
-            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+            try {
+                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+            } catch (Exception ignored) {}
             added = true;
         }
         if (isChannel && counterChanged) {
@@ -3169,7 +3170,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 };
                 TLRPC.Chat chat = isChannel ? MessagesController.getInstance(currentAccount).getChat(-dialogId) : null;
                 final boolean canRepost = !DISABLE_STORY_REPOSTING && MessagesController.getInstance(currentAccount).storiesEnabled() && (!isChannel && !UserObject.isService(dialogId) || ChatObject.isPublic(chat));
-                shareAlert = new ShareAlert(storyViewer.fragment.getContext(), null, null, link, null, false, link, null, false, false, canRepost, shareResourceProvider) {
+                shareAlert = new ShareAlert(storyViewer.fragment.getContext(), null, null, link, null, false, link, null, false, false, canRepost, null, shareResourceProvider) {
 
                     @Override
                     public void dismissInternal() {
@@ -3190,18 +3191,20 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                             if (dids.size() == 1) {
                                 long did = dids.keyAt(0);
                                 if (did == UserConfig.getInstance(currentAccount).clientUserId) {
-                                    bulletinFactory.createSimpleBulletin(R.raw.saved_messages, AndroidUtilities.replaceTags(LocaleController.formatString("StorySharedToSavedMessages", R.string.StorySharedToSavedMessages)), Bulletin.DURATION_PROLONG).hideAfterBottomSheet(false).show();
+                                    bulletinFactory.createSimpleBulletin(R.raw.saved_messages, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.StorySharedToSavedMessages)), Bulletin.DURATION_PROLONG).hideAfterBottomSheet(false).show();
                                 } else if (did < 0) {
                                     TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-did);
-                                    bulletinFactory.createSimpleBulletin(R.raw.forward, AndroidUtilities.replaceTags(LocaleController.formatString("StorySharedTo", R.string.StorySharedTo, topic != null ? topic.title : chat.title)), Bulletin.DURATION_PROLONG).hideAfterBottomSheet(false).show();
+                                    bulletinFactory.createSimpleBulletin(R.raw.forward, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.StorySharedTo, topic != null ? topic.title : chat.title)), Bulletin.DURATION_PROLONG).hideAfterBottomSheet(false).show();
                                 } else {
                                     TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(did);
-                                    bulletinFactory.createSimpleBulletin(R.raw.forward, AndroidUtilities.replaceTags(LocaleController.formatString("StorySharedTo", R.string.StorySharedTo, user.first_name)), Bulletin.DURATION_PROLONG).hideAfterBottomSheet(false).show();
+                                    bulletinFactory.createSimpleBulletin(R.raw.forward, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.StorySharedTo, user.first_name)), Bulletin.DURATION_PROLONG).hideAfterBottomSheet(false).show();
                                 }
                             } else {
                                 bulletinFactory.createSimpleBulletin(R.raw.forward, AndroidUtilities.replaceTags(LocaleController.formatPluralString("StorySharedToManyChats", dids.size(), dids.size()))).hideAfterBottomSheet(false).show();
                             }
-                            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                            try {
+                                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                            } catch (Exception ignored) {}
                         }
                     }
                 };
@@ -3806,7 +3809,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 storyViewer.checkSelfStoriesView();
             }
         });
-        builder.setNegativeButton(LocaleController.getString(R.string.Cancel), (DialogInterface.OnClickListener) (dialog, which) -> {
+        builder.setNegativeButton(LocaleController.getString(R.string.Cancel), (dialog, which) -> {
             dialog.dismiss();
         });
         AlertDialog dialog = builder.create();
@@ -5806,7 +5809,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             captionTranslated = false;
             if (currentStory.uploadingStory != null) {
                 caption = currentStory.uploadingStory.entry.caption;
-                caption = Emoji.replaceEmoji(caption, storyCaptionView.captionTextview.getPaint().getFontMetricsInt(), AndroidUtilities.dp(20), false);
+                caption = Emoji.replaceEmoji(caption, storyCaptionView.captionTextview.getPaint().getFontMetricsInt(), false);
                 SpannableStringBuilder spannableStringBuilder = SpannableStringBuilder.valueOf(caption);
                 TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
                 if (dialogId < 0 || MessagesController.getInstance(currentAccount).storyEntitiesAllowed(user)) {
@@ -5817,7 +5820,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                     captionTranslated = true;
                     TLRPC.TL_textWithEntities text = currentStory.storyItem.translatedText;
                     caption = text.text;
-                    caption = Emoji.replaceEmoji(caption, storyCaptionView.captionTextview.getPaint().getFontMetricsInt(), AndroidUtilities.dp(20), false);
+                    caption = Emoji.replaceEmoji(caption, storyCaptionView.captionTextview.getPaint().getFontMetricsInt(), false);
                     if (caption != null && text.entities != null) {
                         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(text.text);
                         spannableStringBuilder = SpannableStringBuilder.valueOf(MessageObject.replaceAnimatedEmoji(spannableStringBuilder, text.entities, storyCaptionView.captionTextview.getPaint().getFontMetricsInt(), false));
@@ -5832,7 +5835,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                     }
                 } else {
                     caption = currentStory.storyItem.caption;
-                    caption = Emoji.replaceEmoji(caption, storyCaptionView.captionTextview.getPaint().getFontMetricsInt(), AndroidUtilities.dp(20), false);
+                    caption = Emoji.replaceEmoji(caption, storyCaptionView.captionTextview.getPaint().getFontMetricsInt(), false);
                     if (caption != null && currentStory.storyItem.entities != null) {
                         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(currentStory.storyItem.caption);
                         spannableStringBuilder = SpannableStringBuilder.valueOf(MessageObject.replaceAnimatedEmoji(spannableStringBuilder, currentStory.storyItem.entities, storyCaptionView.captionTextview.getPaint().getFontMetricsInt(), false));
@@ -6650,7 +6653,9 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                     }
                     ReactionsEffectOverlay effectOverlay;
                     if (longpress && visibleReaction.emojicon != null) {
-                        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                        try {
+                            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                        } catch (Exception ignored) {}
                         effectOverlay = new ReactionsEffectOverlay(
                                 view.getContext(), null,
                                 reactionsContainerLayout, null,
@@ -6833,7 +6838,9 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                             if (movingReactionProgress > 0.8f && !effectStarted[0]) {
                                 effectStarted[0] = true;
                                 drawReactionEffect = true;
-                                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                                try {
+                                    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                                } catch (Exception ignored) {}
                             }
                         });
                         animator.addListener(new AnimatorListenerAdapter() {
@@ -6845,7 +6852,9 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                                 if (!effectStarted[0]) {
                                     effectStarted[0] = true;
                                     drawReactionEffect = true;
-                                    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                                    try {
+                                        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                                    } catch (Exception ignored) {}
                                 }
                                 storiesLikeButtonFinal.setAllowDrawReaction(true);
                                 storiesLikeButtonFinal.animateVisibleReaction();

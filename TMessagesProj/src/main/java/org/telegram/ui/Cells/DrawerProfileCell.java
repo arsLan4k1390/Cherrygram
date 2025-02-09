@@ -38,6 +38,7 @@ import androidx.annotation.NonNull;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
+import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLocation;
@@ -87,6 +88,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     private RLottieImageView darkThemeView;
     private static RLottieDrawable sunDrawable;
     private boolean updateRightDrawable = true;
+    private Long statusGiftId;
     private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable status;
     private AnimatedStatusView animatedStatus;
 
@@ -747,16 +749,22 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         setArrowState(false);
         CharSequence text = UserObject.getUserName(user);
         try {
-            text = Emoji.replaceEmoji(text, nameTextView.getPaint().getFontMetricsInt(), AndroidUtilities.dp(22), false);
+            text = Emoji.replaceEmoji(text, nameTextView.getPaint().getFontMetricsInt(), false);
         } catch (Exception ignore) {}
 
         drawPremium = false;//user.premium;
         nameTextView.setText(text);
+        statusGiftId = null;
         Long emojiStatusId = UserObject.getEmojiStatusDocumentId(user);
         if (emojiStatusId != null) {
+            final boolean isCollectible = user.emoji_status instanceof TLRPC.TL_emojiStatusCollectible;
             animatedStatus.animate().alpha(1).setDuration(200).start();
             nameTextView.setDrawablePadding(AndroidUtilities.dp(4));
             status.set(emojiStatusId, true);
+            if (isCollectible) {
+                statusGiftId = ((TLRPC.TL_emojiStatusCollectible) user.emoji_status).collectible_id;
+            }
+            status.setParticles(isCollectible, true);
         } else if (user.premium) {
             animatedStatus.animate().alpha(1).setDuration(200).start();
             nameTextView.setDrawablePadding(AndroidUtilities.dp(4));
@@ -765,10 +773,12 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             }
             premiumStar.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_menuPhoneCats), PorterDuff.Mode.MULTIPLY));
             status.set(premiumStar, true);
+            status.setParticles(false, true);
         } else {
             animatedStatus.animateChange(null);
             animatedStatus.animate().alpha(0).setDuration(200).start();
             status.set((Drawable) null, true);
+            status.setParticles(false, true);
         }
         animatedStatus.setColor(Theme.getColor(Theme.isCurrentThemeDark() ? Theme.key_chats_verifiedBackground : Theme.key_chats_menuPhoneCats));
         status.setColor(Theme.getColor(Theme.isCurrentThemeDark() ? Theme.key_chats_verifiedBackground : Theme.key_chats_menuPhoneCats));
@@ -856,6 +866,10 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
 
     public AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable getEmojiStatusDrawable() {
         return status;
+    }
+
+    public Long getEmojiStatusGiftId() {
+        return statusGiftId;
     }
 
     public View getEmojiStatusDrawableParent() {

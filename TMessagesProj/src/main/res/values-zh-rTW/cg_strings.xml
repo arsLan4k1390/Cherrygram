@@ -34,6 +34,7 @@
     <string name="CG_ChooseFolderIcon">選擇圖示</string>
     <string name="CP_NewTabs_NoCounter">隱藏Tab列數字</string>
     <string name="CP_NewTabs_NoCounter_Desc">隱藏未讀訊息數量</string>
+    <string name="CG_SwipeToUnarchive">向左滑動以取消封存</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">回到頂端</string>
@@ -64,6 +65,7 @@
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygram 需要存取您的位置權限，以便您與朋友分享目前位置。現在我們會要求您允許使用您的位置權限（當此應用程式開啟時的情況下）。</string>
     <string name="CG_LocationPermission_Desc">只不過，當 Cherrygram 已經退出關閉並在背景執行時，如您想分享位置給朋友，請轉用「即時位置」功能。除非您同意開啟使用「即時位置」功能，否則您的位置將無法在此應用程式於背景執行時啟用。</string>
+    <string name="CG_Copy_Coordinates">座標</string>
     <!--Location screen-->
     <!--Search filter-->
     <string name="CG_SearchFilter">篩選搜尋結果</string>
@@ -133,6 +135,7 @@
     <string name="AP_RedesignCategory">介面</string>
     <string name="AP_IconReplacements">替換圖示</string>
     <string name="AP_Old_Notification_Icon">預設通知圖示 (Telegram)</string>
+    <string name="AP_Tablet_Mode">平板模式</string>
     <string name="AP_ChangeIconFilter">使用 Telegram 原始圖示</string>
     <string name="AP_ChangeIcon_Cherry_NY">新年</string>
     <string name="AP_ChangeIcon_Default">預設</string>
@@ -169,7 +172,12 @@
     <string name="CP_ReplyBackground">回覆中的背景</string>
     <string name="CP_ReplyCustomColors">自訂回覆和連結預覽的顏色</string>
     <string name="CP_ReplyBackgroundEmoji">回覆和連結預覽中的表情</string>
-    <string name="CP_HideStories">隱藏限時動態</string>
+    <string name="CP_HideStories">隱藏限時動態（僅在本機）</string>
+    <string name="CP_HideStories_Desc">限時動態將從您的對話清單和個人資料中消失。</string>
+    <string name="CP_ArchiveStoriesFromUsers">封存聯絡人的限時動態</string>
+    <string name="CP_ArchiveStoriesFromUsers_Desc">聯絡人的限時動態將自動封存並移至您的已封存記錄，這適用於所有使用 Telegram API 的應用程式。</string>
+    <string name="CP_ArchiveStoriesFromChannels">封存頻道的限時動態</string>
+    <string name="CP_ArchiveStoriesFromChannels_Desc">來自頻道和群組的限時動態將自動封存並移至您的已封存記錄，這適用於所有使用 Telegram API 的應用程式。</string>
     <string name="CP_CustomWallpapers">自訂對話背景</string>
     <string name="CP_CustomWallpapers_Desc">設定由Premium使用者/助力頻道所製作的對話/群組/頻道頁面中的自訂背景</string>
     <string name="CP_DisableAnimAvatars">停用動畫大頭貼</string>
@@ -232,9 +240,22 @@
     <string name="CP_HideKbdOnScroll">捲動時隱藏鍵盤</string>
     <string name="CP_HideSendAsChannel">隱藏頻道身份傳送按鈕</string>
     <string name="CP_HideSendAsChannelDesc">您可以透過長按Emoji/貼紙/GIF 按鈕，開啟以頻道身份傳送的選單</string>
+    <string name="CP_GeminiAI_API_Key">Gemini API 金鑰</string>
+    <string name="CP_GeminiAI_API_Key_Desc">請瀏覽 <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]> 以取得 API 金鑰。</string>
+    <string name="CP_GeminiAI_Model">Gemini 模型程式碼</string>
+    <string name="CP_GeminiAI_Model_Desc">請瀏覽 <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]> 以取得可用模型的清單。</string>
+    <string name="CP_GeminiAI_Sample">示例：</string>
+    <string name="CP_GeminiAI_Instruction">如要使用 Gemini，
+        您需要填寫此畫面上的所有值。
+        \n\n之後，開啟任何對話，輸入訊息並按住傳送訊息按鈕。
+        \n\n此外，您也可以使用 AI 回覆訊息。 如要執行此操作，請按一下對話中的任何文字訊息。
+    </string>
     <string name="CP_Slider_RecentEmojisAmplifier">最近使用的 Emoji 數量 (重啟應用程式後生效)</string>
     <string name="CP_Slider_RecentStickersAmplifier">最近使用的貼圖數量 (重啟應用程式後生效)</string>
     <string name="CP_Header_Record">多媒體</string>
+    <string name="CP_Messages_Size">訊息對話框大小</string>
+    <string name="CP_Slider_MediaAmplifier">圖片與影片</string>
+    <string name="CP_Slider_MediaAmplifier_Hint">放大功能對於相簿（分組媒體）無效</string>
     <string name="CP_SpoilersOnMedia">防劇透特效</string>
     <string name="CP_SpoilersOnMedia_Desc">停用此功能後將不再顯示對照片和影片的防劇透特效。</string>
     <string name="CP_VoiceEnhancements">語音增強</string>
@@ -310,6 +331,8 @@
     <string name="SP_AskPinForChats_Desc">開啟某些特定對話可能需要輸入密碼/進行生物辨識確認 (如指紋、Face ID、PIN 碼或圖案解鎖)。如要啟用對話鎖定功能，可以按一下在對話的右上角三個點。</string>
     <string name="SP_AskPinForArchive">需要生物辨識才能開啟已封存對話</string>
     <string name="SP_AskPinForArchive_Desc">開啟已封存對話可能需要輸入密碼/進行生物辨識確認 (如指紋、Face ID、PIN 碼或圖案解鎖)。</string>
+    <string name="SP_HideArchive">從對話清單中隱藏已封存記錄</string>
+    <string name="SP_HideArchive_Desc">已封存記錄將偽裝為 Cherrygram 頻道。 \n您可以從側邊欄或長按搜尋按鈕以開啟已封存記錄。</string>
     <string name="SP_AskPin">需要密碼</string>
     <string name="SP_DoNotAskPin">無需密碼</string>
     <string name="SP_AskPinBeforeDelete">需要生物辨識才能刪除對話</string>

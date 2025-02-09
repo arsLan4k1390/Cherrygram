@@ -658,6 +658,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             if (fragment.getParentActivity() != null) {
                 fragment.showDialog(alert);
             }
+            alert.setFragment(fragment);
         } else {
             alert.show();
         }

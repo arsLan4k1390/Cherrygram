@@ -213,6 +213,9 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 configStringKeys.add("25-30");
                 configValues.add(CherrygramCameraConfig.CameraXFpsRange25to30);
 
+                configStringKeys.add("30-30");
+                configValues.add(CherrygramCameraConfig.CameraXFpsRange30to30);
+
                 configStringKeys.add("30-60");
                 configValues.add(CherrygramCameraConfig.CameraXFpsRange30to60);
 

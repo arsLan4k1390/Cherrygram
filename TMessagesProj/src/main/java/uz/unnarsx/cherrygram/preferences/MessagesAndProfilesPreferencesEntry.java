@@ -790,16 +790,23 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             msg.overrideLinkColor = selectedColor;
                             msg.overrideLinkEmoji = selectedEmoji;
                             cells[i].setAvatar(msg);
+
+                            if (cells[i].currentNameStatusDrawable == null) {
+                                cells[i].currentNameStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, dp(26));
+                            }
+                            if (cells[i].currentNameStatusDrawable == null) {
+                                return;
+                            }
                             if (!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
-                                Long emojiStatusId = UserObject.getEmojiStatusDocumentId(getUserConfig().getCurrentUser());
+                                Long emojiStatusId = UserObject.getEmojiStatusDocumentId(getUserConfig().getCurrentUser().emoji_status);
                                 if (emojiStatusId != null) {
-                                    cells[i].currentNameStatusDrawable.set(emojiStatusId, true);
+                                    cells[i].currentNameStatusDrawable.set(emojiStatusId, false);
                                     cells[i].currentNameStatusDrawable.play();
                                 } else {
-                                    cells[i].currentNameStatusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, true);
+                                    cells[i].currentNameStatusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, false);
                                 }
                             } else {
-                                cells[i].currentNameStatusDrawable.set(0, false);
+                                cells[i].currentNameStatusDrawable.set((Drawable) null, false);
                             }
                             cells[i].invalidate();
                         }

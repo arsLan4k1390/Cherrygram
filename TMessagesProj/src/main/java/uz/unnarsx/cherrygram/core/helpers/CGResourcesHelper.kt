@@ -130,6 +130,7 @@ object CGResourcesHelper {
     fun getCameraXFpsRange(): String { //CameraPreferences.java:\CameraX FPS
         return when (CherrygramCameraConfig.cameraXFpsRange) {
             CherrygramCameraConfig.CameraXFpsRange25to30 -> "25-30"
+            CherrygramCameraConfig.CameraXFpsRange30to30 -> "30-30"
             CherrygramCameraConfig.CameraXFpsRange30to60 -> "30-60"
             CherrygramCameraConfig.CameraXFpsRange60to60 -> "60-60"
             else -> getString(R.string.Default)

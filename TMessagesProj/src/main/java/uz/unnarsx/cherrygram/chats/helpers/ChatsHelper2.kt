@@ -22,7 +22,6 @@ import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
-import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.AvatarPreviewer
 import org.telegram.ui.Cells.ChatMessageCell
 import org.telegram.ui.ChatActivity
@@ -304,8 +303,8 @@ object ChatsHelper2 {
 
     /** Direct share menu start **/
     @JvmStatic
-    fun showForwardMenu(sa: ShareAlert, rp: Theme.ResourcesProvider, field: FrameLayout) {
-        ItemOptions.makeOptions(sa.container, rp, field)
+    fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {
+        ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
             .add(R.drawable.msg_forward,
                 if (CherrygramChatsConfig.forwardNoAuthorship)
                     getString(R.string.CG_FwdMenu_DisableNoForward)

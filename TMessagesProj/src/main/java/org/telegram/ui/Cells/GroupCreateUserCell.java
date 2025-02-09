@@ -31,7 +31,6 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.checkerframework.checker.units.qual.A;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.Emoji;
@@ -156,7 +155,7 @@ public class GroupCreateUserCell extends FrameLayout {
         nameTextView = new SimpleTextView(context) {
             @Override
             public boolean setText(CharSequence value, boolean force) {
-                value = Emoji.replaceEmoji(value, getPaint().getFontMetricsInt(), AndroidUtilities.dp(14), false);
+                value = Emoji.replaceEmoji(value, getPaint().getFontMetricsInt(), false);
                 return super.setText(value, force);
             }
         };
@@ -220,6 +219,7 @@ public class GroupCreateUserCell extends FrameLayout {
         nameTextView.setText(LocaleController.getString(R.string.PrivacyPremium));
         statusTextView.setTag(Theme.key_windowBackgroundWhiteGrayText);
         statusTextView.setTextColor(Theme.getColor(forceDarkTheme ? Theme.key_voipgroup_lastSeenText : Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
+        statusTextView.setEmojiColor(statusTextView.getTextColor());
         statusTextView.setText(LocaleController.getString(R.string.PrivacyPremiumText));
     }
 
@@ -230,6 +230,7 @@ public class GroupCreateUserCell extends FrameLayout {
         nameTextView.setText(LocaleController.getString(R.string.PrivacyMiniapps));
         statusTextView.setTag(Theme.key_windowBackgroundWhiteGrayText);
         statusTextView.setTextColor(Theme.getColor(forceDarkTheme ? Theme.key_voipgroup_lastSeenText : Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
+        statusTextView.setEmojiColor(statusTextView.getTextColor());
         statusTextView.setText(LocaleController.getString(R.string.PrivacyMiniappsText));
     }
 
@@ -488,6 +489,7 @@ public class GroupCreateUserCell extends FrameLayout {
                             statusTextView.setText(LocaleController.formatUserStatusIOS(currentAccount, currentUser));
                         }
                     }
+                    statusTextView.setEmojiColor(statusTextView.getTextColor());
                 }
 
                 avatarImageView.setForUserOrChat(currentUser, avatarDrawable);
@@ -527,6 +529,7 @@ public class GroupCreateUserCell extends FrameLayout {
                 if (currentStatus == null) {
                     statusTextView.setTag(Theme.key_windowBackgroundWhiteGrayText);
                     statusTextView.setTextColor(Theme.getColor(forceDarkTheme ? Theme.key_voipgroup_lastSeenText : Theme.key_windowBackgroundWhiteGrayText));
+                    statusTextView.setEmojiColor(statusTextView.getTextColor());
                     if (currentChat.participants_count != 0) {
                         if (ChatObject.isChannel(currentChat) && !currentChat.megagroup) {
                             statusTextView.setText(LocaleController.formatPluralString("Subscribers", currentChat.participants_count));
@@ -559,6 +562,7 @@ public class GroupCreateUserCell extends FrameLayout {
             statusTextView.setText(currentStatus, true);
             statusTextView.setTag(Theme.key_windowBackgroundWhiteGrayText);
             statusTextView.setTextColor(Theme.getColor(forceDarkTheme ? Theme.key_voipgroup_lastSeenText : Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
+            statusTextView.setEmojiColor(statusTextView.getTextColor());
         }
 
         updatePremiumBlocked(false);

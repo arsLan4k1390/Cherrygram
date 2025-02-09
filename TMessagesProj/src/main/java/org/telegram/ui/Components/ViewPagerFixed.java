@@ -1154,7 +1154,7 @@ public class ViewPagerFixed extends FrameLayout {
                 int textX = (getMeasuredWidth() - tabWidth) / 2;
                 if (!TextUtils.equals(currentTab.title, currentText)) {
                     currentText = currentTab.title;
-                    CharSequence text = Emoji.replaceEmoji(currentText, textPaint.getFontMetricsInt(), dp(15), false);
+                    CharSequence text = Emoji.replaceEmoji(currentText, textPaint.getFontMetricsInt(), false);
                     textLayout = new StaticLayout(text, textPaint, dp(400), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
                     textHeight = textLayout.getHeight();
                     textOffsetX = (int) -textLayout.getLineLeft(0);
