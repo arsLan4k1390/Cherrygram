@@ -115,7 +115,7 @@ public class FilterTabsView extends FrameLayout {
     public class Tab {
         public int id;
         public CharSequence title;
-        public String realTitle;
+        public CharSequence realTitle;
         public int titleWidth;
         public String emoticon;
         public int iconWidth;
@@ -124,14 +124,15 @@ public class FilterTabsView extends FrameLayout {
         public boolean isLocked;
         public boolean noanimate;
 
-        public Tab(int i, String t, ArrayList<TLRPC.MessageEntity> e, boolean noanimate, String em) {
+        public Tab(int i, String t, ArrayList<TLRPC.MessageEntity> entities, boolean noanimate, String emoticon) {
             id = i;
-            title = tabMode != CherrygramAppearanceConfig.TAB_TYPE_ICON ? new SpannableStringBuilder(t) : "";
-            title = Emoji.replaceEmoji(title, textPaint.getFontMetricsInt(), false);
+            realTitle = t != null ? new SpannableStringBuilder(t) : new SpannableStringBuilder("");
+
+            realTitle = Emoji.replaceEmoji(realTitle, textPaint.getFontMetricsInt(), false);
+            title = (tabMode == CherrygramAppearanceConfig.TAB_TYPE_ICON) ? "" : realTitle;
 //            MessageObject.addEntitiesToText(title, e, false, false, false, true);
-            title = MessageObject.replaceAnimatedEmoji(title, e, textPaint.getFontMetricsInt());
-            realTitle = t;
-            emoticon = em;
+            realTitle = MessageObject.replaceAnimatedEmoji(realTitle, entities, textPaint.getFontMetricsInt());
+            this.emoticon = (i != Integer.MAX_VALUE) ? (emoticon != null ? emoticon : "") : "\uD83D\uDCAC";
             this.noanimate = noanimate;
         }
 

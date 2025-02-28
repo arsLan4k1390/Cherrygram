@@ -63,6 +63,7 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
 import uz.unnarsx.cherrygram.chats.helpers.MessageHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public abstract class BaseFragment {
 
@@ -1079,7 +1080,7 @@ public abstract class BaseFragment {
     }
 
     public int getNavigationBarColor() {
-        int color = getThemedColor(Theme.key_windowBackgroundGray);
+        int color = Theme.getColor(CherrygramAppearanceConfig.INSTANCE.getFlatNavbar() ? Theme.key_chat_messagePanelBackground : Theme.key_windowBackgroundGray, getResourceProvider());
         if (sheetsStack != null) {
             for (int i = 0; i < sheetsStack.size(); ++i) {
                 AttachedSheet sheet = sheetsStack.get(i);

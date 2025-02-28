@@ -186,7 +186,7 @@ public class ActionBar extends FrameLayout {
         return backButtonState;
     }
 
-    public void createBackButtonImage() {
+    private void createBackButtonImage() {
         if (backButtonImageView != null) {
             return;
         }

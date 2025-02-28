@@ -50,13 +50,7 @@
     <string name="CG_CreateMention">Стварыць згадку</string>
     <string name="CG_CreateCode">Стварыць код</string>
     <string name="CG_CreateCodeLanguage">Мова</string>
-    <string name="CG_FwdMenu_EnableNoForward">Выдаляць аўтара паведамленняў</string>
-    <string name="CG_FwdMenu_DisableNoForward">Не выдаляць аўтара паведамлення</string>
     <string name="CG_Without_Authorship">Без аўтарства</string>
-    <string name="CG_FwdMenu_NoNotify">Не апавяшчаць</string>
-    <string name="CG_FwdMenu_Notify">Апавяшчаць</string>
-    <string name="CG_FwdMenu_EnableCaptions">Уключыць подпісы</string>
-    <string name="CG_FwdMenu_DisableCaptions">Схаваць подпісы</string>
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygram патрабуецца ваша месцазнаходжанне, каб вы маглі дзяліцца ёй з сябрамі. У вас запытаюць доступ да месцазнаходжання (калі вы выкарыстоўваеце праграму).</string>
     <string name="CG_LocationPermission_Desc">Аднак, калі вы хаціце дзяліцца сваім месцазнаходжаннем, калі Cherrygram закрыты ці згорнуты, перайдзіце да \"Трансляцыя месцазнаходжання\". Пакуль вы не пагадзіцеся, па-за праграмай яно не будзе даступна.</string>
@@ -227,8 +221,6 @@
     <string name="CP_HideKbdOnScroll">Схаваць клавіятуру пры прагортцы</string>
     <string name="CP_HideSendAsChannel">Схаваць \"Адправіць як канал\"</string>
     <string name="CP_HideSendAsChannelDesc">Вы можаце трапіць у гэта меню праз доўгі націск кнопкі Эмодзі/Стыкераў/Анімацый</string>
-    <string name="CP_Slider_RecentEmojisAmplifier">Лічыльнік нядаўніх эмодзі (патрабуецца перазапуск дадатку)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">Лічыльнік нядаўніх стыкераў (патрабуецца перазапуск дадатку)</string>
     <string name="CP_Header_Record">Медыя</string>
     <string name="CP_SpoilersOnMedia">Эфект спойлера</string>
     <string name="CP_SpoilersOnMedia_Desc">Эфект спойлера на выявах і відэа не будзе паказвацца, калі гэты пункт адключаны.</string>
@@ -283,7 +275,6 @@
     <string name="EP_CustomAppTitle">Назва дадатку</string>
     <string name="EP_CustomChat">Карыстацкі чат для Захаванага</string>
     <string name="EP_CustomChat_Desc">Усталюйце ID іншага чату/групы/канала, каб перасылаць туды паведамленні (праз кнопку ў панэлі дзеянняў, у меню паведамлення ці пры падвойным націску)</string>
-    <string name="EP_CustomChatNotFound">Чат не знойдзены!</string>
     <string name="EP_Network">Сетка</string>
     <string name="EP_DownloadSpeedBoost">Павышэнне хуткасці загрузкі</string>
     <string name="EP_DownloadSpeedBoostNone">Выкл</string>

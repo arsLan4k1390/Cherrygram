@@ -40,7 +40,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
 
@@ -81,7 +80,7 @@ public class Emoji {
         "\uD83D\uDE06", "\uD83D\uDC4C", "\uD83D\uDE10", "\uD83D\uDE15"
     };
 
-    private final static int MAX_RECENT_EMOJI_COUNT = CherrygramChatsConfig.INSTANCE.getSlider_RecentEmojisAmplifier();
+    private final static int MAX_RECENT_EMOJI_COUNT = 48;
 
     static {
         drawImgSize = AndroidUtilities.dp(20);

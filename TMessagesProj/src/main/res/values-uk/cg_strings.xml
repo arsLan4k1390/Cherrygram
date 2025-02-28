@@ -51,13 +51,7 @@
     <string name="CG_CreateMention">Згадати</string>
     <string name="CG_CreateCode">Створити Код</string>
     <string name="CG_CreateCodeLanguage">Мова</string>
-    <string name="CG_FwdMenu_EnableNoForward">Вимкнути авторство</string>
-    <string name="CG_FwdMenu_DisableNoForward">Увімкнути авторство</string>
     <string name="CG_Without_Authorship">без авторства</string>
-    <string name="CG_FwdMenu_NoNotify">Без сповіщення</string>
-    <string name="CG_FwdMenu_Notify">Сповіщати</string>
-    <string name="CG_FwdMenu_EnableCaptions">Увімкнути опис</string>
-    <string name="CG_FwdMenu_DisableCaptions">Прибрати опис</string>
     <string name="CG_CopyTitle">Копіювати заголовок</string>
     <string name="CG_CopyCallback">Копіювати Callback-дані</string>
     <string name="CG_CopyInlineQuery">Копіювати Inline-запит</string>
@@ -174,10 +168,6 @@
     <string name="CP_ReplyBackgroundEmoji">Емодзі у відповідях і попередньому перегляді посилань</string>
     <string name="CP_HideStories">Приховати історії (локально)</string>
     <string name="CP_HideStories_Desc">Історії зникнуть з вашого списку чатів та з профілів.</string>
-    <string name="CP_ArchiveStoriesFromUsers">Архівувати історії контактів</string>
-    <string name="CP_ArchiveStoriesFromUsers_Desc">Історії контактів будуть автоматично архівовані й переміщені у ваш архів. Працює з усіма додатками, які використовують Telegram API.</string>
-    <string name="CP_ArchiveStoriesFromChannels">Архівувати історії каналів</string>
-    <string name="CP_ArchiveStoriesFromChannels_Desc">Історії з каналів та груп будуть автоматично архівовані, та переміщені у ваш архів. Працює по всім додаткам, які використовують Telegram API.</string>
     <string name="CP_CustomWallpapers">Користувацький задній план у чатах</string>
     <string name="CP_CustomWallpapers_Desc">Налаштуйте власні шпалери в чатах/групах/каналах, встановлених преміум-користувачами/прокачаними каналами</string>
     <string name="CP_DisableAnimAvatars">Вимкнути анімовані аватарки</string>
@@ -250,8 +240,6 @@
         \n\nПісля цього відкрийте будь-який чат, введіть повідомлення та утримуйте кнопку надсилання повідомлення.
         \n\nБільше того, ви можете відповісти на повідомлення за допомогою AI. Для цього натисніть будь-яке текстове повідомлення в чаті.
     </string>
-    <string name="CP_Slider_RecentEmojisAmplifier">Лічильник нещодавніх емодзі (потрібен перезапуск додатку)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">Лічильник нещодавніх стікерів (потрібен перезапуск додатку)</string>
     <string name="CP_Header_Record">Медіа</string>
     <string name="CP_Messages_Size">Розмір бульбашок повідомлень</string>
     <string name="CP_Slider_MediaAmplifier">Фото та відео</string>
@@ -311,7 +299,6 @@
     <string name="EP_CustomAppTitle">Назва додатка</string>
     <string name="EP_CustomChat">Власний чат для збереження повідомлень</string>
     <string name="EP_CustomChat_Desc">Встановіть ID з іншого чату/групи/каналу на передові повідомлення там (кнопка в панелі дій, меню повідомлень або подвійного натискання)</string>
-    <string name="EP_CustomChatNotFound">Чат не знайдено!</string>
     <string name="EP_Network">Мережа</string>
     <string name="EP_DownloadSpeedBoost">Збільшення швидкості завантаження</string>
     <string name="EP_DownloadSpeedBoostNone">Вимкнено</string>

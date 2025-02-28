@@ -1479,13 +1479,13 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
             this.initialTab = initialTab;
         } else if (user != null && user.bot && user.bot_has_main_app && user.bot_can_edit) {
             this.initialTab = TAB_BOT_PREVIEWS;
-        } else if (userInfo != null && userInfo.bot_info != null && userInfo.bot_info.has_preview_medias) {
+        } /*else if (userInfo != null && userInfo.bot_info != null && userInfo.bot_info.has_preview_medias) {
             this.initialTab = TAB_STORIES;
-        } else if (!CherrygramCoreConfig.INSTANCE.getHideStories() && (userInfo != null && userInfo.stories_pinned_available || chatInfo != null && chatInfo.stories_pinned_available || isStoriesView())) {
+        }*/ else if (!CherrygramCoreConfig.INSTANCE.getHideStories() && (userInfo != null && userInfo.stories_pinned_available || chatInfo != null && chatInfo.stories_pinned_available || isStoriesView())) {
             this.initialTab = getInitialTab();
-        } else if (userInfo != null && userInfo.stargifts_count > 0 || chatInfo != null && chatInfo.stargifts_count > 0) {
+        } /*else if (userInfo != null && userInfo.stargifts_count > 0 || chatInfo != null && chatInfo.stargifts_count > 0) {
             this.initialTab = TAB_GIFTS;
-        } else if (initialTab != -1 && topicId == 0) {
+        }*/ else if (initialTab != -1 && topicId == 0) {
             this.initialTab = initialTab;
         } else {
             for (int a = 0; a < hasMedia.length; a++) {
@@ -3799,7 +3799,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
             }
         };
         if (initialTab != -1) {
-            scrollSlidingTextTabStrip.setInitialTabId(initialTab);
+            scrollSlidingTextTabStrip.setInitialTabId(-1);
             initialTab = -1;
         }
         scrollSlidingTextTabStrip.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
@@ -5929,19 +5929,21 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
         boolean hasStories = (DialogObject.isUserDialog(dialog_id) || DialogObject.isChatDialog(dialog_id)) && !DialogObject.isEncryptedDialog(dialog_id) && (userInfo != null && userInfo.stories_pinned_available || info != null && info.stories_pinned_available || isStoriesView()) && includeStories();
         boolean hasGifts = giftsContainer != null && (userInfo != null && userInfo.stargifts_count > 0 || info != null && info.stargifts_count > 0);
         int changed = 0;
-        if (!CherrygramCoreConfig.INSTANCE.getHideStories() && ((hasStories || hasBotPreviews) != scrollSlidingTextTabStrip.hasTab(TAB_STORIES))) {
-            changed++;
-        }
-        if (hasEditBotPreviews != scrollSlidingTextTabStrip.hasTab(TAB_BOT_PREVIEWS)) {
-            changed++;
-        }
-        if (isSearchingStories() != scrollSlidingTextTabStrip.hasTab(TAB_STORIES)) {
-            changed++;
-        }
-        if (hasGifts != scrollSlidingTextTabStrip.hasTab(TAB_GIFTS)) {
-            changed++;
-        } else if (giftsContainer != null && hasGifts && giftsLastHash != giftsContainer.getLastEmojisHash()) {
-            changed++;
+        if (!CherrygramCoreConfig.INSTANCE.isDevBuild()) {
+            if (!CherrygramCoreConfig.INSTANCE.getHideStories() && ((hasStories || hasBotPreviews) != scrollSlidingTextTabStrip.hasTab(TAB_STORIES))) {
+                changed++;
+            }
+            if (hasEditBotPreviews != scrollSlidingTextTabStrip.hasTab(TAB_BOT_PREVIEWS)) {
+                changed++;
+            }
+            if (isSearchingStories() != scrollSlidingTextTabStrip.hasTab(TAB_STORIES)) {
+                changed++;
+            }
+            if (hasGifts != scrollSlidingTextTabStrip.hasTab(TAB_GIFTS)) {
+                changed++;
+            } else if (giftsContainer != null && hasGifts && giftsLastHash != giftsContainer.getLastEmojisHash()) {
+                changed++;
+            }
         }
         if (!isStoriesView()) {
             if ((chatUsersAdapter.chatInfo == null) == scrollSlidingTextTabStrip.hasTab(TAB_GROUPUSERS)) {
@@ -5983,6 +5985,22 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                 changed++;
             }
             if (hasSavedMessages != scrollSlidingTextTabStrip.hasTab(TAB_SAVED_MESSAGES)) {
+                changed++;
+            }
+        }
+        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) {
+            if (!CherrygramCoreConfig.INSTANCE.getHideStories() && ((hasStories || hasBotPreviews) != scrollSlidingTextTabStrip.hasTab(TAB_STORIES))) {
+                changed++;
+            }
+            if (hasEditBotPreviews != scrollSlidingTextTabStrip.hasTab(TAB_BOT_PREVIEWS)) {
+                changed++;
+            }
+            if (isSearchingStories() != scrollSlidingTextTabStrip.hasTab(TAB_STORIES)) {
+                changed++;
+            }
+            if (hasGifts != scrollSlidingTextTabStrip.hasTab(TAB_GIFTS)) {
+                changed++;
+            } else if (giftsContainer != null && hasGifts && giftsLastHash != giftsContainer.getLastEmojisHash()) {
                 changed++;
             }
         }
@@ -6036,32 +6054,34 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                     scrollSlidingTextTabStrip.addTextTab(TAB_BOT_PREVIEWS, getString(R.string.ProfileBotPreviewTab), idToView);
                 }
             }
-            if (hasBotPreviews) {
-                if (!scrollSlidingTextTabStrip.hasTab(TAB_STORIES)) {
-                    scrollSlidingTextTabStrip.addTextTab(TAB_STORIES, getString(R.string.ProfileBotPreviewTab), idToView);
-                }
-            } else if (!CherrygramCoreConfig.INSTANCE.getHideStories() && ((DialogObject.isUserDialog(dialog_id) || DialogObject.isChatDialog(dialog_id)) && !DialogObject.isEncryptedDialog(dialog_id) && (userInfo != null && userInfo.stories_pinned_available || info != null && info.stories_pinned_available || isStoriesView()) && includeStories())) {
-                if (isArchivedOnlyStoriesView()) {
-                    if (!scrollSlidingTextTabStrip.hasTab(TAB_ARCHIVED_STORIES)) {
-                        scrollSlidingTextTabStrip.addTextTab(TAB_ARCHIVED_STORIES, getString(R.string.ProfileArchivedStories), idToView);
-                    }
-                    scrollSlidingTextTabStrip.animationDuration = 420;
-                } else {
+            if (!CherrygramCoreConfig.INSTANCE.isDevBuild()) {
+                if (hasBotPreviews) {
                     if (!scrollSlidingTextTabStrip.hasTab(TAB_STORIES)) {
-                        scrollSlidingTextTabStrip.addTextTab(TAB_STORIES, getString(R.string.ProfileStories), idToView);
+                        scrollSlidingTextTabStrip.addTextTab(TAB_STORIES, getString(R.string.ProfileBotPreviewTab), idToView);
                     }
-                    if (isStoriesView()) {
+                } else if (!CherrygramCoreConfig.INSTANCE.getHideStories() && ((DialogObject.isUserDialog(dialog_id) || DialogObject.isChatDialog(dialog_id)) && !DialogObject.isEncryptedDialog(dialog_id) && (userInfo != null && userInfo.stories_pinned_available || info != null && info.stories_pinned_available || isStoriesView()) && includeStories())) {
+                    if (isArchivedOnlyStoriesView()) {
                         if (!scrollSlidingTextTabStrip.hasTab(TAB_ARCHIVED_STORIES)) {
                             scrollSlidingTextTabStrip.addTextTab(TAB_ARCHIVED_STORIES, getString(R.string.ProfileArchivedStories), idToView);
                         }
                         scrollSlidingTextTabStrip.animationDuration = 420;
+                    } else {
+                        if (!scrollSlidingTextTabStrip.hasTab(TAB_STORIES)) {
+                            scrollSlidingTextTabStrip.addTextTab(TAB_STORIES, getString(R.string.ProfileStories), idToView);
+                        }
+                        if (isStoriesView()) {
+                            if (!scrollSlidingTextTabStrip.hasTab(TAB_ARCHIVED_STORIES)) {
+                                scrollSlidingTextTabStrip.addTextTab(TAB_ARCHIVED_STORIES, getString(R.string.ProfileArchivedStories), idToView);
+                            }
+                            scrollSlidingTextTabStrip.animationDuration = 420;
+                        }
                     }
                 }
-            }
-            if (hasGifts) {
-                if (!scrollSlidingTextTabStrip.hasTab(TAB_GIFTS)) {
-                    scrollSlidingTextTabStrip.addTextTab(TAB_GIFTS, TextUtils.concat(getString(R.string.ProfileGifts), giftsContainer.getLastEmojis(null)), idToView);
-                    giftsLastHash = giftsContainer.getLastEmojisHash();
+                if (hasGifts) {
+                    if (!scrollSlidingTextTabStrip.hasTab(TAB_GIFTS)) {
+                        scrollSlidingTextTabStrip.addTextTab(TAB_GIFTS, TextUtils.concat(getString(R.string.ProfileGifts), giftsContainer.getLastEmojis(null)), idToView);
+                        giftsLastHash = giftsContainer.getLastEmojisHash();
+                    }
                 }
             }
             if (!isStoriesView()) {
@@ -6131,6 +6151,36 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                 if (hasRecommendations) {
                     if (!scrollSlidingTextTabStrip.hasTab(TAB_RECOMMENDED_CHANNELS)) {
                         scrollSlidingTextTabStrip.addTextTab(TAB_RECOMMENDED_CHANNELS, getString(dialog_id > 0 ? R.string.SimilarBotsTab : R.string.SimilarChannelsTab), idToView);
+                    }
+                }
+            }
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) {
+                if (hasBotPreviews) {
+                    if (!scrollSlidingTextTabStrip.hasTab(TAB_STORIES)) {
+                        scrollSlidingTextTabStrip.addTextTab(TAB_STORIES, getString(R.string.ProfileBotPreviewTab), idToView);
+                    }
+                } else if (!CherrygramCoreConfig.INSTANCE.getHideStories() && ((DialogObject.isUserDialog(dialog_id) || DialogObject.isChatDialog(dialog_id)) && !DialogObject.isEncryptedDialog(dialog_id) && (userInfo != null && userInfo.stories_pinned_available || info != null && info.stories_pinned_available || isStoriesView()) && includeStories())) {
+                    if (isArchivedOnlyStoriesView()) {
+                        if (!scrollSlidingTextTabStrip.hasTab(TAB_ARCHIVED_STORIES)) {
+                            scrollSlidingTextTabStrip.addTextTab(TAB_ARCHIVED_STORIES, getString(R.string.ProfileArchivedStories), idToView);
+                        }
+                        scrollSlidingTextTabStrip.animationDuration = 420;
+                    } else {
+                        if (!scrollSlidingTextTabStrip.hasTab(TAB_STORIES)) {
+                            scrollSlidingTextTabStrip.addTextTab(TAB_STORIES, getString(R.string.ProfileStories), idToView);
+                        }
+                        if (isStoriesView()) {
+                            if (!scrollSlidingTextTabStrip.hasTab(TAB_ARCHIVED_STORIES)) {
+                                scrollSlidingTextTabStrip.addTextTab(TAB_ARCHIVED_STORIES, getString(R.string.ProfileArchivedStories), idToView);
+                            }
+                            scrollSlidingTextTabStrip.animationDuration = 420;
+                        }
+                    }
+                }
+                if (hasGifts) {
+                    if (!scrollSlidingTextTabStrip.hasTab(TAB_GIFTS)) {
+                        scrollSlidingTextTabStrip.addTextTab(TAB_GIFTS, TextUtils.concat(getString(R.string.ProfileGifts), giftsContainer.getLastEmojis(null)), idToView);
+                        giftsLastHash = giftsContainer.getLastEmojisHash();
                     }
                 }
             }

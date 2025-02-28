@@ -94,6 +94,10 @@ object ChatsPasswordHelper {
         }
     }
 
+    fun getLockedChatsCount(): Int {
+        return getArrayList(Passcode_Array)!!.size
+    }
+
     var shouldRequireBiometricsToOpenChats =
         CherrygramPrivacyConfig.askBiometricsToOpenChat && getArrayList(Passcode_Array) != null && !getArrayList(Passcode_Array)!!.isEmpty()
                 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()

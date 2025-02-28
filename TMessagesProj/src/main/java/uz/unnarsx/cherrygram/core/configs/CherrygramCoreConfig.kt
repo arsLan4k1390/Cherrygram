@@ -58,8 +58,18 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** Animations and Premium Features start **/
     var hideStories by sharedPreferences.boolean("CP_HideStories", false)
+
     var archiveStoriesFromUsers by sharedPreferences.boolean("CP_ArchiveStoriesFromUsers", false)
+    fun toggleArchiveStoriesFromUsers() {
+        archiveStoriesFromUsers = !archiveStoriesFromUsers
+        putBoolean("CP_ArchiveStoriesFromUsers", archiveStoriesFromUsers)
+    }
     var archiveStoriesFromChannels by sharedPreferences.boolean("CP_ArchiveStoriesFromChannels", false)
+    fun toggleArchiveStoriesFromChannels() {
+        archiveStoriesFromChannels = !archiveStoriesFromChannels
+        putBoolean("CP_ArchiveStoriesFromChannels", archiveStoriesFromChannels)
+    }
+
     var customWallpapers by sharedPreferences.boolean("CP_CustomWallpapers", true)
     var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
     var disableReactionsOverlay by sharedPreferences.boolean("CP_DisableReactionsOverlay", false)

@@ -186,6 +186,10 @@ public class GeminiSDKImplementation {
 
                     if (inputBitmap != null && !ocr) {
                         AndroidUtilities.runOnUIThread(() -> {
+                            dialog.setNeutralButton(getString(R.string.Copy), (_1, _2) -> {
+                                AndroidUtilities.addToClipboard(resultText);
+                                Toast.makeText(baseFragment.getContext(), LocaleController.getString(R.string.TextCopied), Toast.LENGTH_SHORT).show();
+                            });
                             dialog.create();
                             dialog.show();
                         });
@@ -236,14 +240,12 @@ public class GeminiSDKImplementation {
                     // Cause fucking Google
                     // throws an "com.google.ai.client.generativeai.type.ServerException: Unexpected Response"
 
-                    AndroidUtilities.runOnUIThread(() -> {
-                        new AlertDialog.Builder(baseFragment.getContext(), AlertDialog.ALERT_TYPE_MESSAGE, baseFragment.getResourceProvider())
-                                .setTitle(getString(R.string.CP_GeminiAI_Header))
-                                .setMessage(ex.getMessage())
-                                .setPositiveButton(getString(R.string.OK), null)
-                                .create()
-                                .show();
-                    });
+                    AndroidUtilities.runOnUIThread(() -> new AlertDialog.Builder(baseFragment.getContext(), AlertDialog.ALERT_TYPE_MESSAGE, baseFragment.getResourceProvider())
+                            .setTitle(getString(R.string.CP_GeminiAI_Header))
+                            .setMessage(ex.getMessage())
+                            .setPositiveButton(getString(R.string.OK), null)
+                            .create()
+                            .show());
                 } else {
                     if (containerView != null) {
                         BulletinFactory.of(containerView, baseFragment.getResourceProvider())

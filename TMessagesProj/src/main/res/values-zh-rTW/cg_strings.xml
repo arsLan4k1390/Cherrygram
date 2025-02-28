@@ -51,13 +51,7 @@
     <string name="CG_CreateMention">建立提及</string>
     <string name="CG_CreateCode">建立代碼</string>
     <string name="CG_CreateCodeLanguage">語言</string>
-    <string name="CG_FwdMenu_EnableNoForward">移除轉寄來源</string>
-    <string name="CG_FwdMenu_DisableNoForward">顯示轉寄來源</string>
     <string name="CG_Without_Authorship">無來源轉寄</string>
-    <string name="CG_FwdMenu_NoNotify">無聲通知</string>
-    <string name="CG_FwdMenu_Notify">通知</string>
-    <string name="CG_FwdMenu_EnableCaptions">顯示字幕</string>
-    <string name="CG_FwdMenu_DisableCaptions">隱藏字幕</string>
     <string name="CG_CopyTitle">複製標題</string>
     <string name="CG_CopyCallback">複製回傳資料</string>
     <string name="CG_CopyInlineQuery">複製內嵌查詢</string>
@@ -174,10 +168,6 @@
     <string name="CP_ReplyBackgroundEmoji">回覆和連結預覽中的表情</string>
     <string name="CP_HideStories">隱藏限時動態（僅在本機）</string>
     <string name="CP_HideStories_Desc">限時動態將從您的對話清單和個人資料中消失。</string>
-    <string name="CP_ArchiveStoriesFromUsers">封存聯絡人的限時動態</string>
-    <string name="CP_ArchiveStoriesFromUsers_Desc">聯絡人的限時動態將自動封存並移至您的已封存記錄，這適用於所有使用 Telegram API 的應用程式。</string>
-    <string name="CP_ArchiveStoriesFromChannels">封存頻道的限時動態</string>
-    <string name="CP_ArchiveStoriesFromChannels_Desc">來自頻道和群組的限時動態將自動封存並移至您的已封存記錄，這適用於所有使用 Telegram API 的應用程式。</string>
     <string name="CP_CustomWallpapers">自訂對話背景</string>
     <string name="CP_CustomWallpapers_Desc">設定由Premium使用者/助力頻道所製作的對話/群組/頻道頁面中的自訂背景</string>
     <string name="CP_DisableAnimAvatars">停用動畫大頭貼</string>
@@ -250,8 +240,6 @@
         \n\n之後，開啟任何對話，輸入訊息並按住傳送訊息按鈕。
         \n\n此外，您也可以使用 AI 回覆訊息。 如要執行此操作，請按一下對話中的任何文字訊息。
     </string>
-    <string name="CP_Slider_RecentEmojisAmplifier">最近使用的 Emoji 數量 (重啟應用程式後生效)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">最近使用的貼圖數量 (重啟應用程式後生效)</string>
     <string name="CP_Header_Record">多媒體</string>
     <string name="CP_Messages_Size">訊息對話框大小</string>
     <string name="CP_Slider_MediaAmplifier">圖片與影片</string>
@@ -311,7 +299,6 @@
     <string name="EP_CustomAppTitle">應用程式標題</string>
     <string name="EP_CustomChat">自訂已儲存訊息的對話</string>
     <string name="EP_CustomChat_Desc">為來自另一個對話/群組/頻道的 ID 設定轉寄訊息 (操作列中的按鈕、訊息選單或按兩下)</string>
-    <string name="EP_CustomChatNotFound">找不到對話紀錄！</string>
     <string name="EP_Network">網路</string>
     <string name="EP_DownloadSpeedBoost">下載加速</string>
     <string name="EP_DownloadSpeedBoostNone">關閉</string>

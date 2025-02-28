@@ -596,6 +596,7 @@ public class ItemOptions {
             if (onClickListener != null) {
                 onClickListener.run();
             }
+            dismiss();
         });
         addView(userButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 52));
 

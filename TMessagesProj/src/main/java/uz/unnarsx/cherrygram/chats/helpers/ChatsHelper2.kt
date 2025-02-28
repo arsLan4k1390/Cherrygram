@@ -120,6 +120,7 @@ object ChatsHelper2 {
         enableMention: Boolean, enableSearchMessages: Boolean, isChatParticipant: Boolean,
         participantsIDs: ArrayList<Long>
     ) {
+//        val options: ItemOptions = ItemOptions.makeOptions(chatActivity, cell)
         ItemOptions.makeOptions(chatActivity, cell)
             /*.add(R.drawable.msg_openprofile, getString(R.string.OpenProfile)) {
                 chatMessageCellDelegate.openProfile(user)
@@ -198,6 +199,14 @@ object ChatsHelper2 {
                 )
                 chatActivity.presentFragment(frag)
             }
+            .addGap()
+            .addProfile(user, getString(R.string.ViewProfile)) {
+                chatMessageCellDelegate.openProfile(user)
+            }
+//            .addChat(user, false) {
+//                chatMessageCellDelegate.openProfile(user) // No description
+//            }
+
             .setDrawScrim(false)
             .setGravity(Gravity.LEFT)
             .forceBottom(true)
@@ -275,8 +284,8 @@ object ChatsHelper2 {
     @JvmStatic
     fun checkCustomChatID(currentAccount: Int) {
         val preferences = MessagesController.getMainSettings(currentAccount)
-        val empty = preferences.getString("CP_CustomChatIDSM", "CP_CustomChatIDSM").equals("")
-        if (empty) {
+        val emptyId = preferences.getString("CP_CustomChatIDSM", "CP_CustomChatIDSM").equals("")
+        if (emptyId) {
             CherrygramCoreConfig.putStringForUserPrefs("CP_CustomChatIDSM",
                 UserConfig.getInstance(currentAccount).getClientUserId().toString()
             )
@@ -304,25 +313,23 @@ object ChatsHelper2 {
     /** Direct share menu start **/
     @JvmStatic
     fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {
+//        val options: ItemOptions = ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
         ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
-            .add(R.drawable.msg_forward,
-                if (CherrygramChatsConfig.forwardNoAuthorship)
-                    getString(R.string.CG_FwdMenu_DisableNoForward)
-                else getString(R.string.CG_FwdMenu_EnableNoForward)
+            .addChecked(
+                CherrygramChatsConfig.forwardAuthorship,
+                getString(R.string.CG_FwdMenu_Authorship)
             ) {
-                CherrygramChatsConfig.forwardNoAuthorship = !CherrygramChatsConfig.forwardNoAuthorship
+                CherrygramChatsConfig.forwardAuthorship = !CherrygramChatsConfig.forwardAuthorship
             }
-            .add(R.drawable.msg_edit,
-                if (CherrygramChatsConfig.forwardWithoutCaptions)
-                    getString(R.string.CG_FwdMenu_EnableCaptions)
-                else getString(R.string.CG_FwdMenu_DisableCaptions)
+            .addChecked(
+                CherrygramChatsConfig.forwardCaptions,
+                getString(R.string.CG_FwdMenu_Captions)
             ) {
-                CherrygramChatsConfig.forwardWithoutCaptions = !CherrygramChatsConfig.forwardWithoutCaptions
+                CherrygramChatsConfig.forwardCaptions = !CherrygramChatsConfig.forwardCaptions
             }
-            .add(R.drawable.input_notify_on,
-                if (CherrygramChatsConfig.forwardNotify)
-                    getString(R.string.CG_FwdMenu_NoNotify)
-                else getString(R.string.CG_FwdMenu_Notify)
+            .addChecked(
+                CherrygramChatsConfig.forwardNotify,
+                getString(R.string.CG_FwdMenu_Notify)
             ) {
                 CherrygramChatsConfig.forwardNotify = !CherrygramChatsConfig.forwardNotify
             }

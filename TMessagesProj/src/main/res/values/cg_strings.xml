@@ -62,14 +62,11 @@
     <string name="CG_CreateCode">Create Code</string>
     <string name="CG_CreateCodeLanguage">Language</string>
 
-    <string name="CG_FwdMenu_EnableNoForward">Disable forward authorship</string>
-    <string name="CG_FwdMenu_DisableNoForward">Enable forward authorship</string>
-    <string name="CG_Without_Authorship">without authorship</string>
-
-    <string name="CG_FwdMenu_NoNotify">Don\'t notify</string>
+    <string name="CG_FwdMenu_Authorship">Sender name</string>
+    <string name="CG_FwdMenu_Captions">Captions</string>
     <string name="CG_FwdMenu_Notify">Notify</string>
-    <string name="CG_FwdMenu_EnableCaptions">Enable captions</string>
-    <string name="CG_FwdMenu_DisableCaptions">Hide captions</string>
+
+    <string name="CG_Without_Authorship">without authorship</string>
 
     <string name="CG_CopyTitle">Copy Title</string>
     <string name="CG_CopyCallback">Copy Callback Data</string>
@@ -202,10 +199,8 @@
     <string name="CP_ReplyBackgroundEmoji">Emoji in replies and links preview</string>
     <string name="CP_HideStories">Hide Stories (locally)</string>
     <string name="CP_HideStories_Desc">Stories will disappear from your chats list and from profiles.</string>
-    <string name="CP_ArchiveStoriesFromUsers">Archive stories from contacts</string>
-    <string name="CP_ArchiveStoriesFromUsers_Desc">Stories from contacts will be automatically archived and moved to your archive. Works across all apps that use the Telegram API.</string>
-    <string name="CP_ArchiveStoriesFromChannels">Archive stories from channels</string>
-    <string name="CP_ArchiveStoriesFromChannels_Desc">Stories from channels and groups will be automatically archived and moved to your archive. Works across all apps that use the Telegram API.</string>
+    <string name="CP_ArchiveStories">Archive stories</string>
+    <string name="CP_ArchiveStories_Desc">Stories will be automatically archived and moved to your archive.</string>
     <string name="CP_CustomWallpapers">Custom background in chats</string>
     <string name="CP_CustomWallpapers_Desc">Configure custom wallpapers in chats/groups/channels set by premium users/boosted channels</string>
     <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
@@ -291,9 +286,6 @@
     </string>
     <string name="CP_GeminiAI_ExtractText">Extract Text (OCR)</string>
 
-    <string name="CP_Slider_RecentEmojisAmplifier">Recent emojis counter (restart app to apply)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">Recent stickers counter (restart app to apply)</string>
-
     <string name="CP_Header_Record">Media</string>
     <string name="CP_Messages_Size">Messages bubble size</string>
     <string name="CP_Slider_MediaAmplifier">Photos and videos</string>
@@ -323,7 +315,7 @@
     <string name="CP_Camera2Desc">All features that are hidden when Camera2 is turned on will not work with Camera2 enabled.</string>
     <string name="CP_CameraStabilisation">Camera stabilisation</string>
     <string name="CP_CameraUW">Start from UW</string>
-    <string name="CP_CameraUW_Desc">Recording of videomessages will start from Ultra Wide camera (if your device\'s API supports it)</string>
+    <string name="CP_CameraUW_Desc">Recording of video messages will start from Ultra Wide camera (if your device\'s API supports it)</string>
     <string name="CP_CameraDualCamera">Dual camera</string>
     <string name="CP_CameraDualCamera_Desc">Captures video message on both cameras for faster switching between cameras while recording. Uses more battery.</string>
     <string name="CP_DefaultCameraDesc">Use the Telegram\'s built-in camera.</string>
@@ -340,7 +332,7 @@
     <string name="CP_DisableCam">Disable cam in media attach menu</string>
     <string name="CP_DisableCam_Desc">The camera button will be available next to the gallery button. \nPressing the button will open the Telegram camera, and holding it will launch the system camera.</string>
 
-    <string name="CP_Header_Videomessages">Videomessages</string>
+    <string name="CP_Header_Videomessages">Video messages</string>
     <string name="CP_ExposureSliderPosition">Exposure slider position</string>
     <string name="CP_ZoomSliderPosition_Bottom">Bottom</string>
     <string name="CP_ZoomSliderPosition_Right">Right</string>
@@ -358,8 +350,8 @@
     <string name="EP_PhotosSize">Send large photos (2560px)</string>
     <string name="EP_CustomAppTitle">App Title</string>
     <string name="EP_CustomChat">Custom chat for Saved Messages</string>
-    <string name="EP_CustomChat_Desc">Set an ID from another chat/group/channel to forward messages there (button in action bar, message menu or double tap)</string>
-    <string name="EP_CustomChatNotFound">Chat not found!</string>
+    <string name="EP_CustomChat_Desc">You can choose any other chat/group/channel to forward messages there (button in action bar, message menu, double tap or on message swipe)</string>
+    <string name="EP_CustomChat_Selected_Title">instead of</string>
     <string name="EP_Network">Network</string>
     <string name="EP_DownloadSpeedBoost">Download speed boost</string>
     <string name="EP_DownloadSpeedBoostNone">Off</string>
@@ -381,6 +373,9 @@
 
     <string name="SP_AskPinForChats">Require biometrics to open a chat</string>
     <string name="SP_AskPinForChats_Desc">System password (fingerprint, face id, PIN or pattern) will be required to access specific chats. To enable, tap on 3 dots inside the chat.</string>
+    <string name="SP_LockedChats">Locked chats</string>
+    <string name="SP_LockedChats_Lock_Destination">to update the locked list</string>
+    <string name="SP_LockedChats_Lock_Destination_Sure">will be locked</string>
     <string name="SP_AskPinForArchive">Require biometrics to open an archive</string>
     <string name="SP_AskPinForArchive_Desc">System password (fingerprint, face id, PIN or pattern) will be required to access archived chats.</string>
     <string name="SP_HideArchive">Hide archive from chats list</string>

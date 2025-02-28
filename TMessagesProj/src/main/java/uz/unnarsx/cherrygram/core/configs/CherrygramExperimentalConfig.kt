@@ -17,7 +17,6 @@ import kotlinx.coroutines.SupervisorJob
 import org.telegram.messenger.ApplicationLoader
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
-import uz.unnarsx.cherrygram.preferences.string
 
 object CherrygramExperimentalConfig: CoroutineScope by CoroutineScope(
     context = SupervisorJob() + Dispatchers.Main.immediate

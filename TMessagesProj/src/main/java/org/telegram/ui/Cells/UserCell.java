@@ -75,7 +75,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
     private CheckBoxSquare checkBoxBig;
     private ImageView checkBox3;
     private TextView adminTextView;
-    private TextView addButton;
+    public TextView addButton;
     private ImageView mutualView;
     private Drawable premiumDrawable;
     private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable botVerification;
@@ -575,6 +575,9 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                 case "existing_chats":
                     avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_EXISTING_CHATS);
                     break;
+                case "saved_cg":
+                    avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_SAVED);
+                    break;
             }
             avatarImageView.setImage(null, "50_50", avatarDrawable);
             currentStatus = "";
@@ -843,9 +846,9 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                 .setViewAdditionalOffsets(0, AndroidUtilities.dp(8), 0, 0)
                 .setScrimViewBackground(Theme.createRoundRectDrawable(0, 0, Theme.getColor(Theme.key_windowBackgroundWhite)))
 
-                .add(R.drawable.msg_openprofile, LocaleController.getString(R.string.OpenProfile),
+                /*.add(R.drawable.msg_openprofile, LocaleController.getString(R.string.OpenProfile),
                         () -> fragment.presentFragment(ProfileActivity.of(dialogId))
-                )
+                )*/
                 .add(R.drawable.msg_discussion, LocaleController.getString(R.string.SendMessage),
                         () -> fragment.presentFragment(ChatActivity.of(dialogId))
                 )
@@ -860,6 +863,10 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                 .addIf(fragment instanceof ProfileActivity && user.id != 0, R.drawable.msg_copy, LocaleController.getString(R.string.CG_CopyID), () -> {
                     AndroidUtilities.addToClipboard("" + user.id);
                     BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.TextCopied)).show();
+                })
+                .addGap()
+                .addProfile(user, getString(R.string.ViewProfile), () -> {
+                    fragment.presentFragment(ProfileActivity.of(user.id));
                 });
 
         filterOptions.setGravity(Gravity.RIGHT)

@@ -42,13 +42,7 @@
     <string name="CG_ViewUserHistory">Cronologia messaggi</string>
     <string name="CG_ToSaved">Salva messaggio</string>
     <string name="CG_CreateMention">Crea riferimento</string>
-    <string name="CG_FwdMenu_EnableNoForward">Disabilita la firma nell\'inoltro</string>
-    <string name="CG_FwdMenu_DisableNoForward">Abilita la firma nell\'inoltro</string>
     <string name="CG_Without_Authorship">Senza firma</string>
-    <string name="CG_FwdMenu_NoNotify">Non notificare</string>
-    <string name="CG_FwdMenu_Notify">Notifica</string>
-    <string name="CG_FwdMenu_EnableCaptions">Abilita didascalie</string>
-    <string name="CG_FwdMenu_DisableCaptions">Nascondi le didascalie</string>
     <!--Chats screen-->
     <!--Misc-->
     <string name="CG_Restart">Riavvia l\'applicazione</string>
@@ -177,8 +171,6 @@
     <string name="CP_HideMuteUnmuteButton">Nascondere il pulsante inferiore nei canali</string>
     <string name="CP_HideKbdOnScroll">Nascondi la tastiera mentre scorri</string>
     <string name="CP_HideSendAsChannel">Nascondi \"Invia come canale\"</string>
-    <string name="CP_Slider_RecentEmojisAmplifier">Contatore emoji recenti (riavvia l\'app per applicare)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">Contatore degli sticker recenti (riavvia l\'app per applicare)</string>
     <string name="CP_Header_Record">Media</string>
     <string name="CP_VoiceEnhancements">Miglioramenti Vocali</string>
     <string name="CP_VoiceEnhancements_Desc">Soppressione del rumore e normalizzazione vocale</string>
@@ -219,7 +211,6 @@
     <string name="EP_CustomAppTitle">Titolo app</string>
     <string name="EP_CustomChat">Chat personalizzata per i Messaggi Salvati</string>
     <string name="EP_CustomChat_Desc">Imposta un ID di un\'altra chat/gruppo/canale per inoltrare qui i messaggi (tasto nella barra azioni, menù messaggi o facendo doppio tap)</string>
-    <string name="EP_CustomChatNotFound">Chat non trovata!</string>
     <string name="EP_Network">Rete</string>
     <string name="EP_DownloadSpeedBoost">Aumenta velocità di download</string>
     <string name="EP_DownloadSpeedBoostNone">Spegni</string>

@@ -51,13 +51,7 @@
     <string name="CG_CreateMention">创建提及</string>
     <string name="CG_CreateCode">创建代码</string>
     <string name="CG_CreateCodeLanguage">语言</string>
-    <string name="CG_FwdMenu_EnableNoForward">移除转发来源</string>
-    <string name="CG_FwdMenu_DisableNoForward">显示转发来源</string>
     <string name="CG_Without_Authorship">无来源转发</string>
-    <string name="CG_FwdMenu_NoNotify">无声通知</string>
-    <string name="CG_FwdMenu_Notify">通知</string>
-    <string name="CG_FwdMenu_EnableCaptions">显示字幕</string>
-    <string name="CG_FwdMenu_DisableCaptions">隐藏字幕</string>
     <string name="CG_CopyTitle">复制标题</string>
     <string name="CG_CopyCallback">复制回调数据</string>
     <string name="CG_CopyInlineQuery">复制内嵌查询</string>
@@ -174,10 +168,6 @@
     <string name="CP_ReplyBackgroundEmoji">回复和链接预览中的表情</string>
     <string name="CP_HideStories">隐藏故事（本地）</string>
     <string name="CP_HideStories_Desc">故事将从您的聊天列表和个人资料中消失。</string>
-    <string name="CP_ArchiveStoriesFromUsers">归档联系人的故事</string>
-    <string name="CP_ArchiveStoriesFromUsers_Desc">联系人的故事将自动归档并移至您的归档中。适用于所有使用 Telegram API 的应用程序。</string>
-    <string name="CP_ArchiveStoriesFromChannels">归档频道中的故事</string>
-    <string name="CP_ArchiveStoriesFromChannels_Desc">来自频道和群组的故事将自动归档并移至您的归档中。适用于所有使用 Telegram API 的应用程序。</string>
     <string name="CP_CustomWallpapers">自定义聊天背景</string>
     <string name="CP_CustomWallpapers_Desc">配置高级用户/增强频道设置的聊天/群组/频道中的自定义壁纸</string>
     <string name="CP_DisableAnimAvatars">禁用动态头像</string>
@@ -250,8 +240,6 @@
         \n\n之后，打开任何聊天，输入消息并按住发送消息按钮。
         \n\n此外，您也可以使用 AI 回复消息。 要执行此操作，请单击聊天中的任何文本消息。
     </string>
-    <string name="CP_Slider_RecentEmojisAmplifier">最近使用的 Emojis 数量（重启应用生效）</string>
-    <string name="CP_Slider_RecentStickersAmplifier">最近使用的贴纸数量（重启应用生效）</string>
     <string name="CP_Header_Record">媒体</string>
     <string name="CP_Messages_Size">消息气泡大小</string>
     <string name="CP_Slider_MediaAmplifier">照片和视频</string>
@@ -311,7 +299,6 @@
     <string name="EP_CustomAppTitle">应用标题</string>
     <string name="EP_CustomChat">自定义已保存消息的聊天</string>
     <string name="EP_CustomChat_Desc">设置来自另一个聊天/群组/频道的 ID 转发消息(动作栏中的按钮，消息菜单或双击)</string>
-    <string name="EP_CustomChatNotFound">未找到聊天！</string>
     <string name="EP_Network">网络</string>
     <string name="EP_DownloadSpeedBoost">下载加速</string>
     <string name="EP_DownloadSpeedBoostNone">关闭</string>

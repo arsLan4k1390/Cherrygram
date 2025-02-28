@@ -50,13 +50,7 @@
     <string name="CG_CreateMention">Criar menção</string>
     <string name="CG_CreateCode">Criar Código</string>
     <string name="CG_CreateCodeLanguage">Idioma</string>
-    <string name="CG_FwdMenu_EnableNoForward">Desativar autoria encaminhada</string>
-    <string name="CG_FwdMenu_DisableNoForward">Habilitar encaminhar autoria</string>
     <string name="CG_Without_Authorship">Sem autoria</string>
-    <string name="CG_FwdMenu_NoNotify">Não notificar</string>
-    <string name="CG_FwdMenu_Notify">Notificar</string>
-    <string name="CG_FwdMenu_EnableCaptions">Ativar legendas</string>
-    <string name="CG_FwdMenu_DisableCaptions">Ocultar legendas</string>
     <string name="CG_CopyTitle">Copiar Título</string>
     <string name="CG_CopyCallback">Copiar dados de retorno de chamada</string>
     <string name="CG_CopyInlineQuery">Copiar Consulta Inline</string>
@@ -234,8 +228,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_HideKbdOnScroll">Ocultar o teclado no scroll</string>
     <string name="CP_HideSendAsChannel">Ocultar \"Enviar como canal\"</string>
     <string name="CP_HideSendAsChannelDesc">Você pode acessar o ementa clicando e pressionando em Emoji/Adesivos/GIFs</string>
-    <string name="CP_Slider_RecentEmojisAmplifier">Contador de emojis recentes (reinicie o aplicativo para aplicar)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">Contador de emojis recentes (reinicie o aplicativo para aplicar)</string>
     <string name="CP_Header_Record">Multimédia</string>
     <string name="CP_SpoilersOnMedia">Efeito de spoiler</string>
     <string name="CP_SpoilersOnMedia_Desc">O efeito de spoiler em fotos e vídeos não será exibido se o recurso estiver desativado.</string>
@@ -292,7 +284,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="EP_CustomAppTitle">Título do aplicativo</string>
     <string name="EP_CustomChat">Conversa personalizada para mensagens guardadas</string>
     <string name="EP_CustomChat_Desc">Definir uma ID de outro chat/grupo/canal para reencaminhar mensagens para lá (botão na barra de ação, menu de mensagens ou duplo toque)</string>
-    <string name="EP_CustomChatNotFound">Conversa não encontrada!</string>
     <string name="EP_Network">Rede</string>
     <string name="EP_DownloadSpeedBoost">Otimizar velocidade de download</string>
     <string name="EP_DownloadSpeedBoostNone">Desligado</string>

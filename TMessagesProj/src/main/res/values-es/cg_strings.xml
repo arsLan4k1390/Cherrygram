@@ -51,13 +51,7 @@
     <string name="CG_CreateMention">Crear mención</string>
     <string name="CG_CreateCode">Crear código</string>
     <string name="CG_CreateCodeLanguage">Idioma</string>
-    <string name="CG_FwdMenu_EnableNoForward">Desactivar autor del reenvío</string>
-    <string name="CG_FwdMenu_DisableNoForward">Activar autor del reenvío</string>
     <string name="CG_Without_Authorship">Sin autor</string>
-    <string name="CG_FwdMenu_NoNotify">No notificar</string>
-    <string name="CG_FwdMenu_Notify">Notificar</string>
-    <string name="CG_FwdMenu_EnableCaptions">Habilitar textos</string>
-    <string name="CG_FwdMenu_DisableCaptions">Ocultar textos</string>
     <string name="CG_CopyTitle">Copiar Título</string>
     <string name="CG_CopyCallback">Copiar datos de retorno</string>
     <string name="CG_CopyInlineQuery">Copiar consulta interna</string>
@@ -174,10 +168,6 @@
     <string name="CP_ReplyBackgroundEmoji">Emoji en la vista previa de respuestas y enlaces</string>
     <string name="CP_HideStories">Ocultar historias (localmente)</string>
     <string name="CP_HideStories_Desc">Las historias desaparecerán de la lista de chats y de los perfiles.</string>
-    <string name="CP_ArchiveStoriesFromUsers">Archivar las historias de contactos</string>
-    <string name="CP_ArchiveStoriesFromUsers_Desc">Las historias de los contactos se archivarán automáticamente y se moverán a su archivo. Funciona en todas las aplicaciones que utilizan la API de Telegram.</string>
-    <string name="CP_ArchiveStoriesFromChannels">Archivar historias de los canales</string>
-    <string name="CP_ArchiveStoriesFromChannels_Desc">Las historias de canales y grupos serán automáticamente archivadas y movidas a tu archivo. Funciona a través de todas las aplicaciones que utilizan la API de Telegram.</string>
     <string name="CP_CustomWallpapers">Fondo personalizado en los chats</string>
     <string name="CP_CustomWallpapers_Desc">Configurar fondos de pantalla personalizados en chats/grupos/canales establecidos por usuarios premium/canales optimizados</string>
     <string name="CP_DisableAnimAvatars">Deshabilitar avatares animados</string>
@@ -250,8 +240,6 @@
         \n\nDespués de eso, abre cualquier chat, escriba un mensaje y mantenga pulsado el botón enviar mensaje.
         \n\nAdemás, también puedes responder a un mensaje usando IA Para ello, haz clic en cualquier mensaje de texto en el chat.
     </string>
-    <string name="CP_Slider_RecentEmojisAmplifier">Contador de emojis recientes (reiniciar app para aplicar)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">Contador de stickers recientes (reinicie la app para aplicar)</string>
     <string name="CP_Header_Record">Medios</string>
     <string name="CP_Messages_Size">Tamaño de la burbuja de mensajes</string>
     <string name="CP_Slider_MediaAmplifier">Fotos y videos</string>
@@ -311,7 +299,6 @@
     <string name="EP_CustomAppTitle">Título de la app</string>
     <string name="EP_CustomChat">Chat personalizado para mensajes guardados</string>
     <string name="EP_CustomChat_Desc">Configure un ID de otro chat/grupo/canal para reenviar mensajes allí (botón en la barra de acciones, menú de mensajes o toque doble)</string>
-    <string name="EP_CustomChatNotFound">¡Chat no encontrado!</string>
     <string name="EP_Network">Red</string>
     <string name="EP_DownloadSpeedBoost">Aumento de velocidad de descarga</string>
     <string name="EP_DownloadSpeedBoostNone">Desactivado</string>

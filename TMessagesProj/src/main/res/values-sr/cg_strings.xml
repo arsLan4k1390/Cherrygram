@@ -50,13 +50,7 @@
     <string name="CG_CreateMention">Направи спомињање</string>
     <string name="CG_CreateCode">Направи кôд</string>
     <string name="CG_CreateCodeLanguage">Језик</string>
-    <string name="CG_FwdMenu_EnableNoForward">Онемогући прослеђивање ауторства</string>
-    <string name="CG_FwdMenu_DisableNoForward">Омогући прослеђивање ауторства</string>
     <string name="CG_Without_Authorship">без ауторства</string>
-    <string name="CG_FwdMenu_NoNotify">Не обавештавај</string>
-    <string name="CG_FwdMenu_Notify">Обавештавај</string>
-    <string name="CG_FwdMenu_EnableCaptions">Омогући натписе</string>
-    <string name="CG_FwdMenu_DisableCaptions">Сакриј натписе</string>
     <string name="CG_CopyTitle">Копирај наслов</string>
     <string name="CG_CopyCallback">Копирај податке о повратном позиву</string>
     <string name="CG_CopyInlineQuery">Копирај инлајн упит</string>
@@ -232,8 +226,6 @@
     <string name="CP_HideKbdOnScroll">Сакриј тастатуру при превлачењу</string>
     <string name="CP_HideSendAsChannel">Сакриј „Пошаљи као канал”</string>
     <string name="CP_HideSendAsChannelDesc">Менију можете приступити дугим додиром на дугме Емоџи/Налепнице/GIF-ови</string>
-    <string name="CP_Slider_RecentEmojisAmplifier">Бројач недавних емоџија (поново покрените апликацију да примените)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">Бројач недавних налепница (поново покрените апликацију да примените)</string>
     <string name="CP_Header_Record">Медији</string>
     <string name="CP_SpoilersOnMedia">Ефекат спојлера</string>
     <string name="CP_SpoilersOnMedia_Desc">Ефекат спојлера на сликама и видеима неће бити приказан ако је опција онемогућена.</string>
@@ -290,7 +282,6 @@
     <string name="EP_CustomAppTitle">Наслов апликације</string>
     <string name="EP_CustomChat">Прилагођено ћаскање за сачуване поруке</string>
     <string name="EP_CustomChat_Desc">Подесите ID из другог ћаскања/групе/канала да бисте тамо прослеђивали поруке (дугме на траци са радњама, мени за поруке или двоструки додир)</string>
-    <string name="EP_CustomChatNotFound">Ћаскање није пронађено!</string>
     <string name="EP_Network">Мрежа</string>
     <string name="EP_DownloadSpeedBoost">Појачање брзине преузимања</string>
     <string name="EP_DownloadSpeedBoostNone">Искључено</string>

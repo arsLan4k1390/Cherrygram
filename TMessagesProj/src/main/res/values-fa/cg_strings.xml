@@ -45,13 +45,7 @@
     <string name="CG_CreateMention">تگ کردن</string>
     <string name="CG_CreateCode">ایجاد کد</string>
     <string name="CG_CreateCodeLanguage">زبان</string>
-    <string name="CG_FwdMenu_EnableNoForward">غیرفعال‌سازی نقل‌قول</string>
-    <string name="CG_FwdMenu_DisableNoForward">فعال‌سازی نقل‌قول</string>
     <string name="CG_Without_Authorship">بدون نقل‌قول</string>
-    <string name="CG_FwdMenu_NoNotify">بدون صدا</string>
-    <string name="CG_FwdMenu_Notify">با صدا</string>
-    <string name="CG_FwdMenu_EnableCaptions">فعال‌سازی زیرنویس</string>
-    <string name="CG_FwdMenu_DisableCaptions">پنهان‌سازی زیرنویس</string>
     <!--Search filter-->
     <string name="CG_SearchFilter">فیلتر کردن نتایج جستجو</string>
     <string name="CG_SearchFilter_None">هیچ کدام</string>
@@ -213,8 +207,6 @@
     <string name="CP_HideKbdOnScroll">مخفی کردن کیبورد حین اسکرول در چت</string>
     <string name="CP_HideSendAsChannel">مخفی کردن دکمه «ارسال به عنوان کانال»</string>
     <string name="CP_HideSendAsChannelDesc">شما می‌توانید با نگه داشتن بر روی دکمه اموجی/استیکرها/گیف‌ها به منو دسترسی پیدا کنید</string>
-    <string name="CP_Slider_RecentEmojisAmplifier">شمارنده‌ی ایموجی‌های اخیر (برای اعمال تغییرات، برنامه را دوباره راه‌اندازی کنید)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">شمارنده‌ی استیکرهای اخیر (برای اعمال تغییرات، برنامه را دوباره راه‌اندازی کنید)</string>
     <string name="CP_Header_Record">رسانه</string>
     <string name="CP_SpoilersOnMedia">افکت اسپویلر</string>
     <string name="CP_SpoilersOnMedia_Desc">در صورت غیرفعال بودن این گزینه، تأثیر مخفی‌کننده بر روی عکس‌ها و ویدیوها نمایش داده نخواهد شد.</string>
@@ -260,7 +252,6 @@
     <string name="EP_CustomAppTitle">عنوان برنامه</string>
     <string name="EP_CustomChat">چت سفارشی برای پیام‌های ذخیره‌شده</string>
     <string name="EP_CustomChat_Desc">تنظیم کردن شناسه یک چت/گروه/کانال دیگر برای انتقال پیام‌ها به آن (دکمه در نوار ابزار، منوی پیام یا دوبار کلیک)</string>
-    <string name="EP_CustomChatNotFound">گفتگو پیدا نشد!</string>
     <string name="EP_Network">شبکه</string>
     <string name="EP_DownloadSpeedBoost">افزایش سرعت دانلود</string>
     <string name="EP_DownloadSpeedBoostNone">خاموش</string>

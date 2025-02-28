@@ -18,11 +18,15 @@ import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.hint
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.list
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class GeneralPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.AP_Header_General)) {
@@ -100,28 +104,15 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     CherrygramCoreConfig.hideStories = it
                 }
             }
-            switch {
-                title = getString(R.string.CP_ArchiveStoriesFromUsers)
-                description = getString(R.string.CP_ArchiveStoriesFromUsers_Desc)
-
-                contract({
-                    return@contract CherrygramCoreConfig.archiveStoriesFromUsers
-                }) {
-                    CherrygramCoreConfig.archiveStoriesFromUsers = it
-                    AppRestartHelper.createRestartBulletin(bf)
+            textIcon {
+                title = getString(R.string.CP_ArchiveStories)
+                icon = R.drawable.msg_archive
+                listener = TGKitTextIconRow.TGTIListener {
+                    AlertDialogSwitchers.showArchiveStoriesAlert(bf)
                 }
+                divider = true
             }
-            switch {
-                title = getString(R.string.CP_ArchiveStoriesFromChannels)
-                description = getString(R.string.CP_ArchiveStoriesFromChannels_Desc)
-
-                contract({
-                    return@contract CherrygramCoreConfig.archiveStoriesFromChannels
-                }) {
-                    CherrygramCoreConfig.archiveStoriesFromChannels = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
+            hint(getString(R.string.CP_ArchiveStories_Desc))
             switch {
                 title = getString(R.string.CP_CustomWallpapers)
                 description = getString(R.string.CP_CustomWallpapers_Desc)

@@ -3339,8 +3339,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         final ArrayList<Integer> users = chatInfo != null && chatInfo.participants != null && chatInfo.participants.participants.size() > 5 ? sortedUsers : null;
         int initialTab = -1;
-        if (openGifts && (userInfo != null && userInfo.stargifts_count > 0 || chatInfo != null && chatInfo.stargifts_count > 0)) initialTab = SharedMediaLayout.TAB_GIFTS;
-        else if (openSimilar) initialTab = SharedMediaLayout.TAB_RECOMMENDED_CHANNELS;
+        /*if (openGifts && (userInfo != null && userInfo.stargifts_count > 0 || chatInfo != null && chatInfo.stargifts_count > 0)) initialTab = SharedMediaLayout.TAB_GIFTS;
+        else*/ if (openSimilar) initialTab = SharedMediaLayout.TAB_RECOMMENDED_CHANNELS;
         else if (users != null) initialTab = SharedMediaLayout.TAB_GROUPUSERS;
         sharedMediaLayout = new SharedMediaLayout(context, did, sharedMediaPreloader, userInfo != null ? userInfo.common_chats_count : 0, sortedUsers, chatInfo, userInfo, initialTab, this, this, SharedMediaLayout.VIEW_TYPE_PROFILE_ACTIVITY, resourcesProvider) {
             @Override

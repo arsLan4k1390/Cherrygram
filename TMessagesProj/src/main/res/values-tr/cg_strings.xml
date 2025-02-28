@@ -51,13 +51,7 @@
     <string name="CG_CreateMention">Bahsetme Oluştur</string>
     <string name="CG_CreateCode">Kod Oluştur</string>
     <string name="CG_CreateCodeLanguage">Dil</string>
-    <string name="CG_FwdMenu_EnableNoForward">İletme yazarlığını devre dışı bırak</string>
-    <string name="CG_FwdMenu_DisableNoForward">İletme yazarlığını etkinleştir</string>
     <string name="CG_Without_Authorship">yazarlık olmadan</string>
-    <string name="CG_FwdMenu_NoNotify">Bildirim gönderme</string>
-    <string name="CG_FwdMenu_Notify">Bildir</string>
-    <string name="CG_FwdMenu_EnableCaptions">Altyazıları etkinleştir</string>
-    <string name="CG_FwdMenu_DisableCaptions">Altyazıları gizle</string>
     <string name="CG_CopyTitle">Başlığı Kopyala</string>
     <string name="CG_CopyCallback">Geri Arama Verilerini Kopyala</string>
     <string name="CG_CopyInlineQuery">Satır İçi Sorguyu Kopyala</string>
@@ -174,10 +168,6 @@
     <string name="CP_ReplyBackgroundEmoji">Yanıtlarda ve bağlantı önizlemelerinde emoji</string>
     <string name="CP_HideStories">Hikayeleri Sakla (yerel olarak)</string>
     <string name="CP_HideStories_Desc">Hikayeler, sohbetler listenizden ve profillerden kaybolacaktır.</string>
-    <string name="CP_ArchiveStoriesFromUsers">Kişilerden gelen hikayeleri arşivle</string>
-    <string name="CP_ArchiveStoriesFromUsers_Desc">Kişilerden gelen hikayeler otomatik olarak arşivlenecek ve arşivinize taşınacaktır. Telegram API\'sini kullanan tüm uygulamalarda çalışır.</string>
-    <string name="CP_ArchiveStoriesFromChannels">Kanallardan gelen hikayeleri arşivle</string>
-    <string name="CP_ArchiveStoriesFromChannels_Desc">Kanallardan ve gruplardan gelen hikayeler otomatik olarak arşivlenecek ve arşivinize taşınacaktır. Telegram API\'sini kullanan tüm uygulamalarda çalışır.</string>
     <string name="CP_CustomWallpapers">Sohbetlerde özel arka plan</string>
     <string name="CP_CustomWallpapers_Desc">Premium kullanıcılar/desteklenen kanallar tarafından ayarlanan sohbetler/gruplar/kanallardaki özel duvar kağıtlarını yapılandırın</string>
     <string name="CP_DisableAnimAvatars">Hareketli avatarları devre dışı bırak</string>
@@ -250,8 +240,6 @@
         \n\nBundan sonra, herhangi bir sohbeti açın, bir mesaj yazın ve mesaj gönder düğmesini basılı tutun.
         \n\nAyrıca, AI kullanarak da bir mesajı yanıtlayabilirsiniz. Bunu yapmak için, sohbetteki herhangi bir metin mesajına tıklayın.
     </string>
-    <string name="CP_Slider_RecentEmojisAmplifier">Son kullanılan emoji sayısı (uygulamak için yeniden başlat)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">Son kullanılan çıkartma sayısı (uygulamak için yeniden başlat)</string>
     <string name="CP_Header_Record">Medya</string>
     <string name="CP_Messages_Size">Mesaj kabarcık boyutu</string>
     <string name="CP_Slider_MediaAmplifier">Fotoğraflar ve videolar</string>
@@ -311,7 +299,6 @@
     <string name="EP_CustomAppTitle">Uygulama Başlığı</string>
     <string name="EP_CustomChat">Kaydedilen Mesajlar için özel sohbet</string>
     <string name="EP_CustomChat_Desc">Mesajları başka bir sohbete/gruba/kanala yönlendirmek için bir ID ayarlayın (hareket çubuğundaki düğme, mesaj menüsü veya çift dokunma ile)</string>
-    <string name="EP_CustomChatNotFound">Sohbet bulunamadı!</string>
     <string name="EP_Network">Ağ</string>
     <string name="EP_DownloadSpeedBoost">İndirme hız artırıcı</string>
     <string name="EP_DownloadSpeedBoostNone">Kapalı</string>

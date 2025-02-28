@@ -257,8 +257,13 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
                 FileLog.e(e);
             }
         } else {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            jsonString = gson.toJson(messageObject.messageOwner);
+            try {
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                jsonString = gson.toJson(messageObject.messageOwner);
+            } catch (Exception e) {
+                CherrygramChatsConfig.INSTANCE.setJacksonJSON_Provider(true);
+            }
+
         }
 
         final SpannableString[] sb = new SpannableString[1];

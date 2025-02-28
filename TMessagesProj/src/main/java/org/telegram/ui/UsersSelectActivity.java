@@ -96,6 +96,7 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
     public final static int TYPE_FILTER = 0;
     public final static int TYPE_AUTO_DELETE_EXISTING_CHATS = 1;
     public final static int TYPE_PRIVATE = 2;
+    public final static int TYPE_LOCKED_CHATS = 1390;
 
     private ScrollView scrollView;
     private SpansContainer spansContainer;
@@ -382,6 +383,16 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
         return this;
     }
 
+    public UsersSelectActivity asLockedChats() {
+        type = TYPE_LOCKED_CHATS;
+        allowSelf = true;
+        return this;
+    }
+
+    public boolean isLockedContent() {
+        return type == TYPE_LOCKED_CHATS;
+    }
+
     public UsersSelectActivity(int type) {
         super();
         this.type = type;
@@ -465,12 +476,23 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
         selectedContacts.clear();
         currentDeletingSpan = null;
 
-        if (type == TYPE_AUTO_DELETE_EXISTING_CHATS) {
+        if (type == TYPE_AUTO_DELETE_EXISTING_CHATS || type == TYPE_LOCKED_CHATS) {
             animatedAvatarContainer = new AnimatedAvatarContainer(getContext());
             actionBar.addView(animatedAvatarContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, 0, LocaleController.isRTL ? 0 : 64, 0,  LocaleController.isRTL ? 64 : 0, 0));
             actionBar.setAllowOverlayTitle(false);
         }
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
+
+        actionBar.setAllowOverlayTitle(true);
+        if (type == TYPE_FILTER || type == TYPE_PRIVATE) {
+            if (isInclude) {
+                actionBar.setTitle(getString(R.string.FilterAlwaysShow));
+            } else {
+                actionBar.setTitle(getString(R.string.FilterNeverShow));
+            }
+        } else if (type == TYPE_AUTO_DELETE_EXISTING_CHATS || type == TYPE_LOCKED_CHATS){
+            updateHint();
+        }
 
         if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
@@ -480,19 +502,14 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
             actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
             actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
             actionBar.setSubtitleColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText));
+
+            if (animatedAvatarContainer != null) {
+                animatedAvatarContainer.getTitle().setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+                animatedAvatarContainer.getSubtitleTextView().setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+            }
             //actionBar.setCastShadows(false);
         }
 
-        actionBar.setAllowOverlayTitle(true);
-        if (type == TYPE_FILTER || type == TYPE_PRIVATE) {
-            if (isInclude) {
-                actionBar.setTitle(getString(R.string.FilterAlwaysShow));
-            } else {
-                actionBar.setTitle(getString(R.string.FilterNeverShow));
-            }
-        } else if (type == TYPE_AUTO_DELETE_EXISTING_CHATS){
-            updateHint();
-        }
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -1121,6 +1138,19 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
                 }
             }
         }
+
+        if (type == TYPE_LOCKED_CHATS) {
+            actionBar.setTitle("");
+            actionBar.setSubtitle("");
+
+            if (selectedCount == 0) {
+                animatedAvatarContainer.getTitle().setText(getString(R.string.SelectChats), true);
+                animatedAvatarContainer.getSubtitleTextView().setText(getString(R.string.SP_LockedChats_Lock_Destination), true);
+            } else {
+                animatedAvatarContainer.getTitle().setText(LocaleController.formatPluralString("Chats", selectedCount, selectedCount));
+                animatedAvatarContainer.getSubtitleTextView().setText(getString(R.string.SP_LockedChats_Lock_Destination_Sure), true);
+            }
+        }
     }
 
     public void setDelegate(FilterUsersActivityDelegate filterUsersActivityDelegate) {
@@ -1395,7 +1425,7 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
                     }
                     boolean blueText = false;
                     boolean enabled = true;
-                    if (type == TYPE_PRIVATE) {
+                    if (type == TYPE_PRIVATE || type == TYPE_LOCKED_CHATS) {
 
                     } else if (type == TYPE_FILTER) {
                         if (!searching) {

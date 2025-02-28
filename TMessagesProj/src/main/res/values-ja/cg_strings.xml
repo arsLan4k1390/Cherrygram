@@ -51,13 +51,7 @@
     <string name="CG_CreateMention">返信を作成</string>
     <string name="CG_CreateCode">コードを作成</string>
     <string name="CG_CreateCodeLanguage">言語</string>
-    <string name="CG_FwdMenu_EnableNoForward">著作者の転送を無効化</string>
-    <string name="CG_FwdMenu_DisableNoForward">著作者の転送を有効化する</string>
     <string name="CG_Without_Authorship">著作者権限なし</string>
-    <string name="CG_FwdMenu_NoNotify">通知しない</string>
-    <string name="CG_FwdMenu_Notify">通知する</string>
-    <string name="CG_FwdMenu_EnableCaptions">字幕を有効化する</string>
-    <string name="CG_FwdMenu_DisableCaptions">字幕を非表示</string>
     <string name="CG_CopyTitle">タイトルをコピー</string>
     <string name="CG_CopyCallback">コールバックデータをコピー</string>
     <string name="CG_CopyInlineQuery">インラインクエリをコピー</string>
@@ -174,10 +168,6 @@
     <string name="CP_ReplyBackgroundEmoji">返信とリンクのプレビューの絵文字</string>
     <string name="CP_HideStories">ストーリーを隠す (ローカル)</string>
     <string name="CP_HideStories_Desc">チャットの一覧とプロフィールからストーリーを隠します。</string>
-    <string name="CP_ArchiveStoriesFromUsers">連絡先からのストーリーをアーカイブにする</string>
-    <string name="CP_ArchiveStoriesFromUsers_Desc">連絡先からのストーリーを自動的にアーカイブに移動します。Telegram APIを使用するすべてのアプリで動作します。</string>
-    <string name="CP_ArchiveStoriesFromChannels">チャンネルからストーリーをアーカイブにする</string>
-    <string name="CP_ArchiveStoriesFromChannels_Desc">チャンネルとグループ内のストーリーを自動的にアーカイブに移動します。Telegram APIを使用するすべてのアプリで動作します。</string>
     <string name="CP_CustomWallpapers">チャットのカスタム背景</string>
     <string name="CP_CustomWallpapers_Desc">プレミアムユーザー、ブーストされたチャンネル、チャット、グループ、チャンネルにカスタム壁紙を設定します。</string>
     <string name="CP_DisableAnimAvatars">アニメーションアバターを無効化</string>
@@ -250,8 +240,6 @@
         \n\nその後に任意のチャットを開いてメッセージを入力し、メッセージ送信ボタンを押し続けます。
         \n\nさらに、AIを使用してメッセージに返信することもできます。これを行うには、チャット内の任意のテキストメッセージをタップします。
     </string>
-    <string name="CP_Slider_RecentEmojisAmplifier">最近の絵文字カウンター (アプリを再起動後に適用されます)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">最近のステッカーカウンター (アプリを再起動後に適用されます)</string>
     <string name="CP_Header_Record">メディア</string>
     <string name="CP_Messages_Size">メッセージバブルのサイズ</string>
     <string name="CP_Slider_MediaAmplifier">写真と動画</string>
@@ -311,7 +299,6 @@
     <string name="EP_CustomAppTitle">アプリのタイトル</string>
     <string name="EP_CustomChat">保存されたメッセージのチャット</string>
     <string name="EP_CustomChat_Desc">他のチャット、グループ、チャンネルでIDを設定してメッセージを転送します (アクションバーのボタン、メッセージメニューまたはダブルタップ)。</string>
-    <string name="EP_CustomChatNotFound">チャットがありません!</string>
     <string name="EP_Network">ネットワーク</string>
     <string name="EP_DownloadSpeedBoost">ダウンロード速度の高速化</string>
     <string name="EP_DownloadSpeedBoostNone">OFF</string>

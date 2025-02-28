@@ -32,6 +32,8 @@ import java.util.Random;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.preferences.cells.StickerSliderCell;
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSliderPreference;
 
@@ -210,6 +212,9 @@ public class AlertDialogSwitchers {
                 fragment.getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
             });
         }
+        builder.setNegativeButton(getString(R.string.Back), ((dialog, which) -> {
+            showChatActionsAlert(fragment);
+        }));
         builder.setPositiveButton(getString(R.string.OK), null);
         builder.setView(linearLayout);
         fragment.showDialog(builder.create());
@@ -712,6 +717,58 @@ public class AlertDialogSwitchers {
             linearLayoutInviteContainer.addView(stickerSliderCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         }
         builder.setPositiveButton(getString(R.string.OK), null);
+        builder.setView(linearLayout);
+        fragment.showDialog(builder.create());
+    }
+
+    public static void showArchiveStoriesAlert(BaseFragment fragment) {
+        if (fragment.getParentActivity() == null) {
+            return;
+        }
+        Context context = fragment.getParentActivity();
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(getString(R.string.CP_ArchiveStories));
+
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        LinearLayout linearLayoutInviteContainer = new LinearLayout(context);
+        linearLayoutInviteContainer.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(linearLayoutInviteContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+
+        int count = 2;
+        for (int a = 0; a < count; a++) {
+            TextCell textCell = new TextCell(context, 23, false, true, fragment.getResourceProvider());
+            switch (a) {
+                case 0: {
+                    textCell.setTextAndCheckAndIcon(getString(R.string.FilterContacts), CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers(), R.drawable.msg_contacts, false);
+                    break;
+                }
+                case 1: {
+                    textCell.setTextAndCheckAndIcon(getString(R.string.FilterChannels), CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels(), R.drawable.msg_channel, false);
+                    break;
+                }
+            }
+            textCell.setTag(a);
+            textCell.setBackground(Theme.getSelectorDrawable(false));
+            linearLayoutInviteContainer.addView(textCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+            textCell.setOnClickListener(v2 -> {
+                Integer tag = (Integer) v2.getTag();
+                switch (tag) {
+                    case 0: {
+                        CherrygramCoreConfig.INSTANCE.toggleArchiveStoriesFromUsers();
+                        textCell.setChecked(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers());
+                        break;
+                    }
+                    case 1: {
+                        CherrygramCoreConfig.INSTANCE.toggleArchiveStoriesFromChannels();
+                        textCell.setChecked(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels());
+                        break;
+                    }
+                }
+            });
+        }
+        builder.setPositiveButton(getString(R.string.OK), (dialogInterface, i)-> AppRestartHelper.createRestartBulletin(fragment));
         builder.setView(linearLayout);
         fragment.showDialog(builder.create());
     }

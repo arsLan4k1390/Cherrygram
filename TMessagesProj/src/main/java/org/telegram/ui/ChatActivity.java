@@ -32900,7 +32900,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         undoView.showWithAction(chatID, UndoView.ACTION_FWD_MESSAGES, messages.size());
                     }
                 } catch (Exception ignore) {
-                    Toast.makeText(getParentActivity(), LocaleController.getString("EP_CustomChatNotFound", R.string.EP_CustomChatNotFound), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getParentActivity(), getString(R.string.ErrorOccurred), Toast.LENGTH_SHORT).show();
                 }
                 break;
             }
@@ -37409,7 +37409,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } else {
                     data = AvatarPreviewer.Data.of(user, classGuid, menuItems);
                 }
-                if (AvatarPreviewer.canPreview(data)) {
+                if (false /*AvatarPreviewer.canPreview(data)*/) {
                     AvatarPreviewer.getInstance().show((ViewGroup) fragmentView, themeDelegate, data, item -> {
                         switch (item) {
                             /*case OPEN_PROFILE:
@@ -37540,7 +37540,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 } else {
                     data = AvatarPreviewer.Data.of(chat, classGuid, menuItems);
                 }
-                if (AvatarPreviewer.canPreview(data)) {
+                if (false /*AvatarPreviewer.canPreview(data)*/) {
                     AvatarPreviewer.getInstance().show((ViewGroup) fragmentView, themeDelegate, data, item -> {
                         switch (item) {
                             case OPEN_PROFILE:
@@ -37561,9 +37561,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     return true;
                 } else {
                     ItemOptions.makeOptions(ChatActivity.this, cell)
-                        .add(R.drawable.msg_openprofile, getString(R.string.OpenProfile), () -> {
-                            openProfile(chat);
-                        })
+//                        .add(R.drawable.msg_openprofile, getString(R.string.OpenProfile), () -> {
+//                            openProfile(chat);
+//                        })
                         .addIf(openChannel, chat.broadcast ? R.drawable.msg_channel : R.drawable.msg_discussion, getString(chat.broadcast ? R.string.OpenChannel2 : R.string.OpenGroup2), () -> {
                             openChat(cell, chat, 0, false);
                         })
@@ -37572,6 +37572,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         })
                         .addIf(enableSearchMessages, R.drawable.msg_search, getString(R.string.AvatarPreviewSearchMessages), () -> {
                             openSearchWithChat(chat);
+                        })
+                        .addGap()
+                        .addProfile(chat, getString(R.string.ViewProfile), () -> {
+                            openProfile(chat);
                         })
                         .setDrawScrim(false)
                         .setGravity(Gravity.LEFT)
@@ -39403,7 +39407,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             if (headerItem != null) {
                 headerItem.updateColor();
             }
-            //setNavigationBarColor(getNavigationBarColor());
+            setNavigationBarColor(getNavigationBarColor());
             if (fragmentContextView != null) {
                 fragmentContextView.updateColors();
             }
@@ -41904,9 +41908,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     public int getNavigationBarColor() {
         int color;
         if (chatActivityEnterView != null && chatActivityEnterView.isPopupShowing()) {
-            color = getThemedColor(Theme.key_chat_emojiPanelBackground);
+            color = Theme.getColor(Theme.key_chat_emojiPanelBackground, getResourceProvider());
         } else {
-            color = getThemedColor(Theme.key_chat_messagePanelBackground);
+            color = Theme.getColor(Theme.key_chat_messagePanelBackground, getResourceProvider());
         }
         if (getLastStoryViewer() != null && getLastStoryViewer().attachedToParent()) {
             return getLastStoryViewer().getNavigationBarColor(color);

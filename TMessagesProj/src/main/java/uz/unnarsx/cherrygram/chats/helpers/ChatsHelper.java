@@ -540,7 +540,7 @@ public class ChatsHelper extends BaseController {
             }
         } catch (Exception ignore) {
             chatActivity.clearSelectionMode();
-            Toast.makeText(chatActivity.getParentActivity(), getString(R.string.EP_CustomChatNotFound), Toast.LENGTH_SHORT).show();
+            Toast.makeText(chatActivity.getParentActivity(), getString(R.string.ErrorOccurred), Toast.LENGTH_SHORT).show();
         }
     }
 

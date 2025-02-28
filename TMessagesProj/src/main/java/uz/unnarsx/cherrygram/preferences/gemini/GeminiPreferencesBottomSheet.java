@@ -7,7 +7,7 @@
  * Copyright github.com/arsLan4k1390, 2022-2025.
  */
 
-package uz.unnarsx.cherrygram.chats.gemini;
+package uz.unnarsx.cherrygram.preferences.gemini;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
@@ -56,8 +56,8 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
     private OutlineEditText geminiApiKeyField;
     private OutlineEditText geminiModelNameField;
 
-    public GeminiPreferencesBottomSheet(Context context) {
-        super(context, true);
+    public GeminiPreferencesBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider) {
+        super(context, true, resourcesProvider);
         setOpenNoDelay(true);
         fixNavigationBar();
         smoothKeyboardAnimationEnabled = true;
@@ -71,13 +71,13 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         SimpleTextView nameView = new SimpleTextView(context);
         nameView.setTextSize(20);
         nameView.setTypeface(AndroidUtilities.bold());
-        nameView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        nameView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         nameView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
         nameView.setText(getString(R.string.CP_GeminiAI_Header));
         header.addView(nameView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 30, Gravity.LEFT, 0, 6, 0, 0));
 
         AnimatedTextView betaHeader = new AnimatedTextView(context, true, false, false) {
-            Drawable backgroundDrawable = Theme.createRoundRectDrawable(AndroidUtilities.dp(4), Theme.multAlpha(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader), 0.15f));
+            Drawable backgroundDrawable = Theme.createRoundRectDrawable(AndroidUtilities.dp(4), Theme.multAlpha(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, resourcesProvider), 0.15f));
 
             @Override
             protected void onDraw(Canvas canvas) {
@@ -91,7 +91,7 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         betaHeader.setTypeface(AndroidUtilities.bold());
         betaHeader.setPadding(AndroidUtilities.dp(5), AndroidUtilities.dp(2), AndroidUtilities.dp(5), AndroidUtilities.dp(2));
         betaHeader.setTextSize(AndroidUtilities.dp(10));
-        betaHeader.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader));
+        betaHeader.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, resourcesProvider));
         header.addView(betaHeader, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 17, Gravity.CENTER_VERTICAL, 95, 12, 0, 0));
 
         geminiApiKeyField = new OutlineEditText(context, resourcesProvider);
@@ -243,7 +243,7 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
     }
 
     public static GeminiPreferencesBottomSheet showAlert(BaseFragment fragment) {
-        GeminiPreferencesBottomSheet alert = new GeminiPreferencesBottomSheet(fragment.getContext());
+        GeminiPreferencesBottomSheet alert = new GeminiPreferencesBottomSheet(fragment.getContext(), fragment.getResourceProvider());
         if (fragment != null) {
             if (fragment.getParentActivity() != null) {
                 fragment.showDialog(alert);

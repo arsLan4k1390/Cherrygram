@@ -50,13 +50,7 @@
     <string name="CG_CreateMention">Erwähnung erstellen</string>
     <string name="CG_CreateCode">Code erstellen</string>
     <string name="CG_CreateCodeLanguage">Sprache</string>
-    <string name="CG_FwdMenu_EnableNoForward">Deaktivieren Sie die Weiterleitung der Autorschaft</string>
-    <string name="CG_FwdMenu_DisableNoForward">Aktivieren Sie die Weiterleitung der Autorenschaft</string>
     <string name="CG_Without_Authorship">Ohne Autorschaft</string>
-    <string name="CG_FwdMenu_NoNotify">Nicht benachrichtigen</string>
-    <string name="CG_FwdMenu_Notify">Benachrichtigen</string>
-    <string name="CG_FwdMenu_EnableCaptions">Untertitel aktivieren</string>
-    <string name="CG_FwdMenu_DisableCaptions">Untertitel ausblenden</string>
     <!--Search filter-->
     <string name="CG_SearchFilter">Suchergebnisse filtern</string>
     <string name="CG_SearchFilter_None">Nichts</string>
@@ -223,8 +217,6 @@
     <string name="CP_HideKbdOnScroll">Tastatur beim Scrollen ausblenden</string>
     <string name="CP_HideSendAsChannel">\"Als Kanal senden\" ausblenden</string>
     <string name="CP_HideSendAsChannelDesc">Du kannst das Menü durch langes Klicken auf Emoji/Sticker/GIFs öffnen</string>
-    <string name="CP_Slider_RecentEmojisAmplifier">Letzte Emojis-Counter (App neu starten um anzuwenden)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">Letzte Sticker-Counter (App neu starten um anzuwenden)</string>
     <string name="CP_Header_Record">Medien</string>
     <string name="CP_SpoilersOnMedia">Spoiler-Effekt</string>
     <string name="CP_SpoilersOnMedia_Desc">Spoiler-Effekt auf Fotos und Videos wird nicht angezeigt, wenn die Funktion deaktiviert ist.</string>
@@ -278,7 +270,6 @@
     <string name="EP_CustomAppTitle">App-Titel</string>
     <string name="EP_CustomChat">Benutzerdefinierter Chat für gespeicherte Nachrichten</string>
     <string name="EP_CustomChat_Desc">Setze eine ID aus einem anderen Chat/Gruppe/Kanal um Nachrichten weiterzuleiten (Schaltfläche in Aktionsleiste, Nachrichtenmenü oder Doppeltipp)</string>
-    <string name="EP_CustomChatNotFound">Chat nicht gefunden!</string>
     <string name="EP_Network">Netzwerk</string>
     <string name="EP_DownloadSpeedBoost">Download-Speed-Boost</string>
     <string name="EP_DownloadSpeedBoostNone">Aus</string>

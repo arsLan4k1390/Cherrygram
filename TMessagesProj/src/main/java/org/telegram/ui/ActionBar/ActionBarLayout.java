@@ -1453,6 +1453,15 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         containerViewBack.setVisibility(View.INVISIBLE);
     }
 
+    private static boolean USE_SPRING_ANIMATION = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING;
+    private static final float SPRING_STIFFNESS = 700f;
+    private static final float SPRING_STIFFNESS_PREVIEW = 650f;
+    private static final float SPRING_STIFFNESS_PREVIEW_OUT = 800f;
+    private static final float SPRING_STIFFNESS_PREVIEW_EXPAND = 750f;
+    private static final float SPRING_MULTIPLIER = 1000f;
+    private SpringAnimation currentSpringAnimation;
+    private static boolean USE_ACTIONBAR_CROSSFADE = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING && CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade();
+
     private void startLayoutAnimation(final boolean open, final boolean first, final boolean preview) {
         if (first) {
             animationProgress = 0.0f;
@@ -3144,9 +3153,102 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         return Math.max(0, usableViewHeight - (rect.bottom - rect.top));
     }
 
-    private static boolean USE_ACTIONBAR_CROSSFADE = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING && CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade();
+    private void resetViewProperties(View v) {
+        if (v == null) {
+            return;
+        }
+
+        v.setAlpha(1f);
+        v.setScaleX(1);
+        v.setScaleY(1);
+        v.setTranslationX(0);
+        v.setTranslationY(0);
+    }
+
+    private boolean tabsEvents;
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        final boolean tabs = ev.getY() > getHeight() - getBottomTabsHeight(true);
+
+        BaseFragment.AttachedSheet lastSheet = null;
+        if (lastSheet == null && sheetFragment != null && sheetFragment.getLastSheet() != null) {
+            lastSheet = sheetFragment.getLastSheet();
+            if (!lastSheet.attachedToParent() || lastSheet.getWindowView() == null) lastSheet = null;
+        }
+        if (lastSheet == null && getLastFragment() != null && getLastFragment().getLastSheet() != null) {
+            lastSheet = getLastFragment().getLastSheet();
+            if (!lastSheet.attachedToParent() || lastSheet.getWindowView() == null) lastSheet = null;
+        }
+        if (lastSheet != null) {
+            if (ev.getAction() == MotionEvent.ACTION_DOWN) {
+                tabsEvents = tabs;
+            }
+            if (!tabsEvents) {
+                if (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL) {
+                    tabsEvents = false;
+                }
+                return lastSheet.getWindowView().dispatchTouchEvent(ev);
+            }
+        }
+        if (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL) {
+            tabsEvents = false;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    public void setWindow(Window window) {
+        this.window = window;
+    }
+
+    @Override
+    public Window getWindow() {
+        if (window != null) {
+            return window;
+        }
+        if (getParentActivity() != null) {
+            return getParentActivity().getWindow();
+        }
+        return null;
+    }
+
+    @Override
+    public BottomSheetTabs getBottomSheetTabs() {
+        return bottomSheetTabs;
+    }
+
+    @Override
+    public void setNavigationBarColor(int color) {
+        if (bottomSheetTabs != null) {
+            bottomSheetTabs.setNavigationBarColor(color, !(startedTracking || animationInProgress));
+        }
+    }
+
+    public void relayout() {
+        requestLayout();
+        containerView.requestLayout();
+        containerViewBack.requestLayout();
+        sheetContainer.requestLayout();
+    }
+
+    @Override
+    public int getBottomTabsHeight(boolean animated) {
+        if (main && bottomSheetTabs != null)
+            return bottomSheetTabs.getHeight(animated);
+        return 0;
+    }
+
     private float swipeProgress;
     private MenuDrawable menuDrawable;
+
+    private void invalidateActionBars() {
+        if (getLastFragment() != null && getLastFragment().getActionBar() != null) {
+            getLastFragment().getActionBar().invalidate();
+        }
+        if (getBackgroundFragment() != null && getBackgroundFragment().getActionBar() != null) {
+            getBackgroundFragment().getActionBar().invalidate();
+        }
+    }
 
     @Override
     public boolean isActionBarInCrossfade() {
@@ -3234,108 +3336,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             fgActionBar.onDrawCrossfadeContent(canvas, true, useBackDrawable, swipeProgress);
             canvas.restore();
         }
-    }
-
-    private static boolean USE_SPRING_ANIMATION = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING;
-    private static final float SPRING_STIFFNESS = 1000f;
-    private static final float SPRING_STIFFNESS_PREVIEW = 650f;
-    private static final float SPRING_STIFFNESS_PREVIEW_OUT = 800f;
-    private static final float SPRING_STIFFNESS_PREVIEW_EXPAND = 750f;
-    private static final float SPRING_MULTIPLIER = 1000f;
-    private SpringAnimation currentSpringAnimation;
-
-    private void resetViewProperties(View v) {
-        if (v == null) {
-            return;
-        }
-
-        v.setAlpha(1f);
-        v.setScaleX(1);
-        v.setScaleY(1);
-        v.setTranslationX(0);
-        v.setTranslationY(0);
-    }
-
-    private void invalidateActionBars() {
-        if (getLastFragment() != null && getLastFragment().getActionBar() != null) {
-            getLastFragment().getActionBar().invalidate();
-        }
-        if (getBackgroundFragment() != null && getBackgroundFragment().getActionBar() != null) {
-            getBackgroundFragment().getActionBar().invalidate();
-        }
-    }
-
-    private boolean tabsEvents;
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        final boolean tabs = ev.getY() > getHeight() - getBottomTabsHeight(true);
-
-        BaseFragment.AttachedSheet lastSheet = null;
-        if (lastSheet == null && sheetFragment != null && sheetFragment.getLastSheet() != null) {
-            lastSheet = sheetFragment.getLastSheet();
-            if (!lastSheet.attachedToParent() || lastSheet.getWindowView() == null) lastSheet = null;
-        }
-        if (lastSheet == null && getLastFragment() != null && getLastFragment().getLastSheet() != null) {
-            lastSheet = getLastFragment().getLastSheet();
-            if (!lastSheet.attachedToParent() || lastSheet.getWindowView() == null) lastSheet = null;
-        }
-        if (lastSheet != null) {
-            if (ev.getAction() == MotionEvent.ACTION_DOWN) {
-                tabsEvents = tabs;
-            }
-            if (!tabsEvents) {
-                if (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL) {
-                    tabsEvents = false;
-                }
-                return lastSheet.getWindowView().dispatchTouchEvent(ev);
-            }
-        }
-        if (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL) {
-            tabsEvents = false;
-        }
-        return super.dispatchTouchEvent(ev);
-    }
-
-    @Override
-    public void setWindow(Window window) {
-        this.window = window;
-    }
-
-    @Override
-    public Window getWindow() {
-        if (window != null) {
-            return window;
-        }
-        if (getParentActivity() != null) {
-            return getParentActivity().getWindow();
-        }
-        return null;
-    }
-
-    @Override
-    public BottomSheetTabs getBottomSheetTabs() {
-        return bottomSheetTabs;
-    }
-
-    @Override
-    public void setNavigationBarColor(int color) {
-        if (bottomSheetTabs != null) {
-            bottomSheetTabs.setNavigationBarColor(color, !(startedTracking || animationInProgress));
-        }
-    }
-
-    public void relayout() {
-        requestLayout();
-        containerView.requestLayout();
-        containerViewBack.requestLayout();
-        sheetContainer.requestLayout();
-    }
-
-    @Override
-    public int getBottomTabsHeight(boolean animated) {
-        if (main && bottomSheetTabs != null)
-            return bottomSheetTabs.getHeight(animated);
-        return 0;
     }
 
 }

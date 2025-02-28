@@ -574,7 +574,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     public static boolean[] dialogsLoaded = new boolean[UserConfig.MAX_ACCOUNT_COUNT];
     private boolean searching;
     private boolean searchWas;
-    private boolean onlySelect;
+    private boolean onlySelect, cgPrefs;
     private boolean canSelectTopics;
     private String searchString;
     private String initialSearchString;
@@ -669,7 +669,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
     private Long statusDrawableGiftId;
     private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable statusDrawable;
-    private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable statusDrawableForFolderName;
     private DrawerProfileCell.AnimatedStatusView animatedStatusView;
     public RightSlidingDialogContainer rightSlidingDialogContainer;
 
@@ -1660,9 +1659,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (statusDrawable != null) {
                 statusDrawable.attach();
             }
-            if (statusDrawableForFolderName != null) {
-                statusDrawableForFolderName.attach();
-            }
         }
 
         @Override
@@ -1670,9 +1666,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             super.onDetachedFromWindow();
             if (statusDrawable != null) {
                 statusDrawable.detach();
-            }
-            if (statusDrawableForFolderName != null) {
-                statusDrawableForFolderName.detach();
             }
         }
     }
@@ -2715,6 +2708,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         if (arguments != null) {
             onlySelect = arguments.getBoolean("onlySelect", false);
+            cgPrefs = arguments.getBoolean("cgPrefs", false);
             canSelectTopics = arguments.getBoolean("canSelectTopics", false);
             cantSendToChannels = arguments.getBoolean("cantSendToChannels", false);
             initialDialogsType = arguments.getInt("dialogsType", DIALOGS_TYPE_DEFAULT);
@@ -3295,7 +3289,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 actionBar.setTitle(actionBarDefaultTitle = getString(R.string.ReplyToDialog));
             } else if (isQuote) {
                 actionBar.setTitle(actionBarDefaultTitle = getString(R.string.QuoteTo));
-            } else if (initialDialogsType == DIALOGS_TYPE_FORWARD && selectAlertString == null) {
+            } else if (initialDialogsType == DIALOGS_TYPE_FORWARD && selectAlertString == null && !cgPrefs) {
                 actionBar.setTitle(actionBarDefaultTitle = getString(R.string.ForwardTo));
             } else if (initialDialogsType == DIALOGS_TYPE_WIDGET) {
                 actionBar.setTitle(actionBarDefaultTitle = getString(R.string.SelectChats));
@@ -3325,6 +3319,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 actionBar.setTitle(actionBarDefaultTitle = getString(R.string.ChooseChannel));
             } else if (requestPeerType instanceof TLRPC.TL_requestPeerTypeChat) {
                 actionBar.setTitle(actionBarDefaultTitle = getString(R.string.ChooseGroup));
+            } else if (initialDialogsType == DIALOGS_TYPE_FORWARD && cgPrefs) {
+                actionBar.setTitle(actionBarDefaultTitle = getString(R.string.SelectChat));
             } else {
                 actionBar.setTitle(actionBarDefaultTitle = getString(R.string.SelectChat));
             }
@@ -3339,15 +3335,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             }
             if (folderId != 0) {
                 actionBar.setTitle(actionBarDefaultTitle = getString(R.string.ArchivedChats));
-                actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-                if ((Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) && CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-                    actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-                    actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-                    actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-                    actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-                    actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_listSelector), false);
-                    actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-                }
             } else {
                 statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
                 statusDrawable.center = true;
@@ -3383,7 +3370,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             (initialDialogsType == DIALOGS_TYPE_DEFAULT && !onlySelect || initialDialogsType == DIALOGS_TYPE_FORWARD) &&
             folderId == 0 && TextUtils.isEmpty(searchString)
         ) {
-            statusDrawableForFolderName = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
             filterTabsView = new FilterTabsView(context) {
                 @Override
                 public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -3668,36 +3654,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
                 @Override
                 public void onTabSelected(FilterTabsView.Tab tab, boolean forward, boolean animated) {
-                    if (!selectedDialogs.isEmpty()) {
-                        return;
-                    }
-
-                    ArrayList<MessagesController.DialogFilter> filters = getMessagesController().getDialogFilters();
-                    if (filters.size() > 1) {
-                        for (int a = 0, N = filters.size(); a < N; a++) {
-                            final MessagesController.DialogFilter filter = filters.get(tab.id);
-
-                            String finalTitle = tab.realTitle;
-                            String characterFilter = "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
-                            String emotionless = finalTitle.replaceAll(characterFilter,"");
-
-                            long docId = MessageObject.getEmojiDocumentIdFromFolderName(filter.entities);
-                            statusDrawableForFolderName.set(docId, true);
-
-                            boolean isPremium = getUserConfig().isPremium();
-                            boolean hasPremiumEmoji = isPremium && docId != 0 && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses();
-
-                            if (CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader()) {
-                                actionBar.setTitleAnimatedX(
-                                        tab.isDefault ? actionBarDefaultTitle : isPremium ? emotionless : tab.realTitle,
-                                        tab.isDefault ? statusDrawable : hasPremiumEmoji ? statusDrawableForFolderName : null,
-                                        forward,
-                                        hasPremiumEmoji ? 400 : 250
-                                );
-                            } else {
-                                actionBar.setTitle(actionBarDefaultTitle, statusDrawable);
-                            }
-                        }
+                    if (CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader()) {
+                        actionBar.setTitleAnimatedX(tab.isDefault ? actionBarDefaultTitle : tab.realTitle, tab.isDefault ? statusDrawable : null, forward, 250);
+                    } else {
+                        actionBar.setTitle(actionBarDefaultTitle, statusDrawable);
                     }
                 }
 
@@ -4309,6 +4269,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE && filterTabsView.isEditing()) {
                         return false;
                     }
+                    if (cgPrefs) return false;
                     return onItemLongClick(viewPage.listView, view, position, x, y, viewPage.dialogsType, viewPage.dialogsAdapter);
                 }
 
@@ -5229,11 +5190,20 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         if (folderId != 0) {
             viewPages[0].listView.setGlowColor(Theme.getColor(Theme.key_actionBarDefaultArchived));
-            actionBar.setTitleColor(Theme.getColor(Theme.key_actionBarDefaultArchivedTitle));
-            actionBar.setItemsColor(Theme.getColor(Theme.key_actionBarDefaultArchivedIcon), false);
-            actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_actionBarDefaultArchivedSelector), false);
-            actionBar.setSearchTextColor(Theme.getColor(Theme.key_actionBarDefaultArchivedSearch), false);
-            actionBar.setSearchTextColor(Theme.getColor(Theme.key_actionBarDefaultArchivedSearchPlaceholder), true);
+            if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
+                actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+                actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
+                actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
+                actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
+                actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
+                actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+            } else {
+                actionBar.setTitleColor(Theme.getColor(Theme.key_actionBarDefaultArchivedTitle));
+                actionBar.setItemsColor(Theme.getColor(Theme.key_actionBarDefaultArchivedIcon), false);
+                actionBar.setItemsBackgroundColor(Theme.getColor(Theme.key_actionBarDefaultArchivedSelector), false);
+                actionBar.setSearchTextColor(Theme.getColor(Theme.key_actionBarDefaultArchivedSearch), false);
+                actionBar.setSearchTextColor(Theme.getColor(Theme.key_actionBarDefaultArchivedSearchPlaceholder), true);
+            }
         }
 
         if (!onlySelect && initialDialogsType == DIALOGS_TYPE_DEFAULT) {
@@ -12806,7 +12776,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             return rightSlidingDialogContainer.getFragment().isLightStatusBar();
         }
         int color = (searching && whiteActionBar) ? Theme.getColor(Theme.key_windowBackgroundWhite) : Theme.getColor(folderId == 0 ? Theme.key_actionBarDefault : Theme.key_actionBarDefaultArchived);
-        if (actionBar.isActionModeShowed()) {
+        if (actionBar.isActionModeShowed() || folderId != 0 && CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
             color = Theme.getColor(Theme.key_actionBarActionModeDefault);
         }
         return ColorUtils.calculateLuminance(color) > 0.7f;

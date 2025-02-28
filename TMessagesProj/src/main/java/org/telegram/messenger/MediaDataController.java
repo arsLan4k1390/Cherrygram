@@ -104,7 +104,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 
 @SuppressWarnings("unchecked")
@@ -904,7 +903,7 @@ public class MediaDataController extends BaseController {
         if (type == TYPE_PREMIUM_STICKERS) {
             return new ArrayList<>(recentStickers[type]);
         }
-        ArrayList<TLRPC.Document> result = new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), CherrygramChatsConfig.INSTANCE.getSlider_RecentStickersAmplifier())));
+        ArrayList<TLRPC.Document> result = new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), 20)));
         if (firstEmpty && !result.isEmpty() && !StickersAlert.DISABLE_STICKER_EDITOR) {
             result.add(0, new TLRPC.TL_documentEmpty());
         }
@@ -1010,8 +1009,7 @@ public class MediaDataController extends BaseController {
                     }
                 });
             }
-//            maxCount = getMessagesController().maxRecentStickersCount;
-            maxCount = CherrygramChatsConfig.INSTANCE.getSlider_RecentStickersAmplifier();
+            maxCount = getMessagesController().maxRecentStickersCount;
         }
         if (recentStickers[type].size() > maxCount || remove) {
             TLRPC.Document old = remove ? document : recentStickers[type].remove(recentStickers[type].size() - 1);
@@ -2064,8 +2062,7 @@ public class MediaDataController extends BaseController {
 //                            maxCount = getMessagesController().maxFaveStickersCount;
                             maxCount = UserConfig.getInstance(currentAccount).isPremium() ? getMessagesController().stickersFavedLimitPremium : getMessagesController().stickersFavedLimitDefault;
                         } else {
-//                            maxCount = getMessagesController().maxRecentStickersCount;
-                            maxCount = CherrygramChatsConfig.INSTANCE.getSlider_RecentStickersAmplifier();
+                            maxCount = getMessagesController().maxRecentStickersCount;
                         }
                     }
                     database.beginTransaction();

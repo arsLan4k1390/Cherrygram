@@ -15,7 +15,7 @@ import androidx.core.util.Pair
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import uz.unnarsx.cherrygram.chats.gemini.GeminiPreferencesBottomSheet
+import uz.unnarsx.cherrygram.preferences.gemini.GeminiPreferencesBottomSheet
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.VibrateUtil
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
@@ -108,50 +108,6 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 icon = R.drawable.magic_stick_solar
                 listener = TGKitTextIconRow.TGTIListener {
                     GeminiPreferencesBottomSheet.showAlert(bf)
-                }
-            }
-        }
-
-        category(getString(R.string.CP_Slider_RecentEmojisAmplifier)) {
-            slider {
-                contract = object : TGSLContract {
-                    override fun setValue(value: Int) {
-                        CherrygramChatsConfig.slider_RecentEmojisAmplifier = value
-                    }
-
-                    override fun getPreferenceValue(): Int {
-                        return CherrygramChatsConfig.slider_RecentEmojisAmplifier
-                    }
-
-                    override fun getMin(): Int {
-                        return 45
-                    }
-
-                    override fun getMax(): Int {
-                        return 90
-                    }
-                }
-            }
-        }
-
-        category(getString(R.string.CP_Slider_RecentStickersAmplifier)) {
-            slider {
-                contract = object : TGSLContract {
-                    override fun setValue(value: Int) {
-                        CherrygramChatsConfig.slider_RecentStickersAmplifier = value
-                    }
-
-                    override fun getPreferenceValue(): Int {
-                        return CherrygramChatsConfig.slider_RecentStickersAmplifier
-                    }
-
-                    override fun getMin(): Int {
-                        return 20
-                    }
-
-                    override fun getMax(): Int {
-                        return 120
-                    }
                 }
             }
         }

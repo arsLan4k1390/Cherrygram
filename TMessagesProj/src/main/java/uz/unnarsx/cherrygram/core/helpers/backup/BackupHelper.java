@@ -257,9 +257,6 @@ public class BackupHelper {
         mainconfig.add("CP_GeminiApiKey");
         mainconfig.add("CP_GeminiModelName");
 
-        mainconfig.add("CP_Slider_RecentEmojisAmplifier");
-        mainconfig.add("CP_Slider_RecentStickersAmplifier");
-
         mainconfig.add("CP_ShareDrawStoryButton");
         mainconfig.add("CP_UsersDrawShareButton");
         mainconfig.add("CP_SupergroupsDrawShareButton");

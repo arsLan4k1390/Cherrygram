@@ -116,8 +116,6 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Hide keyboard while scrolling a chat,
 - Enable/Disable transition to the next channel,
 - Show/Hide bottom button in channels (Mute/Unmute),
-- Recent emojis counter (amplifier),
-- Recent stickers counter (amplifier),
 - Direct Share button (Select where to show the button),
 - Configure message menu,
 - Configure messages bubble size (Photos/Videos, Stickers and GIFs),

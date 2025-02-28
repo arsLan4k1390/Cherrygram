@@ -50,13 +50,7 @@
     <string name="CG_CreateMention">إنشاء إشارة </string>
     <string name="CG_CreateCode">إنشاء رمز</string>
     <string name="CG_CreateCodeLanguage">اللغة</string>
-    <string name="CG_FwdMenu_EnableNoForward">تعطيل إظهار إسم المرسل</string>
-    <string name="CG_FwdMenu_DisableNoForward">تمكين إظهار إسم المرسل</string>
     <string name="CG_Without_Authorship">توجيه من غير إسم</string>
-    <string name="CG_FwdMenu_NoNotify">إرسال صامت</string>
-    <string name="CG_FwdMenu_Notify">إرسال صامت</string>
-    <string name="CG_FwdMenu_EnableCaptions">تفعيل الوصف</string>
-    <string name="CG_FwdMenu_DisableCaptions">إخفاء الوصف</string>
     <!--Search filter-->
     <string name="CG_SearchFilter">تصفية نتائج البحث</string>
     <string name="CG_SearchFilter_None">لا شيء</string>
@@ -223,8 +217,6 @@
     <string name="CP_HideKbdOnScroll">إخفاء لوحة المفاتيح على التمرير</string>
     <string name="CP_HideSendAsChannel">إخفاء \"إرسال كقناة\"</string>
     <string name="CP_HideSendAsChannelDesc">يمكنك الوصول إلى القائمة بالنقر مطولا على زر Emoji/Stickers/GIFs</string>
-    <string name="CP_Slider_RecentEmojisAmplifier">الرموز التعبيرية الأخيرة (إعد تشغيل التطبيق)</string>
-    <string name="CP_Slider_RecentStickersAmplifier">ملصقات الأخيرة (إعد تشغيل التطبيق)</string>
     <string name="CP_Header_Record">الوسائط</string>
     <string name="CP_SpoilersOnMedia">تأثير التشويش </string>
     <string name="CP_SpoilersOnMedia_Desc">لن يتم عرض تأثير التشويش على الصور ومقاطع الفيديو إذا تم تعطيل الميزة.</string>
@@ -273,7 +265,6 @@
     <string name="EP_CustomAppTitle">عنوان التطبيق</string>
     <string name="EP_CustomChat">دردشة مخصصة للرسائل المحفوظة</string>
     <string name="EP_CustomChat_Desc">قم بتعيين معرف من دردشة/مجموعة/قناة أُخرى لإعادة توجيه الرسائل هناك (زر في شريط الإجراءات أو قائمة الرسائل أو أُنقر نقرًا مزدوجًا)</string>
-    <string name="EP_CustomChatNotFound">لم يتم العثور على المحادثة!</string>
     <string name="EP_Network">الشبكة</string>
     <string name="EP_DownloadSpeedBoost">زيادة سرعة التنزيل</string>
     <string name="EP_DownloadSpeedBoostNone">إيقاف</string>

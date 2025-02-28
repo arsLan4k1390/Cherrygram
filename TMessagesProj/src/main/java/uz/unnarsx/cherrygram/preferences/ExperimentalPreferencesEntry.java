@@ -14,6 +14,8 @@ import static org.telegram.messenger.LocaleController.getString;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
+import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -28,6 +30,8 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
+import org.telegram.messenger.UserObject;
+import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -36,17 +40,23 @@ import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextSettingsCell;
+import org.telegram.ui.Cells.UserCell;
+import org.telegram.ui.ChatActivity;
+import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.DialogsActivity;
+import org.telegram.ui.LaunchActivity;
+import org.telegram.ui.ProfileActivity;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
-import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert;
 
 public class ExperimentalPreferencesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -59,7 +69,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     private int actionbarCrossfadeRow;
     private int residentNotificationRow;
     private int customChatRow;
-    private int customChatIdRow;
+    private int customChatPreviewRow;
     private int experimentalSettingsDivisor;
 
     private int networkHeaderRow;
@@ -170,26 +180,17 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     ((TextCheckCell) view).setChecked(CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages());
                 }
                 updateRowsId(false);
-            } else if (position == customChatIdRow) {
-                String currentValue = MessagesController.getMainSettings(currentAccount).getString("CP_CustomChatIDSM",
-                        String.valueOf(getUserConfig().getClientUserId())
-                );
-                TextFieldAlert.createFieldAlert(
-                        context,
-                        getString(R.string.EP_CustomChat),
-                        currentValue,
-                        (result) -> {
-                            if (result.isEmpty()) {
-                                result = currentValue;
-                            }
-                            SharedPreferences.Editor editor = MessagesController.getMainSettings(currentAccount).edit();
-                            editor.putString("CP_CustomChatIDSM", result).apply();
-                            if (view instanceof TextSettingsCell) {
-                                ((TextSettingsCell) view).getValueTextView().setText(result);
-                            }
-                            return null;
-                        }
-                );
+            } else if (position == customChatPreviewRow) {
+                if (view instanceof UserCell) {
+                    ItemOptions options = ItemOptions.makeOptions(this, view);
+                    options.add(R.drawable.msg_openprofile, getString(R.string.OpenProfile),
+                            () -> presentFragment(ProfileActivity.of(ChatsHelper2.getCustomChatID())
+                    ));
+                    options.add(R.drawable.msg_discussion, getString(R.string.AccDescrOpenChat),
+                            () -> presentFragment(ChatActivity.of(ChatsHelper2.getCustomChatID())
+                    ));
+                    options.show();
+                }
             } else if (position == downloadSpeedBoostRow) {
                 ArrayList<String> configStringKeys = new ArrayList<>();
                 ArrayList<Integer> configValues = new ArrayList<>();
@@ -232,7 +233,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     @SuppressLint("NotifyDataSetChanged")
     private void updateRowsId(boolean notify) {
         rowCount = 0;
-        int prevCustomChatIdRow = customChatIdRow;
+        int prevCustomChatPreviewRow = customChatPreviewRow;
         int prevActionbarCrossfadeRow = actionbarCrossfadeRow;
 
         experimentalHeaderRow = rowCount++;
@@ -250,13 +251,13 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         residentNotificationRow = rowCount++;
 
         customChatRow = rowCount++;
-        customChatIdRow = -1;
-        if (CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages()) customChatIdRow = rowCount++;
+        customChatPreviewRow = -1;
+        if (CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages()) customChatPreviewRow = rowCount++;
         if (listAdapter != null) {
-            if (prevCustomChatIdRow == -1 && customChatIdRow != -1) {
-                listAdapter.notifyItemInserted(customChatIdRow);
-            } else if (prevCustomChatIdRow != -1 && customChatIdRow == -1) {
-                listAdapter.notifyItemRemoved(prevCustomChatIdRow);
+            if (prevCustomChatPreviewRow == -1 && customChatPreviewRow != -1) {
+                listAdapter.notifyItemInserted(customChatPreviewRow);
+            } else if (prevCustomChatPreviewRow != -1 && customChatPreviewRow == -1) {
+                listAdapter.notifyItemRemoved(prevCustomChatPreviewRow);
             }
         }
 
@@ -338,15 +339,62 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                                 break;
                         }
                         textCell.setTextAndValue(getString(R.string.EP_NavigationAnimation), value, true);
-                    } else if (position == customChatIdRow) {
-                        String t = "ID:";
-                        SharedPreferences preferences = MessagesController.getMainSettings(currentAccount);
-                        String v = preferences.getString("CP_CustomChatIDSM",
-                                String.valueOf(getUserConfig().getClientUserId())
-                        );
-                        textCell.setTextAndValue(t, v, false);
                     } else if (position == downloadSpeedBoostRow) {
                         textCell.setTextAndValue(getString(R.string.EP_DownloadSpeedBoost), CGResourcesHelper.getDownloadSpeedBoostText(), true);
+                    }
+                    break;
+                case 5:
+                    UserCell userCell = (UserCell) holder.itemView;
+                    userCell.addButton.setText(getString(R.string.Edit));
+                    userCell.addButton.setOnClickListener(view1 -> {
+                        if (getUserConfig().getCurrentUser() == null) {
+                            return;
+                        }
+                        Bundle args = new Bundle();
+                        args.putBoolean("onlySelect", true);
+                        args.putBoolean("cgPrefs", true);
+                        args.putBoolean("allowGlobalSearch", false);
+                        args.putInt("dialogsType", DialogsActivity.DIALOGS_TYPE_FORWARD);
+                        args.putBoolean("resetDelegate", false);
+                        args.putBoolean("closeFragment", true);
+                        DialogsActivity fragment = new DialogsActivity(args);
+                        fragment.setDelegate((fragment1, dids, message, param, notify, scheduleDate, topicsFragment) -> {
+                            long did = dids.get(0).dialogId;
+
+                            String selectedChatId = String.valueOf(did);
+
+                            SharedPreferences.Editor editor = MessagesController.getMainSettings(currentAccount).edit();
+                            editor.putString("CP_CustomChatIDSM", selectedChatId).apply();
+
+                            fragment.finishFragment(true);
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                LaunchActivity.makeRipple(userCell.getLeft(), userCell.getY(), 5f);
+                            }
+                            return true;
+                        });
+                        presentFragment(fragment);
+                    });
+                    if (position == customChatPreviewRow) {
+                        long chatId = ChatsHelper2.getCustomChatID();
+
+                        TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-chatId);
+                        TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(chatId);
+
+                        StringBuilder status = new StringBuilder();
+                        status.append(getString(R.string.EP_CustomChat_Selected_Title));
+                        status.append(' ');
+                        status.append("\"");
+                        status.append(getString(R.string.SavedMessages));
+                        status.append("\".");
+
+                        if (chatId == getUserConfig().clientUserId) {
+                            userCell.setData("saved_cg", getString(R.string.SavedMessages), "", 0);
+                        } else if (chat != null) {
+                            userCell.setData(chat, chat.title, status, 0);
+                        } else {
+                            userCell.setData(user, UserObject.getUserName(user), status, 0);
+                        }
                     }
                     break;
             }
@@ -355,7 +403,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int type = holder.getItemViewType();
-            return type == 3 || type == 4;
+            return type == 3 || type == 4 /*|| type == 5*/;
         }
 
         @NonNull
@@ -375,6 +423,10 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     view = new TextSettingsCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
+                case 5:
+                    view = new UserCell(getContext(), 14, 0, false, true, getResourceProvider(), false, false);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
                 default:
                     view = new ShadowSectionCell(mContext);
                     break;
@@ -391,8 +443,10 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 return 2;
             } else if (position == actionbarCrossfadeRow || position == residentNotificationRow || position == customChatRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
                 return 3;
-            } else if (position == springAnimationRow || position == customChatIdRow || position == downloadSpeedBoostRow) {
+            } else if (position == springAnimationRow || position == downloadSpeedBoostRow) {
                 return 4;
+            } else if (position == customChatPreviewRow) {
+                return 5;
             }
             return 1;
         }

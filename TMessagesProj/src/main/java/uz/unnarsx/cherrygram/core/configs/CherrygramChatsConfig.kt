@@ -121,9 +121,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var geminiApiKey by sharedPreferences.string("CP_GeminiApiKey", "yourKey12345")
     var geminiModelName by sharedPreferences.string("CP_GeminiModelName", "gemini-1.5-flash")
     /** Gemini AI finish **/
-
-    var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
-    var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
     /** Chats finish **/
 
     /** Messages start **/
@@ -300,9 +297,10 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Notifications finish **/
 
     /** Misc start **/
-    var forwardNoAuthorship by sharedPreferences.boolean("CG_ForwardNoAuthorship", false)
-    var forwardWithoutCaptions by sharedPreferences.boolean("CG_ForwardWithoutCaptions", false)
+    var forwardAuthorship by sharedPreferences.boolean("CG_ForwardAuthorship", true)
+    var forwardCaptions by sharedPreferences.boolean("CG_ForwardCaptions", true)
     var forwardNotify by sharedPreferences.boolean("CG_ForwardNotify", true)
+
     var noAuthorship by sharedPreferences.boolean("CG_NoAuthorship", false)
     var gifSpoilers by sharedPreferences.boolean("CG_GifSpoiler", false)
 

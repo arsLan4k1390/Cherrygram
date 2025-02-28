@@ -1482,15 +1482,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 AndroidUtilities.setLightStatusBar(getWindow(), enable, forceLightStatusBar);
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && checkNavigationBar && (!useCurrentFragment || currentFragment == null || !currentFragment.isInPreviewMode())) {
-                final Window window = getWindow();
-                int color = Theme.getColor(CherrygramAppearanceConfig.INSTANCE.getFlatNavbar() ? Theme.key_chat_messagePanelBackground : Theme.key_windowBackgroundGray, null, true);
-                if (window.getNavigationBarColor() != color || CherrygramAppearanceConfig.INSTANCE.getFlatNavbar() ) {
-                    window.setNavigationBarColor(color);
-                    final float brightness = AndroidUtilities.computePerceivedBrightness(color);
-                    AndroidUtilities.setLightNavigationBar(getWindow(), brightness >= 0.721f);
-                }
-
-                /*int color = currentFragment != null && useCurrentFragment ? currentFragment.getNavigationBarColor() : Theme.getColor(Theme.key_windowBackgroundGray, null, true);
+                int color = currentFragment != null && useCurrentFragment ? currentFragment.getNavigationBarColor() :
+                        Theme.getColor(CherrygramAppearanceConfig.INSTANCE.getFlatNavbar() ? Theme.key_chat_messagePanelBackground : Theme.key_windowBackgroundGray, null, true);
                 if (actionBarLayout.getSheetFragment(false) != null) {
                     BaseFragment sheetFragment = actionBarLayout.getSheetFragment(false);
                     if (sheetFragment.sheetsStack != null) {
@@ -1506,7 +1499,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     color = sheet.getNavigationBarColor(color);
                 }
                 setNavigationBarColor(color, checkButtons);
-                setLightNavigationBar(AndroidUtilities.computePerceivedBrightness(color) >= .721f);*/
+                setLightNavigationBar(AndroidUtilities.computePerceivedBrightness(color) >= .721f);
             }
         }
         if ((SharedConfig.noStatusBar || forceLightStatusBar) && Build.VERSION.SDK_INT >= 21 && checkStatusBar) {

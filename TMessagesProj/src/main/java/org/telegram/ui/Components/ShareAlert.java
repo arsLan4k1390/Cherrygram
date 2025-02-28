@@ -112,7 +112,6 @@ import org.telegram.ui.Cells.ShareTopicCell;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.LaunchActivity;
-import org.telegram.ui.MessageStatisticActivity;
 import org.telegram.ui.PremiumPreviewFragment;
 import org.telegram.ui.Stories.DarkThemeResourceProvider;
 
@@ -1640,7 +1639,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         }
         writeButtonContainer.addView(writeButton, LayoutHelper.createFrame(Build.VERSION.SDK_INT >= 21 ? 56 : 60, Build.VERSION.SDK_INT >= 21 ? 56 : 60, Gravity.LEFT | Gravity.TOP, Build.VERSION.SDK_INT >= 21 ? 2 : 0, 0, 0, 0));
         writeButton.setOnClickListener(v -> sendInternalCherry());
-        writeButton.setOnLongClickListener(v -> onSendLongClick(writeButton));
+//        writeButton.setOnLongClickListener(v -> onSendLongClick(writeButton));
 
         textPaint.setTextSize(dp(12));
         textPaint.setTypeface(AndroidUtilities.bold());
@@ -3584,8 +3583,8 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                 if (timestampCheckbox != null && timestampCheckbox.isChecked()) {
                     video_timestamp = timestamp;
                 }
-                if (CherrygramChatsConfig.INSTANCE.getForwardNoAuthorship() || CherrygramChatsConfig.INSTANCE.getForwardWithoutCaptions()) {
-                    result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, true, CherrygramChatsConfig.INSTANCE.getForwardWithoutCaptions(), CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg, video_timestamp);
+                if (!CherrygramChatsConfig.INSTANCE.getForwardAuthorship() || !CherrygramChatsConfig.INSTANCE.getForwardCaptions()) {
+                    result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, true, !CherrygramChatsConfig.INSTANCE.getForwardCaptions(), CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg, video_timestamp);
                 } else {
                     result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, false, false, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg, video_timestamp);
                 }
