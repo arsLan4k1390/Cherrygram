@@ -130,7 +130,6 @@ public class CrashReportBottomSheet extends OnceBottomSheetHelper {
             CrashReportBottomSheet dialog = new CrashReportBottomSheet(fragment);
             dialog.setCancelable(false);
             dialog.show();
-            dialog.setOnDismissListener(v -> Crashlytics.deleteCrashLogs());
         } catch (Exception ignored) {
         }
     }

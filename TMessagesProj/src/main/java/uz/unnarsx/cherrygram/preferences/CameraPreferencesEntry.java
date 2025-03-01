@@ -155,7 +155,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
             if (position == disableAttachCameraRow) {
-                CherrygramCameraConfig.INSTANCE.toggleDisableAttachCamera();
+                CherrygramCameraConfig.INSTANCE.setDisableAttachCamera(!CherrygramCameraConfig.INSTANCE.getDisableAttachCamera());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getDisableAttachCamera());
                 }
@@ -193,7 +193,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                     AppRestartHelper.createRestartBulletin(this);
                 });
             } else if (position == cameraUseDualCameraRow) {
-                CherrygramCameraConfig.INSTANCE.toggleUseDualCamera();
+                CherrygramCameraConfig.INSTANCE.setUseDualCamera(!CherrygramCameraConfig.INSTANCE.getUseDualCamera());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getUseDualCamera());
                 }
@@ -202,7 +202,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 updateRowsId(true);
                 parentLayout.rebuildAllFragmentViews(false, false);
             } else if (position == startFromUltraWideRow) {
-                CherrygramCameraConfig.INSTANCE.toggleStartFromUltraWideCam();
+                CherrygramCameraConfig.INSTANCE.setStartFromUltraWideCam(!CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
                 }
@@ -231,7 +231,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                     listAdapter.notifyItemChanged(cameraXFpsRangeRow);
                 });
             } else if (position == cameraStabilisationRow) {
-                CherrygramCameraConfig.INSTANCE.toggleCameraStabilisation();
+                CherrygramCameraConfig.INSTANCE.setCameraStabilisation(!CherrygramCameraConfig.INSTANCE.getCameraStabilisation());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getCameraStabilisation());
                 }
@@ -257,12 +257,12 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                     listAdapter.notifyItemChanged(exposureSliderRow);
                 });
             } else if (position == cameraControlButtonsRow) {
-                CherrygramCameraConfig.INSTANCE.toggleCenterCameraControlButtons();
+                CherrygramCameraConfig.INSTANCE.setCenterCameraControlButtons(!CherrygramCameraConfig.INSTANCE.getCenterCameraControlButtons());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getCenterCameraControlButtons());
                 }
             } else if (position == rearCamRow) {
-                CherrygramCameraConfig.INSTANCE.toggleRearCam();
+                CherrygramCameraConfig.INSTANCE.setRearCam(!CherrygramCameraConfig.INSTANCE.getRearCam());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getRearCam());
                 }

@@ -22,10 +22,17 @@ object Constants {
     var CG_CHANNEL_USERNAME = "Cherry_gram"
     @JvmField
     var CG_CHANNEL_URL = "https://t.me/cherry_gram"
+
+    @JvmField
+    var CG_APKS_CHANNEL_USERNAME = "CherrygramAPKs"
+    @JvmField
+    var CG_APKS_CHANNEL_URL = "https://t.me/CherrygramAPKs"
+
     @JvmField
     var CG_CHAT_USERNAME = "CherrygramSupport"
     @JvmField
     var CG_CHAT_URL = "https://t.me/CherrygramSupport"
+
     @JvmField
     var UPDATE_APP_URL = if (CherrygramCoreConfig.isPlayStoreBuild()) "https://play.google.com/store/apps/details?id=uz.unnarsx.cherrygram" else CG_CHANNEL_URL
     /** CG Chats Links finish**/

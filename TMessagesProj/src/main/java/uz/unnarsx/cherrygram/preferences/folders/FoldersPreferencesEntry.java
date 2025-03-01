@@ -138,14 +138,14 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
             if (position == folderNameAppHeaderRow) {
-                CherrygramAppearanceConfig.INSTANCE.toggleFolderNameInHeader();
+                CherrygramAppearanceConfig.INSTANCE.setFolderNameInHeader(!CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader());
                 }
                 parentLayout.rebuildAllFragmentViews(false, false);
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
             } else if (position == hideAllChatsTabRow) {
-                CherrygramAppearanceConfig.INSTANCE.toggleTabsHideAllChats();
+                CherrygramAppearanceConfig.INSTANCE.setTabsHideAllChats(!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats());
                 }
@@ -154,7 +154,7 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
                 getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
                 getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
             } else if (position == hideCounterRow) {
-                CherrygramAppearanceConfig.INSTANCE.toggleTabsNoUnread();
+                CherrygramAppearanceConfig.INSTANCE.setTabsNoUnread(!CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread());
                 }
@@ -210,7 +210,7 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
                     updateRowsId(false);
                 });
             } else if (position == addStrokeRow) {
-                CherrygramAppearanceConfig.INSTANCE.toggleTabStyleStroke();
+                CherrygramAppearanceConfig.INSTANCE.setTabStyleStroke(!CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke());
                 }

@@ -124,13 +124,13 @@ public class DrawerPreferencesEntry extends BaseFragment {
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setOnItemClickListener((view, position, x, y) -> {
             if (position == drawerSnowRow) {
-                CherrygramAppearanceConfig.INSTANCE.toggleDrawerSnow();
+                CherrygramAppearanceConfig.INSTANCE.setDrawSnowInDrawer(!CherrygramAppearanceConfig.INSTANCE.getDrawSnowInDrawer());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawSnowInDrawer());
                 }
                 parentLayout.rebuildAllFragmentViews(true, true);
             } else if (position == drawerAvatarAsBackgroundRow) {
-                CherrygramAppearanceConfig.INSTANCE.toggleDrawerAvatar();
+                CherrygramAppearanceConfig.INSTANCE.setDrawerAvatar(!CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar());
                 }
@@ -145,34 +145,34 @@ public class DrawerPreferencesEntry extends BaseFragment {
                     updateRowsId(false);
                 }
             } else if (position == showAvatarRow) {
-                CherrygramAppearanceConfig.INSTANCE.toggleDrawerSmallAvatar();
+                CherrygramAppearanceConfig.INSTANCE.setDrawerSmallAvatar(!CherrygramAppearanceConfig.INSTANCE.getDrawerSmallAvatar());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawerSmallAvatar());
                 }
                 getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
             } else if (position == drawerDarkenBackgroundRow) {
-                CherrygramAppearanceConfig.INSTANCE.toggleDrawerDarken();
+                CherrygramAppearanceConfig.INSTANCE.setDrawerDarken(!CherrygramAppearanceConfig.INSTANCE.getDrawerDarken());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawerDarken());
                 }
                 getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
             } else if (position == showGradientRow) {
-                CherrygramAppearanceConfig.INSTANCE.toggleDrawerGradient();
+                CherrygramAppearanceConfig.INSTANCE.setDrawerGradient(!CherrygramAppearanceConfig.INSTANCE.getDrawerGradient());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawerGradient());
                 }
                 getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
             } else if (position == drawerBlurBackgroundRow) {
-                CherrygramAppearanceConfig.INSTANCE.toggleDrawerBlur();
+                CherrygramAppearanceConfig.INSTANCE.setDrawerBlur(!CherrygramAppearanceConfig.INSTANCE.getDrawerBlur());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawerBlur());
                 }
                 getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
-                if(CherrygramAppearanceConfig.INSTANCE.getDrawerBlur()) {
+                if (CherrygramAppearanceConfig.INSTANCE.getDrawerBlur()) {
                     listAdapter.notifyItemRangeInserted(drawerDividerRow, 3);
                 } else {
                     listAdapter.notifyItemRangeRemoved(drawerDividerRow, 3);

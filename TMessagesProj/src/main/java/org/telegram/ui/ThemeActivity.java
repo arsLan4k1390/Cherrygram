@@ -1110,7 +1110,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     ((TextCheckCell) view).setChecked(!animations);
                 }
             } else if (position == appIconFilterRow) {
-                CherrygramCoreConfig.INSTANCE.toggleAppIconFilter();
+                CherrygramCoreConfig.INSTANCE.setFilterLauncherIcon(!CherrygramCoreConfig.INSTANCE.getFilterLauncherIcon());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramCoreConfig.INSTANCE.getFilterLauncherIcon());
                     listAdapter.notifyItemChanged(appIconSelectorRow);

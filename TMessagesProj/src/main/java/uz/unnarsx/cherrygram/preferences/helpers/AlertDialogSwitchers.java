@@ -91,27 +91,27 @@ public class AlertDialogSwitchers {
                 Integer tag = (Integer) v2.getTag();
                 switch (tag) {
                     case 0: {
-                        CherrygramChatsConfig.INSTANCE.toggleShortcutJumpToBegin();
+                        CherrygramChatsConfig.INSTANCE.setShortcut_JumpToBegin(!CherrygramChatsConfig.INSTANCE.getShortcut_JumpToBegin());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShortcut_JumpToBegin());
                         break;
                     }
                     case 1: {
-                        CherrygramChatsConfig.INSTANCE.toggleShortcutDeleteAll();
+                        CherrygramChatsConfig.INSTANCE.setShortcut_DeleteAll(!CherrygramChatsConfig.INSTANCE.getShortcut_DeleteAll());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShortcut_DeleteAll());
                         break;
                     }
                     case 2: {
-                        CherrygramChatsConfig.INSTANCE.toggleShortcutSavedMessages();
+                        CherrygramChatsConfig.INSTANCE.setShortcut_SavedMessages(!CherrygramChatsConfig.INSTANCE.getShortcut_SavedMessages());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShortcut_SavedMessages());
                         break;
                     }
                     case 3: {
-                        CherrygramChatsConfig.INSTANCE.toggleShortcutBlur();
+                        CherrygramChatsConfig.INSTANCE.setShortcut_Blur(!CherrygramChatsConfig.INSTANCE.getShortcut_Blur());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShortcut_Blur());
                         break;
                     }
                     case 4: {
-                        CherrygramChatsConfig.INSTANCE.toggleShortcutBrowser();
+                        CherrygramChatsConfig.INSTANCE.setShortcut_Browser(!CherrygramChatsConfig.INSTANCE.getShortcut_Browser());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShortcut_Browser());
                         break;
                     }
@@ -179,32 +179,32 @@ public class AlertDialogSwitchers {
                 Integer tag = (Integer) v2.getTag();
                 switch (tag) {
                     case 0: {
-                        CherrygramChatsConfig.INSTANCE.toggleAdminsReactions();
+                        CherrygramChatsConfig.INSTANCE.setAdmins_Reactions(!CherrygramChatsConfig.INSTANCE.getAdmins_Reactions());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getAdmins_Reactions());
                         break;
                     }
                     case 1: {
-                        CherrygramChatsConfig.INSTANCE.toggleAdminsPermissions();
+                        CherrygramChatsConfig.INSTANCE.setAdmins_Permissions(!CherrygramChatsConfig.INSTANCE.getAdmins_Permissions());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getAdmins_Permissions());
                         break;
                     }
                     case 2: {
-                        CherrygramChatsConfig.INSTANCE.toggleAdminsAdministrators();
+                        CherrygramChatsConfig.INSTANCE.setAdmins_Administrators(!CherrygramChatsConfig.INSTANCE.getAdmins_Administrators());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getAdmins_Administrators());
                         break;
                     }
                     case 3: {
-                        CherrygramChatsConfig.INSTANCE.toggleAdminsMembers();
+                        CherrygramChatsConfig.INSTANCE.setAdmins_Members(!CherrygramChatsConfig.INSTANCE.getAdmins_Members());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getAdmins_Members());
                         break;
                     }
                     case 4: {
-                        CherrygramChatsConfig.INSTANCE.toggleAdminsStatistics();
+                        CherrygramChatsConfig.INSTANCE.setAdmins_Statistics(!CherrygramChatsConfig.INSTANCE.getAdmins_Statistics());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getAdmins_Statistics());
                         break;
                     }
                     case 5: {
-                        CherrygramChatsConfig.INSTANCE.toggleAdminsRecentActions();
+                        CherrygramChatsConfig.INSTANCE.setAdmins_RecentActions(!CherrygramChatsConfig.INSTANCE.getAdmins_RecentActions());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getAdmins_RecentActions());
                         break;
                     }
@@ -274,32 +274,32 @@ public class AlertDialogSwitchers {
                 Integer tag = (Integer) v2.getTag();
                 switch (tag) {
                     case 0: {
-                        CherrygramChatsConfig.INSTANCE.toggleShareDrawStoryButton();
+                        CherrygramChatsConfig.INSTANCE.setShareDrawStoryButton(!CherrygramChatsConfig.INSTANCE.getShareDrawStoryButton());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShareDrawStoryButton());
                         break;
                     }
                     case 1: {
-                        CherrygramChatsConfig.INSTANCE.toggleUsersDrawShareButton();
+                        CherrygramChatsConfig.INSTANCE.setUsersDrawShareButton(!CherrygramChatsConfig.INSTANCE.getUsersDrawShareButton());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getUsersDrawShareButton());
                         break;
                     }
                     case 2: {
-                        CherrygramChatsConfig.INSTANCE.toggleSupergroupsDrawShareButton();
+                        CherrygramChatsConfig.INSTANCE.setSupergroupsDrawShareButton(!CherrygramChatsConfig.INSTANCE.getSupergroupsDrawShareButton());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getSupergroupsDrawShareButton());
                         break;
                     }
                     case 3: {
-                        CherrygramChatsConfig.INSTANCE.toggleChannelsDrawShareButton();
+                        CherrygramChatsConfig.INSTANCE.setChannelsDrawShareButton(!CherrygramChatsConfig.INSTANCE.getChannelsDrawShareButton());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getChannelsDrawShareButton());
                         break;
                     }
                     case 4: {
-                        CherrygramChatsConfig.INSTANCE.toggleBotsDrawShareButton();
+                        CherrygramChatsConfig.INSTANCE.setBotsDrawShareButton(!CherrygramChatsConfig.INSTANCE.getBotsDrawShareButton());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getBotsDrawShareButton());
                         break;
                     }
                     case 5: {
-                        CherrygramChatsConfig.INSTANCE.toggleStickersDrawShareButton();
+                        CherrygramChatsConfig.INSTANCE.setStickersDrawShareButton(!CherrygramChatsConfig.INSTANCE.getStickersDrawShareButton());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getStickersDrawShareButton());
                         break;
                     }
@@ -393,57 +393,57 @@ public class AlertDialogSwitchers {
                 Integer tag = (Integer) v2.getTag();
                 switch (tag) {
                     case 0: {
-                        CherrygramAppearanceConfig.INSTANCE.toggleChangeStatusDrawerButton();
+                        CherrygramAppearanceConfig.INSTANCE.setChangeStatusDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getChangeStatusDrawerButton());
                         textCell.setChecked(CherrygramAppearanceConfig.INSTANCE.getChangeStatusDrawerButton());
                         break;
                     }
                     /*case 1: {
-                        CherrygramAppearanceConfig.INSTANCE.toggleMyStoriesDrawerButton();
+                        CherrygramAppearanceConfig.INSTANCE.setMyStoriesDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getMyStoriesDrawerButton());
                         textCell.setChecked(CherrygramAppearanceConfig.INSTANCE.getMyStoriesDrawerButton());
                         break;
                     }*/
                     case 1: {
-                        CherrygramAppearanceConfig.INSTANCE.toggleMyProfileDrawerButton();
+                        CherrygramAppearanceConfig.INSTANCE.setMyProfileDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getMyProfileDrawerButton());
                         textCell.setChecked(CherrygramAppearanceConfig.INSTANCE.getMyProfileDrawerButton());
                         break;
                     }
                     case 2: {
-                        CherrygramAppearanceConfig.INSTANCE.toggleCreateGroupDrawerButton();
+                        CherrygramAppearanceConfig.INSTANCE.setCreateGroupDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCreateGroupDrawerButton());
                         textCell.setChecked(CherrygramAppearanceConfig.INSTANCE.getCreateGroupDrawerButton());
                         break;
                     }
                     case 3: {
-                        CherrygramAppearanceConfig.INSTANCE.toggleCreateChannelDrawerButton();
+                        CherrygramAppearanceConfig.INSTANCE.setCreateChannelDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCreateChannelDrawerButton());
                         textCell.setChecked(CherrygramAppearanceConfig.INSTANCE.getCreateChannelDrawerButton());
                         break;
                     }
                     case 4: {
-                        CherrygramAppearanceConfig.INSTANCE.toggleContactsDrawerButton();
+                        CherrygramAppearanceConfig.INSTANCE.setContactsDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getContactsDrawerButton());
                         textCell.setChecked(CherrygramAppearanceConfig.INSTANCE.getContactsDrawerButton());
                         break;
                     }
                     case 5: {
-                        CherrygramAppearanceConfig.INSTANCE.toggleCallsDrawerButton();
+                        CherrygramAppearanceConfig.INSTANCE.setCallsDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCallsDrawerButton());
                         textCell.setChecked(CherrygramAppearanceConfig.INSTANCE.getCallsDrawerButton());
                         break;
                     }
                     case 6: {
-                        CherrygramAppearanceConfig.INSTANCE.toggleSavedMessagesDrawerButton();
+                        CherrygramAppearanceConfig.INSTANCE.setSavedMessagesDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getSavedMessagesDrawerButton());
                         textCell.setChecked(CherrygramAppearanceConfig.INSTANCE.getSavedMessagesDrawerButton());
                         break;
                     }
                     case 7: {
-                        CherrygramAppearanceConfig.INSTANCE.toggleArchivedChatsDrawerButton();
+                        CherrygramAppearanceConfig.INSTANCE.setArchivedChatsDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getArchivedChatsDrawerButton());
                         textCell.setChecked(CherrygramAppearanceConfig.INSTANCE.getArchivedChatsDrawerButton());
                         break;
                     }
                     case 8: {
-                        CherrygramAppearanceConfig.INSTANCE.toggleScanQRDrawerButton();
+                        CherrygramAppearanceConfig.INSTANCE.setScanQRDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getScanQRDrawerButton());
                         textCell.setChecked(CherrygramAppearanceConfig.INSTANCE.getScanQRDrawerButton());
                         break;
                     }
                     case 9: {
-                        CherrygramAppearanceConfig.INSTANCE.toggleCGPreferencesDrawerButton();
+                        CherrygramAppearanceConfig.INSTANCE.setCGPreferencesDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCGPreferencesDrawerButton());
                         textCell.setChecked(CherrygramAppearanceConfig.INSTANCE.getCGPreferencesDrawerButton());
                         break;
                     }
@@ -531,62 +531,62 @@ public class AlertDialogSwitchers {
                 Integer tag = (Integer) v2.getTag();
                 switch (tag) {
                     case 0: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowSaveForNotifications();
+                        CherrygramChatsConfig.INSTANCE.setShowSaveForNotifications(!CherrygramChatsConfig.INSTANCE.getShowSaveForNotifications());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowSaveForNotifications());
                         break;
                     }
                     case 1: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowReply();
+                        CherrygramChatsConfig.INSTANCE.setShowReply(!CherrygramChatsConfig.INSTANCE.getShowReply());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowReply());
                         break;
                     }
                     case 2: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowGeminiReply();
+                        CherrygramChatsConfig.INSTANCE.setShowGeminiReply(!CherrygramChatsConfig.INSTANCE.getShowGeminiReply());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowGeminiReply());
                         break;
                     }
                     case 3: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowCopyPhoto();
+                        CherrygramChatsConfig.INSTANCE.setShowCopyPhoto(!CherrygramChatsConfig.INSTANCE.getShowCopyPhoto());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowCopyPhoto());
                         break;
                     }
                     case 4: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowCopyPhotoAsSticker();
+                        CherrygramChatsConfig.INSTANCE.setShowCopyPhotoAsSticker(!CherrygramChatsConfig.INSTANCE.getShowCopyPhotoAsSticker());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowCopyPhotoAsSticker());
                         break;
                     }
                     case 5: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowClearFromCache();
+                        CherrygramChatsConfig.INSTANCE.setShowClearFromCache(!CherrygramChatsConfig.INSTANCE.getShowClearFromCache());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowClearFromCache());
                         break;
                     }
                     case 6: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowForward();
+                        CherrygramChatsConfig.INSTANCE.setShowForward(!CherrygramChatsConfig.INSTANCE.getShowForward());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowForward());
                         break;
                     }
                     case 7: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowForwardWoAuthorship();
+                        CherrygramChatsConfig.INSTANCE.setShowForwardWoAuthorship(!CherrygramChatsConfig.INSTANCE.getShowForwardWoAuthorship());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowForwardWoAuthorship());
                         break;
                     }
                     case 8: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowViewHistory();
+                        CherrygramChatsConfig.INSTANCE.setShowViewHistory(!CherrygramChatsConfig.INSTANCE.getShowViewHistory());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowViewHistory());
                         break;
                     }
                     case 9: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowSaveMessage();
+                        CherrygramChatsConfig.INSTANCE.setShowSaveMessage(!CherrygramChatsConfig.INSTANCE.getShowSaveMessage());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowSaveMessage());
                         break;
                     }
                     case 10: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowReport();
+                        CherrygramChatsConfig.INSTANCE.setShowReport(!CherrygramChatsConfig.INSTANCE.getShowReport());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowReport());
                         break;
                     }
                     case 11: {
-                        CherrygramChatsConfig.INSTANCE.toggleShowJSON();
+                        CherrygramChatsConfig.INSTANCE.setShowJSON(!CherrygramChatsConfig.INSTANCE.getShowJSON());
                         textCell.setChecked(CherrygramChatsConfig.INSTANCE.getShowJSON());
                         break;
                     }
@@ -756,12 +756,12 @@ public class AlertDialogSwitchers {
                 Integer tag = (Integer) v2.getTag();
                 switch (tag) {
                     case 0: {
-                        CherrygramCoreConfig.INSTANCE.toggleArchiveStoriesFromUsers();
+                        CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromUsers(!CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers());
                         textCell.setChecked(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers());
                         break;
                     }
                     case 1: {
-                        CherrygramCoreConfig.INSTANCE.toggleArchiveStoriesFromChannels();
+                        CherrygramCoreConfig.INSTANCE.setArchiveStoriesFromChannels(!CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels());
                         textCell.setChecked(CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels());
                         break;
                     }

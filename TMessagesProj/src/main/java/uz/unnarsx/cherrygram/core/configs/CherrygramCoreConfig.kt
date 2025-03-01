@@ -58,18 +58,8 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** Animations and Premium Features start **/
     var hideStories by sharedPreferences.boolean("CP_HideStories", false)
-
     var archiveStoriesFromUsers by sharedPreferences.boolean("CP_ArchiveStoriesFromUsers", false)
-    fun toggleArchiveStoriesFromUsers() {
-        archiveStoriesFromUsers = !archiveStoriesFromUsers
-        putBoolean("CP_ArchiveStoriesFromUsers", archiveStoriesFromUsers)
-    }
     var archiveStoriesFromChannels by sharedPreferences.boolean("CP_ArchiveStoriesFromChannels", false)
-    fun toggleArchiveStoriesFromChannels() {
-        archiveStoriesFromChannels = !archiveStoriesFromChannels
-        putBoolean("CP_ArchiveStoriesFromChannels", archiveStoriesFromChannels)
-    }
-
     var customWallpapers by sharedPreferences.boolean("CP_CustomWallpapers", true)
     var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
     var disableReactionsOverlay by sharedPreferences.boolean("CP_DisableReactionsOverlay", false)
@@ -81,27 +71,13 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** OTA start **/
     var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isStandaloneBetaBuild())
-    fun toggleInstallBetas() {
-        installBetas = !installBetas
-        putBoolean("CG_Install_Beta_Ver", installBetas)
-    }
-
     var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", isStandaloneStableBuild() || isStandaloneBetaBuild() || isDevBuild())
-    fun toggleAutoOTA() {
-        autoOTA = !autoOTA
-        putBoolean("CG_Auto_OTA", autoOTA)
-    }
-
     var lastUpdateCheckTime by sharedPreferences.long("CG_LastUpdateCheckTime", 0)
     var updateScheduleTimestamp by sharedPreferences.long("CG_UpdateScheduleTimestamp", 0)
     /** OTA finish **/
 
     /** Launch icons (Telegram Chats Settings) start **/
     var filterLauncherIcon by sharedPreferences.boolean("AP_Filter_Launcher_Icon", false)
-    fun toggleAppIconFilter() { // Telegram chats settings
-        filterLauncherIcon = !filterLauncherIcon
-        putBoolean("AP_Filter_Launcher_Icon", filterLauncherIcon)
-    }
     /** Launch icons (Telegram Chats Settings) finish **/
 
     /** Cherrygram build types start **/

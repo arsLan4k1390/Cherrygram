@@ -13,16 +13,20 @@ import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -51,9 +55,11 @@ import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 public class UpdaterBottomSheet extends BottomSheet {
 
     private BaseFragment fragment;
+    private Theme.ResourcesProvider resourcesProvider;
+    private AnimatedTextView checkUpdatesButton;
 
-    public UpdaterBottomSheet(Context context, boolean available, UpdaterUtils.Update update) {
-        super(context, false);
+    public UpdaterBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider, boolean available, UpdaterUtils.Update update) {
+        super(context, false, resourcesProvider);
         setOpenNoDelay(true);
         fixNavigationBar();
 
@@ -73,7 +79,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             SimpleTextView nameView = new SimpleTextView(context);
             nameView.setTextSize(20);
             nameView.setTypeface(AndroidUtilities.bold());
-            nameView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            nameView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
             nameView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             nameView.setText(getString(R.string.UP_UpdateAvailable));
             header.addView(nameView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 30, Gravity.LEFT, 75, 5, 0, 0));
@@ -82,7 +88,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             timeView.setAnimationProperties(0.7f, 0, 450, CubicBezierInterpolator.EASE_OUT_QUINT);
             timeView.setIgnoreRTL(!LocaleController.isRTL);
             timeView.adaptWidth = false;
-            timeView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+            timeView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
             timeView.setTextSize(AndroidUtilities.dp(13));
             timeView.setTypeface(AndroidUtilities.bold());
             timeView.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
@@ -90,8 +96,8 @@ public class UpdaterBottomSheet extends BottomSheet {
             header.addView(timeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, Gravity.LEFT, 75, 35, 0, 0));
         }
 
-        TextCell version = new TextCell(context);
-        version.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
+        TextCell version = new TextCell(context, resourcesProvider);
+        version.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 100, 0));
         if (available) {
             version.setTextAndValueAndIcon(getString(R.string.UP_Version), update.version.replaceAll("v|-beta|-force", ""), R.drawable.msg_info, true);
         } else {
@@ -102,22 +108,22 @@ public class UpdaterBottomSheet extends BottomSheet {
 
         View divider = new View(context) {
             @Override
-            protected void onDraw(Canvas canvas) {
+            protected void onDraw(@NonNull Canvas canvas) {
                 super.onDraw(canvas);
                 canvas.drawLine(0, AndroidUtilities.dp(1), getMeasuredWidth(), AndroidUtilities.dp(1), Theme.dividerPaint);
             }
         };
 
         if (available) {
-            TextCell size = new TextCell(context);
-            size.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
+            TextCell size = new TextCell(context, resourcesProvider);
+            size.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 100, 0));
             size.setTextAndValueAndIcon(getString(R.string.UP_UpdateSize), update.size, R.drawable.msg_sendfile, true);
             size.setOnClickListener(v -> copyText(size.getTextView().getText() + ": " + size.getValueTextView().getText()));
             linearLayout.addView(size);
 
             if (!TextUtils.isEmpty(update.changelog)) {
-                TextCell changelog = new TextCell(context);
-                changelog.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
+                TextCell changelog = new TextCell(context, resourcesProvider);
+                changelog.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 100, 0));
                 if (update.changelog.contains("Changelog")) {
                     changelog.setTextAndIcon(getString(R.string.UP_Changelog), R.drawable.msg_log, false);
                 } else {
@@ -130,8 +136,8 @@ public class UpdaterBottomSheet extends BottomSheet {
                 linearLayout.addView(changelog);
 
                 if (update.changelog.contains("Changelog")) {
-                    TextInfoPrivacyCell changelogTextView = new TextInfoPrivacyCell(context);
-                    changelogTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+                    TextInfoPrivacyCell changelogTextView = new TextInfoPrivacyCell(context, resourcesProvider);
+                    changelogTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
                     changelogTextView.setText(UpdaterUtils.replaceTags(update.changelog));
                     linearLayout.addView(changelogTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
                 }
@@ -144,8 +150,8 @@ public class UpdaterBottomSheet extends BottomSheet {
             doneButton.setSingleLine(true);
             doneButton.setEllipsize(TextUtils.TruncateAt.END);
             doneButton.setGravity(Gravity.CENTER);
-            doneButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-            doneButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
+            doneButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
+            doneButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
             doneButton.setTypeface(AndroidUtilities.bold());
             doneButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             doneButton.setText(getString(R.string.AppUpdateDownloadNow));
@@ -160,7 +166,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             scheduleButton.setSingleLine(true);
             scheduleButton.setEllipsize(TextUtils.TruncateAt.END);
             scheduleButton.setGravity(Gravity.CENTER);
-            scheduleButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_addButton));
+            scheduleButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
             scheduleButton.setBackground(null);
             scheduleButton.setTypeface(AndroidUtilities.bold());
             scheduleButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
@@ -172,34 +178,34 @@ public class UpdaterBottomSheet extends BottomSheet {
             linearLayout.addView(scheduleButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, 0, 16, 1, 16, 0));
         } else {
             final String bType = CGResourcesHelper.INSTANCE.getBuildType() + " | " + CGResourcesHelper.INSTANCE.getAbiCode();
-            TextCell buildType = new TextCell(context);
-            buildType.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
+
+            TextCell buildType = new TextCell(context, resourcesProvider);
+            buildType.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 100, 0));
             buildType.setTextAndValueAndIcon(getString(R.string.UP_BuildType), bType, R.drawable.msg_customize, true);
             buildType.setOnClickListener(v -> copyText(buildType.getTextView().getText() + ": " + buildType.getValueTextView().getText()));
             linearLayout.addView(buildType);
 
-            AnimatedTextView checkUpdates = new AnimatedTextView(context, true, true, false);
             TextCell installBetas = new TextCell(context, 23, false, true, resourcesProvider);
-            installBetas.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
+            installBetas.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 100, 0));
             installBetas.setTextAndCheckAndIcon(getString(R.string.UP_InstallBetas), CherrygramCoreConfig.INSTANCE.getInstallBetas(), R.drawable.test_tube_solar, false);
             installBetas.setOnClickListener(v -> {
-                CherrygramCoreConfig.INSTANCE.toggleInstallBetas();
+                CherrygramCoreConfig.INSTANCE.setInstallBetas(!CherrygramCoreConfig.INSTANCE.getInstallBetas());
                 installBetas.setChecked(!installBetas.isChecked());
-                checkUpdates.callOnClick();
+                checkUpdatesButton.callOnClick();
             });
             linearLayout.addView(installBetas);
 
             TextCell checkOnLaunch = new TextCell(context, 23, false, true, resourcesProvider);
-            checkOnLaunch.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
+            checkOnLaunch.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 100, 0));
             checkOnLaunch.setTextAndCheckAndIcon(getString(R.string.UP_Auto_OTA), CherrygramCoreConfig.INSTANCE.getAutoOTA(), R.drawable.msg_retry, false);
             checkOnLaunch.setOnClickListener(v -> {
-                CherrygramCoreConfig.INSTANCE.toggleAutoOTA();
+                CherrygramCoreConfig.INSTANCE.setAutoOTA(!CherrygramCoreConfig.INSTANCE.getAutoOTA());
                 checkOnLaunch.setChecked(!checkOnLaunch.isChecked());
             });
             linearLayout.addView(checkOnLaunch);
 
-            TextCell clearUpdates = new TextCell(context);
-            clearUpdates.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
+            TextCell clearUpdates = new TextCell(context, resourcesProvider);
+            clearUpdates.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 100, 0));
             clearUpdates.setTextAndIcon(getString(R.string.UP_ClearUpdatesCache), R.drawable.msg_clear, false);
             clearUpdates.setOnClickListener(v -> {
                 if (UpdaterUtils.getOtaDirSize().replaceAll("\\D+", "").equals("0")) {
@@ -213,31 +219,41 @@ public class UpdaterBottomSheet extends BottomSheet {
 
             linearLayout.addView(divider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1)));
 
-            FrameLayout checkUpdatesBackground = new FrameLayout(context);
-            checkUpdatesBackground.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
-            linearLayout.addView(checkUpdatesBackground, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, 0, 16, 15, 16, 16));
+            FrameLayout buttonsView = new FrameLayout(context);
+            buttonsView.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
 
-//            AnimatedTextView checkUpdates = new AnimatedTextView(context, true, true, false);
-            checkUpdates.setAnimationProperties(.7f, 0, 500, CubicBezierInterpolator.EASE_OUT_QUINT);
-            checkUpdates.setGravity(Gravity.CENTER);
-            checkUpdates.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-            checkUpdates.setTypeface(AndroidUtilities.bold());
-            checkUpdates.setTextSize(AndroidUtilities.dp(14));
-            checkUpdates.setIgnoreRTL(!LocaleController.isRTL);
-            checkUpdates.adaptWidth = false;
-            checkUpdates.setText(getString(R.string.UP_CheckForUpdates));
-            checkUpdates.setOnClickListener(v -> {
+            checkUpdatesButton = new AnimatedTextView(context, true, true, false);
+            checkUpdatesButton.setAnimationProperties(.7f, 0, 500, CubicBezierInterpolator.EASE_OUT_QUINT);
+            checkUpdatesButton.setGravity(Gravity.CENTER_HORIZONTAL);
+            checkUpdatesButton.setGravity(Gravity.CENTER);
+            checkUpdatesButton.setText(getString(R.string.UP_CheckForUpdates));
+            checkUpdatesButton.setTypeface(AndroidUtilities.bold());
+            checkUpdatesButton.setTextSize(AndroidUtilities.dp(14));
+            checkUpdatesButton.setIgnoreRTL(!LocaleController.isRTL);
+            checkUpdatesButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
+            checkUpdatesButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
+            checkUpdatesButton.setOnClickListener(v -> {
                 SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
                 spannableStringBuilder.append(".  ");
                 spannableStringBuilder.setSpan(new ColoredImageSpan(Objects.requireNonNull(ContextCompat.getDrawable(getContext(), R.drawable.sync_outline_28))), 0, 1, 0);
-                checkUpdates.setText(spannableStringBuilder);
+                checkUpdatesButton.setText(spannableStringBuilder);
 
                 UpdaterUtils.checkUpdates(fragment, true, () -> {
-                    checkUpdates.setText(getString(R.string.UP_CheckForUpdates));
-                    BulletinFactory.of(getContainer(), null).createErrorBulletin(getString(R.string.UP_Not_Found)).show();
+                    checkUpdatesButton.setText(getString(R.string.UP_CheckForUpdates));
+                    BulletinFactory.of(getContainer(), resourcesProvider).createErrorBulletin(getString(R.string.UP_Not_Found)).show();
                 }, this::dismiss, null);
             });
-            checkUpdatesBackground.addView(checkUpdates, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
+            buttonsView.addView(checkUpdatesButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
+
+            ImageView downloadButton = new ImageView(context);
+            downloadButton.setScaleType(ImageView.ScaleType.CENTER);
+            downloadButton.setImageResource(R.drawable.msg_download);
+            downloadButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+            downloadButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
+            downloadButton.setOnClickListener(v -> openApkChannel());
+            buttonsView.addView(downloadButton, LayoutHelper.createFrame(48, 48, Gravity.BOTTOM | Gravity.RIGHT, 0, 16, 16, 16));
+
+            linearLayout.addView(buttonsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
         }
 
         ScrollView scrollView = new ScrollView(context);
@@ -245,18 +261,24 @@ public class UpdaterBottomSheet extends BottomSheet {
         setCustomView(scrollView);
     }
 
-    public void setFragment(BaseFragment fragment) {
-        this.fragment = fragment;
+    private void openApkChannel() {
+        dismiss();
+        fragment.getMessagesController().openByUserName(Constants.CG_APKS_CHANNEL_USERNAME, fragment, 1);
     }
 
     private void copyText(CharSequence text) {
         AndroidUtilities.addToClipboard(text);
-        BulletinFactory.of(getContainer(), null).createCopyBulletin(getString(R.string.TextCopied)).show();
+        BulletinFactory.of(getContainer(), resourcesProvider).createCopyBulletin(getString(R.string.TextCopied)).show();
+    }
+
+    public void setFragmentParams(BaseFragment fragment) {
+        this.fragment = fragment;
+        this.resourcesProvider = fragment.getResourceProvider();
     }
 
     public static void showAlert(BaseFragment fragment, boolean available, UpdaterUtils.Update update) {
-        UpdaterBottomSheet alert = new UpdaterBottomSheet(fragment.getContext(), available, update);
-        alert.setFragment(fragment);
+        UpdaterBottomSheet alert = new UpdaterBottomSheet(fragment.getContext(), fragment.getResourceProvider(), available, update);
+        alert.setFragmentParams(fragment);
         if (fragment.getParentActivity() != null) {
             fragment.showDialog(alert);
         }

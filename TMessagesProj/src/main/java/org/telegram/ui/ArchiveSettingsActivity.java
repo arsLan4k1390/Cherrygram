@@ -132,7 +132,7 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
                 ((TextCheckCell) view).setChecked(settings.archive_and_mute_new_noncontact_peers);
                 changed = true;
             } else if (item.id == 10) {
-                CherrygramChatsConfig.INSTANCE.toggleUnarchiveOnSwipe();
+                CherrygramChatsConfig.INSTANCE.setUnarchiveOnSwipe(!CherrygramChatsConfig.INSTANCE.getUnarchiveOnSwipe());
                 ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getUnarchiveOnSwipe());
                 changed = true;
             }

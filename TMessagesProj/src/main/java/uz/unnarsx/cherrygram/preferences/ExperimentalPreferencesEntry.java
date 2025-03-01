@@ -163,19 +163,19 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     AppRestartHelper.createRestartBulletin(this);
                 });
             } else if (position == actionbarCrossfadeRow) {
-                CherrygramExperimentalConfig.INSTANCE.toggleActionbarCrossfade();
+                CherrygramExperimentalConfig.INSTANCE.setActionbarCrossfade(!CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade());
                 }
                 AppRestartHelper.createRestartBulletin(this);
             } else if (position == residentNotificationRow) {
-                CherrygramExperimentalConfig.INSTANCE.toggleResidentNotification();
+                CherrygramExperimentalConfig.INSTANCE.setResidentNotification(!CherrygramExperimentalConfig.INSTANCE.getResidentNotification());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramExperimentalConfig.INSTANCE.getResidentNotification());
                 }
                 AppRestartHelper.createRestartBulletin(this);
             } else if (position == customChatRow) {
-                CherrygramExperimentalConfig.INSTANCE.toggleCustomChatForSavedMessages();
+                CherrygramExperimentalConfig.INSTANCE.setCustomChatForSavedMessages(!CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages());
                 }
@@ -211,13 +211,13 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                     AppRestartHelper.createRestartBulletin(this);
                 });
             } else if (position == uploadSpeedBoostRow) {
-                CherrygramExperimentalConfig.INSTANCE.toggleUploadSpeedBoost();
+                CherrygramExperimentalConfig.INSTANCE.setUploadSpeedBoost(!CherrygramExperimentalConfig.INSTANCE.getUploadSpeedBoost());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramExperimentalConfig.INSTANCE.getUploadSpeedBoost());
                 }
                 AppRestartHelper.createRestartBulletin(this);
             } else if (position == slowNetworkMode) {
-                CherrygramExperimentalConfig.INSTANCE.toggleSlowNetworkMode();
+                CherrygramExperimentalConfig.INSTANCE.setSlowNetworkMode(!CherrygramExperimentalConfig.INSTANCE.getSlowNetworkMode());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramExperimentalConfig.INSTANCE.getSlowNetworkMode());
                 }

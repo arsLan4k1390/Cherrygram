@@ -8644,12 +8644,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     args1.putLong("user_id", dialogId);
                 }
 
-                if (getMessagesController().checkCanOpenChat(args1, DialogsActivity.this)) {
-                    if (searchString != null) {
-                        getNotificationCenter().postNotificationName(NotificationCenter.closeChats);
-                    }
-                    presentFragment(new ProfileActivity(args1));
-                }
+                presentFragment(new ProfileActivity(args1));
             });
             previewMenu[0].addView(openProfileItem);
         }

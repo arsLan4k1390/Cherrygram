@@ -24,13 +24,6 @@ object CherrygramDebugConfig: CoroutineScope by CoroutineScope(
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
-    fun putBoolean(key: String, value: Boolean) {
-        val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-        val editor = preferences.edit()
-        editor.putBoolean(key, value)
-        editor.apply()
-    }
-
     /** Misc start **/
     var showRPCErrors by sharedPreferences.boolean("EP_ShowRPCErrors", false)
     var oldTimeStyle by sharedPreferences.boolean("CP_OldTimeStyle", false)
@@ -38,10 +31,6 @@ object CherrygramDebugConfig: CoroutineScope by CoroutineScope(
 
     /** Blur start **/
     var forceChatBlurEffect by sharedPreferences.boolean("AP_ForceBlur", false)
-    fun toggleForceChatBlurEffect() {
-        forceChatBlurEffect = !forceChatBlurEffect
-        putBoolean("AP_ForceBlur", forceChatBlurEffect)
-    }
     var forceChatBlurEffectIntensity by sharedPreferences.int("AP_ForceBlur_Intensity", 155)
     /** Blur finish **/
 

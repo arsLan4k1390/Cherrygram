@@ -62,7 +62,7 @@ public class BlurPreferencesBottomSheet extends BottomSheet {
         forceBlur.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector), 100, 0));
         forceBlur.setTextAndCheck(getString(R.string.BlurInChat), CherrygramDebugConfig.INSTANCE.getForceChatBlurEffect(), false);
         forceBlur.setOnClickListener(v -> {
-            CherrygramDebugConfig.INSTANCE.toggleForceChatBlurEffect();
+            CherrygramDebugConfig.INSTANCE.setForceChatBlurEffect(!CherrygramDebugConfig.INSTANCE.getForceChatBlurEffect());
             forceBlur.setChecked(!forceBlur.isChecked());
             contentView.invalidateBlur();
             contentView.invalidateBlurredViews();
