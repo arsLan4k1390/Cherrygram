@@ -18,24 +18,30 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.google.android.exoplayer2.util.Util;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.Components.AlertsCreator;
+import org.telegram.ui.Components.RadialProgress2;
 import org.telegram.ui.Components.TypefaceSpan;
 
 import java.io.BufferedReader;
@@ -63,11 +69,14 @@ public class UpdaterUtils {
     public static String version, changelog, size, uploadDate;
     public static File otaPath, versionPath, apkFile;
 
-    private static long id = 1L;
+    public static long id = 1L;
     private static final long updateCheckInterval = 3600000L; // 1 hour
 
     private static boolean updateDownloaded;
     private static boolean checkingForUpdates;
+
+    private static Handler handler = new Handler();
+    private static Runnable progressRunnable;
 
     public static final String[] deviceModels = {
             "Galaxy S6", "Galaxy S7", "Galaxy S8", "Galaxy S9", "Galaxy S10", "Galaxy S21",
@@ -98,6 +107,38 @@ public class UpdaterUtils {
             }
             updateDownloaded = apkFile.exists();
         }
+    }
+
+    public static boolean updateFileExists() {
+        String version = CherrygramCoreConfig.INSTANCE.getUpdateVersionName();
+
+        otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
+        versionPath = new File(otaPath, version);
+        apkFile = new File(versionPath, "update.apk");
+        try {
+            if (!versionPath.exists())
+                versionPath.mkdirs();
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+
+        String[] current = Constants.INSTANCE.getCG_VERSION().split("\\.");
+        String[] downloaded = version.split("\\.");
+        boolean isNew = false;
+
+        int length = Math.max(current.length, downloaded.length);
+        for (int i = 0; i < length; i++) {
+            int v1 = i < current.length ? Utilities.parseInt(current[i]) : 0;
+            int v2 = i < downloaded.length ? Utilities.parseInt(downloaded[i]) : 0;
+            if (v1 < v2) {
+                isNew = true;
+            } else if (v1 > v2) {
+                isNew = false;
+            }
+            CherrygramCoreConfig.INSTANCE.setUpdateAvailable(isNew);
+        }
+
+        return isNew && (apkFile != null || apkFile.getAbsolutePath() != null || apkFile.getPath() != null) && apkFile.exists();
     }
 
     public interface OnUpdateNotFound {
@@ -143,7 +184,7 @@ public class UpdaterUtils {
                 }
 
                 JSONObject obj = new JSONObject(textBuilder.toString());
-                org.json.JSONArray arr = obj.getJSONArray("assets");
+                JSONArray arr = obj.getJSONArray("assets");
 
                 if (arr.length() == 0)
                     return;
@@ -163,7 +204,7 @@ public class UpdaterUtils {
                         }
                     }
                 }
-                version = obj.getString("tag_name");
+                version = obj.getString("name"); // Can be changed to tag_name
                 changelog = obj.getString("body");
                 uploadDate = obj.getString("published_at").replaceAll("[TZ]", " ");
                 uploadDate = LocaleController.formatDateTime(getMillisFromDate(uploadDate, "yyyy-M-dd hh:mm:ss") / 1000, true);
@@ -176,6 +217,8 @@ public class UpdaterUtils {
                             onUpdateFound.run();
                         if (progress != null) progress.end();
                     });
+                    CherrygramCoreConfig.INSTANCE.setUpdateAvailable(true);
+                    CherrygramCoreConfig.INSTANCE.setUpdateVersionName(version);
                 } else {
                     if (onUpdateNotFound != null)
                         AndroidUtilities.runOnUIThread(onUpdateNotFound::run);
@@ -189,7 +232,7 @@ public class UpdaterUtils {
         }, 200);
     }
 
-    public static void downloadApk(Context context, String link, String title) {
+    public static void downloadApk(Context context, String link, String title, TextView progressTextView, boolean isForce) {
         if (context != null && !updateDownloaded) {
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(link));
 
@@ -210,7 +253,12 @@ public class UpdaterUtils {
             } else  {
                 Util.registerReceiverNotExported(context, downloadBroadcastReceiver, intentFilter, Util.createHandlerForCurrentOrMainLooper());
             }
+            CherrygramCoreConfig.INSTANCE.setUpdateIsDownloading(true);
+            trackDownloadProgress(context, progressTextView, null, null);
+            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateLoading);
         } else {
+            CherrygramCoreConfig.INSTANCE.setUpdateIsDownloading(false);
+            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
             installApk(context, apkFile.getAbsolutePath());
         }
     }
@@ -327,9 +375,12 @@ public class UpdaterUtils {
                     int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
                     int status = cursor.getInt(columnIndex);
                     if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                        handler.removeCallbacks(progressRunnable);
                         installApk(context, apkFile.getAbsolutePath());
                         id = 1L;
                         updateDownloaded = false;
+
+                        NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
                     } else {
                         // ignore for now
                     }
@@ -346,6 +397,70 @@ public class UpdaterUtils {
             }
         }
     }
+
+    public static void trackDownloadProgress(Context context, TextView progressTextView, SimpleTextView progressTextViewInDrawer, RadialProgress2 updateLayoutIcon) {
+        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+
+        progressRunnable = new Runnable() {
+            @Override
+            public void run() {
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(id);
+                Cursor cursor = downloadManager.query(query);
+
+                if (cursor != null && cursor.moveToFirst()) {
+                    int indexBytesDownloaded = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
+                    int indexBytesTotal = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES);
+
+                    if (indexBytesDownloaded >= 0 && indexBytesTotal >= 0) {
+                        int bytesDownloaded = cursor.getInt(indexBytesDownloaded);
+                        int bytesTotal = cursor.getInt(indexBytesTotal);
+
+                        if (bytesTotal > 0) {
+                            int progress = (int) ((bytesDownloaded * 100L) / bytesTotal);
+                            if (progressTextView != null) {
+                                progressTextView.setText(
+                                        LocaleController.formatString(org.telegram.messenger.R.string.AppUpdateDownloading, progress)
+                                );
+                            }
+                            if (progressTextViewInDrawer != null && updateLayoutIcon != null) {
+                                progressTextViewInDrawer.setText(
+                                        LocaleController.formatString(org.telegram.messenger.R.string.AppUpdateDownloading, progress)
+                                );
+                                updateLayoutIcon.setProgress((float) progress / 100, true);
+                            }
+                            CherrygramCoreConfig.INSTANCE.setUpdateDownloadingProgress(progress);
+                            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("Загрузка: " + progress + "%");
+                        }
+                    }
+                }
+
+                if (cursor != null) {
+                    cursor.close();
+                }
+
+                handler.postDelayed(this, 50);
+            }
+        };
+
+        handler.post(progressRunnable);
+    }
+
+    public static void cancelDownload(Context context, long downloadId) {
+        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        if (downloadManager != null) {
+            downloadManager.remove(downloadId);
+        }
+
+        if (handler != null && progressRunnable != null) {
+            handler.removeCallbacks(progressRunnable);
+        }
+
+        CherrygramCoreConfig.INSTANCE.setUpdateIsDownloading(false);
+        CherrygramCoreConfig.INSTANCE.setUpdateDownloadingProgress(0f);
+        NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
+    }
+
 
     public static class Update {
         public final String version, size, downloadURL, uploadDate, changelog;

@@ -218,7 +218,6 @@
     <string name="CP_NoRounding">四捨五入の表示を無効化</string>
     <string name="CP_DeleteForAll">デフォルトで｢すべて削除｣を使用する</string>
     <string name="CP_DeleteForAll_Desc">メッセージの削除時にチェックボックスが自動的に選択されます。</string>
-    <string name="CP_ConfirmCalls">通話をする前に確認する</string>
     <string name="CP_ForwardMsgDate">転送されたメッセージの日付を表示</string>
     <string name="CP_ShowSeconds">送信時間に秒を表示する</string>
     <string name="CP_LeftBottomButtonAction">左側のボタンのアクション</string>
@@ -347,7 +346,6 @@
     <string name="UP_Not_Found">Cherrygramは最新です。</string>
     <string name="UP_UpdateAvailable">更新があります!</string>
     <string name="UP_Version">バージョン</string>
-    <string name="UP_UpdateSize">更新のサイズ</string>
     <string name="UP_Changelog">更新履歴:</string>
     <string name="UP_ChangelogRead">タップで読む</string>
     <string name="UP_Download">ダウンロード</string>

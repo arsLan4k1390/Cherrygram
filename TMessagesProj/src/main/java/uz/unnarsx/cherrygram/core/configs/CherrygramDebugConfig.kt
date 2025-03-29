@@ -53,6 +53,7 @@ object CherrygramDebugConfig: CoroutineScope by CoroutineScope(
 
     var sendVideosAtMaxQuality by sharedPreferences.boolean("sendVideosMaxQuality", false)
     var playGIFsAsVideos by sharedPreferences.boolean("CP_PlayGIFsAsVideos", true)
+    var hideVideoTimestamp by sharedPreferences.boolean("CP_HideVideoTimestamp", true)
     /** Chats finish **/
 
 }

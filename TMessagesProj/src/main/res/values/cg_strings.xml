@@ -257,7 +257,6 @@
     <string name="CP_NoRoundingSummary" translatable="false">1.2K -> 1,234</string>
     <string name="CP_DeleteForAll">Use \"Delete for all\" by default</string>
     <string name="CP_DeleteForAll_Desc">Checkbox will be automatically checked while deleting messages.</string>
-    <string name="CP_ConfirmCalls">Ask before calling</string>
     <string name="CP_ForwardMsgDate">Show forwarded message date</string>
     <string name="CP_ShowSeconds">Format time with seconds</string>
     <string name="CP_ShowSeconds_Desc" translatable="false">12:34 -> 12:34:56</string>
@@ -278,6 +277,8 @@
     <string name="CP_GeminiAI_API_Key_Desc">Visit <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]> to obtain the API Key.</string>
     <string name="CP_GeminiAI_Model">Gemini model code</string>
     <string name="CP_GeminiAI_Model_Desc">Visit <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]> to get the list of available models.</string>
+    <string name="CP_GeminiAI_Model_Selector">Gemini models list</string>
+    <string name="CP_GeminiAI_Model_Selector_Desc">If you have a valid API Key, tap here to choose a model and fill the field automatically.</string>
     <string name="CP_GeminiAI_Sample">Sample:</string>
     <string name="CP_GeminiAI_Instruction">To use the Gemini,
         you need to fill in all the values on this screen.
@@ -411,7 +412,6 @@
     <string name="UP_Not_Found">Cherrygram is up to date.</string>
     <string name="UP_UpdateAvailable">Update available!</string>
     <string name="UP_Version">Version</string>
-    <string name="UP_UpdateSize">Update size</string>
     <string name="UP_Changelog">Changelog:</string>
     <string name="UP_ChangelogRead">Tap to read</string>
     <string name="UP_Download">Download</string>

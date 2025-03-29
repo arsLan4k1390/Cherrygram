@@ -324,7 +324,7 @@ public class ActionBar extends FrameLayout {
                     }
                 }
 
-                if (Theme.canStartHolidayAnimation() || CherrygramAppearanceConfig.INSTANCE.getDrawSnowInActionBar()) {
+                if (/*Theme.canStartHolidayAnimation() ||*/ CherrygramAppearanceConfig.INSTANCE.getDrawSnowInActionBar()) {
                     if (snowflakesEffect == null) {
                         snowflakesEffect = new SnowflakesEffect(0);
                     }
@@ -663,20 +663,6 @@ public class ActionBar extends FrameLayout {
 //        }
 
         return actionMode;
-    }
-
-    public void onDrawCrossfadeBackground(Canvas canvas) {
-        if (blurredBackground && actionBarColor != Color.TRANSPARENT) {
-            rectTmp.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
-            blurScrimPaint.setColor(actionBarColor);
-            contentView.drawBlurRect(canvas, getY(), rectTmp, blurScrimPaint, true);
-        } else {
-            Drawable drawable = getBackground();
-            if (drawable != null) {
-                drawable.setBounds(0, 0, getWidth(), getHeight());
-                drawable.draw(canvas);
-            }
-        }
     }
 
     public void onDrawCrossfadeContent(Canvas canvas, boolean front, boolean hideBackDrawable, float progress) {
@@ -1795,11 +1781,6 @@ public class ActionBar extends FrameLayout {
         requestLayout();
     }
 
-
-    public int getItemsColor() {
-        return itemsColor;
-    }
-
     @Override
     public boolean hasOverlappingRendering() {
         return false;
@@ -2032,4 +2013,25 @@ public class ActionBar extends FrameLayout {
     public FrameLayout getTitlesContainer() {
         return titlesContainer;
     }
+
+    /** Cherrygram start */
+    public void onDrawCrossfadeBackground(Canvas canvas) {
+        if (blurredBackground && actionBarColor != Color.TRANSPARENT) {
+            rectTmp.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+            blurScrimPaint.setColor(actionBarColor);
+            contentView.drawBlurRect(canvas, getY(), rectTmp, blurScrimPaint, true);
+        } else {
+            Drawable drawable = getBackground();
+            if (drawable != null) {
+                drawable.setBounds(0, 0, getWidth(), getHeight());
+                drawable.draw(canvas);
+            }
+        }
+    }
+
+    public int getItemsColor() {
+        return itemsColor;
+    }
+    /** Cherrygram finish */
+
 }

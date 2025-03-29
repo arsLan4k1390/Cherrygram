@@ -745,26 +745,22 @@ public class EditTextCaption extends EditTextBoldCursor {
     //Cherrygram
     public void makeSelectedCode() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(LocaleController.getString(R.string.CG_CreateCode));
+        builder.setTitle(getString(R.string.CG_CreateCode));
 
-        final EditTextBoldCursor editText = new EditTextBoldCursor(getContext()) {
-            @Override
-            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(64), MeasureSpec.EXACTLY));
-            }
-        };
+        final EditTextBoldCursor editText = new EditTextBoldCursor(getContext());
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-        editText.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-        editText.setHintText(LocaleController.getString(R.string.CG_CreateCodeLanguage));
-        editText.setHeaderHintColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader));
-        editText.setSingleLine(true);
-        editText.setFocusable(true);
-        editText.setTransformHintToHeader(true);
-        editText.setLineColors(Theme.getColor(Theme.key_windowBackgroundWhiteInputField), Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated), Theme.getColor(Theme.key_fill_RedNormal));
-        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        editText.setBackgroundDrawable(null);
-        editText.requestFocus();
+        editText.setHintTextColor(getThemedColor(Theme.key_windowBackgroundWhiteHintText));
+        editText.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+        editText.setBackground(Theme.createEditTextDrawable(getContext(), true));
         editText.setPadding(0, 0, 0, 0);
+        editText.setSingleLine(true);
+        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        editText.setHint(getString(R.string.CG_CreateCodeLanguage));
+        editText.setCursorColor(getThemedColor(Theme.key_windowBackgroundWhiteBlueHeader));
+        editText.setCursorSize(AndroidUtilities.dp(20));
+        editText.setCursorWidth(1.5f);
+        editText.setFocusable(true);
+        editText.requestFocus();
         builder.setView(editText);
 
         final int start;
@@ -788,7 +784,9 @@ public class EditTextCaption extends EditTextBoldCursor {
             }
         }
 
-        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), (dialogInterface, i) -> {
+        builder.setPositiveButton(getString(R.string.OK), (dialogInterface, i) -> {
+            AndroidUtilities.hideKeyboard(editText);
+
             Editable editable = getText();
             CharacterStyle[] spans = editable.getSpans(start, end, CharacterStyle.class);
             if (spans != null && spans.length > 0) {
@@ -814,11 +812,14 @@ public class EditTextCaption extends EditTextBoldCursor {
                 delegate.onSpansChanged();
             }
         });
-        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+
+        builder.setNegativeButton(getString(R.string.Cancel), (dialog, which) -> AndroidUtilities.hideKeyboard(editText));
+
         builder.show().setOnShowListener(dialog -> {
             editText.requestFocus();
             AndroidUtilities.showKeyboard(editText);
         });
+
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) editText.getLayoutParams();
         if (layoutParams != null) {
             if (layoutParams instanceof FrameLayout.LayoutParams) {
@@ -826,6 +827,7 @@ public class EditTextCaption extends EditTextBoldCursor {
             }
             layoutParams.rightMargin = layoutParams.leftMargin = AndroidUtilities.dp(24);
             layoutParams.height = AndroidUtilities.dp(36);
+            layoutParams.bottomMargin = AndroidUtilities.dp(15);
             editText.setLayoutParams(layoutParams);
         }
         editText.setSelection(0, editText.getText().length());
@@ -833,26 +835,22 @@ public class EditTextCaption extends EditTextBoldCursor {
 
     public void makeSelectedMention() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setTitle(LocaleController.getString(R.string.CG_CreateMention));
+        builder.setTitle(getString(R.string.CG_CreateMention));
 
-        final EditTextBoldCursor editText = new EditTextBoldCursor(getContext()) {
-            @Override
-            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(64), MeasureSpec.EXACTLY));
-            }
-        };
+        final EditTextBoldCursor editText = new EditTextBoldCursor(getContext());
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-        editText.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-        editText.setHintText("ID");
-        editText.setHeaderHintColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader));
-        editText.setSingleLine(true);
-        editText.setFocusable(true);
-        editText.setTransformHintToHeader(true);
-        editText.setLineColors(Theme.getColor(Theme.key_windowBackgroundWhiteInputField), Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated), Theme.getColor(Theme.key_fill_RedNormal));
-        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        editText.setBackgroundDrawable(null);
-        editText.requestFocus();
+        editText.setHintTextColor(getThemedColor(Theme.key_windowBackgroundWhiteHintText));
+        editText.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+        editText.setBackground(Theme.createEditTextDrawable(getContext(), true));
         editText.setPadding(0, 0, 0, 0);
+        editText.setSingleLine(true);
+        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        editText.setHint("ID");
+        editText.setCursorColor(getThemedColor(Theme.key_windowBackgroundWhiteBlueHeader));
+        editText.setCursorSize(AndroidUtilities.dp(20));
+        editText.setCursorWidth(1.5f);
+        editText.setFocusable(true);
+        editText.requestFocus();
         builder.setView(editText);
 
         final int start;
@@ -866,7 +864,9 @@ public class EditTextCaption extends EditTextBoldCursor {
             end = getSelectionEnd();
         }
 
-        builder.setPositiveButton(LocaleController.getString("OK", R.string.OK), (dialogInterface, i) -> {
+        builder.setPositiveButton(getString(R.string.Mention), (dialogInterface, i) -> {
+            AndroidUtilities.hideKeyboard(editText);
+
             Editable editable = getText();
             CharacterStyle spans[] = editable.getSpans(start, end, CharacterStyle.class);
             if (spans != null && spans.length > 0) {
@@ -892,23 +892,25 @@ public class EditTextCaption extends EditTextBoldCursor {
                 delegate.onSpansChanged();
             }
         });
-        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+
+        builder.setNegativeButton(getString(R.string.Cancel), (dialog, which) -> AndroidUtilities.hideKeyboard(editText));
+
         builder.show().setOnShowListener(dialog -> {
             editText.requestFocus();
             AndroidUtilities.showKeyboard(editText);
         });
-        if (editText != null) {
-            ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) editText.getLayoutParams();
-            if (layoutParams != null) {
-                if (layoutParams instanceof FrameLayout.LayoutParams) {
-                    ((FrameLayout.LayoutParams) layoutParams).gravity = Gravity.CENTER_HORIZONTAL;
-                }
-                layoutParams.rightMargin = layoutParams.leftMargin = AndroidUtilities.dp(24);
-                layoutParams.height = AndroidUtilities.dp(36);
-                editText.setLayoutParams(layoutParams);
+
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) editText.getLayoutParams();
+        if (layoutParams != null) {
+            if (layoutParams instanceof FrameLayout.LayoutParams) {
+                ((FrameLayout.LayoutParams) layoutParams).gravity = Gravity.CENTER_HORIZONTAL;
             }
-            editText.setSelection(0, editText.getText().length());
+            layoutParams.rightMargin = layoutParams.leftMargin = AndroidUtilities.dp(24);
+            layoutParams.height = AndroidUtilities.dp(36);
+            layoutParams.bottomMargin = AndroidUtilities.dp(15);
+            editText.setLayoutParams(layoutParams);
         }
+        editText.setSelection(0, editText.getText().length());
     }
     //Cherrygram
 }

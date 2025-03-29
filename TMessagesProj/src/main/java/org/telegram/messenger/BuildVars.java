@@ -48,12 +48,17 @@ public class BuildVars {
         APP_HASH = Extra.APP_HASH;
         PLAYSTORE_APP_URL = Constants.UPDATE_APP_URL;
         HUAWEI_STORE_URL = Constants.UPDATE_APP_URL;
+
         if (ApplicationLoader.applicationContext != null) {
             SharedPreferences sharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("systemConfig", Context.MODE_PRIVATE);
             LOGS_ENABLED = DEBUG_VERSION || sharedPreferences.getBoolean("logsEnabled", DEBUG_VERSION);
             if (LOGS_ENABLED) {
+                final Thread.UncaughtExceptionHandler pastHandler = Thread.getDefaultUncaughtExceptionHandler();
                 Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-                    FileLog.fatal(exception, true);
+                    FileLog.fatal(exception, false);
+                    if (pastHandler != null) {
+                        pastHandler.uncaughtException(thread, exception);
+                    }
                 });
             }
         }
@@ -79,7 +84,7 @@ public class BuildVars {
         return false;
     }
 
-    private static Boolean betaApp;
+//    private static Boolean betaApp;
     public static boolean isBetaApp() {
         /*if (betaApp == null) {
             betaApp = ApplicationLoader.applicationContext != null && "org.telegram.messenger.beta".equals(ApplicationLoader.applicationContext.getPackageName());
@@ -94,7 +99,7 @@ public class BuildVars {
     }
 
     public static String getSmsHash() {
-        return Extra.SMS_HASH;
 //        return ApplicationLoader.isStandaloneBuild() ? "w0lkcmTZkKh" : (DEBUG_VERSION ? "O2P2z+/jBpJ" : "oLeq9AcOZkT");
+        return Extra.SMS_HASH;
     }
 }

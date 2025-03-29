@@ -209,7 +209,6 @@
     <string name="CP_NoRounding">Адключыць акругленне лічб</string>
     <string name="CP_DeleteForAll">Выкарыстоўваць \"Выдаліць для ўсіх\" па ўмаўчанні</string>
     <string name="CP_DeleteForAll_Desc">Пры выдаленні паведамленняў галачка будзе ставіцца аўтаматычна.</string>
-    <string name="CP_ConfirmCalls">Пытаць перад званком</string>
     <string name="CP_ForwardMsgDate">Паказваць дату перасланага паведамлення</string>
     <string name="CP_ShowSeconds">Паказваць час з секундамі</string>
     <string name="CP_LeftBottomButtonAction">Дзеянне левай кнопкі</string>
@@ -315,7 +314,6 @@
     <string name="UP_Not_Found">Выкарыстоўваецца апошняя версія Cherrygram.</string>
     <string name="UP_UpdateAvailable">Даступна абнаўленне!</string>
     <string name="UP_Version">Версія</string>
-    <string name="UP_UpdateSize">Памер абнаўлення</string>
     <string name="UP_Changelog">Спіс змен:</string>
     <string name="UP_ChangelogRead">Тыкніце, каб прачытаць</string>
     <string name="UP_Download">Спампаваць</string>

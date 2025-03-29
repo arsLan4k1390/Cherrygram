@@ -51,6 +51,7 @@ import org.telegram.ui.Cells.LoadingCell;
 import org.telegram.ui.Cells.LocationCell;
 import org.telegram.ui.Cells.ProfileSearchCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
+import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Components.CheckBox2;
 import org.telegram.ui.Components.CombinedDrawable;
@@ -878,6 +879,8 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 	private class ListAdapter extends RecyclerListView.SelectionAdapter {
 
 		private Context mContext;
+		private int createLinkRow;
+		private int createLinkInfoRow;
 		private int activeHeaderRow;
 		private int callsHeaderRow;
 		private int activeStartRow;
@@ -893,6 +896,8 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 		}
 
 		private void updateRows() {
+			createLinkRow = -1;
+			createLinkInfoRow = -1;
 			activeHeaderRow = -1;
 			callsHeaderRow = -1;
 			activeStartRow = -1;
@@ -986,7 +991,7 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 		@Override
 		public boolean isEnabled(RecyclerView.ViewHolder holder) {
 			int type = holder.getItemViewType();
-			return type == 0 || type == 4;
+			return type == 0 || type == 4 || type == 6;
 		}
 
 		@Override
@@ -1011,7 +1016,7 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 					break;
 				case 2:
 					view = new TextInfoPrivacyCell(mContext);
-					view.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
+					view.setBackground(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
 					break;
 				case 3:
 					view = new HeaderCell(mContext, Theme.key_windowBackgroundWhiteBlueHeader, 21, 15, 2, false, getResourceProvider());
@@ -1020,9 +1025,15 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 				case 4:
 					view = new GroupCallCell(mContext);
 					break;
+				case 6:
+					view = new TextCell(mContext);
+					view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+					break;
 				case 5:
 				default:
-					view = new ShadowSectionCell(mContext);
+					view = new TextInfoPrivacyCell(mContext);
+					((TextInfoPrivacyCell) view).setFixedSize(12);
+					break;
 			}
 			return new RecyclerListView.Holder(view);
 		}
@@ -1107,6 +1118,23 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 					cell.profileSearchCell.setData(chat, null, null, text, false, false);
 					break;
 				}
+				case 5: {
+					TextInfoPrivacyCell cell = (TextInfoPrivacyCell) holder.itemView;
+					if (position == createLinkInfoRow) {
+						cell.setText("You can create a link that will allow your friends on Telegram to join the call.");
+						cell.setFixedSize(0);
+					} else {
+						cell.setText(null);
+						cell.setFixedSize(12);
+					}
+					break;
+				}
+				case 6: {
+					TextCell cell = (TextCell) holder.itemView;
+					cell.setTextAndIcon("Create Call Link", R.drawable.menu_link_create, false);
+					cell.setColors(Theme.key_windowBackgroundWhiteBlueText4, Theme.key_windowBackgroundWhiteBlueText4);
+					break;
+				}
 			}
 		}
 
@@ -1120,8 +1148,10 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 				return 4;
 			} else if (i == loadingCallsRow) {
 				return 1;
-			} else if (i == sectionRow) {
+			} else if (i == sectionRow || i == createLinkInfoRow) {
 				return 5;
+			} else if (i == createLinkRow) {
+				return 6;
 			}
 			return 2;
 		}

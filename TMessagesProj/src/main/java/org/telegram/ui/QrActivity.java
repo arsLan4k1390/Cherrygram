@@ -1720,13 +1720,16 @@ public class QrActivity extends BaseFragment {
         }
     }
 
-    @Override
-    public boolean isActionBarCrossfadeEnabled() {
-        return false;
-    }
-
     interface OnItemSelectedListener {
 
         void onItemSelected(EmojiThemes theme, int position);
     }
+
+    /** Cherrygram start */
+    @Override
+    public boolean isActionBarCrossfadeEnabled() {
+        return false;
+    }
+    /** Cherrygram finish */
+
 }

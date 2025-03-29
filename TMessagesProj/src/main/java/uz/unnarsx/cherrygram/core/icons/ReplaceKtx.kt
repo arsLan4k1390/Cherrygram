@@ -16,3 +16,9 @@ fun newSparseInt(vararg intPairs: Pair<Int, Int>) = SparseIntArray().apply {
         this.put(it.first, it.second)
     }
 }
+
+fun newHashMap(vararg intPairs: Pair<Int, Int>) = HashMap<Int, Int>().apply {
+    intPairs.forEach {
+        this[it.first] = it.second
+    }
+}

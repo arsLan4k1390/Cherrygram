@@ -79,7 +79,7 @@ public class BlurPreferencesBottomSheet extends BottomSheet {
         blurRadiusTextView.setGravity((LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.TOP);
         linearLayout.addView(blurRadiusTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.TOP, 21, 13, 21, 0));
 
-        BlurPreferencesBottomSheet.BlurIntensityCell blurIntensityCell = new BlurPreferencesBottomSheet.BlurIntensityCell(context) {
+        BlurIntensityCell blurIntensityCell = new BlurIntensityCell(context) {
             @Override
             protected void onBlurIntensityChange(int percentage, boolean layout) {
                 super.onBlurIntensityChange(percentage, layout);

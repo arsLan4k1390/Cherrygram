@@ -37,13 +37,16 @@ import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.Components.SnowflakesEffect;
+
+import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.drawer.cells.BlurIntensityCell;
 import uz.unnarsx.cherrygram.preferences.drawer.cells.DrawerProfilePreviewCell;
 import uz.unnarsx.cherrygram.preferences.drawer.cells.ThemeSelectorDrawerCell;
-import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers;
 
 public class DrawerPreferencesEntry extends BaseFragment {
     private int rowCount;
@@ -118,7 +121,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
         listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         listView.setVerticalScrollBarEnabled(false);
         listView.setAdapter(listAdapter);
-        if(listView.getItemAnimator() != null){
+        if (listView.getItemAnimator() != null) {
             ((DefaultItemAnimator) listView.getItemAnimator()).setDelayAnimations(false);
         }
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
@@ -128,15 +131,25 @@ public class DrawerPreferencesEntry extends BaseFragment {
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawSnowInDrawer());
                 }
-                parentLayout.rebuildAllFragmentViews(true, true);
+
+                listAdapter.notifyItemChanged(drawerRow, new Object());
+
+                if (CherrygramAppearanceConfig.INSTANCE.getDrawSnowInDrawer()) {
+                    profilePreviewCell.snowflakesEffect = new SnowflakesEffect(0);
+                    profilePreviewCell.snowflakesEffect.setColorKey(Theme.key_chats_menuName);
+                    profilePreviewCell.snowflakesEffect.onDraw(profilePreviewCell, null);
+                } else {
+                    profilePreviewCell.snowflakesEffect = null;
+                }
             } else if (position == drawerAvatarAsBackgroundRow) {
                 CherrygramAppearanceConfig.INSTANCE.setDrawerAvatar(!CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar());
                 }
-                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+
                 TransitionManager.beginDelayedTransition(profilePreviewCell);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
+
                 if (CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar()) {
                     updateRowsId(false);
                     listAdapter.notifyItemRangeInserted(showGradientRow, 4 + (CherrygramAppearanceConfig.INSTANCE.getDrawerBlur() ? 3:0));
@@ -149,29 +162,34 @@ public class DrawerPreferencesEntry extends BaseFragment {
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawerSmallAvatar());
                 }
-                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+
+                TransitionManager.beginDelayedTransition(profilePreviewCell);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
             } else if (position == drawerDarkenBackgroundRow) {
                 CherrygramAppearanceConfig.INSTANCE.setDrawerDarken(!CherrygramAppearanceConfig.INSTANCE.getDrawerDarken());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawerDarken());
                 }
-                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+
+                TransitionManager.beginDelayedTransition(profilePreviewCell);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
             } else if (position == showGradientRow) {
                 CherrygramAppearanceConfig.INSTANCE.setDrawerGradient(!CherrygramAppearanceConfig.INSTANCE.getDrawerGradient());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawerGradient());
                 }
-                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+
+                TransitionManager.beginDelayedTransition(profilePreviewCell);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
             } else if (position == drawerBlurBackgroundRow) {
                 CherrygramAppearanceConfig.INSTANCE.setDrawerBlur(!CherrygramAppearanceConfig.INSTANCE.getDrawerBlur());
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getDrawerBlur());
                 }
-                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+
+                TransitionManager.beginDelayedTransition(profilePreviewCell);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
+
                 if (CherrygramAppearanceConfig.INSTANCE.getDrawerBlur()) {
                     listAdapter.notifyItemRangeInserted(drawerDividerRow, 3);
                 } else {
@@ -179,7 +197,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                 }
                 updateRowsId(false);
             } else if (position == menuItemsRow) {
-                AlertDialogSwitchers.showDrawerIconsAlert(this);
+                showDrawerItemsSelector();
             }
         });
 
@@ -265,7 +283,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                 case 3:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
                     if (position == drawerSnowRow) {
-                        textCheckCell.setTextAndCheck(getString(R.string.CP_Snowflakes_Header), CherrygramAppearanceConfig.INSTANCE.getDrawSnowInDrawer(), !CherrygramAppearanceConfig.INSTANCE.getDrawerBlur());
+                        textCheckCell.setTextAndCheck(getString(R.string.CP_Snowflakes_Header), CherrygramAppearanceConfig.INSTANCE.getDrawSnowInDrawer(), true);
                     } else if (position == drawerAvatarAsBackgroundRow) {
                         textCheckCell.setTextAndCheck(getString(R.string.AP_DrawerAvatar), CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar(), CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar());
                     } else if (position == showAvatarRow) {
@@ -322,15 +340,14 @@ public class DrawerPreferencesEntry extends BaseFragment {
                             super.onBlurIntensityChange(percentage, layout);
                             CherrygramAppearanceConfig.INSTANCE.setDrawerBlurIntensity(percentage);
                             RecyclerView.ViewHolder holder = listView.findViewHolderForAdapterPosition(editBlurRow);
-                            if (holder != null && holder.itemView instanceof BlurIntensityCell) {
-                                BlurIntensityCell cell = (BlurIntensityCell) holder.itemView;
+                            if (holder != null && holder.itemView instanceof BlurIntensityCell cell) {
                                 if (layout) {
                                     cell.requestLayout();
                                 } else {
                                     cell.invalidate();
                                 }
                             }
-                            getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
+
                             listAdapter.notifyItemChanged(drawerRow, new Object());
                         }
                     };
@@ -382,6 +399,86 @@ public class DrawerPreferencesEntry extends BaseFragment {
             }
             return 1;
         }
+    }
+
+    private void showDrawerItemsSelector() {
+        ArrayList<String> prefTitle = new ArrayList<>();
+        ArrayList<Integer> prefIcon = new ArrayList<>();
+        ArrayList<Boolean> prefCheck = new ArrayList<>();
+        ArrayList<Boolean> prefDivider = new ArrayList<>();
+        ArrayList<Runnable> clickListener = new ArrayList<>();
+
+        prefTitle.add(getUserConfig().getEmojiStatus() != null ? getString(R.string.ChangeEmojiStatus) : getString(R.string.SetEmojiStatus));
+        prefIcon.add(getUserConfig().getEmojiStatus() != null ? R.drawable.msg_status_edit : R.drawable.msg_status_set);
+        prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getChangeStatusDrawerButton());
+        prefDivider.add(false);
+        clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setChangeStatusDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getChangeStatusDrawerButton()));
+
+        prefTitle.add(getString(R.string.MyProfile));
+        prefIcon.add(R.drawable.left_status_profile);
+        prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getMyProfileDrawerButton());
+        prefDivider.add(true);
+        clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setMyProfileDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getMyProfileDrawerButton()));
+
+        prefTitle.add(getString(R.string.NewGroup));
+        prefIcon.add(R.drawable.msg_groups);
+        prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getCreateGroupDrawerButton());
+        prefDivider.add(false);
+        clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setCreateGroupDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCreateGroupDrawerButton()));
+
+        prefTitle.add(getString(R.string.NewChannel));
+        prefIcon.add(R.drawable.msg_channel);
+        prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getCreateChannelDrawerButton());
+        prefDivider.add(false);
+        clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setCreateChannelDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCreateChannelDrawerButton()));
+
+        prefTitle.add(getString(R.string.Contacts));
+        prefIcon.add(R.drawable.msg_contacts);
+        prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getContactsDrawerButton());
+        prefDivider.add(false);
+        clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setContactsDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getContactsDrawerButton()));
+
+        prefTitle.add(getString(R.string.Calls));
+        prefIcon.add(R.drawable.msg_calls);
+        prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getCallsDrawerButton());
+        prefDivider.add(false);
+        clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setCallsDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCallsDrawerButton()));
+
+        prefTitle.add(getString(R.string.SavedMessages));
+        prefIcon.add(R.drawable.msg_saved);
+        prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getSavedMessagesDrawerButton());
+        prefDivider.add(false);
+        clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setSavedMessagesDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getSavedMessagesDrawerButton()));
+
+        prefTitle.add(getString(R.string.ArchivedChats));
+        prefIcon.add(R.drawable.msg_archive);
+        prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getArchivedChatsDrawerButton());
+        prefDivider.add(false);
+        clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setArchivedChatsDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getArchivedChatsDrawerButton()));
+
+        prefTitle.add(getString(R.string.AuthAnotherClient));
+        prefIcon.add(R.drawable.msg_qrcode);
+        prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getScanQRDrawerButton());
+        prefDivider.add(true);
+        clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setScanQRDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getScanQRDrawerButton()));
+
+        prefTitle.add(getString(R.string.CGP_AdvancedSettings));
+        prefIcon.add(R.drawable.msg_settings);
+        prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getCGPreferencesDrawerButton());
+        prefDivider.add(false);
+        clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setCGPreferencesDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCGPreferencesDrawerButton()));
+
+        PopupHelper.showSwitchAlert(
+                getString(R.string.AP_DrawerButtonsCategory),
+                this,
+                prefTitle,
+                prefIcon,
+                prefCheck,
+                null,
+                prefDivider,
+                clickListener,
+                () -> getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged)
+        );
     }
 
 }

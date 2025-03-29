@@ -22,8 +22,8 @@ import org.telegram.ui.Components.BulletinFactory
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics
-import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
+import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
@@ -90,7 +90,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                 value = "@${Constants.CG_CHANNEL_USERNAME}"
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    bf.messagesController.openByUserName(Constants.CG_CHANNEL_USERNAME, bf, 1);
+                    bf.messagesController.openByUserName(Constants.CG_CHANNEL_USERNAME, bf, 1)
                 }
             }
             textIcon {
@@ -99,7 +99,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                 value = "@${Constants.CG_CHAT_USERNAME}"
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    bf.messagesController.openByUserName(Constants.CG_CHAT_USERNAME, bf, 1);
+                    bf.messagesController.openByUserName(Constants.CG_CHAT_USERNAME, bf, 1)
                 }
             }
             textIcon {

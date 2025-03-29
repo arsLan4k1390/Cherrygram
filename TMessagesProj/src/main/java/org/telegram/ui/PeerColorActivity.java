@@ -94,6 +94,7 @@ import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.ButtonBounce;
 import org.telegram.ui.Components.ColoredImageSpan;
+import org.telegram.ui.Components.CreateRtmpStreamBottomSheet;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.Easings;
 import org.telegram.ui.Components.FilledTabsView;
@@ -307,7 +308,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                             view = headerCell;
                             break;
                         case VIEW_TYPE_GIFT:
-                            GiftCell giftCell = new GiftCell(getContext(), resourceProvider);
+                            GiftCell giftCell = new GiftCell(getContext(), false, resourceProvider);
                             view = giftCell;
                             break;
                         case VIEW_TYPE_FLICKER:
@@ -2936,11 +2937,6 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
         }
     }
 
-    @Override
-    public boolean isActionBarCrossfadeEnabled() {
-        return false;
-    }
-
     public static class GiftCell extends FrameLayout {
 
         public long id;
@@ -2951,7 +2947,10 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
         public final GiftSheet.CardBackground cardBackground;
         public final BackupImageView imageView;
 
-        public GiftCell(Context context, Theme.ResourcesProvider resourcesProvider) {
+        @Nullable
+        private final GiftSheet.Ribbon ribbon;
+
+        public GiftCell(Context context, boolean withRibbon, Theme.ResourcesProvider resourcesProvider) {
             super(context);
 
             card = new FrameLayout(context);
@@ -2961,6 +2960,13 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
 
             imageView = new BackupImageView(context);
             card.addView(imageView, LayoutHelper.createFrame(80, 80, Gravity.CENTER, 0, 12, 0, 12));
+
+            if (withRibbon) {
+                ribbon = new GiftSheet.Ribbon(context);
+                addView(ribbon, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.RIGHT | Gravity.TOP, 0, 2, 1, 0));
+            } else {
+                ribbon = null;
+            }
         }
 
         public void set(int index, TL_stars.TL_starGiftUnique gift) {
@@ -2975,6 +2981,25 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
 
             cardBackground.setBackdrop(backdrop);
             cardBackground.setPattern(pattern);
+        }
+
+        public void set(int index, TL_stars.SavedStarGift g) {
+            id = g.gift.id;
+            final boolean center = index % 3 == 1;
+            setPadding(center ? dp(4) : 0, 0, center ? dp(4) : 0, 0);
+
+            setSticker(g.gift.getDocument(), g.gift);
+
+            backdrop = findAttribute(g.gift.attributes, TL_stars.starGiftAttributeBackdrop.class);
+            pattern = findAttribute(g.gift.attributes, TL_stars.starGiftAttributePattern.class);
+
+            cardBackground.setBackdrop(backdrop);
+            cardBackground.setPattern(pattern);
+
+            if (ribbon != null) {
+                ribbon.setBackdrop(backdrop);
+                ribbon.setText(9, "#" + LocaleController.formatNumber(g.gift.num, ','), false);
+            }
         }
 
         public long getGiftId() {
@@ -3017,6 +3042,27 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                 parentObject
             );
         }
+
+        public static class Factory extends UItem.UItemFactory<GiftCell> {
+            static { setup(new Factory()); }
+
+            @Override
+            public GiftCell createView(Context context, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
+                return new GiftCell(context, true, resourcesProvider);
+            }
+
+            @Override
+            public void bindView(View view, UItem item, boolean divider) {
+                ((GiftCell) view).set(-1, (TL_stars.SavedStarGift) item.object);
+                ((GiftCell) view).setSelected(item.checked, false);
+            }
+
+            public static UItem asGiftCell(TL_stars.SavedStarGift gift) {
+                UItem item = UItem.ofFactory(Factory.class);
+                item.object = gift;
+                return item;
+            }
+        }
     }
 
     public static boolean eq(TLRPC.EmojiStatus emoji_status, TLRPC.TL_emojiStatusCollectible b) {
@@ -3025,4 +3071,12 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
         final TLRPC.TL_emojiStatusCollectible a = (TLRPC.TL_emojiStatusCollectible) emoji_status;
         return a.collectible_id == b.collectible_id;
     }
+
+    /** Cherrygram start */
+    @Override
+    public boolean isActionBarCrossfadeEnabled() {
+        return false;
+    }
+    /** Cherrygram finish */
+
 }

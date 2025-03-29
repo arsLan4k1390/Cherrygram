@@ -18,7 +18,7 @@ import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
-import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.hint
@@ -108,7 +108,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                 title = getString(R.string.CP_ArchiveStories)
                 icon = R.drawable.msg_archive
                 listener = TGKitTextIconRow.TGTIListener {
-                    AlertDialogSwitchers.showArchiveStoriesAlert(bf)
+                    showStoriesArchiveConfigurator(bf)
                 }
                 divider = true
             }
@@ -192,4 +192,57 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
 
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("general_preferences_screen")
     }
+
+    private fun showStoriesArchiveConfigurator(fragment: BaseFragment) {
+        val menuItems = listOf(
+            MenuItemConfig(
+                getString(R.string.FilterContacts),
+                R.drawable.msg_contacts,
+                { CherrygramCoreConfig.archiveStoriesFromUsers },
+                { CherrygramCoreConfig.archiveStoriesFromUsers = !CherrygramCoreConfig.archiveStoriesFromUsers }
+            ),
+            MenuItemConfig(
+                getString(R.string.FilterChannels),
+                R.drawable.msg_channel,
+                { CherrygramCoreConfig.archiveStoriesFromChannels },
+                { CherrygramCoreConfig.archiveStoriesFromChannels = !CherrygramCoreConfig.archiveStoriesFromChannels }
+            ),
+        )
+
+        val prefTitle = ArrayList<String>()
+        val prefIcon = ArrayList<Int>()
+        val prefCheck = ArrayList<Boolean>()
+        val prefDivider = ArrayList<Boolean>()
+        val clickListener = ArrayList<Runnable>()
+
+        for (item in menuItems) {
+            prefTitle.add(item.titleRes)
+            prefIcon.add(item.iconRes)
+            prefCheck.add(item.isChecked())
+            prefDivider.add(item.divider)
+            clickListener.add(Runnable { item.toggle() })
+        }
+
+        PopupHelper.showSwitchAlert(
+            getString(R.string.CP_ArchiveStories),
+            fragment,
+            prefTitle,
+            prefIcon,
+            prefCheck,
+            null,
+            prefDivider,
+            clickListener,
+            null
+        )
+
+    }
+
+    data class MenuItemConfig(
+        val titleRes: String,
+        val iconRes: Int,
+        val isChecked: () -> Boolean,
+        val toggle: () -> Unit,
+        val divider: Boolean = false
+    )
+
 }

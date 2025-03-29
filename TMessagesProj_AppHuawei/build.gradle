@@ -9,7 +9,6 @@ import java.util.concurrent.TimeUnit
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.huawei.agconnect'
-apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.firebase.crashlytics'
 
 repositories {
@@ -23,6 +22,7 @@ configurations {
 }
 
 configurations.configureEach {
+    exclude group: 'com.google.firebase', module: 'firebase-core'
     exclude group: 'androidx.recyclerview', module: 'recyclerview'
 }
 
@@ -54,8 +54,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_14
-        targetCompatibility JavaVersion.VERSION_14
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
 
         coreLibraryDesugaringEnabled true
     }
@@ -351,3 +351,5 @@ tasks.configureEach { task ->
         }
     }
 }
+
+apply plugin: 'com.google.gms.google-services'

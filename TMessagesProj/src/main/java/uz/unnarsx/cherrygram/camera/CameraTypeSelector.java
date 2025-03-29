@@ -48,19 +48,22 @@ import org.telegram.ui.LaunchActivity;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class CameraTypeSelector extends LinearLayout {
+
     String[] strings = new String[]{
             "Telegram",
             "CameraX",
             "Camera 2 (Telegram)",
             getString(R.string.CP_CameraTypeSystem),
     };
+
     int[] icons = new int[]{
-            R.drawable.telegram_camera_icon,
-            R.drawable.cherry_camera_icon,
-            R.drawable.camerax_icon,
-            R.drawable.android_camera_icon
+            R.drawable.camera_icon_telegram,
+            R.drawable.camera_icon_cherrygram,
+            R.drawable.camera_icon_camerax,
+            R.drawable.camera_icon_system
     };
     int currentIcon = CherrygramCameraConfig.INSTANCE.getCameraType();
+
     private final NumberPicker numberPicker;
     private final FrameLayout preview;
 

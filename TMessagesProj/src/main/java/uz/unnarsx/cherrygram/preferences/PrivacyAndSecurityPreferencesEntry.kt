@@ -132,33 +132,23 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                         AndroidUtilities.runOnUIThread({
                             val activity: UsersSelectActivity = getUsersSelectActivity()
                             activity.setDelegate { ids: ArrayList<Long>, flags: Int ->
-                                val arr = ChatsPasswordHelper.getArrayList(ChatsPasswordHelper.Passcode_Array)
-//                                arr?.clear() // Has issues on different accounts
+                                val chatIds = ids.toSet()
+                                val lockedChats = ChatsPasswordHelper.getArrayList(ChatsPasswordHelper.PASSCODE_ARRAY).toMutableSet()
 
-                                val chatIds = ArrayList<Long>()
-                                chatIds.addAll(ids)
+                                if (CherrygramCoreConfig.isDevBuild()) FileLog.d("old locked chats array: $lockedChats")
+                                lockedChats.clear()
 
-                                if (chatIds.isEmpty()) {
-                                    arr?.clear()
-                                } else {
-                                    for (b in chatIds.indices) {
-                                        val selectedChatId = chatIds[b]
-
-                                        if (arr != null) {
-                                            if (DialogObject.isUserDialog(selectedChatId)) {
-                                                if (!arr.contains(selectedChatId.toString())) {
-                                                    arr.add(selectedChatId.toString())
-                                                }
-                                            } else if (DialogObject.isChatDialog(selectedChatId)) {
-                                                if (!arr.contains(selectedChatId.toString())) {
-                                                    arr.add(selectedChatId.toString())
-                                                }
-                                            }
+                                if (chatIds.isNotEmpty()) {
+                                    chatIds.forEach { id ->
+                                        if (DialogObject.isUserDialog(id) || DialogObject.isChatDialog(id)) {
+                                            lockedChats.add(id.toString())
                                         }
                                     }
                                 }
-                                ChatsPasswordHelper.saveArrayList(arr, ChatsPasswordHelper.Passcode_Array)
-                                if (CherrygramCoreConfig.isDevBuild()) FileLog.d("new locked chats array: $arr")
+
+                                ChatsPasswordHelper.saveArrayList(ArrayList(lockedChats), ChatsPasswordHelper.PASSCODE_ARRAY)
+                                if (CherrygramCoreConfig.isDevBuild()) FileLog.d("new locked chats array: $lockedChats")
+
                                 value = ChatsPasswordHelper.getLockedChatsCount().toString()
                             }
                             bf.presentFragment(activity)
@@ -166,6 +156,23 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     }
                 }
             }
+            /*textIcon {
+                isAvailable = CherrygramCoreConfig.isDevBuild() && CherrygramPrivacyConfig.askBiometricsToOpenChat && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+
+                icon = R.drawable.msg_clear
+                title = getString(R.string.SP_LockedChats)
+                value = ChatsPasswordHelper.getLockedChatsCount().toString()
+                divider = true
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    val arr = ChatsPasswordHelper.getArrayList(ChatsPasswordHelper.Passcode_Array)!!
+                    arr.clear()
+                    ChatsPasswordHelper.saveArrayList(arr, ChatsPasswordHelper.Passcode_Array)
+
+                    value = ChatsPasswordHelper.getLockedChatsCount().toString()
+                    bf.parentLayout.rebuildAllFragmentViews(true, true)
+                }
+            }*/
             switch {
                 isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
@@ -218,7 +225,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
 
     private fun getUsersSelectActivity(): UsersSelectActivity {
         val chatsList = ArrayList<Long>()
-        for (chatId in ChatsPasswordHelper.getArrayList(ChatsPasswordHelper.Passcode_Array)!!) {
+        for (chatId in ChatsPasswordHelper.getArrayList(ChatsPasswordHelper.PASSCODE_ARRAY)) {
 
             val user = MessagesController.getInstance(UserConfig.selectedAccount).getUser(chatId!!.toLong())
             val chat = MessagesController.getInstance(UserConfig.selectedAccount).getChat(-chatId!!.toLong())

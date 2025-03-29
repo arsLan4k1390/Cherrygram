@@ -23,6 +23,7 @@ import org.telegram.messenger.camera.CameraView;
 import java.io.File;
 
 public abstract class BaseCameraView extends FrameLayout {
+
     public BaseCameraView(@NonNull Context context) {
         super(context);
     }
@@ -71,4 +72,5 @@ public abstract class BaseCameraView extends FrameLayout {
     public abstract float getTextureHeight(float width, float height);
 
     public abstract void startSwitchingAnimation();
+
 }

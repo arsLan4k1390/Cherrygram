@@ -184,10 +184,10 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                 if (view instanceof UserCell) {
                     ItemOptions options = ItemOptions.makeOptions(this, view);
                     options.add(R.drawable.msg_openprofile, getString(R.string.OpenProfile),
-                            () -> presentFragment(ProfileActivity.of(ChatsHelper2.getCustomChatID())
+                            () -> presentFragment(ProfileActivity.of(ChatsHelper2.INSTANCE.getCustomChatID())
                     ));
                     options.add(R.drawable.msg_discussion, getString(R.string.AccDescrOpenChat),
-                            () -> presentFragment(ChatActivity.of(ChatsHelper2.getCustomChatID())
+                            () -> presentFragment(ChatActivity.of(ChatsHelper2.INSTANCE.getCustomChatID())
                     ));
                     options.show();
                 }
@@ -376,7 +376,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                         presentFragment(fragment);
                     });
                     if (position == customChatPreviewRow) {
-                        long chatId = ChatsHelper2.getCustomChatID();
+                        long chatId = ChatsHelper2.INSTANCE.getCustomChatID();
 
                         TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-chatId);
                         TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(chatId);

@@ -74,7 +74,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 
 public class AddressBarList extends FrameLayout {
 
@@ -1115,17 +1114,11 @@ public class AddressBarList extends FrameLayout {
             if (loading || endReached) return;
             loading = true;
             final long selfId = UserConfig.getInstance(currentAccount).getClientUserId();
-            long chatID;
-            if (CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages()) {
-                chatID = ChatsHelper2.getCustomChatID();
-            } else {
-                chatID = selfId;
-            }
             int min_id = Integer.MAX_VALUE;
             for (int i = 0; i < links.size(); ++i) {
                 min_id = Math.min(min_id, links.get(i).getId());
             }
-            MediaDataController.getInstance(currentAccount).loadMedia(chatID, links.isEmpty() ? 30 : 50, min_id == Integer.MAX_VALUE ? 0 : min_id, 0, MediaDataController.MEDIA_URL, 0, 1, guid, 0, null, query);
+            MediaDataController.getInstance(currentAccount).loadMedia(ChatsHelper2.INSTANCE.getCustomChatID(), links.isEmpty() ? 30 : 50, min_id == Integer.MAX_VALUE ? 0 : min_id, 0, MediaDataController.MEDIA_URL, 0, 1, guid, 0, null, query);
         }
 
         @Override

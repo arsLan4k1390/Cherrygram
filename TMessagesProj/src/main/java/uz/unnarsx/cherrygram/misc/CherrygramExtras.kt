@@ -11,7 +11,9 @@ package uz.unnarsx.cherrygram.misc
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.Color
 import android.widget.Toast
+import androidx.core.graphics.ColorUtils
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +28,15 @@ import org.telegram.tgnet.TLObject
 import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.AlertDialog
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.CallLogActivity
+import org.telegram.ui.ChatActivity
+import org.telegram.ui.Components.MediaActivity
+import org.telegram.ui.ContactsActivity
+import org.telegram.ui.GroupCreateActivity
+import org.telegram.ui.ProfileActivity
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
+import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry
+import uz.unnarsx.cherrygram.preferences.tgkit.TGKitSettingsFragment
 import kotlin.system.exitProcess
 
 object CherrygramExtras : CoroutineScope by MainScope() {
@@ -159,6 +169,37 @@ object CherrygramExtras : CoroutineScope by MainScope() {
 
     private fun reviewInGooglePlay(context: Context) {
         Browser.openUrl(context, "market://details?id=${context.packageName}")
+    }
+
+    fun needToAnimateFragment(fragment: BaseFragment) : Boolean {
+        return fragment is CallLogActivity
+                || fragment is ContactsActivity
+                || fragment is ChatActivity
+                || fragment is GroupCreateActivity
+                || fragment is MediaActivity
+                || fragment is ProfileActivity
+
+                || fragment is TGKitSettingsFragment
+                || fragment is ExperimentalPreferencesEntry
+    }
+
+    fun getTransparentColor(color: Int, opacity: Float): Int {
+        var alpha = Color.alpha(color)
+        val red = Color.red(color)
+        val green = Color.green(color)
+        val blue = Color.blue(color)
+        // Set alpha based on your logic, here I'm making it 25% of it's initial value.
+        alpha = (alpha * opacity).toInt()
+        return Color.argb(alpha, red, green, blue)
+    }
+
+    fun isLight(color: Int): Boolean {
+        val red = Color.red(color)
+        val green = Color.green(color)
+        val blue = Color.blue(color)
+        val hsl = FloatArray(3)
+        ColorUtils.RGBToHSL(red, green, blue, hsl)
+        return hsl[2] >= 0.5f
     }
 
 }

@@ -80,6 +80,7 @@ import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Adapters.DialogsAdapter;
@@ -344,6 +345,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     private int currentAccount;
     private CustomDialog customDialog;
     private long currentDialogId;
+    private String customMessage;
     private int currentDialogFolderId;
     private int currentDialogFolderDialogsCount;
     private int currentEditDate;
@@ -444,9 +446,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
     private final AnimatedFloat premiumBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
     private boolean premiumBlocked;
+    private final AnimatedFloat starsBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
+    private long starsPriceBlocked;
 
     public boolean isBlocked() {
         return premiumBlocked;
+    }
+    public long getStarsPrice() {
+        return starsPriceBlocked;
     }
 
     protected CheckBox2 checkBox;
@@ -626,6 +633,14 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         emojiStatus = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, dp(22));
         botVerification = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, dp(17));
         avatarImage.setAllowLoadingOnAttachedOnly(true);
+    }
+
+    public void setCustomMessage(String message) {
+        if (!TextUtils.equals(customMessage, message)) {
+            customMessage = message;
+            buildLayout();
+            requestLayout();
+        }
     }
 
     public void setDialog(TLRPC.Dialog dialog, int type, int folder) {
@@ -1359,6 +1374,12 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     buttonString = spannableStringBuilder;
                 }
                 currentMessagePaint = Theme.dialogs_messagePaint[paintIndex];
+            } else if (!TextUtils.isEmpty(customMessage)) {
+                draftMessage = null;
+                draftVoice = false;
+                messageString = customMessage;
+                timeString = "";
+                currentMessagePaint = Theme.dialogs_messagePaint[paintIndex];
             } else {
                 if (printingString != null) {
                     lastPrintString = printingString;
@@ -1816,7 +1837,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 }
             }
 
-            if (!drawForwardIcon && !isFolderCell() && !isForumCell() && !isDialogFolder() && message != null && message.messageOwner != null && message.messageOwner.action instanceof TLRPC.TL_messageActionStarGift) {
+            if (!drawForwardIcon && !isFolderCell() && !isForumCell() && !isDialogFolder() && draftMessage == null && message != null && message.messageOwner != null && message.messageOwner.action instanceof TLRPC.TL_messageActionStarGift) {
                 drawGiftIcon = true;
                 SpannableStringBuilder builder = new SpannableStringBuilder(messageString);
                 builder.insert(0, "d ");
@@ -1832,7 +1853,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 }
             }
 
-            if (draftMessage != null) {
+            if (!TextUtils.isEmpty(customMessage)) {
+                timeString = "";
+            } else if (draftMessage != null) {
                 timeString = LocaleController.stringForMessageListDate(draftMessage.date);
             } else if (lastMessageDate != 0) {
                 timeString = LocaleController.stringForMessageListDate(lastMessageDate);
@@ -2092,6 +2115,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             if (LocaleController.isRTL) {
                 nameLeft += w;
             }
+        }
+        if (drawBotVerified) {
+            nameWidth -= dp(21);
         }
         try {
             int ellipsizeWidth = nameWidth - dp(12);
@@ -5885,11 +5911,13 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     }
 
     private void updatePremiumBlocked(boolean animated) {
-        final boolean wasPremiumBlocked = premiumBlocked;
-        premiumBlocked = (unsubscribePremiumBlocked != null) && user != null && MessagesController.getInstance(currentAccount).isUserPremiumBlocked(user.id);
-        if (wasPremiumBlocked != premiumBlocked) {
+        final TL_account.RequirementToContact r = (unsubscribePremiumBlocked != null) && user != null ? MessagesController.getInstance(currentAccount).isUserContactBlocked(user.id) : null;
+        if (premiumBlocked != DialogObject.isPremiumBlocked(r) || starsPriceBlocked != DialogObject.getMessagesStarsPrice(r)) {
+            premiumBlocked = DialogObject.isPremiumBlocked(r);
+            starsPriceBlocked = DialogObject.getMessagesStarsPrice(r);
             if (!animated) {
                 premiumBlockedT.set(premiumBlocked, true);
+                starsBlockedT.set(starsPriceBlocked > 0, true);
             }
             invalidate();
         }

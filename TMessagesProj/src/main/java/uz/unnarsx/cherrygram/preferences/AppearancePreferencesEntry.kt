@@ -19,6 +19,7 @@ import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.DialogsActivity
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert
 import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
@@ -51,8 +52,10 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     }
                 }) {
                     CherrygramAppearanceConfig.iconReplacement = it
+
                     (bf.parentActivity as? LaunchActivity)?.reloadResources()
-                    bf.parentLayout.rebuildAllFragmentViews(true, true)
+                    Theme.reloadAllResources(bf.parentActivity)
+                    bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
             }
             switch {
@@ -62,7 +65,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramAppearanceConfig.oneUI_SwitchStyle
                 }) {
                     CherrygramAppearanceConfig.oneUI_SwitchStyle = it
-                    bf.parentLayout.rebuildAllFragmentViews(true, true)
                 }
             }
             switch {
@@ -180,7 +182,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramAppearanceConfig.drawSnowInActionBar
                 }) {
                     CherrygramAppearanceConfig.drawSnowInActionBar = it
-                    bf.parentLayout.rebuildAllFragmentViews(false, false)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {

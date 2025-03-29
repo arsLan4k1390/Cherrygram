@@ -1,3 +1,5 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
@@ -11,6 +13,7 @@ configurations {
 }
 
 configurations.configureEach {
+    exclude group: 'com.google.firebase', module: 'firebase-core'
     exclude group: 'androidx.recyclerview', module: 'recyclerview'
 }
 
@@ -33,6 +36,10 @@ dependencies {
     implementation "androidx.sharetarget:sharetarget:1.2.0"
     implementation 'androidx.interpolator:interpolator:1.0.0'
     implementation 'androidx.biometric:biometric:1.1.0'
+
+    implementation 'com.google.android.gms:play-services-cast-framework:21.4.0'
+    implementation "androidx.mediarouter:mediarouter:1.7.0"
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
 
     compileOnly 'org.checkerframework:checker-qual:2.5.2'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.0'
@@ -86,18 +93,15 @@ dependencies {
             because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
         }
     }
+    implementation 'com.google.android.recaptcha:recaptcha:18.4.0'
 
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
 }
 
-//def isWindows = String.valueOf(DefaultNativePlatform.currentOperatingSystem.toFamilyName() == OperatingSystemFamily.WINDOWS)
+def isWindows = String.valueOf(DefaultNativePlatform.currentOperatingSystem.toFamilyName() == OperatingSystemFamily.WINDOWS)
 android {
     kotlinOptions {
-        jvmTarget = '14'
-    }
-
-    buildFeatures {
-        viewBinding true
+        jvmTarget = '17'
     }
 
     compileSdk 34
@@ -124,13 +128,14 @@ android {
                 'src/main/res-vkui',
                 'src/main/res-solar',
                 'src/main/res-tabs',
-                'src/main/res-payments'
+                'src/main/res-payments',
+                'src/main/res-cherrygram'
         ]
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_14
-        targetCompatibility JavaVersion.VERSION_14
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
 
         coreLibraryDesugaringEnabled true
     }
@@ -162,8 +167,11 @@ android {
 //            ndk.debugSymbolLevel = 'FULL'
             buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"" + APP_VERSION_NAME_CHERRY + "\""
             buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
+//            buildConfigField "String", "APP_CENTER_HASH", "\"\""
+//            buildConfigField "String", "BETA_URL", "\"" + getProps("BETA_PRIVATE_URL") + "\""
             buildConfigField "boolean", "DEBUG_VERSION", "true"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
+            buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
         }
 
         standalone {
@@ -175,9 +183,10 @@ android {
             buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"" + APP_VERSION_NAME_CHERRY + "\""
             buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
 //            buildConfigField "String", "APP_CENTER_HASH", "\"\""
+//            buildConfigField "String", "BETA_URL", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "false"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
-//            buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
+            buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
         }
 
         release {
@@ -190,9 +199,10 @@ android {
             buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"" + APP_VERSION_NAME_CHERRY + "\""
             buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
 //            buildConfigField "String", "APP_CENTER_HASH", "\"\""
+//            buildConfigField "String", "BETA_URL", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "false"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
-//            buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
+            buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
         }
     }
     namespace 'org.telegram.messenger'
@@ -214,7 +224,7 @@ def getProps(String propName) {
         return "";
     }
 }
-//apply plugin: 'com.google.gms.google-services' No matching client found for package name 'org.telegram.messenger'
+apply plugin: 'com.google.gms.google-services'
 
 task checkVisibility {
     doFirst {
@@ -228,7 +238,7 @@ task checkVisibility {
     }
     doLast {
         if (project.gradle.startParameter.taskNames.find { it.contains("HA_public") }) {
-            def privateBuild = file("${projectDir}_AppHockeyApp/afat/HA_private/app.apk")
+            def privateBuild = file("${projectDir}_AppHockeyApp/afat/HA_private/Telegram-Beta.apk")
             if (privateBuild.exists()) {
                 privateBuild.delete()
             }

@@ -45,10 +45,13 @@ object TextFieldAlert {
         val editText = EditTextBoldCursor(context)
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18f)
         editText.setTextColor(Theme.getColor(Theme.key_dialogTextBlack))
+        editText.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader))
+        editText.setCursorSize(AndroidUtilities.dp(20f))
         editText.background = Theme.createEditTextDrawable(context, true)
         editText.isSingleLine = true
         editText.isFocusable = true
         editText.imeOptions = EditorInfo.IME_ACTION_DONE
+        editText.hint = getString(R.string.CG_AppName)
         editText.setText(defaultValue)
         editText.requestFocus()
 
@@ -62,10 +65,11 @@ object TextFieldAlert {
         builder.setNeutralButton(getString(R.string.FirstNameSmall)) { _: DialogInterface?, _: Int ->
             finish(UserObject.getFirstName(user).toString().trim())
         }
-        builder.setPositiveButton(getString(R.string.OK)) { _: DialogInterface?, _: Int ->
+        builder.setPositiveButton(getString(R.string.Save)) { _: DialogInterface?, _: Int ->
+            AndroidUtilities.hideKeyboard(editText)
             finish(editText.text.toString().trim())
         }
-        builder.setNegativeButton(getString(R.string.Cancel), null)
+        builder.setNegativeButton(getString(R.string.Cancel)) { _: AlertDialog?, _: Int -> AndroidUtilities.hideKeyboard(editText) }
         builder.show().setOnShowListener {
             editText.requestFocus()
             AndroidUtilities.showKeyboard(editText)
@@ -77,6 +81,8 @@ object TextFieldAlert {
         }
         layoutParams.leftMargin = AndroidUtilities.dp(24f)
         layoutParams.rightMargin = layoutParams.leftMargin
+        layoutParams.height = AndroidUtilities.dp(36f)
+        layoutParams.bottomMargin = AndroidUtilities.dp(15f)
         editText.layoutParams = layoutParams
     }
 
@@ -98,6 +104,8 @@ object TextFieldAlert {
         val editText = EditTextBoldCursor(context)
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18f)
         editText.setTextColor(Theme.getColor(Theme.key_dialogTextBlack))
+        editText.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader))
+        editText.setCursorSize(AndroidUtilities.dp(20f))
         editText.background = Theme.createEditTextDrawable(context, true)
         editText.isSingleLine = true
         editText.isFocusable = true
@@ -111,9 +119,10 @@ object TextFieldAlert {
         textLayout.addView(editText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 36))
         builder.setView(textLayout)
         builder.setPositiveButton(getString(R.string.OK)) { _: DialogInterface?, _: Int ->
-            finish(removeNonNumericChars(editText.text.toString().trim()))
+            AndroidUtilities.hideKeyboard(editText)
+            finish(removeNonNumericChars(editText.text.toString().trim(), true))
         }
-        builder.setNegativeButton(getString(R.string.Cancel), null)
+        builder.setNegativeButton(getString(R.string.Cancel)) { _: AlertDialog?, _: Int -> AndroidUtilities.hideKeyboard(editText) }
         builder.show().setOnShowListener {
             editText.requestFocus()
             AndroidUtilities.showKeyboard(editText)
@@ -125,6 +134,8 @@ object TextFieldAlert {
         }
         layoutParams.leftMargin = AndroidUtilities.dp(24f)
         layoutParams.rightMargin = layoutParams.leftMargin
+        layoutParams.height = AndroidUtilities.dp(36f)
+        layoutParams.bottomMargin = AndroidUtilities.dp(15f)
         editText.layoutParams = layoutParams
     }
 
@@ -144,6 +155,8 @@ object TextFieldAlert {
         val editText = EditTextBoldCursor(context)
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18f)
         editText.setTextColor(Theme.getColor(Theme.key_dialogTextBlack))
+        editText.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader))
+        editText.setCursorSize(AndroidUtilities.dp(20f))
         editText.background = Theme.createEditTextDrawable(context, true)
         editText.isSingleLine = true
         editText.isFocusable = true
@@ -158,9 +171,10 @@ object TextFieldAlert {
         builder.setView(textLayout)
 
         builder.setPositiveButton(getString(R.string.OK)) { _: DialogInterface?, _: Int ->
+            AndroidUtilities.hideKeyboard(editText)
             finish(editText.text.toString().trim())
         }
-        builder.setNegativeButton(getString(R.string.Cancel), null)
+        builder.setNegativeButton(getString(R.string.Cancel)) { _: AlertDialog?, _: Int -> AndroidUtilities.hideKeyboard(editText) }
         builder.show().setOnShowListener {
             editText.requestFocus()
             AndroidUtilities.showKeyboard(editText)
@@ -172,10 +186,16 @@ object TextFieldAlert {
         }
         layoutParams.leftMargin = AndroidUtilities.dp(24f)
         layoutParams.rightMargin = layoutParams.leftMargin
+        layoutParams.height = AndroidUtilities.dp(36f)
+        layoutParams.bottomMargin = AndroidUtilities.dp(15f)
         editText.layoutParams = layoutParams
     }*/
 
-    private fun removeNonNumericChars(input: String): String {
-        return input.replace(Regex("[^0-9-]"), "")
+    fun removeNonNumericChars(input: String, allowMinus: Boolean): String {
+        return if (allowMinus) {
+            input.replace(Regex("[^0-9-]"), "")
+        } else {
+            input.replace(Regex("[^0-9]"), "")
+        }
     }
 }

@@ -196,7 +196,6 @@
     <string name="CP_NoRounding">غیرفعال کردن رند کردن اعضا</string>
     <string name="CP_DeleteForAll">تیک خوردن «حذف برای همه» بصورت پیش‌فرض</string>
     <string name="CP_DeleteForAll_Desc">تیک گزینه‌ی «حذف برای همه» به‌طور خودکار علامت گذاری خواهد شد.</string>
-    <string name="CP_ConfirmCalls">پرسیدن قبل از برقراری تماس</string>
     <string name="CP_ForwardMsgDate">نمایش تاریخ پیام فوروارد شده</string>
     <string name="CP_ShowSeconds">فرمت زمان با ثانیه</string>
     <string name="CP_LeftBottomButtonAction">عملکرد دکمه‌ی چپ</string>
@@ -287,7 +286,6 @@
     <string name="UP_Not_Found">نرم‌افزار Cherrygram بروز است.</string>
     <string name="UP_UpdateAvailable">بروزرسانی موجود است!</string>
     <string name="UP_Version">نسخه</string>
-    <string name="UP_UpdateSize">اندازه بروزرسانی</string>
     <string name="UP_Changelog">لیست تغییرات:</string>
     <string name="UP_ChangelogRead">برای خواندن ضربه بزنید</string>
     <string name="UP_Download">دانلود</string>

@@ -37,6 +37,7 @@ import org.telegram.ui.SMSSubscribeSheet;
 import java.io.File;
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.updater.UpdaterBottomSheet;
 import uz.unnarsx.cherrygram.core.updater.UpdaterUtils;
 
@@ -82,8 +83,8 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
     public boolean openApkInstall(Activity activity, TLRPC.Document document) {
         boolean exists = false;
         /*try {
-            String fileName = FileLoader.getAttachFileName(document);
-            File f = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(document, true);
+            final String fileName = FileLoader.getAttachFileName(document);
+            final File f = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(document, true);
             if (exists = f.exists()) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -118,14 +119,20 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
 
     @Override
     public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenu, ViewGroup sideMenuContainer) {
-//        return new UpdateLayout(activity, sideMenu, sideMenuContainer);
-        return null;
+        if (CherrygramCoreConfig.INSTANCE.getUpdatesNewUI()) {
+            return new UpdateLayout(activity, sideMenu, sideMenuContainer);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public IUpdateButton takeUpdateButton(Context context) {
-//        return new UpdateButton(context);
-        return null;
+        if (CherrygramCoreConfig.INSTANCE.getUpdatesNewUI()) {
+            return new UpdateButton(context);
+        } else {
+            return null;
+        }
     }
 
     @Override

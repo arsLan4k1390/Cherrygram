@@ -205,7 +205,6 @@
     <string name="CP_NoRounding">Zahlen nicht runden</string>
     <string name="CP_DeleteForAll">Standardmäßig \"Für alle löschen\" verwenden</string>
     <string name="CP_DeleteForAll_Desc">Beim Löschen der Nachrichten wird das Kontrollkästchen automatisch ausgewählt.</string>
-    <string name="CP_ConfirmCalls">Vor Anruf fragen</string>
     <string name="CP_ForwardMsgDate">Datum der weitergeleiteten Nachricht anzeigen</string>
     <string name="CP_ShowSeconds">Zeit mit Sekunden formatieren</string>
     <string name="CP_LeftBottomButtonAction">Aktion linke Taste</string>
@@ -310,7 +309,6 @@
     <string name="UP_Not_Found">Cherrygram ist auf dem neuesten Stand.</string>
     <string name="UP_UpdateAvailable">Update verfügbar!</string>
     <string name="UP_Version">Version</string>
-    <string name="UP_UpdateSize">Update-Größe</string>
     <string name="UP_Changelog">Changelog:</string>
     <string name="UP_ChangelogRead">Zum Lesen tippen</string>
     <string name="UP_Download">Download</string>

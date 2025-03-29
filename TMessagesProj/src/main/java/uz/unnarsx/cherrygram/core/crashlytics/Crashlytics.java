@@ -13,7 +13,6 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
-import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLoader;
@@ -30,8 +29,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.misc.Constants;
 
 public class Crashlytics implements Thread.UncaughtExceptionHandler {
     private final Thread.UncaughtExceptionHandler defaultUEH;
@@ -48,9 +47,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
         String stacktrace = result.toString();
         try {
             saveCrashLogs(stacktrace);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+        } catch (Exception ignored) { }
         printWriter.close();
         defaultUEH.uncaughtException(t, e);
     }
@@ -113,9 +110,9 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
                 "• Cherrygram Version: " + Constants.INSTANCE.getCG_VERSION() + " (" + CGResourcesHelper.INSTANCE.getAbiCode() + ")\n" +
                 "• Telegram Version: " + BuildVars.BUILD_VERSION_STRING + "\n" +
                 "• Build Type: " + CGResourcesHelper.INSTANCE.getBuildType() + "\n" +
-                "• Device: " + AndroidUtilities.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + "\n" +
+                "• Device: " + CGResourcesHelper.INSTANCE.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + "\n" +
                 "• OS Version: " + Build.VERSION.RELEASE + "\n" +
-                "• Camera: " + CGResourcesHelper.getCameraName() + "\n" +
+                "• Camera: " + CGResourcesHelper.INSTANCE.getCameraName() + "\n" +
                 "• Performance Class: " + getPerformanceClassString() + "\n" +
                 "• Google Play Services: " + ApplicationLoader.hasPlayServices + "\n" +
                 "• Locale: " + LocaleController.getSystemLocaleStringIso639();

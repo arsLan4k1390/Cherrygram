@@ -28,6 +28,7 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.telephony.TelephonyManager;
+import android.util.Pair;
 import android.util.Log;
 import android.view.ViewGroup;
 
@@ -57,8 +58,8 @@ import java.util.Locale;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 
 public class ApplicationLoader extends Application {
@@ -147,11 +148,19 @@ public class ApplicationLoader extends Application {
         return applicationLoaderInstance.isStandalone();
     }
 
+    public static boolean isBetaBuild() {
+        return applicationLoaderInstance.isBeta();
+    }
+
     protected boolean isHuaweiBuild() {
         return false;
     }
 
     protected boolean isStandalone() {
+        return false;
+    }
+
+    protected boolean isBeta() {
         return false;
     }
 
@@ -648,6 +657,10 @@ public class ApplicationLoader extends Application {
         return false;
     }
 
+    public boolean showCustomUpdateAppPopup(Context context, BetaUpdate update, int account) {
+        return false;
+    }
+
     public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenu, ViewGroup sideMenuContainer) {
         return null;
     }
@@ -693,6 +706,25 @@ public class ApplicationLoader extends Application {
     }
 
     public BaseFragment openSettings(int n) {
+        return null;
+    }
+
+    public boolean isCustomUpdate() {
+        return false;
+    }
+    public void downloadUpdate() {}
+    public void cancelDownloadingUpdate() {}
+    public boolean isDownloadingUpdate() {
+        return false;
+    }
+    public float getDownloadingUpdateProgress() {
+        return 0.0f;
+    }
+    public void checkUpdate(boolean force, Runnable whenDone) {}
+    public BetaUpdate getUpdate() {
+        return null;
+    }
+    public File getDownloadedUpdateFile() {
         return null;
     }
 

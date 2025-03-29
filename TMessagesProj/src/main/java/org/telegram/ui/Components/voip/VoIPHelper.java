@@ -41,6 +41,7 @@ import org.telegram.messenger.voip.VoIPService;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_phone;
+import org.telegram.ui.AccountFrozenAlert;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -63,8 +64,6 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Set;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public class VoIPHelper {
 
 	public static long lastCallTime = 0;
@@ -76,7 +75,11 @@ public class VoIPHelper {
 	}
 
 	public static void startCall(TLRPC.User user, boolean videoCall, boolean canVideoCall, final Activity activity, TLRPC.UserFull userFull, AccountInstance accountInstance, boolean confirmed) {
-		if (userFull != null && userFull.phone_calls_private) {
+        if (accountInstance == null ? MessagesController.getInstance(UserConfig.selectedAccount).isFrozen() : accountInstance.getMessagesController().isFrozen()) {
+            AccountFrozenAlert.show(accountInstance == null ? UserConfig.selectedAccount : accountInstance.getCurrentAccount());
+            return;
+        }
+        if (userFull != null && userFull.phone_calls_private) {
 			new AlertDialog.Builder(activity)
 					.setTitle(LocaleController.getString(R.string.VoipFailed))
 					.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("CallNotAvailable", R.string.CallNotAvailable,
@@ -105,7 +108,7 @@ public class VoIPHelper {
 			return;
 		}
 
-		if (CherrygramChatsConfig.INSTANCE.getConfirmCalls() && !confirmed && activity instanceof LaunchActivity) {
+		if (!confirmed && activity instanceof LaunchActivity) {
 			final BaseFragment lastFragment = ((LaunchActivity) activity).getActionBarLayout().getLastFragment();
 			if (lastFragment != null) {
 				AlertsCreator.createCallDialogAlert(lastFragment, lastFragment.getMessagesController().getUser(user.id), videoCall);

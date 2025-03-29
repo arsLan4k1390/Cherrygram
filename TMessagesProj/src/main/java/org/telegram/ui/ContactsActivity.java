@@ -544,9 +544,9 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                             args.putLong("user_id", user.id);
                             if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
                                 if (getParentActivity() != null
-                                        && ChatsPasswordHelper.INSTANCE.getShouldRequireBiometricsToOpenChats()
                                         && user.id != 0
-                                        && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(user.id))
+                                        && ChatsPasswordHelper.INSTANCE.getShouldRequireBiometricsToOpenChats()
+                                        && ChatsPasswordHelper.INSTANCE.isChatLocked(user.id)
                                 ) {
                                     CGBiometricPrompt.prompt(getParentActivity(), () -> {
                                         presentFragment(new ChatActivity(args), needFinishFragment);
@@ -560,6 +560,10 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                 } else if (object instanceof String) {
                     String str = (String) object;
                     if (!str.equals("section")) {
+                        if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                            AccountFrozenAlert.show(currentAccount);
+                            return;
+                        }
                         NewContactBottomSheet activity = new NewContactBottomSheet(ContactsActivity.this, getContext());
                         activity.setInitialPhoneNumber(str, true);
                         activity.show();
@@ -596,17 +600,33 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                 if ((!onlyUsers || inviteViaLink != 0) && section == 0) {
                     if (needPhonebook) {
                         if (row == 0) {
+                            if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                                AccountFrozenAlert.show(currentAccount);
+                                return;
+                            }
                             presentFragment(new InviteContactsActivity());
                         }
                     } else if (inviteViaLink != 0) {
                         if (row == 0) {
+                            if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                                AccountFrozenAlert.show(currentAccount);
+                                return;
+                            }
                             presentFragment(new GroupInviteActivity(chatId != 0 ? chatId : channelId));
                         }
                     } else {
                         if (row == 0) {
+                            if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                                AccountFrozenAlert.show(currentAccount);
+                                return;
+                            }
                             Bundle args = new Bundle();
                             presentFragment(new GroupCreateActivity(args), false);
                         } else if (row == 1) {
+                            if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                                AccountFrozenAlert.show(currentAccount);
+                                return;
+                            }
                             AndroidUtilities.requestAdjustNothing(getParentActivity(), getClassGuid());
                             new NewContactBottomSheet(ContactsActivity.this, getContext()) {
                                 @Override
@@ -616,6 +636,10 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 }
                             }.show();
                         } else if (row == 2) {
+                            if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                                AccountFrozenAlert.show(currentAccount);
+                                return;
+                            }
                             SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                             if (!BuildVars.DEBUG_VERSION && preferences.getBoolean("channel_intro", false)) {
                                 Bundle args = new Bundle();
@@ -648,9 +672,9 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 args.putLong("user_id", user.id);
                                 if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
                                     if (getParentActivity() != null
-                                            && ChatsPasswordHelper.INSTANCE.getShouldRequireBiometricsToOpenChats()
                                             && user.id != 0
-                                            && ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(user.id))
+                                            && ChatsPasswordHelper.INSTANCE.getShouldRequireBiometricsToOpenChats()
+                                            && ChatsPasswordHelper.INSTANCE.isChatLocked(user.id)
                                     ) {
                                         CGBiometricPrompt.prompt(getParentActivity(), () -> {
                                             presentFragment(new ChatActivity(args), needFinishFragment);
@@ -843,6 +867,10 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
             frameLayout.addView(floatingButtonContainer, LayoutHelper.createFrame((Build.VERSION.SDK_INT >= 21 ? 56 : 60) + 20, (Build.VERSION.SDK_INT >= 21 ? 56 : 60) + 20, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 4 : 0, 0, LocaleController.isRTL ? 0 : 4, 0));
             floatingButtonContainer.setOnClickListener(v -> {
                 AndroidUtilities.requestAdjustNothing(getParentActivity(), getClassGuid());
+                if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                    AccountFrozenAlert.show(currentAccount);
+                    return;
+                }
                 new NewContactBottomSheet(ContactsActivity.this, getContext()) {
                     @Override
                     public void dismissInternal() {

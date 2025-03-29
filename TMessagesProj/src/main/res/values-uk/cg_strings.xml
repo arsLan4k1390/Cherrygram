@@ -218,7 +218,6 @@
     <string name="CP_NoRounding">Вимкнути округлення чисел</string>
     <string name="CP_DeleteForAll">Використовувати \"Видалити для всіх\" за замовчуванням</string>
     <string name="CP_DeleteForAll_Desc">Відмітка буде автоматично перевірятися при видаленні повідомлень.</string>
-    <string name="CP_ConfirmCalls">Запит перед звінком</string>
     <string name="CP_ForwardMsgDate">Показувати дату пересланого повідомлення</string>
     <string name="CP_ShowSeconds">Відформатувати час у секундах</string>
     <string name="CP_LeftBottomButtonAction">Дія лівої кнопки</string>
@@ -347,7 +346,6 @@
     <string name="UP_Not_Found">Використовується остання версія Cherrygram.</string>
     <string name="UP_UpdateAvailable">Доступне оновлення!</string>
     <string name="UP_Version">Версія</string>
-    <string name="UP_UpdateSize">Розмір оновлення</string>
     <string name="UP_Changelog">Список змін:</string>
     <string name="UP_ChangelogRead">Торкніться, щоб читати</string>
     <string name="UP_Download">Звантажити</string>

@@ -33,16 +33,13 @@ import org.telegram.ui.Components.TranslateAlert2
 import org.telegram.ui.Components.UndoView
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
-import uz.unnarsx.cherrygram.core.helpers.LocalVerificationsHelper
 
 object ChatsHelper2 {
 
     /** Avatar admin actions start **/
-    @JvmStatic
-    fun injectChatActivityAvatarArraySize(cf: ChatActivity): Int {
+    /*fun injectChatActivityAvatarArraySize(cf: ChatActivity): Int {
         var objs = 0
 
         if (ChatObject.canBlockUsers(cf.currentChat)) objs++
@@ -52,7 +49,6 @@ object ChatsHelper2 {
         return objs
     }
 
-    @JvmStatic
     fun injectChatActivityAvatarArrayItems(cf: ChatActivity, arr: Array<AvatarPreviewer.MenuItem>, enableMention: Boolean,  enableSearchMessages: Boolean) {
         var startPos = if (enableMention || enableSearchMessages) 3 else 2
 
@@ -72,7 +68,6 @@ object ChatsHelper2 {
         }
     }
 
-    @JvmStatic
     fun injectChatActivityAvatarOnClick(cf: ChatActivity, item: AvatarPreviewer.MenuItem, user: TLRPC.User, participantsIDs: ArrayList<Long>) {
         when (item) {
             AvatarPreviewer.MenuItem.CG_KICK -> {
@@ -112,9 +107,8 @@ object ChatsHelper2 {
             else -> {}
         }
         participantsIDs.clear()
-    }
+    }*/
 
-    @JvmStatic
     fun injectChatActivityAvatarOnClickNew(
         chatActivity: ChatActivity, chatMessageCellDelegate: ChatActivity.ChatMessageCellDelegate, cell: ChatMessageCell, user: TLRPC.User,
         enableMention: Boolean, enableSearchMessages: Boolean, isChatParticipant: Boolean,
@@ -281,32 +275,14 @@ object ChatsHelper2 {
     /** Chat search filter finish **/
 
     /** Custom chat id for Saved Messages start **/
-    @JvmStatic
-    fun checkCustomChatID(currentAccount: Int) {
-        val preferences = MessagesController.getMainSettings(currentAccount)
-        val emptyId = preferences.getString("CP_CustomChatIDSM", "CP_CustomChatIDSM").equals("")
-        if (emptyId) {
-            CherrygramCoreConfig.putStringForUserPrefs("CP_CustomChatIDSM",
-                UserConfig.getInstance(currentAccount).getClientUserId().toString()
-            )
-//            FileLog.e("changed the id")
-        }
-    }
-
-    @JvmStatic
     fun getCustomChatID(): Long {
-        val id: Long
         val preferences = MessagesController.getMainSettings(UserConfig.selectedAccount)
         val savedMessagesChatID =
             preferences.getString("CP_CustomChatIDSM", UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId().toString())
         val chatID = savedMessagesChatID!!.replace("-100", "-").toLong()
 
-        id = if (CherrygramExperimentalConfig.customChatForSavedMessages) {
-            chatID
-        } else {
-            UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId()
-        }
-        return id
+        return if (CherrygramExperimentalConfig.customChatForSavedMessages) chatID
+        else UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId()
     }
     /** Custom chat id for Saved Messages finish **/
 
@@ -382,20 +358,16 @@ object ChatsHelper2 {
             }
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE -> {
                 // Save message
-                val id = getCustomChatID()
+                val chatID = getCustomChatID()
 
-                cf.sendMessagesHelper.sendMessage(arrayListOf(msg), id, false, false, true, 0)
+                cf.sendMessagesHelper.sendMessage(arrayListOf(msg), chatID, false, false, true, 0, 0)
 
                 cf.createUndoView()
                 if (cf.undoView == null) {
                     return
                 }
-                if (!CherrygramExperimentalConfig.customChatForSavedMessages) {
-                    if (!BulletinFactory.of(cf).showForwardedBulletinWithTag(id, arrayListOf(msg).size)) {
-                        cf.undoView!!.showWithAction(id, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
-                    }
-                } else {
-                    cf.undoView!!.showWithAction(id, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
+                if (!BulletinFactory.of(cf).showForwardedBulletinWithTag(chatID, arrayListOf(msg).size)) {
+                    cf.undoView!!.showWithAction(chatID, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
                 }
             }
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> {
@@ -439,9 +411,5 @@ object ChatsHelper2 {
     /*fun isCherryVerified(chat: TLRPC.Chat): Boolean {
         return LocalVerificationsHelper.getVerify().stream().anyMatch { id: Long -> id == chat.id }
     }*/
-
-    fun isDeleteAllHidden(chat: TLRPC.Chat): Boolean {
-        return LocalVerificationsHelper.hideDeleteAll().stream().anyMatch { id: Long -> id == chat.id }
-    }
 
 }

@@ -518,8 +518,8 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
 //            pixelDualH = previewSize[1].getHeight();
 //        }
 //        if (pixelDualW <= 0) {
-            pixelDualW = getMeasuredWidth();
-            pixelDualH = getMeasuredHeight();
+        pixelDualW = getMeasuredWidth();
+        pixelDualH = getMeasuredHeight();
 //        }
     }
 
@@ -741,6 +741,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             aspectRatio = new Size(16, 9);
             photoMaxWidth = wantedWidth = 1280;
             photoMaxHeight = wantedHeight = 720;
+
         } else {
             if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera1to1 && !isStory) {
                 aspectRatio = new Size(1, 1);
@@ -750,13 +751,14 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
                     photoMaxWidth = 720;
                     photoMaxHeight = 720;
-                } else if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH && largePhotos) {
+                } else if (largePhotos) {
                     photoMaxWidth = 2560;
                     photoMaxHeight = 2560;
                 } else {
                     photoMaxWidth = 1080;
                     photoMaxHeight = 1080;
                 }
+
             } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera4to3 && !isStory) {
                 aspectRatio = new Size(4, 3);
                 wantedWidth = 1280;
@@ -765,13 +767,14 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
                     photoMaxWidth = 1280;
                     photoMaxHeight = 960;
-                } else if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH && largePhotos) {
+                } else if (largePhotos) {
                     photoMaxWidth = 2560;
                     photoMaxHeight = 1920;
                 } else {
                     photoMaxWidth = 1920;
                     photoMaxHeight = 1440;
                 }
+
             } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera16to9) {
                 aspectRatio = new Size(16, 9);
                 wantedWidth = 1280;
@@ -780,13 +783,14 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
                     photoMaxWidth = 1280;
                     photoMaxHeight = 960;
-                } else if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH && largePhotos) {
+                } else if (largePhotos) {
                     photoMaxWidth = 2560;
                     photoMaxHeight = 1440;
                 } else {
                     photoMaxWidth = isStory ? 1280 : 1920;
                     photoMaxHeight = isStory ? 720 : 1080;
                 }
+
             } else {
                 if (Math.abs(screenSize - size4to3) < 0.1f) {
                     aspectRatio = new Size(4, 3);
@@ -796,7 +800,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
                         photoMaxWidth = 1280;
                         photoMaxHeight = 960;
-                    } else if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH && largePhotos) {
+                    } else if (largePhotos) {
                         photoMaxWidth = 2560;
                         photoMaxHeight = 1920;
                     } else {
@@ -811,7 +815,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
                         photoMaxWidth = 1280;
                         photoMaxHeight = 960;
-                    } else if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH && largePhotos) {
+                    } else if (largePhotos) {
                         photoMaxWidth = 2560;
                         photoMaxHeight = 1440;
                     } else {
@@ -1362,14 +1366,14 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             int[] configsCount = new int[1];
             EGLConfig[] configs = new EGLConfig[1];
             int[] configSpec = new int[]{
-                    EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-                    EGL10.EGL_RED_SIZE, 8,
-                    EGL10.EGL_GREEN_SIZE, 8,
-                    EGL10.EGL_BLUE_SIZE, 8,
-                    EGL10.EGL_ALPHA_SIZE, 0,
-                    EGL10.EGL_DEPTH_SIZE, 0,
-                    EGL10.EGL_STENCIL_SIZE, 0,
-                    EGL10.EGL_NONE
+                EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+                EGL10.EGL_RED_SIZE, 8,
+                EGL10.EGL_GREEN_SIZE, 8,
+                EGL10.EGL_BLUE_SIZE, 8,
+                EGL10.EGL_ALPHA_SIZE, 0,
+                EGL10.EGL_DEPTH_SIZE, 0,
+                EGL10.EGL_STENCIL_SIZE, 0,
+                EGL10.EGL_NONE
             };
             if (!egl10.eglChooseConfig(eglDisplay, configSpec, configs, 1, configsCount)) {
                 if (BuildVars.LOGS_ENABLED) {
@@ -1484,10 +1488,10 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             float tX = 1.0f / scaleX / 2.0f;
             float tY = 1.0f / scaleY / 2.0f;
             float[] texData = {
-                    0.5f - tX, 0.5f - tY,
-                    0.5f + tX, 0.5f - tY,
-                    0.5f - tX, 0.5f + tY,
-                    0.5f + tX, 0.5f + tY
+                0.5f - tX, 0.5f - tY,
+                0.5f + tX, 0.5f - tY,
+                0.5f - tX, 0.5f + tY,
+                0.5f + tX, 0.5f + tY
             };
 
             vertexBuffer = ByteBuffer.allocateDirect(verticesData.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -2011,10 +2015,10 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                     float tY = 1.0f / scaleY / 2.0f;
 
                     float[] texData = {
-                            0.5f - tX, 0.5f - tY,
-                            0.5f + tX, 0.5f - tY,
-                            0.5f - tX, 0.5f + tY,
-                            0.5f + tX, 0.5f + tY
+                        0.5f - tX, 0.5f - tY,
+                        0.5f + tX, 0.5f - tY,
+                        0.5f - tX, 0.5f + tY,
+                        0.5f + tX, 0.5f + tY
                     };
 
                     textureBuffer = ByteBuffer.allocateDirect(texData.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -3126,13 +3130,13 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 int renderableType = EGL14.EGL_OPENGL_ES2_BIT;
 
                 int[] attribList = {
-                        EGL14.EGL_RED_SIZE, 8,
-                        EGL14.EGL_GREEN_SIZE, 8,
-                        EGL14.EGL_BLUE_SIZE, 8,
-                        EGL14.EGL_ALPHA_SIZE, 8,
-                        EGL14.EGL_RENDERABLE_TYPE, renderableType,
-                        0x3142, 1,
-                        EGL14.EGL_NONE
+                    EGL14.EGL_RED_SIZE, 8,
+                    EGL14.EGL_GREEN_SIZE, 8,
+                    EGL14.EGL_BLUE_SIZE, 8,
+                    EGL14.EGL_ALPHA_SIZE, 8,
+                    EGL14.EGL_RENDERABLE_TYPE, renderableType,
+                    0x3142, 1,
+                    EGL14.EGL_NONE
                 };
                 android.opengl.EGLConfig[] configs = new android.opengl.EGLConfig[1];
                 int[] numConfigs = new int[1];
@@ -3141,8 +3145,8 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
                 }
 
                 int[] attrib2_list = {
-                        EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
-                        EGL14.EGL_NONE
+                    EGL14.EGL_CONTEXT_CLIENT_VERSION, 2,
+                    EGL14.EGL_NONE
                 };
                 eglContext = EGL14.eglCreateContext(eglDisplay, configs[0], sharedEglContext, attrib2_list, 0);
                 eglConfig = configs[0];
@@ -3156,7 +3160,7 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             }
 
             int[] surfaceAttribs = {
-                    EGL14.EGL_NONE
+                EGL14.EGL_NONE
             };
             eglSurface = EGL14.eglCreateWindowSurface(eglDisplay, eglConfig, surface, surfaceAttribs, 0);
             if (eglSurface == null) {
@@ -3174,10 +3178,10 @@ public class CameraView extends BaseCameraView implements TextureView.SurfaceTex
             float tX = 1.0f / scaleX / 2.0f;
             float tY = 1.0f / scaleY / 2.0f;
             float[] texData = {
-                    0.5f - tX, 0.5f - tY,
-                    0.5f + tX, 0.5f - tY,
-                    0.5f - tX, 0.5f + tY,
-                    0.5f + tX, 0.5f + tY
+                0.5f - tX, 0.5f - tY,
+                0.5f + tX, 0.5f - tY,
+                0.5f - tX, 0.5f + tY,
+                0.5f + tX, 0.5f + tY
             };
             textureBuffer = ByteBuffer.allocateDirect(texData.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
             textureBuffer.put(texData).position(0);

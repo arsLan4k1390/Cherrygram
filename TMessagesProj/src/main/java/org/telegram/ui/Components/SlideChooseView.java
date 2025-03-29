@@ -19,6 +19,8 @@ import androidx.core.math.MathUtils;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
 
+import uz.unnarsx.cherrygram.misc.CherrygramExtras;
+
 public class SlideChooseView extends View {
 
     private final SeekBarAccessibilityDelegate accessibilityDelegate;
@@ -234,7 +236,7 @@ public class SlideChooseView extends View {
             float ut = MathUtils.clamp(selectedIndexAnimated - a + 1f, 0, 1);
             int color = ColorUtils.blendARGB(getThemedColor(Theme.key_switchTrack), Theme.multAlpha(getThemedColor(Theme.key_switchTrackChecked), minIndex != Integer.MIN_VALUE && a <= minIndex ? .50f : 1.0f), ut);
             if (!allowSlide) {
-                color = AndroidUtilities.getTransparentColor(color, 0.5f);
+                color = CherrygramExtras.INSTANCE.getTransparentColor(color, 0.5f);
             }
             paint.setColor(color);
             linePaint.setColor(color);
@@ -262,7 +264,7 @@ public class SlideChooseView extends View {
             }
             int size = optionsSizes[a];
             String text = optionsStr[a];
-            textPaint.setColor(AndroidUtilities.getTransparentColor(ColorUtils.blendARGB(getThemedColor(Theme.key_windowBackgroundWhiteGrayText), getThemedColor(Theme.key_windowBackgroundWhiteBlueText), t), allowSlide ? 1.0f : 0.5f));
+            textPaint.setColor(CherrygramExtras.INSTANCE.getTransparentColor(ColorUtils.blendARGB(getThemedColor(Theme.key_windowBackgroundWhiteGrayText), getThemedColor(Theme.key_windowBackgroundWhiteBlueText), t), allowSlide ? 1.0f : 0.5f));
 
             if (leftDrawables != null) {
                 canvas.save();
@@ -294,9 +296,9 @@ public class SlideChooseView extends View {
         }
 
         float cx = sideSide + (lineSize + gapSize * 2 + circleSize) * selectedIndexAnimated + circleSize / 2;
-        paint.setColor(AndroidUtilities.getTransparentColor(ColorUtils.setAlphaComponent(getThemedColor(Theme.key_switchTrackChecked), 80), allowSlide ? 1.0f : 0.5f));
+        paint.setColor(CherrygramExtras.INSTANCE.getTransparentColor(ColorUtils.setAlphaComponent(getThemedColor(Theme.key_switchTrackChecked), 80), allowSlide ? 1.0f : 0.5f));
         canvas.drawCircle(cx, cy, AndroidUtilities.dp(12 * movingAnimated), paint);
-        paint.setColor(AndroidUtilities.getTransparentColor(getThemedColor(Theme.key_switchTrackChecked), allowSlide ? 1.0f : 0.5f));
+        paint.setColor(CherrygramExtras.INSTANCE.getTransparentColor(getThemedColor(Theme.key_switchTrackChecked), allowSlide ? 1.0f : 0.5f));
         canvas.drawCircle(cx, cy, AndroidUtilities.dp(6), paint);
     }
 

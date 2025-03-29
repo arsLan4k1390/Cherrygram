@@ -216,7 +216,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_NoRounding">Desativar arredondamento numérico</string>
     <string name="CP_DeleteForAll">Usar \"Eliminar para todos\" por defeito</string>
     <string name="CP_DeleteForAll_Desc">Caixa de seleção será marcada automaticamente ao excluir mensagens.</string>
-    <string name="CP_ConfirmCalls">Perguntar antes de ligar</string>
     <string name="CP_ForwardMsgDate">Mostrar data da mensagem encaminhada</string>
     <string name="CP_ShowSeconds">Formatar a hora com segundos</string>
     <string name="CP_LeftBottomButtonAction">Ação do botão esquerdo</string>
@@ -330,7 +329,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="UP_Not_Found">O Cherrygram está atualizado.</string>
     <string name="UP_UpdateAvailable">Atualização disponível!</string>
     <string name="UP_Version">Versão</string>
-    <string name="UP_UpdateSize">Tamanho da atualização</string>
     <string name="UP_Changelog">Registo de alterações:</string>
     <string name="UP_ChangelogRead">Toque para ler</string>
     <string name="UP_Download">Transferir</string>

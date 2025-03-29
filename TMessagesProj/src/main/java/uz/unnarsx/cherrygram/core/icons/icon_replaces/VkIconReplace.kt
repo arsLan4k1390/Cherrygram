@@ -9,12 +9,11 @@
 
 package uz.unnarsx.cherrygram.core.icons.icon_replaces
 
-import android.util.SparseIntArray
 import org.telegram.messenger.R
-import uz.unnarsx.cherrygram.core.icons.newSparseInt
+import uz.unnarsx.cherrygram.core.icons.newHashMap
 
 class VkIconReplace : BaseIconReplace() {
-    override val replaces: SparseIntArray = newSparseInt(
+    override val replaces: HashMap<Int, Int> = newHashMap(
             // Settings - Main
             R.drawable.msg_settings to R.drawable.settings_outline_28,
             R.drawable.msg_settings_old to R.drawable.settings_outline_28,
@@ -88,7 +87,6 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.filled_fire to R.drawable.fire_outline_28,
             /*R.drawable.msg_gif to R.drawable.airplay_video_outline_28,*/
             R.drawable.msg_report to R.drawable.report_outline_28,
-            R.drawable.clear_cache to R.drawable.clear_data_outline_28,
             R.drawable.msg_copy to R.drawable.copy_outline_28,
             R.drawable.msg_fave to R.drawable.favorite_outline_28,
             R.drawable.msg_shareout to R.drawable.share_external_outline_28,
@@ -143,4 +141,5 @@ class VkIconReplace : BaseIconReplace() {
             R.drawable.profile_newmsg to R.drawable.comment_outline_28,
 
     )
+
 }

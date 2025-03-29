@@ -87,8 +87,12 @@ public class RadioColorCell extends FrameLayout {
 
     public void setTextAndText2AndValue(CharSequence text, CharSequence text2, boolean checked) {
         textView.setText(text);
-        text2View.setVisibility(View.VISIBLE);
-        text2View.setText(text2);
+        if (text2 != null) {
+            text2View.setVisibility(View.VISIBLE);
+            text2View.setText(text2);
+        } else {
+            text2View.setVisibility(View.GONE);
+        }
         radioButton.setChecked(checked, false);
     }
 

@@ -36,7 +36,6 @@ import org.telegram.messenger.R;
 import org.telegram.ui.Components.InstantCameraView;
 import org.telegram.ui.Components.RLottieDrawable;
 
-import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class VideoMessagesHelper {
@@ -131,7 +130,7 @@ public class VideoMessagesHelper {
         attributes.screenBrightness = 1F; //maxBrightness
         ((Activity) instantCameraView.getContext()).getWindow().setAttributes(attributes);
 
-        CGFeatureHooks.setFlashLight(true);
+        CherrygramCameraConfig.INSTANCE.setWhiteBackground(true);
         instantCameraView.blurBehindDrawable.showFlash(true);
         AndroidUtilities.setLightStatusBar(((Activity) instantCameraView.getContext()).getWindow(), true);
         instantCameraView.flashButton.setInvert(1F);
@@ -144,7 +143,7 @@ public class VideoMessagesHelper {
         attributes.screenBrightness = -1F; //previousBrightness
         ((Activity) instantCameraView.getContext()).getWindow().setAttributes(attributes);
 
-        CGFeatureHooks.setFlashLight(false);
+        CherrygramCameraConfig.INSTANCE.setWhiteBackground(false);
         instantCameraView.blurBehindDrawable.showFlash(false);
         AndroidUtilities.setLightStatusBar(((Activity) instantCameraView.getContext()).getWindow(), false);
         instantCameraView.invalidateBlur();
@@ -157,35 +156,26 @@ public class VideoMessagesHelper {
     public void updateCameraXFlash(InstantCameraView instantCameraView) {
         toggleTorch(instantCameraView);
 
-        if (instantCameraView.flashButton != null && (wasFlashing == null || wasFlashing != instantCameraView.flashing)) {
-            instantCameraView.flashButton.setContentDescription(getString(instantCameraView.flashing ? R.string.AccDescrCameraFlashOff : R.string.AccDescrCameraFlashOn));
-            if (!instantCameraView.flashing) {
-                if (instantCameraView.flashOnDrawable == null) {
-                    instantCameraView.flashOnDrawable = new RLottieDrawable(R.raw.roundcamera_flash_on, "roundcamera_flash_on", dp(28), dp(28));
-                    instantCameraView.flashOnDrawable.setCallback(instantCameraView.flashButton);
-                }
-                instantCameraView.flashButton.setImageDrawable(instantCameraView.flashOnDrawable);
-                if (wasFlashing == null) {
-                    instantCameraView.flashOnDrawable.setCurrentFrame(instantCameraView.flashOnDrawable.getFramesCount() - 1);
-                } else {
-                    instantCameraView.flashOnDrawable.setCurrentFrame(0);
-                    instantCameraView.flashOnDrawable.start();
-                }
-            } else {
-                if (instantCameraView.flashOffDrawable == null) {
-                    instantCameraView.flashOffDrawable = new RLottieDrawable(R.raw.roundcamera_flash_off, "roundcamera_flash_off", dp(28), dp(28));
-                    instantCameraView.flashOffDrawable.setCallback(instantCameraView.flashButton);
-                }
-                instantCameraView.flashButton.setImageDrawable(instantCameraView.flashOffDrawable);
-                if (wasFlashing == null) {
-                    instantCameraView.flashOffDrawable.setCurrentFrame(instantCameraView.flashOffDrawable.getFramesCount() - 1);
-                } else {
-                    instantCameraView.flashOffDrawable.setCurrentFrame(0);
-                    instantCameraView.flashOffDrawable.start();
-                }
-            }
-            wasFlashing = instantCameraView.flashing;
+        if (instantCameraView.flashButton == null || (wasFlashing != null && wasFlashing == instantCameraView.flashing)) return;
+
+        instantCameraView.flashButton.setContentDescription(getString(
+                instantCameraView.flashing ? R.string.AccDescrCameraFlashOff : R.string.AccDescrCameraFlashOn
+        ));
+
+        RLottieDrawable drawable = instantCameraView.flashing ? instantCameraView.flashOffDrawable : instantCameraView.flashOnDrawable;
+        if (drawable == null) {
+            drawable = new RLottieDrawable(
+                    instantCameraView.flashing ? R.raw.roundcamera_flash_off : R.raw.roundcamera_flash_on,
+                    instantCameraView.flashing ? "roundcamera_flash_off" : "roundcamera_flash_on",
+                    dp(28), dp(28)
+            );
+            drawable.setCallback(instantCameraView.flashButton);
         }
+        instantCameraView.flashButton.setImageDrawable(drawable);
+        drawable.setCurrentFrame(wasFlashing == null ? drawable.getFramesCount() - 1 : 0);
+        if (wasFlashing != null) drawable.start();
+
+        wasFlashing = instantCameraView.flashing;
     }
 
     public float getZoomForSlider(InstantCameraView instantCameraView) {
@@ -247,11 +237,12 @@ public class VideoMessagesHelper {
     }
 
     public int getSliderW() {
+        int dpi = AndroidUtilities.densityDpi;
         return switch (AndroidUtilities.displaySize.x) {
-            case 1440 -> AndroidUtilities.densityDpi > 560 ? 85 : 105;
-            case 1080 -> AndroidUtilities.densityDpi > 420 ? 115 : 140;
-            case 720 -> AndroidUtilities.densityDpi > 280 ? 175 : 210;
-            default -> AndroidUtilities.densityDpi > 420 ? 120 : 145;
+            case 1440 -> dpi > 560 ? 85 : 105;
+            case 1080 -> dpi > 420 ? 115 : 140;
+            case 720 -> dpi > 280 ? 175 : 210;
+            default -> dpi > 420 ? 120 : 145;
         };
     }
 
@@ -283,31 +274,20 @@ public class VideoMessagesHelper {
     }
 
     public static Range<Integer> getCameraXFpsRange() {
-        Range<Integer> fpsRange = new Range<>(30, 30);
-        if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange25to30) {
-            fpsRange = new Range<>(25, 30);
-        } else if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange30to30) {
-            fpsRange = new Range<>(30, 30);
-        } else if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange30to60) {
-            fpsRange = new Range<>(30, 60);
-        } else if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() == CherrygramCameraConfig.CameraXFpsRange60to60) {
-            fpsRange = new Range<>(60, 60);
-        }
-        return fpsRange;
+        return switch (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange()) {
+            case CherrygramCameraConfig.CameraXFpsRange25to30 -> new Range<>(25, 30);
+            case CherrygramCameraConfig.CameraXFpsRange30to60 -> new Range<>(30, 60);
+            case CherrygramCameraConfig.CameraXFpsRange60to60 -> new Range<>(60, 60);
+            default -> new Range<>(30, 30); // CherrygramCameraConfig.CameraXFpsRange30to30
+        };
     }
 
     public static int getCameraXAspectRatio() {
-        int aspectRatio;
-        if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera4to3) {
-            aspectRatio = AspectRatio.RATIO_4_3;
-        } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.Camera16to9) {
-            aspectRatio = AspectRatio.RATIO_16_9;
-        } else if (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio() == CherrygramCameraConfig.CameraAspectDefault) {
-            aspectRatio = AspectRatio.RATIO_DEFAULT;
-        } else {
-            aspectRatio = AspectRatio.RATIO_16_9;
-        }
-        return aspectRatio;
+        return switch (CherrygramCameraConfig.INSTANCE.getCameraAspectRatio()) {
+            case CherrygramCameraConfig.Camera4to3 -> AspectRatio.RATIO_4_3;
+            case CherrygramCameraConfig.Camera16to9 -> AspectRatio.RATIO_16_9;
+            default -> AspectRatio.RATIO_DEFAULT;
+        };
     }
 
 }

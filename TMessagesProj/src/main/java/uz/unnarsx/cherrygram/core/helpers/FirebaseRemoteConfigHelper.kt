@@ -48,7 +48,7 @@ object FirebaseRemoteConfigHelper {
     }
 
     suspend fun initRemoteConfig() = withContext(Dispatchers.IO) {
-        val fetchInterval = if (CherrygramCoreConfig.isDevBuild()) 10800 else 43200 // 12 hours
+        val fetchInterval = if (CherrygramCoreConfig.isDevBuild()) 10800 else 21600 // 6 hours
 
         activate(fetchInterval.toLong())
             .onSuccess {
@@ -56,6 +56,7 @@ object FirebaseRemoteConfigHelper {
                     setRoundVideoResolution(it.getLong(Constants.Videomessages_Resolution))
                 }
                 toggleReTgCheck(it.getBoolean(Constants.Re_Tg_Check))
+                toggleNewUpdatesUI(it.getBoolean(Constants.is_new_updates_ui_available))
 
                 if (CherrygramCoreConfig.isDevBuild() || CherrygramDebugConfig.showRPCErrors) {
                     AndroidUtilities.runOnUIThread {
@@ -102,6 +103,18 @@ object FirebaseRemoteConfigHelper {
 
         if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
             FileLog.d("New reTg value:" + CherrygramPrivacyConfig.reTgCheck)
+        }
+    }
+
+    private fun toggleNewUpdatesUI(enable: Boolean) {
+        if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
+            FileLog.d("Old updates value:" + CherrygramCoreConfig.updatesNewUI)
+        }
+
+        CherrygramCoreConfig.updatesNewUI = enable
+
+        if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
+            FileLog.d("New updates value:" + CherrygramCoreConfig.updatesNewUI)
         }
     }
 

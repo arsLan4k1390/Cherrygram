@@ -164,8 +164,10 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 ArrayList<String> configStringKeys = new ArrayList<>();
                 ArrayList<Integer> configValues = new ArrayList<>();
 
-                configStringKeys.add("1:1");
-                configValues.add(CherrygramCameraConfig.Camera1to1);
+                if (CameraXUtils.isCurrentCameraNotCameraX()) {
+                    configStringKeys.add("1:1");
+                    configValues.add(CherrygramCameraConfig.Camera1to1);
+                }
 
                 configStringKeys.add("4:3");
                 configValues.add(CherrygramCameraConfig.Camera4to3);
@@ -190,7 +192,6 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                     CherrygramCameraConfig.INSTANCE.setCameraResolution(types.get(i));
 
                     listAdapter.notifyItemChanged(cameraXQualityRow);
-                    AppRestartHelper.createRestartBulletin(this);
                 });
             } else if (position == cameraUseDualCameraRow) {
                 CherrygramCameraConfig.INSTANCE.setUseDualCamera(!CherrygramCameraConfig.INSTANCE.getUseDualCamera());
@@ -328,7 +329,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
         if (CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2 && CherrygramCameraConfig.INSTANCE.getUseDualCamera()) {
             rearCamRow = -1;
         } else {
-            rearCamRow = rowCount++;;
+            rearCamRow = rowCount++;
         }
 
         if (listAdapter != null && notify) {
@@ -393,7 +394,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                 case 6:
                     TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
                     if (position == cameraAdviseRow) {
-                        textInfoPrivacyCell.setText(CGResourcesHelper.getCameraAdvise());
+                        textInfoPrivacyCell.setText(CGResourcesHelper.INSTANCE.getCameraAdvise());
                     }
                     break;
                 case 7:
@@ -402,13 +403,13 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                     TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
                     textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                     if (position == cameraAspectRatioRow) {
-                        textCell.setTextAndValue(getString(R.string.CP_CameraAspectRatio), CGResourcesHelper.getCameraAspectRatio(), true);
+                        textCell.setTextAndValue(getString(R.string.CP_CameraAspectRatio), CGResourcesHelper.INSTANCE.getCameraAspectRatio(), true);
                     } else if (position == cameraXQualityRow) {
                         textSettingsCell.setTextAndValue(getString(R.string.CP_CameraQuality), CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p", true);
                     } else if (position == cameraXFpsRangeRow) {
-                        textCell.setTextAndValue("FPS", CGResourcesHelper.getCameraXFpsRange(), true);
+                        textCell.setTextAndValue("FPS", CGResourcesHelper.INSTANCE.getCameraXFpsRange(), true);
                     } else if (position == exposureSliderRow) {
-                        textCell.setTextAndValue(getString(R.string.CP_ExposureSliderPosition), CGResourcesHelper.getExposureSliderPosition(), true);
+                        textCell.setTextAndValue(getString(R.string.CP_ExposureSliderPosition), CGResourcesHelper.INSTANCE.getExposureSliderPosition(), true);
                     }
                     break;
             }

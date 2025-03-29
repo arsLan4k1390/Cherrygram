@@ -72,15 +72,21 @@ public class CGBiometricPrompt {
     }
 
     public static void prompt(Activity activity, Runnable successCallback) {
+        prompt(activity, successCallback, null);
+    }
+
+    public static void prompt(Activity activity, Runnable successCallback, Runnable failCallback) {
         CGBiometricPrompt.callBiometricPrompt(activity, new CGBiometricPrompt.CGBiometricListener() {
             @Override
             public void onError(CharSequence msg) {
+                if (failCallback != null) failCallback.run();
                 if (CherrygramDebugConfig.INSTANCE.getShowRPCErrors())
                     Toast.makeText(activity, msg, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailed() {
+                if (failCallback != null) failCallback.run();
                 if (CherrygramDebugConfig.INSTANCE.getShowRPCErrors())
                     Toast.makeText(activity, "Fail", Toast.LENGTH_SHORT).show();
             }

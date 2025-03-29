@@ -224,18 +224,25 @@ public class CameraXController {
         return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY);
     }
 
-    private int getNextFlashMode(int legacyMode) {
-        return switch (legacyMode) {
-            case ImageCapture.FLASH_MODE_AUTO -> ImageCapture.FLASH_MODE_ON;
-            case ImageCapture.FLASH_MODE_ON -> ImageCapture.FLASH_MODE_OFF;
-            default -> ImageCapture.FLASH_MODE_AUTO;
-        };
-    }
+//    public int setNextFlashMode() {
+//        int next = switch (iCapture.getFlashMode()) {
+//            case ImageCapture.FLASH_MODE_AUTO -> ImageCapture.FLASH_MODE_ON;
+//            case ImageCapture.FLASH_MODE_ON -> ImageCapture.FLASH_MODE_OFF;
+//            default -> ImageCapture.FLASH_MODE_AUTO;
+//        };
+//
+//        iCapture.setFlashMode(next);
+//        return next;
+//    }
 
     public int setNextFlashMode() {
-        int next = getNextFlashMode(iCapture.getFlashMode());
-        iCapture.setFlashMode(next);
-        return next;
+        int currentMode = iCapture.getFlashMode();
+        int nextMode = (currentMode == ImageCapture.FLASH_MODE_AUTO) ? ImageCapture.FLASH_MODE_ON
+                : (currentMode == ImageCapture.FLASH_MODE_ON) ? ImageCapture.FLASH_MODE_OFF
+                : ImageCapture.FLASH_MODE_AUTO;
+
+        iCapture.setFlashMode(nextMode);
+        return nextMode;
     }
 
     public int getCurrentFlashMode() {
@@ -314,35 +321,27 @@ public class CameraXController {
     @SuppressLint({"RestrictedApi", "UnsafeExperimentalUsageError", "UnsafeOptInUsageError"})
     public void bindUseCases() {
         if (provider == null) return;
-        android.util.Size targetSize = getVideoBestSize();
+
         Preview.Builder previewBuilder = new Preview.Builder();
-        previewBuilder.setTargetResolution(targetSize);
+        previewBuilder.setTargetResolution(getVideoBestSize());
+
         if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() != CherrygramCameraConfig.CameraXFpsRangeDefault) {
             previewBuilder.setTargetFrameRate(VideoMessagesHelper.getCameraXFpsRange());
         }
+
         if (!isFrontface && selectedEffect == CAMERA_WIDE) {
             cameraSelector = CameraXUtils.getDefaultWideAngleCamera(provider);
         } else {
             cameraSelector = isFrontface ? CameraSelector.DEFAULT_FRONT_CAMERA : CameraSelector.DEFAULT_BACK_CAMERA;
         }
 
-        if (!isFrontface) {
-            switch (selectedEffect) {
-                case CAMERA_NIGHT:
-                    cameraSelector = extensionsManager.getExtensionEnabledCameraSelector(cameraSelector, ExtensionMode.NIGHT);
-                    break;
-                case CAMERA_HDR:
-                    cameraSelector = extensionsManager.getExtensionEnabledCameraSelector(cameraSelector, ExtensionMode.HDR);
-                    break;
-                case CAMERA_AUTO:
-                    cameraSelector = extensionsManager.getExtensionEnabledCameraSelector(cameraSelector, ExtensionMode.AUTO);
-                    break;
-                case CAMERA_NONE:
-                default:
-                    cameraSelector = extensionsManager.getExtensionEnabledCameraSelector(cameraSelector, ExtensionMode.NONE);
-                    break;
-            }
-        }
+        int extensionMode = (isFrontface) ? ExtensionMode.NONE : switch (selectedEffect) {
+            case CAMERA_NIGHT -> ExtensionMode.NIGHT;
+            case CAMERA_HDR -> ExtensionMode.HDR;
+            case CAMERA_AUTO -> ExtensionMode.AUTO;
+            default -> ExtensionMode.NONE;
+        };
+        cameraSelector = extensionsManager.getExtensionEnabledCameraSelector(cameraSelector, extensionMode);
 
         Quality quality = CameraXUtils.getVideoQuality();
         QualitySelector selector = QualitySelector.from(quality, FallbackStrategy.higherQualityOrLowerThan(quality));
@@ -350,6 +349,7 @@ public class CameraXController {
                 .setQualitySelector(selector)
                 .setAspectRatio(VideoMessagesHelper.getCameraXAspectRatio())
                 .build();
+
         vCapture = VideoCapture.withOutput(recorder);
 
         ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder()
@@ -404,15 +404,11 @@ public class CameraXController {
     }
 
     public float resetZoom() {
-        if (camera != null) {
-            camera.getCameraControl().setLinearZoom(0f);
-            ZoomState zoomStateLiveData = camera.getCameraInfo().getZoomState().getValue();
-            if (zoomStateLiveData != null) {
-                oldZoomSelection = zoomStateLiveData.getLinearZoom();
-                return oldZoomSelection;
-            }
-        }
-        return 0.0f;
+        if (camera == null) return 0.0f;
+
+        camera.getCameraControl().setLinearZoom(0f);
+        ZoomState zoomStateLiveData = camera.getCameraInfo().getZoomState().getValue();
+        return (zoomStateLiveData != null) ? (oldZoomSelection = zoomStateLiveData.getLinearZoom()) : 0.0f;
     }
 
     @SuppressLint("UnsafeExperimentalUsageError")
@@ -454,15 +450,15 @@ public class CameraXController {
     }
 
     @SuppressLint({"UnsafeExperimentalUsageError", "RestrictedApi"})
-    public void focusToPoint(int x, int y) {
+    public void focusToPoint(int x, int y/*, boolean disableAutoCancel*/) {
         MeteringPoint point = meteringPointFactory.createPoint(x, y);
+        FocusMeteringAction.Builder actionBuilder = new FocusMeteringAction.Builder(
+                point, FocusMeteringAction.FLAG_AE | FocusMeteringAction.FLAG_AF | FocusMeteringAction.FLAG_AWB
+        );
 
-        FocusMeteringAction action = new FocusMeteringAction
-                .Builder(point, FocusMeteringAction.FLAG_AE | FocusMeteringAction.FLAG_AF | FocusMeteringAction.FLAG_AWB)
-//                .disableAutoCancel()
-                .build();
+//        if (disableAutoCancel) actionBuilder.disableAutoCancel();
 
-        camera.getCameraControl().startFocusAndMetering(action);
+        camera.getCameraControl().startFocusAndMetering(actionBuilder.build());
     }
 
 
@@ -484,8 +480,7 @@ public class CameraXController {
                 .prepareRecording(ApplicationLoader.applicationContext, fileOpt)
                 .withAudioEnabled()
                 .start(AsyncTask.THREAD_POOL_EXECUTOR, videoRecordEvent -> {
-                    if (videoRecordEvent instanceof VideoRecordEvent.Finalize) {
-                        VideoRecordEvent.Finalize finalize = (VideoRecordEvent.Finalize) videoRecordEvent;
+                    if (videoRecordEvent instanceof VideoRecordEvent.Finalize finalize) {
                         if (finalize.hasError()) {
                             if (noSupportedSurfaceCombinationWorkaround) {
                                 AndroidUtilities.runOnUIThread(() -> {
@@ -536,15 +531,17 @@ public class CameraXController {
                 FileLog.e(e);
             }
         }
+
         Bitmap bitmap = SendMessagesHelper.createVideoThumbnail(path.getAbsolutePath(), MediaStore.Video.Thumbnails.MINI_KIND);
-        if (mirror) {
-            Bitmap b = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(b);
-            canvas.scale(-1, 1, b.getWidth() >> 1, b.getHeight() >> 1);
+        if (bitmap != null && mirror) {
+            Bitmap mirroredBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(mirroredBitmap);
+            canvas.scale(-1, 1, mirroredBitmap.getWidth() / 2f, mirroredBitmap.getHeight() / 2f);
             canvas.drawBitmap(bitmap, 0, 0, null);
             bitmap.recycle();
-            bitmap = b;
+            bitmap = mirroredBitmap;
         }
+
         String fileName = Integer.MIN_VALUE + "_" + SharedConfig.getLastLocalId() + ".jpg";
         final File cacheFile = new File(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE), fileName);
         try {
@@ -568,7 +565,6 @@ public class CameraXController {
         });
     }
 
-
     @SuppressLint("RestrictedApi")
     public void stopVideoRecording(final boolean abandon) {
         abandonCurrentVideo = abandon;
@@ -576,7 +572,6 @@ public class CameraXController {
             recording.stop();
         }
     }
-
 
     public void takePicture(final File file, Runnable onTake) {
         if (stableFPSPreviewOnly) return;
@@ -679,4 +674,5 @@ public class CameraXController {
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     public @interface EffectFacing {
     }
+
 }

@@ -218,7 +218,6 @@
     <string name="CP_NoRounding">禁用数字舍入</string>
     <string name="CP_DeleteForAll">默认勾选\"全部删除\"</string>
     <string name="CP_DeleteForAll_Desc">删除消息时默认勾选全部删除</string>
-    <string name="CP_ConfirmCalls">通话前提醒</string>
     <string name="CP_ForwardMsgDate">显示转发日期时间</string>
     <string name="CP_ShowSeconds">时间显示秒</string>
     <string name="CP_LeftBottomButtonAction">左侧按钮功能</string>
@@ -347,7 +346,6 @@
     <string name="UP_Not_Found">Cherrygram 已是最新</string>
     <string name="UP_UpdateAvailable">有可用更新！</string>
     <string name="UP_Version">版本</string>
-    <string name="UP_UpdateSize">文件大小</string>
     <string name="UP_Changelog">更新日志</string>
     <string name="UP_ChangelogRead">点击阅读</string>
     <string name="UP_Download">下载</string>

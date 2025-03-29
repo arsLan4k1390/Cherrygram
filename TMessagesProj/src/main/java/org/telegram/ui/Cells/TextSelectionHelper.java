@@ -1642,7 +1642,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
         ArrayList<TLRPC.MessageEntity> entities = messageObject.messageOwner != null ? messageObject.messageOwner.entities : null;
 
         TranslateAlert2 alert = TranslateAlert2.showAlert(parentView.getContext(), baseFragment, UserConfig.selectedAccount, fromLang, toLang, str, entities, noforwardsOrPaidMedia, null, this::showActions);
-        alert.setDimBehindAlpha(100);
+        alert.setDimBehindAlpha(140);
         alert.setDimBehind(true);
         clear(true);
     }

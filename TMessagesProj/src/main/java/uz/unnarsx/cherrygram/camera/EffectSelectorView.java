@@ -25,6 +25,8 @@ import org.telegram.ui.Components.LayoutHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.misc.CherrygramExtras;
+
 public class EffectSelectorView extends LinearLayout {
 
     private ButtonEffect oldSelection;
@@ -38,8 +40,8 @@ public class EffectSelectorView extends LinearLayout {
         GradientDrawable gd = new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
                 new int[]{
-                        AndroidUtilities.getTransparentColor(colorBackground, 0.4f),
-                        AndroidUtilities.getTransparentColor(colorBackground, 0)
+                        CherrygramExtras.INSTANCE.getTransparentColor(colorBackground, 0.4f),
+                        CherrygramExtras.INSTANCE.getTransparentColor(colorBackground, 0)
                 });
         setBackground(gd);
     }
@@ -125,8 +127,8 @@ public class EffectSelectorView extends LinearLayout {
             GradientDrawable gd = new GradientDrawable(
                     GradientDrawable.Orientation.TOP_BOTTOM,
                     new int[]{
-                            AndroidUtilities.getTransparentColor(colorBackground, 0.4f),
-                            AndroidUtilities.getTransparentColor(colorBackground, 0)
+                            CherrygramExtras.INSTANCE.getTransparentColor(colorBackground, 0.4f),
+                            CherrygramExtras.INSTANCE.getTransparentColor(colorBackground, 0)
                     });
             setBackground(gd);
         } else {
@@ -134,8 +136,8 @@ public class EffectSelectorView extends LinearLayout {
             GradientDrawable gd = new GradientDrawable(
                     GradientDrawable.Orientation.LEFT_RIGHT,
                     new int[]{
-                            AndroidUtilities.getTransparentColor(colorBackground, 0.4f),
-                            AndroidUtilities.getTransparentColor(colorBackground, 0)
+                            CherrygramExtras.INSTANCE.getTransparentColor(colorBackground, 0.4f),
+                            CherrygramExtras.INSTANCE.getTransparentColor(colorBackground, 0)
                     });
             setBackground(gd);
         }

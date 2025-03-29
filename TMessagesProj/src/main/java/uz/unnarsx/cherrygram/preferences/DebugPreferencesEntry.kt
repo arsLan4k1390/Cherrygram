@@ -187,6 +187,16 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                     CherrygramDebugConfig.playGIFsAsVideos = it
                 }
             }
+            switch {
+                title = "Hide video timestamp *"
+                description = "Saved Progress for Videos. Videos you watch now automatically save your progress – so you can return exactly where you left off."
+
+                contract({
+                    return@contract CherrygramDebugConfig.hideVideoTimestamp
+                }) {
+                    CherrygramDebugConfig.hideVideoTimestamp = it
+                }
+            }
             textIcon {
                 title = getString(R.string.DebugMenuResetDialogs)
 

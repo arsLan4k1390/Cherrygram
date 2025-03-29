@@ -27,11 +27,15 @@ import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RLottieImageView;
+
+import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 
 public class ThemeDrawerCell extends FrameLayout {
 
@@ -91,7 +95,7 @@ public class ThemeDrawerCell extends FrameLayout {
             };
             if (icons != null) {
                 for (int i = 0; i < icons.length; i++) {
-                    Drawable icon = getResources().getDrawable(icons[i]);
+                    Drawable icon = ResourcesCompat.getDrawable(getResources(), icons[i], getContext().getTheme());
                     int iconSize = Math.round(nav_width * 0.19f);
                     int textSize = Math.round(iconSize * 0.6f);
                     int yOffsetText = Math.round((iconSize - textSize) / 2.0f);
@@ -112,7 +116,8 @@ public class ThemeDrawerCell extends FrameLayout {
             Rect rectParamGradient = new Rect(0, getHeight() - height, getWidth(), getHeight());
             GradientDrawable gd = new GradientDrawable(
                     GradientDrawable.Orientation.BOTTOM_TOP,
-                    new int[]{colorBackground, AndroidUtilities.getTransparentColor(colorBackground, 0)});
+                    new int[]{colorBackground, CherrygramExtras.INSTANCE.getTransparentColor(colorBackground, 0)}
+            );
             gd.setCornerRadius(0f);
             gd.setBounds(rectParamGradient);
             gd.draw(canvas);

@@ -3371,6 +3371,8 @@ public class Theme {
     private static HashMap<MessageObject, AudioVisualizerDrawable> animatedOutVisualizerDrawables;
 
     public static int colorsCount;
+
+    /** Cherrygram start */
     public static final int key_alwaysBlack = colorsCount++;
     public static final int key_alwaysWhite = colorsCount++;
     public static final int key_alwaysGray = colorsCount++;
@@ -3378,6 +3380,7 @@ public class Theme {
     public static final int key_cgGradient1 = colorsCount++;
     public static final int key_cgGradient2 = colorsCount++;
     public static Drawable chat_attachCameraButton;
+    /** Cherrygram finish */
 
     public static final int key_wallpaperFileOffset = colorsCount++;
     public static final int key_dialogBackground = colorsCount++;
@@ -10736,4 +10739,5 @@ public class Theme {
 
     public static Paint DEBUG_RED = new Paint(); static { DEBUG_RED.setColor(0xffff0000); }
     public static Paint DEBUG_BLUE = new Paint(); static { DEBUG_BLUE.setColor(0xff0000ff); }
+
 }

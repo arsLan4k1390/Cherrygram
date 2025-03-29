@@ -9,12 +9,11 @@
 
 package uz.unnarsx.cherrygram.core.icons.icon_replaces
 
-import android.util.SparseIntArray
 import org.telegram.messenger.R
-import uz.unnarsx.cherrygram.core.icons.newSparseInt
+import uz.unnarsx.cherrygram.core.icons.newHashMap
 
 class SolarIconReplace : BaseIconReplace() {
-    override val replaces: SparseIntArray = newSparseInt(
+    override val replaces: HashMap<Int, Int> = newHashMap(
         R.drawable.arrow_more to R.drawable.arrow_more_solar,
         R.drawable.attach_send to R.drawable.attach_send_solar,
         R.drawable.bot_file to R.drawable.msg_round_file_solar,
@@ -209,7 +208,6 @@ class SolarIconReplace : BaseIconReplace() {
         R.drawable.msg_folders_requests to R.drawable.msg_folders_requests_solar,
         R.drawable.msg_forward to R.drawable.msg_share_solar,
         R.drawable.msg_forward_replace to R.drawable.msg_forward_replace_solar,
-        R.drawable.clear_cache to R.drawable.msg_clear_solar,
         R.drawable.msg_gallery to R.drawable.msg_gallery_solar,
         R.drawable.msg_gif to R.drawable.msg_gif_solar,
         R.drawable.msg_gif_add to R.drawable.msg_gif_add_solar,
@@ -428,4 +426,5 @@ class SolarIconReplace : BaseIconReplace() {
         R.drawable.msg_header_share to R.drawable.msg_share_filled_solar,
         R.drawable.msg_header_draw to R.drawable.msg_header_draw_solar,
     )
+
 }

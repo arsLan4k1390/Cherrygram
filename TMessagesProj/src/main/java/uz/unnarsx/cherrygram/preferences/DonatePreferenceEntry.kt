@@ -29,7 +29,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
         category(getString(R.string.DP_Donate_Method)) {
             textIcon {
                 icon = if (isDarkMode) R.drawable.card_visa_dark else R.drawable.card_visa_light
-                title = "VISA (Visa Direct)"
+                title = "VISA USD (Visa Direct)"
 
                 listener = TGKitTextIconRow.TGTIListener {
                     AndroidUtilities.addToClipboard("4278310028377794")
@@ -69,7 +69,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 title = "UzCard (Uzbekistan)"
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    AndroidUtilities.addToClipboard("8600490727700080")
+                    AndroidUtilities.addToClipboard("5614683588301333")
                     Toast.makeText(bf.parentActivity, getString(R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
             }

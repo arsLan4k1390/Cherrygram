@@ -58,7 +58,7 @@ public class CameraXUtils {
     }
 
     public static boolean isCurrentCameraNotCameraX() {
-        return !isCameraXSupported() || CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_X;
+        return !isCurrentCameraCameraX();
     }
 
     /*public static int getDefaultCamera() { // Used for Config
@@ -90,72 +90,58 @@ public class CameraXUtils {
                 + "getDefaultWideAngleCamera.");
     }
 
-    public static Map<Quality, Size> getAvailableVideoSizes() throws IllegalStateException {
+    public static Map<Quality, Size> getAvailableVideoSizes() {
         if (qualityException != null) {
             throw new IllegalStateException("CameraX sizes failed to load!", qualityException);
         }
-        return qualityToSize == null ? new HashMap<>() : qualityToSize;
+        return qualityToSize != null ? qualityToSize : new HashMap<>();
+    }
+
+    private static Map<Quality, Size> fetchAvailableVideoSizes(CameraSelector selector, ProcessCameraProvider provider) {
+        return selector.filter(provider.getAvailableCameraInfos()).stream()
+                .findFirst()
+                .map(camInfo -> QualitySelector.getSupportedQualities(camInfo).stream()
+                        .collect(Collectors.toMap(
+                                Function.identity(),
+                                quality -> Optional.ofNullable(QualitySelector.getResolution(camInfo, quality))
+                                        .orElse(new Size(0, 0))
+                        ))
+                ).orElseGet(HashMap::new);
     }
 
     public static void loadCameraXSizes() {
-        if (qualityToSize != null || qualityException != null) {
-            return;
-        }
+        if (qualityToSize != null || qualityException != null) return;
+
         Context context = ApplicationLoader.applicationContext;
-        ListenableFuture<ProcessCameraProvider> providerFtr = ProcessCameraProvider.getInstance(context);
-        providerFtr.addListener(() -> {
-            ProcessCameraProvider provider = null;
+        ListenableFuture<ProcessCameraProvider> providerFuture = ProcessCameraProvider.getInstance(context);
+        providerFuture.addListener(() -> {
             try {
-                CameraSelector.Builder cameraBuilder = new CameraSelector.Builder();
-                provider = providerFtr.get();
-                CameraSelector camera = cameraBuilder.build();
-                qualityToSize = getAvailableVideoSizes(camera, provider);
+                ProcessCameraProvider provider = providerFuture.get();
+                qualityToSize = fetchAvailableVideoSizes(new CameraSelector.Builder().build(), provider);
                 loadSuggestedResolution();
+                provider.unbindAll();
             } catch (Exception e) {
                 qualityException = e;
-            } finally {
-                if (provider != null) {
-                    provider.unbindAll();
-                }
             }
         }, ContextCompat.getMainExecutor(context));
     }
 
-    private static Map<Quality, Size> getAvailableVideoSizes(CameraSelector cameraSelector, ProcessCameraProvider provider) {
-        return cameraSelector.filter(provider.getAvailableCameraInfos()).stream()
-                .findFirst()
-                .map(camInfo ->
-                        QualitySelector.getSupportedQualities(camInfo).stream().collect(
-                                Collectors.toMap(
-                                        Function.identity(),
-                                        quality -> Optional.ofNullable(QualitySelector.getResolution(camInfo, quality))
-                                                .orElse(new Size(0, 0))
-                                )
-                        )
-                ).orElse(new HashMap<>());
-    }
-
     public static void loadSuggestedResolution() {
         int suggestedRes = getSuggestedResolution(false);
-        Map<Quality, Size> sizes = getAvailableVideoSizes();
 
-        int min = sizes.values().stream()
-                .mapToInt(Size::getHeight)
-                .min().orElse(0);
-
-        int max = sizes.values().stream()
-                .mapToInt(Size::getHeight)
-                .max().orElse(0);
+        int minResolution = getAvailableVideoSizes().values().stream().mapToInt(Size::getHeight).min().orElse(0);
+        int maxResolution = getAvailableVideoSizes().values().stream().mapToInt(Size::getHeight).max().orElse(0);
 
         getAvailableVideoSizes().values().stream()
-                .sorted(Comparator.comparingInt(Size::getHeight).reversed())
                 .mapToInt(Size::getHeight)
                 .filter(height -> height <= suggestedRes)
-                .findFirst()
+                .max()
                 .ifPresent(height -> {
                     cameraResolution = height;
-                    if (CherrygramCameraConfig.INSTANCE.getCameraResolution() == -1 || CherrygramCameraConfig.INSTANCE.getCameraResolution() > max || CherrygramCameraConfig.INSTANCE.getCameraResolution() < min) {
-                        CherrygramCameraConfig.INSTANCE.setCameraResolution(height);
+                    if (CherrygramCameraConfig.INSTANCE.getCameraResolution() == -1 || CherrygramCameraConfig.INSTANCE.getCameraResolution() > maxResolution || CherrygramCameraConfig.INSTANCE.getCameraResolution() < minResolution) {
+                        CherrygramCameraConfig.INSTANCE.setCameraResolution(
+                                Math.min(Math.max(height, minResolution), maxResolution)
+                        );
                     }
                 });
     }
@@ -163,68 +149,62 @@ public class CameraXUtils {
     public static Size getPreviewBestSize() {
         int suggestedRes = getSuggestedResolution(true);
         return getAvailableVideoSizes().values().stream()
-                .filter(size -> size.getHeight() <= CherrygramCameraConfig.INSTANCE.getCameraResolution() && size.getHeight() <= suggestedRes)
+                .filter(size -> size.getHeight() <= cameraResolution && size.getHeight() <= suggestedRes)
                 .max(Comparator.comparingInt(Size::getHeight))
                 .orElse(new Size(0, 0));
     }
 
     public static Quality getVideoQuality() {
         return getAvailableVideoSizes().entrySet().stream()
-                .filter(entry -> entry.getValue().getHeight() == CherrygramCameraConfig.INSTANCE.getCameraResolution())
+                .filter(entry -> entry.getValue().getHeight() == cameraResolution)
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElse(Quality.HIGHEST);
     }
 
     private static int getSuggestedResolution(boolean isPreview) {
-        int suggestedRes;
-        switch (SharedConfig.getDevicePerformanceClass()) {
-            case SharedConfig.PERFORMANCE_CLASS_LOW:
-                suggestedRes = 720;
-                break;
-            case SharedConfig.PERFORMANCE_CLASS_AVERAGE:
-                suggestedRes = 1080;
-                break;
-            case SharedConfig.PERFORMANCE_CLASS_HIGH:
-            default:
-                suggestedRes = isPreview ? 1080 : 2160;
-                break;
-        }
-        return suggestedRes;
+        int perfClass = SharedConfig.getDevicePerformanceClass();
+        if (perfClass == SharedConfig.PERFORMANCE_CLASS_LOW) return 720;
+        if (perfClass == SharedConfig.PERFORMANCE_CLASS_AVERAGE) return 1080;
+        return isPreview ? 1080 : 2160;
     }
 
     @SuppressLint({"RestrictedApi", "UnsafeOptInUsageError"})
     public static String getWideCameraId(ProcessCameraProvider provider) {
-        float lowestAngledCamera = Integer.MAX_VALUE;
-        List<CameraInfo> cameraInfoList = provider.getAvailableCameraInfos();
+        float lowestAngledCamera = Float.MAX_VALUE;
         String cameraId = null;
         int availableBackCamera = 0;
         boolean foundWideAngleOnPrimaryCamera = false;
-        for (int i = 0; i < cameraInfoList.size(); i++) {
-            CameraInfo cameraInfo = cameraInfoList.get(i);
-            String id = Camera2CameraInfo.from(cameraInfo).getCameraId();
+
+        for (CameraInfo cameraInfo : provider.getAvailableCameraInfos()) {
             try {
-                CameraCharacteristics cameraCharacteristics = Camera2CameraInfo.from(cameraInfo).getCameraCharacteristicsMap().get(id);
-                if (cameraCharacteristics != null) {
-                    if (cameraCharacteristics.get(CameraCharacteristics.LENS_FACING) == LENS_FACING_BACK) {
-                        availableBackCamera++;
-                        ZoomState zoomState = cameraInfo.getZoomState().getValue();
-                        if (zoomState != null && zoomState.getMinZoomRatio() < 1.0F && zoomState.getMinZoomRatio() > 0) {
-                            foundWideAngleOnPrimaryCamera = true;
-                        }
-                        float[] listLensAngle = cameraCharacteristics.get(LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
-                        if (listLensAngle != null && listLensAngle.length > 0) {
-                            if (listLensAngle[0] < 3.0f && listLensAngle[0] < lowestAngledCamera) {
-                                lowestAngledCamera = listLensAngle[0];
-                                cameraId = id;
-                            }
-                        }
-                    }
+                Camera2CameraInfo camera2Info = Camera2CameraInfo.from(cameraInfo);
+                CameraCharacteristics cameraCharacteristics = camera2Info.getCameraCharacteristicsMap()
+                        .get(camera2Info.getCameraId());
+
+                if (cameraCharacteristics == null) continue;
+
+                Integer lensFacing = cameraCharacteristics.get(CameraCharacteristics.LENS_FACING);
+                if (lensFacing == null || lensFacing != LENS_FACING_BACK) continue; // Потому что некоторые девайсы не отдают lensFacing :)
+
+                availableBackCamera++;
+                ZoomState zoomState = cameraInfo.getZoomState().getValue();
+
+                if (zoomState != null && zoomState.getMinZoomRatio() < 1.0F && zoomState.getMinZoomRatio() > 0) {
+                    foundWideAngleOnPrimaryCamera = true;
+                }
+
+                float[] listLensAngle = cameraCharacteristics.get(LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
+                if (listLensAngle != null && listLensAngle.length > 0 && listLensAngle[0] < 3.0f && listLensAngle[0] < lowestAngledCamera) {
+                    lowestAngledCamera = listLensAngle[0];
+                    cameraId = camera2Info.getCameraId();
                 }
             } catch (Exception e) {
                 FileLog.e(e);
             }
         }
+
         return availableBackCamera >= 2 && !foundWideAngleOnPrimaryCamera ? cameraId : null;
     }
+
 }

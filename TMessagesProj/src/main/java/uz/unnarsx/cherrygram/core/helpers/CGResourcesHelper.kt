@@ -14,7 +14,6 @@ import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.URLSpan
-import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.LocaleController.getString
@@ -22,12 +21,13 @@ import org.telegram.messenger.R
 import org.telegram.ui.Components.URLSpanNoUnderline
 import org.telegram.ui.LauncherIconController
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 object CGResourcesHelper {
 
@@ -73,7 +73,6 @@ object CGResourcesHelper {
     /** About app finish **/
 
     /** Camera start **/
-    @JvmStatic
     fun getCameraName(): String { // Crashlytics.java:\ Camera type
         return when (CherrygramCameraConfig.cameraType) {
             CherrygramCameraConfig.TELEGRAM_CAMERA -> "Telegram"
@@ -83,7 +82,6 @@ object CGResourcesHelper {
         }
     }
 
-    @JvmStatic
     @SuppressWarnings("deprecation")
     fun getCameraAdvise(): CharSequence {
         val advise: String = when (CherrygramCameraConfig.cameraType) {
@@ -116,7 +114,6 @@ object CGResourcesHelper {
         return spannable
     }
 
-    @JvmStatic
     fun getCameraAspectRatio(): String { // CameraPreferences.java:\Camera aspect ratio
         return when (CherrygramCameraConfig.cameraAspectRatio) {
             CherrygramCameraConfig.Camera1to1 -> "1:1"
@@ -126,7 +123,6 @@ object CGResourcesHelper {
         }
     }
 
-    @JvmStatic
     fun getCameraXFpsRange(): String { //CameraPreferences.java:\CameraX FPS
         return when (CherrygramCameraConfig.cameraXFpsRange) {
             CherrygramCameraConfig.CameraXFpsRange25to30 -> "25-30"
@@ -137,7 +133,6 @@ object CGResourcesHelper {
         }
     }
 
-    @JvmStatic
     fun getExposureSliderPosition(): String { // CameraPreferences.java:\Exposure slider
         return when (CherrygramCameraConfig.exposureSlider) {
 //            CherrygramCameraConfig.EXPOSURE_SLIDER_BOTTOM -> getString(R.string.CP_ZoomSliderPosition_Bottom)
@@ -157,7 +152,7 @@ object CGResourcesHelper {
             CherrygramChatsConfig.LEFT_BUTTON_REPLY -> getString(R.string.Reply)
             CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE -> getString(R.string.CG_ToSaved)
             CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE -> getString(R.string.DirectShare)
-            else -> AndroidUtilities.capitalize(getString(R.string.CG_Without_Authorship))
+            else -> capitalize(getString(R.string.CG_Without_Authorship))
         }
     }
 
@@ -207,7 +202,6 @@ object CGResourcesHelper {
     /** Profile activity finish **/
 
     /** Misc start **/
-    @JvmStatic
     fun getProperNotificationIcon(): Int { // App notification icon
         return if (CherrygramCoreConfig.oldNotificationIcon) {
             R.drawable.notification
@@ -216,7 +210,6 @@ object CGResourcesHelper {
         }
     }
 
-    @JvmStatic
     fun getResidentNotificationIcon(): Int {
         return if (CherrygramCoreConfig.oldNotificationIcon) R.drawable.cg_notification else R.drawable.notification
     }
@@ -237,7 +230,6 @@ object CGResourcesHelper {
         }
     }
 
-    @JvmStatic
     @SuppressWarnings("deprecation")
     fun getGeminiApiKeyAdvice(): CharSequence {
         val advise = getString(R.string.CP_GeminiAI_API_Key_Desc)
@@ -250,7 +242,6 @@ object CGResourcesHelper {
         return getUrlNoUnderlineText(htmlParsed)
     }
 
-    @JvmStatic
     @SuppressWarnings("deprecation")
     fun getGeminiModelNameAdvice(): CharSequence {
         val advise = getString(R.string.CP_GeminiAI_Model_Desc)
@@ -300,6 +291,15 @@ object CGResourcesHelper {
             )
         } catch (ignore: Exception) { }
         return "LOC_ERR"
+    }
+
+    fun capitalize(text: String): String {
+        var capitalizeString = ""
+        if (text.trim { it <= ' ' } != "") {
+            capitalizeString =
+                text.substring(0, 1).uppercase(Locale.getDefault()) + text.substring(1)
+        }
+        return capitalizeString
     }
     /** Misc finish **/
 }

@@ -9,32 +9,8 @@
 
 package uz.unnarsx.cherrygram.chats.gemini
 
-import android.app.Activity
-import android.content.Context
-import android.os.Build
-import android.view.View
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.DispatchQueue
-import org.telegram.messenger.FileLog
-import org.telegram.messenger.LocaleController.getString
-import org.telegram.messenger.R
-import org.telegram.ui.ActionBar.AlertDialog
-import org.telegram.ui.ActionBar.Theme.ResourcesProvider
-import org.telegram.ui.Components.Bulletin
-import org.telegram.ui.Components.BulletinFactory
-import org.telegram.ui.Components.ChatActivityEnterView
-import org.telegram.ui.LaunchActivity
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
-import uz.unnarsx.cherrygram.helpers.NetworkHelper
-import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
-import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry
-import java.io.OutputStream
-import java.net.HttpURLConnection
-import java.net.URL
 
 @Deprecated("Not used anymore, use GeminiSDKImplementation.Java")
 object GeminiHelper: CoroutineScope by MainScope() {

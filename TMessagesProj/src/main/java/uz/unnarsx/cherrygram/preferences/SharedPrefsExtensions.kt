@@ -35,6 +35,17 @@ class IntPreference(
     }
 }
 
+class FloatPreference(
+    private val sharedPreferences: SharedPreferences,
+    private val key: String,
+    private val defaultValue: Float,
+) : ReadWriteProperty<Any, Float> {
+    override fun getValue(thisRef: Any, property: KProperty<*>): Float = sharedPreferences.getFloat(key, defaultValue)
+    override fun setValue(thisRef: Any, property: KProperty<*>, value: Float) {
+        sharedPreferences.edit().putFloat(key, value).apply()
+    }
+}
+
 class BooleanPreference(
         private val sharedPreferences: SharedPreferences,
         private val key: String,
@@ -58,6 +69,7 @@ class LongPreference(
 }
 
 fun SharedPreferences.int(key: String, defaultValue: Int): ReadWriteProperty<Any, Int> = IntPreference(this, key, defaultValue)
+fun SharedPreferences.float(key: String, defaultValue: Float): ReadWriteProperty<Any, Float> = FloatPreference(this, key, defaultValue)
 fun SharedPreferences.boolean(key: String, defaultValue: Boolean): ReadWriteProperty<Any, Boolean> = BooleanPreference(this, key, defaultValue)
 fun SharedPreferences.string(key: String, defaultValue: String): ReadWriteProperty<Any, String> = StringPreference(this, key, defaultValue)
 fun SharedPreferences.long(key: String, defaultValue: Long): ReadWriteProperty<Any, Long> = LongPreference(this, key, defaultValue)

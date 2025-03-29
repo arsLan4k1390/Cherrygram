@@ -15,11 +15,12 @@ import androidx.core.util.Pair
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import uz.unnarsx.cherrygram.preferences.gemini.GeminiPreferencesBottomSheet
+import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.VibrateUtil
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
@@ -32,14 +33,14 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSliderPreference.TGSLContract
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
-class ChatsPreferencesEntry : BasePreferencesEntry {
+object ChatsPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.CP_Header_Chats)) {
         category(getString(R.string.CP_Header_Chats)) {
             textIcon {
                 title = getString(R.string.CP_ChatMenuShortcuts)
                 icon = R.drawable.msg_list
                 listener = TGKitTextIconRow.TGTIListener {
-                    AlertDialogSwitchers.showChatActionsAlert(bf)
+                    showChatMenuItemsConfigurator(bf)
                 }
                 divider = true
             }
@@ -63,22 +64,12 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = getString(R.string.CP_ConfirmCalls)
-
-                contract({
-                    return@contract CherrygramChatsConfig.confirmCalls
-                }) {
-                    CherrygramChatsConfig.confirmCalls = it
-                }
-            }
-            switch {
                 title = getString(R.string.CP_HideKbdOnScroll)
 
                 contract({
                     return@contract CherrygramChatsConfig.hideKeyboardOnScroll
                 }) {
                     CherrygramChatsConfig.hideKeyboardOnScroll = it
-                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -117,7 +108,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 title = getString(R.string.DirectShare)
                 icon = R.drawable.msg_share
                 listener = TGKitTextIconRow.TGTIListener {
-                    AlertDialogSwitchers.showDirectShareAlert(bf)
+                    showDirectShareConfigurator(bf)
                 }
                 divider = true
             }
@@ -125,7 +116,7 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
                 title = getString(R.string.CP_MessageMenu)
                 icon = R.drawable.msg_list
                 listener = TGKitTextIconRow.TGTIListener {
-                    AlertDialogSwitchers.showChatMenuIconsAlert(bf)
+                    CGMessageMenuInjector.showMessageMenuItemsConfigurator(bf)
                 }
                 divider = true
             }
@@ -417,4 +408,223 @@ class ChatsPreferencesEntry : BasePreferencesEntry {
 
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("chats_preferences_screen")
     }
+
+    private fun showDirectShareConfigurator(fragment: BaseFragment) {
+        val menuItems = listOf(
+            MenuItemConfig(
+                getString(R.string.RepostToStory),
+                R.drawable.large_repost_story,
+                { CherrygramChatsConfig.shareDrawStoryButton },
+                { CherrygramChatsConfig.shareDrawStoryButton = !CherrygramChatsConfig.shareDrawStoryButton },
+                true
+            ),
+            MenuItemConfig(
+                getString(R.string.FilterChats),
+                0,
+                { CherrygramChatsConfig.usersDrawShareButton },
+                { CherrygramChatsConfig.usersDrawShareButton = !CherrygramChatsConfig.usersDrawShareButton }
+            ),
+            MenuItemConfig(
+                getString(R.string.FilterGroups),
+                0,
+                { CherrygramChatsConfig.supergroupsDrawShareButton },
+                { CherrygramChatsConfig.supergroupsDrawShareButton = !CherrygramChatsConfig.supergroupsDrawShareButton }
+            ),
+            MenuItemConfig(
+                getString(R.string.FilterChannels),
+                0,
+                { CherrygramChatsConfig.channelsDrawShareButton },
+                { CherrygramChatsConfig.channelsDrawShareButton = !CherrygramChatsConfig.channelsDrawShareButton }
+            ),
+            MenuItemConfig(
+                getString(R.string.FilterBots),
+                0,
+                { CherrygramChatsConfig.botsDrawShareButton },
+                { CherrygramChatsConfig.botsDrawShareButton = !CherrygramChatsConfig.botsDrawShareButton }
+            ),
+            MenuItemConfig(
+                getString(R.string.StickersName),
+                0,
+                { CherrygramChatsConfig.stickersDrawShareButton },
+                { CherrygramChatsConfig.stickersDrawShareButton = !CherrygramChatsConfig.stickersDrawShareButton }
+            )
+        )
+
+        val prefTitle = ArrayList<String>()
+        val prefIcon = ArrayList<Int>()
+        val prefCheck = ArrayList<Boolean>()
+        val prefDivider = ArrayList<Boolean>()
+        val clickListener = ArrayList<Runnable>()
+
+        for (item in menuItems) {
+            prefTitle.add(item.titleRes)
+            prefIcon.add(item.iconRes)
+            prefCheck.add(item.isChecked())
+            prefDivider.add(item.divider)
+            clickListener.add(Runnable { item.toggle() })
+        }
+
+        PopupHelper.showSwitchAlert(
+            getString(R.string.DirectShare),
+            fragment,
+            prefTitle,
+            prefIcon,
+            prefCheck,
+            null,
+            prefDivider,
+            clickListener,
+            null
+        )
+
+    }
+
+    fun showChatMenuItemsConfigurator(fragment: BaseFragment) {
+        val menuItems = listOf(
+            MenuItemConfig(
+                getString(R.string.CG_JumpToBeginning),
+                R.drawable.ic_upward,
+                { CherrygramChatsConfig.shortcut_JumpToBegin },
+                { CherrygramChatsConfig.shortcut_JumpToBegin = !CherrygramChatsConfig.shortcut_JumpToBegin }
+            ),
+            MenuItemConfig(
+                getString(R.string.CG_DeleteAllFromSelf),
+                R.drawable.msg_delete,
+                { CherrygramChatsConfig.shortcut_DeleteAll },
+                { CherrygramChatsConfig.shortcut_DeleteAll = !CherrygramChatsConfig.shortcut_DeleteAll }
+            ),
+            MenuItemConfig(
+                getString(R.string.SavedMessages),
+                R.drawable.msg_saved,
+                { CherrygramChatsConfig.shortcut_SavedMessages },
+                { CherrygramChatsConfig.shortcut_SavedMessages = !CherrygramChatsConfig.shortcut_SavedMessages }
+            ),
+            MenuItemConfig(
+                getString(R.string.BlurInChat),
+                R.drawable.msg_theme,
+                { CherrygramChatsConfig.shortcut_Blur },
+                { CherrygramChatsConfig.shortcut_Blur = !CherrygramChatsConfig.shortcut_Blur }
+            ),
+            MenuItemConfig(
+                "Telegram Browser",
+                R.drawable.msg_language,
+                { CherrygramChatsConfig.shortcut_Browser },
+                { CherrygramChatsConfig.shortcut_Browser = !CherrygramChatsConfig.shortcut_Browser },
+                true
+            ),
+            MenuItemConfig(
+                getString(R.string.CP_AdminActions),
+                R.drawable.msg_admins,
+                { false },
+                { showChatAdminItemsConfigurator(fragment) },
+                isCheckInvisible = true
+            ),
+        )
+
+        val prefTitle = ArrayList<String>()
+        val prefIcon = ArrayList<Int>()
+        val prefCheck = ArrayList<Boolean>()
+        val prefCheckInvisible = ArrayList<Boolean>()
+        val prefDivider = ArrayList<Boolean>()
+        val clickListener = ArrayList<Runnable>()
+
+        for (item in menuItems) {
+            prefTitle.add(item.titleRes)
+            prefIcon.add(item.iconRes)
+            prefCheck.add(item.isChecked())
+            prefCheckInvisible.add(item.isCheckInvisible)
+            prefDivider.add(item.divider)
+            clickListener.add(Runnable { item.toggle() })
+        }
+
+        PopupHelper.showSwitchAlert(
+            getString(R.string.CP_ChatMenuShortcuts),
+            fragment,
+            prefTitle,
+            prefIcon,
+            prefCheck,
+            prefCheckInvisible,
+            prefDivider,
+            clickListener,
+            null
+        )
+    }
+
+    private fun showChatAdminItemsConfigurator(fragment: BaseFragment) {
+        val menuItems = listOf(
+            MenuItemConfig(
+                getString(R.string.Reactions),
+                R.drawable.msg_reactions2,
+                { CherrygramChatsConfig.admins_Reactions },
+                { CherrygramChatsConfig.admins_Reactions = !CherrygramChatsConfig.admins_Reactions }
+            ),
+            MenuItemConfig(
+                getString(R.string.ChannelPermissions),
+                R.drawable.msg_permissions,
+                { CherrygramChatsConfig.admins_Permissions },
+                { CherrygramChatsConfig.admins_Permissions = !CherrygramChatsConfig.admins_Permissions }
+            ),
+            MenuItemConfig(
+                getString(R.string.ChannelAdministrators),
+                R.drawable.msg_admins,
+                { CherrygramChatsConfig.admins_Administrators },
+                { CherrygramChatsConfig.admins_Administrators = !CherrygramChatsConfig.admins_Administrators }
+            ),
+            MenuItemConfig(
+                getString(R.string.ChannelMembers),
+                R.drawable.msg_groups,
+                { CherrygramChatsConfig.admins_Members },
+                { CherrygramChatsConfig.admins_Members = !CherrygramChatsConfig.admins_Members }
+            ),
+            MenuItemConfig(
+                getString(R.string.StatisticsAndBoosts),
+                R.drawable.msg_stats,
+                { CherrygramChatsConfig.admins_Statistics },
+                { CherrygramChatsConfig.admins_Statistics = !CherrygramChatsConfig.admins_Statistics }
+            ),
+            MenuItemConfig(
+                getString(R.string.EventLog),
+                R.drawable.msg_log,
+                { CherrygramChatsConfig.admins_RecentActions },
+                { CherrygramChatsConfig.admins_RecentActions = !CherrygramChatsConfig.admins_RecentActions }
+            ),
+        )
+
+        val prefTitle = ArrayList<String>()
+        val prefIcon = ArrayList<Int>()
+        val prefCheck = ArrayList<Boolean>()
+        val prefCheckInvisible = ArrayList<Boolean>()
+        val prefDivider = ArrayList<Boolean>()
+        val clickListener = ArrayList<Runnable>()
+
+        for (item in menuItems) {
+            prefTitle.add(item.titleRes)
+            prefIcon.add(item.iconRes)
+            prefCheck.add(item.isChecked())
+            prefCheckInvisible.add(item.isCheckInvisible)
+            prefDivider.add(item.divider)
+            clickListener.add(Runnable { item.toggle() })
+        }
+
+        PopupHelper.showSwitchAlert(
+            getString(R.string.CP_AdminActions),
+            fragment,
+            prefTitle,
+            prefIcon,
+            prefCheck,
+            prefCheckInvisible,
+            prefDivider,
+            clickListener,
+            null
+        )
+    }
+
+    data class MenuItemConfig(
+        val titleRes: String,
+        val iconRes: Int,
+        val isChecked: () -> Boolean,
+        val toggle: () -> Unit,
+        val divider: Boolean = false,
+        val isCheckInvisible: Boolean = false
+    )
+
 }

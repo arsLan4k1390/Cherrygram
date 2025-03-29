@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class Translator {
@@ -41,9 +42,9 @@ public class Translator {
         for (String language : targetLanguages) {
             Locale locale = Locale.forLanguageTag(language);
             if (!TextUtils.isEmpty(locale.getScript())) {
-                names.add(HtmlCompat.fromHtml(String.format("%s - %s", AndroidUtilities.capitalize(locale.getDisplayScript()), AndroidUtilities.capitalize(locale.getDisplayScript(locale))), HtmlCompat.FROM_HTML_MODE_LEGACY).toString());
+                names.add(HtmlCompat.fromHtml(String.format("%s - %s", CGResourcesHelper.INSTANCE.capitalize(locale.getDisplayScript()), CGResourcesHelper.INSTANCE.capitalize(locale.getDisplayScript(locale))), HtmlCompat.FROM_HTML_MODE_LEGACY).toString());
             } else {
-                names.add(String.format("%s - %s", AndroidUtilities.capitalize(locale.getDisplayName()), AndroidUtilities.capitalize(locale.getDisplayName(locale))));
+                names.add(String.format("%s - %s", CGResourcesHelper.INSTANCE.capitalize(locale.getDisplayName()), CGResourcesHelper.INSTANCE.capitalize(locale.getDisplayName(locale))));
             }
         }
         AndroidUtilities.selectionSort(names, targetLanguages);

@@ -23,7 +23,7 @@ object CherrygramPreferencesNavigator {
     fun createMainMenu() = TGKitSettingsFragment(MainPreferencesEntry())
     fun createGeneral() = TGKitSettingsFragment(GeneralPreferencesEntry())
     fun createAppearance() = TGKitSettingsFragment(AppearancePreferencesEntry())
-    fun createChats() = TGKitSettingsFragment(ChatsPreferencesEntry())
+    fun createChats() = TGKitSettingsFragment(ChatsPreferencesEntry)
     fun createPrivacyAndSecurity() = TGKitSettingsFragment(PrivacyAndSecurityPreferencesEntry())
     fun createDonate() = TGKitSettingsFragment(DonatePreferenceEntry())
     fun createDebug() = TGKitSettingsFragment(DebugPreferencesEntry())

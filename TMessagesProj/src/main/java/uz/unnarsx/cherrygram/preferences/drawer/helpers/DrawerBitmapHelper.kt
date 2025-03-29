@@ -34,10 +34,8 @@ object DrawerBitmapHelper : CoroutineScope by CoroutineScope(
     context = SupervisorJob() + Dispatchers.Main.immediate
 ) {
 
-    @JvmField
     var currentAccountBitmap: BitmapDrawable? = null
 
-    @JvmStatic
     fun setAccountBitmap(user: TLRPC.User) {
         val userFull = MessagesController.getInstance(UserConfig.selectedAccount).getUserFull(user.id)
         try {
@@ -85,13 +83,12 @@ object DrawerBitmapHelper : CoroutineScope by CoroutineScope(
                 )
             }
             launch {
-                delay(5000)
-                NotificationCenter.getInstance(UserConfig.selectedAccount).postNotificationName(NotificationCenter.mainUserInfoChanged)
+                delay(3000)
+                NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cg_updateDrawerAvatar)
             }
         }
     }
 
-    @JvmStatic
     fun darkenBitmap(bm: Bitmap?): Bitmap {
         val canvas = Canvas(bm!!)
         val p = Paint(Color.RED)
@@ -105,6 +102,11 @@ object DrawerBitmapHelper : CoroutineScope by CoroutineScope(
         if (src == null) {
             return null
         }
+
+        if (src.width <= 640 && src.height <= 640) {
+            return Utilities.stackBlurBitmap(src, CherrygramAppearanceConfig.drawerBlurIntensity).let { src }
+        }
+
         val b: Bitmap = if (src.height > src.width) {
             Bitmap.createBitmap((640f * src.width / src.height).roundToInt(), 640, Bitmap.Config.ARGB_8888)
         } else {

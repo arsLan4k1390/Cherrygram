@@ -218,7 +218,6 @@
     <string name="CP_NoRounding">Sayı yuvarlamayı devre dışı bırak</string>
     <string name="CP_DeleteForAll">Varsayılan olarak \"Herkes için sil\" seçeneğini kullan</string>
     <string name="CP_DeleteForAll_Desc">Mesajları silerken onay kutusu otomatik olarak işaretlenecektir.</string>
-    <string name="CP_ConfirmCalls">Aramadan önce sor</string>
     <string name="CP_ForwardMsgDate">İletilen mesaj tarihini göster</string>
     <string name="CP_ShowSeconds">Zamanı saniyelerle biçimlendir</string>
     <string name="CP_LeftBottomButtonAction">Sol düğme eylemi</string>
@@ -347,7 +346,6 @@
     <string name="UP_Not_Found">Cherrygram güncel.</string>
     <string name="UP_UpdateAvailable">Güncelleme mevcut!</string>
     <string name="UP_Version">Sürüm</string>
-    <string name="UP_UpdateSize">Güncelleme boyutu</string>
     <string name="UP_Changelog">Değişiklik listesi:</string>
     <string name="UP_ChangelogRead">Okumak için dokunun</string>
     <string name="UP_Download">İndir</string>

@@ -43,8 +43,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import kotlin.text.StringsKt;
-import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.PermissionsUtils;
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 
 public class BackupHelper {
 
@@ -249,7 +249,6 @@ public class BackupHelper {
 
         mainconfig.add("AP_CenterChatTitle");
         mainconfig.add("CP_UnreadBadgeOnBackButton");
-        mainconfig.add("CP_ConfirmCalls");
         mainconfig.add("CP_HideKbdOnScroll");
         mainconfig.add("CP_DisableSwipeToNext");
         mainconfig.add("CP_HideMuteUnmuteButton");

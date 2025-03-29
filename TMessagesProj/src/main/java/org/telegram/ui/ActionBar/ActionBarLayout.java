@@ -84,7 +84,6 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.VibrateUtil;
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 
-
 public class ActionBarLayout extends FrameLayout implements INavigationLayout, FloatingDebugProvider {
 
     public boolean highlightActionButtons = false;
@@ -1452,15 +1451,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         }
         containerViewBack.setVisibility(View.INVISIBLE);
     }
-
-    private static boolean USE_SPRING_ANIMATION = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING;
-    private static final float SPRING_STIFFNESS = 700f;
-    private static final float SPRING_STIFFNESS_PREVIEW = 650f;
-    private static final float SPRING_STIFFNESS_PREVIEW_OUT = 800f;
-    private static final float SPRING_STIFFNESS_PREVIEW_EXPAND = 750f;
-    private static final float SPRING_MULTIPLIER = 1000f;
-    private SpringAnimation currentSpringAnimation;
-    private static boolean USE_ACTIONBAR_CROSSFADE = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING && CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade();
 
     private void startLayoutAnimation(final boolean open, final boolean first, final boolean preview) {
         if (first) {
@@ -3153,18 +3143,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         return Math.max(0, usableViewHeight - (rect.bottom - rect.top));
     }
 
-    private void resetViewProperties(View v) {
-        if (v == null) {
-            return;
-        }
-
-        v.setAlpha(1f);
-        v.setScaleX(1);
-        v.setScaleY(1);
-        v.setTranslationX(0);
-        v.setTranslationY(0);
-    }
-
     private boolean tabsEvents;
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
@@ -3238,6 +3216,16 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         return 0;
     }
 
+    /** Cherrygram start */
+    private static boolean USE_SPRING_ANIMATION = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING;
+    private static final float SPRING_STIFFNESS = 700f;
+    private static final float SPRING_STIFFNESS_PREVIEW = 650f;
+    private static final float SPRING_STIFFNESS_PREVIEW_OUT = 800f;
+    private static final float SPRING_STIFFNESS_PREVIEW_EXPAND = 750f;
+    private static final float SPRING_MULTIPLIER = 1000f;
+    private SpringAnimation currentSpringAnimation;
+    private static boolean USE_ACTIONBAR_CROSSFADE = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING && CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade();
+
     private float swipeProgress;
     private MenuDrawable menuDrawable;
 
@@ -3248,6 +3236,18 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         if (getBackgroundFragment() != null && getBackgroundFragment().getActionBar() != null) {
             getBackgroundFragment().getActionBar().invalidate();
         }
+    }
+
+    private void resetViewProperties(View v) {
+        if (v == null) {
+            return;
+        }
+
+        v.setAlpha(1f);
+        v.setScaleX(1);
+        v.setScaleY(1);
+        v.setTranslationX(0);
+        v.setTranslationY(0);
     }
 
     @Override
@@ -3337,5 +3337,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             canvas.restore();
         }
     }
+    /** Cherrygram finish */
 
 }

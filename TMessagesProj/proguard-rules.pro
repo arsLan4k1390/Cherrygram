@@ -24,6 +24,7 @@
 -keep class com.google.android.exoplayer2.metadata.flac.PictureFrame { *; }
 -keep class com.google.android.exoplayer2.decoder.SimpleDecoderOutputBuffer { *; }
 -keep class org.telegram.ui.Stories.recorder.FfmpegAudioWaveformLoader { *; }
+-keep class androidx.mediarouter.app.MediaRouteButton { *; }
 -keepclassmembers class ** {
     @android.webkit.JavascriptInterface <methods>;
 }
@@ -138,6 +139,12 @@
 -keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
 -keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
 
+-keepnames class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO.* { <fields>; }
+-keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO.** {*;}
+-keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO$ErrorResponse {*;}
+-keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO$ErrorDetail {*;}
+-keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO$ErrorDetails{*;}
+-keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO$Metadata {*;}
 -keepnames class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO.* { <fields>; }
 -keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO.** {*;}
 -keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO$Response { *; }

@@ -205,7 +205,6 @@
     <string name="CP_NoRounding">تعطيل تقريب الأرقام</string>
     <string name="CP_DeleteForAll">استخدم\" حذف للجميع \" افتراضيا</string>
     <string name="CP_DeleteForAll_Desc">سيتم تحديد خانة الاختيار تلقائيا أثناء حذف الرسائل.</string>
-    <string name="CP_ConfirmCalls">اسأل قبل الاتصال</string>
     <string name="CP_ForwardMsgDate">إظهار تاريخ الرسالة المعاد توجيهها</string>
     <string name="CP_ShowSeconds">تنسيق الوقت بالثواني</string>
     <string name="CP_LeftBottomButtonAction">سلوك الزر الأيسر</string>
@@ -305,7 +304,6 @@
     <string name="UP_Not_Found">Cherrygram محدّث.</string>
     <string name="UP_UpdateAvailable">تحديث متاح!</string>
     <string name="UP_Version">الإصدار</string>
-    <string name="UP_UpdateSize">حجم التحديث</string>
     <string name="UP_Changelog">سجل التغييرات:</string>
     <string name="UP_ChangelogRead">انقر للقراءة</string>
     <string name="UP_Download">تحميل</string>

@@ -9,48 +9,53 @@
 
 package uz.unnarsx.cherrygram.chats.helpers
 
-import android.app.Activity
-import android.content.SharedPreferences
+import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.FingerprintController
 import org.telegram.messenger.MessageObject
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC.MessageEntity
 import org.telegram.tgnet.TLRPC.TL_messageEntitySpoiler
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
-import java.lang.reflect.Type
 
 object ChatsPasswordHelper {
 
-    const val Passcode_Array = "passcode_array12"
+    const val PASSCODE_ARRAY = "locked_chats_list"
+    private val currentAccount = UserConfig.selectedAccount
+    private val userConfig: UserConfig = UserConfig.getInstance(currentAccount)
 
-    fun saveArrayList(list: ArrayList<String?>?, key: String?) {
-        val prefs = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-        val editor: SharedPreferences.Editor = prefs.edit()
-        val gson = Gson()
-        val json: String = gson.toJson(list)
-        editor.putString(key, json)
-        editor.apply()
+    fun saveArrayList(list: ArrayList<String>, key: String) {
+        MessagesController.getMainSettings(currentAccount)
+            .edit()
+            .putString(key, Gson().toJson(list))
+            .apply()
     }
 
-    fun getArrayList(key: String?): ArrayList<String?>? {
-        val prefs = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-        val gson = Gson()
-        val json: String? = prefs.getString(key, null)
-        val type: Type = object : TypeToken<ArrayList<String?>?>() {}.type
-        return gson.fromJson(json, type)
+    fun getArrayList(key: String): ArrayList<String> {
+        val json = MessagesController.getMainSettings(currentAccount).getString(key, null)
+
+        return Gson().fromJson(json, object : TypeToken<ArrayList<String>>() {}.type) ?: arrayListOf(userConfig.clientUserId.toString())
+    }
+
+    fun isChatLocked(chatId: Long): Boolean {
+        val lockedChats = getArrayList(PASSCODE_ARRAY)
+
+        return chatId != 0L && (lockedChats.contains(chatId.toString()) || lockedChats.contains("-$chatId"))
+    }
+
+    fun isChatLocked(messageObject: MessageObject): Boolean {
+        return shouldRequireBiometricsToOpenChats
+                && messageObject.messageOwner.message != null
+                && !messageObject.isStoryReactionPush && !messageObject.isStoryPush
+                && !messageObject.isStoryMentionPush && !messageObject.isStoryPushHidden
+                && isChatLocked(messageObject.chatId)
     }
 
     fun checkLockedChatsEntities(messageObject: MessageObject, original: java.util.ArrayList<MessageEntity>?): java.util.ArrayList<MessageEntity>? {
-        return if (shouldRequireBiometricsToOpenChats && messageObject.messageOwner.message != null
-            && messageObject.chatId != 0L && (
-                    getArrayList(Passcode_Array)!!.contains(messageObject.chatId.toString())
-                    || getArrayList(Passcode_Array)!!.contains("-" + messageObject.chatId.toString())
-            )
-            && !messageObject.isStoryReactionPush && !messageObject.isStoryPush && !messageObject.isStoryMentionPush && !messageObject.isStoryPushHidden
-        ) {
+        return if (isChatLocked(messageObject)) {
             val entities = original?.let { java.util.ArrayList(it) }
             val spoiler = TL_messageEntitySpoiler()
             spoiler.offset = 0
@@ -60,15 +65,6 @@ object ChatsPasswordHelper {
         } else {
             original
         }
-    }
-
-    fun isChatLocked(messageObject: MessageObject): Boolean {
-        return shouldRequireBiometricsToOpenChats && messageObject.messageOwner.message != null
-            && messageObject.chatId != 0L && (
-                    getArrayList(Passcode_Array)!!.contains(messageObject.chatId.toString())
-                            || getArrayList(Passcode_Array)!!.contains("-" + messageObject.chatId.toString())
-                    )
-            && !messageObject.isStoryReactionPush && !messageObject.isStoryPush && !messageObject.isStoryMentionPush && !messageObject.isStoryPushHidden
     }
 
     fun checkLockedChatsEntities(messageObject: MessageObject): java.util.ArrayList<MessageEntity>? {
@@ -95,15 +91,24 @@ object ChatsPasswordHelper {
     }
 
     fun getLockedChatsCount(): Int {
-        return getArrayList(Passcode_Array)!!.size
+        return getArrayList(PASSCODE_ARRAY).size
     }
 
-    var shouldRequireBiometricsToOpenChats =
-        CherrygramPrivacyConfig.askBiometricsToOpenChat && getArrayList(Passcode_Array) != null && !getArrayList(Passcode_Array)!!.isEmpty()
-                && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+    val shouldRequireBiometricsToOpenChats by lazy {
+        CherrygramPrivacyConfig.askBiometricsToOpenChat &&
+                /*&& getArrayList(Passcode_Array).isNotEmpty()*/
+                Build.VERSION.SDK_INT >= 23 &&
+                CGBiometricPrompt.hasBiometricEnrolled() &&
+                FingerprintController.isKeyReady() &&
+                !FingerprintController.checkDeviceFingerprintsChanged()
+    }
 
-    var shouldRequireBiometricsToOpenArchive =
-        CherrygramPrivacyConfig.askBiometricsToOpenArchive
-                && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+    val shouldRequireBiometricsToOpenArchive by lazy {
+        CherrygramPrivacyConfig.askBiometricsToOpenArchive &&
+                Build.VERSION.SDK_INT >= 23 &&
+                CGBiometricPrompt.hasBiometricEnrolled() &&
+                FingerprintController.isKeyReady() &&
+                !FingerprintController.checkDeviceFingerprintsChanged()
+    }
 
 }

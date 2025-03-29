@@ -35,9 +35,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+
 public class CropView extends FrameLayout implements CropAreaView.AreaViewListener, CropGestureDetector.CropGestureListener {
     private static final float EPSILON = 0.00001f;
-    private static final int RESULT_SIDE = 2560;
+    private static final int RESULT_SIDE = CherrygramChatsConfig.INSTANCE.getLargePhotos() ? 2560 : 1280;
     private static final float MAX_SCALE = 30.0f;
 
     public CropAreaView areaView;

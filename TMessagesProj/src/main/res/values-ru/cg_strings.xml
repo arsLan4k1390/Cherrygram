@@ -249,7 +249,6 @@
     <string name="CP_NoRounding">Отключить округление чисел</string>
     <string name="CP_DeleteForAll">Использовать \"Удалить для всех\" по умолчанию</string>
     <string name="CP_DeleteForAll_Desc">При удалении сообщений галочка будет ставиться автоматически.</string>
-    <string name="CP_ConfirmCalls">Спрашивать перед звонком</string>
     <string name="CP_ForwardMsgDate">Показывать дату пересланного сообщения</string>
     <string name="CP_ShowSeconds">Показывать время с секундами</string>
     <string name="CP_LeftBottomButtonAction">Действие левой кнопки</string>
@@ -266,6 +265,8 @@
     <string name="CP_GeminiAI_API_Key_Desc">Посетите <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]>, чтобы получить API ключ.</string>
     <string name="CP_GeminiAI_Model">Код модели Gemini</string>
     <string name="CP_GeminiAI_Model_Desc">Посетите <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]>, чтобы получить список доступных моделей.</string>
+    <string name="CP_GeminiAI_Model_Selector">Список моделей Gemini</string>
+    <string name="CP_GeminiAI_Model_Selector_Desc">Если у вас имеется валидный API ключ, нажмите сюда, чтобы выбрать модель и заполнить поле автоматически.</string>
     <string name="CP_GeminiAI_Sample">Например:</string>
     <string name="CP_GeminiAI_Instruction">Чтобы воспользоваться Gemini,
         необходимо заполнить все значения на этом экране.
@@ -397,7 +398,6 @@
     <string name="UP_Not_Found">Используется последняя версия Cherrygram.</string>
     <string name="UP_UpdateAvailable">Доступно обновление!</string>
     <string name="UP_Version">Версия</string>
-    <string name="UP_UpdateSize">Размер обновления</string>
     <string name="UP_Changelog">Список изменений:</string>
     <string name="UP_ChangelogRead">Прочитать</string>
     <string name="UP_Download">Загрузить</string>

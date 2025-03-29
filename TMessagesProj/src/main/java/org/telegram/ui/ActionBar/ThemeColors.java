@@ -16,12 +16,14 @@ public class ThemeColors {
     public static int[] createDefaultColors() {
         int[] defaultColors = new int[Theme.colorsCount];
 
+        /** Cherrygram start */
         defaultColors[key_alwaysBlack] = Color.BLACK;
         defaultColors[key_alwaysWhite] = Color.WHITE;
         defaultColors[key_alwaysGray] = 0xff999999;
         defaultColors[key_alwaysGrayDarkTheme] = 0xff656660;
         defaultColors[key_cgGradient1] = 0xffA33156;
         defaultColors[key_cgGradient2] = 0xffE54C7F;
+        /** Cherrygram finish */
 
         defaultColors[key_wallpaperFileOffset] = 0;
         defaultColors[key_dialogBackground] = 0xffffffff;
@@ -822,10 +824,14 @@ public class ThemeColors {
     public static SparseArray<String> createColorKeysMap() {
         SparseArray<String> colorKeysMap = new SparseArray<>();
 
+        /** Cherrygram start */
         colorKeysMap.put(key_alwaysBlack, "alwaysBlack");
         colorKeysMap.put(key_alwaysWhite, "alwaysWhite");
         colorKeysMap.put(key_alwaysGray, "alwaysGray");
         colorKeysMap.put(key_alwaysGrayDarkTheme, "alwaysGrayDarkTheme");
+        colorKeysMap.put(key_cgGradient1, "cgGradient1");
+        colorKeysMap.put(key_cgGradient2, "cgGradient2");
+        /** Cherrygram finish */
 
         colorKeysMap.put(key_wallpaperFileOffset, "wallpaperFileOffset");
         colorKeysMap.put(key_dialogBackground, "dialogBackground");

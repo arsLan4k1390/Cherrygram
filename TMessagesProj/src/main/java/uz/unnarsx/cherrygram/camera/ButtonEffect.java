@@ -26,12 +26,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.R;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 
 @SuppressLint("ViewConstructor")
 public class ButtonEffect extends RelativeLayout {
+
     final private ImageView imageView;
     private ValueAnimator toggleAnimation;
     private boolean isSelected = false;
@@ -63,7 +66,7 @@ public class ButtonEffect extends RelativeLayout {
         int w = AndroidUtilities.dp(50);
         Bitmap bmp = Bitmap.createBitmap(w, w, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmp);
-        Drawable d = getResources().getDrawable(getIconRes(cameraType));
+        Drawable d = ResourcesCompat.getDrawable(getResources(), getIconRes(cameraType), getContext().getTheme());
         d.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         int s = (w * 60) / 100;
         int x = (w >> 1) - (s >> 1);

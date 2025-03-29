@@ -218,7 +218,6 @@
     <string name="CP_NoRounding">Desactivar redondeo numérico</string>
     <string name="CP_DeleteForAll">Usar \"Eliminar para todos\" por defecto</string>
     <string name="CP_DeleteForAll_Desc">La casilla de verificación se marcará automáticamente al eliminar mensajes.</string>
-    <string name="CP_ConfirmCalls">Preguntar antes de llamar</string>
     <string name="CP_ForwardMsgDate">Mostrar fecha del mensaje reenviado</string>
     <string name="CP_ShowSeconds">Formato de tiempo con segundos</string>
     <string name="CP_LeftBottomButtonAction">Acción del botón izquierdo</string>
@@ -347,7 +346,6 @@
     <string name="UP_Not_Found">Cherrygram está actualizado.</string>
     <string name="UP_UpdateAvailable">¡Actualización disponible!</string>
     <string name="UP_Version">Versión</string>
-    <string name="UP_UpdateSize">Tamaño de actualización</string>
     <string name="UP_Changelog">Registro de cambios:</string>
     <string name="UP_ChangelogRead">Toca para leer</string>
     <string name="UP_Download">Descargar</string>

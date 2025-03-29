@@ -9,14 +9,11 @@
 
 package uz.unnarsx.cherrygram.core.icons.icon_replaces
 
-import android.util.SparseIntArray
-import androidx.core.util.containsKey
-
 abstract class BaseIconReplace {
-    abstract val replaces: SparseIntArray
+    abstract val replaces: HashMap<Int, Int>
 
     fun wrap(id: Int): Int {
-        if (replaces.containsKey(id)) return replaces[id]
-        return id
+        return replaces[id] ?: id
     }
+
 }

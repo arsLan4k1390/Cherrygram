@@ -21,7 +21,7 @@ import org.telegram.ui.LaunchActivity;
 
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.preferences.gemini.GeminiPreferencesBottomSheet;
+import uz.unnarsx.cherrygram.preferences.GeminiPreferencesBottomSheet;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;

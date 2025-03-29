@@ -172,14 +172,14 @@ public class ChatsHelper extends BaseController {
         return spannableStringBuilder;
     }
 
-    public static void addMessageToClipboard(MessageObject selectedObject, Runnable callback) {
+    public void addMessageToClipboard(MessageObject selectedObject, Runnable callback) {
         String path = getPathToMessage(selectedObject);
         if (!TextUtils.isEmpty(path)) {
             addFileToClipboard(new File(path), callback);
         }
     }
 
-    public static void addMessageToClipboardAsSticker(MessageObject selectedObject, Runnable callback) {
+    public void addMessageToClipboardAsSticker(MessageObject selectedObject, Runnable callback) {
         String path = getPathToMessage(selectedObject);
 
         try {
@@ -194,7 +194,7 @@ public class ChatsHelper extends BaseController {
         } catch (Exception ignored) {}
     }
 
-    public static String getPathToMessage(MessageObject messageObject) {
+    private String getPathToMessage(MessageObject messageObject) {
         String path = messageObject.messageOwner.attachPath;
         if (!TextUtils.isEmpty(path)) {
             File temp = new File(path);
@@ -219,7 +219,7 @@ public class ChatsHelper extends BaseController {
         return path;
     }
 
-    public static void addFileToClipboard(File file, Runnable callback) {
+    public void addFileToClipboard(File file, Runnable callback) {
         try {
             Context context = ApplicationLoader.applicationContext;
             ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
@@ -232,11 +232,11 @@ public class ChatsHelper extends BaseController {
         }
     }
 
-    public void saveStickerToGallery(Activity activity, MessageObject messageObject, Utilities.Callback<Uri> callback) {
-        saveStickerToGallery(activity, getPathToMessage(messageObject), messageObject.isVideoSticker(), callback);
-    }
+//    public void saveStickerToGallery(Activity activity, MessageObject messageObject, Utilities.Callback<Uri> callback) {
+//        saveStickerToGallery(activity, getPathToMessage(messageObject), messageObject.isVideoSticker(), callback);
+//    }
 
-    public static void saveStickerToGallery(Activity activity, TLRPC.Document document, Utilities.Callback<Uri> callback) {
+    public void saveStickerToGallery(Activity activity, TLRPC.Document document, Utilities.Callback<Uri> callback) {
         String path = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(document, true).toString();
         File temp = new File(path);
         if (!temp.exists()) {
@@ -245,7 +245,7 @@ public class ChatsHelper extends BaseController {
         saveStickerToGallery(activity, path, MessageObject.isVideoSticker(document), callback);
     }
 
-    private static void saveStickerToGallery(Activity activity, String path, boolean video, Utilities.Callback<Uri> callback) {
+    private void saveStickerToGallery(Activity activity, String path, boolean video, Utilities.Callback<Uri> callback) {
         Utilities.globalQueue.postRunnable(() -> {
             try {
                 if (video) {
@@ -523,19 +523,15 @@ public class ChatsHelper extends BaseController {
 
     private void createCGSaveMessagesSelected(ChatActivity chatActivity) {
         try {
-            long chatID = ChatsHelper2.getCustomChatID();
+            long chatID = ChatsHelper2.INSTANCE.getCustomChatID();
 
             ArrayList<MessageObject> messages = getSelectedMessages(chatActivity);
-            forwardMessages(chatActivity, messages, false, true, 0, chatActivity.customChatID ? chatID : getUserConfig().getClientUserId());
+            forwardMessages(chatActivity, messages, false, true, 0, chatID);
             chatActivity.createUndoView();
             if (chatActivity.getUndoView() == null) {
                 return;
             }
-            if (!chatActivity.customChatID) {
-                if (!BulletinFactory.of(chatActivity).showForwardedBulletinWithTag(getUserConfig().getClientUserId(), messages.size())) {
-                    chatActivity.getUndoView().showWithAction(getUserConfig().getClientUserId(), UndoView.ACTION_FWD_MESSAGES, messages.size());
-                }
-            } else {
+            if (!BulletinFactory.of(chatActivity).showForwardedBulletinWithTag(chatID, messages.size())) {
                 chatActivity.getUndoView().showWithAction(chatID, UndoView.ACTION_FWD_MESSAGES, messages.size());
             }
         } catch (Exception ignore) {
@@ -580,7 +576,7 @@ public class ChatsHelper extends BaseController {
         if ((scheduleDate != 0) == (chatActivity.getChatMode() == ChatActivity.MODE_SCHEDULED)) {
             chatActivity.waitingForSendingMessageLoad = true;
         }
-        AlertsCreator.showSendMediaAlert(getSendMessagesHelper().sendMessage(arrayList, did == 0 ? chatActivity.getDialogId(): did, fromMyName, false, notify, scheduleDate), chatActivity);
+        AlertsCreator.showSendMediaAlert(getSendMessagesHelper().sendMessage(arrayList, did == 0 ? chatActivity.getDialogId(): did, fromMyName, false, notify, scheduleDate, 0), chatActivity, chatActivity.getResourceProvider());
     }
 
     private void createCGShareAlertSelected(ChatActivity chatActivity) {
@@ -629,9 +625,9 @@ public class ChatsHelper extends BaseController {
             }
 
             @Override
-            protected void onSend(LongSparseArray<TLRPC.Dialog> dids, int count, TLRPC.TL_forumTopic topic) {
+            protected void onSend(LongSparseArray<TLRPC.Dialog> dids, int count, TLRPC.TL_forumTopic topic, boolean showToast) {
                 chatActivity.createUndoView();
-                if (chatActivity.getUndoView() == null) {
+                if (chatActivity.getUndoView() == null || !showToast) {
                     return;
                 }
                 if (dids.size() == 1) {

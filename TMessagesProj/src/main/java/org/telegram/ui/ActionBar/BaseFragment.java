@@ -915,14 +915,6 @@ public abstract class BaseFragment {
         }
     }
 
-    public MessageHelper getMessageHelper() {
-        return MessageHelper.getInstance(currentAccount);
-    }
-
-    public ChatsHelper getChatsHelper() {
-        return ChatsHelper.getInstance(currentAccount);
-    }
-
     public void saveKeyboardPositionBeforeTransition() {
 
     }
@@ -1342,5 +1334,15 @@ public abstract class BaseFragment {
         public Runnable onPreFinished;
         public boolean occupyNavigationBar;
     }
+
+    /** Cherrygram start */
+    public MessageHelper getMessageHelper() {
+        return MessageHelper.getInstance(currentAccount);
+    }
+
+    public ChatsHelper getChatsHelper() {
+        return ChatsHelper.getInstance(currentAccount);
+    }
+    /** Cherrygram finish*/
 
 }

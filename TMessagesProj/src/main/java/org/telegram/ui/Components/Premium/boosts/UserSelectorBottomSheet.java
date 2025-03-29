@@ -91,6 +91,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
     public static final int TYPE_STARS = 1;
     public static final int TYPE_STAR_GIFT = 2;
     public static final int TYPE_TRANSFER = 3;
+    public static final int TYPE_CALL = 4;
 
     private static UserSelectorBottomSheet instance;
 
@@ -240,7 +241,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
     }
 
     private void checkEditTextHint() {
-        if (!selectedIds.isEmpty() || type == TYPE_STARS || type == TYPE_STAR_GIFT || type == TYPE_TRANSFER) {
+        if (!selectedIds.isEmpty() || type == TYPE_STARS || type == TYPE_STAR_GIFT || type == TYPE_TRANSFER || type == TYPE_CALL) {
             if (!isHintSearchText) {
                 isHintSearchText = true;
                 AndroidUtilities.runOnUIThread(() -> searchField.setHintText(getString(R.string.Search), true), 10);
@@ -320,7 +321,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
         };
         searchField.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
         searchField.setOnSearchTextChange(this::onSearch);
-        searchField.setHintText(getString(!selectedIds.isEmpty() || type == TYPE_STARS || type == TYPE_STAR_GIFT || type == TYPE_TRANSFER ? R.string.Search : R.string.GiftPremiumUsersSearchHint), false);
+        searchField.setHintText(getString(!selectedIds.isEmpty() || type == TYPE_STARS || type == TYPE_STAR_GIFT || type == TYPE_TRANSFER || type == TYPE_CALL ? R.string.Search : R.string.GiftPremiumUsersSearchHint), false);
 
         sectionCell = new View(getContext()) {
             @Override
@@ -352,7 +353,9 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
         };
         actionButton.setOnClickListener(v -> next());
         buttonContainer.addView(actionButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
-//        containerView.addView(buttonContainer, LayoutHelper.createFrameMarginPx(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, backgroundPaddingLeft, 0, backgroundPaddingLeft, 0));
+        if (type == TYPE_CALL) {
+            containerView.addView(buttonContainer, LayoutHelper.createFrameMarginPx(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, backgroundPaddingLeft, 0, backgroundPaddingLeft, 0));
+        }
 
         bulletinContainer = new FrameLayout(getContext());
         containerView.addView(bulletinContainer, LayoutHelper.createFrameMarginPx(LayoutHelper.MATCH_PARENT, 300, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, backgroundPaddingLeft, 0, backgroundPaddingLeft, dp(68)));
@@ -400,9 +403,15 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
                     return;
                 }
                 if (type == TYPE_PREMIUM || type == TYPE_STAR_GIFT) {
+                    if (UserObject.areGiftsDisabled(id)) {
+                        BulletinFactory.of(container, resourcesProvider).createSimpleBulletin(R.raw.error, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.UserDisallowedGifts, DialogObject.getShortName(id)))).show();
+                        return;
+                    }
                     List<TLRPC.TL_premiumGiftCodeOption> options = BoostRepository.filterGiftOptions(paymentOptions, 1);
                     options = BoostRepository.filterGiftOptionsByBilling(options);
-                    new GiftSheet(getContext(), currentAccount, id, options, this::dismiss).show();
+                    new GiftSheet(getContext(), currentAccount, id, options, this::dismiss)
+                        .setBirthday(birthdays != null && birthdays.contains(id))
+                        .show();
                     return;
                 }
                 if (selectedIds.contains(id)) {
@@ -449,6 +458,9 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
             updateList(true, false);
         }, null);
         headerView.setText(getTitle());
+        if (actionBar != null) {
+            actionBar.setTitle(getTitle());
+        }
         updateActionButton(false);
         initContacts(false);
         initHints(false);
@@ -502,7 +514,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
     }
 
     private void next() {
-        if (selectedIds.size() == 0 || paymentOptions.isEmpty() && (type != TYPE_PREMIUM && type != TYPE_STAR_GIFT)) {
+        if (selectedIds.size() == 0 || paymentOptions.isEmpty() && (type != TYPE_PREMIUM && type != TYPE_STAR_GIFT && type != TYPE_CALL)) {
             return;
         }
         List<TLRPC.User> selectedUsers = new ArrayList<>();
@@ -515,16 +527,26 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
         if (type == TYPE_STARS) {
             return;
         }
+        if (type == TYPE_CALL) {
+            if (onUsersSelectedListener != null) {
+                onUsersSelectedListener.run(selectedIds);
+                onUsersSelectedListener = null;
+            }
+            return;
+        }
         List<TLRPC.TL_premiumGiftCodeOption> options = BoostRepository.filterGiftOptions(paymentOptions, selectedUsers.size());
         options = BoostRepository.filterGiftOptionsByBilling(options);
         if (selectedUsers.size() == 1) {
             final long userId = selectedUsers.get(0).id;
+            if (UserObject.areGiftsDisabled(userId)) {
+                BulletinFactory.of(container, resourcesProvider).createSimpleBulletin(R.raw.error, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.UserDisallowedGifts, DialogObject.getShortName(userId)))).show();
+                return;
+            }
             new GiftSheet(getContext(), currentAccount, userId, options, this::dismiss)
                 .setBirthday(birthdays != null && birthdays.contains(userId))
                 .show();
             return;
         }
-//        PremiumPreviewGiftToUsersBottomSheet.show(selectedUsers, options);
     }
 
     public void scrollToTop(boolean animate) {
@@ -610,7 +632,9 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
     private void updateActionButton(boolean animated) {
         actionButton.setShowZero(false);
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
-        if (selectedIds.size() == 0) {
+        if (type == TYPE_CALL) {
+            stringBuilder.append(getString(R.string.CallInviteMembersButton));
+        } else if (selectedIds.size() == 0) {
             if (LocaleController.isRTL) {
                 stringBuilder.append(getString("GiftPremiumChooseRecipientsBtn", R.string.GiftPremiumChooseRecipientsBtn));
                 stringBuilder.append("d").setSpan(recipientsBtnSpaceSpan, stringBuilder.length() - 1, stringBuilder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -623,7 +647,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
         }
         actionButton.setCount(selectedIds.size(), true);
         actionButton.setText(stringBuilder, animated, false);
-        actionButton.setEnabled(true);
+        actionButton.setEnabled(selectedIds.size() > 0);
     }
 
     private void onSearch(String text) {
@@ -646,6 +670,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
     }
 
     private int addSection(ArrayList<SelectorAdapter.Item> items, CharSequence title, ArrayList<TLRPC.User> users, boolean addSelectAll) {
+        addSelectAll = false;
         int h = 0;
         if (users.isEmpty()) {
             return h;
@@ -743,7 +768,7 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
             if (userFull == null) {
                 MessagesController.getInstance(currentAccount).loadFullUser(UserConfig.getInstance(currentAccount).getCurrentUser(), 0, true);
             }
-            if (type != TYPE_TRANSFER && userFull != null && userFull.birthday == null) {
+            if ((type == TYPE_PREMIUM || type == TYPE_STAR_GIFT) && userFull != null && userFull.birthday == null) {
                 h += dp(50);
                 items.add(Item.asButton(1, R.drawable.menu_birthday, getString(R.string.GiftsBirthdaySetup)));
             }
@@ -895,6 +920,12 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
         onUserSelectedListener = listener;
     }
 
+    private Utilities.Callback<HashSet<Long>> onUsersSelectedListener;
+    public UserSelectorBottomSheet setOnUsersSelector(Utilities.Callback<HashSet<Long>> listener) {
+        onUsersSelectedListener = listener;
+        return this;
+    }
+
     private boolean includeTonOption;
     private int tonDays;
     public void addTONOption(int days) {
@@ -909,20 +940,27 @@ public class UserSelectorBottomSheet extends BottomSheetWithRecyclerListView imp
         if (customTitle != null) {
             return customTitle;
         }
-        if (getType() == TYPE_STARS) {
-            return getString(R.string.GiftStarsTitle);
-        }
-        if ((getType() == TYPE_STAR_GIFT || getType() == TYPE_PREMIUM) && !MessagesController.getInstance(currentAccount).stargiftsBlocked) {
-            return getString(R.string.GiftTelegramPremiumOrStarsTitle);
+        switch (type) {
+            case TYPE_CALL:
+                return getString(R.string.CallInviteMembers);
+            case TYPE_STARS:
+                return getString(R.string.GiftStarsTitle);
+            case TYPE_STAR_GIFT:
+            case TYPE_PREMIUM:
+                return getString(R.string.GiftTelegramPremiumOrStarsTitle);
         }
         return getString(R.string.GiftTelegramPremiumTitle);
     }
 
     @Override
     protected RecyclerListView.SelectionAdapter createAdapter(RecyclerListView listView) {
-        selectorAdapter = new SelectorAdapter(getContext(), false, resourcesProvider);
+        selectorAdapter = new SelectorAdapter(getContext(), needChecks(), resourcesProvider);
         selectorAdapter.setGreenSelector(true);
         return selectorAdapter;
+    }
+
+    protected boolean needChecks() {
+        return false;
     }
 
     protected int getType() {

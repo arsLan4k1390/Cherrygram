@@ -214,7 +214,6 @@
     <string name="CP_NoRounding">Онемогући заокруживање бројева</string>
     <string name="CP_DeleteForAll">Подразумевано користи „Избриши за све”</string>
     <string name="CP_DeleteForAll_Desc">Поље за потврду ће бити аутоматски означено при брисању порука.</string>
-    <string name="CP_ConfirmCalls">Питај пре позива</string>
     <string name="CP_ForwardMsgDate">Прикажи датум прослеђене поруке</string>
     <string name="CP_ShowSeconds">Показивање времена са секундама</string>
     <string name="CP_LeftBottomButtonAction">Радња левог дугмета</string>
@@ -328,7 +327,6 @@
     <string name="UP_Not_Found">Cherrygram је ажуран.</string>
     <string name="UP_UpdateAvailable">Ажурирање доступно!</string>
     <string name="UP_Version">Верзија</string>
-    <string name="UP_UpdateSize">Величина ажурирања</string>
     <string name="UP_Changelog">Евиденција промена:</string>
     <string name="UP_ChangelogRead">Додирните да прочитате</string>
     <string name="UP_Download">Преузми</string>

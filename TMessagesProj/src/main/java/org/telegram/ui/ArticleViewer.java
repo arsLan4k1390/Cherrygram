@@ -120,7 +120,6 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimationNotificationsLocker;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.ChatObject;
-import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.DownloadController;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
@@ -225,7 +224,6 @@ import java.util.Locale;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 
 public class ArticleViewer implements NotificationCenter.NotificationCenterDelegate {
 
@@ -4347,13 +4345,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 }
                 url = BotWebViewContainer.magic2tonsite(url);
                 final long selfId = UserConfig.getInstance(currentAccount).getClientUserId();
-
-                long chatID;
-                if (CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages()) {
-                    chatID = ChatsHelper2.getCustomChatID();
-                } else {
-                    chatID = selfId;
-                }
+                long chatID = ChatsHelper2.INSTANCE.getCustomChatID();
 
                 SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(url, chatID));
                 TLRPC.TL_message msg = new TLRPC.TL_message();
@@ -4373,17 +4365,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                     }
                     BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                     if (lastFragment != null) {
-                        Bundle args = new Bundle();
-                        if (CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages()) {
-                            if (DialogObject.isChatDialog(chatID)) {
-                                args.putLong("chat_id", -chatID);
-                            } else {
-                                args.putLong("user_id", chatID);
-                            }
-                        } else {
-                            args.putLong("user_id", selfId);
-                        }
-                        lastFragment.presentFragment(new ChatActivity(args));
+                        lastFragment.presentFragment(ChatActivity.of(chatID));
                     }
                 })).show(true);
             } else if (id == WebActionBar.bookmarks_item) {

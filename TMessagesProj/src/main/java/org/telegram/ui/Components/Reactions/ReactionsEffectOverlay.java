@@ -60,7 +60,6 @@ public class ReactionsEffectOverlay {
     private final AnimationView emojiImageView;
     private final AnimationView emojiStaticImageView;
     private final FrameLayout container;
-    private final BaseFragment fragment;
     private final int currentAccount;
     private ReactionsEffectOverlay nextReactionOverlay;
     boolean animateIn;
@@ -94,7 +93,6 @@ public class ReactionsEffectOverlay {
     boolean isFinished;
 
     public ReactionsEffectOverlay(Context context, BaseFragment fragment, ReactionsContainerLayout reactionsLayout, View cell, View fromAnimationView, float x, float y, ReactionsLayoutInBubble.VisibleReaction visibleReaction, int currentAccount, int animationType, boolean isStories) {
-        this.fragment = fragment;
         this.isStories = isStories;
         final MessageObject messageObject;
         if (cell instanceof ChatMessageCell) {
@@ -243,7 +241,7 @@ public class ReactionsEffectOverlay {
         } else if (cell != null) {
             ((View) cell.getParent()).getLocationInWindow(loc);
             fromX = loc[0] + x;
-            fromY = loc[1] + y;
+            fromY = loc[1] + y + (cell instanceof ChatMessageCell ? ((ChatMessageCell) cell).starsPriceTopPadding : 0);
             fromHeight = 0;
         } else {
             fromX = x;

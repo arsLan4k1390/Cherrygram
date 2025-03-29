@@ -659,14 +659,11 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
 
     public static JsonBottomSheet showAlert(Context context, Theme.ResourcesProvider resourcesProvider, BaseFragment fragment, MessageObject messageObject, TLRPC.Chat currentChat) {
         JsonBottomSheet alert = new JsonBottomSheet(context, resourcesProvider, messageObject, currentChat);
-        if (fragment != null) {
-            if (fragment.getParentActivity() != null) {
-                fragment.showDialog(alert);
-            }
-            alert.setFragment(fragment);
-        } else {
-            alert.show();
+        if (fragment.getParentActivity() != null) {
+            fragment.showDialog(alert);
         }
+        alert.dimBehindAlpha = 140;
+        alert.setFragment(fragment);
         return alert;
     }
 

@@ -60,7 +60,7 @@ object Constants {
     const val Videomessages_Resolution = "videomessages_resolution"
     const val Is_Donate_Screen_Available = "is_donate_screen_available"
     const val Re_Tg_Check = "re_tg_check"
-    const val switch_HideArchiveChats = "switch_HideArchiveChats"
+    const val is_new_updates_ui_available = "is_new_updates_ui_available"
     /** Firebase remote Config finish **/
 
 }

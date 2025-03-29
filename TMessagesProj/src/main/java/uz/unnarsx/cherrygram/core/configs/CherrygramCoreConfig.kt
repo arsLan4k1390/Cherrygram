@@ -21,8 +21,10 @@ import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
 import uz.unnarsx.cherrygram.preferences.boolean
+import uz.unnarsx.cherrygram.preferences.float
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
+import uz.unnarsx.cherrygram.preferences.string
 
 object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     context = SupervisorJob() + Dispatchers.Main.immediate
@@ -74,6 +76,12 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", isStandaloneStableBuild() || isStandaloneBetaBuild() || isDevBuild())
     var lastUpdateCheckTime by sharedPreferences.long("CG_LastUpdateCheckTime", 0)
     var updateScheduleTimestamp by sharedPreferences.long("CG_UpdateScheduleTimestamp", 0)
+
+    var updatesNewUI by sharedPreferences.boolean("CG_UpdatesNewUI", true)
+    var updateVersionName by sharedPreferences.string("CG_UpdateVersionName", "idk")
+    var updateIsDownloading by sharedPreferences.boolean("CG_UpdateIsDownloading", false)
+    var updateDownloadingProgress by sharedPreferences.float("CG_NewUpdateDownloadingProgress", 0f)
+    var updateAvailable by sharedPreferences.boolean("CG_UpdateAvailable", false)
     /** OTA finish **/
 
     /** Launch icons (Telegram Chats Settings) start **/

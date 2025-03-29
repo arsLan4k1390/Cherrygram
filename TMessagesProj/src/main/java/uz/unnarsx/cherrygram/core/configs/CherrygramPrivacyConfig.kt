@@ -17,7 +17,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.long
@@ -37,7 +36,6 @@ object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
     var hideArchiveFromChatsList by sharedPreferences.boolean("SP_HideArchiveFromChatsList", false)
     var askBiometricsToOpenArchive by sharedPreferences.boolean("SP_AskBiometricsToOpenArchive", false)
     var askBiometricsToOpenChat by sharedPreferences.boolean("SP_AskBiometricsToOpenChat", false)
-    private var tweakPasscodeChatsArray by sharedPreferences.boolean("tweakPasscodeChatsArray", false)
     var askPasscodeBeforeDelete by sharedPreferences.boolean("SP_AskPinBeforeDelete", false)
     var allowSystemPasscode by sharedPreferences.boolean("SP_AllowSystemPasscode", false)
     /** Passcode lock finish **/
@@ -52,13 +50,6 @@ object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
                 FirebaseAnalyticsHelper.start(ApplicationLoader.applicationContext)
             }
             FirebaseAnalyticsHelper.trackEventWithEmptyBundle("cg_start")
-
-            if (!tweakPasscodeChatsArray) {
-                val arr: ArrayList<String?> = ArrayList()
-                arr.add("0")
-                ChatsPasswordHelper.saveArrayList(arr, ChatsPasswordHelper.Passcode_Array)
-                tweakPasscodeChatsArray = true
-            }
 
             /*delay(5000)
             FirebaseAnalyticsHelper.trackAllCherrygramSettings()*/

@@ -58,10 +58,13 @@ import uz.unnarsx.cherrygram.preferences.BasePreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.cells.StickerSliderCell;
 
 public class TGKitSettingsFragment extends BaseFragment {
+
     private final TGKitSettings settings;
     private final SparseArray<TGKitPreference> positions = new SparseArray<>();
+
     private ListAdapter listAdapter;
     private RecyclerListView listView;
+
     private int rowCount;
 
     public TGKitSettingsFragment(BasePreferencesEntry entry) {
@@ -143,20 +146,16 @@ public class TGKitSettingsFragment extends BaseFragment {
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(((TGKitSwitchPreference) pref).contract.getPreferenceValue());
                 }
-            } else if (pref instanceof TGKitTextIconRow) {
-                TGKitTextIconRow preference = ((TGKitTextIconRow) pref);
+            } else if (pref instanceof TGKitTextIconRow preference) {
                 if (preference.listener != null) preference.listener.onClick(this);
-            } else if (pref instanceof TGKitTextDetailRow) {
-                TGKitTextDetailRow preference = ((TGKitTextDetailRow) pref);
+            } else if (pref instanceof TGKitTextDetailRow preference) {
                 if (preference.listener != null) preference.listener.onClick(this);
-            } else if (pref instanceof TGKitSettingsCellRow) {
-                TGKitSettingsCellRow preference = ((TGKitSettingsCellRow) pref);
+            } else if (pref instanceof TGKitSettingsCellRow preference) {
                 if (preference.listener != null) preference.listener.onClick(this);
-            } else if (pref instanceof TGKitListPreference) {
-                TGKitListPreference preference = ((TGKitListPreference) pref);
+            } else if (pref instanceof TGKitListPreference preference) {
                 preference.callActionHueta(this, getParentActivity(), () -> {
                     if (view instanceof TextSettingsCell)
-                        ((TextSettingsCell) view).setTextAndValue(preference.title, preference.getContract().getValue(), preference.getDivider());
+                        ((TextSettingsCell) view).setTextAndValue(preference.title, preference.getContract().getValue(), true, preference.getDivider());
                 });
             }
         });
@@ -238,10 +237,10 @@ public class TGKitSettingsFragment extends BaseFragment {
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             switch (holder.getItemViewType()) {
                 case 0: {
-                    holder.itemView.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                    holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                     break;
                 }
                 case 1: {
@@ -290,7 +289,7 @@ public class TGKitSettingsFragment extends BaseFragment {
                 case 7: {
                     TextSettingsCell settingsCell = (TextSettingsCell) holder.itemView;
                     TGKitListPreference pref = (TGKitListPreference) positions.get(position);
-                    settingsCell.setTextAndValue(pref.title, pref.getContract().getValue(), pref.getDivider());
+                    settingsCell.setTextAndValue(pref.title, pref.getContract().getValue(), true, pref.getDivider());
                     break;
                 }
                 case 8: {
@@ -310,7 +309,7 @@ public class TGKitSettingsFragment extends BaseFragment {
                 int position = holder.getAdapterPosition();
                 TextSettingsCell checkCell = (TextSettingsCell) holder.itemView;
                 TGKitListPreference pref = ((TGKitListPreference) positions.get(position));
-                checkCell.setTextAndValue(pref.title, pref.getContract().getValue(), pref.getDivider());
+                checkCell.setTextAndValue(pref.title, pref.getContract().getValue(), true, pref.getDivider());
             }
         }
 
@@ -323,13 +322,11 @@ public class TGKitSettingsFragment extends BaseFragment {
             return isRowEnabled(holder.getAdapterPosition());
         }
 
+        @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = null;
+            View view;
             switch (viewType) {
-                case 0:
-                    view = new ShadowSectionCell(mContext);
-                    break;
                 case 1:
                 case 7:
                     view = new TextSettingsCell(mContext);
@@ -357,6 +354,9 @@ public class TGKitSettingsFragment extends BaseFragment {
                     break;
                 case 8:
                     view = new TextInfoPrivacyCell(mContext);
+                    break;
+                default:
+                    view = new ShadowSectionCell(mContext);
                     break;
             }
             view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));

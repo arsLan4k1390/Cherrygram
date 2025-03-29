@@ -216,6 +216,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
 import uz.unnarsx.cherrygram.core.PermissionsUtils;
@@ -608,7 +609,7 @@ public class AndroidUtilities {
         return spannableStringBuilder;
     }
 
-    public static SpannableStringBuilder makeClickable(String str, int type, Runnable runnable, Theme.ResourcesProvider resourcesProvider) {
+    public static SpannableStringBuilder makeClickable(CharSequence str, int type, Runnable runnable, Theme.ResourcesProvider resourcesProvider) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
         if (type == REPLACING_TAG_TYPE_LINK || type == REPLACING_TAG_TYPE_LINK_NBSP || type == REPLACING_TAG_TYPE_LINKBOLD || type == REPLACING_TAG_TYPE_UNDERLINE) {
             spannableStringBuilder.setSpan(new ClickableSpan() {
@@ -641,7 +642,7 @@ public class AndroidUtilities {
         return spannableStringBuilder;
     }
 
-    public static SpannableStringBuilder makeClickable(String str, Runnable runnable) {
+    public static SpannableStringBuilder makeClickable(CharSequence str, Runnable runnable) {
         return makeClickable(str, 0, runnable, null);
     }
 
@@ -719,12 +720,14 @@ public class AndroidUtilities {
     }
 
     public static CharSequence replaceArrows(CharSequence text, boolean link) {
-        return replaceArrows(text, link, dp(8f / 3f), 0);
+        return replaceArrows(text, link, dp(8f / 3f), 0, 1.0f);
     }
-
     public static CharSequence replaceArrows(CharSequence text, boolean link, float translateX, float translateY) {
+        return replaceArrows(text, link, translateX, translateY, 1.0f);
+    }
+    public static CharSequence replaceArrows(CharSequence text, boolean link, float translateX, float translateY, float scale) {
         ColoredImageSpan span = new ColoredImageSpan(R.drawable.msg_mini_forumarrow, DynamicDrawableSpan.ALIGN_BOTTOM);
-        span.setScale(.88f, .88f);
+        span.setScale(scale * .88f, scale * .88f);
         span.translate(-translateX, translateY);
         span.spaceScaleX = .8f;
         if (link) {
@@ -740,7 +743,7 @@ public class AndroidUtilities {
         text = AndroidUtilities.replaceMultipleCharSequence(">", text, rightArrow);
 
         span = new ColoredImageSpan(R.drawable.msg_mini_forumarrow, DynamicDrawableSpan.ALIGN_BOTTOM);
-        span.setScale(.88f, .88f);
+        span.setScale(scale * .88f, scale * .88f);
         span.translate(translateX, translateY);
         span.rotate(180f);
         span.spaceScaleX = .8f;
@@ -2283,7 +2286,7 @@ public class AndroidUtilities {
     public static Typeface getTypeface(String assetPath) {
         synchronized (typefaceCache) {
             if (!typefaceCache.containsKey(assetPath)) {
-                Typeface t = null;
+                Typeface t;
                 try {
                     if (CherrygramCoreConfig.INSTANCE.getSystemFonts()) {
                         switch (assetPath) {
@@ -2940,7 +2943,7 @@ public class AndroidUtilities {
 
     public static int getPhotoSize() {
         if (photoSize == null) {
-            photoSize = 2560;
+            photoSize = CherrygramChatsConfig.INSTANCE.getLargePhotos() ? 2560 : 1280;
         }
         return photoSize;
     }
@@ -3570,7 +3573,11 @@ public class AndroidUtilities {
     }
 
     private static File getAlbumDir(boolean secretChat) {
-        if (secretChat || !BuildVars.NO_SCOPED_STORAGE || Build.VERSION.SDK_INT >= 23 && PermissionsUtils.isImagesPermissionGranted()) {
+        if (
+            secretChat ||
+            !BuildVars.NO_SCOPED_STORAGE ||
+            Build.VERSION.SDK_INT >= 23 && PermissionsUtils.isImagesPermissionGranted()
+        ) {
             return FileLoader.getDirectory(FileLoader.MEDIA_DIR_IMAGE);
         }
         File storageDir = null;
@@ -3841,17 +3848,15 @@ public class AndroidUtilities {
         int h = duration / 3600;
         int m = duration / 60 % 60;
         int s = duration % 60;
+        String str = "";
         if (h > 0) {
-            return String.format(Locale.US, "%dh%02dm%02ds", h, m, s);
+            str += String.format(Locale.US, "%dh", h);
         }
         if (m > 0) {
-            if (s > 0) {
-                return String.format(Locale.US, "%dm%02ds", m, s);
-            } else {
-                return String.format(Locale.US, "%dm", m);
-            }
+            str += String.format(Locale.US, h > 0 ? "%02dm" : "%dm", m);
         }
-        return String.format(Locale.US, "%d", s);
+        str += String.format(Locale.US, h > 0 || m > 0 ? "%02ds" : "%ds", s);
+        return str;
     }
 
     public static String formatLongDuration(int duration) {
@@ -3859,6 +3864,9 @@ public class AndroidUtilities {
     }
 
     public static String formatDuration(int duration, boolean isLong) {
+        return formatDuration(duration, isLong, false);
+    }
+    public static String formatDuration(int duration, boolean isLong, boolean noSecondsIfHours) {
         int h = duration / 3600;
         int m = duration / 60 % 60;
         int s = duration % 60;
@@ -3869,7 +3877,11 @@ public class AndroidUtilities {
                 return String.format(Locale.US, "%d:%02d", m, s);
             }
         } else {
-            return String.format(Locale.US, "%d:%02d:%02d", h, m, s);
+            if (noSecondsIfHours) {
+                return String.format(Locale.US, "%d:%02d", h, m);
+            } else {
+                return String.format(Locale.US, "%d:%02d:%02d", h, m, s);
+            }
         }
     }
 
@@ -4172,8 +4184,7 @@ public class AndroidUtilities {
             int idx = fileName.lastIndexOf('.');
             if (idx != -1) {
                 String ext = fileName.substring(idx + 1);
-                int h = ext.toLowerCase().hashCode();
-                if (restrict && (h == 0x17a1c || h == 0x3107ab || h == 0x19a1b || h == 0xe55 || h == 0x18417)) {
+                if (restrict && MessageObject.isV(ext)) {
                     return true;
                 }
                 realMimeType = myMime.getMimeTypeFromExtension(ext.toLowerCase());
@@ -4281,6 +4292,18 @@ public class AndroidUtilities {
                 }
             }
             return original;
+        } else if (original instanceof SpannableString) {
+            if (TextUtils.indexOf(original, "\n\n") < 0) return original;
+            SpannableStringBuilder stringBuilder = new SpannableStringBuilder(original);
+            for (int a = 0, N = original.length(); a < N - 2; a++) {
+                stringBuilder.getChars(a, a + 2, buf, 0);
+                if (buf[0] == '\n' && buf[1] == '\n') {
+                    stringBuilder = stringBuilder.replace(a, a + 2, "\n");
+                    a--;
+                    N--;
+                }
+            }
+            return stringBuilder;
         }
         return original.toString().replace("\n\n", "\n");
     }
@@ -5430,6 +5453,27 @@ public class AndroidUtilities {
         }
     }
 
+    public static void updateVisibleRow(RecyclerListView listView, int position) {
+        if (listView == null) {
+            return;
+        }
+        RecyclerView.Adapter adapter = listView.getAdapter();
+        if (adapter == null) {
+            return;
+        }
+        for (int i = 0; i < listView.getChildCount(); i++) {
+            View child = listView.getChildAt(i);
+            int p = listView.getChildAdapterPosition(child);
+            if (p >= 0) {
+                RecyclerView.ViewHolder holder = listView.getChildViewHolder(child);
+                if (holder == null || holder.shouldIgnore() || holder.getAdapterPosition() != position) {
+                    continue;
+                }
+                adapter.onBindViewHolder(holder, p);
+            }
+        }
+    }
+
     public static void updateImageViewImageAnimated(ImageView imageView, int newIcon) {
         updateImageViewImageAnimated(imageView, ContextCompat.getDrawable(imageView.getContext(), newIcon));
     }
@@ -6223,14 +6267,6 @@ public class AndroidUtilities {
         return isHonor;
     }
 
-    public static String capitalize(String name){
-        String capitalizeString = "";
-        if (!name.trim().equals("")) {
-            capitalizeString = name.substring(0,1).toUpperCase() + name.substring(1);
-        }
-        return capitalizeString;
-    }
-
     public static void selectionSort(ArrayList<CharSequence> x, ArrayList<String> y) {
         for (int i = 0; i < x.size() - 1; i++) {
             for (int j = i + 1; j < x.size(); j++) {
@@ -6245,25 +6281,6 @@ public class AndroidUtilities {
                 }
             }
         }
-    }
-
-    public static int getTransparentColor(int color, float opacity){
-        int alpha = Color.alpha(color);
-        int red = Color.red(color);
-        int green = Color.green(color);
-        int blue = Color.blue(color);
-        // Set alpha based on your logic, here I'm making it 25% of it's initial value.
-        alpha *= opacity;
-        return Color.argb(alpha, red, green, blue);
-    }
-
-    public static boolean isLight(int color) {
-        int red = Color.red(color);
-        int green = Color.green(color);
-        int blue = Color.blue(color);
-        float[] hsl = new float[3];
-        ColorUtils.RGBToHSL(red, green, blue, hsl);
-        return hsl[2] >= 0.5f;
     }
 
     public static CharSequence withLearnMore(CharSequence text, Runnable onClick) {

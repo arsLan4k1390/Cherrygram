@@ -631,9 +631,13 @@ public class TextCell extends FrameLayout {
             checkBox.setVisibility(VISIBLE);
             checkBox.setChecked(checked, false);
         }
-        imageView.setVisibility(VISIBLE);
-        imageView.setPadding(0, dp(7), 0, 0);
-        imageView.setImageResource(resId);
+        if (resId != 0) {
+            imageView.setVisibility(VISIBLE);
+            imageView.setPadding(0, dp(7), 0, 0);
+            imageView.setImageResource(resId);
+        } else {
+            imageView.setVisibility(GONE);
+        }
         needDivider = divider;
         setWillNotDraw(!needDivider);
         if (emojiDrawable != null) {

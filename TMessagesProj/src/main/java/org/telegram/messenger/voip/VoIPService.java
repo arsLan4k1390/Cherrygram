@@ -3025,7 +3025,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			builder.setSmallIcon(isMicMute() ? R.drawable.voicechat_muted : R.drawable.voicechat_active);
 		} else {
 			builder.setContentTitle(LocaleController.getString(R.string.VoipOutgoingCall));
-			builder.setSmallIcon(CGResourcesHelper.getProperNotificationIcon());
+			builder.setSmallIcon(CGResourcesHelper.INSTANCE.getProperNotificationIcon());
 			builder.setOngoing(true);
 		}
 		builder.setPriority(Notification.PRIORITY_MAX);
@@ -4179,7 +4179,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 
 		Notification.Builder builder = new Notification.Builder(this)
 				.setContentTitle(video ? LocaleController.getString(R.string.VoipInVideoCallBranding) : LocaleController.getString(R.string.VoipInCallBranding))
-				.setSmallIcon(CGResourcesHelper.getProperNotificationIcon())
+				.setSmallIcon(CGResourcesHelper.INSTANCE.getProperNotificationIcon())
 				.setContentIntent(PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			SharedPreferences nprefs = MessagesController.getGlobalNotificationsSettings();

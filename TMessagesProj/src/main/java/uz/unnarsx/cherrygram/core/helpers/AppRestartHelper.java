@@ -23,6 +23,7 @@ import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
+import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,12 +51,11 @@ public final class AppRestartHelper extends Activity {
     }
 
     public static void createRestartBulletin(BaseFragment fragment) {
-        BulletinFactory.of(fragment).createRestartBulletin(
+        BulletinFactory.of(fragment).createSimpleBulletin(
                 R.raw.chats_infotip,
                 LocaleController.getString(R.string.CG_RestartToApply),
                 LocaleController.getString(R.string.BotUnblock),
-                () -> {
-                }).show();
+                () -> triggerRebirth(fragment.getContext(), new Intent(fragment.getContext(), LaunchActivity.class))).show();
     }
 
     public static void createDebugSuccessBulletin(BaseFragment fragment) {
@@ -64,5 +64,6 @@ public final class AppRestartHelper extends Activity {
                 .setDuration(Bulletin.DURATION_LONG)
                 .show();
     }
+
 }
 

@@ -42,7 +42,7 @@ public class NotificationsService extends Service {
             notificationManager.createNotificationChannel(channel);
             startForeground(7777,
                     new NotificationCompat.Builder(this, "cherrygramPush")
-                            .setSmallIcon(CGResourcesHelper.getResidentNotificationIcon())
+                            .setSmallIcon(CGResourcesHelper.INSTANCE.getResidentNotificationIcon())
                             .setShowWhen(false)
                             .setOngoing(true)
                             .setContentText(LocaleController.getString(R.string.CG_PushService))

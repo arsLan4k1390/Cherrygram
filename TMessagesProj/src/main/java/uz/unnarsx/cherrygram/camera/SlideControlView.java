@@ -26,6 +26,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -94,21 +95,21 @@ public class SlideControlView extends View {
         this.mode = mode;
 
         if (mode == SLIDER_MODE_ZOOM) {
-            minusDrawable = context.getResources().getDrawable(R.drawable.zoom_minus);
-            plusDrawable = context.getResources().getDrawable(R.drawable.zoom_plus);
+            minusDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.zoom_minus, context.getTheme());
+            plusDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.zoom_plus, context.getTheme());
         } else if (mode == SLIDER_MODE_EV) {
-            minusDrawable = context.getResources().getDrawable(R.drawable.ev_minus);
-            plusDrawable = context.getResources().getDrawable(R.drawable.ev_plus);
+            minusDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ev_minus, context.getTheme());
+            plusDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ev_plus, context.getTheme());
         }
 
-        progressDrawable = context.getResources().getDrawable(R.drawable.zoom_slide);
+        progressDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.zoom_slide, context.getTheme());
         if (mode == SLIDER_MODE_ZOOM) {
-            filledProgressDrawable = context.getResources().getDrawable(R.drawable.zoom_slide_a);
+            filledProgressDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.zoom_slide_a, context.getTheme());
         } else if (mode == SLIDER_MODE_EV) {
-            filledProgressDrawable = context.getResources().getDrawable(R.drawable.zoom_slide);
+            filledProgressDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.zoom_slide, context.getTheme());
         }
-        knobDrawable = context.getResources().getDrawable(R.drawable.zoom_round);
-        pressedKnobDrawable = context.getResources().getDrawable(R.drawable.zoom_round_b);
+        knobDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.zoom_round, context.getTheme());
+        pressedKnobDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.zoom_round_b, context.getTheme());
     }
 
     public float getSliderValue() {

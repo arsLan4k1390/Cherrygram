@@ -550,7 +550,6 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
 
         imageView = new RLottieImageView(context);
         imageView.setAnimation(R.raw.passcode_lock, 58, 58);
-//        imageView.getAnimatedDrawable().setCurrentFrame(37, false); // set lock animation to locked
         imageView.setAutoRepeat(false);
         addView(imageView, LayoutHelper.createFrame(58, 58, Gravity.LEFT | Gravity.TOP));
 
@@ -733,7 +732,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         title.setTypeface(AndroidUtilities.bold());
         title.setTextColor(0xFFFFFFFF);
-        title.setText(LocaleController.getString(R.string.CG_AppName));
+        title.setText(LocaleController.getString(R.string.UnlockToUse));
         numbersTitleContainer.addView(title, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, 0, 0, 0));
 
         subtitleView = new TextView(context);
@@ -1187,7 +1186,11 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         }
         Activity parentActivity = AndroidUtilities.findActivity(getContext());
         if (parentActivity != null && fingerprintView.getVisibility() == VISIBLE && !ApplicationLoader.mainInterfacePaused && (!(parentActivity instanceof LaunchActivity) || ((LaunchActivity) parentActivity).allowShowFingerprintDialog(this))) {
-            CGBiometricPrompt.prompt(parentActivity, () -> processDone(true));
+            CGBiometricPrompt.prompt(parentActivity,
+                    () -> processDone(true),
+                    () -> showPin(true)
+            );
+            showPin(false);
         }
     }
 
