@@ -39,7 +39,6 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Looper;
 import android.os.Parcelable;
 import android.os.StatFs;
 import android.os.StrictMode;
@@ -52,7 +51,6 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.util.Base64;
-import android.util.Pair;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.ActionMode;
@@ -73,6 +71,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.arch.core.util.Function;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.pm.ShortcutInfoCompat;
@@ -128,7 +127,9 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.browser.Browser;
+import org.telegram.messenger.pip.PictureInPictureActivityHandler;
 import org.telegram.messenger.voip.VideoCapturerDevice;
+import org.telegram.messenger.voip.VoIPGroupNotification;
 import org.telegram.messenger.voip.VoIPPendingCall;
 import org.telegram.messenger.voip.VoIPPreNotificationService;
 import org.telegram.messenger.voip.VoIPService;
@@ -179,7 +180,9 @@ import org.telegram.ui.Components.MediaActivity;
 import org.telegram.ui.Components.PasscodeView;
 import org.telegram.ui.Components.PasscodeViewDialog;
 import org.telegram.ui.Components.PhonebookShareAlert;
+import org.telegram.messenger.pip.PipNativeApiController;
 import org.telegram.ui.Components.PipRoundVideoView;
+import org.telegram.ui.Components.PipVideoOverlay;
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.Components.Premium.boosts.BoostPagerBottomSheet;
 import org.telegram.ui.Components.Premium.boosts.GiftInfoBottomSheet;
@@ -197,6 +200,7 @@ import org.telegram.ui.Components.TermsOfServiceView;
 import org.telegram.ui.Components.ThemeEditorView;
 import org.telegram.ui.Components.UndoView;
 import org.telegram.ui.Components.spoilers.SpoilerEffect2;
+import org.telegram.ui.Components.voip.RTMPStreamPipOverlay;
 import org.telegram.ui.Components.voip.VoIPHelper;
 import org.telegram.ui.Stars.ISuperRipple;
 import org.telegram.ui.Stars.StarGiftSheet;
@@ -241,7 +245,7 @@ import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
 import uz.unnarsx.cherrygram.core.icons.CGUIResources;
 import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics;
 
-public class LaunchActivity extends BasePermissionsActivity implements INavigationLayout.INavigationLayoutDelegate, NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate {
+public class LaunchActivity extends BasePermissionsActivity implements INavigationLayout.INavigationLayoutDelegate, NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, PictureInPictureActivityHandler {
     public final static String EXTRA_FORCE_NOT_INTERNAL_APPS = "force_not_internal_apps";
     public final static String EXTRA_FORCE_REQUEST = "force_request";
     public final static Pattern PREFIX_T_ME_PATTERN = Pattern.compile("^(?:http(?:s|)://|)([A-z0-9-]+?)\\.t\\.me");
@@ -288,6 +292,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     private FrameLayout shadowTablet;
     private FrameLayout shadowTabletSide;
     private SizeNotifierFrameLayout backgroundTablet;
+    private FrameLayout pipNativeWrapper;
     public FrameLayout frameLayout;
     private FireworksOverlay fireworksOverlay;
     private BottomSheetTabsOverlay bottomSheetTabsOverlay;
@@ -436,7 +441,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         };
         frameLayout.setClipToPadding(false);
         frameLayout.setClipChildren(false);
-        setContentView(frameLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        pipNativeWrapper = new FrameLayout(this);
+        pipNativeWrapper.addView(frameLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        setContentView(pipNativeWrapper, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         if (Build.VERSION.SDK_INT >= 21) {
             themeSwitchImageView = new ImageView(this);
             themeSwitchImageView.setVisibility(View.GONE);
@@ -1866,8 +1873,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         String action = intent.getAction();
         final int[] intentAccount = new int[]{intent.getIntExtra("currentAccount", UserConfig.selectedAccount)};
         switchToAccount(intentAccount[0], true);
-        boolean isVoipIntent = action != null && action.equals("voip");
-        boolean isVoipAnswerIntent = action != null && action.equals("voip_answer");
+        final boolean isVoipIntent = action != null && action.equals("voip");
+        final boolean isVoipAnswerIntent = action != null && action.equals("voip_answer");
         if (!fromPassword && (AndroidUtilities.needShowPasscode(true) || SharedConfig.isWaitingForPasscodeEnter)) {
             showPasscodeActivity(true, false, -1, -1, null, null);
             UserConfig.getInstance(currentAccount).saveConfig(false);
@@ -1910,6 +1917,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         String callSearchQuery = null;
         String newContactName = null;
         String newContactPhone = null;
+        String conferenceSlug = null;
         boolean forceNotInternalForApps = intent.getBooleanExtra(EXTRA_FORCE_NOT_INTERNAL_APPS, false);
         boolean forceRequest = intent.getBooleanExtra(EXTRA_FORCE_REQUEST, false);
 
@@ -2379,6 +2387,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                                 text = data.getQueryParameter("text");
                                             } else if (path.startsWith("addstickers/")) {
                                                 sticker = path.replace("addstickers/", "");
+                                            } else if (path.startsWith("call/")) {
+                                                conferenceSlug = path.replace("call/", "");
                                             } else if (path.startsWith("addemoji/")) {
                                                 emoji = path.replace("addemoji/", "");
                                             } else if (path.startsWith("msg/") || path.startsWith("share/")) {
@@ -2921,7 +2931,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                     } else if ((url.startsWith("tg:call") || url.startsWith("tg://call"))) {
                                         if (UserConfig.getInstance(currentAccount).isClientActivated()) {
                                             final String extraForceCall = "extra_force_call";
-                                            if (ContactsController.getInstance(currentAccount).contactsLoaded || intent.hasExtra(extraForceCall)) {
+                                            final String slug = data.getQueryParameter("slug");
+                                            if (!TextUtils.isEmpty(slug)) {
+                                                conferenceSlug = slug;
+                                            } else if (ContactsController.getInstance(currentAccount).contactsLoaded || intent.hasExtra(extraForceCall)) {
                                                 final String callFormat = data.getQueryParameter("format");
                                                 final String callUserName = data.getQueryParameter("name");
                                                 final String callPhone = data.getQueryParameter("phone");
@@ -3435,6 +3448,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     drawerLayoutContainer.setAllowOpenDrawer(true, false);
                 }
                 pushOpened.set(true);
+            } else if (!TextUtils.isEmpty(conferenceSlug)) {
+                GroupCallSheet.show(this, currentAccount, 0, conferenceSlug, progress);
             } else if (newContact) {
                 final NewContactBottomSheet fragment = new NewContactBottomSheet(actionBarLayout.getLastFragment(), this);
                 if (newContactName != null) {
@@ -3540,7 +3555,11 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             }
         }
         if (isVoipAnswerIntent) {
-            VoIPPreNotificationService.answer(this);
+            if (intent != null && intent.hasExtra("group_call_invite_msg_id")) {
+                VoIPGroupNotification.answer(this, intentAccount[0], intent.getIntExtra("group_call_invite_msg_id", 0));
+            } else {
+                VoIPPreNotificationService.answer(this);
+            }
         } else if (isVoipIntent) {
             VoIPFragment.show(this, intentAccount[0]);
         }
@@ -6612,9 +6631,12 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         SpoilerEffect2.pause(true);
     }
 
+    private boolean isStarted;
+
     @Override
     protected void onStart() {
         super.onStart();
+        isStarted = true;
         Browser.bindCustomTabsService(this);
         ApplicationLoader.mainInterfaceStopped = false;
         GroupCallPip.updateVisibility(this);
@@ -6626,11 +6648,54 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     @Override
     protected void onStop() {
         super.onStop();
+        isStarted = false;
         Browser.unbindCustomTabsService(this);
         ApplicationLoader.mainInterfaceStopped = true;
         GroupCallPip.updateVisibility(this);
         if (GroupCallActivity.groupCallInstance != null) {
             GroupCallActivity.groupCallInstance.onPause();
+        }
+    }
+
+    @Override
+    public boolean isActivityStopped() {
+        return !isStarted;
+    }
+
+    @Override
+    public void addActivityPipView(View view) {
+        frameLayout.setVisibility(View.GONE);
+        pipNativeWrapper.addView(view, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+    }
+
+    @Override
+    public void removeActivityPipView(View view) {
+        pipNativeWrapper.removeView(view);
+        frameLayout.setVisibility(pipNativeWrapper.getChildCount() > 1 ? View.GONE : View.VISIBLE);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, @NonNull Configuration newConfig) {
+        PipNativeApiController.onPictureInPictureModeChanged(this, isInPictureInPictureMode);
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+
+        if (!isInPictureInPictureMode && !isStarted) {
+            if (RTMPStreamPipOverlay.isVisible()) {
+                RTMPStreamPipOverlay.dismiss();
+            }
+            if (PipVideoOverlay.isVisible()) {
+                PipVideoOverlay.dismiss();
+            }
+
+            GroupCallActivity.onLeaveClick(this, null, false, true);
+
+            if (PhotoViewer.getPipInstance() != null) {
+                PhotoViewer.getPipInstance().destroyPhotoViewer();
+            }
+            if (PhotoViewer.hasInstance()) {
+                PhotoViewer.getInstance().closePhoto(false, false); //destroyPhotoViewer();
+            }
         }
     }
 
@@ -6717,6 +6782,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         if (actionBarLayout != null) {
             actionBarLayout.onUserLeaveHint();
         }
+        PipNativeApiController.onUserLeaveHint(this);
     }
 
     View feedbackView;
@@ -7523,7 +7589,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             } else {
                 did = UserConfig.getInstance(currentAccount).clientUserId;
             }
-            TLRPC.TL_groupCallParticipant participant = call.participants.get(did);
+            TLRPC.GroupCallParticipant participant = call.participants.get(did);
             boolean mutedByAdmin = participant != null && !participant.can_self_unmute && participant.muted;
             wasMutedByAdminRaisedHand = mutedByAdmin && participant.raise_hand_rating != 0;
 
@@ -8293,7 +8359,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     getActionBarLayout().presentFragment(params.setRemoveLast(actionBarLayout.getFragmentStack().size() > 1).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(false));
                     return false;
                 }
-            } else if (layout != layersActionBarLayout) {
+            } else if (layersActionBarLayout != null && layout != layersActionBarLayout) {
                 layersActionBarLayout.getView().setVisibility(View.VISIBLE);
                 drawerLayoutContainer.setAllowOpenDrawer(false, true);
 
