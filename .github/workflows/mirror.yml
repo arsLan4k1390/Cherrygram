@@ -8,11 +8,11 @@ on:
 jobs:
   mirror:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
 
-      - name: Push to GitLab
+    steps:
+      - name: Mirror GitHub → GitLab
         run: |
-          git remote add gitlab https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/arsLan4k1390/Cherrygram.git
-          git push --mirror gitlab
+          git clone --mirror https://github.com/arsLan4k1390/Cherrygram.git
+          cd Cherrygram.git
+          git remote set-url --push origin https://oauth2:${{ secrets.GITLAB_TOKEN }}@gitlab.com/arsLan4k1390/Cherrygram.git
+          git push --mirror
