@@ -480,20 +480,19 @@ public class UpdaterUtils {
             String[] current = Constants.INSTANCE.getCG_VERSION().split("\\.");
             String[] latest = version.split("\\.");
 
-            boolean isNew = false;
-
             int length = Math.max(current.length, latest.length);
             for (int i = 0; i < length; i++) {
                 int v1 = i < current.length ? Utilities.parseInt(current[i]) : 0;
                 int v2 = i < latest.length ? Utilities.parseInt(latest[i]) : 0;
                 if (v1 < v2) {
-                    isNew = true;
+                    CherrygramCoreConfig.INSTANCE.setUpdateAvailable(true);
+                    return true;
                 } else if (v1 > v2) {
-                    isNew = false;
+                    CherrygramCoreConfig.INSTANCE.setUpdateAvailable(false);
+                    return false;
                 }
-                CherrygramCoreConfig.INSTANCE.setUpdateAvailable(isNew);
             }
-            return isNew;
+            return false;
         }
 
         // todo: force update
