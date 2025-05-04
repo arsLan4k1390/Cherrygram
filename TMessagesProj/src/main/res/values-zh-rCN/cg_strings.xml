@@ -130,7 +130,6 @@
     <string name="AP_IconReplacements">替换图标</string>
     <string name="AP_Old_Notification_Icon">默认通知图标 (Telegram)</string>
     <string name="AP_Tablet_Mode">平板模式</string>
-    <string name="AP_ChangeIconFilter">使用 Telegram 原始图标</string>
     <string name="AP_ChangeIcon_Cherry_NY">新年</string>
     <string name="AP_ChangeIcon_Default">默认</string>
     <string name="AP_ChangeIcon_Dark">深色</string>

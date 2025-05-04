@@ -161,7 +161,7 @@ public class UpdaterBottomSheet extends BottomSheet {
                 if (!downloadButtonClicked) {
                     downloadButtonClicked = true;
                     doneButton.setClickable(false);
-                    UpdaterUtils.downloadApk(getContext(), update.downloadURL, "Cherrygram " + update.version, doneButton, isForce);
+                    UpdaterUtils.downloadApk(getContext(), update.downloadURL, "Cherrygram " + update.version, doneButton);
                     dismiss();
                 }
             });
@@ -214,6 +214,7 @@ public class UpdaterBottomSheet extends BottomSheet {
                 }
 
                 UpdaterUtils.cancelDownload(getContext(), UpdaterUtils.id);
+                CherrygramCoreConfig.INSTANCE.setUpdateAvailable(false);
             });
             linearLayout.addView(clearUpdates);
 
@@ -321,6 +322,7 @@ public class UpdaterBottomSheet extends BottomSheet {
         if (fragment.getParentActivity() != null) {
             fragment.showDialog(alert);
         }
+        NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
     }
 
     @Override

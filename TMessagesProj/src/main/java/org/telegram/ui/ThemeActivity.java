@@ -106,7 +106,6 @@ import org.telegram.ui.web.WebBrowserSettings;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -115,7 +114,6 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 public class ThemeActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -215,7 +213,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
     private int liteModeInfoRow;
 
     private int appIconHeaderRow;
-    private int appIconFilterRow;
     private int appIconSelectorRow;
     private int appIconShadowRow;
 
@@ -590,7 +587,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         createNewThemeRow = -1;
 
         appIconHeaderRow = -1;
-        appIconFilterRow = -1;
         appIconSelectorRow = -1;
         appIconShadowRow = -1;
         lastShadowRow = -1;
@@ -656,7 +652,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             chatListInfoRow = rowCount++;
 
 //            appIconHeaderRow = rowCount++;
-//            appIconFilterRow = rowCount++;
 //            appIconSelectorRow = rowCount++;
 //            appIconShadowRow = rowCount++;
 
@@ -692,12 +687,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             otherSectionRow = rowCount++;
 
             appIconHeaderRow = rowCount++;
-            appIconFilterRow = rowCount++;
             appIconSelectorRow = rowCount++;
-            if (listAdapter != null) {
-                listAdapter.notifyItemRemoved(appIconSelectorRow);
-                listAdapter.notifyItemInserted(appIconSelectorRow);
-            }
             appIconShadowRow = rowCount++;
         } else {
             nightDisabledRow = rowCount++;
@@ -1108,13 +1098,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 editor.apply();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(!animations);
-                }
-            } else if (position == appIconFilterRow) {
-                CherrygramCoreConfig.INSTANCE.setFilterLauncherIcon(!CherrygramCoreConfig.INSTANCE.getFilterLauncherIcon());
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramCoreConfig.INSTANCE.getFilterLauncherIcon());
-                    listAdapter.notifyItemChanged(appIconSelectorRow);
-                    updateRows(false);
                 }
             } else if (position == backgroundRow) {
                 presentFragment(new WallpapersListActivity(WallpapersListActivity.TYPE_ALL));
@@ -2497,8 +2480,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                         textCheckCell.setTextAndValueAndCheck(getString(R.string.PauseMusicOnRecord), getString("PauseMusicOnRecordInfo", R.string.PauseMusicOnRecordInfo), SharedConfig.pauseMusicOnRecord, true, true);
                     } else if (position == pauseOnMediaRow) {
                         textCheckCell.setTextAndCheck(getString(R.string.PauseMusicOnMedia), SharedConfig.pauseMusicOnMedia, true);
-                    } else if (position == appIconFilterRow) {
-                        textCheckCell.setTextAndCheck(LocaleController.getString("AP_ChangeIconFilter", R.string.AP_ChangeIconFilter), CherrygramCoreConfig.INSTANCE.getFilterLauncherIcon(), true);
                     } else if (position == directShareRow) {
                         textCheckCell.setTextAndValueAndCheck(getString("DirectShare", R.string.DirectShare), getString("DirectShareInfo", R.string.DirectShareInfo), SharedConfig.directShare, false, true);
                     } else if (position == sensitiveContentRow) {
@@ -2639,7 +2620,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 return TYPE_HEADER;
             } else if (position == automaticBrightnessRow) {
                 return TYPE_BRIGHTNESS;
-            } else if (position == scheduleLocationRow || position == sendByEnterRow || position == appIconFilterRow ||
+            } else if (position == scheduleLocationRow || position == sendByEnterRow ||
                     position == raiseToSpeakRow || position == raiseToListenRow || position == pauseOnRecordRow ||
                     position == directShareRow || position == chatBlurRow || position == pauseOnMediaRow || position == nextMediaTapRow || position == sensitiveContentRow) {
                 return TYPE_TEXT_CHECK;

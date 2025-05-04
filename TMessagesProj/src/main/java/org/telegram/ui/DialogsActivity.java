@@ -124,8 +124,8 @@ import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.XiaomiUtilities;
 import org.telegram.messenger.browser.Browser;
-import org.telegram.messenger.AutoBackupUserAgent;
 import org.telegram.messenger.voip.ConferenceCall;
+import org.telegram.messenger.AutoBackupUserAgent;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLObject;
@@ -3165,6 +3165,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         if (floatingButton2Container != null) {
                             floatingButton2Container.setVisibility(View.GONE);
                         }
+                        if (updateButton != null) {
+                            updateButton.setVisibility(View.GONE);
+                        }
                         if (storyHint != null) {
                             storyHint.hide();
                         }
@@ -3223,6 +3226,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         floatingButtonContainer.setVisibility(View.VISIBLE);
                         if (floatingButton2Container != null) {
                             floatingButton2Container.setVisibility(storiesEnabled ? View.VISIBLE : View.GONE);
+                        }
+                        if (updateButton != null) {
+                            updateButton.setVisibility(View.VISIBLE);
                         }
                         floatingHidden = true;
                         floatingButtonTranslation = dp(100);
@@ -5179,12 +5185,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             contentView.addView(animatedStatusView, LayoutHelper.createFrame(20, 20, Gravity.LEFT | Gravity.TOP));
         }
 
-        if (searchString == null && initialDialogsType == DIALOGS_TYPE_DEFAULT) {
+        if (searchString == null && initialDialogsType == DIALOGS_TYPE_DEFAULT && CherrygramCoreConfig.INSTANCE.getUpdateAvailable() && updateFileExists()) {
             updateButton = ApplicationLoader.applicationLoaderInstance.takeUpdateButton(context);
             if (updateButton != null) {
-                contentView.addView(updateButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.LEFT | Gravity.BOTTOM));
+                contentView.addView(updateButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.CENTER | Gravity.BOTTOM, dp(25), 0, dp(25), dp(10)));
                 updateButton.onTranslationUpdate(ty -> {
-                    additionalFloatingTranslation2 = dp(48) - ty;
+                    additionalFloatingTranslation2 = dp(75) - ty;
                     if (additionalFloatingTranslation2 < 0) {
                         additionalFloatingTranslation2 = 0;
                     }
@@ -5488,6 +5494,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
             };
             AutoBackupUserAgent.INSTANCE.checkLoggedAccountsInstances(suspendResult);
+            AutoBackupUserAgent.INSTANCE.antiCheckLoggedAccountsInstances(suspendResult);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !PermissionsUtils.isBluetoothPermissionGranted()) {
@@ -11025,10 +11032,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 type = MenuDrawable.TYPE_DEFAULT;
                 downloadProgress = 0.0f;
             }
-        } else if (CherrygramCoreConfig.INSTANCE.getUpdateAvailable() || updateFileExists()) { // TODO make MenuDrawable.TYPE_UDPATE_AVAILABLE when implemented
+        } else if (CherrygramCoreConfig.INSTANCE.getUpdateAvailable()) {
             if (CherrygramCoreConfig.INSTANCE.getUpdateIsDownloading()) {
                 type = MenuDrawable.TYPE_UDPATE_DOWNLOADING;
                 downloadProgress = CherrygramCoreConfig.INSTANCE.getUpdateDownloadingProgress();
+            } else if (!CherrygramCoreConfig.INSTANCE.getUpdateIsDownloading() && updateFileExists()) {
+                type = MenuDrawable.TYPE_UDPATE_AVAILABLE;
+                downloadProgress = 0.0f;
             } else {
                 type = MenuDrawable.TYPE_DEFAULT;
                 downloadProgress = 0.0f;
@@ -12734,6 +12744,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 floatingButtonContainer.setTranslationX((isDrawerTransition ? 1 : -1) * dp(slideAmplitudeDp) * (1f - slideFragmentProgress));
                 floatingButtonContainer.invalidate();
             }
+            if (updateButton != null && USE_SPRING_ANIMATION) {
+                updateButton.setTranslationX((isDrawerTransition ? 1 : -1) * dp(slideAmplitudeDp) * (1f - slideFragmentProgress));
+                updateButton.invalidate();
+            }
             if (rightSlidingDialogContainer != null && rightSlidingDialogContainer.getFragmentView() != null) {
                 if (!rightFragmentTransitionInProgress) {
                     rightSlidingDialogContainer.getFragmentView().setTranslationX((isDrawerTransition ? 1 : -1) * dp(slideAmplitudeDp) * (1f - slideFragmentProgress));
@@ -12763,6 +12777,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (floatingButtonContainer != null && USE_SPRING_ANIMATION) {
                 floatingButtonContainer.setTranslationX((isDrawerTransition ? dp(4) : -dp(4)) * (1f - slideFragmentProgress));
                 floatingButtonContainer.invalidate();
+            }
+            if (updateButton != null && USE_SPRING_ANIMATION) {
+                updateButton.setTranslationX((isDrawerTransition ? dp(4) : -dp(4)) * (1f - slideFragmentProgress));
+                updateButton.invalidate();
             }
             if (rightSlidingDialogContainer != null && rightSlidingDialogContainer.getFragmentView() != null) {
                 if (!rightFragmentTransitionInProgress) {
@@ -13585,23 +13603,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         } catch (Exception e) {
             FileLog.e(e);
         }
-
-        String[] current = Constants.INSTANCE.getCG_VERSION().split("\\.");
-        String[] downloaded = version.split("\\.");
-        boolean isNew = false;
-
-        int length = Math.max(current.length, downloaded.length);
-        for (int i = 0; i < length; i++) {
-            int v1 = i < current.length ? Utilities.parseInt(current[i]) : 0;
-            int v2 = i < downloaded.length ? Utilities.parseInt(downloaded[i]) : 0;
-            if (v1 < v2) {
-                isNew = true;
-            } else if (v1 > v2) {
-                isNew = false;
-            }
-        }
-
-        return ApplicationLoader.isStandaloneBuild() && isNew && (apkFile != null || apkFile.getAbsolutePath() != null || apkFile.getPath() != null) && apkFile.exists();
+        return ApplicationLoader.isStandaloneBuild() && (apkFile != null || apkFile.getAbsolutePath() != null || apkFile.getPath() != null) && apkFile.exists();
     }
 
     private static boolean USE_SPRING_ANIMATION = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING;

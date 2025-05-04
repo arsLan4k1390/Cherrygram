@@ -123,6 +123,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
@@ -10301,6 +10302,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     if (pu.action instanceof TLRPC.TL_sendMessageRecordAudioAction) {
                         if (isGroup) {
                             text = LocaleController.formatString("IsRecordingAudio", R.string.IsRecordingAudio, getUserNameForTyping(user));
+                            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) text = getUserNameForTyping(user);
                         } else {
                             text = LocaleController.getString(R.string.RecordingAudio);
                         }
@@ -10308,6 +10310,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     } else if (pu.action instanceof TLRPC.TL_sendMessageRecordRoundAction) {
                         if (isGroup) {
                             text = LocaleController.formatString("IsRecordingRound", R.string.IsRecordingRound, getUserNameForTyping(user));
+                            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) text = getUserNameForTyping(user);
                         } else {
                             text = LocaleController.getString(R.string.RecordingRound);
                         }
@@ -10336,6 +10339,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     } else if (pu.action instanceof TLRPC.TL_sendMessageRecordVideoAction) {
                         if (isGroup) {
                             text = LocaleController.formatString("IsRecordingVideo", R.string.IsRecordingVideo, getUserNameForTyping(user));
+                            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) text = getUserNameForTyping(user);
                         } else {
                             text = LocaleController.getString(R.string.RecordingVideoStatus);
                         }
@@ -10393,6 +10397,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     } else {
                         if (isGroup) {
                             text = LocaleController.formatString("IsTypingGroup", R.string.IsTypingGroup, getUserNameForTyping(user));
+                            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) text = getUserNameForTyping(user);
                         } else {
                             text = LocaleController.getString(R.string.Typing);
                         }
@@ -10415,18 +10420,35 @@ public class MessagesController extends BaseController implements NotificationCe
                         }
                     }
                     if (label.length() != 0) {
-                        if (count == 1) {
-                            text = LocaleController.formatString("IsTypingGroup", R.string.IsTypingGroup, label.toString());
-                        } else {
-                            if (arr.size() > 2) {
-                                String plural = LocaleController.getPluralString("AndMoreTypingGroup", arr.size() - 2);
-                                try {
-                                    text = String.format(plural, label.toString(), arr.size() - 2);
-                                } catch (Exception e) {
-                                    text = "LOC_ERR: AndMoreTypingGroup";
-                                }
+                        if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) {
+                            String input = label.toString();
+                            int commaIndex = input.indexOf(',');
+                            String output = (commaIndex != -1) ? input.substring(0, commaIndex).trim() : input.trim();
+
+                            if (label.length() < 25) {
+                                text = label.toString();
                             } else {
-                                text = LocaleController.formatString("AreTypingGroup", R.string.AreTypingGroup, label.toString());
+                                String plural = LocaleController.getPluralString("CG_AndMoreTypingGroup", arr.size() - 1);
+                                try {
+                                    text = String.format(plural, output, arr.size() - 1);
+                                } catch (Exception e) {
+                                    text = "LOC_ERR: CG_AndMoreTypingGroup";
+                                }
+                            }
+                        } else {
+                            if (count == 1) {
+                                text = LocaleController.formatString("IsTypingGroup", R.string.IsTypingGroup, label.toString());
+                            } else {
+                                if (arr.size() > 2) {
+                                    String plural = LocaleController.getPluralString("AndMoreTypingGroup", arr.size() - 2);
+                                    try {
+                                        text = String.format(plural, label.toString(), arr.size() - 2);
+                                    } catch (Exception e) {
+                                        text = "LOC_ERR: AndMoreTypingGroup";
+                                    }
+                                } else {
+                                    text = LocaleController.formatString("AreTypingGroup", R.string.AreTypingGroup, label.toString());
+                                }
                             }
                         }
                         type = 0;

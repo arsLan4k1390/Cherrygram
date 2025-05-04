@@ -5453,11 +5453,44 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 updateSendButtonPaid();
             }
 
+            private boolean isReplacing = false;
+            private long lastInputTime = 0;
+            private static final long TIMEOUT_MS = 1000;
+
             @Override
             public void afterTextChanged(Editable editable) {
                 if (ignorePrevTextChange) {
                     return;
                 }
+
+                if (isReplacing) return;
+
+                long now = System.currentTimeMillis();
+                long elapsed = now - lastInputTime;
+                lastInputTime = now;
+
+                if (elapsed > TIMEOUT_MS) return;
+
+                isReplacing = true;
+
+                String text = editable.toString();
+                int length = text.length();
+
+                if (length >= 2) {
+                    String lastTwo = text.substring(length - 2);
+                    String replacement = switch (lastTwo) {
+                        case "--" -> "—";
+                        case "<<" -> "«";
+                        case ">>" -> "»";
+                        default -> null;
+                    };
+
+                    if (replacement != null) {
+                        editable.replace(length - 2, length, replacement);
+                    }
+                }
+                isReplacing = false;
+
                 if (prevText != null) {
                     ignorePrevTextChange = true;
                     editable.replace(0, editable.length(), prevText);
@@ -12994,15 +13027,11 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
     public void geminiPreSend() {
         GeminiSDKImplementation.initGeminiConfig(
-                getParentFragment().getParentActivity(),
                 getParentFragment(),
+                getParentFragment(),
+                messageEditText.getText().toString(), false,
                 null,
-                this,
-                null,
-                messageEditText.getText().toString(),
-                null,
-                false,
-                false
+                false, false
         );
     }
 

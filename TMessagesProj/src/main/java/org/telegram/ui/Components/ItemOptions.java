@@ -139,7 +139,7 @@ public class ItemOptions {
     public boolean swipeback;
 
     private ItemOptions(BaseFragment fragment, View scrimView, boolean swipeback) {
-        if (fragment.getContext() == null) {
+        if (fragment == null && fragment.getContext() == null) {
             return;
         }
 

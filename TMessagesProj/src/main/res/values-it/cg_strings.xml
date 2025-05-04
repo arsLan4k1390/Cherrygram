@@ -93,7 +93,6 @@
     <string name="AP_RedesignCategory">Ridisegna</string>
     <string name="AP_IconReplacements">Sostituzioni icone</string>
     <string name="AP_Old_Notification_Icon">Icona di notifica predefinita (Telegram)</string>
-    <string name="AP_ChangeIconFilter">Usa icone Telegram</string>
     <string name="AP_ChangeIcon_Cherry_NY">Anno Nuovo</string>
     <string name="AP_ChangeIcon_Default">Predefinito</string>
     <string name="AP_ChangeIcon_Dark">Scuro</string>

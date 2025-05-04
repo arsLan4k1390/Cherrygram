@@ -130,7 +130,6 @@
     <string name="AP_IconReplacements">アイコンの置換</string>
     <string name="AP_Old_Notification_Icon">デフォルトの通知アイコン (Telegram)</string>
     <string name="AP_Tablet_Mode">タブレットモード</string>
-    <string name="AP_ChangeIconFilter">Telegramアイコンを使用する</string>
     <string name="AP_ChangeIcon_Cherry_NY">新年</string>
     <string name="AP_ChangeIcon_Default">デフォルト</string>
     <string name="AP_ChangeIcon_Dark">ダーク</string>

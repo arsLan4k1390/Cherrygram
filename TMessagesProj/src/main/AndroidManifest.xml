@@ -119,6 +119,7 @@
             android:enabled="true"
             android:name="uz.unnarsx.cherrygram.CG_Icon_Cherry"
             android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_launcher_cherry"
             android:exported="true">
 
             <intent-filter>
@@ -371,21 +372,6 @@
 
         <activity-alias
             android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.CG_Icon_Cherry_NY"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_cherry_ny"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
             android:name="uz.unnarsx.cherrygram.CG_Icon_Dark_NY"
             android:targetActivity="org.telegram.ui.LaunchActivity"
             android:icon="@mipmap/icon_launcher_cherry_dark_ny"
@@ -399,172 +385,7 @@
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity-alias>
 
-<!--        Telegram legacy icons-->
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.Old_Icon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.Monet_Icon_Samsung"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_monet_samsung"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.Monet_Icon_Pixel"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_monet_pixel"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.DarkIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_dark"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.White_Icon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_white"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.LagunaIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_laguna"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.AquaIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_aqua"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.GreenIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_green"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.LavandaIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_lavanda"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.SunsetIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_sunset"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="uz.unnarsx.cherrygram.SunriseIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_sunrise"
-            android:exported="true">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
-
+<!--        Telegram launch icons start -->
         <activity-alias
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.PremiumIcon"
@@ -609,6 +430,7 @@
             </intent-filter>
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity-alias>
+<!--        Telegram launch icons finish -->
 
         <activity
             android:name="org.telegram.ui.LaunchActivity"

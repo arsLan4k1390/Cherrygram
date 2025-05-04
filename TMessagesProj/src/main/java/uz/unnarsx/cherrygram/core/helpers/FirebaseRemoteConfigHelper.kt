@@ -111,7 +111,11 @@ object FirebaseRemoteConfigHelper {
             FileLog.d("Old updates value:" + CherrygramCoreConfig.updatesNewUI)
         }
 
-        CherrygramCoreConfig.updatesNewUI = enable
+        if (CherrygramCoreConfig.isDevBuild()) {
+            CherrygramCoreConfig.updatesNewUI = true
+        } else {
+            CherrygramCoreConfig.updatesNewUI = enable
+        }
 
         if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
             FileLog.d("New updates value:" + CherrygramCoreConfig.updatesNewUI)

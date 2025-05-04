@@ -92,6 +92,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.TextureView;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -103,7 +104,6 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
@@ -304,8 +304,8 @@ import java.util.stream.Collectors;
 
 import uz.unnarsx.cherrygram.chats.CGChatMenuInjector;
 import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
+import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet;
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation;
-import uz.unnarsx.cherrygram.chats.gemini.GeminiTranslatorBottomSheet;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
@@ -6451,6 +6451,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         });
         chatListView.setLayoutManager(chatLayoutManager);
+        KeyboardHiderOnFastScroll.attachTo(chatListView, contentView);
         chatListView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
@@ -6528,11 +6529,6 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         scrollingFloatingDate = true;
                         checkTextureViewPosition = true;
                         scrollingChatListView = true;
-
-                        if (CherrygramChatsConfig.INSTANCE.getHideKeyboardOnScroll()) {
-                            InputMethodManager imm = (InputMethodManager) getParentActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(recyclerView.getWindowToken(), 0);
-                        }
                     }
                     if (SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_LOW) {
                         scrolling = false;
@@ -18982,7 +18978,13 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         if (currentEncryptedChat != null) {
             leftIcon = getThemedDrawable(Theme.key_drawable_lockIconDrawable);
         } else if (currentChat != null) {
-            leftIcon = avatarContainer.getBotVerificationDrawable(DialogObject.getBotVerificationIcon(currentChat), false);
+            if (currentChat.id == Constants.Cherrygram_Channel || currentChat.id == Constants.Cherrygram_APKs
+                    || currentChat.id == Constants.Cherrygram_Support || currentChat.id == Constants.Cherrygram_Beta
+            ) {
+                leftIcon = avatarContainer.getBotVerificationDrawable(Constants.CHERRY_EMOJI_ID, false, true);
+            } else {
+                leftIcon = avatarContainer.getBotVerificationDrawable(DialogObject.getBotVerificationIcon(currentChat), false);
+            }
         } else if (currentUser != null && !UserObject.isUserSelf(currentUser)) {
             leftIcon = avatarContainer.getBotVerificationDrawable(DialogObject.getBotVerificationIcon(currentUser), false);
         }
@@ -30986,9 +30988,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 if (CherrygramChatsConfig.INSTANCE.getShowGemini()
                         && popupLayout != null  && popupLayout.getSwipeBack() != null
                         && selectedObject != null && selectedObject.messageOwner != null && !selectedObject.isSponsored()
-                        && (selectedObject.type == MessageObject.TYPE_TEXT || selectedObject.type == MessageObject.TYPE_PHOTO || selectedObject.caption != null)
+                        && (selectedObject.type == MessageObject.TYPE_TEXT || selectedObject.type == MessageObject.TYPE_PHOTO || selectedObject.type == MessageObject.TYPE_VOICE || selectedObject.type == MessageObject.TYPE_ROUND_VIDEO || selectedObject.caption != null)
                 ) {
-                    CGMessageMenuInjector.INSTANCE.showGeminiItems(this, popupLayout, selectedObject, currentChat);
+                    CGMessageMenuInjector.INSTANCE.showGeminiItems(this, popupLayout, selectedObject);
                 }
 
                 scrimPopupWindowItems = new ActionBarMenuSubItem[items.size()];
@@ -32698,15 +32700,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
                 showFieldPanelForReply(selectedObject);
                 GeminiSDKImplementation.initGeminiConfig(
-                        getParentActivity(),
                         this,
+                        this,
+                        selectedObject.messageOwner.message, false,
                         null,
-                        chatActivityEnterView,
-                        null,
-                        selectedObject.messageOwner.message,
-                        null,
-                        false,
-                        false
+                        false, false
                 );
                 break;
             }
@@ -32715,9 +32713,9 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     return;
                 }
 
+                GeminiResultsBottomSheet.setMessageObject(selectedObject);
+                GeminiResultsBottomSheet.setCurrentChat(currentChat);
                 geminiTranslate(selectedObject);
-                GeminiTranslatorBottomSheet.setMessageObject(selectedObject);
-                GeminiTranslatorBottomSheet.setCurrentChat(currentChat);
 
                 break;
             }
@@ -35087,7 +35085,12 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         shakeContent();
                     }
                 } else if (str.startsWith("@")) {
-                    getMessagesController().openByUserName(username, ChatActivity.this, 0, makeProgressForLink(cell, url));
+                    if (isInPreviewMode()) {
+                        removeSelfFromStack();
+                        Browser.openUrl(getParentActivity(), Uri.parse("https://t.me/" + username), false, false, null);
+                    } else {
+                        getMessagesController().openByUserName(username, ChatActivity.this, 0, makeProgressForLink(cell, url));
+                    }
                 } else {
                     processExternalUrl(0, str, url, cell, false, false);
                 }
@@ -35259,6 +35262,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
         } catch (Exception e) {
             FileLog.e(e);
+        }
+        if (isInPreviewMode()) {
+            removeSelfFromStack();
+            Browser.openUrl(getParentActivity(), Uri.parse(url), false, false, null);
         }
         if (forceAlert || AndroidUtilities.shouldShowUrlInAlert(url)) {
             if (type == 0 || type == 2) {
@@ -38299,6 +38306,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
         @Override
         public void didPressBotButton(ChatMessageCell cell, TLRPC.KeyboardButton button) {
+            if (isInPreviewMode()) return;
             if (chatMode == MODE_QUICK_REPLIES) return;
             if (getParentActivity() == null || bottomOverlayChat.getVisibility() == View.VISIBLE &&
                     !(button instanceof TLRPC.TL_keyboardButtonSwitchInline) && !(button instanceof TLRPC.TL_keyboardButtonCallback) &&
@@ -38903,6 +38911,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             if (bottomOverlayChat != null && bottomOverlayChat.getVisibility() == View.VISIBLE || bottomOverlay != null && bottomOverlay.getVisibility() == View.VISIBLE) {
                 return;
             }
+            if (isBottomOverlaysInvisible()) return;
             if (chatActivityEnterView != null && username != null && username.length() > 0) {
                 chatActivityEnterView.setFieldText("@" + username + " ");
                 chatActivityEnterView.openKeyboard();
@@ -39264,6 +39273,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
         @Override
         public void didPressInstantButton(ChatMessageCell cell, int type) {
+            if (isInPreviewMode()) removeSelfFromStack(false);
             MessageObject messageObject = cell.getMessageObject();
             if (type == 19) {
                 if (progressDialogCurrent != null) {
@@ -43111,15 +43121,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         }
 
         GeminiSDKImplementation.initGeminiConfig(
-                getParentActivity(),
                 this,
-                null,
-                null,
                 this,
-                messageTextToTranslate,
+                messageTextToTranslate, true,
                 null,
-                false,
-                true
+                false, false
         );
     }
 
@@ -43224,6 +43230,69 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             editText.setLayoutParams(layoutParams);
         }
         editText.setSelection(0, editText.getText().length());
+    }
+
+    private class KeyboardHiderOnFastScroll {
+
+        private static final int VELOCITY_THRESHOLD = dp(4000); // px/second
+
+        public static void attachTo(@NonNull RecyclerView recyclerView, @NonNull View contentView) {
+            recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+                private VelocityTracker velocityTracker = null;
+
+                @Override
+                public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                    switch (e.getActionMasked()) {
+                        case MotionEvent.ACTION_DOWN:
+                            if (velocityTracker == null) {
+                                velocityTracker = VelocityTracker.obtain();
+                            } else {
+                                velocityTracker.clear();
+                            }
+                            velocityTracker.addMovement(e);
+                            break;
+
+                        case MotionEvent.ACTION_MOVE:
+                            if (velocityTracker != null) {
+                                velocityTracker.addMovement(e);
+                            }
+                            break;
+
+                        case MotionEvent.ACTION_UP:
+                            if (velocityTracker != null) {
+                                velocityTracker.addMovement(e);
+                                velocityTracker.computeCurrentVelocity(1000);
+                                float velocityY = velocityTracker.getYVelocity();
+
+                                if (Math.abs(velocityY) > VELOCITY_THRESHOLD
+                                        && CherrygramChatsConfig.INSTANCE.getHideKeyboardOnScroll()
+                                ) {
+                                    AndroidUtilities.hideKeyboard(contentView);
+                                }
+
+                                velocityTracker.recycle();
+                                velocityTracker = null;
+                            }
+                            break;
+
+                        case MotionEvent.ACTION_CANCEL:
+                            if (velocityTracker != null) {
+                                velocityTracker.recycle();
+                                velocityTracker = null;
+                            }
+                            break;
+                    }
+
+                    return false;
+                }
+
+                @Override
+                public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {}
+
+                @Override
+                public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
+            });
+        }
     }
     /** Cherrygram finish */
 

@@ -18,6 +18,9 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ChatActivity;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class PlayingGameDrawable extends StatusDrawable {
 
@@ -35,6 +38,12 @@ public class PlayingGameDrawable extends StatusDrawable {
     public PlayingGameDrawable(boolean isDialogScreen, Theme.ResourcesProvider resourcesProvider) {
         this.isDialogScreen = isDialogScreen;
         this.resourcesProvider = resourcesProvider;
+    }
+
+    public PlayingGameDrawable(boolean isDialogScreen, Theme.ResourcesProvider resourcesProvider, ChatActivity parentFragment) {
+        this.isDialogScreen = isDialogScreen;
+        this.resourcesProvider = resourcesProvider;
+        this.chatActivity = parentFragment;
     }
     public void setIsChat(boolean value) {
         isChat = value;
@@ -76,40 +85,73 @@ public class PlayingGameDrawable extends StatusDrawable {
     public void draw(Canvas canvas) {
         int size = AndroidUtilities.dp(10);
         int y = getBounds().top + (getIntrinsicHeight() - size) / 2;
-        if (isChat) {
-            //y = AndroidUtilities.dp(8.5f) + getBounds().top;
-        } else {
-            y += AndroidUtilities.dp(1);
-            //y = AndroidUtilities.dp(9.3f) + getBounds().top;
-        }
 
-        paint.setColor(Theme.getColor(isDialogScreen ? Theme.key_chats_actionMessage : Theme.key_chat_status, resourcesProvider));
-        rect.set(0, y, size, y + size);
-        int rad;
-        if (progress < 0.5f) {
-            rad = (int) (35 * (1.0f - progress / 0.5f));
-        } else {
-            rad = (int) (35 * (progress - 0.5f) / 0.5f);
-        }
-        for (int a = 0; a < 3; a++) {
-            float x = a * AndroidUtilities.dp(5) + AndroidUtilities.dp(9.2f) - AndroidUtilities.dp(5) * progress;
-            if (a == 2) {
-                paint.setAlpha(Math.min(255, (int) (255 * progress / 0.5f)));
-            } else if (a == 0) {
-                if (progress > 0.5f) {
-                    paint.setAlpha((int) (255 * (1.0f - (progress - 0.5f) / 0.5f)));
+        if (centerChatTitle && chatActivity != null) {
+            int centerX = getBounds().centerX() - AndroidUtilities.dp(10);
+            int centerY = getBounds().centerY();
+
+            paint.setColor(Theme.getColor(isDialogScreen ? Theme.key_chats_actionMessage : Theme.key_chat_status, resourcesProvider));
+
+            rect.set(centerX - size / 2, centerY - size / 2, centerX + size / 2, centerY + size / 2);
+
+            int rad = (progress < 0.5f) ? (int) (35 * (1.0f - progress / 0.5f)) : (int) (35 * (progress - 0.5f) / 0.5f);
+
+            for (int a = 0; a < 3; a++) {
+                float x = centerX + a * AndroidUtilities.dp(5) + AndroidUtilities.dp(9.2f) - AndroidUtilities.dp(5) * progress;
+                if (a == 2) {
+                    paint.setAlpha(Math.min(255, (int) (255 * progress / 0.5f)));
+                } else if (a == 0) {
+                    if (progress > 0.5f) {
+                        paint.setAlpha((int) (255 * (1.0f - (progress - 0.5f) / 0.5f)));
+                    } else {
+                        paint.setAlpha(255);
+                    }
                 } else {
                     paint.setAlpha(255);
                 }
-            } else {
-                paint.setAlpha(255);
+                canvas.drawCircle(x, centerY, AndroidUtilities.dp(1.2f), paint);
             }
-            canvas.drawCircle(x, y + size / 2, AndroidUtilities.dp(1.2f), paint);
+
+            paint.setAlpha(255);
+            canvas.drawArc(rect, rad, 360 - rad * 2, true, paint);
+            paint.setColor(Theme.getColor(isDialogScreen ? Theme.key_windowBackgroundWhite : Theme.key_actionBarDefault));
+            canvas.drawCircle(centerX, centerY - AndroidUtilities.dp(2), AndroidUtilities.dp(1), paint);
+        } else {
+            if (isChat) {
+                //y = AndroidUtilities.dp(8.5f) + getBounds().top;
+            } else {
+                y += AndroidUtilities.dp(1);
+                //y = AndroidUtilities.dp(9.3f) + getBounds().top;
+            }
+
+            paint.setColor(Theme.getColor(isDialogScreen ? Theme.key_chats_actionMessage : Theme.key_chat_status, resourcesProvider));
+            rect.set(0, y, size, y + size);
+            int rad;
+            if (progress < 0.5f) {
+                rad = (int) (35 * (1.0f - progress / 0.5f));
+            } else {
+                rad = (int) (35 * (progress - 0.5f) / 0.5f);
+            }
+            for (int a = 0; a < 3; a++) {
+                float x = a * AndroidUtilities.dp(5) + AndroidUtilities.dp(9.2f) - AndroidUtilities.dp(5) * progress;
+                if (a == 2) {
+                    paint.setAlpha(Math.min(255, (int) (255 * progress / 0.5f)));
+                } else if (a == 0) {
+                    if (progress > 0.5f) {
+                        paint.setAlpha((int) (255 * (1.0f - (progress - 0.5f) / 0.5f)));
+                    } else {
+                        paint.setAlpha(255);
+                    }
+                } else {
+                    paint.setAlpha(255);
+                }
+                canvas.drawCircle(x, y + size / 2, AndroidUtilities.dp(1.2f), paint);
+            }
+            paint.setAlpha(255);
+            canvas.drawArc(rect, rad, 360 - rad * 2, true, paint);
+            paint.setColor(Theme.getColor(isDialogScreen ? Theme.key_windowBackgroundWhite : Theme.key_actionBarDefault));
+            canvas.drawCircle(AndroidUtilities.dp(4), y + size / 2 - AndroidUtilities.dp(2), AndroidUtilities.dp(1), paint);
         }
-        paint.setAlpha(255);
-        canvas.drawArc(rect, rad, 360 - rad * 2, true, paint);
-        paint.setColor(Theme.getColor(isDialogScreen ? Theme.key_windowBackgroundWhite : Theme.key_actionBarDefault));
-        canvas.drawCircle(AndroidUtilities.dp(4), y + size / 2 - AndroidUtilities.dp(2), AndroidUtilities.dp(1), paint);
 
         checkUpdate();
     }
@@ -141,11 +183,17 @@ public class PlayingGameDrawable extends StatusDrawable {
 
     @Override
     public int getIntrinsicWidth() {
-        return AndroidUtilities.dp(20);
+        return centerChatTitle && chatActivity != null ? AndroidUtilities.dp(16) : AndroidUtilities.dp(20);
     }
 
     @Override
     public int getIntrinsicHeight() {
         return AndroidUtilities.dp(18);
     }
+
+    /** Cherrygram start */
+    private boolean centerChatTitle = CherrygramChatsConfig.INSTANCE.getCenterChatTitle();
+    private ChatActivity chatActivity;
+    /** Cherrygram finish */
+
 }

@@ -49,8 +49,13 @@ object Constants {
     /** CG Chats IDs finish**/
 
     /** Misc start**/
-    const val CHERRY_EMOJI_ID = 5203934494985307875L // Cherrygram logo
-    const val CHERRY_EMOJI_ID_14 = 5203934494985307875L // Cherrygram logo (bra)
+    const val CHERRY_EMOJI_ID = 5220045200780458122L // Cherrygram logo
+    const val CHERRY_EMOJI_ID_BRA = 5222458839256825177L // Cherrygram logo (bra)
+    const val CHERRY_EMOJI_ID_VERIFIED = 5222226331202254876L // Cherrygram Verified adaptive logo
+    const val CHERRY_EMOJI_ID_VERIFIED_BRA = 5219719363086546908L // Cherrygram Verified Bra adaptive logo
+    const val CHERRY_EMOJI_ID_DONATE = 5411229175971322671L // Cherry emoji with eyeglasses
+    const val CHERRY_EMOJI_ID_PREMIUM = 5393391313502609448L // Cherry emoji with stars
+    const val CHERRY_EMOJI_ID_PREMIUM_MOON = 5370777017904011118L // Evil moon emoji
     const val PROFILE_BACKGROUND_COLOR_ID_GREEN_BLUE = 12 // Blue-Green gradient
     const val PROFILE_BACKGROUND_COLOR_ID_RED = 14 // Red-Pink gradient
     const val REPLY_BACKGROUND_COLOR_ID = 13 // Red-Pink gradient

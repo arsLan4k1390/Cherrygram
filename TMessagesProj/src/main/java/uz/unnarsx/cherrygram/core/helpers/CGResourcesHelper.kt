@@ -254,6 +254,18 @@ object CGResourcesHelper {
         return getUrlNoUnderlineText(htmlParsed)
     }
 
+    @SuppressWarnings("deprecation")
+    fun getDonatesAdvice(): CharSequence {
+        val advise = getString(R.string.DP_Donate_Desc)
+
+        val htmlParsed: Spannable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY))
+        } else {
+            SpannableString(Html.fromHtml(advise))
+        }
+        return getUrlNoUnderlineText(htmlParsed)
+    }
+
     @JvmStatic
     fun getShowDcIdText(): String { // MessagesAndProfilesPreferencesEntry.java:\Show dc id
         return when (CherrygramAppearanceConfig.showIDDC) {

@@ -17,9 +17,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.KotlinFragmentsManager
+import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
+import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
+import uz.unnarsx.cherrygram.helpers.network.DonatesManager
+import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.float
 import uz.unnarsx.cherrygram.preferences.int
@@ -79,14 +84,11 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     var updatesNewUI by sharedPreferences.boolean("CG_UpdatesNewUI", true)
     var updateVersionName by sharedPreferences.string("CG_UpdateVersionName", "idk")
+    var updateSize by sharedPreferences.string("CG_UpdateSize", "0")
     var updateIsDownloading by sharedPreferences.boolean("CG_UpdateIsDownloading", false)
     var updateDownloadingProgress by sharedPreferences.float("CG_NewUpdateDownloadingProgress", 0f)
     var updateAvailable by sharedPreferences.boolean("CG_UpdateAvailable", false)
     /** OTA finish **/
-
-    /** Launch icons (Telegram Chats Settings) start **/
-    var filterLauncherIcon by sharedPreferences.boolean("AP_Filter_Launcher_Icon", false)
-    /** Launch icons (Telegram Chats Settings) finish **/
 
     /** Cherrygram build types start **/
     fun isStandaloneStableBuild(): Boolean {
@@ -110,11 +112,31 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     }
     /** Cherrygram build types finish **/
 
+    /** Misc start */
+    var lastDonatesCheckTime by sharedPreferences.long("CG_LastDonatesCheckTime", 0)
+    /** Misc finish*/
+
     init {
         launch {
             if (ApplicationLoader.checkPlayServices()) {
                 FirebaseApp.initializeApp(ApplicationLoader.applicationContext)
                 FirebaseRemoteConfigHelper.initRemoteConfig()
+            }
+
+            DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext)
+
+            if (KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelInfo))
+                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelLink))
+                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelTitle))
+                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_APKS_CHANNEL_URL)
+                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_APKS_CHANNEL_USERNAME)
+                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_AUTHOR)
+                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHANNEL_URL)
+                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHAT_URL)
+                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHANNEL_USERNAME)
+                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_CHAT_USERNAME)
+            ) {
+                KotlinFragmentsManager.nfweioufwehr117()
             }
         }
     }

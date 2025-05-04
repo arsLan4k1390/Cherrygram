@@ -20,9 +20,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.R;
@@ -108,7 +106,7 @@ public class UpdateLayout extends IUpdateLayout {
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
                 int width = MeasureSpec.getSize(widthMeasureSpec);
                 if (lastGradientWidth != width) {
-                    updateGradient = new LinearGradient(0, 0, width, 0, new int[]{0xff69BF72, 0xff53B3AD}, new float[]{0.0f, 1.0f}, Shader.TileMode.CLAMP);
+                    updateGradient = new LinearGradient(0, 0, width, 0, new int[]{0xff8C2D4C, 0xffE54C7F}, new float[]{0.0f, 1.0f}, Shader.TileMode.CLAMP);
                     lastGradientWidth = width;
                 }
             }
@@ -125,12 +123,12 @@ public class UpdateLayout extends IUpdateLayout {
                 return;
             }
             if (updateLayoutIcon.getIcon() == MediaActionDrawable.ICON_DOWNLOAD) {
-//                FileLoader.getInstance(currentAccount).loadFile(SharedConfig.pendingAppUpdate.document, "update", FileLoader.PRIORITY_NORMAL, 1);
-//                updateAppUpdateViews(currentAccount,  true);
+                UpdaterUtils.downloadApk(updateLayout.getContext(), UpdaterUtils.downloadURL, "Cherrygram " + UpdaterUtils.version, null);
+                updateAppUpdateViews(currentAccount,  true);
             } else if (updateLayoutIcon.getIcon() == MediaActionDrawable.ICON_CANCEL) {
                 UpdaterUtils.cancelDownload(updateLayout.getContext(), UpdaterUtils.id);
                 updateAppUpdateViews(currentAccount, true);
-            } else if (UpdaterUtils.updateFileExists()) {
+            } else {
                 UpdaterUtils.installApk(activity, UpdaterUtils.apkFile.getAbsolutePath());
             }
         });
@@ -165,14 +163,10 @@ public class UpdateLayout extends IUpdateLayout {
         if (sideMenuContainer == null) {
             return;
         }
-        /* (CherrygramCoreConfig.INSTANCE.getUpdateAvailable()) {*/
-        if (UpdaterUtils.updateFileExists() || CherrygramCoreConfig.INSTANCE.getUpdateIsDownloading()) {
+        if (CherrygramCoreConfig.INSTANCE.getUpdateAvailable() && UpdaterUtils.downloadURL != null && UpdaterUtils.version != null) {
             createUpdateUI(currentAccount);
-            /*updateSizeTextView.setText(AndroidUtilities.formatFileSize(SharedConfig.pendingAppUpdate.document.size));
-            String fileName = FileLoader.getAttachFileName(SharedConfig.pendingAppUpdate.document);
-            File path = FileLoader.getInstance(currentAccount).getPathToAttach(SharedConfig.pendingAppUpdate.document, true);*/
-            boolean showSize = false; // true when update file size is available
-
+            updateSizeTextView.setText(CherrygramCoreConfig.INSTANCE.getUpdateSize());
+            boolean showSize;
             if (UpdaterUtils.updateFileExists() && CherrygramCoreConfig.INSTANCE.getUpdateDownloadingProgress() >= 99f) {
                 updateLayoutIcon.setIcon(MediaActionDrawable.ICON_UPDATE, true, animated);
                 setUpdateText(LocaleController.getString(R.string.AppUpdateNow), animated);
@@ -183,11 +177,11 @@ public class UpdateLayout extends IUpdateLayout {
                     updateLayoutIcon.setProgress(0, false);
                     UpdaterUtils.trackDownloadProgress(sideMenuContainer.getContext(), null, updateTextViews[0], updateLayoutIcon);
                     showSize = false;
-                } /*else {
+                } else {
                     updateLayoutIcon.setIcon(MediaActionDrawable.ICON_DOWNLOAD, true, animated);
-                    setUpdateText(LocaleController.getString(R.string.AppUpdate), animated);
+                    setUpdateText(LocaleController.getString(R.string.AppUpdate).replace("Telegram", LocaleController.getString(R.string.CG_AppName)), animated);
                     showSize = true;
-                }*/
+                }
             }
             if (showSize) {
                 if (updateSizeTextView.getTag() != null) {

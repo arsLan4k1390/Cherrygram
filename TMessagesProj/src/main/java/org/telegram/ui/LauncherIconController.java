@@ -34,7 +34,7 @@ public class LauncherIconController {
     }
 
     public enum LauncherIcon {
-        CHERRY("CG_Icon_Cherry", R.drawable.icon_background_default, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Cherry),
+        CHERRY("CG_Icon_Cherry", R.drawable.icon_background_default, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Default),
         MONET_CHERRY_SAMSUNG("CG_Icon_Monet_Samsung", R.color.icon_background_cherry_samsung, R.drawable.icon_foreground_cherry_samsung, R.string.AP_ChangeIcon_Monet_Samsung),
         MONET_CHERRY_PIXEL("CG_Icon_Monet_Pixel", R.color.icon_background_cherry_pixel, R.drawable.icon_foreground_cherry_pixel, R.string.AP_ChangeIcon_Monet_Pixel),
         DARK_CHERRY("CG_Icon_Dark", R.drawable.icon_background_dark, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Dark),
@@ -51,20 +51,8 @@ public class LauncherIconController {
         SUNRISE_CHERRY("CG_Icon_Sunrise", R.drawable.icon_background_sunrise, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunrise),
         TURBO_CHERRY("CG_Icon_Turbo", R.drawable.icon_background_turbo, R.drawable.icon_foreground_cherry, R.string.AppIconTurbo),
         NOX_CHERRY("CG_Icon_Night", R.mipmap.icon_background_nox, R.drawable.icon_foreground_cherry, R.string.AppIconNox),
-        CHERRY_NY("CG_Icon_Cherry_NY", R.drawable.icon_background_cherry_ny, R.drawable.icon_foreground_cherry_ny, R.string.AP_ChangeIcon_Cherry_NY),
         DARK_NY("CG_Icon_Dark_NY", R.drawable.icon_background_dark_ny, R.drawable.icon_foreground_cherry_bra, R.string.AP_ChangeIcon_Cherry_NY),
 
-        OLD("Old_Icon", R.drawable.icon_background_default, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Default),
-        MONET_SAMSUNG("Monet_Icon_Samsung", R.color.icon_background_samsung, R.drawable.icon_foreground_samsung, R.string.AP_ChangeIcon_Monet_Samsung),
-        MONET_PIXEL("Monet_Icon_Pixel", R.color.icon_background_pixel, R.drawable.icon_foreground_pixel, R.string.AP_ChangeIcon_Monet_Pixel),
-        DARK("DarkIcon", R.drawable.icon_background_dark, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Dark),
-        WHITE("White_Icon", R.drawable.icon_background_white, R.drawable.icon_foreground_white, R.string.AP_ChangeIcon_White),
-        LAGUNA("LagunaIcon", R.drawable.icon_background_laguna, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Laguna),
-        AQUA("AquaIcon", R.drawable.icon_background_aqua, R.drawable.icon_foreground, R.string.AppIconAqua),
-        GREEN("GreenIcon", R.drawable.icon_background_green, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Green),
-        LAVANDA("LavandaIcon", R.drawable.icon_background_lavanda, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Lavanda),
-        SUNSET("SunsetIcon", R.drawable.icon_background_sunset, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Sunset),
-        SUNRISE("SunriseIcon", R.drawable.icon_background_sunrise, R.drawable.icon_foreground, R.string.AP_ChangeIcon_Sunrise),
         PREMIUM("PremiumIcon", R.drawable.icon_background_premium, R.mipmap.icon_foreground_premium, R.string.AppIconPremium, true),
         TURBO("TurboIcon", R.drawable.icon_background_turbo, R.mipmap.icon_foreground_turbo, R.string.AppIconTurbo, true),
         NOX("NoxIcon", R.mipmap.icon_background_nox, R.drawable.icon_foreground, R.string.AppIconNox, true);
@@ -105,14 +93,6 @@ public class LauncherIconController {
         if (isEnabled(LauncherIcon.MONET_CHERRY_PIXEL)) {
             setIcon(LauncherIcon.CHERRY);
             setIcon(LauncherIcon.MONET_CHERRY_PIXEL);
-        }
-        if (isEnabled(LauncherIcon.MONET_SAMSUNG)) {
-            setIcon(LauncherIcon.CHERRY);
-            setIcon(LauncherIcon.MONET_SAMSUNG);
-        }
-        if (isEnabled(LauncherIcon.MONET_PIXEL)) {
-            setIcon(LauncherIcon.CHERRY);
-            setIcon(LauncherIcon.MONET_PIXEL);
         }
     }
 }

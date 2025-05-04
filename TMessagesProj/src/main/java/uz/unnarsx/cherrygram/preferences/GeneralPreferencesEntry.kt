@@ -97,6 +97,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
         category(getString(R.string.CP_PremAndAnim_Header)) {
             switch {
                 title = getString(R.string.CP_HideStories)
+                description = getString(R.string.CP_HideStories_Desc)
 
                 contract({
                     return@contract CherrygramCoreConfig.hideStories

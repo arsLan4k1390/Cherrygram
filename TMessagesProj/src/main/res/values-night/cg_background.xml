@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="cg_splash_background">#151515</color>
+    <color name="cg_splash_background">#101010</color>
     <color name="cg_splash_navigation_bar">#000</color>
-    <color name="cg_background">#97324E</color>
+    <color name="cg_background">#9E3254</color>
     <color name="cg_foreground">#FFFFFF</color>
 </resources>

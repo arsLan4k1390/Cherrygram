@@ -1576,5 +1576,21 @@ public final class BulletinFactory {
             return createEmojiBulletin2(document, message, LocaleController.getString("ApplyTheme", R.string.ApplyTheme), selectedObject, () -> ChatsHelper.getInstance(UserConfig.selectedAccount).applyReplyBackground(selectedObject, fragment));
         }
     }
+
+    public Bulletin createDonatesBulletin(TLRPC.Document document, CharSequence text, String button, int duration, Runnable onButtonClick) {
+        final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
+        if (MessageObject.isTextColorEmoji(document)) {
+            layout.imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_undo_infoColor), PorterDuff.Mode.SRC_IN));
+        }
+        layout.setAnimation(document, 30, 30);
+        layout.textView.setText(text);
+        layout.textView.setSingleLine(false);
+        layout.textView.setMaxLines(3);
+        layout.setButton(new Bulletin.UndoButton(getContext(), true, resourcesProvider)
+                .setText(button)
+                .setUndoAction(onButtonClick)
+        );
+        return create(layout, duration);
+    }
     //Cherrygram
 }

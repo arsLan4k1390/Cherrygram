@@ -249,7 +249,7 @@ public class BackupHelper {
 
         mainconfig.add("AP_CenterChatTitle");
         mainconfig.add("CP_UnreadBadgeOnBackButton");
-        mainconfig.add("CP_HideKbdOnScroll");
+        mainconfig.add("CP_HideKeyboardOnScroll");
         mainconfig.add("CP_DisableSwipeToNext");
         mainconfig.add("CP_HideMuteUnmuteButton");
 
@@ -264,6 +264,7 @@ public class BackupHelper {
         mainconfig.add("CP_StickersDrawShareButton");
 
         mainconfig.add("CP_ShowSaveForNotifications");
+        mainconfig.add("CP_ShowGemini");
         mainconfig.add("CP_ShowReply");
         mainconfig.add("CP_ShowCopyPhoto");
         mainconfig.add("CP_ShowCopyPhotoAsSticker");
@@ -335,10 +336,6 @@ public class BackupHelper {
         mainconfig.add("EP_UploadSpeedBoost");
         mainconfig.add("EP_SlowNetworkMode");
         /** Experimental finish **/
-
-        /** Misc start **/
-        mainconfig.add("AP_Filter_Launcher_Icon");
-        /** Misc finish **/
         //cherry
 
         spToJSON("mainconfig", configJson, mainconfig::contains);

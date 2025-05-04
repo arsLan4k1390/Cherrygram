@@ -246,6 +246,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
             }
             switch {
                 title = getString(R.string.CP_SpoilersOnMedia)
+                description = getString(R.string.CP_SpoilersOnMedia_Desc)
 
                 contract({
                     return@contract CherrygramChatsConfig.spoilersOnMedia

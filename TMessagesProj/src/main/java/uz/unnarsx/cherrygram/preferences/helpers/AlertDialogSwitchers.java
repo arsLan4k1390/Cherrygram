@@ -48,7 +48,7 @@ public class AlertDialogSwitchers {
         for (int a = 0; a < count; a++) {
             HeaderCell headerCell = new HeaderCell(fragment.getContext(), fragment.getResourceProvider());
             TextInfoPrivacyCell textInfoPrivacyCell = new TextInfoPrivacyCell(fragment.getContext());
-            StickerSliderCell stickerSliderCell = new StickerSliderCell(fragment.getContext());
+            StickerSliderCell stickerSliderCell = new StickerSliderCell(fragment.getContext(), fragment.getResourceProvider());
             TGKitSliderPreference.TGSLContract contract;
             switch (a) {
                 case 0: {

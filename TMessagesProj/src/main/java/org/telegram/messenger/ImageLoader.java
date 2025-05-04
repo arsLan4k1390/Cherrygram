@@ -1465,7 +1465,7 @@ public class ImageLoader {
                                 image = MediaStore.Images.Thumbnails.getThumbnail(ApplicationLoader.applicationContext.getContentResolver(), mediaId, MediaStore.Images.Thumbnails.MINI_KIND, opts);
                             }
                         }
-                        if (image == null) {
+                        if (!mediaIsVideo && image == null) {
                             if (image == null) {
                                 FileInputStream is;
                                 if (secureDocumentKey != null) {

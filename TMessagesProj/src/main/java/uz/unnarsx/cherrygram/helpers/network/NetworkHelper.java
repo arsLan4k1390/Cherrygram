@@ -7,7 +7,7 @@
  * Copyright github.com/arsLan4k1390, 2022-2025.
  */
 
-package uz.unnarsx.cherrygram.helpers;
+package uz.unnarsx.cherrygram.helpers.network;
 
 import org.telegram.messenger.Utilities;
 

@@ -31,6 +31,11 @@
     <string name="CG_LastSeenHours_other">был(а) %1$d часов назад</string>
     <!--Last seen status-->
 
+    <!--Typing status-->
+    <string name="CG_AndMoreTypingGroup_one">%1$s и еще %2$d</string>
+    <string name="CG_AndMoreTypingGroup_other">%1$s и еще %2$d</string>
+    <!--Typing status-->
+
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">Тип иконок</string>
     <string name="CG_FoldersTypeTitles">Только названия</string>
@@ -152,7 +157,6 @@
     <string name="AP_IconReplacements">Замена иконок</string>
     <string name="AP_Old_Notification_Icon">Стандартная иконка уведомлений (Telegram)</string>
     <string name="AP_Tablet_Mode">Режим планшета</string>
-    <string name="AP_ChangeIconFilter">Использовать иконки Telegram</string>
     <string name="AP_ChangeIcon_Cherry_NY">Новогодняя</string>
     <string name="AP_ChangeIcon_Default">По умолчанию</string>
     <string name="AP_ChangeIcon_Dark">Тёмная</string>
@@ -273,6 +277,8 @@
         \n\nПосле этого перейдите в любой чат, введите сообщение и зажмите кнопку отправки сообщений.
         \n\nТакже, вы можете ответить на сообщение с помощью AI. Для этого нажмите на любое текстовое сообщение в чате.
     </string>
+    <string name="CP_GeminiAI_Temperature">Температура</string>
+    <string name="CP_GeminiAI_Temperature_Desc">Управляйте креативностью текста. Низкие значения делают текст более предсказуемым и сфокусированным, высокие - более случайным и оригинальным.</string>
     <string name="CP_GeminiAI_ExtractText">Извлечь текст (OCR)</string>
 
     <string name="CP_Header_Record">Медиа</string>
@@ -406,6 +412,9 @@
     <!--Donations-->
     <string name="DP_RateUs">Оцените Cherrygram</string>
     <string name="DP_Donate">Поддержать разработку</string>
+    <string name="DP_Donate_Desc">Поддержите разработку Cherrygram и получите эпический значок!
+    \nОтправьте подтверждение платежа (>=1$) <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> или в <![CDATA[<a href="https://t.me/CherrygramSupport">чат поддержки Cherrygram</a>]]>, чтобы получить значок.</string>
+    <string name="DP_Donate_Bulletin">**%s** внес(ла) вклад в успех **Cherrygram**!</string>
     <string name="DP_Donate_Method">Выберите метод</string>
     <!--Donations-->
     <!--Cherrygram screens-->

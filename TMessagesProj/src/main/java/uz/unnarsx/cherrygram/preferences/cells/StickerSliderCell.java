@@ -30,15 +30,18 @@ public class StickerSliderCell extends FrameLayout {
     private int startRadius;
     private int endRadius;
 
-    public StickerSliderCell(Context context) {
+    private Theme.ResourcesProvider resourcesProvider;
+
+    public StickerSliderCell(Context context, Theme.ResourcesProvider resourcesProvider) {
         super(context);
+        this.resourcesProvider = resourcesProvider;
 
         setWillNotDraw(false);
 
         textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextSize(AndroidUtilities.dp(16));
 
-        sizeBar = new SeekBarView(context);
+        sizeBar = new SeekBarView(context, resourcesProvider);
         sizeBar.setReportChanges(true);
         sizeBar.setDelegate(new SeekBarView.SeekBarViewDelegate() {
             @Override
@@ -64,7 +67,7 @@ public class StickerSliderCell extends FrameLayout {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        textPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteValueText));
+        textPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteValueText, resourcesProvider));
         canvas.drawText("" + contract.getPreferenceValue(), getMeasuredWidth() - AndroidUtilities.dp(39), AndroidUtilities.dp(28), textPaint);
     }
 

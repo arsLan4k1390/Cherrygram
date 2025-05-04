@@ -33,6 +33,11 @@
     <string name="CG_LastSeenHours_other">last seen %1$d hours ago</string>
     <!--Last seen status-->
 
+    <!--Typing status-->
+    <string name="CG_AndMoreTypingGroup_one">%1$s and %2$d more</string>
+    <string name="CG_AndMoreTypingGroup_other">%1$s and %2$d more</string>
+    <!--Typing status-->
+
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">Tab icon type</string>
     <string name="CG_FoldersTypeTitles">Only titles</string>
@@ -154,8 +159,6 @@
     <string name="AP_IconReplacements">Icon replacements</string>
     <string name="AP_Old_Notification_Icon">Default notification icon (Telegram)</string>
     <string name="AP_Tablet_Mode">Tablet mode</string>
-    <string name="AP_ChangeIconFilter">Use Telegram icons</string>
-    <string name="AP_ChangeIcon_Cherry" translatable="false">Cherry</string>
     <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
     <string name="AP_ChangeIcon_Default">Default</string>
     <string name="AP_ChangeIcon_Monet_Samsung" translatable="false">Monet (OneUI &amp; MIUI)</string>
@@ -285,6 +288,8 @@
         \n\nAfter that, open any chat, type a message and hold down the send message button.
         \n\nMoreover, you can reply to a message using AI as well. To do this, click on any text message in the chat.
     </string>
+    <string name="CP_GeminiAI_Temperature">Temperature</string>
+    <string name="CP_GeminiAI_Temperature_Desc">Control the creativity of the text. Low values make the text more predictable and focused, high values - more random and original.</string>
     <string name="CP_GeminiAI_ExtractText">Extract Text (OCR)</string>
 
     <string name="CP_Header_Record">Media</string>
@@ -420,6 +425,9 @@
     <!--Donations-->
     <string name="DP_RateUs">Rate Cherrygram</string>
     <string name="DP_Donate">Donate</string>
+    <string name="DP_Donate_Desc">Support Cherrygram development and get an epic badge!
+    \nSend a proof of payment (>=1$) to <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> or <![CDATA[<a href="https://t.me/CherrygramSupport">Cherrygram Support chat</a>]]> to get the badge.</string>
+    <string name="DP_Donate_Bulletin">**%s** contributed to **Cherrygram\'s** success!</string>
     <string name="DP_Donate_Method">Choose method</string>
     <!--Donations-->
     <!--Cherrygram screens-->

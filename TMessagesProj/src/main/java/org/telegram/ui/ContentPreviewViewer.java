@@ -724,6 +724,11 @@ public class ContentPreviewViewer {
                     icons.add(inFavs ? R.drawable.msg_unfave : R.drawable.msg_fave);
                     actions.add(5);
                 }
+                if (currentDocument != null) {
+                    items.add(LocaleController.getString(R.string.CG_SaveSticker));
+                    icons.add(R.drawable.msg_download);
+                    actions.add(1390);
+                }
                 if (items.isEmpty()) {
                     return;
                 }
@@ -753,6 +758,16 @@ public class ContentPreviewViewer {
                         delegate.removeFromRecent(currentDocument);
                     } else if (action == 5) {
                         MediaDataController.getInstance(currentAccount).addRecentSticker(MediaDataController.TYPE_FAVE, parentObject, currentDocument, (int) (System.currentTimeMillis() / 1000), inFavs);
+                    } else if (actions.get(which) == 1390) {
+                        ChatsHelper.getInstance(currentAccount).saveStickerToGallery(parentActivity, currentDocument, (uri) -> {
+                            if (parentActivity instanceof LaunchActivity activity) {
+                                if (activity.getActionBarLayout() != null && activity.getActionBarLayout().getLastFragment() != null) {
+                                    if (BulletinFactory.canShowBulletin(activity.getActionBarLayout().getLastFragment())) {
+                                        BulletinFactory.of(activity.getActionBarLayout().getLastFragment()).createDownloadBulletin(BulletinFactory.FileType.STICKER, resourcesProvider).show();
+                                    }
+                                }
+                            }
+                        });
                     }
                     dismissPopupWindow();
                 };

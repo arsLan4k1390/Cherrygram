@@ -114,6 +114,7 @@ object ChatsHelper2 {
         enableMention: Boolean, enableSearchMessages: Boolean, isChatParticipant: Boolean,
         participantsIDs: ArrayList<Long>
     ) {
+        if (chatActivity.context == null) return
 //        val options: ItemOptions = ItemOptions.makeOptions(chatActivity, cell)
         ItemOptions.makeOptions(chatActivity, cell)
             /*.add(R.drawable.msg_openprofile, getString(R.string.OpenProfile)) {

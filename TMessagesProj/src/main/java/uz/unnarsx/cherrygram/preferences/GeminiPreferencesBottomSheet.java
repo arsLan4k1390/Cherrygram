@@ -39,6 +39,7 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.TextDetailSettingsCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Components.AnimatedTextView;
@@ -53,6 +54,8 @@ import uz.unnarsx.cherrygram.chats.gemini.network.ModelInfo;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
+import uz.unnarsx.cherrygram.preferences.cells.StickerSliderCell;
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSliderPreference;
 
 public class GeminiPreferencesBottomSheet extends BottomSheet {
 
@@ -67,6 +70,7 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
     public GeminiPreferencesBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider) {
         super(context, true, resourcesProvider);
         setOpenNoDelay(true);
+        setCanDismissWithSwipe(false);
         fixNavigationBar();
         smoothKeyboardAnimationEnabled = true;
 
@@ -105,6 +109,12 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         geminiApiKeyField = new OutlineEditText(context, resourcesProvider);
         geminiApiKeyField.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         geminiApiKeyField.getEditText().setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        geminiApiKeyField.getEditText().setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_NEXT){
+                doOnDone(false);
+            }
+            return false;
+        });
         geminiApiKeyField.setHint(getString(R.string.CP_GeminiAI_API_Key));
         geminiApiKeyField.getEditText().setSingleLine(false);
         geminiApiKeyField.getEditText().setFilters(getInputFilter());
@@ -129,6 +139,12 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         geminiModelNameField = new OutlineEditText(context, resourcesProvider);
         geminiModelNameField.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
         geminiModelNameField.getEditText().setImeOptions(EditorInfo.IME_ACTION_DONE);
+        geminiApiKeyField.getEditText().setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE){
+                doOnDone(false);
+            }
+            return false;
+        });
         geminiModelNameField.setHint(getString(R.string.CP_GeminiAI_Model));
         geminiModelNameField.getEditText().setSingleLine(true);
         geminiModelNameField.getEditText().setFilters(getInputFilter());
@@ -178,6 +194,27 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         };
         linearLayout.addView(geminiModelAdviceCellDivider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1), 0, 16, 0, 16, 0));
 
+        HeaderCell headerCell = new HeaderCell(getContext(), getResourcesProvider());
+        headerCell.setText(getString(R.string.CP_GeminiAI_Temperature));
+        headerCell.setTextSize(16);
+        linearLayout.addView(headerCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+
+        StickerSliderCell temperatureSliderCell = getStickerSliderCell();
+        linearLayout.addView(temperatureSliderCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+
+        TextInfoPrivacyCell temperatureAdviceCell = new TextInfoPrivacyCell(context, dp(1), resourcesProvider);
+        temperatureAdviceCell.setText(getString(R.string.CP_GeminiAI_Temperature_Desc));
+        linearLayout.addView(temperatureAdviceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, -10, 16, 0));
+
+        View temperatureAdviceCellDivider = new View(context) {
+            @Override
+            protected void onDraw(@NonNull Canvas canvas) {
+                super.onDraw(canvas);
+                canvas.drawLine(0, AndroidUtilities.dp(1), getMeasuredWidth(), AndroidUtilities.dp(1), Theme.dividerPaint);
+            }
+        };
+        linearLayout.addView(temperatureAdviceCellDivider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1), 0, 16, 0, 16, 0));
+
         FrameLayout buttonView = new FrameLayout(context);
         buttonView.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
 
@@ -185,12 +222,12 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         doneButton.setEllipsize(TextUtils.TruncateAt.END);
         doneButton.setGravity(Gravity.CENTER_HORIZONTAL);
         doneButton.setGravity(Gravity.CENTER);
-        doneButton.setText(getString(R.string.Done));
+        doneButton.setText(getString(R.string.Save));
         doneButton.setTypeface(AndroidUtilities.bold());
         doneButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         doneButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
         doneButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
-        doneButton.setOnClickListener(v -> doOnDone());
+        doneButton.setOnClickListener(v -> doOnDone(true));
         buttonView.addView(doneButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
         HintView2 hintView = new HintView2(context, HintView2.DIRECTION_BOTTOM)
@@ -220,6 +257,35 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         setCustomView(scrollView);
     }
 
+    @NonNull
+    private StickerSliderCell getStickerSliderCell() {
+        StickerSliderCell stickerSliderCell = new StickerSliderCell(getContext(), getResourcesProvider());
+        TGKitSliderPreference.TGSLContract contract = new TGKitSliderPreference.TGSLContract() {
+            @Override
+            public void setValue(int value) {
+                CherrygramChatsConfig.INSTANCE.setGeminiTemperatureValue(value);
+            }
+
+            @Override
+            public int getPreferenceValue() {
+                return CherrygramChatsConfig.INSTANCE.getGeminiTemperatureValue();
+            }
+
+            @Override
+            public int getMin() {
+                return 1;
+            }
+
+            @Override
+            public int getMax() {
+                return 10;
+            }
+        };
+        contract.setValue(CherrygramChatsConfig.INSTANCE.getGeminiTemperatureValue());
+        stickerSliderCell.setContract(contract);
+        return stickerSliderCell;
+    }
+
     public void setFragment(BaseFragment fragment) {
         this.fragment = fragment;
     }
@@ -236,7 +302,7 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         return new InputFilter[] { filter };
     }
 
-    private void doOnDone() {
+    private void doOnDone(boolean dismiss) {
         if (fragment == null || fragment.getParentActivity() == null) {
             return;
         }
@@ -265,7 +331,7 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
                 geminiModelNameField.getEditText().getText().toString()
         );
 
-        dismiss();
+        if (dismiss) dismiss();
     }
 
     @Override
@@ -278,6 +344,7 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
     @Override
     public void dismiss() {
         super.dismiss();
+        doOnDone(false);
         AndroidUtilities.runOnUIThread(() -> AndroidUtilities.hideKeyboard(linearLayout), 50);
     }
 

@@ -14,6 +14,9 @@ import android.graphics.Paint;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ChatActivity;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class RoundStatusDrawable extends StatusDrawable {
 
@@ -29,6 +32,13 @@ public class RoundStatusDrawable extends StatusDrawable {
         if (createPaint) {
             currentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         }
+    }
+
+    public RoundStatusDrawable(boolean createPaint, ChatActivity parentFragment) {
+        if (createPaint) {
+            currentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        }
+        this.chatActivity = parentFragment;
     }
 
     @Override
@@ -74,7 +84,16 @@ public class RoundStatusDrawable extends StatusDrawable {
     public void draw(Canvas canvas) {
         Paint paint = currentPaint == null ? Theme.chat_statusPaint : currentPaint;
         paint.setAlpha(55 + (int) (200 * progress));
-        canvas.drawCircle(AndroidUtilities.dp(6), AndroidUtilities.dp(isChat ? 8 : 9), AndroidUtilities.dp(4), paint);
+
+        if (centerChatTitle && chatActivity != null) {
+            float centerX = getBounds().centerX() - AndroidUtilities.dp(1);
+            float centerY = AndroidUtilities.dp(isChat ? 8 : 9);
+            float radius = AndroidUtilities.dp(4);
+
+            canvas.drawCircle(centerX, centerY, radius, paint);
+        } else {
+            canvas.drawCircle(AndroidUtilities.dp(6), AndroidUtilities.dp(isChat ? 8 : 9), AndroidUtilities.dp(4), paint);
+        }
         if (started) {
             update();
         }
@@ -97,11 +116,17 @@ public class RoundStatusDrawable extends StatusDrawable {
 
     @Override
     public int getIntrinsicWidth() {
-        return AndroidUtilities.dp(12);
+        return centerChatTitle && chatActivity != null ? AndroidUtilities.dp(8) : AndroidUtilities.dp(12);
     }
 
     @Override
     public int getIntrinsicHeight() {
         return AndroidUtilities.dp(10);
     }
+
+    /** Cherrygram start */
+    private boolean centerChatTitle = CherrygramChatsConfig.INSTANCE.getCenterChatTitle();
+    private ChatActivity chatActivity;
+    /** Cherrygram finish */
+
 }

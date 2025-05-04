@@ -26,8 +26,8 @@ dependencies {
 }
 
 android {
-    compileSdk 34
-    buildToolsVersion = '34.0.0'
+    compileSdk 36
+    buildToolsVersion = '36.0.0'
 
     defaultConfig.applicationId = APP_PACKAGE
 
@@ -81,7 +81,7 @@ android {
             signingConfig signingConfigs.release
 //            applicationIdSuffix ".web"
             minifyEnabled true
-            shrinkResources false
+            shrinkResources true
             multiDexEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
@@ -92,7 +92,7 @@ android {
             jniDebuggable false
             signingConfig signingConfigs.release
             minifyEnabled true
-            shrinkResources false
+            shrinkResources true
             multiDexEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'

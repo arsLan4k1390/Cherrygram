@@ -129,7 +129,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_RedesignCategory">Redesenho</string>
     <string name="AP_IconReplacements">Substituição de ícones</string>
     <string name="AP_Old_Notification_Icon">Ícone de notificação padrão (Telegram)</string>
-    <string name="AP_ChangeIconFilter">Usar ícones do Telegram</string>
     <string name="AP_ChangeIcon_Cherry_NY">Ano Novo</string>
     <string name="AP_ChangeIcon_Default">Por defeito</string>
     <string name="AP_ChangeIcon_Dark">Escuro</string>

@@ -26,7 +26,7 @@ public class TGKitTextDetailRow extends TGKitPreference {
 
     public void bindCell(TextDetailSettingsCell textDetailCell) {
         if (icon != -1 && detail != null) {
-            textDetailCell.setTextAndValueAndIcon(title, detail, icon, divider);
+            textDetailCell.setTextAndValueAndIcon(title.toString(), detail, icon, divider);
         } else if (detail != null) {
             textDetailCell.setTextAndValue(title, detail, divider);
         }

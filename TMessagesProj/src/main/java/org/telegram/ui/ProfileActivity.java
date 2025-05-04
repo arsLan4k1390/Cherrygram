@@ -320,8 +320,11 @@ import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.Extra;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
+import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator;
@@ -2125,6 +2128,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             applyBulletin = null;
             AndroidUtilities.runOnUIThread(runnable);
         }
+        Bulletin.removeDelegate(this);
     }
 
     @Override
@@ -3221,6 +3225,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         botVerificationDrawable[i].attach();
                     }
                 }
+                if (cherrygramStatusDrawable != null) {
+                    cherrygramStatusDrawable.attach();
+                }
             }
 
             @Override
@@ -3236,6 +3243,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (botVerificationDrawable[i] != null) {
                         botVerificationDrawable[i].detach();
                     }
+                }
+                if (cherrygramStatusDrawable != null) {
+                    cherrygramStatusDrawable.detach();
                 }
             }
         };
@@ -4979,9 +4989,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 return;
             }
-            if (expandAvatar()) {
+            /*if (expandAvatar()) {
                 return;
-            }
+            }*/
             openAvatar();
         });
         avatarImage.setHasStories(needInsetForStories());
@@ -8287,10 +8297,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     @Override
     public boolean needDelayOpenAnimation() {
-        if (playProfileAnimation == 0) {
-            return true;
+        if (CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING || CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) {
+            return false;
+        } else {
+            return playProfileAnimation == 0;
         }
-        return false;
     }
 
     @Override
@@ -9730,6 +9741,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (botVerificationDrawable[a] != null) {
                 botVerificationDrawable[a].setColor(ColorUtils.blendARGB(ColorUtils.blendARGB(fromColor, 0x99ffffff, progress), getThemedColor(Theme.key_player_actionBarTitle), mediaHeaderAnimationProgress));
             }
+            if (cherrygramStatusDrawable != null) {
+                cherrygramStatusDrawable.setColor(color);
+            }
             if (a == 1) {
                 animatedStatusView.setColor(color);
             }
@@ -9951,6 +9965,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         nameTextView[a].setRightDrawable(null);
                     }
                 }
+
+                checkCherrygramBadges(nameTextView, a, user);
+
                 if (leftIcon == null && currentEncryptedChat == null && user.bot_verification_icon != 0) {
                     nameTextView[a].setLeftDrawableOutside(true);
                     leftIcon = getBotVerificationDrawable(user.bot_verification_icon, false, a);
@@ -9966,7 +9983,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         showStatusSelect();
                     });
                 }
-                if (!user.self && getMessagesController().isPremiumUser(user) && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+                if (!user.self && getMessagesController().isPremiumUser(user)) {
                     final SimpleTextView textView = nameTextView[a];
                     nameTextView[a].setRightDrawableOnClick(v -> {
                         if (user.emoji_status instanceof TLRPC.TL_emojiStatusCollectible) {
@@ -10113,9 +10130,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 updatedPeerColor();
             }
             if (topView != null) {
-                if (chat.id == Constants.Cherrygram_Channel || chat.id == Constants.Cherrygram_APKs || chat.id == Constants.Cherrygram_Support || chat.id == Constants.Cherrygram_Beta) {
-                    topView.setBackgroundEmojiId(Constants.CHERRY_EMOJI_ID_14, chat != null && chat.emoji_status instanceof TLRPC.TL_emojiStatusCollectible, true);
-                } else {
+                if (chat.id == Constants.Cherrygram_Channel || chat.id == Constants.Cherrygram_APKs) {
+                    topView.setBackgroundEmojiId(Constants.CHERRY_EMOJI_ID, true, true);
+                } else if (chat.id == Constants.Cherrygram_Support || chat.id == Constants.Cherrygram_Beta) {
+                    topView.setBackgroundEmojiId(Constants.CHERRY_EMOJI_ID_BRA, true, true);
+                }else {
                     topView.setBackgroundEmojiId(ChatObject.getProfileEmojiId(chat), chat != null && chat.emoji_status instanceof TLRPC.TL_emojiStatusCollectible, true);
                 }
             }
@@ -10230,6 +10249,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 nameTextView[a].setLeftDrawable(null);
                 nameTextView[a].setRightDrawableOutside(a == 0);
                 nameTextView[a].setRightDrawableOnClick(null);
+                nameTextView[a].setRightDrawable2OnClick(null);
                 if (a != 0) {
                     if (chat.scam || chat.fake) {
                         nameTextView[a].setRightDrawable2(getScamDrawable(chat.scam ? 0 : 1));
@@ -10277,6 +10297,17 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         nameTextView[a].setRightDrawable(null);
                     }
                 }
+
+                if (chat.id == Constants.Cherrygram_Channel || chat.id == Constants.Cherrygram_APKs) {
+                    nameTextView[a].setRightDrawable(getEmojiStatusDrawable(Constants.CHERRY_EMOJI_ID, false, true, 18, a));
+                    nameTextView[a].setRightDrawableOutside(true);
+                } else if (chat.id == Constants.Cherrygram_Support || chat.id == Constants.Cherrygram_Beta) {
+                    nameTextView[a].setRightDrawable(getEmojiStatusDrawable(Constants.CHERRY_EMOJI_ID_BRA, false, true, 18, a));
+                    nameTextView[a].setRightDrawableOutside(true);
+                } else {
+                    nameTextView[a].setRightDrawable(null);
+                }
+
                 if (chat.bot_verification_icon != 0) {
                     nameTextView[a].setLeftDrawableOutside(true);
                     nameTextView[a].setLeftDrawable(getBotVerificationDrawable(chat.bot_verification_icon, false, a));
@@ -11801,6 +11832,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             phoneNumber = null;
                         }
                         isFragmentPhoneNumber = phoneNumber != null && phoneNumber.matches("888\\d{8}");
+                        if (isFragmentPhoneNumber && !TextUtils.isEmpty(phoneNumber)) {
+                            text = PhoneFormat.getInstance().format("+ " + user.phone);
+                        }
                         detailCell.setTextAndValue(text, LocaleController.getString(isFragmentPhoneNumber ? R.string.AnonymousNumber : R.string.PhoneMobile), false);
                     } else if (position == idRow) {
                         final long id;
@@ -14819,6 +14853,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     }
 
     public void updateCollectibleHint() {
+        updateDonatorHint();
         if (collectibleHint == null) return;
         collectibleHint.setJointPx(0, -collectibleHint.getPaddingLeft() + nameTextView[1].getX() + (nameTextView[1].getRightDrawableX() - nameTextView[1].getRightDrawableWidth() * lerp(0.45f, 0.25f, currentExpandAnimatorValue)) * nameTextView[1].getScaleX());
         final float expanded = AndroidUtilities.lerp(expandAnimatorValues, currentExpanAnimatorFracture);
@@ -14829,5 +14864,106 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             collectibleHint.animate().alpha((collectibleHintVisible = visible) ? 1.0f : 0.0f).setInterpolator(CubicBezierInterpolator.EASE_OUT).setDuration(200).start();
         }
     }
+
+    /** Cherrygram start */
+    private HintView2 donatorHint;
+    private int donatorHintBackgroundColor;
+    private Boolean donatorHintVisible;
+
+    private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cherrygramStatusDrawable;
+    private Drawable getEmojiStatusDrawable(long document_id, boolean animated, boolean showParticles, int size, int a) {
+        if (cherrygramStatusDrawable == null) {
+            cherrygramStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(nameTextView[a], AndroidUtilities.dp(size), AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS);
+            if (fragmentViewAttached) {
+                cherrygramStatusDrawable.attach();
+            }
+        }
+        if (a == 1) {
+            emojiStatusGiftId = null;
+        }
+        cherrygramStatusDrawable.set(document_id, animated);
+        cherrygramStatusDrawable.setParticles(showParticles, animated);
+
+        updateEmojiStatusDrawableColor();
+        return cherrygramStatusDrawable;
+    }
+
+    private void checkCherrygramBadges(SimpleTextView[] nameTextView, int a, TLRPC.User user) {
+        if (user == null) return;
+        long emojiDocumentId;
+        boolean forceBra = user.id == Constants.Cherrygram_Owner;
+
+        if (DonatesManager.INSTANCE.didUserDonate(user.id) || forceBra) {
+            emojiDocumentId = forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
+
+            nameTextView[a].setRightDrawable2(getEmojiStatusDrawable(emojiDocumentId, false, forceBra, 22, a));
+            nameTextView[a].setRightDrawableInside(true);
+        } else {
+            emojiDocumentId = 0;
+            nameTextView[a].setRightDrawable2(null);
+        }
+
+        nameTextView[a].setRightDrawable2OnClick(v -> {
+            TLRPC.Document document = AnimatedEmojiDrawable.findDocument(currentAccount, emojiDocumentId);
+            SpannableStringBuilder stringBuilder = new SpannableStringBuilder(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.DP_Donate_Bulletin, UserObject.getUserName(user))));
+
+            BulletinFactory.of(this).createDonatesBulletin(
+                    document,
+                    stringBuilder,
+                    LocaleController.getString(R.string.LearnMore),
+                    Bulletin.DURATION_PROLONG,
+                    () -> Browser.openUrl(getContext(), Uri.parse("tg://cg_donate"))
+            ).show();
+            showDonatorHint(user);
+        });
+    }
+
+    private void showDonatorHint(TLRPC.User user) {
+        if (user == null) return;
+        if (avatarContainer2 == null) return;
+        if (donatorHint != null) donatorHint.hide();
+
+        SpannableStringBuilder stringBuilder = new SpannableStringBuilder(
+                AndroidUtilities.replaceTags(
+                        LocaleController.formatString(R.string.DP_Donate_Bulletin, UserObject.getUserName(user))
+                )
+        );
+
+        donatorHintVisible = null;
+        donatorHint = new HintView2(getContext(), HintView2.DIRECTION_BOTTOM);
+        donatorHintBackgroundColor = peerColor != null && peerColor.getBgColor1(Theme.isCurrentThemeDark()) != peerColor.getBgColor2(Theme.isCurrentThemeDark()) ? peerColor.getBgColor1(Theme.isCurrentThemeDark()) : getThemedColor(Theme.key_undo_background);
+        donatorHint.setPadding(dp(4), 0, dp(4), dp(15));
+        donatorHint.setFlicker(.66f, Theme.multAlpha(11922687 | 0xFF000000, 0.5f));
+        avatarContainer2.addView(donatorHint, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, dp(15)));
+        donatorHint.setTextSize(12);
+        donatorHint.setText(stringBuilder);
+        donatorHint.setDuration(-1);
+        donatorHint.setInnerPadding(10, 3, 10, 3);
+        donatorHint.setArrowSize(4, 2.66f);
+        donatorHint.setRoundingWithCornerEffect(false);
+        donatorHint.setRounding(16);
+        donatorHint.show();
+        donatorHint.setOnClickListener(v -> Browser.openUrl(getContext(), Uri.parse("tg://cg_donate")));
+        if (extraHeight < dp(82)) {
+            donatorHintVisible = false;
+            donatorHint.setAlpha(0.0f);
+        }
+        updateDonatorHint();
+        AndroidUtilities.runOnUIThread(donatorHint::hide, 5500);
+    }
+
+    public void updateDonatorHint() {
+        if (donatorHint == null) return;
+        int padding = nameTextView[1].getRightDrawableWidth() != 0 ? dp(29) : nameTextView[1].getTextWidth() - dp(10);
+        donatorHint.setJointPx(0, -donatorHint.getPaddingLeft() + nameTextView[1].getX() + padding + (nameTextView[1].getRightDrawableX() - nameTextView[1].getRightDrawableWidth() * lerp(0.45f, 0.25f, currentExpandAnimatorValue)) * nameTextView[1].getScaleX());
+        final float expanded = AndroidUtilities.lerp(expandAnimatorValues, currentExpanAnimatorFracture);
+        donatorHint.setTranslationY(-donatorHint.getPaddingBottom() + nameTextView[1].getY() - dp(24) + lerp(dp(6), -dp(12), expanded));
+        donatorHint.setBgColor(ColorUtils.blendARGB(donatorHintBackgroundColor, 0x50000000, expanded));
+        final boolean visible = extraHeight >= dp(82);
+        if (donatorHintVisible == null || donatorHintVisible != visible) {
+            donatorHint.animate().alpha((donatorHintVisible = visible) ? 1.0f : 0.0f).setInterpolator(CubicBezierInterpolator.EASE_OUT).setDuration(200).start();
+        }
+    }
+    /** Cherrygram finish */
 
 }

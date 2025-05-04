@@ -28,7 +28,7 @@ fun TGKitPreferences.switch(block: TGKitSwitchPreference.() -> Unit) = add(TGKit
 fun TGKitPreferences.slider(block: TGKitSliderPreference.() -> Unit) = add(TGKitSliderPreference().apply(block))
 fun TGKitPreferences.textIcon(block: TGKitTextIconRow.() -> Unit) = add(TGKitTextIconRow().apply(block))
 fun TGKitPreferences.textDetail(block: TGKitTextDetailRow.() -> Unit) = add(TGKitTextDetailRow().apply(block))
-fun TGKitPreferences.hint(text: String) = add(TGKitTextHintRow().also { it.title = text })
+fun TGKitPreferences.hint(text: CharSequence) = add(TGKitTextHintRow().also { it.title = text })
 
 fun TGKitSwitchPreference.contract(getValue: () -> Boolean, setValue: (Boolean) -> Unit) {
     contract = object : TGKitSwitchPreference.TGSPContract {

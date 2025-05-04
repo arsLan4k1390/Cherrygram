@@ -238,8 +238,8 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
-import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
+import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator;
 import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
 import uz.unnarsx.cherrygram.core.icons.CGUIResources;
@@ -1028,10 +1028,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     });
         }
 
-        if (CherrygramCoreConfig.INSTANCE.getAutoOTA()) {
-            checkCgUpdates(getSafeLastFragment(), null, false);
-        }
-        if (!CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) CherrygramExtras.postCheckFollowChannel(this, currentAccount);
+        processFeats();
 
         BackupAgent.requestBackup(this);
 
@@ -8484,22 +8481,19 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     public boolean needCloseLastFragment(INavigationLayout layout) {
         if (AndroidUtilities.isTablet()) {
             if (layout == actionBarLayout && layout.getFragmentStack().size() <= 1 && !switchingAccount) {
-                onFinish();
-                finish();
+                super.onBackPressed();
                 return false;
             } else if (layout == rightActionBarLayout) {
                 if (!tabletFullSize) {
                     backgroundTablet.setVisibility(View.VISIBLE);
                 }
             } else if (layout == layersActionBarLayout && actionBarLayout.getFragmentStack().isEmpty() && layersActionBarLayout.getFragmentStack().size() == 1) {
-                onFinish();
-                finish();
+                super.onBackPressed();
                 return false;
             }
         } else {
             if (layout.getFragmentStack().size() <= 1) {
-                onFinish();
-                finish();
+                super.onBackPressed();
                 return false;
             }
             if (layout.getFragmentStack().size() >= 2 && !(layout.getFragmentStack().get(0) instanceof LoginActivity)) {
@@ -9035,6 +9029,14 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 return true;
             }
         });
+    }
+
+    private void processFeats() {
+        CherrygramCoreConfig.INSTANCE.setUpdateAvailable(false);
+        if (CherrygramCoreConfig.INSTANCE.getAutoOTA()) {
+            checkCgUpdates(getSafeLastFragment(), null, false);
+        }
+        if (!CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) CherrygramExtras.checkChannelFollow(this, currentAccount);
     }
     /** Cherrygram finish */
 

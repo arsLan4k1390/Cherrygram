@@ -64,6 +64,8 @@ import org.telegram.ui.Stories.StoriesUtilities;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
+import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
+import uz.unnarsx.cherrygram.misc.Constants;
 
 public class UserCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
@@ -222,6 +224,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
 
         botVerification = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(nameTextView, dp(20));
         emojiStatus = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(nameTextView, dp(20));
+        cherrygramStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(nameTextView, dp(20));
 
         statusTextView = new SimpleTextView(context);
         statusTextView.setTextSize(15);
@@ -666,6 +669,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             nameTextView.setRightDrawable(null);
             nameTextView.setRightDrawableTopPadding(0);
         }
+        checkCherrygramBadges(nameTextView, currentUser);
         if (currentStatus != null) {
             statusTextView.setTextColor(statusColor);
             statusTextView.setText(currentStatus);
@@ -759,6 +763,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
         emojiStatus.attach();
         botVerification.attach();
+        cherrygramStatusDrawable.attach();
     }
 
     @Override
@@ -767,6 +772,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
         emojiStatus.detach();
         botVerification.detach();
+        cherrygramStatusDrawable.detach();
         storyParams.onDetachFromWindow();
     }
 
@@ -872,4 +878,33 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         filterOptions.setGravity(Gravity.RIGHT)
                 .show();
     }
+
+    /** Cherrygram start */
+    private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cherrygramStatusDrawable;
+
+    private void checkCherrygramBadges(SimpleTextView nameTextView, TLRPC.User user) {
+        if (user == null) return;
+        long emojiDocumentId;
+        boolean showParticles = false;
+        boolean forceBra = user.id == Constants.Cherrygram_Owner;
+
+        if (DonatesManager.INSTANCE.didUserDonate(user.id) || forceBra) {
+            emojiDocumentId = forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
+            showParticles = forceBra;
+        } else {
+            emojiDocumentId = 0;
+            nameTextView.setRightDrawable2(null);
+        }
+
+        if (emojiDocumentId != 0) {
+            cherrygramStatusDrawable.set(emojiDocumentId, false);
+            cherrygramStatusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+            cherrygramStatusDrawable.setParticles(showParticles, showParticles);
+
+            nameTextView.setRightDrawable2(cherrygramStatusDrawable);
+            nameTextView.setRightDrawableInside(true);
+        }
+    }
+    /** Cherrygram finish */
+
 }

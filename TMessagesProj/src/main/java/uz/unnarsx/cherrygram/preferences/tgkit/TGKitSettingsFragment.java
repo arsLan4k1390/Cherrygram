@@ -261,7 +261,7 @@ public class TGKitSettingsFragment extends BaseFragment {
                     TextCheckCell checkCell = (TextCheckCell) holder.itemView;
                     TGKitSwitchPreference pref = (TGKitSwitchPreference) positions.get(position);
                     if (pref.description != null) {
-                        checkCell.setTextAndValueAndCheck(pref.title, pref.description, pref.contract.getPreferenceValue(), true, pref.divider);
+                        checkCell.setTextAndValueAndCheck(pref.title.toString(), pref.description, pref.contract.getPreferenceValue(), true, pref.divider);
                     } else {
                         checkCell.setTextAndCheck(pref.title, pref.contract.getPreferenceValue(), pref.divider);
                     }
@@ -349,11 +349,14 @@ public class TGKitSettingsFragment extends BaseFragment {
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 6:
-                    view = new StickerSliderCell(mContext);
+                    view = new StickerSliderCell(mContext, resourceProvider);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case 8:
                     view = new TextInfoPrivacyCell(mContext);
+                    if (settings != null && settings.name.contains(getString(R.string.DP_Donate))) {
+                        view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    }
                     break;
                 default:
                     view = new ShadowSectionCell(mContext);

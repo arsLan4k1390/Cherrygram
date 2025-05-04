@@ -130,7 +130,6 @@
     <string name="AP_IconReplacements">Reemplazo de icono</string>
     <string name="AP_Old_Notification_Icon">Icono de notificación por defecto (Telegram)</string>
     <string name="AP_Tablet_Mode">Modo tablet</string>
-    <string name="AP_ChangeIconFilter">Usar iconos de Telegram</string>
     <string name="AP_ChangeIcon_Cherry_NY">Año Nuevo</string>
     <string name="AP_ChangeIcon_Default">Por defecto</string>
     <string name="AP_ChangeIcon_Dark">Oscuro</string>

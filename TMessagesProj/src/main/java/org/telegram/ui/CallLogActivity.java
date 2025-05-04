@@ -110,8 +110,8 @@ import java.util.stream.Collectors;
 
 import androidx.collection.LongSparseArray;
 import androidx.annotation.Nullable;
-import androidx.core.graphics.ColorUtils;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 

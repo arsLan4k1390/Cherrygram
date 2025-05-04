@@ -313,6 +313,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.chats.gemini.GeminiButtonsLayout;
+import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet;
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
@@ -397,7 +398,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 }
             };
             titleLayout.setPivotX(dp(16));
-            titleLayout.setPadding(centerTitle ? 0 : dp(16), centerTitle ? AndroidUtilities.dp(17) : 0, 0, 0);
+            titleLayout.setPadding(centerTitle ? 0 : dp(16), 0, 0, 0);
             titleLayout.setClipToPadding(false);
             container.addView(titleLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
 
@@ -410,7 +411,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 titleTextView[i].setTypeface(AndroidUtilities.bold());
                 titleTextView[i].setDrawablePadding(dp(4));
                 titleTextView[i].setScrollNonFitText(true);
-                titleLayout.addView(titleTextView[i], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, centerTitle ? Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL : Gravity.LEFT | Gravity.CENTER_VERTICAL, centerTitle ? 96 : 0, 0, centerTitle ? 96 : 0, 0));
+                titleLayout.addView(titleTextView[i], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, centerTitle ? Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL : Gravity.LEFT | Gravity.CENTER_VERTICAL, centerTitle ? 96 : 0, CherrygramChatsConfig.INSTANCE.getCenterChatTitle() ? dp(2) : 0, centerTitle ? 96 : 0, 0));
             }
 
             subtitleTextView = new AnimatedTextView(context, true, false, false);
@@ -419,7 +420,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             subtitleTextView.setGravity(centerTitle ? Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL : Gravity.LEFT | Gravity.CENTER_VERTICAL);
             subtitleTextView.setTextColor(0xffffffff);
             subtitleTextView.setEllipsizeByGradient(true);
-            container.addView(subtitleTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, centerTitle ? Gravity.CENTER_HORIZONTAL | Gravity.TOP : Gravity.LEFT | Gravity.TOP, centerTitle ? 0 : 16, 0, 0, 0));
+            container.addView(subtitleTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 20, centerTitle ? Gravity.CENTER_HORIZONTAL | Gravity.TOP : Gravity.LEFT | Gravity.TOP, centerTitle ? 0 : 16, CherrygramChatsConfig.INSTANCE.getCenterChatTitle() ? -dp(1) : 0, 0, 0));
         }
 
         public void setTextShadows(boolean applyShadows) {
@@ -5870,43 +5871,13 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
 
         /** Gemini button start **/
         geminiButtonsLayout = new GeminiButtonsLayout(activityContext, menuItem.getPopupLayout().getSwipeBack(), (messageObject, isOCR) -> {
+            GeminiResultsBottomSheet.setMessageObject(messageObject);
             GeminiSDKImplementation.injectGeminiForMedia(
                     messageObject,
-                    currentAccount,
-                    parentActivity,
                     parentFragment,
-                    containerView,
-                    isOCR
+                    isOCR,
+                    false
             );
-//            String path = "";
-//            if (messageObject != null) {
-//                path = messageObject.messageOwner.attachPath;
-//                if (!TextUtils.isEmpty(path)) {
-//                    File temp = new File(path);
-//                    if (!temp.exists()) {
-//                        path = null;
-//                    }
-//                }
-//                if (TextUtils.isEmpty(path)) {
-//                    path = FileLoader.getInstance(currentAccount).getPathToMessage(messageObject.messageOwner).toString();
-//                }
-//                if (messageObject.qualityToSave != null) {
-//                    File f = FileLoader.getInstance(currentAccount).getPathToAttach(messageObject.qualityToSave, null, false, true);
-//                    if (f == null) return;
-//                    path = f.getPath();
-//                }
-//            }
-//
-//            GeminiSDKImplementation.initGeminiConfig(
-//                    parentActivity,
-//                    parentFragment,
-//                    containerView,
-//                    null,
-//                    "",
-//                    GeminiSDKImplementation.getBitmapFromFile(new File(path)),
-//                    isOCR
-//            );
-
             menuItem.toggleSubMenu();
         });
 
@@ -22855,42 +22826,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         return videoPlayer.getCurrentPosition();
     }
 
-    /** Cherrygram start */
-    private PhotoViewerHelper photoViewerHelper;
-
-    private ActionBarPopupWindow.GapView geminiGap;
-    private ActionBarMenuSubItem geminiButton;
-    private GeminiButtonsLayout geminiButtonsLayout;
-
-    private void changeGeminiItemsVisibility(boolean visible) {
-        if (visible) {
-            geminiGap.setVisibility(View.VISIBLE);
-            geminiButton.setVisibility(View.VISIBLE);
-        } else {
-            geminiGap.setVisibility(View.GONE);
-            geminiButton.setVisibility(View.GONE);
-        }
-    }
-
-    private TLRPC.VideoSize getEmojiMarkup(boolean hasVideoAvatar, boolean hasPublicVideoAvatar, TLRPC.Photo avatar, TLRPC.UserFull userFull) {
-        TLRPC.VideoSize emojiMarkup;
-        if (hasVideoAvatar) {
-            emojiMarkup = FileLoader.getEmojiMarkup(avatar.video_sizes);
-        } else if (hasPublicVideoAvatar) {
-            emojiMarkup = FileLoader.getEmojiMarkup(userFull.fallback_photo.video_sizes);
-        } else {
-            emojiMarkup = null;
-        }
-        return emojiMarkup;
-    }
-
-    private int getDoubleTapDuration() {
-        return CherrygramChatsConfig.INSTANCE.getVideoSeekDuration() * 1000;
-    }
-    /** Cherrygram finish */
-
-
-
     @Override
     public View detachContentFromWindow() {
         if (videoPlayer != null) {
@@ -22934,4 +22869,39 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             videoPlayer.setSurfaceView(videoSurfaceView);
         }
     }
+
+    /** Cherrygram start */
+    private PhotoViewerHelper photoViewerHelper;
+
+    private ActionBarPopupWindow.GapView geminiGap;
+    private ActionBarMenuSubItem geminiButton;
+    private GeminiButtonsLayout geminiButtonsLayout;
+
+    private void changeGeminiItemsVisibility(boolean visible) {
+        if (visible) {
+            geminiGap.setVisibility(View.VISIBLE);
+            geminiButton.setVisibility(View.VISIBLE);
+        } else {
+            geminiGap.setVisibility(View.GONE);
+            geminiButton.setVisibility(View.GONE);
+        }
+    }
+
+    private TLRPC.VideoSize getEmojiMarkup(boolean hasVideoAvatar, boolean hasPublicVideoAvatar, TLRPC.Photo avatar, TLRPC.UserFull userFull) {
+        TLRPC.VideoSize emojiMarkup;
+        if (hasVideoAvatar) {
+            emojiMarkup = FileLoader.getEmojiMarkup(avatar.video_sizes);
+        } else if (hasPublicVideoAvatar) {
+            emojiMarkup = FileLoader.getEmojiMarkup(userFull.fallback_photo.video_sizes);
+        } else {
+            emojiMarkup = null;
+        }
+        return emojiMarkup;
+    }
+
+    private int getDoubleTapDuration() {
+        return CherrygramChatsConfig.INSTANCE.getVideoSeekDuration() * 1000;
+    }
+    /** Cherrygram finish */
+
 }

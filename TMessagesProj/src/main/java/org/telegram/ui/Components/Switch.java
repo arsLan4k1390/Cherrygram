@@ -11,6 +11,7 @@ package org.telegram.ui.Components;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
@@ -30,6 +31,7 @@ import android.util.StateSet;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.animation.Interpolator;
 
 import androidx.annotation.Keep;
 
@@ -243,7 +245,13 @@ public class Switch extends View {
     private void animateToCheckedState(boolean newCheckedState) {
         checkAnimator = ObjectAnimator.ofFloat(this, "progress", newCheckedState ? 1 : 0);
         checkAnimator.setDuration(200);
-        checkAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
+
+        Interpolator interpolator = CubicBezierInterpolator.EASE_OUT_QUINT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ValueAnimator.getDurationScale() >= 1f) {
+            interpolator = CubicBezierInterpolator.EASE_OUT_BACK;
+        }
+        checkAnimator.setInterpolator(interpolator);
+
         checkAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -256,6 +264,7 @@ public class Switch extends View {
     private void animateIcon(boolean newCheckedState) {
         iconAnimator = ObjectAnimator.ofFloat(this, "iconProgress", newCheckedState ? 1 : 0);
         iconAnimator.setDuration(200);
+        iconAnimator.setInterpolator(Easings.easeInOutQuad);
         iconAnimator.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
@@ -390,15 +399,13 @@ public class Switch extends View {
 
         if (CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle()) {
             thumb = AndroidUtilities.dp(17.5F); // толщина свитча
-            x = AndroidUtilities.dp(4); // длина свитча когда он включен
+            x = (getMeasuredWidth() - width) / 2;
             y = getMeasuredHeight() / 2 - thumb / 2;
 
-            if (isChecked) {
-                tx = ((getMeasuredWidth() - width) / 2) + AndroidUtilities.dp(7) + (int) (AndroidUtilities.dp(17) * progress);
-            } else {
-                tx = ((getMeasuredWidth() - width)) + AndroidUtilities.dp(7) + (int) (AndroidUtilities.dp(17) * progress);
-            }
+            float start = x + thumb / 2f;
+            float end = x + width - thumb / 2f;
 
+            tx = (int) (start + (end - start) * progress + AndroidUtilities.dp(isChecked ? 2 : 1));
         } else {
             thumb = AndroidUtilities.dp(20);
             x = (getMeasuredWidth() - width) / 2;

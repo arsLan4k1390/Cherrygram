@@ -72,7 +72,7 @@ public class InstantCameraVideoEncoderOverlayHelper {
                 final int trueSize = logoSize - logoOffset - logoOffset;
 
                 final int[] logoMetaData = new int[3];
-                final long logoPtr = RLottieDrawable.createWithJson(AndroidUtilities.readRes(R.raw.plane_logo_plain), "logo_plane", logoMetaData, null);
+                final long logoPtr = RLottieDrawable.createWithJson(AndroidUtilities.readRes(R.raw.round_overlay_animation_cherry), "surface1701", logoMetaData, null);
                 final Bitmap logoBitmap = Bitmap.createBitmap(logoSize, logoSize, Bitmap.Config.ARGB_8888);
 
                 Bitmap bitmap = Bitmap.createBitmap(trueSize * 8, trueSize * 4, Bitmap.Config.ALPHA_8);
@@ -109,7 +109,7 @@ public class InstantCameraVideoEncoderOverlayHelper {
                 float scale = (float) logoSize / videoWidth;
                 setVertexCords(verData, VERTEX_BUFFER_WATERMARK_TEXT_POSITION, 1f - scale * 2f, -1f + scale * 2f, 1, -1);
 
-                Bitmap bitmap = AndroidUtilities.getBitmapFromRaw(R.raw.round_blur_overlay_text);
+                Bitmap bitmap = AndroidUtilities.getBitmapFromRaw(R.raw.round_blur_overlay_text_cherry);
                 if (bitmap != null) {
                     Bitmap sBitmap = Bitmap.createScaledBitmap(bitmap, logoSize, logoSize, true);
                     Bitmap aBitmap = sBitmap.extractAlpha();

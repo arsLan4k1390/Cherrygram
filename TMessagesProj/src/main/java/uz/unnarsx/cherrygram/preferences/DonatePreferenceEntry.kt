@@ -17,8 +17,10 @@ import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.hint
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
@@ -26,6 +28,9 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 class DonatePreferenceEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.DP_Donate)) {
         val isDarkMode: Boolean = !Theme.isCurrentThemeDay()
+        category(getString(R.string.Info)) {
+            hint(CGResourcesHelper.getDonatesAdvice())
+        }
         category(getString(R.string.DP_Donate_Method)) {
             textIcon {
                 icon = if (isDarkMode) R.drawable.card_visa_dark else R.drawable.card_visa_light
@@ -83,7 +88,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                     Toast.makeText(bf.parentActivity, getString(R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
             }
-            textIcon {
+            /*textIcon {
                 icon = if (isDarkMode) R.drawable.card_ym_dark else R.drawable.card_ym_light
                 title = "YooMoney (RUB)"
 
@@ -91,7 +96,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                     AndroidUtilities.addToClipboard("4100116983696293")
                     Toast.makeText(bf.parentActivity, getString(R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
-            }
+            }*/
         }
 
         category("Binance") {

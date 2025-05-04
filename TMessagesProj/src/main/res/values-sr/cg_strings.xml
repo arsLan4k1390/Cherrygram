@@ -127,7 +127,6 @@
     <string name="AP_RedesignCategory">Редизајн</string>
     <string name="AP_IconReplacements">Замене икона</string>
     <string name="AP_Old_Notification_Icon">Подразумевана икона обавештења (Telegram)</string>
-    <string name="AP_ChangeIconFilter">Користи Telegram иконе</string>
     <string name="AP_ChangeIcon_Cherry_NY">Нова година</string>
     <string name="AP_ChangeIcon_Default">Подразумевано</string>
     <string name="AP_ChangeIcon_Dark">Тамно</string>

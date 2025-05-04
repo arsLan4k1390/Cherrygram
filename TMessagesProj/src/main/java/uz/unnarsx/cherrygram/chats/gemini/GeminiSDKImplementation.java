@@ -10,24 +10,26 @@
 package uz.unnarsx.cherrygram.chats.gemini;
 
 import static org.telegram.messenger.LocaleController.getString;
+import static uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet.capitalFirst;
+import static uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet.languageName;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.text.TextUtils;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.google.ai.client.generativeai.GenerativeModel;
 import com.google.ai.client.generativeai.java.GenerativeModelFutures;
+import com.google.ai.client.generativeai.type.BlobPart;
 import com.google.ai.client.generativeai.type.BlockThreshold;
 import com.google.ai.client.generativeai.type.Content;
 import com.google.ai.client.generativeai.type.GenerateContentResponse;
 import com.google.ai.client.generativeai.type.GenerationConfig;
 import com.google.ai.client.generativeai.type.GoogleGenerativeAIException;
 import com.google.ai.client.generativeai.type.HarmCategory;
+import com.google.ai.client.generativeai.type.Part;
 import com.google.ai.client.generativeai.type.SafetySetting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -44,10 +46,12 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
-import org.telegram.ui.Components.ChatActivityEnterView;
 import org.telegram.ui.PhotoViewer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
@@ -57,23 +61,19 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 public class GeminiSDKImplementation {
 
     public static void initGeminiConfig(
-            Activity parentActivity,
             BaseFragment baseFragment,
-            PhotoViewer.FrameLayoutDrawer containerView,
-            ChatActivityEnterView chatActivityEnterView,
             ChatActivity chatActivity,
-            CharSequence inputText,
-            Bitmap inputBitmap,
-            Boolean ocr,
-            Boolean translateText
+            CharSequence inputText, boolean translateText,
+            File mediaFile,
+            boolean ocr, boolean transcribe
     ) {
 
-        if (parentActivity == null && baseFragment == null && baseFragment.getContext() == null) return;
+        if (baseFragment == null && baseFragment.getParentActivity() == null && baseFragment.getContext() == null) return;
 
         GenerationConfig.Builder configBuilder = new GenerationConfig.Builder();
-//        configBuilder.temperature = 0.15f;
-//        configBuilder.topK = 32;
-//        configBuilder.topP = 1f;
+        configBuilder.temperature = (float) CherrygramChatsConfig.INSTANCE.getGeminiTemperatureValue() / 10;
+        configBuilder.topK = 10;
+        configBuilder.topP = 0.5f;
         configBuilder.maxOutputTokens = 4096;
 
         ArrayList<SafetySetting> safetySettings = new ArrayList<>();
@@ -85,15 +85,11 @@ public class GeminiSDKImplementation {
         createGenerativeModel(
                 configBuilder,
                 safetySettings,
-                parentActivity,
                 baseFragment,
-                containerView,
-                chatActivityEnterView,
                 chatActivity,
-                inputText,
-                inputBitmap,
-                ocr,
-                translateText
+                inputText, translateText,
+                mediaFile,
+                ocr, transcribe
         );
 
     }
@@ -101,15 +97,11 @@ public class GeminiSDKImplementation {
     private static void createGenerativeModel(
             GenerationConfig.Builder configBuilder,
             ArrayList<SafetySetting> safetySettings,
-            Activity parentActivity,
             BaseFragment baseFragment,
-            PhotoViewer.FrameLayoutDrawer containerView,
-            ChatActivityEnterView chatActivityEnterView,
             ChatActivity chatActivity,
-            CharSequence inputText,
-            Bitmap inputBitmap,
-            Boolean ocr,
-            Boolean translateText
+            CharSequence inputText, boolean translateText,
+            File mediaFile,
+            boolean ocr, boolean transcribe
     ) {
 
         GenerativeModel gm = new GenerativeModel(
@@ -121,34 +113,26 @@ public class GeminiSDKImplementation {
 
         generateContent(
                 gm,
-                parentActivity,
                 baseFragment,
-                containerView,
-                chatActivityEnterView,
                 chatActivity,
-                inputText,
-                inputBitmap,
-                ocr,
-                translateText
+                inputText, translateText,
+                mediaFile,
+                ocr, transcribe
         );
 
     }
 
     private static void generateContent(
             GenerativeModel gm,
-            Activity parentActivity,
             BaseFragment baseFragment,
-            PhotoViewer.FrameLayoutDrawer containerView,
-            ChatActivityEnterView chatActivityEnterView,
             ChatActivity chatActivity,
-            CharSequence inputText,
-            Bitmap inputBitmap,
-            Boolean ocr,
-            Boolean translateText
+            CharSequence inputText, boolean translateText,
+            File mediaFile,
+            boolean ocr, boolean transcribe
     ) {
 
         AlertDialog progressDialog = new AlertDialog(
-                parentActivity,
+                baseFragment.getParentActivity(),
                 AlertDialog.ALERT_TYPE_SPINNER,
                 baseFragment.getResourceProvider()
         );
@@ -163,6 +147,8 @@ public class GeminiSDKImplementation {
 
         Content.Builder content = new Content.Builder();
 
+        Bitmap inputBitmap = getBitmapFromFile(mediaFile);
+
         if (inputBitmap != null && !ocr) { // Describing picture
             String lang = LocaleController.getInstance().getCurrentLocale().getLanguage();
             content.addText("What is the object in this picture? Answer in language: " + lang);
@@ -171,10 +157,16 @@ public class GeminiSDKImplementation {
             content.addText("What text is written in the picture? Answer without further ado.");
             content.addImage(inputBitmap);
         } else if (translateText) { // Message translation
-            String lang = CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini();
+            String lang = capitalFirst(languageName(CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()));
             String prompt = "Answer without further ado. Translate the text to " + lang + ": " + inputText;
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + prompt);
             content.addText(prompt);
+        } else if (transcribe) { // Voice to text
+            byte[] audioBytes = readBytesCompat(mediaFile);
+            Part audioPart = new BlobPart("audio/ogg", audioBytes);
+
+            content.addText("Please transcribe the following audio to text without further ado.");
+            content.addPart(audioPart);
         } else { // Answer only to text
             content.addText(inputText.toString());
         }
@@ -207,32 +199,17 @@ public class GeminiSDKImplementation {
                     dialog.setMessage(resultText);
                     dialog.setPositiveButton(getString(R.string.OK), null);
 
-                    if (inputBitmap != null || ocr) {
-                        AndroidUtilities.runOnUIThread(() -> {
-                            dialog.setNeutralButton(getString(R.string.Copy), (_1, _2) -> {
-                                AndroidUtilities.addToClipboard(resultText);
-                                Toast.makeText(baseFragment.getContext(), LocaleController.getString(R.string.TextCopied), Toast.LENGTH_SHORT).show();
-                            });
-                            dialog.create();
-                            dialog.show();
-                        });
-                    } else if (translateText && chatActivity != null) {
-                        GeminiTranslatorBottomSheet.showAlert(baseFragment, chatActivity, resultText);
+                    if (translateText || transcribe || inputBitmap != null || ocr) {
+                        int subtitle = getBottomSheetSubtitle(translateText, transcribe, inputBitmap, ocr);
+                        GeminiResultsBottomSheet.showAlert(baseFragment, chatActivity, resultText, subtitle);
                     } else {
-                        if (containerView != null) {
-                            BulletinFactory.of(containerView, baseFragment.getResourceProvider())
-                                    .createSuccessBulletin(getString(R.string.YourPasswordSuccess))
-                                    .setDuration(Bulletin.DURATION_LONG)
-                                    .show();
-                        } else {
-                            BulletinFactory.global()
-                                    .createSuccessBulletin(getString(R.string.YourPasswordSuccess), baseFragment.getResourceProvider())
-                                    .setDuration(Bulletin.DURATION_SHORT)
-                                    .show();
-                        }
+                        BulletinFactory.global()
+                                .createSuccessBulletin(getString(R.string.YourPasswordSuccess), baseFragment.getResourceProvider())
+                                .setDuration(Bulletin.DURATION_SHORT)
+                                .show();
 
-                        if (chatActivityEnterView != null && chatActivityEnterView.messageEditText != null) {
-                            chatActivityEnterView.messageEditText.setText(resultText);
+                        if (chatActivity != null && chatActivity.getChatActivityEnterView() != null && chatActivity.getChatActivityEnterView().messageEditText != null) {
+                            chatActivity.getChatActivityEnterView().messageEditText.setText(resultText);
                         }
                     }
                 }
@@ -263,17 +240,10 @@ public class GeminiSDKImplementation {
                             .create()
                             .show());
                 } else {
-                    if (containerView != null) {
-                        BulletinFactory.of(containerView, baseFragment.getResourceProvider())
-                                .createErrorBulletin(ex.getMessage())
-                                .setDuration(Bulletin.DURATION_LONG)
-                                .show();
-                    } else {
-                        BulletinFactory.global()
-                                .createErrorBulletin(ex.getMessage(), baseFragment.getResourceProvider())
-                                .setDuration(Bulletin.DURATION_SHORT)
-                                .show();
-                    }
+                    BulletinFactory.global()
+                            .createErrorBulletin(ex.getMessage(), baseFragment.getResourceProvider())
+                            .setDuration(Bulletin.DURATION_SHORT)
+                            .show();
 
                 }
 
@@ -284,56 +254,90 @@ public class GeminiSDKImplementation {
 
     public static void injectGeminiForMedia(
             MessageObject messageObject,
-            int currentAccount,
-            Activity parentActivity,
-            BaseFragment parentFragment,
-            PhotoViewer.FrameLayoutDrawer containerView,
-            boolean isOCR
+            BaseFragment baseFragment,
+            boolean isOCR,
+            boolean transcribe
     ) {
-        String path = "";
-        if (messageObject != null) {
-            path = messageObject.messageOwner.attachPath;
-            if (!TextUtils.isEmpty(path)) {
-                File temp = new File(path);
-                if (!temp.exists()) {
-                    path = null;
-                }
-            }
-            if (TextUtils.isEmpty(path)) {
-                path = FileLoader.getInstance(currentAccount).getPathToMessage(messageObject.messageOwner).toString();
-            }
-            if (messageObject.qualityToSave != null) {
-                File f = FileLoader.getInstance(currentAccount).getPathToAttach(messageObject.qualityToSave, null, false, true);
-                if (f == null) return;
-                path = f.getPath();
-            }
+        if (getMediaFile(messageObject, baseFragment).exists()) {
+            initGeminiConfig(
+                    baseFragment,
+                    null,
+                    "", false,
+                    getMediaFile(messageObject, baseFragment),
+                    isOCR, transcribe
+            );
+        } else {
+            showDownloadAlert(baseFragment);
         }
-
-        initGeminiConfig(
-                parentActivity,
-                parentFragment,
-                containerView,
-                null,
-                null,
-                "",
-                GeminiSDKImplementation.getBitmapFromFile(new File(path)),
-                isOCR,
-                false
-        );
     }
 
-    public static Bitmap getBitmapFromFile(File file) {
-        if (file.exists()) {
+    private static File getMediaFile(MessageObject messageObject, BaseFragment baseFragment) {
+        File file = null;
+        if (!TextUtils.isEmpty(messageObject.messageOwner.attachPath)) {
+            file = new File(messageObject.messageOwner.attachPath);
+            if (!file.exists()) {
+                file = null;
+            }
+        }
+        if (file == null) {
+            file = FileLoader.getInstance(baseFragment.getCurrentAccount()).getPathToMessage(messageObject.messageOwner, false, true);
+        }
+        if (file != null && !file.exists()) {
+            file = FileLoader.getInstance(baseFragment.getCurrentAccount()).getPathToMessage(messageObject.messageOwner, true, true);
+        }
+        return file;
+    }
+
+    private static int getBottomSheetSubtitle(boolean translateText, boolean transcribe, Bitmap inputBitmap, boolean ocr) {
+        int subtitle = 0;
+
+        if (translateText) {
+            subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_TRANSLATE;
+        } else if (transcribe) {
+            subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_TRANSCRIBE;
+        }  else if (inputBitmap != null && !ocr) {
+            subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_EXPLANATION;
+        } else if (inputBitmap != null && ocr) {
+            subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_OCR;
+        }
+        return subtitle;
+    }
+
+    private static Bitmap getBitmapFromFile(File file) {
+        if (file != null && file.exists()) {
             return BitmapFactory.decodeFile(file.getAbsolutePath());
         } else {
             return null;
         }
     }
 
+    private static byte[] readBytesCompat(File file) {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] data = new byte[4096];
+            int nRead;
+            while ((nRead = fis.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+        } catch (IOException e) {
+            FileLog.e(e);
+            return null;
+        }
+        return buffer.toByteArray();
+    }
+
     private static void shutdownGeminiSDK(ListenableFuture<GenerateContentResponse> response) {
         if (response != null && !response.isCancelled()) {
             response.cancel(true);
         }
+    }
+
+    private static void showDownloadAlert(BaseFragment baseFragment) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(baseFragment.getParentActivity(), baseFragment.getResourceProvider());
+        builder.setTitle(getString(R.string.CP_GeminiAI_Header));
+        builder.setPositiveButton(getString(R.string.OK), null);
+        builder.setMessage(getString(R.string.PleaseDownload));
+        baseFragment.showDialog(builder.create());
     }
 
 }

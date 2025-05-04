@@ -208,6 +208,7 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
                     ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
                 }
             } else if (position == cameraXFpsRangeRow) {
+                if (!CherrygramCoreConfig.INSTANCE.isDevBuild()) return;
                 ArrayList<String> configStringKeys = new ArrayList<>();
                 ArrayList<Integer> configValues = new ArrayList<>();
 

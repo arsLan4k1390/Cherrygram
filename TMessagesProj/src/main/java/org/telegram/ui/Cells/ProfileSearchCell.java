@@ -202,9 +202,13 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
         ad = sponsoredPeer;
     }
 
-    private boolean allowEmojiStatus = true;
+    private boolean allowEmojiStatus = !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses();
     public void setAllowEmojiStatus(boolean allowEmojiStatus) {
-        this.allowEmojiStatus = allowEmojiStatus;
+        if (CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+            this.allowEmojiStatus = false;
+        } else {
+            this.allowEmojiStatus = allowEmojiStatus;
+        }
     }
     public void setData(Object object, TLRPC.EncryptedChat ec, CharSequence n, CharSequence s, boolean needCount, boolean saved) {
         currentName = n;
@@ -746,13 +750,13 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
         if (allowEmojiStatus && verified) {
             statusDrawable.set(new CombinedDrawable(Theme.dialogs_verifiedDrawable, Theme.dialogs_verifiedCheckDrawable, 0, 0), animated);
             statusDrawable.setColor(null);
-        } else if (allowEmojiStatus && user != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(user.emoji_status) != 0 && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+        } else if (allowEmojiStatus && user != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(user.emoji_status) != 0) {
             statusDrawable.set(DialogObject.getEmojiStatusDocumentId(user.emoji_status), animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-        } else if (allowEmojiStatus && chat != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0 && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+        } else if (allowEmojiStatus && chat != null && !savedMessages && DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0) {
             statusDrawable.set(DialogObject.getEmojiStatusDocumentId(chat.emoji_status), animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-        } else if (allowEmojiStatus && user != null && !savedMessages && MessagesController.getInstance(currentAccount).isPremiumUser(user) && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+        } else if (allowEmojiStatus && user != null && !savedMessages && MessagesController.getInstance(currentAccount).isPremiumUser(user)) {
             statusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, animated);
             statusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
         } else {

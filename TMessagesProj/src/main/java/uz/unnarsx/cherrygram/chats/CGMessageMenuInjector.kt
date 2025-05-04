@@ -26,6 +26,7 @@ import org.telegram.ui.ActionBar.ActionBarPopupWindow.GapView
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.LayoutHelper
+import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
@@ -39,10 +40,12 @@ object CGMessageMenuInjector {
         chatActivity: ChatActivity,
         popupLayout: ActionBarPopupWindowLayout,
         selectedObject: MessageObject,
-        currentChat: TLRPC.Chat?
     ) {
         val linearLayout = LinearLayout(chatActivity.parentActivity)
         linearLayout.orientation = LinearLayout.VERTICAL
+
+        val isVoiceOrVideoMessage = selectedObject.type == MessageObject.TYPE_VOICE || selectedObject.type == MessageObject.TYPE_ROUND_VIDEO
+        val isPhoto = selectedObject.type == MessageObject.TYPE_PHOTO
 
         val backCell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
         backCell.setItemHeight(44)
@@ -56,7 +59,13 @@ object CGMessageMenuInjector {
         backCell.setOnClickListener {
             popupLayout.swipeBack?.closeForeground()
         }
-        linearLayout.addView(backCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT))
+        linearLayout.addView(
+            backCell,
+            LayoutHelper.createLinear(
+                if (isVoiceOrVideoMessage) dp(100f) else LayoutHelper.MATCH_PARENT,
+                LayoutHelper.WRAP_CONTENT
+            )
+        )
 
         linearLayout.addView(
             GapView(chatActivity.contentView.context, chatActivity.resourceProvider),
@@ -65,9 +74,8 @@ object CGMessageMenuInjector {
 
         val sections = ArrayList<View>()
 
-        if (selectedObject.messageOwner.message != null
-            && !TextUtils.isEmpty(selectedObject.messageOwner.message)
-            && ChatObject.canSendMessages(currentChat)
+        if (!TextUtils.isEmpty(selectedObject.messageOwner.message) &&
+            (chatActivity.currentChat != null && ChatObject.canSendMessages(chatActivity.currentChat) || chatActivity.currentUser != null)
         ) {
             val cell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
             cell.setTextAndIcon(getString(R.string.Reply), R.drawable.menu_reply)
@@ -77,9 +85,7 @@ object CGMessageMenuInjector {
             sections.add(cell)
         }
 
-        if (selectedObject.messageOwner.message != null
-            && !TextUtils.isEmpty(selectedObject.messageOwner.message)
-        ) {
+        if (!TextUtils.isEmpty(selectedObject.messageOwner.message)) {
             val cell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
             cell.setTextAndIcon(getString(R.string.TranslateMessage), R.drawable.msg_translate)
             cell.setOnClickListener {
@@ -88,37 +94,52 @@ object CGMessageMenuInjector {
             sections.add(cell)
         }
 
-        val hasMedia = selectedObject.isPhoto
+        if (isVoiceOrVideoMessage) {
+            val cell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
+            cell.setTextAndIcon(getString(R.string.PremiumPreviewVoiceToText), R.drawable.msg_photo_text_solar)
+            cell.setOnClickListener {
+                chatActivity.closeMenu()
+                GeminiResultsBottomSheet.setMessageObject(selectedObject)
+                GeminiResultsBottomSheet.setCurrentChat(chatActivity.currentChat)
+                GeminiSDKImplementation.injectGeminiForMedia(
+                    selectedObject,
+                    chatActivity,
+                    false,
+                    true
+                )
+            }
+            sections.add(cell)
+        }
 
-        if (hasMedia) {
+        if (isPhoto) {
             val cell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
             cell.setTextAndIcon(getString(R.string.AccDescrQuizExplanation), R.drawable.msg_info_solar)
             cell.setOnClickListener {
                 chatActivity.closeMenu()
+                GeminiResultsBottomSheet.setMessageObject(selectedObject)
+                GeminiResultsBottomSheet.setCurrentChat(chatActivity.currentChat)
                 GeminiSDKImplementation.injectGeminiForMedia(
                     selectedObject,
-                    chatActivity.currentAccount,
-                    chatActivity.parentActivity,
                     chatActivity,
-                    null,
+                    false,
                     false
                 )
             }
             sections.add(cell)
         }
 
-        if (hasMedia) {
+        if (isPhoto) {
             val cell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
             cell.setTextAndIcon(getString(R.string.CP_GeminiAI_ExtractText), R.drawable.msg_edit_solar)
             cell.setOnClickListener {
                 chatActivity.closeMenu()
+                GeminiResultsBottomSheet.setMessageObject(selectedObject)
+                GeminiResultsBottomSheet.setCurrentChat(chatActivity.currentChat)
                 GeminiSDKImplementation.injectGeminiForMedia(
                     selectedObject,
-                    chatActivity.currentAccount,
-                    chatActivity.parentActivity,
                     chatActivity,
-                    null,
-                    true
+                    true,
+                    false
                 )
             }
             sections.add(cell)

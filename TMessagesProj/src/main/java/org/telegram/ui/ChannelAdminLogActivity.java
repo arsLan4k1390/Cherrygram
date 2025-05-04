@@ -346,6 +346,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.messagePlayingProgressDidChanged);
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.didSetNewWallpapper);
         notificationsLocker.unlock();
+        Bulletin.removeDelegate(this);
     }
 
     private void updateEmptyPlaceholder() {

@@ -1213,7 +1213,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                                 currentSpringAnimation = new SpringAnimation(valueHolder)
                                         .setSpring(new SpringForce(SPRING_MULTIPLIER)
                                                 .setStiffness(SPRING_STIFFNESS)
-                                                .setDampingRatio(1f));
+                                                .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY));
                                 if (velX != 0) {
                                     currentSpringAnimation.setStartVelocity(velX / 15f);
                                 }
@@ -1221,7 +1221,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                                 currentSpringAnimation = new SpringAnimation(valueHolder)
                                         .setSpring(new SpringForce(0f)
                                                 .setStiffness(SPRING_STIFFNESS)
-                                                .setDampingRatio(1f));
+                                                .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY));
                             }
                             currentSpringAnimation.addUpdateListener((animation, value, velocity) -> {
                                 var progress = value / SPRING_MULTIPLIER;
@@ -3217,14 +3217,14 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
     }
 
     /** Cherrygram start */
-    private static boolean USE_SPRING_ANIMATION = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING;
-    private static final float SPRING_STIFFNESS = 700f;
-    private static final float SPRING_STIFFNESS_PREVIEW = 650f;
-    private static final float SPRING_STIFFNESS_PREVIEW_OUT = 800f;
-    private static final float SPRING_STIFFNESS_PREVIEW_EXPAND = 750f;
-    private static final float SPRING_MULTIPLIER = 1000f;
+    private final boolean USE_SPRING_ANIMATION = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING;
+    private final float SPRING_STIFFNESS = 700f;
+    private final float SPRING_STIFFNESS_PREVIEW = 650f;
+    private final float SPRING_STIFFNESS_PREVIEW_OUT = 800f;
+    private final float SPRING_STIFFNESS_PREVIEW_EXPAND = 750f;
+    private final float SPRING_MULTIPLIER = 1000f;
     private SpringAnimation currentSpringAnimation;
-    private static boolean USE_ACTIONBAR_CROSSFADE = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING && CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade();
+    private final boolean USE_ACTIONBAR_CROSSFADE = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING && CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade();
 
     private float swipeProgress;
     private MenuDrawable menuDrawable;

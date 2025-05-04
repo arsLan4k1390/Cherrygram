@@ -65,7 +65,7 @@ public class UpdaterUtils {
 
     private static String uri = "https://api.github.com/repos/arsLan4k1390/Cherrygram/releases/latest";
     private static String betauri = "https://api.github.com/repos/arsLan4k1390/CherrygramBeta-APKs/releases/latest";
-    private static String downloadURL = null;
+    public static String downloadURL = null;
     public static String version, changelog, size, uploadDate;
     public static File otaPath, versionPath, apkFile;
 
@@ -217,8 +217,10 @@ public class UpdaterUtils {
                             onUpdateFound.run();
                         if (progress != null) progress.end();
                     });
+                    CherrygramCoreConfig.INSTANCE.setUpdateIsDownloading(false);
                     CherrygramCoreConfig.INSTANCE.setUpdateAvailable(true);
-                    CherrygramCoreConfig.INSTANCE.setUpdateVersionName(version);
+                    if (version != null && !version.equals("0")) CherrygramCoreConfig.INSTANCE.setUpdateVersionName(version);
+                    CherrygramCoreConfig.INSTANCE.setUpdateSize(size);
                 } else {
                     if (onUpdateNotFound != null)
                         AndroidUtilities.runOnUIThread(onUpdateNotFound::run);
@@ -232,7 +234,7 @@ public class UpdaterUtils {
         }, 200);
     }
 
-    public static void downloadApk(Context context, String link, String title, TextView progressTextView, boolean isForce) {
+    public static void downloadApk(Context context, String link, String title, TextView progressTextView) {
         if (context != null && !updateDownloaded) {
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(link));
 
@@ -478,17 +480,20 @@ public class UpdaterUtils {
             String[] current = Constants.INSTANCE.getCG_VERSION().split("\\.");
             String[] latest = version.split("\\.");
 
+            boolean isNew = false;
+
             int length = Math.max(current.length, latest.length);
             for (int i = 0; i < length; i++) {
                 int v1 = i < current.length ? Utilities.parseInt(current[i]) : 0;
                 int v2 = i < latest.length ? Utilities.parseInt(latest[i]) : 0;
                 if (v1 < v2) {
-                    return true;
+                    isNew = true;
                 } else if (v1 > v2) {
-                    return false;
+                    isNew = false;
                 }
+                CherrygramCoreConfig.INSTANCE.setUpdateAvailable(isNew);
             }
-            return false;
+            return isNew;
         }
 
         // todo: force update

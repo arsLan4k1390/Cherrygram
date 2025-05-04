@@ -2,6 +2,6 @@
 <resources>
     <color name="cg_splash_background">#FFFFFF</color>
     <color name="cg_splash_navigation_bar">#FFF</color>
-    <color name="cg_background">#A33654</color>
+    <color name="cg_background">#9D3254</color>
     <color name="cg_foreground">#FFFFFF</color>
 </resources>

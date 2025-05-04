@@ -44,7 +44,8 @@ class TGKitListPreference : TGKitPreference() {
             }
         }
 
-        val d = AlertsCreator.createSingleChoiceDialog(pr, titleArray.toTypedArray(), title, selected) { di, sel ->
+        val d = AlertsCreator.createSingleChoiceDialog(pr, titleArray.toTypedArray(),
+            title.toString(), selected) { di, sel ->
             contract!!.setValue(idArray[sel])
             ti.update()
         }

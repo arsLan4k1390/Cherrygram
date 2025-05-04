@@ -34,6 +34,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.math.MathUtils;
 import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -52,6 +53,8 @@ import org.telegram.messenger.TranslateController;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
+import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
@@ -75,9 +78,8 @@ import java.util.Locale;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
-import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
-public class GeminiTranslatorBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
+public class GeminiResultsBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
     private HeaderView headerView;
     private LoadingTextView loadingTextView;
@@ -94,12 +96,15 @@ public class GeminiTranslatorBottomSheet extends BottomSheet implements Notifica
     private TextView buttonTextView;
     private ImageView copyButton;
 
-    public BaseFragment fragment;
-
     private static MessageObject selectedObject; // TODO set to null when closing bottom sheet
     private static TLRPC.Chat currentChat; // TODO set to null when closing bottom sheet
 
-    private GeminiTranslatorBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider, ChatActivity chatActivity, String geminiResult) {
+    public static int GEMINI_TYPE_TRANSLATE = 1;
+    public static int GEMINI_TYPE_TRANSCRIBE = 2;
+    public static int GEMINI_TYPE_EXPLANATION = 3;
+    public static int GEMINI_TYPE_OCR = 4;
+
+    private GeminiResultsBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider, ChatActivity chatActivity, String geminiResult, int subtitle) {
         super(context, false, resourcesProvider);
 
         backgroundPaddingLeft = 0;
@@ -189,7 +194,7 @@ public class GeminiTranslatorBottomSheet extends BottomSheet implements Notifica
         listView.setItemAnimator(itemAnimator);
         containerView.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM));
 
-        headerView = new HeaderView(context, chatActivity);
+        headerView = new HeaderView(context, chatActivity, subtitle);
         containerView.addView(headerView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 5, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
         buttonView = new FrameLayout(context);
@@ -252,10 +257,6 @@ public class GeminiTranslatorBottomSheet extends BottomSheet implements Notifica
     @Override
     public void dismissInternal() {
         super.dismissInternal();
-    }
-
-    private void setFragmentParams(BaseFragment fragment) {
-        this.fragment = fragment;
     }
 
     public static void setMessageObject(MessageObject messageObject) {
@@ -418,7 +419,7 @@ public class GeminiTranslatorBottomSheet extends BottomSheet implements Notifica
 
         private View shadow;
 
-        public HeaderView(Context context, ChatActivity chatActivity) {
+        private HeaderView(Context context, ChatActivity chatActivity, int subtitle) {
             super(context);
 
             backgroundView = new View(context);
@@ -439,7 +440,7 @@ public class GeminiTranslatorBottomSheet extends BottomSheet implements Notifica
             menuIconImageView.setScaleType(ImageView.ScaleType.CENTER);
             menuIconImageView.setImageResource(R.drawable.ic_ab_other);
             menuIconImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogSearchIcon, getResourcesProvider()), PorterDuff.Mode.MULTIPLY));
-//            menuIconImageView.setOnClickListener((v) -> ChatsHelper2.showJsonMenu(GeminiTranslatorBottomSheet.this, headerView, messageObject));
+//            menuIconImageView.setOnClickListener((v) -> ChatsHelper2.showJsonMenu(GeminiResultsBottomSheet.this, headerView, messageObject));
 //            addView(menuIconImageView, LayoutHelper.createFrame(36, 36, Gravity.RIGHT | Gravity.TOP, 0, 11, 16, 0));
 
             titleTextView = new TextView(context) {
@@ -551,17 +552,32 @@ public class GeminiTranslatorBottomSheet extends BottomSheet implements Notifica
             toLanguageTextView.setAnimationProperties(.25f, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
             toLanguageTextView.setTextColor(getThemedColor(Theme.key_player_actionBarSubtitle));
             toLanguageTextView.setTextSize(dp(14));
-            toLanguageTextView.setText(capitalFirst(languageName(CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini())));
+
+            String subtitleText = "";
+            if (subtitle == GEMINI_TYPE_TRANSLATE) {
+                subtitleText = capitalFirst(languageName(CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()));
+            } else if (subtitle == GEMINI_TYPE_TRANSCRIBE) {
+                subtitleText = getString(R.string.PremiumPreviewVoiceToText);
+            } else if (subtitle == GEMINI_TYPE_EXPLANATION) {
+                subtitleText = getString(R.string.AccDescrQuizExplanation);
+            } else if (subtitle == GEMINI_TYPE_OCR) {
+                subtitleText = getString(R.string.CP_GeminiAI_ExtractText);
+            }
+
+            toLanguageTextView.setText(subtitleText);
             toLanguageTextView.setPadding(dp(4), dp(2), dp(4), dp(2));
-            toLanguageTextView.setOnClickListener(e -> {
-                openLanguagesSelect(getContext(), () -> {
-                    dismiss();
-                    chatActivity.geminiTranslate(selectedObject);
+
+            if (subtitle == GEMINI_TYPE_TRANSLATE) {
+                toLanguageTextView.setOnClickListener(e -> {
+                    openLanguagesSelect(() -> {
+                        dismiss();
+                        chatActivity.geminiTranslate(selectedObject);
+                    });
                 });
-            });
+            }
 
             subtitleView.addView(toLanguageTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 0, 0, 0, 0));
-            addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 22, 43, 22, 0));
+            addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.FILL_HORIZONTAL, 20, 43, 22, 0));
 
             shadow = new View(context);
             shadow.setBackgroundColor(getThemedColor(Theme.key_dialogShadowLine));
@@ -609,7 +625,7 @@ public class GeminiTranslatorBottomSheet extends BottomSheet implements Notifica
             );
         }
 
-        private void openLanguagesSelect(Context context, Runnable callback) {
+        private void openLanguagesSelect(Runnable callback) {
             ArrayList<String> targetLanguages = new ArrayList<>(targetLanguagesForGemini);
             ArrayList<CharSequence> names = new ArrayList<>();
             for (String language : targetLanguages) {
@@ -622,13 +638,51 @@ public class GeminiTranslatorBottomSheet extends BottomSheet implements Notifica
             }
             AndroidUtilities.selectionSort(names, targetLanguages);
 
-            targetLanguages.add(0, LocaleController.getInstance().getCurrentLocale().getLanguage());
-            names.add(0, getString(R.string.Default));
+            ActionBarPopupWindow.ActionBarPopupWindowLayout layout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(getContext()) {
+                @Override
+                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                    super.onMeasure(widthMeasureSpec,
+                            MeasureSpec.makeMeasureSpec(Math.min((int) (AndroidUtilities.displaySize.y * .33f), MeasureSpec.getSize(heightMeasureSpec)), MeasureSpec.EXACTLY)
+                    );
+                }
+            };
 
-            PopupHelper.show(names, getString(R.string.CG_TranslationLanguage), targetLanguages.indexOf(CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()), context, i -> {
-                CherrygramChatsConfig.INSTANCE.setTranslationTargetGemini(targetLanguages.get(i));
-                callback.run();
-            }, getResourcesProvider());
+            Drawable shadowDrawable2 = ContextCompat.getDrawable(getContext(), R.drawable.popup_fixed_alert).mutate();
+            shadowDrawable2.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarDefaultSubmenuBackground), PorterDuff.Mode.MULTIPLY));
+            layout.setBackground(shadowDrawable2);
+
+            boolean first = true;
+            for (int i = 0; i < targetLanguages.size(); ++i) {
+                ActionBarMenuSubItem button = new ActionBarMenuSubItem(getContext(), 2, first, i == targetLanguages.size() - 1, resourcesProvider);
+                button.setText(names.get(i));
+                button.setChecked(TextUtils.equals(
+                        targetLanguages.get(i),
+                        CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()
+                ));
+                int finalI = i;
+                button.setOnClickListener(e -> {
+                    adapter.updateMainView(loadingTextView);
+                    CherrygramChatsConfig.INSTANCE.setTranslationTargetGemini(targetLanguages.get(finalI));
+                    callback.run();
+                });
+                layout.addView(button);
+
+                first = false;
+            }
+
+            ActionBarPopupWindow window = new ActionBarPopupWindow(layout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT);
+            window.setPauseNotifications(true);
+            window.setDismissAnimationDuration(220);
+            window.setOutsideTouchable(true);
+            window.setClippingEnabled(true);
+            window.setAnimationStyle(R.style.PopupContextAnimation);
+            window.setFocusable(true);
+            int[] location = new int[2];
+            toLanguageTextView.getLocationInWindow(location);
+            layout.measure(MeasureSpec.makeMeasureSpec(AndroidUtilities.displaySize.x, MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(AndroidUtilities.displaySize.y, MeasureSpec.AT_MOST));
+            int height = layout.getMeasuredHeight();
+            int y = location[1] > AndroidUtilities.displaySize.y * .9f - height ? location[1] - height + dp(8) : location[1] + toLanguageTextView.getMeasuredHeight() - dp(8);
+            window.showAtLocation(containerView, Gravity.TOP | Gravity.LEFT, location[0] - dp(8), y);
         }
 
     }
@@ -727,16 +781,14 @@ public class GeminiTranslatorBottomSheet extends BottomSheet implements Notifica
         }
     }
 
-    public static GeminiTranslatorBottomSheet showAlert(BaseFragment fragment, ChatActivity chatActivity, String geminiResult) {
-        GeminiTranslatorBottomSheet alert = new GeminiTranslatorBottomSheet(fragment.getContext(), fragment.getResourceProvider(), chatActivity, geminiResult);
+    public static GeminiResultsBottomSheet showAlert(BaseFragment fragment, ChatActivity chatActivity, String geminiResult, int subtitle) {
+        GeminiResultsBottomSheet alert = new GeminiResultsBottomSheet(fragment.getContext(), fragment.getResourceProvider(), chatActivity, geminiResult, subtitle);
         if (fragment.getParentActivity() != null) {
             fragment.showDialog(alert);
         }
         alert.dimBehindAlpha = 140;
-        alert.setFragmentParams(fragment);
         return alert;
     }
-
 
     public static String capitalFirst(String text) {
         if (text == null || text.isEmpty()) {
@@ -749,7 +801,7 @@ public class GeminiTranslatorBottomSheet extends BottomSheet implements Notifica
         return languageName(locale, null);
     }
 
-    public static String languageName(String locale, boolean[] accusative) {
+    private static String languageName(String locale, boolean[] accusative) {
         if (locale == null || locale.equals(TranslateController.UNKNOWN_LANGUAGE) || locale.equals("auto")) {
             return null;
         }
@@ -793,12 +845,12 @@ public class GeminiTranslatorBottomSheet extends BottomSheet implements Notifica
         }
     }
 
-    public static String systemLanguageName(String langCode) {
+    private static String systemLanguageName(String langCode) {
         return systemLanguageName(langCode, false);
     }
 
     private static HashMap<String, Locale> localesByCode;
-    public static String systemLanguageName(String langCode, boolean inItsOwnLocale) {
+    private static String systemLanguageName(String langCode, boolean inItsOwnLocale) {
         if (langCode == null) {
             return null;
         }
