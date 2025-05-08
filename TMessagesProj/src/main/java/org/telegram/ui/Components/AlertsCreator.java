@@ -115,7 +115,6 @@ import org.telegram.ui.Cells.TextColorCell;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.Components.voip.VoIPHelper;
-import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.LanguageSelectActivity;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.LoginActivity;
@@ -150,6 +149,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
@@ -2362,7 +2362,7 @@ public class AlertsCreator {
             }
         });
         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-        if (DialogsActivity.askPasscode) {
+        if (ChatsPasswordHelper.INSTANCE.askPasscodeBeforeDelete()) {
             CGBiometricPrompt.prompt(fragment.getParentActivity(),
                     () -> {
                         AlertDialog alertDialog = builder.create();
@@ -3018,7 +3018,7 @@ public class AlertsCreator {
             builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("BlockUsersMessage", R.string.BlockUsersMessage, LocaleController.formatPluralString("UsersCount", count))));
         }
 
-        final boolean[] checks = new boolean[]{true, true};
+        final boolean[] checks = new boolean[]{true, false};
 
         for (int a = 0; a < cell.length; a++) {
             if (a == 0 && !reportSpam) {
@@ -3030,14 +3030,24 @@ public class AlertsCreator {
             if (a == 0) {
                 cell[a].setText(LocaleController.getString(R.string.ReportSpamTitle), "", true, false);
             } else {
-                cell[a].setText(count == 1 ? LocaleController.getString(R.string.DeleteThisChatBothSides) : LocaleController.getString(R.string.DeleteTheseChatsBothSides), "", true, false);
+                cell[a].setText(count == 1 ? LocaleController.getString(R.string.DeleteThisChatBothSides) : LocaleController.getString(R.string.DeleteTheseChatsBothSides), "", false, false);
             }
             cell[a].setPadding(LocaleController.isRTL ? dp(16) : dp(8), 0, LocaleController.isRTL ? dp(8) : dp(16), 0);
             linearLayout.addView(cell[a], LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
+            int finalA = a;
             cell[a].setOnClickListener(v -> {
                 CheckBoxCell cell1 = (CheckBoxCell) v;
-                checks[num] = !checks[num];
-                cell1.setChecked(checks[num], true);
+                if (ChatsPasswordHelper.INSTANCE.askPasscodeBeforeDelete() && finalA != 0 && !cell[finalA].isChecked()) {
+                    CGBiometricPrompt.prompt(fragment.getParentActivity(),
+                            () -> {
+                                checks[finalA] = !checks[finalA];
+                                cell[finalA].setChecked(checks[finalA], true);
+                            }
+                    );
+                } else {
+                    checks[num] = !checks[num];
+                    cell1.setChecked(checks[num], true);
+                }
             });
         }
 

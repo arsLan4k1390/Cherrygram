@@ -12,6 +12,7 @@ package uz.unnarsx.cherrygram.chats.helpers
 import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.telegram.messenger.FileLog
 import org.telegram.messenger.FingerprintController
 import org.telegram.messenger.MessageObject
 import org.telegram.messenger.MessagesController
@@ -19,6 +20,7 @@ import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC.MessageEntity
 import org.telegram.tgnet.TLRPC.TL_messageEntitySpoiler
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
 
 object ChatsPasswordHelper {
@@ -47,7 +49,7 @@ object ChatsPasswordHelper {
     }
 
     fun isChatLocked(messageObject: MessageObject): Boolean {
-        return shouldRequireBiometricsToOpenChats
+        return CherrygramPrivacyConfig.askBiometricsToOpenChat
                 && messageObject.messageOwner.message != null
                 && !messageObject.isStoryReactionPush && !messageObject.isStoryPush
                 && !messageObject.isStoryMentionPush && !messageObject.isStoryPushHidden
@@ -94,8 +96,9 @@ object ChatsPasswordHelper {
         return getArrayList(PASSCODE_ARRAY).size
     }
 
-    val shouldRequireBiometricsToOpenChats by lazy {
-        CherrygramPrivacyConfig.askBiometricsToOpenChat &&
+    fun shouldRequireBiometricsToOpenChats(): Boolean {
+        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил shouldRequireBiometricsToOpenChats")
+        return CherrygramPrivacyConfig.askBiometricsToOpenChat &&
                 /*&& getArrayList(Passcode_Array).isNotEmpty()*/
                 Build.VERSION.SDK_INT >= 23 &&
                 CGBiometricPrompt.hasBiometricEnrolled() &&
@@ -103,12 +106,18 @@ object ChatsPasswordHelper {
                 !FingerprintController.checkDeviceFingerprintsChanged()
     }
 
-    val shouldRequireBiometricsToOpenArchive by lazy {
-        CherrygramPrivacyConfig.askBiometricsToOpenArchive &&
+    fun shouldRequireBiometricsToOpenArchive(): Boolean {
+        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил shouldRequireBiometricsToOpenArchive")
+        return CherrygramPrivacyConfig.askBiometricsToOpenArchive && Build.VERSION.SDK_INT >= 23
+    }
+
+    fun askPasscodeBeforeDelete(): Boolean {
+        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил askPasscodeBeforeDelete")
+        return CherrygramPrivacyConfig.askPasscodeBeforeDelete &&
                 Build.VERSION.SDK_INT >= 23 &&
-                CGBiometricPrompt.hasBiometricEnrolled() &&
-                FingerprintController.isKeyReady() &&
-                !FingerprintController.checkDeviceFingerprintsChanged()
+                CGBiometricPrompt.hasBiometricEnrolled()
+                && FingerprintController.isKeyReady()
+                && !FingerprintController.checkDeviceFingerprintsChanged()
     }
 
 }

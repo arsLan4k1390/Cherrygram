@@ -26,6 +26,10 @@
     <string name="CG_LastSeenHours_many">visto pela última vez há %1$d horas</string>
     <string name="CG_LastSeenHours_other">visto pela última vez há %1$d horas</string>
     <!--Last seen status-->
+    <!--Typing status-->
+    <string name="CG_AndMoreTypingGroup_one">%1$s e %2$d a mais</string>
+    <string name="CG_AndMoreTypingGroup_other">%1$s e %2$d a mais</string>
+    <!--Typing status-->
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">Tipo de ícone de separador</string>
     <string name="CG_FoldersTypeTitles">Apenas títulos</string>
@@ -34,6 +38,7 @@
     <string name="CG_ChooseFolderIcon">Escolha um Ícone</string>
     <string name="CP_NewTabs_NoCounter">Esconder contador em separadores</string>
     <string name="CP_NewTabs_NoCounter_Desc">Isto irá esconder o contador de mensagens não lidas</string>
+    <string name="CG_SwipeToUnarchive">Deslize para a esquerda para desarquivar</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">Para o início</string>
@@ -50,6 +55,9 @@
     <string name="CG_CreateMention">Criar menção</string>
     <string name="CG_CreateCode">Criar Código</string>
     <string name="CG_CreateCodeLanguage">Idioma</string>
+    <string name="CG_FwdMenu_Authorship">Nome do remetente</string>
+    <string name="CG_FwdMenu_Captions">Legendas</string>
+    <string name="CG_FwdMenu_Notify">Notificar</string>
     <string name="CG_Without_Authorship">Sem autoria</string>
     <string name="CG_CopyTitle">Copiar Título</string>
     <string name="CG_CopyCallback">Copiar dados de retorno de chamada</string>
@@ -58,6 +66,7 @@
     <!--Location screen-->
     <string name="CG_LocationPermission">O Cherrygram precisa acessar sua localização para que você possa compartilhá-la com seus amigos. Agora você será solicitado a permitir que sua localização seja usada (enquanto o aplicativo estiver aberto).</string>
     <string name="CG_LocationPermission_Desc">No entanto, se você deseja que sua localização esteja disponível para seus amigos, enquanto Cherrygram está fechado e em segundo plano, vá para o recurso \"Localização em tempo real\". Até você concordar em usar o recurso de Localização tempo real, sua localização não estará disponível em segundo plano.</string>
+    <string name="CG_Copy_Coordinates">Coordenadas</string>
     <!--Location screen-->
     <!--Search filter-->
     <string name="CG_SearchFilter">Filtrar resultados de pesquisa</string>
@@ -129,6 +138,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="AP_RedesignCategory">Redesenho</string>
     <string name="AP_IconReplacements">Substituição de ícones</string>
     <string name="AP_Old_Notification_Icon">Ícone de notificação padrão (Telegram)</string>
+    <string name="AP_Tablet_Mode">Modo tablet</string>
     <string name="AP_ChangeIcon_Cherry_NY">Ano Novo</string>
     <string name="AP_ChangeIcon_Default">Por defeito</string>
     <string name="AP_ChangeIcon_Dark">Escuro</string>
@@ -165,6 +175,9 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_ReplyCustomColors">Cores personalizadas na pré-visualização de respostas e ligações</string>
     <string name="CP_ReplyBackgroundEmoji">Emoji nas respostas e pré-visualização de ligações</string>
     <string name="CP_HideStories">Ocultar Stories</string>
+    <string name="CP_HideStories_Desc">Os stories desaparecerão da sua lista de chats e dos perfis.</string>
+    <string name="CP_ArchiveStories">Arquive stories</string>
+    <string name="CP_ArchiveStories_Desc">Os stories serão automaticamente arquivados e movidos para o seu arquivo.</string>
     <string name="CP_CustomWallpapers">Fundo personalizado nos bate-papos</string>
     <string name="CP_CustomWallpapers_Desc">Configurar papéis de parede personalizados em chats/grupos/canais definidos por usuários premium/canais impulsionados</string>
     <string name="CP_DisableAnimAvatars">Desativar avatares animados</string>
@@ -223,10 +236,29 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_DisableSwipeToNext">Desativar transição para o próximo canal</string>
     <string name="CP_DisableSwipeToNext_Desc">Desativar mudança para o próximo canal ao rolar através de qualquer canal</string>
     <string name="CP_HideMuteUnmuteButton">Esconder o botão inferior em canais</string>
-    <string name="CP_HideKbdOnScroll">Ocultar o teclado no scroll</string>
+    <string name="CP_HideKbdOnScroll">Role intensamente para ocultar o teclado ao rolar</string>
     <string name="CP_HideSendAsChannel">Ocultar \"Enviar como canal\"</string>
     <string name="CP_HideSendAsChannelDesc">Você pode acessar o ementa clicando e pressionando em Emoji/Adesivos/GIFs</string>
+    <string name="CP_GeminiAI_API_Key">Chave de API Gemini</string>
+    <string name="CP_GeminiAI_API_Key_Desc">Visite <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]> para obter a chave de API.</string>
+    <string name="CP_GeminiAI_Model">Código do modelo Gemini</string>
+    <string name="CP_GeminiAI_Model_Desc">Visite <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]> para obter a lista de modelos disponíveis.</string>
+    <string name="CP_GeminiAI_Model_Selector">Lista de modelos Gemini</string>
+    <string name="CP_GeminiAI_Model_Selector_Desc">Se você tiver uma chave de API válida, toque aqui para escolher um modelo e preencher o campo automaticamente.</string>
+    <string name="CP_GeminiAI_Sample">Amostra:</string>
+    <string name="CP_GeminiAI_Instruction">Para usar o Gemini,
+        você precisa preencher todos os valores nesta tela.
+        \n\nDepois disso, abra qualquer chat, digite uma mensagem e mantenha pressionado o botão enviar mensagem.
+        \n\nAlém disso, você também pode responder a uma mensagem usando IA. Para fazer isso, clique em qualquer mensagem de texto no chat.
+    </string>
+    <string name="CP_GeminiAI_Temperature">Temperatura</string>
+    <string name="CP_GeminiAI_Temperature_Desc">Controle a criatividade do texto. Valores baixos tornam o texto mais previsível e focado, valores altos - mais aleatórios e originais.</string>
+    <string name="CP_GeminiAI_ExtractText">Extrair Texto (OCR)</string>
+    <string name="CP_GeminiAI_Summarize">Resumir</string>
     <string name="CP_Header_Record">Multimédia</string>
+    <string name="CP_Messages_Size">Tamanho da bolha de mensagens</string>
+    <string name="CP_Slider_MediaAmplifier">Fotos e vídeos</string>
+    <string name="CP_Slider_MediaAmplifier_Hint">Não funciona com álbuns (mídias agrupadas)</string>
     <string name="CP_SpoilersOnMedia">Efeito de spoiler</string>
     <string name="CP_SpoilersOnMedia_Desc">O efeito de spoiler em fotos e vídeos não será exibido se o recurso estiver desativado.</string>
     <string name="CP_VoiceEnhancements">Melhorias de Voz</string>
@@ -282,6 +314,7 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="EP_CustomAppTitle">Título do aplicativo</string>
     <string name="EP_CustomChat">Conversa personalizada para mensagens guardadas</string>
     <string name="EP_CustomChat_Desc">Definir uma ID de outro chat/grupo/canal para reencaminhar mensagens para lá (botão na barra de ação, menu de mensagens ou duplo toque)</string>
+    <string name="EP_CustomChat_Selected_Title">em vez de</string>
     <string name="EP_Network">Rede</string>
     <string name="EP_DownloadSpeedBoost">Otimizar velocidade de download</string>
     <string name="EP_DownloadSpeedBoostNone">Desligado</string>
@@ -299,8 +332,13 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="SP_RemovedS">Removido com sucesso</string>
     <string name="SP_AskPinForChats">Exigir a biometria para abrir um chat</string>
     <string name="SP_AskPinForChats_Desc">A senha do sistema (impressão digital, reconhecimento facial, PIN ou padrão) será necessária para acessar as conversas específicas. Para ativar, toque nos 3 pontos dentro do chat.</string>
+    <string name="SP_LockedChats">Chats bloqueados</string>
+    <string name="SP_LockedChats_Lock_Destination">para atualizar a lista de bloqueados</string>
+    <string name="SP_LockedChats_Lock_Destination_Sure">será bloqueado</string>
     <string name="SP_AskPinForArchive">Exigir biometria para abrir um arquivo</string>
     <string name="SP_AskPinForArchive_Desc">A senha do sistema (impressão digital, reconhecimento facial, PIN ou padrão) será necessária para acessar os chats arquivados.</string>
+    <string name="SP_HideArchive">Ocultar arquivos da lista de chats</string>
+    <string name="SP_HideArchive_Desc">O arquivo será mascarado como canal Cherrygram. \nVocê poderá abrir o arquivo da gaveta ou tocar longamente no botão de pesquisa.</string>
     <string name="SP_AskPin">Exigir senha</string>
     <string name="SP_DoNotAskPin">Não exigir senha</string>
     <string name="SP_AskPinBeforeDelete">Exigir a biometria para excluir chats</string>
@@ -335,6 +373,9 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <!--Donations-->
     <string name="DP_RateUs">Avalie Cherrygram</string>
     <string name="DP_Donate">Faça um donativo</string>
+    <string name="DP_Donate_Desc">Apoie o desenvolvimento do Cherrygram e ganhe um emblema épico!
+    \nEnvie um comprovante de pagamento (&gt;=1$) to <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> or <![CDATA[<a href="https://t.me/CherrygramSupport">Cherrygram Chat de suporte</a>]]> para obter o emblema.</string>
+    <string name="DP_Donate_Bulletin">**%s** contribuiu para o **Cherrygram** com sucesso!</string>
     <string name="DP_Donate_Method">Escolher o método</string>
     <!--Donations-->
     <!--Cherrygram screens-->

@@ -261,7 +261,7 @@
     <string name="CP_DisableSwipeToNext">Отключить переход на следующий канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Отключить переключение на следующий канал при прокрутке любого канала</string>
     <string name="CP_HideMuteUnmuteButton">Скрыть нижнюю кнопку в каналах</string>
-    <string name="CP_HideKbdOnScroll">Скрыть клавиатуру при прокрутке</string>
+    <string name="CP_HideKbdOnScroll">Интенсивность скролла для скрытия клавиатуры при прокрутке</string>
     <string name="CP_HideSendAsChannel">Скрыть \"Отправить как канал\"</string>
     <string name="CP_HideSendAsChannelDesc">Вы сможете попасть в это меню путем зажатия кнопки Эмодзи/Стикеры/GIFки</string>
 
@@ -280,6 +280,7 @@
     <string name="CP_GeminiAI_Temperature">Температура</string>
     <string name="CP_GeminiAI_Temperature_Desc">Управляйте креативностью текста. Низкие значения делают текст более предсказуемым и сфокусированным, высокие - более случайным и оригинальным.</string>
     <string name="CP_GeminiAI_ExtractText">Извлечь текст (OCR)</string>
+    <string name="CP_GeminiAI_Summarize">Сводка (кратко)</string>
 
     <string name="CP_Header_Record">Медиа</string>
     <string name="CP_Messages_Size">Размер пузыря сообщений</string>

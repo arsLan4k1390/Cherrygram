@@ -78,10 +78,13 @@ import org.telegram.ui.Components.ViewPagerFixed;
 import org.telegram.ui.Stories.StoriesUtilities;
 import org.telegram.ui.UserInfoActivity;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.Extra;
@@ -309,7 +312,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             final TLRPC.User me = getUserConfig().getCurrentUser();
 
                             if (position == idPreviewRow) {
-                                detailCell.setTextAndValue(me.id + "", "ID", false);
+                                DecimalFormat df = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US) {{ setGroupingSeparator(' '); }});
+                                detailCell.setTextAndValue(df.format(me.id), "ID", false);
 
                                 Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.msg_calendar2);
                                 detailCell.setImage(drawable);
@@ -332,7 +336,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                     sb.append("DC: ");
                                     sb.append(getString(R.string.NumberUnknown));
                                 }
-                                detailCell.setTextAndValue("ID: " + me.id, sb, false);
+                                DecimalFormat df = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US) {{ setGroupingSeparator(' '); }});
+                                detailCell.setTextAndValue("ID: " + df.format(me.id), sb, false);
 
                                 Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.msg_calendar2);
                                 detailCell.setImage(drawable);

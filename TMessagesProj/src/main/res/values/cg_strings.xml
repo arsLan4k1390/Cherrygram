@@ -271,7 +271,7 @@
     <string name="CP_DisableSwipeToNext">Disable transition to the next channel</string>
     <string name="CP_DisableSwipeToNext_Desc">Disable switching to the next channel when scrolling through any channel</string>
     <string name="CP_HideMuteUnmuteButton">Hide bottom button in channels</string>
-    <string name="CP_HideKbdOnScroll">Hide keyboard on scroll</string>
+    <string name="CP_HideKbdOnScroll">Scroll intensity to hide keyboard when scrolling</string>
     <string name="CP_HideSendAsChannel">Hide \"Send as channel\"</string>
     <string name="CP_HideSendAsChannelDesc">You can access the menu by long click on Emoji/Stickers/GIFs button</string>
 
@@ -291,6 +291,7 @@
     <string name="CP_GeminiAI_Temperature">Temperature</string>
     <string name="CP_GeminiAI_Temperature_Desc">Control the creativity of the text. Low values make the text more predictable and focused, high values - more random and original.</string>
     <string name="CP_GeminiAI_ExtractText">Extract Text (OCR)</string>
+    <string name="CP_GeminiAI_Summarize">Summarize</string>
 
     <string name="CP_Header_Record">Media</string>
     <string name="CP_Messages_Size">Messages bubble size</string>

@@ -86,7 +86,7 @@ object CGChatMenuInjector {
 
         if (isAnyButtonEnabled) headerItem.lazilyAddColoredGap()
 
-        if (ChatsPasswordHelper.shouldRequireBiometricsToOpenChats) {
+        if (ChatsPasswordHelper.shouldRequireBiometricsToOpenChats()) {
             if (
                 currentUser != null && currentUser.id != 0L && ChatsPasswordHelper.isChatLocked(currentUser.id)
                 || currentChat != null && currentChat.id != 0L && ChatsPasswordHelper.isChatLocked(currentChat.id)

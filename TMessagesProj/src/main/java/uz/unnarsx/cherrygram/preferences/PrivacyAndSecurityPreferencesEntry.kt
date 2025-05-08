@@ -83,7 +83,6 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }) {
                     CherrygramPrivacyConfig.hideArchiveFromChatsList = it
                     if (!CherrygramAppearanceConfig.archivedChatsDrawerButton) CherrygramAppearanceConfig.archivedChatsDrawerButton = true
-                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -98,7 +97,6 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     CGBiometricPrompt.prompt(bf.parentActivity) {
                         CherrygramPrivacyConfig.askBiometricsToOpenArchive = it
                         bf.parentLayout.rebuildAllFragmentViews(true, true)
-                        AppRestartHelper.createRestartBulletin(bf)
                     }
                 }
             }
@@ -115,7 +113,6 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     CGBiometricPrompt.prompt(bf.parentActivity) {
                         CherrygramPrivacyConfig.askBiometricsToOpenChat = it
                         bf.parentLayout.rebuildAllFragmentViews(true, true)
-                        AppRestartHelper.createRestartBulletin(bf)
                     }
                 }
             }
@@ -182,8 +179,10 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 contract({
                     return@contract CherrygramPrivacyConfig.askPasscodeBeforeDelete
                 }) {
-                    CherrygramPrivacyConfig.askPasscodeBeforeDelete = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBiometricPrompt.prompt(bf.parentActivity) {
+                        CherrygramPrivacyConfig.askPasscodeBeforeDelete = it
+                        bf.parentLayout.rebuildAllFragmentViews(true, true)
+                    }
                 }
             }
             switch {

@@ -6,6 +6,11 @@
     <string name="CG_FollowChannelInfo">برای در جریان بودن از تمام اخبار و ویژگی‌های Cherrygram، به کانال ما بپیوندید!</string>
     <string name="CG_DoNotRemindAgain">دوباره یادآوری نکن</string>
     <!--Telegram screens-->
+    <string name="CG_RegistrationDate">تاریخ نام‌نویسی:</string>
+    <string name="CG_RegistrationDateNewer">جدیدتر از %s</string>
+    <string name="CG_RegistrationDateOlder">قدیمی‌تر از %s</string>
+    <string name="CG_RegistrationDateApproximately">نزدیک به %s</string>
+    <string name="CG_RegistrationDateFailed">گرفتن تاریخ نام‌نویسی ناموفق بود.</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">ورود با QR</string>
     <string name="CG_QRLoginMessage">برای ورود، کد QR را با دستگاه دیگری اسکن کنید.</string>
@@ -21,6 +26,10 @@
     <string name="CG_LastSeenHours_many">آخرین بازدید %1$d ساعت قبل</string>
     <string name="CG_LastSeenHours_other">آخرین بازدید %1$d ساعت قبل</string>
     <!--Last seen status-->
+    <!--Typing status-->
+    <string name="CG_AndMoreTypingGroup_one">%1$s و %2$d مورد دیگر</string>
+    <string name="CG_AndMoreTypingGroup_other">%1$s و %2$d مورد دیگر</string>
+    <!--Typing status-->
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">نوع آیکون زبانه‌ها</string>
     <string name="CG_FoldersTypeTitles">فقط عناوین</string>
@@ -29,6 +38,7 @@
     <string name="CG_ChooseFolderIcon">آیکونی انتخاب کنید</string>
     <string name="CP_NewTabs_NoCounter">پنهان‌سازی شمارنده در زبانه‌ها</string>
     <string name="CP_NewTabs_NoCounter_Desc">این گزینه شمارنده‌ی پیام‌های خوانده نشده را پنهان خواهد کرد</string>
+    <string name="CG_SwipeToUnarchive">برای درآوردن از بایگانی به چپ بکشید</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">به ابتدا</string>
@@ -45,7 +55,19 @@
     <string name="CG_CreateMention">تگ کردن</string>
     <string name="CG_CreateCode">ایجاد کد</string>
     <string name="CG_CreateCodeLanguage">زبان</string>
+    <string name="CG_FwdMenu_Authorship">نام فرستنده</string>
+    <string name="CG_FwdMenu_Captions">زیرنویس‌ها</string>
+    <string name="CG_FwdMenu_Notify">اطلاع</string>
     <string name="CG_Without_Authorship">بدون نقل‌قول</string>
+    <string name="CG_CopyTitle">رونوشت عنوان</string>
+    <string name="CG_CopyCallback">رونویسی داده‌های بازگشتی</string>
+    <string name="CG_CopyInlineQuery">رونوشت جستار درون خطی</string>
+    <string name="CG_CopyID">رونوشت شناسه کاربر</string>
+    <!--Location screen-->
+    <string name="CG_LocationPermission">Cherrygram نیاز به دسترسی به مکان شما دارد تا بتوانید آن را با دوستان خود هم‌رسانی کنید. اکنون از شما خواسته می شود که اجازه دهید از موقعیت مکانی خود استفاده کنید (تا زمانی که برنامه باز است).</string>
+    <string name="CG_LocationPermission_Desc">با این حال، اگر می خواهید موقعیت مکانی شما در زمانی که Cherrygram بسته و در پس‌زمینه است در دسترس دوستانتان باشد، به ویژگی \"Live Location\" بروید. تا زمانی که با استفاده از ویژگی مکان زنده موافقت نکنید، مکانتان در پس زمینه در دسترس نخواهد بود.</string>
+    <string name="CG_Copy_Coordinates">مختصات</string>
+    <!--Location screen-->
     <!--Search filter-->
     <string name="CG_SearchFilter">فیلتر کردن نتایج جستجو</string>
     <string name="CG_SearchFilter_None">هیچ کدام</string>
@@ -62,6 +84,7 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_UnknownCherrySettingsOption">چنین گزینه ای برای تنظیمات چِری وجود ندارد.</string>
     <string name="CG_Restart">راه‌اندازی مجدد برنامه</string>
     <string name="CG_RestartToApply">برای اعمال تغییرات برنامه را مجدداً راه‌اندازی کنید</string>
     <string name="CG_PushService">خدمات پوش Cherrygram.</string>
@@ -113,6 +136,7 @@
     <string name="AP_RedesignCategory">بازطراحی</string>
     <string name="AP_IconReplacements">جایگزینی آیکون‌ها</string>
     <string name="AP_Old_Notification_Icon">آیکون اعلان پیشفرض (تلگرام)</string>
+    <string name="AP_Tablet_Mode">حالت تبلت</string>
     <string name="AP_ChangeIcon_Cherry_NY">سال نو</string>
     <string name="AP_ChangeIcon_Default">پیش‌فرض</string>
     <string name="AP_ChangeIcon_Dark">تیره</string>
@@ -149,6 +173,9 @@
     <string name="CP_ReplyCustomColors">رنگ‌های سفارشی در پیام‌های پاسخ داده شده و پیش‌نمایش لینک‌ها</string>
     <string name="CP_ReplyBackgroundEmoji">ایموجی در پاسخ‌ها و پیش‌نمایش لینک‌ها</string>
     <string name="CP_HideStories">مخفی‌کردن استوری‌ها</string>
+    <string name="CP_HideStories_Desc">استوری ها از فهرست گفتگوها و نمایه ها ناپدید می‌شوند.</string>
+    <string name="CP_ArchiveStories">بایگانی کردن استوری‌‌ها</string>
+    <string name="CP_ArchiveStories_Desc">داستان ها به طور خودکار بایگانی می‌شوند و به بایگانی شما می‌روند.</string>
     <string name="CP_CustomWallpapers">پس‌زمینه سفارشی در گفتگوها</string>
     <string name="CP_CustomWallpapers_Desc">تنظیم پس‌زمینه‌های سفارشی در چت‌ها/گروه‌ها/کانال‌ها توسط کاربران پریمیوم/کانال‌های تقویت‌شده</string>
     <string name="CP_DisableAnimAvatars">غیرفعال‌سازی تصویر پروفایل متحرک</string>
@@ -188,8 +215,12 @@
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">گفتگوها</string>
+    <string name="CP_Header_Messages">پیام‌ها</string>
     <string name="CP_TimeOnStick">پنهان‌سازی ساعت روی استیکرها در چت</string>
+    <string name="CP_ChatMenuShortcuts">میانبرهای فهرست گفتگو</string>
+    <string name="CP_AdminActions">میانبرهای ادمین</string>
     <string name="CP_MessageMenu">منوی پیام</string>
+    <string name="AP_CenterChatsTitle">عنوان وسط در گفتگوها</string>
     <string name="CP_UnreadBadgeOnBackButton">نمایش شمارنده چت های خوانده نشده</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">فعال کردن شمارنده چت های خوانده نشده روی دکمه برگشت در گپ باز</string>
     <string name="CP_NoRounding">غیرفعال کردن رند کردن اعضا</string>
@@ -199,13 +230,33 @@
     <string name="CP_ShowSeconds">فرمت زمان با ثانیه</string>
     <string name="CP_LeftBottomButtonAction">عملکرد دکمه‌ی چپ</string>
     <string name="CP_DoubleTapAction">عملکرد ضربه زدن</string>
+    <string name="CG_MsgSlideAction">کنش هنگام کشیدن پیام</string>
     <string name="CP_DisableSwipeToNext">غیرفعال‌سازی انتقال به کانال بعدی</string>
     <string name="CP_DisableSwipeToNext_Desc">انتقال به کانال بعدی هنگام پیمایش کانال‌ها را غیرفعال می‌کند</string>
     <string name="CP_HideMuteUnmuteButton">مخفی کردن دکمه پایین کانال ها</string>
-    <string name="CP_HideKbdOnScroll">مخفی کردن کیبورد حین اسکرول در چت</string>
+    <string name="CP_HideKbdOnScroll">Scroll intensity to hide keyboard when scrolling</string>
     <string name="CP_HideSendAsChannel">مخفی کردن دکمه «ارسال به عنوان کانال»</string>
     <string name="CP_HideSendAsChannelDesc">شما می‌توانید با نگه داشتن بر روی دکمه اموجی/استیکرها/گیف‌ها به منو دسترسی پیدا کنید</string>
+    <string name="CP_GeminiAI_API_Key">کلید API جمینای</string>
+    <string name="CP_GeminiAI_API_Key_Desc">برای گرفتن کلید API به <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]> بروید.</string>
+    <string name="CP_GeminiAI_Model">شناسه مدل جمینای</string>
+    <string name="CP_GeminiAI_Model_Desc">برای گرفتن فهرست همه مدل‌ها به <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]> بروید.</string>
+    <string name="CP_GeminiAI_Model_Selector">فهرست مدل‌های جمینای</string>
+    <string name="CP_GeminiAI_Model_Selector_Desc">اگر یک کلید API معتبر دارید، برای انتخاب مدل و پر کردن خودکار، اینجا بزنید.</string>
+    <string name="CP_GeminiAI_Sample">نمونه:</string>
+    <string name="CP_GeminiAI_Instruction">برای استفاده از جمینای،
+        شما باید تمام مقادیر موجود در این صفحه را پر کنید.
+        \n\nپس از آن، هر گفتگویی را باز کنید، پیامی را بنویسید و دکمه ارسال پیام را نگه دارید.
+        \n\nهمچنین، می توانید با به‌کارگیری هوش مصنوعی نیز به یک پیام پاسخ دهید. برای انجام این کار، روی هر پیام متنی در گفتگو بزنید.
+    </string>
+    <string name="CP_GeminiAI_Temperature">دما</string>
+    <string name="CP_GeminiAI_Temperature_Desc">خلاقیت متن را هدایت کنید. مقادیر پایین متن را قابل پیش‌بینی‌تر و متمرکزتر می کند، مقادیر بالا - تصادفی‌تر و اصلی‌تر.</string>
+    <string name="CP_GeminiAI_ExtractText">استخراج متن(OCR)</string>
+    <string name="CP_GeminiAI_Summarize">Summarize</string>
     <string name="CP_Header_Record">رسانه</string>
+    <string name="CP_Messages_Size">اندازه حباب پیام</string>
+    <string name="CP_Slider_MediaAmplifier">تصاویر و ویدیوها</string>
+    <string name="CP_Slider_MediaAmplifier_Hint">با آلبوم ها کار نمی کند (رسانه گروه بندی شده)</string>
     <string name="CP_SpoilersOnMedia">افکت اسپویلر</string>
     <string name="CP_SpoilersOnMedia_Desc">در صورت غیرفعال بودن این گزینه، تأثیر مخفی‌کننده بر روی عکس‌ها و ویدیوها نمایش داده نخواهد شد.</string>
     <string name="CP_VoiceEnhancements">بهبود صدا</string>
@@ -227,6 +278,9 @@
     <string name="CP_Category_Camera">دوربین</string>
     <string name="CP_CameraType">نوع دوربین</string>
     <string name="CP_Camera2Desc">تمام ویژگی‌هایی که هنگام فعال‌سازی Camera2 مخفی می‌شوند، با فعال بودن Camera2 کار نخواهند کرد.</string>
+    <string name="CP_CameraStabilisation">پایدار کننده دوربین</string>
+    <string name="CP_CameraUW">آغاز از UW</string>
+    <string name="CP_CameraUW_Desc">ضبط پیام های ویدیویی از دوربین بسیار عریض آغاز می شود (اگر API دستگاه شما از آن پشتیبانی کند)</string>
     <string name="CP_CameraDualCamera">دو دوربینه</string>
     <string name="CP_CameraDualCamera_Desc">ضبط پیام ویدیویی با استفاده از هر دو دوربین برای انتقال سریع‌تر بین دوربین‌ها در حین ضبط. باعث مصرف بیشتر باتری می‌شود.</string>
     <string name="CP_DefaultCameraDesc">استفاده از دوربین داخلی تلگرام.</string>
@@ -235,10 +289,18 @@
     <string name="CP_CameraTypeSystem">سیستم</string>
     <string name="CP_SystemCameraDesc">به طور مستقیم از دوربین اصلی گوشی استفاده میکند (در پیام هی ویدیویی در دسترس نیست).</string>
     <string name="CP_CameraAspectRatio">نسبت ابعاد دوربین</string>
+    <string name="CP_CenterCameraControlButtons">دکمه‌های هدایت در مرکز</string>
+    <string name="CP_CenterCameraControlButtons_Desc">دکمه‌های تعویض دوربین و چراغ قوه در مرکز.</string>
     <string name="CP_RearCam">استفاده از دوربین عقب</string>
     <string name="CP_RearCam_Desc">بجای دوربین جلو برای پیام‌های ویدئویی</string>
     <string name="CP_DisableCam">غیرفعال‌سازی دوربین در منوی ضمیمه کردن رسانه</string>
     <string name="CP_DisableCam_Desc">دکمه دوربین در کنار دکمه گالری در دسترس خواهد بود.\nفشار دادن دکمه دوربین دوربین تلگرام را باز می‌کند و نگه داشتن آن دوربین سیستم را راه‌اندازی می‌کند.</string>
+    <string name="CP_Header_Videomessages">پیام ویدیویی</string>
+    <string name="CP_ExposureSliderPosition">جایگاه لغزنده نوردهی</string>
+    <string name="CP_ZoomSliderPosition_Bottom">پایین</string>
+    <string name="CP_ZoomSliderPosition_Right">راست</string>
+    <string name="CP_ZoomSliderPosition_Left">چپ</string>
+    <string name="CP_Exposure">نوردهی</string>
     <!--Camera Preferences-->
     <!--Experimental Preferences-->
     <string name="EP_Category_Experimental">آزمایشی</string>
@@ -250,6 +312,7 @@
     <string name="EP_CustomAppTitle">عنوان برنامه</string>
     <string name="EP_CustomChat">چت سفارشی برای پیام‌های ذخیره‌شده</string>
     <string name="EP_CustomChat_Desc">تنظیم کردن شناسه یک چت/گروه/کانال دیگر برای انتقال پیام‌ها به آن (دکمه در نوار ابزار، منوی پیام یا دوبار کلیک)</string>
+    <string name="EP_CustomChat_Selected_Title">به جای</string>
     <string name="EP_Network">شبکه</string>
     <string name="EP_DownloadSpeedBoost">افزایش سرعت دانلود</string>
     <string name="EP_DownloadSpeedBoostNone">خاموش</string>
@@ -265,6 +328,22 @@
     <string name="SP_GoogleAnalytics_Desc">با فعال کردن این گزینه، تمامی خطاها و آمارهای برنامه به \"console.firebase.google.com\" گزارش داده خواهند شد تا توسط توسعه‌دهنده بررسی بیشتری صورت گیرد.</string>
     <string name="SP_CleanOld">حذف حافظه پنهان قدیمی (/sdcard/Telegram)</string>
     <string name="SP_RemovedS">با موفقیت حذف شد</string>
+    <string name="SP_AskPinForChats">نیاز به زیست‌سنجی برای بازکردن یک گفتگو</string>
+    <string name="SP_AskPinForChats_Desc">گذرواژه سیستم (اثر انگشت، شناسه چهره، گذرواژه عددی یا الگو) برای دسترسی به گفتگوهای خاص مورد لازم است. برای فعال کردن، روی 3 نقطه داخل گفتگو ضربه بزنید.</string>
+    <string name="SP_LockedChats">گفتگوهای قفل شده</string>
+    <string name="SP_LockedChats_Lock_Destination">برای به‌روزرسانی فهرست قفل شده</string>
+    <string name="SP_LockedChats_Lock_Destination_Sure">قفل خواهد شد</string>
+    <string name="SP_AskPinForArchive">نیاز به زیست‌سنجی برای باز کردن بایگانی</string>
+    <string name="SP_AskPinForArchive_Desc">گذرواژه سیستم (اثر انگشت، شناسه چهره، رمز عددی یا الگو) برای دسترسی به گفتگوهای بایگانی شده مورد نیاز است.</string>
+    <string name="SP_HideArchive">پنهان کردن بایگانی از فهرست گفتگوها</string>
+    <string name="SP_HideArchive_Desc">بایگانی در قالب کانال Cherrygram پوشانده می شود. \nشما می توانید بایگانی را از کشو یا با ضربه طولانی روی دکمه جستجو باز کنید.</string>
+    <string name="SP_AskPin">گذرواژه لازم باشد</string>
+    <string name="SP_DoNotAskPin">گذرواژه لازم نباشد</string>
+    <string name="SP_AskPinBeforeDelete">نیاز به زیست‌سنجی برای پاک کردن گفتگو</string>
+    <string name="SP_AskPinBeforeDelete_Desc">اگر بخواهید یک گفتگو یا سابقه را پاک کنید، زیست‌سنجی لازم خواهد بود. گذرواژه و زیست‌سنجی در سیستم نیز باید فعال باشد.</string>
+    <string name="SP_AllowUseSystemPasscode">اجازه استفاده از گذرواژه/الگوی سیستم</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">دکمه \"رد کردن\" در گفتگوی تأیید اثر انگشت با دکمه \"گذرواژه عددی/الگو\" جایگزین می شود و می‌توانید از گذرواژه سیستم برای باز کردن قفل Cherrygram استفاده کنید.</string>
+    <string name="SP_TestFingerprint">آزمودن اثرانگشت</string>
     <string name="SP_Category_Account">حساب کاربری</string>
     <string name="SP_DeleteAccount">حذف حساب تلگرام</string>
     <!--Security Preferences-->
@@ -290,7 +369,11 @@
     <string name="UP_Download">دانلود</string>
     <!--Updates Preferences-->
     <!--Donations-->
+    <string name="DP_RateUs">امتیازدهی به Cherrygram</string>
     <string name="DP_Donate">کمک مالی</string>
+    <string name="DP_Donate_Desc">از توسعه Cherrygram پشتیبانی کنید و یک نشان حماسی دریافت کنید!
+    \n برای گرفتن نشان، یک مدرک از پرداخت (&gt;=1$) به <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> یا <![CDATA[<a href="https://t.me/CherrygramSupport">گروه پشتیبانی Cherrygram</a>]]> بفرستید.</string>
+    <string name="DP_Donate_Bulletin">**%s** با موفقیت به **Cherrygram** کمک کرد!</string>
     <string name="DP_Donate_Method">انتخاب نوع پرداخت</string>
     <!--Donations-->
     <!--Cherrygram screens-->

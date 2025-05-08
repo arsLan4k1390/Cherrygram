@@ -157,7 +157,6 @@ import org.telegram.messenger.EmojiData;
 import org.telegram.messenger.FactCheckController;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
-import org.telegram.messenger.FingerprintController;
 import org.telegram.messenger.FlagSecureReason;
 import org.telegram.messenger.HashtagSearchController;
 import org.telegram.messenger.ImageLoader;
@@ -304,6 +303,7 @@ import java.util.stream.Collectors;
 
 import uz.unnarsx.cherrygram.chats.CGChatMenuInjector;
 import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
+import uz.unnarsx.cherrygram.chats.gemini.GeminiButtonsLayout;
 import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet;
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
@@ -313,7 +313,6 @@ import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet;
@@ -3752,8 +3751,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     if (getParentActivity() == null) {
                         return;
                     }
-                    boolean askPasscode = CherrygramPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete() && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged();
-                    if (askPasscode) {
+                    if (ChatsPasswordHelper.INSTANCE.askPasscodeBeforeDelete()) {
                         CGBiometricPrompt.prompt(getParentActivity(),
                             () -> {
                                 boolean canDeleteHistory = chatInfo != null && chatInfo.can_delete_channel;
@@ -30985,7 +30983,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                     }
                 }
 
-                if (CherrygramChatsConfig.INSTANCE.getShowGemini()
+                if (CherrygramChatsConfig.INSTANCE.getShowGemini() && GeminiButtonsLayout.geminiButtonsVisible()
                         && popupLayout != null  && popupLayout.getSwipeBack() != null
                         && selectedObject != null && selectedObject.messageOwner != null && !selectedObject.isSponsored()
                         && (selectedObject.type == MessageObject.TYPE_TEXT || selectedObject.type == MessageObject.TYPE_PHOTO || selectedObject.type == MessageObject.TYPE_VOICE || selectedObject.type == MessageObject.TYPE_ROUND_VIDEO || selectedObject.caption != null)
@@ -32411,17 +32409,19 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
             }
             case OPTION_COPY_PHOTO: {
                 getChatsHelper().addMessageToClipboard(selectedObject, () -> {
-                    if (BulletinFactory.canShowBulletin(ChatActivity.this)) {
-                        BulletinFactory.of(this).createCopyBulletin(LocaleController.getString(R.string.CG_PhotoCopied)).show();
-                    }
+                    BulletinFactory.global()
+                            .createSuccessBulletin(getString(R.string.CG_PhotoCopied), getResourceProvider())
+                            .setDuration(Bulletin.DURATION_SHORT)
+                            .show();
                 });
                 break;
             }
             case OPTION_COPY_PHOTO_AS_STICKER: {
                 getChatsHelper().addMessageToClipboardAsSticker(selectedObject, () -> {
-                    if (BulletinFactory.canShowBulletin(ChatActivity.this)) {
-                        BulletinFactory.of(this).createCopyBulletin(LocaleController.getString(R.string.CG_PhotoCopied)).show();
-                    }
+                    BulletinFactory.global()
+                            .createSuccessBulletin(getString(R.string.CG_PhotoCopied), getResourceProvider())
+                            .setDuration(Bulletin.DURATION_SHORT)
+                            .show();
                 });
                 break;
             }
@@ -32699,13 +32699,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 }
 
                 showFieldPanelForReply(selectedObject);
-                GeminiSDKImplementation.initGeminiConfig(
-                        this,
-                        this,
-                        selectedObject.messageOwner.message, false,
-                        null,
-                        false, false
-                );
+
+                GeminiResultsBottomSheet.setMessageObject(selectedObject);
+                GeminiResultsBottomSheet.setCurrentChat(currentChat);
+                processGeminiWithText(selectedObject, null, false, false);
                 break;
             }
             case OPTION_TRANSLATE_GEMINI: {
@@ -32715,7 +32712,18 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
                 GeminiResultsBottomSheet.setMessageObject(selectedObject);
                 GeminiResultsBottomSheet.setCurrentChat(currentChat);
-                geminiTranslate(selectedObject);
+                processGeminiWithText(selectedObject, null, true, false);
+
+                break;
+            }
+            case OPTION_SUMMARIZE_GEMINI: {
+                if (selectedObject == null && selectedObject.messageOwner == null && selectedObject.messageOwner.message == null) {
+                    return;
+                }
+
+                GeminiResultsBottomSheet.setMessageObject(selectedObject);
+                GeminiResultsBottomSheet.setCurrentChat(currentChat);
+                processGeminiWithText(selectedObject, null, false, true);
 
                 break;
             }
@@ -43097,39 +43105,54 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
     public final static int OPTION_OPEN_TELEGRAM_BROWSER = 2026;
     public final static int OPTION_REPLY_GEMINI = 2027;
     public final static int OPTION_TRANSLATE_GEMINI = 2028;
-    public final static int OPTION_ADVANCED_SEARCH = 2029;
+    public final static int OPTION_SUMMARIZE_GEMINI = 2029;
+    public final static int OPTION_ADVANCED_SEARCH = 2030;
 
-    public void geminiTranslate(MessageObject selectedObject) {
-        int[] messageIdToTranslate = new int[] { selectedObject.getId() };
-        CharSequence messageTextToTranslate;
-        messageTextToTranslate = getMessageCaption(selectedObject, selectedObjectGroup, messageIdToTranslate);
-        if (messageTextToTranslate == null && selectedObject.isPoll()) {
-            try {
-                TLRPC.Poll poll = ((TLRPC.TL_messageMediaPoll) selectedObject.messageOwner.media).poll;
-                StringBuilder pollText = new StringBuilder(poll.question.text).append("\n");
-                for (TLRPC.PollAnswer answer : poll.answers)
-                    pollText.append("\n\uD83D\uDD18 ").append(answer.text == null ? "" : answer.text.text);
-                messageTextToTranslate = pollText.toString();
-            } catch (Exception e) {
+    public void processGeminiWithText(MessageObject selectedObject, String geminiResult, boolean translateText, boolean summarize) {
+        CharSequence messageTextToTranslate = "";
+
+        if (selectedObject != null) {
+            int[] messageIdToTranslate = new int[] { selectedObject.getId() };
+            messageTextToTranslate = getMessageCaption(selectedObject, selectedObjectGroup, messageIdToTranslate);
+            if (messageTextToTranslate == null && selectedObject.isPoll()) {
+                try {
+                    TLRPC.Poll poll = ((TLRPC.TL_messageMediaPoll) selectedObject.messageOwner.media).poll;
+                    StringBuilder pollText = new StringBuilder(poll.question.text).append("\n");
+                    for (TLRPC.PollAnswer answer : poll.answers)
+                        pollText.append("\n\uD83D\uDD18 ").append(answer.text == null ? "" : answer.text.text);
+                    messageTextToTranslate = pollText.toString();
+                } catch (Exception e) {
+                }
+            }
+            if (messageTextToTranslate == null && MessageObject.isMediaEmpty(selectedObject.messageOwner)) {
+                messageTextToTranslate = getMessageContent(selectedObject, 0, false);
+            }
+            if (messageTextToTranslate != null && Emoji.fullyConsistsOfEmojis(messageTextToTranslate)) {
+                messageTextToTranslate = null; // message fully consists of emojis, do not translate
             }
         }
-        if (messageTextToTranslate == null && MessageObject.isMediaEmpty(selectedObject.messageOwner)) {
-            messageTextToTranslate = getMessageContent(selectedObject, 0, false);
-        }
-        if (messageTextToTranslate != null && Emoji.fullyConsistsOfEmojis(messageTextToTranslate)) {
-            messageTextToTranslate = null; // message fully consists of emojis, do not translate
-        }
+
+        String textToSummarize = selectedObject != null && selectedObject.messageOwner != null
+                && selectedObject.messageOwner.message != null && !TextUtils.isEmpty(selectedObject.messageOwner.message) ? selectedObject.messageOwner.message : geminiResult;
 
         GeminiSDKImplementation.initGeminiConfig(
                 this,
                 this,
-                messageTextToTranslate, true,
+                summarize ? textToSummarize : messageTextToTranslate, translateText, summarize,
                 null,
                 false, false
         );
     }
 
     private void searchWithID(String inputID) {
+        if (inputID.length() > 20) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle(getString(R.string.AvatarPreviewSearchMessages));
+            builder.setMessage(LocaleController.getString(R.string.InvalidFormatError));
+            builder.setPositiveButton(getString(R.string.Close), null);
+            builder.show();
+            return;
+        }
         long chatID = Long.parseLong(inputID);
 
         TLRPC.User user = getMessagesController().getUser(chatID);
@@ -43234,9 +43257,10 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
 
     private class KeyboardHiderOnFastScroll {
 
-        private static final int VELOCITY_THRESHOLD = dp(4000); // px/second
-
         public static void attachTo(@NonNull RecyclerView recyclerView, @NonNull View contentView) {
+            final int VELOCITY_THRESHOLD = dp(CherrygramChatsConfig.INSTANCE.getHideKeyboardOnScrollIntensity() * 1000); // px/second
+            final int invertedSensitivity = dp(10000) /*max*/ - VELOCITY_THRESHOLD + 1;
+
             recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
                 private VelocityTracker velocityTracker = null;
 
@@ -43264,8 +43288,8 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                                 velocityTracker.computeCurrentVelocity(1000);
                                 float velocityY = velocityTracker.getYVelocity();
 
-                                if (Math.abs(velocityY) > VELOCITY_THRESHOLD
-                                        && CherrygramChatsConfig.INSTANCE.getHideKeyboardOnScroll()
+                                if (Math.abs(velocityY) > invertedSensitivity && CherrygramChatsConfig.INSTANCE.getHideKeyboardOnScrollIntensity() > 0
+                                        || CherrygramChatsConfig.INSTANCE.getHideKeyboardOnScrollIntensity() == 10
                                 ) {
                                     AndroidUtilities.hideKeyboard(contentView);
                                 }

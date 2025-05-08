@@ -19,9 +19,11 @@ import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.SharedConfig
-import uz.unnarsx.cherrygram.chats.helpers.StickersHelper
+import uz.unnarsx.cherrygram.chats.gemini.GeminiButtonsLayout
+import uz.unnarsx.cherrygram.helpers.network.StickersManager
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
+import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
 
 object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
@@ -53,9 +55,9 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle", true)
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
-    var hideKeyboardOnScroll by sharedPreferences.boolean("CP_HideKeyboardOnScroll", true)
     var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
     var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
+    var hideKeyboardOnScrollIntensity by sharedPreferences.int("CP_HideKeyboardOnScrollIntensity", 5)
 
     /** Gemini AI start **/
     var geminiApiKey by sharedPreferences.string("CP_GeminiApiKey", " ")
@@ -76,7 +78,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     /** Message menu start **/
     var showSaveForNotifications by sharedPreferences.boolean("CP_ShowSaveForNotifications", false)
-    var showGemini by sharedPreferences.boolean("CP_ShowGemini", true)
+    var showGemini by sharedPreferences.boolean("CP_ShowGemini", GeminiButtonsLayout.geminiButtonsVisible())
     var showReply by sharedPreferences.boolean("CP_ShowReply", true)
     var showCopyPhoto by sharedPreferences.boolean("CP_ShowCopyPhoto", true)
     var showCopyPhotoAsSticker by sharedPreferences.boolean("CP_ShowCopyPhotoAsSticker", true)
@@ -179,12 +181,13 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Search Filter finish **/
 
     var unarchiveOnSwipe by sharedPreferences.boolean("CG_UnarchiveOnSwipe", false)
+    var lastStickersCheckTime by sharedPreferences.long("CG_LastStickersCheckTime", 0)
     /** Misc finish **/
 
     init {
         launch {
-            if (!CherrygramCoreConfig.isPlayStoreBuild()) StickersHelper.getStickerSetIDs()
-            StickersHelper.copyStickerFromAssets()
+            StickersManager.startAutoRefresh(ApplicationLoader.applicationContext)
+            StickersManager.copyStickerFromAssets()
         }
     }
     

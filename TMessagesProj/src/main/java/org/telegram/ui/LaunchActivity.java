@@ -3185,7 +3185,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         BaseFragment bf = mainFragmentsStack.get(mainFragmentsStack.size() - 1);
                         if (bf != null && bf.getParentActivity() != null
                                 && push_user_id != 0
-                                && ChatsPasswordHelper.INSTANCE.getShouldRequireBiometricsToOpenChats()
+                                && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
                                 && ChatsPasswordHelper.INSTANCE.isChatLocked(push_user_id)
                         ) {
                             CGBiometricPrompt.prompt(bf.getParentActivity(), () -> {

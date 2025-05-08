@@ -4254,7 +4254,10 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         }
 
         if (drawAvatar && (!(isTopic && forumTopic != null && forumTopic.id == 1) || archivedChatsDrawable == null || !archivedChatsDrawable.isDraw())) {
-            storyParams.drawHiddenStoriesAsSegments = !ChatsPasswordHelper.INSTANCE.getShouldRequireBiometricsToOpenArchive() && !CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList() && currentDialogFolderId != 0;
+            storyParams.drawHiddenStoriesAsSegments =
+                    !ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenArchive() &&
+                    !CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList() &&
+                    currentDialogFolderId != 0;
             StoriesUtilities.drawAvatarWithStory(currentDialogId, canvas, avatarImage, storyParams);
         }
 

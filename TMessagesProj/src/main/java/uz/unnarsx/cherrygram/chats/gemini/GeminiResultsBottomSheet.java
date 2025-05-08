@@ -93,7 +93,7 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
 
     private View buttonShadowView;
     private FrameLayout buttonView;
-    private TextView buttonTextView;
+    private TextView summarizeButton;
     private ImageView copyButton;
 
     private static MessageObject selectedObject; // TODO set to null when closing bottom sheet
@@ -103,9 +103,10 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
     public static int GEMINI_TYPE_TRANSCRIBE = 2;
     public static int GEMINI_TYPE_EXPLANATION = 3;
     public static int GEMINI_TYPE_OCR = 4;
+    public static int GEMINI_TYPE_SUMMARIZE = 5;
 
-    private GeminiResultsBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider, ChatActivity chatActivity, String geminiResult, int subtitle) {
-        super(context, false, resourcesProvider);
+    private GeminiResultsBottomSheet(BaseFragment fragment, ChatActivity chatActivity, String geminiResult, int subtitle) {
+        super(fragment.getContext(), false, fragment.getResourceProvider());
 
         backgroundPaddingLeft = 0;
 
@@ -115,20 +116,20 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         boolean noforwards = mc.isChatNoForwards(selectedObject.getChatId()) || selectedObject.messageOwner.noforwards || selectedObject.getDialogId() == UserObject.VERIFY;
         boolean noforwardsOrPaidMedia = noforwards || selectedObject.type == MessageObject.TYPE_PAID_MEDIA;
 
-        containerView = new ContainerView(context);
+        containerView = new ContainerView(fragment.getContext());
         sheetTopAnimated = new AnimatedFloat(containerView, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
 
-        loadingTextView = new LoadingTextView(context);
+        loadingTextView = new LoadingTextView(fragment.getContext());
         loadingTextView.setPadding(dp(22), dp(12), dp(22), dp(6));
 
-        textViewContainer = new FrameLayout(context) {
+        textViewContainer = new FrameLayout(fragment.getContext()) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), heightMeasureSpec);
             }
         };
 
-        textView = new TextView(context);
+        textView = new TextView(fragment.getContext());
         textView.setPadding(dp(22), dp(0), dp(22), dp(6));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, SharedConfig.fontSize);
 //        textView.setTypeface(AndroidUtilities.bold());
@@ -137,7 +138,7 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
 
         textViewContainer.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-        listView = new RecyclerListView(context, getResourcesProvider()) {
+        listView = new RecyclerListView(fragment.getContext(), getResourcesProvider()) {
             @Override
             public boolean dispatchTouchEvent(MotionEvent ev) {
                 if (ev.getAction() == MotionEvent.ACTION_DOWN && ev.getY() < getSheetTop() - getTop()) {
@@ -158,8 +159,8 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
         listView.setPadding(0, AndroidUtilities.statusBarHeight + dp(56), 0, dp(80));
         listView.setClipToPadding(true);
-        listView.setLayoutManager(layoutManager = new LinearLayoutManager(context));
-        listView.setAdapter(adapter = new PaddedAdapter(context, loadingTextView));
+        listView.setLayoutManager(layoutManager = new LinearLayoutManager(fragment.getContext()));
+        listView.setAdapter(adapter = new PaddedAdapter(fragment.getContext(), loadingTextView));
         listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -194,32 +195,45 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         listView.setItemAnimator(itemAnimator);
         containerView.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM));
 
-        headerView = new HeaderView(context, chatActivity, subtitle);
+        headerView = new HeaderView(fragment.getContext(), chatActivity, subtitle);
         containerView.addView(headerView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 5, Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
-        buttonView = new FrameLayout(context);
+        buttonView = new FrameLayout(fragment.getContext());
         buttonView.setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
 
-        buttonShadowView = new View(context);
+        buttonShadowView = new View(fragment.getContext());
         buttonShadowView.setBackgroundColor(getThemedColor(Theme.key_dialogShadowLine));
         buttonShadowView.setAlpha(0);
         buttonView.addView(buttonShadowView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.getShadowHeight() / dpf2(1), Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
-        buttonTextView = new TextView(context);
-        buttonTextView.setLines(1);
-        buttonTextView.setSingleLine(true);
-        buttonTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-        buttonTextView.setEllipsize(TextUtils.TruncateAt.END);
-        buttonTextView.setGravity(Gravity.CENTER);
-        buttonTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, getResourcesProvider()));
-        buttonTextView.setTypeface(AndroidUtilities.bold());
-        buttonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        buttonTextView.setText(getString(R.string.Close));
-        buttonTextView.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, getResourcesProvider()), 6));
-        buttonTextView.setOnClickListener(e -> dismiss());
-        buttonView.addView(buttonTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
+        summarizeButton = new TextView(fragment.getContext());
+        summarizeButton.setLines(1);
+        summarizeButton.setSingleLine(true);
+        summarizeButton.setGravity(Gravity.CENTER_HORIZONTAL);
+        summarizeButton.setEllipsize(TextUtils.TruncateAt.END);
+        summarizeButton.setGravity(Gravity.CENTER);
+        summarizeButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, getResourcesProvider()));
+        summarizeButton.setTypeface(AndroidUtilities.bold());
+        summarizeButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        summarizeButton.setText(subtitle == 5 ? getString(R.string.Close) : getString(R.string.CP_GeminiAI_Summarize));
+        summarizeButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, getResourcesProvider()), 6));
+        summarizeButton.setOnClickListener(e -> {
+            if (subtitle == 5) {
+                dismiss();
+            } else {
+                dismiss();
+                GeminiSDKImplementation.initGeminiConfig(
+                        fragment,
+                        null,
+                        geminiResult, false, true,
+                        null,
+                        false, false
+                );
+            }
+        });
+        buttonView.addView(summarizeButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
-        copyButton = new ImageView(context);
+        copyButton = new ImageView(fragment.getContext());
         copyButton.setScaleType(ImageView.ScaleType.CENTER);
         copyButton.setImageResource(R.drawable.msg_copy);
         copyButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_buttonText, getResourcesProvider()), PorterDuff.Mode.MULTIPLY));
@@ -438,10 +452,10 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
             menuIconImageView = new ImageView(context);
             menuIconImageView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_actionBarActionModeDefaultSelector, getResourcesProvider()), 1));
             menuIconImageView.setScaleType(ImageView.ScaleType.CENTER);
-            menuIconImageView.setImageResource(R.drawable.ic_ab_other);
+            menuIconImageView.setImageResource(R.drawable.arrow_more);
             menuIconImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogSearchIcon, getResourcesProvider()), PorterDuff.Mode.MULTIPLY));
-//            menuIconImageView.setOnClickListener((v) -> ChatsHelper2.showJsonMenu(GeminiResultsBottomSheet.this, headerView, messageObject));
-//            addView(menuIconImageView, LayoutHelper.createFrame(36, 36, Gravity.RIGHT | Gravity.TOP, 0, 11, 16, 0));
+            menuIconImageView.setOnClickListener(v -> dismiss());
+            if (subtitle != 5) addView(menuIconImageView, LayoutHelper.createFrame(36, 36, Gravity.RIGHT | Gravity.TOP, 0, 11, 16, 0));
 
             titleTextView = new TextView(context) {
                 @Override
@@ -562,6 +576,8 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
                 subtitleText = getString(R.string.AccDescrQuizExplanation);
             } else if (subtitle == GEMINI_TYPE_OCR) {
                 subtitleText = getString(R.string.CP_GeminiAI_ExtractText);
+            } if (subtitle == GEMINI_TYPE_SUMMARIZE) {
+                subtitleText = getString(R.string.CP_GeminiAI_Summarize);
             }
 
             toLanguageTextView.setText(subtitleText);
@@ -571,7 +587,7 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
                 toLanguageTextView.setOnClickListener(e -> {
                     openLanguagesSelect(() -> {
                         dismiss();
-                        chatActivity.geminiTranslate(selectedObject);
+                        chatActivity.processGeminiWithText(selectedObject, null, true, false);
                     });
                 });
             }
@@ -782,7 +798,7 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
     }
 
     public static GeminiResultsBottomSheet showAlert(BaseFragment fragment, ChatActivity chatActivity, String geminiResult, int subtitle) {
-        GeminiResultsBottomSheet alert = new GeminiResultsBottomSheet(fragment.getContext(), fragment.getResourceProvider(), chatActivity, geminiResult, subtitle);
+        GeminiResultsBottomSheet alert = new GeminiResultsBottomSheet(fragment, chatActivity, geminiResult, subtitle);
         if (fragment.getParentActivity() != null) {
             fragment.showDialog(alert);
         }

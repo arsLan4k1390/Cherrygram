@@ -5264,8 +5264,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 writeButton.setContentDescription(LocaleController.getString(R.string.AccDescrOpenChat));
             }
         } else {
-            if (currentChat.megagroup) {
-                writeButton.setImageResource(R.drawable.msg_channel);
+            if (ChatObject.isDiscussionGroup(currentChat, chatInfo)) {
+                writeButton.setImageResource(R.drawable.msg_folders_channels_solar);
                 writeButton.setContentDescription(LocaleController.getString(R.string.OpenChannel2));
             } else {
                 writeButton.setImageResource(R.drawable.profile_discuss);
@@ -6112,7 +6112,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     ChatActivity chatActivity = new ChatActivity(args);
                     if (getParentActivity() != null
                             && user.id != 0
-                            && ChatsPasswordHelper.INSTANCE.getShouldRequireBiometricsToOpenChats()
+                            && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
                             && ChatsPasswordHelper.INSTANCE.isChatLocked(user.id)
                     ) {
                         CGBiometricPrompt.prompt(getParentActivity(), () -> {
@@ -7359,7 +7359,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
                 boolean writeButtonVisible = diff > 0.2f && !searchMode && (imageUpdater == null || setAvatarRow == -1);
                 if (writeButtonVisible && chatId != 0) {
-                    writeButtonVisible = ChatObject.isChannel(currentChat) && !currentChat.megagroup && chatInfo != null && chatInfo.linked_chat_id != 0 && infoHeaderRow != -1;
+                    writeButtonVisible = /*ChatObject.isChannel(currentChat) && !currentChat.megagroup &&*/ chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow != -1 || idRow != -1 || idDcRow != -1);
                 }
                 if (!openAnimationInProgress) {
                     boolean currentVisible = writeButton.getTag() == null;
@@ -10304,8 +10304,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 } else if (chat.id == Constants.Cherrygram_Support || chat.id == Constants.Cherrygram_Beta) {
                     nameTextView[a].setRightDrawable(getEmojiStatusDrawable(Constants.CHERRY_EMOJI_ID_BRA, false, true, 18, a));
                     nameTextView[a].setRightDrawableOutside(true);
-                } else {
-                    nameTextView[a].setRightDrawable(null);
                 }
 
                 if (chat.bot_verification_icon != 0) {
@@ -10677,14 +10675,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (!chat.creator && !chat.left && !chat.kicked && !isTopic) {
                         otherItem.addSubItem(leave_group, R.drawable.msg_leave, LocaleController.getString(R.string.LeaveMegaMenu));
                     }
-                    if (!BuildVars.IS_BILLING_UNAVAILABLE && !getMessagesController().premiumPurchaseBlocked()) {
-                        StarsController.getInstance(currentAccount).loadStarGifts();
-                        otherItem.addSubItem(gift_premium, R.drawable.msg_gift_premium, LocaleController.getString(R.string.ProfileSendAGiftToChannel));
-                        otherItem.setSubItemShown(gift_premium, chatInfo != null && chatInfo.stargifts_available);
-                    }
-                    if (chatInfo != null && chatInfo.linked_chat_id != 0) {
-                        otherItem.addSubItem(view_discussion, R.drawable.msg_channel, LocaleController.getString("OpenChannel2", R.string.OpenChannel2));
-                    }
                     if (isTopic && ChatObject.canDeleteTopic(currentAccount, chat, topicId)) {
                         otherItem.addSubItem(delete_topic, R.drawable.msg_delete, LocaleController.getPluralString("DeleteTopics", 1));
                     }
@@ -10696,7 +10686,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         otherItem.addSubItem(share, R.drawable.msg_share, LocaleController.getString(R.string.BotShare));
                     }
                     otherItem.addSubItem(boost_channel, R.drawable.boost_channel_solar, LocaleController.getString("BoostChannel", R.string.BoostChannel));
-                    if (chatInfo != null && chatInfo.linked_chat_id != 0) {
+                    if (!BuildVars.IS_BILLING_UNAVAILABLE && !getMessagesController().premiumPurchaseBlocked()) {
+                        StarsController.getInstance(currentAccount).loadStarGifts();
+                        otherItem.addSubItem(gift_premium, R.drawable.msg_gift_premium, LocaleController.getString(R.string.ProfileSendAGiftToChannel));
+                        otherItem.setSubItemShown(gift_premium, chatInfo != null && chatInfo.stargifts_available);
+                    }
+                    if (chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow == -1 && idRow == -1 && idDcRow == -1)) {
                         otherItem.addSubItem(view_discussion, R.drawable.msg_discussion, LocaleController.getString(R.string.ViewDiscussion));
                     }
                     if (!currentChat.creator && !currentChat.left && !currentChat.kicked) {
@@ -11841,23 +11836,31 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         if (userId != 0) {
                             id = userId;
                         } else if (chatId != 0) {
-                            id = Long.parseLong("-100" + chatId);
+                            id = chatId;
                         } else {
                             id = dialogId;
                         }
                         hasRegistrationDate = chatId == 0;
-                        detailCell.setTextAndValue(id + "", "ID", false);
+
+                        DecimalFormat df = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US) {{ setGroupingSeparator(' '); }});
+                        CharSequence formattedID = chatId != 0 ? "-100 " + df.format(id) : df.format(id);
+
+                        detailCell.setTextAndValue(formattedID, "ID", false);
                     } else if (position == idDcRow) {
                         final long id;
                         if (userId != 0) {
                             id = userId;
                         } else if (chatId != 0) {
-                            id = Long.parseLong("-100" + chatId);
+                            id = chatId;
                         } else {
                             id = dialogId;
                         }
                         hasRegistrationDate = chatId == 0;
-                        detailCell.setTextAndValue("ID: " + id, userDcLine, false);
+
+                        DecimalFormat df = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US) {{ setGroupingSeparator(' '); }});
+                        CharSequence formattedID = chatId != 0 ? "-100 " + df.format(id) : df.format(id);
+
+                        detailCell.setTextAndValue("ID: " + formattedID, userDcLine, false);
                     } else if (position == usernameRow) {
                         String username = null;
                         CharSequence text;
@@ -14932,13 +14935,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         donatorHintVisible = null;
         donatorHint = new HintView2(getContext(), HintView2.DIRECTION_BOTTOM);
         donatorHintBackgroundColor = peerColor != null && peerColor.getBgColor1(Theme.isCurrentThemeDark()) != peerColor.getBgColor2(Theme.isCurrentThemeDark()) ? peerColor.getBgColor1(Theme.isCurrentThemeDark()) : getThemedColor(Theme.key_undo_background);
-        donatorHint.setPadding(dp(4), 0, dp(4), dp(15));
+        donatorHint.setPadding(dp(4), 0, dp(4), dp(2));
         donatorHint.setFlicker(.66f, Theme.multAlpha(11922687 | 0xFF000000, 0.5f));
-        avatarContainer2.addView(donatorHint, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, dp(15)));
-        donatorHint.setTextSize(12);
+        avatarContainer2.addView(donatorHint, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 24));
+        donatorHint.setTextSize(10f);
         donatorHint.setText(stringBuilder);
         donatorHint.setDuration(-1);
-        donatorHint.setInnerPadding(10, 3, 10, 3);
+        donatorHint.setInnerPadding(6, 3, 6, 3);
         donatorHint.setArrowSize(4, 2.66f);
         donatorHint.setRoundingWithCornerEffect(false);
         donatorHint.setRounding(16);

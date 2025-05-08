@@ -248,7 +248,14 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
     public void colorizeJson(MessageObject messageObject) {
         String jsonString = "";
 
-        if (isJacksonSupportedAndEnabled()) {
+        if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetChatWallPaper || !isJacksonSupportedAndEnabled()) {
+            try {
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                jsonString = gson.toJson(messageObject.messageOwner);
+            } catch (Exception e) {
+                CherrygramChatsConfig.INSTANCE.setJacksonJSON_Provider(true);
+            }
+        } else {
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -256,14 +263,6 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             } catch (IOException e) {
                 FileLog.e(e);
             }
-        } else {
-            try {
-                Gson gson = new GsonBuilder().setPrettyPrinting().create();
-                jsonString = gson.toJson(messageObject.messageOwner);
-            } catch (Exception e) {
-                CherrygramChatsConfig.INSTANCE.setJacksonJSON_Provider(true);
-            }
-
         }
 
         final SpannableString[] sb = new SpannableString[1];
@@ -499,7 +498,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             sb.append("message ID: ");
             sb.append(messageId);
             sb.append("\nJSON Library: ");
-            sb.append(isJacksonSupportedAndEnabled() ? "Jackson" : "Google GSON");
+            sb.append(messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetChatWallPaper || !isJacksonSupportedAndEnabled() ? "Google GSON" : "Jackson");
             messageIdTextView.setText(sb);
             messageIdTextView.setPadding(0, dp(2), 0, dp(2));
             messageIdTextView.setOnClickListener(v -> {

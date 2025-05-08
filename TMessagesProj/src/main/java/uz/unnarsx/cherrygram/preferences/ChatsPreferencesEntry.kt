@@ -64,15 +64,6 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = getString(R.string.CP_HideKbdOnScroll)
-
-                contract({
-                    return@contract CherrygramChatsConfig.hideKeyboardOnScroll
-                }) {
-                    CherrygramChatsConfig.hideKeyboardOnScroll = it
-                }
-            }
-            switch {
                 title = getString(R.string.CP_DisableSwipeToNext)
                 description = getString(R.string.CP_DisableSwipeToNext_Desc)
 
@@ -89,6 +80,28 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramChatsConfig.hideMuteUnmuteButton
                 }) {
                     CherrygramChatsConfig.hideMuteUnmuteButton = it
+                }
+            }
+        }
+
+        category(getString(R.string.CP_HideKbdOnScroll)) {
+            slider {
+                contract = object : TGSLContract {
+                    override fun setValue(value: Int) {
+                        CherrygramChatsConfig.hideKeyboardOnScrollIntensity = value
+                    }
+
+                    override fun getPreferenceValue(): Int {
+                        return CherrygramChatsConfig.hideKeyboardOnScrollIntensity
+                    }
+
+                    override fun getMin(): Int {
+                        return 0
+                    }
+
+                    override fun getMax(): Int {
+                        return 10
+                    }
                 }
             }
         }

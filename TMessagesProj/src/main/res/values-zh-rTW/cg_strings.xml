@@ -26,6 +26,10 @@
     <string name="CG_LastSeenHours_many">最後上線於 %1$d 小時之前</string>
     <string name="CG_LastSeenHours_other">最後上線於 %1$d 小時之前</string>
     <!--Last seen status-->
+    <!--Typing status-->
+    <string name="CG_AndMoreTypingGroup_one">%1$s及另%2$d個</string>
+    <string name="CG_AndMoreTypingGroup_other">%1$s及另%2$d個</string>
+    <!--Typing status-->
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">Tab 圖示類型</string>
     <string name="CG_FoldersTypeTitles">僅顯示文本</string>
@@ -51,6 +55,9 @@
     <string name="CG_CreateMention">建立提及</string>
     <string name="CG_CreateCode">建立代碼</string>
     <string name="CG_CreateCodeLanguage">語言</string>
+    <string name="CG_FwdMenu_Authorship">寄件人姓名</string>
+    <string name="CG_FwdMenu_Captions">標題</string>
+    <string name="CG_FwdMenu_Notify">通知</string>
     <string name="CG_Without_Authorship">無來源轉寄</string>
     <string name="CG_CopyTitle">複製標題</string>
     <string name="CG_CopyCallback">複製回傳資料</string>
@@ -167,6 +174,8 @@
     <string name="CP_ReplyBackgroundEmoji">回覆和連結預覽中的表情</string>
     <string name="CP_HideStories">隱藏限時動態（僅在本機）</string>
     <string name="CP_HideStories_Desc">限時動態將從您的對話清單和個人資料中消失。</string>
+    <string name="CP_ArchiveStories">封存限時動態</string>
+    <string name="CP_ArchiveStories_Desc">限時動態將自動封存並移至您的存檔中。</string>
     <string name="CP_CustomWallpapers">自訂對話背景</string>
     <string name="CP_CustomWallpapers_Desc">設定由Premium使用者/助力頻道所製作的對話/群組/頻道頁面中的自訂背景</string>
     <string name="CP_DisableAnimAvatars">停用動畫大頭貼</string>
@@ -225,19 +234,25 @@
     <string name="CP_DisableSwipeToNext">停用頻道切換</string>
     <string name="CP_DisableSwipeToNext_Desc">瀏覽頻道訊息時禁止切換至下一個頻道</string>
     <string name="CP_HideMuteUnmuteButton">隱藏頻道底部按鈕</string>
-    <string name="CP_HideKbdOnScroll">捲動時隱藏鍵盤</string>
+    <string name="CP_HideKbdOnScroll">Scroll intensity to hide keyboard when scrolling</string>
     <string name="CP_HideSendAsChannel">隱藏頻道身份傳送按鈕</string>
     <string name="CP_HideSendAsChannelDesc">您可以透過長按Emoji/貼紙/GIF 按鈕，開啟以頻道身份傳送的選單</string>
     <string name="CP_GeminiAI_API_Key">Gemini API 金鑰</string>
     <string name="CP_GeminiAI_API_Key_Desc">請瀏覽 <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]> 以取得 API 金鑰。</string>
     <string name="CP_GeminiAI_Model">Gemini 模型程式碼</string>
     <string name="CP_GeminiAI_Model_Desc">請瀏覽 <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]> 以取得可用模型的清單。</string>
+    <string name="CP_GeminiAI_Model_Selector">Gemini 模型列表</string>
+    <string name="CP_GeminiAI_Model_Selector_Desc">如果您有有效的 API 金鑰，請點選此處選擇模型，並自動填入欄位。</string>
     <string name="CP_GeminiAI_Sample">示例：</string>
     <string name="CP_GeminiAI_Instruction">如要使用 Gemini，
         您需要填寫此畫面上的所有值。
         \n\n之後，開啟任何對話，輸入訊息並按住傳送訊息按鈕。
         \n\n此外，您也可以使用 AI 回覆訊息。 如要執行此操作，請按一下對話中的任何文字訊息。
     </string>
+    <string name="CP_GeminiAI_Temperature">溫度</string>
+    <string name="CP_GeminiAI_Temperature_Desc">控制文字的創意度。低值會使文字更具預測性和重點，高值則使文字更具隨機性和原創性。</string>
+    <string name="CP_GeminiAI_ExtractText">提取文字 (OCR)</string>
+    <string name="CP_GeminiAI_Summarize">Summarize</string>
     <string name="CP_Header_Record">多媒體</string>
     <string name="CP_Messages_Size">訊息對話框大小</string>
     <string name="CP_Slider_MediaAmplifier">圖片與影片</string>
@@ -297,6 +312,7 @@
     <string name="EP_CustomAppTitle">應用程式標題</string>
     <string name="EP_CustomChat">自訂已儲存訊息的對話</string>
     <string name="EP_CustomChat_Desc">為來自另一個對話/群組/頻道的 ID 設定轉寄訊息 (操作列中的按鈕、訊息選單或按兩下)</string>
+    <string name="EP_CustomChat_Selected_Title">代替</string>
     <string name="EP_Network">網路</string>
     <string name="EP_DownloadSpeedBoost">下載加速</string>
     <string name="EP_DownloadSpeedBoostNone">關閉</string>
@@ -314,6 +330,9 @@
     <string name="SP_RemovedS">刪除成功</string>
     <string name="SP_AskPinForChats">需要生物辨識才能開啟對話</string>
     <string name="SP_AskPinForChats_Desc">開啟某些特定對話可能需要輸入密碼/進行生物辨識確認 (如指紋、Face ID、PIN 碼或圖案解鎖)。如要啟用對話鎖定功能，可以按一下在對話的右上角三個點。</string>
+    <string name="SP_LockedChats">鎖定的對話</string>
+    <string name="SP_LockedChats_Lock_Destination">更新鎖定清單</string>
+    <string name="SP_LockedChats_Lock_Destination_Sure">將被鎖定</string>
     <string name="SP_AskPinForArchive">需要生物辨識才能開啟已封存對話</string>
     <string name="SP_AskPinForArchive_Desc">開啟已封存對話可能需要輸入密碼/進行生物辨識確認 (如指紋、Face ID、PIN 碼或圖案解鎖)。</string>
     <string name="SP_HideArchive">從對話清單中隱藏已封存記錄</string>
@@ -352,6 +371,9 @@
     <!--Donations-->
     <string name="DP_RateUs">評價 Cherrygram</string>
     <string name="DP_Donate">捐贈</string>
+    <string name="DP_Donate_Desc">支持 Cherrygram 開發並獲得史詩般的徽章！
+    \n將付款證明 (&gt;=1$) 寄至 <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> 或 <![CDATA[<a href="https://t.me/CherrygramSupport">Cherrygram 支援對話</a>]]> 以取得徽章。</string>
+    <string name="DP_Donate_Bulletin">**%s** 為 **Cherrygram** 的成功作出了貢獻！</string>
     <string name="DP_Donate_Method">選擇付款方式</string>
     <!--Donations-->
     <!--Cherrygram screens-->

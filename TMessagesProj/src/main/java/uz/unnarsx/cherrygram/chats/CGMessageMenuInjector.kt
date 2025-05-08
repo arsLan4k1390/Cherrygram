@@ -94,6 +94,17 @@ object CGMessageMenuInjector {
             sections.add(cell)
         }
 
+        if (!TextUtils.isEmpty(selectedObject.messageOwner.message)) {
+            val cell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
+            cell.setTextAndIcon(getString(R.string.CP_GeminiAI_Summarize), R.drawable.magic_stick_solar)
+            cell.setOnClickListener {
+                GeminiResultsBottomSheet.setMessageObject(selectedObject)
+                GeminiResultsBottomSheet.setCurrentChat(chatActivity.currentChat)
+                chatActivity.processSelectedOption(ChatActivity.OPTION_SUMMARIZE_GEMINI)
+            }
+            sections.add(cell)
+        }
+
         if (isVoiceOrVideoMessage) {
             val cell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
             cell.setTextAndIcon(getString(R.string.PremiumPreviewVoiceToText), R.drawable.msg_photo_text_solar)
@@ -102,8 +113,9 @@ object CGMessageMenuInjector {
                 GeminiResultsBottomSheet.setMessageObject(selectedObject)
                 GeminiResultsBottomSheet.setCurrentChat(chatActivity.currentChat)
                 GeminiSDKImplementation.injectGeminiForMedia(
-                    selectedObject,
                     chatActivity,
+                    chatActivity,
+                    selectedObject,
                     false,
                     true
                 )
@@ -119,8 +131,9 @@ object CGMessageMenuInjector {
                 GeminiResultsBottomSheet.setMessageObject(selectedObject)
                 GeminiResultsBottomSheet.setCurrentChat(chatActivity.currentChat)
                 GeminiSDKImplementation.injectGeminiForMedia(
-                    selectedObject,
                     chatActivity,
+                    chatActivity,
+                    selectedObject,
                     false,
                     false
                 )
@@ -136,8 +149,9 @@ object CGMessageMenuInjector {
                 GeminiResultsBottomSheet.setMessageObject(selectedObject)
                 GeminiResultsBottomSheet.setCurrentChat(chatActivity.currentChat)
                 GeminiSDKImplementation.injectGeminiForMedia(
-                    selectedObject,
                     chatActivity,
+                    chatActivity,
+                    selectedObject,
                     true,
                     false
                 )

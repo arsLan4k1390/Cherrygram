@@ -106,7 +106,6 @@ import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.FilesMigrationService;
-import org.telegram.messenger.FingerprintController;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.LiteMode;
@@ -253,6 +252,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
+import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
@@ -297,8 +297,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private boolean storiesOverscrollCalled;
     private boolean wasDrawn;
     private int fragmentContextTopPadding;
-
-    public static boolean askPasscode = CherrygramPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete() && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged();
 
     public MessagesStorage.TopicKey getOpenedDialogId() {
         return openedDialogId;
@@ -7099,9 +7097,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (getParentActivity() == null) {
                 return;
             }
-            if (MessagesController.getGlobalNotificationsSettings().getBoolean("askedAboutFSILockscreen", false)) {
-                return;
-            }
             showDialog(new AlertDialog.Builder(getParentActivity())
                 .setTopAnimation(R.raw.permission_request_apk, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, Theme.getColor(Theme.key_dialogTopBackground))
                 .setMessage(getString(R.string.PermissionFSILockscreen))
@@ -7116,7 +7111,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         }
                     }
                 })
-                .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), (dialog, which) -> MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askedAboutFSILockscreen", true).commit())
+                .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), null)
                 .create());
         }
         showFiltersHint();
@@ -9448,7 +9443,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             hideActionMode(false);
                         });
                         builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
-                        if (askPasscode) {
+                        if (ChatsPasswordHelper.INSTANCE.askPasscodeBeforeDelete()) {
                             CGBiometricPrompt.prompt(getParentActivity(),
                                 () -> showDialog(builder.create())
                             );
@@ -9456,7 +9451,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             showDialog(builder.create());
                         }
                     } else {
-                        if (askPasscode) {
+                        if (ChatsPasswordHelper.INSTANCE.askPasscodeBeforeDelete()) {
                             TLRPC.User user1 = user;
                             CGBiometricPrompt.prompt(getParentActivity(),
                                 () -> AlertsCreator.createClearOrDeleteDialogAlert(DialogsActivity.this, action == clear, chat, user1, DialogObject.isEncryptedDialog(dialog.id), action == delete, (param) -> {

@@ -46,7 +46,6 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
-import org.telegram.ui.PhotoViewer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -63,7 +62,7 @@ public class GeminiSDKImplementation {
     public static void initGeminiConfig(
             BaseFragment baseFragment,
             ChatActivity chatActivity,
-            CharSequence inputText, boolean translateText,
+            CharSequence inputText, boolean translateText, boolean summarize,
             File mediaFile,
             boolean ocr, boolean transcribe
     ) {
@@ -87,7 +86,7 @@ public class GeminiSDKImplementation {
                 safetySettings,
                 baseFragment,
                 chatActivity,
-                inputText, translateText,
+                inputText, translateText, summarize,
                 mediaFile,
                 ocr, transcribe
         );
@@ -99,7 +98,7 @@ public class GeminiSDKImplementation {
             ArrayList<SafetySetting> safetySettings,
             BaseFragment baseFragment,
             ChatActivity chatActivity,
-            CharSequence inputText, boolean translateText,
+            CharSequence inputText, boolean translateText, boolean summarize,
             File mediaFile,
             boolean ocr, boolean transcribe
     ) {
@@ -115,7 +114,7 @@ public class GeminiSDKImplementation {
                 gm,
                 baseFragment,
                 chatActivity,
-                inputText, translateText,
+                inputText, translateText, summarize,
                 mediaFile,
                 ocr, transcribe
         );
@@ -126,7 +125,7 @@ public class GeminiSDKImplementation {
             GenerativeModel gm,
             BaseFragment baseFragment,
             ChatActivity chatActivity,
-            CharSequence inputText, boolean translateText,
+            CharSequence inputText, boolean translateText, boolean summarize,
             File mediaFile,
             boolean ocr, boolean transcribe
     ) {
@@ -151,24 +150,39 @@ public class GeminiSDKImplementation {
 
         if (inputBitmap != null && !ocr) { // Describing picture
             String lang = LocaleController.getInstance().getCurrentLocale().getLanguage();
-            content.addText("What is the object in this picture? Answer in language: " + lang);
+            content.addText("What is the object in this picture? Answer in " + lang + " language.");
             content.addImage(inputBitmap);
         } else if (inputBitmap != null && ocr) { // OCR - Optical Character Recognition
             content.addText("What text is written in the picture? Answer without further ado.");
             content.addImage(inputBitmap);
         } else if (translateText) { // Message translation
             String lang = capitalFirst(languageName(CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()));
-            String prompt = "Answer without further ado. Translate the text to " + lang + ": " + inputText;
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + prompt);
-            content.addText(prompt);
+
+            String translationPrompt = "You are a professional translator. Translate all input text into " +
+                    lang + " accurately and naturally, preserving the original meaning, tone, and context. " +
+                    "Do not add explanations or comments. Just return the translated text without any introduction or closing phrases. " +
+                    "Here is the text to translate into " + lang + ": " + inputText;
+
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + translationPrompt);
+            content.addText(translationPrompt);
         } else if (transcribe) { // Voice to text
             byte[] audioBytes = readBytesCompat(mediaFile);
             Part audioPart = new BlobPart("audio/ogg", audioBytes);
 
-            content.addText("Please transcribe the following audio to text without further ado.");
+            String ocrPrompt = "You are a speech-to-text transcriber. Accurately transcribe the spoken content from the provided audio without translating it. " +
+                    "Keep the original language of the speaker. Do not explain or comment on the content. " +
+                    "Return only the plain transcribed text, without any headers, summaries, or formatting.";
+
+            content.addText(ocrPrompt);
             content.addPart(audioPart);
         } else { // Answer only to text
-            content.addText(inputText.toString());
+            String summarizeString = summarize ? "Summarize the following message briefly in the language " +
+                    "it is written in. Output only the summary, without any additional text or phrases in the start or the end of the message " +
+                    "like \"Summary\" or \"Here is the summary\". The text to summarize: " : " ";
+
+            String prompt = summarizeString + inputText.toString();
+            content.addText(prompt);
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + prompt);
         }
         content.build();
 
@@ -199,8 +213,8 @@ public class GeminiSDKImplementation {
                     dialog.setMessage(resultText);
                     dialog.setPositiveButton(getString(R.string.OK), null);
 
-                    if (translateText || transcribe || inputBitmap != null || ocr) {
-                        int subtitle = getBottomSheetSubtitle(translateText, transcribe, inputBitmap, ocr);
+                    if (translateText || transcribe || summarize || inputBitmap != null || ocr) {
+                        int subtitle = getBottomSheetSubtitle(translateText, transcribe, summarize, inputBitmap, ocr);
                         GeminiResultsBottomSheet.showAlert(baseFragment, chatActivity, resultText, subtitle);
                     } else {
                         BulletinFactory.global()
@@ -253,25 +267,27 @@ public class GeminiSDKImplementation {
     }
 
     public static void injectGeminiForMedia(
-            MessageObject messageObject,
             BaseFragment baseFragment,
+            ChatActivity chatActivity,
+            MessageObject messageObject,
             boolean isOCR,
             boolean transcribe
     ) {
         if (getMediaFile(messageObject, baseFragment).exists()) {
             initGeminiConfig(
                     baseFragment,
-                    null,
-                    "", false,
+                    chatActivity,
+                    "", false, false,
                     getMediaFile(messageObject, baseFragment),
                     isOCR, transcribe
             );
+            if (transcribe && !messageObject.isOut() && messageObject.isContentUnread()) baseFragment.getMessagesController().markMessageContentAsRead(messageObject);
         } else {
             showDownloadAlert(baseFragment);
         }
     }
 
-    private static File getMediaFile(MessageObject messageObject, BaseFragment baseFragment) {
+    public static File getMediaFile(MessageObject messageObject, BaseFragment baseFragment) {
         File file = null;
         if (!TextUtils.isEmpty(messageObject.messageOwner.attachPath)) {
             file = new File(messageObject.messageOwner.attachPath);
@@ -288,10 +304,12 @@ public class GeminiSDKImplementation {
         return file;
     }
 
-    private static int getBottomSheetSubtitle(boolean translateText, boolean transcribe, Bitmap inputBitmap, boolean ocr) {
+    private static int getBottomSheetSubtitle(boolean translateText, boolean transcribe, boolean summarize, Bitmap inputBitmap, boolean ocr) {
         int subtitle = 0;
 
-        if (translateText) {
+        if (summarize) {
+            subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_SUMMARIZE;
+        } else if (translateText) {
             subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_TRANSLATE;
         } else if (transcribe) {
             subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_TRANSCRIBE;

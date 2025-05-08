@@ -137,7 +137,6 @@
     <string name="AP_IconReplacements">Заміна іконок</string>
     <string name="AP_Old_Notification_Icon">Стандартна іконка повідомлень (Telegram)</string>
     <string name="AP_Tablet_Mode">Режим планшета</string>
-    <string name="AP_ChangeIconFilter">Використовувати іконки Telegram</string>
     <string name="AP_ChangeIcon_Cherry_NY">Новий Рік</string>
     <string name="AP_ChangeIcon_Default">По замовчуванню</string>
     <string name="AP_ChangeIcon_Dark">Темнота</string>
@@ -235,7 +234,7 @@
     <string name="CP_DisableSwipeToNext">Вимкнути перехід на наступний канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Вимкнути перехід на наступний канал при прокрутці будь якого каналу</string>
     <string name="CP_HideMuteUnmuteButton">Приховати нижню кнопку в каналах</string>
-    <string name="CP_HideKbdOnScroll">Приховати клавіатуру під час прокрутки</string>
+    <string name="CP_HideKbdOnScroll">Інтенсивність прокручування щоб приховати клавіатуру</string>
     <string name="CP_HideSendAsChannel">Приховати \"Відправити як канал\"</string>
     <string name="CP_HideSendAsChannelDesc">Ви можете отримати доступ до меню довгим натисканням на кнопку Emoji/Stickers/GIF-зображення</string>
     <string name="CP_GeminiAI_API_Key">API ключ Gemini</string>
@@ -253,6 +252,7 @@
     <string name="CP_GeminiAI_Temperature">Температура</string>
     <string name="CP_GeminiAI_Temperature_Desc">Керування креативністю тексту. Низькі значення роблять текст більш передбачуваним та сфокусованим, високими значеннями - більш випадковими та оригінальними.</string>
     <string name="CP_GeminiAI_ExtractText">Витягнути текст (OCR)</string>
+    <string name="CP_GeminiAI_Summarize">Підсумувати</string>
     <string name="CP_Header_Record">Медіа</string>
     <string name="CP_Messages_Size">Розмір бульбашок повідомлень</string>
     <string name="CP_Slider_MediaAmplifier">Фото та відео</string>
@@ -373,7 +373,7 @@
     <string name="DP_Donate">Підтримати розробку</string>
     <string name="DP_Donate_Desc">Підтримайте розробку Cherrygram і отримаєте епічний значок!
     \nНадішліть доказ оплати (&gt;=1$) в <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> або <![CDATA[<a href="https://t.me/CherrygramSupport">Cherrygram підтримуючий чат</a>]]> для отримання значка.</string>
-    <string name="DP_Donate_Bulletin">**%s** додано **Cherrygram\'** успіх!</string>
+    <string name="DP_Donate_Bulletin">**%s** зробили внесок до **Cherrygram\'** успішно!</string>
     <string name="DP_Donate_Method">Оберіть метод</string>
     <!--Donations-->
     <!--Cherrygram screens-->

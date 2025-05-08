@@ -321,7 +321,9 @@ object ChatsHelper2 {
     @JvmStatic
     fun showJsonMenu(sa: JsonBottomSheet, field: FrameLayout, messageObject: MessageObject) {
         ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
-            .add(R.drawable.msg_info,
+            .addIf(
+                messageObject.messageOwner.action !is TLRPC.TL_messageActionSetChatWallPaper,
+                R.drawable.msg_info,
                 if (sa.isJacksonSupportedAndEnabled) "Switch to GSON" else "Switch to Jackson"
             ) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

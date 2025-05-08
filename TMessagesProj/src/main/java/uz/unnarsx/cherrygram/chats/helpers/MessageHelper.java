@@ -72,6 +72,8 @@ public class MessageHelper extends BaseController {
         return localInstance;
     }
 
+    private AlertDialog progressDialog;
+
     public void createDeleteHistoryAlert(BaseFragment fragment, TLRPC.Chat chat, TLRPC.TL_forumTopic forumTopic, long mergeDialogId, Theme.ResourcesProvider resourcesProvider) {
         createDeleteHistoryAlert(fragment, chat, forumTopic, mergeDialogId, -1, resourcesProvider);
     }
@@ -151,12 +153,40 @@ public class MessageHelper extends BaseController {
             messageTextView.setText(AndroidUtilities.replaceTags(getString(R.string.CG_DeleteAllFromSelfAlert)));
         }
 
+        progressDialog = new AlertDialog(fragment.getParentActivity(), AlertDialog.ALERT_TYPE_SPINNER);
+        progressDialog.setCanCancel(false);
+
         builder.setNeutralButton(getString(R.string.CG_DeleteAllFromSelfBefore), (dialog, which) -> showBeforeDatePickerAlert(fragment, before1 -> createDeleteHistoryAlert(fragment, chat, forumTopic, mergeDialogId, before1, resourcesProvider)));
         builder.setPositiveButton(getString(R.string.DeleteAll), (dialogInterface, i) -> {
+            AndroidUtilities.runOnUIThread(() -> {
+                try {
+                    progressDialog.show();
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
+            });
             if (cell != null && cell.isChecked()) {
-                showDeleteHistoryBulletin(fragment, 0, false, () -> getMessagesController().deleteUserChannelHistory(chat, getUserConfig().getCurrentUser(), null, 0), resourcesProvider);
+                showDeleteHistoryBulletin(fragment, 0, false, () -> {
+                    getMessagesController().deleteUserChannelHistory(chat, getUserConfig().getCurrentUser(), null, 0);
+                    AndroidUtilities.runOnUIThread(() -> {
+                        try {
+                            if (progressDialog != null && progressDialog.isShowing()) progressDialog.dismiss();
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+                    });
+                }, resourcesProvider);
             } else {
-                deleteUserHistoryWithSearch(fragment, -chat.id, forumTopic != null ? forumTopic.id : 0, forumTopic != null ? forumTopic.id : 0, mergeDialogId, before == -1 ? getConnectionsManager().getCurrentTime() : before, (count, deleteAction) -> showDeleteHistoryBulletin(fragment, count, true, deleteAction, resourcesProvider));
+                deleteUserHistoryWithSearch(fragment, -chat.id, forumTopic != null ? forumTopic.id : 0, forumTopic != null ? forumTopic.id : 0, mergeDialogId, before == -1 ? getConnectionsManager().getCurrentTime() : before, (count, deleteAction) -> {
+                    showDeleteHistoryBulletin(fragment, count, true, deleteAction, resourcesProvider);
+                    AndroidUtilities.runOnUIThread(() -> {
+                        try {
+                            if (progressDialog != null && progressDialog.isShowing()) progressDialog.dismiss();
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                        }
+                    });
+                });
             }
         });
         builder.setNegativeButton(getString(R.string.Cancel), null);
@@ -321,8 +351,14 @@ public class MessageHelper extends BaseController {
         }
         req.hash = hash;
         getConnectionsManager().sendRequest(req, (response, error) -> {
-            if (response instanceof TLRPC.messages_Messages) {
-                var res = (TLRPC.messages_Messages) response;
+            AndroidUtilities.runOnUIThread(() -> {
+                try {
+                    if (progressDialog != null && progressDialog.isShowing()) progressDialog.dismiss();
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
+            });
+            if (response instanceof TLRPC.messages_Messages res) {
                 if (response instanceof TLRPC.TL_messages_messagesNotModified || res.messages.isEmpty()) {
                     latch.countDown();
                     return;

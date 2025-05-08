@@ -307,26 +307,26 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
             return;
         }
 
-        if (geminiApiKeyField.getEditText().length() == 0) {
+        /*if (geminiApiKeyField.getEditText().length() == 0) {
             Vibrator v = (Vibrator) fragment.getParentActivity().getSystemService(Context.VIBRATOR_SERVICE);
             if (v != null) {
                 v.vibrate(200);
             }
             AndroidUtilities.shakeView(geminiApiKeyField);
             return;
-        }
+        }*/
         CherrygramChatsConfig.INSTANCE.setGeminiApiKey(
                 geminiApiKeyField.getEditText().getText().toString()
         );
 
-        if (geminiModelNameField.getEditText().length() == 0) {
+        /*if (geminiModelNameField.getEditText().length() == 0) {
             Vibrator v = (Vibrator) fragment.getParentActivity().getSystemService(Context.VIBRATOR_SERVICE);
             if (v != null) {
                 v.vibrate(200);
             }
             AndroidUtilities.shakeView(geminiModelNameField);
             return;
-        }
+        }*/
         CherrygramChatsConfig.INSTANCE.setGeminiModelName(
                 geminiModelNameField.getEditText().getText().toString()
         );

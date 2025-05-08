@@ -13029,7 +13029,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
         GeminiSDKImplementation.initGeminiConfig(
                 getParentFragment(),
                 getParentFragment(),
-                messageEditText.getText().toString(), false,
+                messageEditText.getText().toString(), false, false,
                 null,
                 false, false
         );

@@ -249,9 +249,9 @@ public class BackupHelper {
 
         mainconfig.add("AP_CenterChatTitle");
         mainconfig.add("CP_UnreadBadgeOnBackButton");
-        mainconfig.add("CP_HideKeyboardOnScroll");
         mainconfig.add("CP_DisableSwipeToNext");
         mainconfig.add("CP_HideMuteUnmuteButton");
+        mainconfig.add("CP_HideKeyboardOnScrollIntensity");
 
         mainconfig.add("CP_GeminiApiKey");
         mainconfig.add("CP_GeminiModelName");
