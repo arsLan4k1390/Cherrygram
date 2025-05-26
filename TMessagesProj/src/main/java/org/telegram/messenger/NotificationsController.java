@@ -51,7 +51,6 @@ import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
-import android.view.HapticFeedbackConstants;
 
 import androidx.collection.LongSparseArray;
 import androidx.core.app.NotificationCompat;
@@ -93,11 +92,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
-
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.VibrateUtil;
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
 public class NotificationsController extends BaseController {
 
@@ -274,7 +268,7 @@ public class NotificationsController extends BaseController {
                 preferences = ApplicationLoader.applicationContext.getSharedPreferences("Notifications", Activity.MODE_PRIVATE);
             }
             OTHER_NOTIFICATIONS_CHANNEL = "Other" + Utilities.random.nextLong();
-            preferences.edit().putString("OtherKey", OTHER_NOTIFICATIONS_CHANNEL).apply();
+            preferences.edit().putString("OtherKey", OTHER_NOTIFICATIONS_CHANNEL).commit();
         }
         if (notificationChannel == null) {
             notificationChannel = new NotificationChannel(OTHER_NOTIFICATIONS_CHANNEL, "Internal notifications", NotificationManager.IMPORTANCE_DEFAULT);
@@ -394,7 +388,7 @@ public class NotificationsController extends BaseController {
             SharedPreferences preferences = getAccountInstance().getNotificationsSettings();
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear();
-            editor.apply();
+            editor.commit();
 
             if (Build.VERSION.SDK_INT >= 26) {
                 try {
@@ -1131,20 +1125,7 @@ public class NotificationsController extends BaseController {
                 long topicId = MessageObject.getTopicId(currentAccount, messageObject.messageOwner, getMessagesController().isForum(messageObject));
                 if (dialogId == openedDialogId && ApplicationLoader.isScreenOn && !messageObject.isStoryReactionPush) {
                     if (!isFcm) {
-                        if (CherrygramChatsConfig.INSTANCE.getNotificationSound() != CherrygramChatsConfig.NOTIF_SOUND_DISABLE) {
-                            playInChatSound();
-                        }
-                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration() && CherrygramChatsConfig.INSTANCE.getVibrateInChats() != CherrygramChatsConfig.VIBRATION_DISABLE) {
-                            if (CherrygramChatsConfig.INSTANCE.getVibrateInChats() == CherrygramChatsConfig.VIBRATION_CLICK) {
-                                VibrateUtil.INSTANCE.makeClickVibration();
-                            } else if (CherrygramChatsConfig.INSTANCE.getVibrateInChats() == CherrygramChatsConfig.VIBRATION_WAVE_FORM) {
-                                VibrateUtil.INSTANCE.makeWaveVibration();
-                            } else if (CherrygramChatsConfig.INSTANCE.getVibrateInChats() == CherrygramChatsConfig.VIBRATION_KEYBOARD_TAP) {
-                                VibrateUtil.vibrate(HapticFeedbackConstants.KEYBOARD_TAP);
-                            } else if (CherrygramChatsConfig.INSTANCE.getVibrateInChats() == CherrygramChatsConfig.VIBRATION_LONG) {
-                                VibrateUtil.vibrate();
-                            }
-                        }
+                        playInChatSound();
                     }
                     FileLog.d("skipped message because chat is already opened (openedDialogId = " + openedDialogId + ")");
                     continue;
@@ -1850,9 +1831,6 @@ public class NotificationsController extends BaseController {
         } else {
             boolean isChannel = ChatObject.isChannel(chat) && !chat.megagroup;
             if (dialogPreviewEnabled && (chat_id == 0 && fromId != 0 && preferences.getBoolean("EnablePreviewAll", true) || chat_id != 0 && (!isChannel && preferences.getBoolean("EnablePreviewGroup", true) || isChannel && preferences.getBoolean("EnablePreviewChannel", true)))) {
-//                if (ChatsPasswordHelper.INSTANCE.isChatLocked(messageObject)) { // TODO: Investigate
-//                    return replaceSpoilers(messageObject);
-//                }
                 if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
                     userName[0] = null;
                     if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetSameChatWallPaper) {
@@ -2382,10 +2360,9 @@ public class NotificationsController extends BaseController {
         if (messageObject != null && messageObject.didSpoilLoginCode()) {
             return stringBuilder.toString();
         }
-        var entities = ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(messageObject);
-        for (int i = 0; i < entities.size(); i++) {
-            if (entities.get(i) instanceof TLRPC.TL_messageEntitySpoiler) {
-                TLRPC.TL_messageEntitySpoiler spoiler = (TLRPC.TL_messageEntitySpoiler) entities.get(i);
+        for (int i = 0; i < messageObject.messageOwner.entities.size(); i++) {
+            if (messageObject.messageOwner.entities.get(i) instanceof TLRPC.TL_messageEntitySpoiler) {
+                TLRPC.TL_messageEntitySpoiler spoiler = (TLRPC.TL_messageEntitySpoiler) messageObject.messageOwner.entities.get(i);
                 for (int j = 0; j < spoiler.length; j++) {
                     stringBuilder.setCharAt(spoiler.offset + j, spoilerChars[j % spoilerChars.length]);
                 }
@@ -2492,9 +2469,6 @@ public class NotificationsController extends BaseController {
         } else {
             if (chatId == 0 && fromId != 0) {
                 if (dialogPreviewEnabled && preferences.getBoolean("EnablePreviewAll", true)) {
-//                    if (ChatsPasswordHelper.INSTANCE.isChatLocked(messageObject)) { // TODO: Investigate
-//                        return replaceSpoilers(messageObject);
-//                    }
                     if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
                         if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetSameChatWallPaper) {
                             msg = LocaleController.getString(R.string.WallpaperSameNotification);
@@ -2644,9 +2618,6 @@ public class NotificationsController extends BaseController {
             } else if (chatId != 0) {
                 boolean isChannel = ChatObject.isChannel(chat) && !chat.megagroup;
                 if (dialogPreviewEnabled && (!isChannel && preferences.getBoolean("EnablePreviewGroup", true) || isChannel && preferences.getBoolean("EnablePreviewChannel", true))) {
-//                    if (ChatsPasswordHelper.INSTANCE.isChatLocked(messageObject)) { // TODO: Investigate
-//                        return replaceSpoilers(messageObject);
-//                    }
                     if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
                         if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionChatAddUser) {
                             long singleUserId = messageObject.messageOwner.action.user_id;
@@ -3221,11 +3192,7 @@ public class NotificationsController extends BaseController {
                     }
                     if (soundIn == 0 && !soundInLoaded) {
                         soundInLoaded = true;
-                        if (CherrygramChatsConfig.INSTANCE.getNotificationSound() == CherrygramChatsConfig.NOTIF_SOUND_DEFAULT) {
-                            soundIn = soundPool.load(ApplicationLoader.applicationContext, R.raw.sound_in, 1);
-                        } else if (CherrygramChatsConfig.INSTANCE.getNotificationSound() == CherrygramChatsConfig.NOTIF_SOUND_IOS) {
-                            soundIn = soundPool.load(ApplicationLoader.applicationContext, R.raw.sound_in_ios, 1);
-                        }
+                        soundIn = soundPool.load(ApplicationLoader.applicationContext, R.raw.sound_in, 1);
                     }
                     if (soundIn != 0) {
                         try {
@@ -3325,7 +3292,7 @@ public class NotificationsController extends BaseController {
                     }
                 }
             }
-            editor.apply();
+            editor.commit();
         } catch (Exception e) {
             FileLog.e(e);
         }
@@ -3415,7 +3382,7 @@ public class NotificationsController extends BaseController {
                 overwriteKey = "overwrite_private";
             }
             editor.remove(overwriteKey);
-            editor.apply();
+            editor.commit();
         } catch (Exception e) {
             FileLog.e(e);
         }
@@ -3450,7 +3417,7 @@ public class NotificationsController extends BaseController {
                         editor.remove(key);
                     }
                 }
-                editor.apply();
+                editor.commit();
             } catch (Exception e) {
                 FileLog.e(e);
             }
@@ -3587,12 +3554,12 @@ public class NotificationsController extends BaseController {
                     }
                 }
                 if (editor != null) {
-                    editor.apply();
+                    editor.commit();
                 }
             } catch (Exception e) {
                 FileLog.e(e);
             }
-            preferences.edit().putBoolean("groupsCreated5", true).apply();
+            preferences.edit().putBoolean("groupsCreated5", true).commit();
             groupsCreated = true;
         }
         if (!channelGroupsCreated) {
@@ -3884,7 +3851,7 @@ public class NotificationsController extends BaseController {
                             edited = true;
                         }
                         if (editor != null) {
-                            editor.apply();
+                            editor.commit();
                         }
                     }
                 }
@@ -3895,7 +3862,7 @@ public class NotificationsController extends BaseController {
         }
 
         if (edited && newSettingsHash != null) {
-            preferences.edit().putString(key, channelId).putString(key + "_s", newSettingsHash).apply();
+            preferences.edit().putString(key, channelId).putString(key + "_s", newSettingsHash).commit();
             if (BuildVars.LOGS_ENABLED) {
                 FileLog.d("change edited channel " + channelId);
             }
@@ -3931,7 +3898,7 @@ public class NotificationsController extends BaseController {
             } else {
                 channelId = currentAccount + "channel_" + dialogId + "_" + Utilities.random.nextLong();
             }
-            NotificationChannel notificationChannel = new NotificationChannel(channelId, secretChat ? LocaleController.getString(R.string.CG_AppName) : name, importance);
+            NotificationChannel notificationChannel = new NotificationChannel(channelId, secretChat ? LocaleController.getString(R.string.SecretChatName) : name, importance);
             notificationChannel.setGroup(groupId);
             if (ledColor != 0) {
                 notificationChannel.enableLights(true);
@@ -3961,7 +3928,7 @@ public class NotificationsController extends BaseController {
             }
             lastNotificationChannelCreateTime = SystemClock.elapsedRealtime();
             systemNotificationManager.createNotificationChannel(notificationChannel);
-            preferences.edit().putString(key, channelId).putString(key + "_s", newSettingsHash).apply();
+            preferences.edit().putString(key, channelId).putString(key + "_s", newSettingsHash).commit();
         }
         return channelId;
     }
@@ -4118,12 +4085,12 @@ public class NotificationsController extends BaseController {
             if (DialogObject.isEncryptedDialog(dialog_id) || allowSummary && pushDialogs.size() > 1 || passcode) {
                 if (passcode) {
                     if (chatId != 0) {
-                        name = LocaleController.getString(R.string.CG_AppName);
+                        name = LocaleController.getString(R.string.NotificationHiddenChatName);
                     } else {
-                        name = LocaleController.getString(R.string.CG_AppName);
+                        name = LocaleController.getString(R.string.NotificationHiddenName);
                     }
                 } else {
-                    name = LocaleController.getString(R.string.CG_AppName);
+                    name = LocaleController.getString(R.string.AppName);
                 }
                 replace = false;
             } else {
@@ -4219,10 +4186,6 @@ public class NotificationsController extends BaseController {
             }
 
             if (!notifyAboutLast || !value || MediaController.getInstance().isRecordingAudio() || silent == 1) {
-                notifyDisabled = true;
-            }
-
-            if (CherrygramChatsConfig.INSTANCE.getSilenceNonContacts() && getContactsController().contactsDict.get(userId) == null) {
                 notifyDisabled = true;
             }
 
@@ -4445,7 +4408,7 @@ public class NotificationsController extends BaseController {
             PendingIntent contentIntent = PendingIntent.getActivity(ApplicationLoader.applicationContext, 0, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_ONE_SHOT);
 
             mBuilder.setContentTitle(name)
-                    .setSmallIcon(CGResourcesHelper.INSTANCE.getProperNotificationIcon())
+                    .setSmallIcon(R.drawable.notification)
                     .setAutoCancel(true)
                     .setNumber(total_unread_count)
                     .setContentIntent(contentIntent)
@@ -4675,7 +4638,7 @@ public class NotificationsController extends BaseController {
                 editor.putString("sound_path_" + NotificationsController.getSharedPrefKey(dialogId, topicId), newSound);
                 deleteNotificationChannelInternal(dialogId, topicId, -1);
             }
-            editor.apply();
+            editor.commit();
             sound = Settings.System.DEFAULT_RINGTONE_URI;
             notificationBuilder.setChannelId(validateChannelId(dialogId, topicId, chatName, vibrationPattern, ledColor, sound, importance, isDefault, isInApp, isSilent, chatType));
             notificationManager.notify(notificationId, notificationBuilder.build());
@@ -4944,7 +4907,7 @@ public class NotificationsController extends BaseController {
                         continue;
                     }
                 }
-                name = LocaleController.getString(R.string.CG_AppName);
+                name = LocaleController.getString(R.string.SecretChatName);
                 photoPath = null;
             }
             if (lastMessageObject != null && lastMessageObject.isStoryReactionPush && !preferences.getBoolean("EnableReactionsPreview", true)) {
@@ -4955,9 +4918,9 @@ public class NotificationsController extends BaseController {
 
             if (waitingForPasscode) {
                 if (DialogObject.isChatDialog(dialogId)) {
-                    name = LocaleController.getString(R.string.CG_AppName);
+                    name = LocaleController.getString(R.string.NotificationHiddenChatName);
                 } else {
-                    name = LocaleController.getString(R.string.CG_AppName);
+                    name = LocaleController.getString(R.string.NotificationHiddenName);
                 }
                 photoPath = null;
                 canReply = false;
@@ -5161,13 +5124,13 @@ public class NotificationsController extends BaseController {
                             if (DialogObject.isChatDialog(dialogId)) {
                                 if (isChannel) {
                                     if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) {
-                                        personName = LocaleController.getString(R.string.CG_AppName);
+                                        personName = LocaleController.getString(R.string.NotificationHiddenChatName);
                                     }
                                 } else {
                                     personName = LocaleController.getString(R.string.NotificationHiddenChatUserName);
                                 }
                             } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O_MR1) {
-                                personName = LocaleController.getString(R.string.CG_AppName);
+                                personName = LocaleController.getString(R.string.NotificationHiddenName);
                             }
                         }
                     } else {
@@ -5295,11 +5258,7 @@ public class NotificationsController extends BaseController {
                                     }, 20_000);
 
                                     if (!TextUtils.isEmpty(messageObject.caption)) {
-                                        String finalText = messageObject.caption.toString();
-                                        if (ChatsPasswordHelper.INSTANCE.isChatLocked(lastMessageObject)) {
-                                            finalText = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(messageObject.caption.toString(), true);
-                                        }
-                                        messagingStyle.addMessage(finalText, ((long) messageObject.messageOwner.date) * 1000, person);
+                                        messagingStyle.addMessage(messageObject.caption, ((long) messageObject.messageOwner.date) * 1000, person);
                                     }
                                     setPhoto = true;
                                 }
@@ -5414,7 +5373,7 @@ public class NotificationsController extends BaseController {
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(ApplicationLoader.applicationContext)
                     .setContentTitle(name)
-                    .setSmallIcon(CGResourcesHelper.INSTANCE.getProperNotificationIcon())
+                    .setSmallIcon(R.drawable.notification)
                     .setContentText(text.toString())
                     .setAutoCancel(true)
                     .setNumber(dialogKey.story ? storyPushMessages.size() : messageObjects.size())
@@ -5802,7 +5761,7 @@ public class NotificationsController extends BaseController {
         if (dialog != null) {
             dialog.notify_settings = new TLRPC.TL_peerNotifySettings();
         }
-        editor.apply();
+        editor.commit();
         getNotificationsController().updateServerNotificationsSettings(did, topicId,true);
     }
 
@@ -5849,7 +5808,7 @@ public class NotificationsController extends BaseController {
                 dialog.notify_settings.mute_until = untilTime;
             }
         }
-        editor.apply();
+        editor.commit();
         updateServerNotificationsSettings(dialog_id, topicId);
     }
 
@@ -6064,7 +6023,7 @@ public class NotificationsController extends BaseController {
     }
 
     public void setGlobalNotificationsEnabled(int type, int time) {
-        getAccountInstance().getNotificationsSettings().edit().putInt(getGlobalNotificationsKey(type), time).apply();
+        getAccountInstance().getNotificationsSettings().edit().putInt(getGlobalNotificationsKey(type), time).commit();
         updateServerNotificationsSettings(type);
         getMessagesStorage().updateMutedDialogsFiltersCounters();
         deleteNotificationChannelGlobal(type);

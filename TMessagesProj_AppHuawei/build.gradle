@@ -1,15 +1,5 @@
-import okhttp3.*
-
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.time.LocalDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
-
 apply plugin: 'com.android.application'
 apply plugin: 'com.huawei.agconnect'
-apply plugin: 'com.google.firebase.crashlytics'
 
 repositories {
     mavenCentral()
@@ -21,27 +11,27 @@ configurations {
     compile.exclude module: 'support-v4'
 }
 
-configurations.configureEach {
+configurations.all {
     exclude group: 'com.google.firebase', module: 'firebase-core'
     exclude group: 'androidx.recyclerview', module: 'recyclerview'
 }
 
 dependencies {
     implementation project(':TMessagesProj')
-    implementation 'androidx.fragment:fragment:1.8.3'
+    implementation 'androidx.fragment:fragment:1.2.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     implementation files('../TMessagesProj/libs/libgsaverification-client.aar')
 
-    implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.huawei.hms:push:6.11.0.300'
-    implementation 'com.huawei.hms:maps:6.11.0.304'
-    implementation 'com.huawei.hms:location:6.11.0.301'
+    implementation 'com.google.firebase:firebase-messaging:22.0.0'
+    implementation 'com.huawei.hms:push:6.5.0.300'
+    implementation 'com.huawei.hms:maps:6.6.0.300'
+    implementation 'com.huawei.hms:location:6.4.0.300'
 }
 
 android {
-    compileSdk 36
-    buildToolsVersion = '36.0.0'
+    compileSdkVersion 34
+    buildToolsVersion '34.0.0'
 
     defaultConfig.applicationId = APP_PACKAGE
 
@@ -53,26 +43,30 @@ android {
         disable 'BlockedPrivateApi'
     }
 
+    dexOptions {
+        jumboMode = true
+    }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
 
         coreLibraryDesugaringEnabled true
     }
 
     signingConfigs {
         debug {
-            storeFile file('../Your_Key.jks')
-            storePassword 'Your_Password'
-            keyAlias 'Your_Alias'
-            keyPassword 'Your_Password'
+            storeFile file("../TMessagesProj/config/release.keystore")
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
         }
 
         release {
-            storeFile file('../Your_Key.jks')
-            storePassword 'Your_Password'
-            keyAlias 'Your_Alias'
-            keyPassword 'Your_Password'
+            storeFile file("../TMessagesProj/config/release.keystore")
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
         }
     }
 
@@ -80,7 +74,7 @@ android {
         debug {
             debuggable true
             jniDebuggable true
-            signingConfig signingConfigs.release
+            signingConfig signingConfigs.debug
             minifyEnabled false
             shrinkResources false
             multiDexEnabled true
@@ -107,13 +101,12 @@ android {
         manifest.srcFile '../TMessagesProj/config/release/AndroidManifest.xml'
     }
 
-    flavorDimensions = ["minApi"]
+    flavorDimensions "minApi"
 
     productFlavors {
         afat {
             ndk {
-                //noinspection ChromeOsAbiSupport
-                abiFilters "armeabi-v7a", "arm64-v8a"/*, "x86", "x86_64"*/
+                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
             sourceSets.debug {
                 manifest.srcFile '../TMessagesProj/config/debug/AndroidManifest_SDK23.xml'
@@ -129,12 +122,10 @@ android {
 
     defaultConfig.versionCode = Integer.parseInt(APP_VERSION_CODE)
 
-    applicationVariants.configureEach { variant ->
-        variant.outputs.configureEach { output ->
-            def abi = output.getFilter('ABI')
-            if (abi == null) abi = 'universal'
-            outputFileName = "Cherrygram-Huawei-${APP_VERSION_NAME_CHERRY}-TG-${defaultConfig.versionName}-${abi}.apk"
-            output.versionCodeOverride = defaultConfig.versionCode * 10
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "app-huawei.apk"
+            output.versionCodeOverride = defaultConfig.versionCode * 10 + variant.productFlavors.get(0).abiVersionCode
         }
     }
 
@@ -146,7 +137,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 34
         versionName APP_VERSION_NAME
         ndkVersion "21.4.7075529"
@@ -158,7 +149,7 @@ android {
         externalNativeBuild {
             cmake {
                 version '3.10.2'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
+                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-16'
             }
         }
     }
@@ -170,185 +161,6 @@ android {
 
     lintOptions {
         checkReleaseBuilds false
-    }
-
-    bundle {
-        language {
-            enableSplit = false
-        }
-    }
-
-    splits.abi {
-        enable true
-        reset()
-        //noinspection ChromeOsAbiSupport
-        include "arm64-v8a", "armeabi-v7a"
-        universalApk true
-    }
-}
-
-/** *
- *
- * CI/CD is used for sending APKs to Telegram and copying them to Desktop
- *
- * **/
-
-static def loadEnv(filePath) {
-    def env = [:]
-    Files.lines(Paths.get(filePath)).each { line ->
-        if (line && !line.startsWith("#")) {
-            def (key, value) = line.split('=', 2)
-            env[key.trim()] = value?.trim()
-        }
-    }
-    return env
-}
-
-def env = loadEnv("${project.rootDir}/secrets_for_ci.env")
-
-env.each { key, value ->
-    ext."$key" = value
-}
-
-static def isWindows() {
-    def osName = System.getProperty('os.name').toLowerCase()
-    return osName.contains('win')
-}
-
-static def isMacOS() {
-    def osName = System.getProperty('os.name').toLowerCase()
-    return osName.contains('mac')
-}
-
-static def isWindowsOrMacOS() {
-    def osName = System.getProperty('os.name').toLowerCase()
-    return osName.contains('win') || osName.contains('mac')
-}
-
-static def getOSName() {
-    def buildHost
-    if (isWindows()) {
-        buildHost = 'Windows'
-    } else if (isMacOS()) {
-        buildHost = 'macOS'
-    } else {
-        buildHost = 'Unknown'
-    }
-    return buildHost
-}
-
-def desktopPath
-if (isWindows()) {
-    desktopPath = "C:/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
-} else if (isMacOS()) {
-    desktopPath = "/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
-}
-
-tasks.register('copyFiles', Copy) {
-    from "${projectDir}/afat/release/"
-    include '**/*.apk'
-    exclude 'baselineProfiles/**'
-    into desktopPath
-}
-
-def fileName = "Cherrygram-Huawei-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-arm64-v8a.apk"
-def apkFilePath = "${projectDir}/afat/release/${fileName}"
-
-def fileName2 = "Cherrygram-Huawei-${APP_VERSION_NAME_CHERRY}-TG-${APP_VERSION_NAME}-armeabi-v7a.apk"
-def apkFilePath2 = "${projectDir}/afat/release/${fileName2}"
-
-tasks.register('sendApk') {
-    doLast {
-        def file = new File(apkFilePath)
-        def file2 = new File(apkFilePath2)
-
-        if (!file.exists() && !file2.exists()) {
-            println "APK file not found: $apkFilePath"
-            println "APK file not found: $apkFilePath2"
-            return
-        }
-
-        println "Sending APK to Cherrygram Support..."
-
-        try {
-            sendApkToTelegram(file)
-            sendApkToTelegram(file2)
-        } catch (Exception e) {
-            println "Error sending APK: ${e.message}"
-            e.printStackTrace()
-        }
-    }
-}
-
-void sendApkToTelegram(File file) {
-    OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(90, TimeUnit.SECONDS)
-            .build()
-
-    def appVersion = "App version: *${APP_VERSION_NAME_CHERRY} // ${APP_VERSION_NAME} (${APP_VERSION_CODE})*"
-
-    def currentDateAndTime = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm"))
-    def buildDate = "\n \nBuild date (UTC): *" + currentDateAndTime + "*\n"
-
-    def buildHost = "\nBuilt on: *${getOSName()}*"
-
-    def currentRepo = 'git rev-parse --show-toplevel'.execute().text.trim().split('/').last()
-    def currentBranch = 'git rev-parse --abbrev-ref HEAD'.execute().text.trim()
-    def projectName = "\n \nProject: *${currentRepo}*" + "/${currentBranch}"
-
-    def lastCommitAuthor = 'git log -1 --pretty=%an'.execute().text.trim()
-    def author = "\nTriggered by: *${lastCommitAuthor}*"
-
-
-    def fileCaption
-    if (file.name.contains("arm64-v8a")) {
-        fileCaption = appVersion + buildDate + "Architecture: *arm64-v8a*" + buildHost + projectName + author
-    } else if (file.name.contains("armeabi-v7a")) {
-        fileCaption = appVersion + buildDate + "Architecture: *armeabi-v7a*" + buildHost + projectName + author
-    } else {
-        fileCaption = appVersion + buildDate + "Architecture: *universal*" + buildHost + projectName + author
-    }
-
-    def requestBody = new MultipartBody.Builder()
-            .setType(MultipartBody.FORM)
-            .addFormDataPart("chat_id", "${TELEGRAM_CHAT_ID}")
-            .addFormDataPart("document", file.name,
-                    RequestBody.create(MediaType.parse("application/vnd.android.package-archive"), file)
-            )
-            .addFormDataPart("caption", fileCaption)
-            .addFormDataPart("parse_mode", "Markdown")
-            .build()
-
-    def request = new Request.Builder()
-            .url("https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument")
-            .post(requestBody)
-            .build()
-
-    println "Uploading file: ${file.name}, size: ${file.length()} bytes"
-
-    client.newCall(request).execute().withCloseable { response ->
-        if (response.isSuccessful()) {
-            println "APK successfully sent to Cherrygram Support!"
-        } else {
-            throw new RuntimeException("HTTP ${response.code()} - ${response.message()}")
-        }
-    }
-}
-
-tasks.configureEach { task ->
-    if (task.name == 'extractProguardFiles') {
-        task.doFirst {
-            delete "${projectDir}/afat/release/"
-        }
-    }
-
-    if (task.name == 'assembleAfatRelease') {
-        if (isWindowsOrMacOS()) {
-            sendApk.mustRunAfter copyFiles
-            task.finalizedBy 'copyFiles', 'sendApk'
-        } else {
-            task.finalizedBy 'sendApk'
-        }
     }
 }
 

@@ -44,8 +44,6 @@ import org.telegram.ui.Components.StaticLayoutEx;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public class ChatPullingDownDrawable implements NotificationCenter.NotificationCenterDelegate {
 
     public int dialogFolderId;
@@ -330,11 +328,9 @@ public class ChatPullingDownDrawable implements NotificationCenter.NotificationC
         if ((progress >= 1f && lastProgress < 1f) || (progress < 1f && lastProgress == 1f)) {
             long time = System.currentTimeMillis();
             if (time - lastHapticTime > 100) {
-                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    try {
-                        parent.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                    } catch (Exception ignored) {}
-                }
+                try {
+                    parent.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                } catch (Exception ignored) {}
                 lastHapticTime = time;
             }
             lastProgress = progress;

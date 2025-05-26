@@ -166,8 +166,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.core.PermissionsUtils;
-
 public class StoryRecorder implements NotificationCenter.NotificationCenterDelegate {
 
     private final Theme.ResourcesProvider resourcesProvider = new DarkThemeResourceProvider();
@@ -3787,7 +3785,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
             if (useDisplayFlashlight() && frontfaceFlashModes != null && !frontfaceFlashModes.isEmpty()) {
                 final String mode = frontfaceFlashModes.get(frontfaceFlashMode);
                 SharedPreferences sharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("camera", Activity.MODE_PRIVATE);
-                sharedPreferences.edit().putString("flashMode", mode).apply();
+                sharedPreferences.edit().putString("flashMode", mode).commit();
             }
             cameraView.switchCamera();
             saveCameraFace(cameraView.isFrontface());
@@ -6510,10 +6508,18 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
     private boolean requestGalleryPermission() {
         if (activity != null) {
             boolean noGalleryPermission = false;
-            if (Build.VERSION.SDK_INT >= 23) {
-                noGalleryPermission = !PermissionsUtils.isImagesAndVideoPermissionGranted();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                noGalleryPermission = (
+                    activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED ||
+                    activity.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED
+                );
                 if (noGalleryPermission) {
-                    PermissionsUtils.requestImagesAndVideoPermission(activity);
+                    activity.requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO}, 114);
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                noGalleryPermission = activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
+                if (noGalleryPermission) {
+                    activity.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 114);
                 }
             }
             return !noGalleryPermission;
@@ -7111,25 +7117,25 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         if (animated) {
             view.setVisibility(View.VISIBLE);
             view.animate()
-                    .alpha(visible ? 1.0f : 0.0f)
-                    .setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                        @Override
-                        public void onAnimationUpdate(@NonNull ValueAnimator animation) {
-                            updateActionBarButtonsOffsets();
+                .alpha(visible ? 1.0f : 0.0f)
+                .setUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(@NonNull ValueAnimator animation) {
+                        updateActionBarButtonsOffsets();
+                    }
+                })
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        updateActionBarButtonsOffsets();
+                        if (!visible) {
+                            view.setVisibility(View.GONE);
                         }
-                    })
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            updateActionBarButtonsOffsets();
-                            if (!visible) {
-                                view.setVisibility(View.GONE);
-                            }
-                        }
-                    })
-                    .setDuration(320)
-                    .setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT)
-                    .start();
+                    }
+                })
+                .setDuration(320)
+                .setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT)
+                .start();
         } else {
             view.animate().cancel();
             view.setVisibility(visible ? View.VISIBLE : View.GONE);

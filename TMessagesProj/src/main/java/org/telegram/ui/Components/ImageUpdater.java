@@ -63,8 +63,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uz.unnarsx.cherrygram.core.PermissionsUtils;
-
 public class ImageUpdater implements NotificationCenter.NotificationCenterDelegate, PhotoCropActivity.PhotoEditActivityDelegate {
     private final static int ID_TAKE_PHOTO = 0,
             ID_UPLOAD_FROM_GALLERY = 1,
@@ -719,13 +717,14 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
             return;
         }
         final Activity activity = parentFragment.getParentActivity();
-        if (Build.VERSION.SDK_INT >= 23 && activity != null) {
-            if (canSelectVideo ? !PermissionsUtils.isImagesAndVideoPermissionGranted() : !PermissionsUtils.isImagesPermissionGranted()) {
-                if (canSelectVideo) {
-                    PermissionsUtils.requestImagesAndVideoPermission(activity, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE_FOR_AVATAR);
-                } else {
-                    PermissionsUtils.requestImagesPermission(activity, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE_FOR_AVATAR);
-                }
+        if (Build.VERSION.SDK_INT >= 33 && activity != null) {
+            if (activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED || activity.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
+                activity.requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE_FOR_AVATAR);
+                return;
+            }
+        } else if (Build.VERSION.SDK_INT >= 23 && activity != null) {
+            if (activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                activity.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE_FOR_AVATAR);
                 return;
             }
         }

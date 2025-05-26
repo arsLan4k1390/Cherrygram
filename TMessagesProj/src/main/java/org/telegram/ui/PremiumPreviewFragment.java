@@ -874,7 +874,7 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
 
     @Override
     public boolean isActionBarCrossfadeEnabled() {
-        return true;
+        return false;
     }
 
     public static void buyPremium(BaseFragment fragment) {
@@ -1046,9 +1046,9 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
                 if (selectedTier == null || selectedTier.subscriptionOption == null || selectedTier.subscriptionOption.bot_url == null) {
                     if (!TextUtils.isEmpty(fragment.getMessagesController().premiumBotUsername)) {
                         launchActivity.setNavigateToPremiumBot(true);
-                        launchActivity.onNewIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/" + fragment.getMessagesController().premiumBotUsername + "?start=" + source)).putExtra("internal", true), (Browser.Progress) null);
+                        launchActivity.onNewIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/" + fragment.getMessagesController().premiumBotUsername + "?start=" + source)), null);
                     } else if (!TextUtils.isEmpty(fragment.getMessagesController().premiumInvoiceSlug)) {
-                        launchActivity.onNewIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/$" + fragment.getMessagesController().premiumInvoiceSlug)).putExtra("internal", true), (Browser.Progress) null);
+                        launchActivity.onNewIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/$" + fragment.getMessagesController().premiumInvoiceSlug)), null);
                     }
                 } else {
                     Uri uri = Uri.parse(selectedTier.subscriptionOption.bot_url);
@@ -1967,7 +1967,7 @@ public class PremiumPreviewFragment extends BaseFragment implements Notification
             animated = false;
         }
         if (BuildVars.IS_BILLING_UNAVAILABLE && selectedTierIndex < subscriptionTiers.size()) {
-            premiumButtonView.setButton(getPremiumButtonText(currentAccount, null), v -> buyPremium(this), animated);
+            premiumButtonView.setButton(getPremiumButtonText(currentAccount, subscriptionTiers.get(selectedTierIndex)), v -> buyPremium(this), animated);
             return;
         }
         if (!BuildVars.useInvoiceBilling() && (!BillingController.getInstance().isReady() || subscriptionTiers.isEmpty() || selectedTierIndex >= subscriptionTiers.size() || subscriptionTiers.get(selectedTierIndex).googlePlayProductDetails == null)) {

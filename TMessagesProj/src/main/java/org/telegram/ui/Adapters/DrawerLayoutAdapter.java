@@ -9,6 +9,7 @@
 package org.telegram.ui.Adapters;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -22,7 +23,6 @@ import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.KotlinFragmentsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.ActionBar.Theme;
@@ -37,8 +37,6 @@ import org.telegram.ui.Components.SideMenultItemAnimator;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
 
@@ -84,7 +82,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         if (profileCell != null) {
             profileCell.setAccountsShown(accountsShown, animated);
         }
-        MessagesController.getGlobalMainSettings().edit().putBoolean("accountsShown", accountsShown).apply();
+        MessagesController.getGlobalMainSettings().edit().putBoolean("accountsShown", accountsShown).commit();
         if (animated) {
             itemAnimator.setShouldClipChildren(false);
             if (accountsShown) {
@@ -251,16 +249,11 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             return;
         }
         int eventType = Theme.getEventType();
-        if (CherrygramAppearanceConfig.INSTANCE.getEventType() > 0) {
-            eventType = CherrygramAppearanceConfig.INSTANCE.getEventType() - 1;
-        }
         int newGroupIcon;
         int newSecretIcon;
         int newChannelIcon;
         int contactsIcon;
         int callsIcon;
-        int archiveIcon = R.drawable.msg_archive;
-        int scanQrIcon = R.drawable.msg_qrcode;;
         int savedIcon;
         int settingsIcon;
         int inviteIcon;
@@ -268,60 +261,48 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         if (eventType == 0) {
             newGroupIcon = R.drawable.msg_groups_ny;
             //newSecretIcon = R.drawable.msg_secret_ny;
-            newChannelIcon = R.drawable.msg_channel_ny;
+            //newChannelIcon = R.drawable.msg_channel_ny;
             contactsIcon = R.drawable.msg_contacts_ny;
             callsIcon = R.drawable.msg_calls_ny;
             savedIcon = R.drawable.msg_saved_ny;
             settingsIcon = R.drawable.msg_settings_ny;
-            /*inviteIcon = R.drawable.msg_invite_ny;
-            helpIcon = R.drawable.msg_help_ny;*/
+            inviteIcon = R.drawable.msg_invite_ny;
+            helpIcon = R.drawable.msg_help_ny;
         } else if (eventType == 1) {
             newGroupIcon = R.drawable.msg_groups_14;
             //newSecretIcon = R.drawable.msg_secret_14;
-            newChannelIcon = R.drawable.msg_channel_14;
+            //newChannelIcon = R.drawable.msg_channel_14;
             contactsIcon = R.drawable.msg_contacts_14;
             callsIcon = R.drawable.msg_calls_14;
             savedIcon = R.drawable.msg_saved_14;
             settingsIcon = R.drawable.msg_settings_14;
-            /*inviteIcon = R.drawable.msg_secret_ny;
-            helpIcon = R.drawable.msg_help;*/
+            inviteIcon = R.drawable.msg_secret_ny;
+            helpIcon = R.drawable.msg_help;
         } else if (eventType == 2) {
             newGroupIcon = R.drawable.msg_groups_hw;
             //newSecretIcon = R.drawable.msg_secret_hw;
-            newChannelIcon = R.drawable.msg_channel_hw;
+            //newChannelIcon = R.drawable.msg_channel_hw;
             contactsIcon = R.drawable.msg_contacts_hw;
             callsIcon = R.drawable.msg_calls_hw;
             savedIcon = R.drawable.msg_saved_hw;
             settingsIcon = R.drawable.msg_settings_hw;
-            /*inviteIcon = R.drawable.msg_invite_hw;
-            helpIcon = R.drawable.msg_help_hw;*/
-        } else if (eventType == 3) {
-            newGroupIcon = R.drawable.menu_groups_cn;
-            newSecretIcon = R.drawable.menu_secret_cn;
-            newChannelIcon = R.drawable.menu_broadcast_cn;
-            contactsIcon = R.drawable.menu_contacts_cn;
-            callsIcon = R.drawable.menu_calls_cn;
-            savedIcon = R.drawable.menu_bookmarks_cn;
-            settingsIcon = R.drawable.menu_settings_cn;
-            scanQrIcon = R.drawable.msg_qrcode;
-            /*inviteIcon = R.drawable.menu_invite_cn;
-            helpIcon = R.drawable.msg_help_hw;*/
+            inviteIcon = R.drawable.msg_invite_hw;
+            helpIcon = R.drawable.msg_help_hw;
         } else {
             newGroupIcon = R.drawable.msg_groups;
-            newSecretIcon = R.drawable.msg_secret;
-            newChannelIcon = R.drawable.msg_channel;
+            //newSecretIcon = R.drawable.msg_secret;
+            //newChannelIcon = R.drawable.msg_channel;
             contactsIcon = R.drawable.msg_contacts;
             callsIcon = R.drawable.msg_calls;
             savedIcon = R.drawable.msg_saved;
             settingsIcon = R.drawable.msg_settings_old;
-            /*inviteIcon = R.drawable.msg_invite;
-            helpIcon = R.drawable.msg_help;*/
+            inviteIcon = R.drawable.msg_invite;
+            helpIcon = R.drawable.msg_help;
         }
         UserConfig me = UserConfig.getInstance(UserConfig.selectedAccount);
         boolean showDivider = false;
-        if (CherrygramAppearanceConfig.INSTANCE.getMyProfileDrawerButton())
-            items.add(new Item(16, LocaleController.getString(R.string.MyProfile), R.drawable.left_status_profile));
-        if (me != null && me.isPremium() && CherrygramAppearanceConfig.INSTANCE.getChangeStatusDrawerButton()) {
+        items.add(new Item(16, LocaleController.getString(R.string.MyProfile), R.drawable.left_status_profile));
+        if (me != null && me.isPremium()) {
             if (me.getEmojiStatus() != null) {
                 items.add(new Item(15, LocaleController.getString(R.string.ChangeEmojiStatus), R.drawable.msg_status_edit));
             } else {
@@ -329,7 +310,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             }
             showDivider = true;
         }
-//        if (MessagesController.getInstance(UserConfig.selectedAccount).storiesEnabled() && CherrygramAppearanceConfig.INSTANCE.getMyStoriesDrawerButton()) {
+//        if (MessagesController.getInstance(UserConfig.selectedAccount).storiesEnabled()) {
 //            items.add(new Item(17, LocaleController.getString(R.string.ProfileStories), R.drawable.msg_menu_stories));
 //            showDivider = true;
 //        }
@@ -352,34 +333,16 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         if (showDivider) {
             items.add(null); // divider
         }
-
-        if (CherrygramAppearanceConfig.INSTANCE.getCreateGroupDrawerButton())
-            items.add(new Item(2, LocaleController.getString(R.string.NewGroup), newGroupIcon));
+        items.add(new Item(2, LocaleController.getString(R.string.NewGroup), newGroupIcon));
         //items.add(new Item(3, LocaleController.getString(R.string.NewSecretChat), newSecretIcon));
-        if (CherrygramAppearanceConfig.INSTANCE.getCreateChannelDrawerButton())
-            items.add(new Item(4, LocaleController.getString(R.string.NewChannel), newChannelIcon));
-        if (CherrygramAppearanceConfig.INSTANCE.getContactsDrawerButton())
-            items.add(new Item(6, LocaleController.getString(R.string.Contacts), contactsIcon));
-        if (CherrygramAppearanceConfig.INSTANCE.getCallsDrawerButton())
-            items.add(new Item(10, LocaleController.getString(R.string.Calls), callsIcon));
-        if (CherrygramAppearanceConfig.INSTANCE.getSavedMessagesDrawerButton())
-            items.add(new Item(11, LocaleController.getString(R.string.SavedMessages), savedIcon));
-        if (CherrygramAppearanceConfig.INSTANCE.getArchivedChatsDrawerButton())
-            items.add(new Item(1001, LocaleController.getString(R.string.ArchivedChats), archiveIcon));
-        if (CherrygramAppearanceConfig.INSTANCE.getScanQRDrawerButton())
-            items.add(new Item(1000, LocaleController.getString(R.string.AuthAnotherClient), scanQrIcon));
+        //items.add(new Item(4, LocaleController.getString(R.string.NewChannel), newChannelIcon));
+        items.add(new Item(6, LocaleController.getString(R.string.Contacts), contactsIcon));
+        items.add(new Item(10, LocaleController.getString(R.string.Calls), callsIcon));
+        items.add(new Item(11, LocaleController.getString(R.string.SavedMessages), savedIcon));
         items.add(new Item(8, LocaleController.getString(R.string.Settings), settingsIcon));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getCGPreferencesDrawerButton()) {
-            items.add(null);
-            items.add(new Item(1002, LocaleController.getString(R.string.CGP_AdvancedSettings), settingsIcon));
-        }
-
-        /*items.add(null); // divider
-        if (CherrygramAppearanceConfig.INSTANCE.getInviteFriendsDrawerButton())
-            items.add(new Item(7, LocaleController.getString("InviteFriends", R.string.InviteFriends), inviteIcon));
-        if (CherrygramAppearanceConfig.INSTANCE.getTelegramFeaturesDrawerButton())
-            items.add(new Item(13, LocaleController.getString("TelegramFeatures", R.string.TelegramFeatures), helpIcon));*/
+        items.add(null); // divider
+        items.add(new Item(7, LocaleController.getString(R.string.InviteFriends), inviteIcon));
+        items.add(new Item(13, LocaleController.getString(R.string.TelegramFeatures), helpIcon));
     }
 
     public boolean click(View view, int position) {
@@ -462,11 +425,6 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
                 actionCell.setTextAndIcon(id, text, icon);
             }
             actionCell.setError(error);
-
-            if (text == null) {
-                return;
-            }
-            KotlinFragmentsManager.INSTANCE.vnwpoih23nkjhqj(text);
         }
 
         @Keep

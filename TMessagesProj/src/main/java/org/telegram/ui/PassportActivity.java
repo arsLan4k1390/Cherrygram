@@ -994,8 +994,8 @@ public class PassportActivity extends BaseFragment implements NotificationCenter
                                 if (!TextUtils.isEmpty(firstName) && !TextUtils.isEmpty(middleName) && !TextUtils.isEmpty(lastName)) {
                                     int num = a;
                                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                                    builder.setMessage(LocaleController.formatString(R.string.PassportNameCheckAlert, firstName, middleName, lastName));
-                                    builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+                                    builder.setMessage(LocaleController.formatString("PassportNameCheckAlert", R.string.PassportNameCheckAlert, firstName, middleName, lastName));
+                                    builder.setTitle(LocaleController.getString(R.string.AppName));
                                     builder.setPositiveButton(LocaleController.getString(R.string.Done), (dialogInterface, i) -> {
                                         inputFields[FIELD_NAME].setText(firstName);
                                         inputFields[FIELD_MIDNAME].setText(middleName);
@@ -3543,7 +3543,7 @@ public class PassportActivity extends BaseFragment implements NotificationCenter
             finishFragment();
         });
         builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
-        builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+        builder.setTitle(LocaleController.getString(R.string.AppName));
         if (documentOnly && currentDocumentsType == null && currentType.type instanceof TLRPC.TL_secureValueTypeAddress) {
             builder.setMessage(LocaleController.getString(R.string.PassportDeleteAddressAlert));
         } else if (documentOnly && currentDocumentsType == null && currentType.type instanceof TLRPC.TL_secureValueTypePersonalDetails) {
@@ -4906,7 +4906,7 @@ public class PassportActivity extends BaseFragment implements NotificationCenter
                 builder.setMessage(LocaleController.getString(R.string.PassportDeleteScan));
             }
             builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
-            builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+            builder.setTitle(LocaleController.getString(R.string.AppName));
             builder.setPositiveButton(LocaleController.getString(R.string.OK), (dialog, which) -> {
                 documentsCells.remove(document);
                 if (type == UPLOADING_TYPE_SELFIE) {
@@ -5987,8 +5987,8 @@ public class PassportActivity extends BaseFragment implements NotificationCenter
                             deleteValueInternal(requiredType, null, null, true, this::needHideProgress, (error, text) -> needHideProgress(), documentOnly);
                         });
                         builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
-                        builder.setTitle(LocaleController.getString(R.string.CG_AppName));
-                        builder.setMessage(phoneField ? LocaleController.getString(R.string.PassportDeletePhoneAlert) : LocaleController.getString("PassportDeleteEmailAlert", R.string.PassportDeleteEmailAlert));
+                        builder.setTitle(LocaleController.getString(R.string.AppName));
+                        builder.setMessage(phoneField ? LocaleController.getString(R.string.PassportDeletePhoneAlert) : LocaleController.getString(R.string.PassportDeleteEmailAlert));
                         showDialog(builder.create());
                         return;
                     }
@@ -6285,7 +6285,7 @@ public class PassportActivity extends BaseFragment implements NotificationCenter
                 if (!permissionsItems.isEmpty()) {
                     if (getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                        builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+                        builder.setTitle(LocaleController.getString(R.string.AppName));
                         builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
                         builder.setMessage(LocaleController.getString(R.string.AllowReadCall));
                         permissionsDialog = showDialog(builder.create());
@@ -6307,9 +6307,9 @@ public class PassportActivity extends BaseFragment implements NotificationCenter
         req.settings.allow_app_hash = PushListenerController.GooglePushListenerServiceProvider.INSTANCE.hasServices();
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE);
         if (req.settings.allow_app_hash) {
-            preferences.edit().putString("sms_hash", BuildVars.getSmsHash()).apply();
+            preferences.edit().putString("sms_hash", BuildVars.getSmsHash()).commit();
         } else {
-            preferences.edit().remove("sms_hash").apply();
+            preferences.edit().remove("sms_hash").commit();
         }
         if (req.settings.allow_flashcall) {
             try {
@@ -6646,7 +6646,7 @@ public class PassportActivity extends BaseFragment implements NotificationCenter
                 }
                 if (grantResults != null && grantResults.length != 0 && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                    builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+                    builder.setTitle(LocaleController.getString(R.string.AppName));
                     builder.setMessage(LocaleController.getString(R.string.PermissionNoAudioVideoWithHint));
                     builder.setNegativeButton(LocaleController.getString(R.string.PermissionOpenSettings), (dialog, which) -> {
                         try {
@@ -7839,7 +7839,7 @@ public class PassportActivity extends BaseFragment implements NotificationCenter
         public boolean onBackPressed(boolean force) {
             if (!force) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+                builder.setTitle(LocaleController.getString(R.string.AppName));
                 builder.setMessage(LocaleController.getString(R.string.StopVerification));
                 builder.setPositiveButton(LocaleController.getString(R.string.Continue), null);
                 builder.setNegativeButton(LocaleController.getString(R.string.Stop), (dialogInterface, i) -> {

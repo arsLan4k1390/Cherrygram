@@ -71,8 +71,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 @SuppressWarnings("JavaReflectionMemberAccess")
 public class RecyclerListView extends RecyclerView {
     public final static int SECTIONS_TYPE_SIMPLE = 0,
@@ -1112,20 +1110,16 @@ public class RecyclerListView extends RecyclerView {
                     View child = currentChildView;
                     if (onItemLongClickListener != null) {
                         if (onItemLongClickListener.onItemClick(currentChildView, currentChildPosition)) {
-                            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                                try {
-                                    child.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                                } catch (Exception ignored) {}
-                            }
+                            try {
+                                child.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                            } catch (Exception ignored) {}
                             child.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
                         }
                     } else {
                         if (onItemLongClickListenerExtended.onItemClick(currentChildView, currentChildPosition, event.getX() - currentChildView.getX(), event.getY() - currentChildView.getY())) {
-                            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                                try {
-                                    child.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                                } catch (Exception ignored) {}
-                            }
+                            try {
+                                child.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                            } catch (Exception ignored) {}
                             child.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_LONG_CLICKED);
                             longPressCalled = true;
                         }
@@ -1602,7 +1596,7 @@ public class RecyclerListView extends RecyclerView {
     @Override
     public void setVerticalScrollBarEnabled(boolean verticalScrollBarEnabled) {
         if (attributes != null) {
-            super.setVerticalScrollBarEnabled(false);
+            super.setVerticalScrollBarEnabled(verticalScrollBarEnabled);
         }
     }
 
@@ -1659,9 +1653,7 @@ public class RecyclerListView extends RecyclerView {
         if (selectorDrawable != null) {
             selectorDrawable.setCallback(null);
         }
-        if (selectorType == 100) {
-            selectorDrawable = Theme.createSimpleSelectorRoundRectDrawable(0, 0x00, 0x00, 0x00);
-        } else if (selectorType == 8) {
+        if (selectorType == 8) {
             selectorDrawable = Theme.createRadSelectorDrawable(color, selectorRadius, 0);
         } else if (selectorType == 9) {
             selectorDrawable = null;

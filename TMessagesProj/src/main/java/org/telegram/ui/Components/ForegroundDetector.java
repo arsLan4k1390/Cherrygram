@@ -27,7 +27,6 @@ public class ForegroundDetector implements Application.ActivityLifecycleCallback
     }
 
     private int refs;
-    private boolean isPaused;
     private boolean wasInBackground = true;
     private long enterBackgroundTime = 0;
     private CopyOnWriteArrayList<Listener> listeners = new CopyOnWriteArrayList<>();
@@ -112,16 +111,10 @@ public class ForegroundDetector implements Application.ActivityLifecycleCallback
 
     @Override
     public void onActivityResumed(Activity activity) {
-        this.isPaused = false;
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
-        this.isPaused = true;
-    }
-
-    public boolean isPaused(){
-        return this.isPaused;
     }
 
     @Override

@@ -356,11 +356,6 @@ public class MessagesStorage extends BaseController {
                         FileLog.e(e2);
                     }
                 }
-                try {
-                    database.executeFast("CREATE TABLE IF NOT EXISTS dialog_filter_cherry(id INTEGER PRIMARY KEY, ord INTEGER, unread_count INTEGER, flags INTEGER, title TEXT, emoticon TEXT)").stepThis().dispose();
-                } catch (Exception e) {
-                    FileLog.e(e);
-                }
                 if (version < LAST_DB_VERSION) {
                     try {
                         updateDbToLastVersion(version);
@@ -456,7 +451,7 @@ public class MessagesStorage extends BaseController {
             "user_contacts_v7",
             "user_phones_v7",
             "dialogs",
-            "dialog_filter_cherry",
+            "dialog_filter",
             "dialog_filter_ep",
             "dialog_filter_pin_v2",
             "randoms_v2",
@@ -567,7 +562,7 @@ public class MessagesStorage extends BaseController {
         database.executeFast("CREATE INDEX IF NOT EXISTS folder_id_idx_dialogs ON dialogs(folder_id);").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS flags_idx_dialogs ON dialogs(flags);").stepThis().dispose();
 
-        database.executeFast("CREATE TABLE dialog_filter_cherry(id INTEGER PRIMARY KEY, ord INTEGER, unread_count INTEGER, flags INTEGER, title TEXT, color INTEGER DEFAULT -1, entities BLOB, noanimate INTEGER, emoticon TEXT)").stepThis().dispose();
+        database.executeFast("CREATE TABLE dialog_filter(id INTEGER PRIMARY KEY, ord INTEGER, unread_count INTEGER, flags INTEGER, title TEXT, color INTEGER DEFAULT -1, entities BLOB, noanimate INTEGER)").stepThis().dispose();
         database.executeFast("CREATE TABLE dialog_filter_ep(id INTEGER, peer INTEGER, PRIMARY KEY (id, peer))").stepThis().dispose();
         database.executeFast("CREATE TABLE dialog_filter_pin_v2(id INTEGER, peer INTEGER, pin INTEGER, PRIMARY KEY (id, peer))").stepThis().dispose();
 
@@ -2108,7 +2103,7 @@ public class MessagesStorage extends BaseController {
             getNotificationCenter().postNotificationName(NotificationCenter.didClearDatabase);
             getMediaDataController().loadAttachMenuBots(false, true);
             getNotificationCenter().postNotificationName(NotificationCenter.onDatabaseReset);
-
+            
             getMessagesController().getStoriesController().cleanup();
         });
     }
@@ -2443,7 +2438,7 @@ public class MessagesStorage extends BaseController {
 
                 usersToLoad.add(getUserConfig().getClientUserId());
 
-                filtersCursor = database.queryFinalized("SELECT id, ord, unread_count, flags, title, color, entities, noanimate, emoticon FROM dialog_filter_cherry WHERE 1");
+                filtersCursor = database.queryFinalized("SELECT id, ord, unread_count, flags, title, color, entities, noanimate FROM dialog_filter WHERE 1");
 
                 boolean updateCounters = false;
                 boolean hasDefaultFilter = false;
@@ -2462,7 +2457,6 @@ public class MessagesStorage extends BaseController {
                         buff.reuse();
                     }
                     filter.title_noanimate = filtersCursor.intValue(7) == 1;
-                    filter.emoticon = filtersCursor.stringValue(8);
                     dialogFilters.add(filter);
                     dialogFiltersMap.put(filter.id, filter);
                     filtersById.put(filter.id, filter);
@@ -2532,7 +2526,7 @@ public class MessagesStorage extends BaseController {
                     dialogFiltersMap.put(filter.id, filter);
                     filtersById.put(filter.id, filter);
 
-                    state = database.executeFast("REPLACE INTO dialog_filter_cherry VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                    state = database.executeFast("REPLACE INTO dialog_filter VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
                     state.bindInteger(1, filter.id);
                     state.bindInteger(2, filter.order);
                     state.bindInteger(3, filter.unreadCount);
@@ -2544,7 +2538,6 @@ public class MessagesStorage extends BaseController {
                     entitiesVector.serializeToStream(entitiesBuffer);
                     state.bindByteBuffer(7, entitiesBuffer);
                     state.bindInteger(8, filter.title_noanimate ? 1 : 0);
-                    state.bindNull(9);
                     state.stepThis().dispose();
                     state = null;
                     entitiesBuffer.reuse();
@@ -3018,7 +3011,7 @@ public class MessagesStorage extends BaseController {
                 dialogFiltersMap.put(filter.id, filter);
             }
 
-            state = database.executeFast("REPLACE INTO dialog_filter_cherry VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            state = database.executeFast("REPLACE INTO dialog_filter VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
             state.bindInteger(1, filter.id);
             state.bindInteger(2, filter.order);
             state.bindInteger(3, filter.unreadCount);
@@ -3031,11 +3024,6 @@ public class MessagesStorage extends BaseController {
             entitiesVector.serializeToStream(entitiesBuffer);
             state.bindByteBuffer(7, entitiesBuffer);
             state.bindInteger(8, filter.title_noanimate ? 1 : 0);
-            if (filter.emoticon != null) {
-                state.bindString(9, filter.emoticon);
-            } else {
-                state.bindNull(9);
-            }
             state.step();
             state.dispose();
             entitiesBuffer.reuse();
@@ -3181,10 +3169,6 @@ public class MessagesStorage extends BaseController {
                             changed = true;
                             filter.title_noanimate= newFilter.title_noanimate;
                         }
-                        if (!TextUtils.equals(filter.emoticon, newFilter.emoticon)) {
-                            changed = true;
-                            filter.emoticon = newFilter.emoticon;
-                        }
                         final int color = (newFilter.flags & 134217728) != 0 ? newFilter.color : -1;
                         if (filter.color != color) {
                             filter.color = color;
@@ -3327,7 +3311,6 @@ public class MessagesStorage extends BaseController {
                         filter.entities = newFilter.title.entities;
                         filter.title_noanimate = newFilter.title_noanimate;
                         filter.color = (newFilter.flags & 134217728) != 0 ? newFilter.color : -1;
-                        filter.emoticon = newFilter.emoticon;
                         filter.pendingUnreadCount = -1;
                         for (int c = 0; c < 2; c++) {
                             if (c == 0) {
@@ -3480,7 +3463,7 @@ public class MessagesStorage extends BaseController {
         try {
             dialogFilters.remove(filter);
             dialogFiltersMap.remove(filter.id);
-            database.executeFast("DELETE FROM dialog_filter_cherry WHERE id = " + filter.id).stepThis().dispose();
+            database.executeFast("DELETE FROM dialog_filter WHERE id = " + filter.id).stepThis().dispose();
             database.executeFast("DELETE FROM dialog_filter_ep WHERE id = " + filter.id).stepThis().dispose();
             database.executeFast("DELETE FROM dialog_filter_pin_v2 WHERE id = " + filter.id).stepThis().dispose();
         } catch (Exception e) {
@@ -3511,7 +3494,7 @@ public class MessagesStorage extends BaseController {
     public void saveDialogFiltersOrderInternal() {
         SQLitePreparedStatement state = null;
         try {
-            state = database.executeFast("UPDATE dialog_filter_cherry SET ord = ?, flags = ? WHERE id = ?");
+            state = database.executeFast("UPDATE dialog_filter SET ord = ?, flags = ? WHERE id = ?");
             for (int a = 0, N = dialogFilters.size(); a < N; a++) {
                 MessagesController.DialogFilter filter = dialogFilters.get(a);
                 state.requery();

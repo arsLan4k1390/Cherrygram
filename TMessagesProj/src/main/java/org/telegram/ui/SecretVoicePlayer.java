@@ -43,7 +43,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.ChatListItemAnimator;
 
 import com.google.android.exoplayer2.ExoPlayer;
 

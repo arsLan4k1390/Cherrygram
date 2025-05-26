@@ -142,8 +142,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public class SelectAnimatedEmojiDialog extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     public final static int TYPE_EMOJI_STATUS = 0;
@@ -706,11 +704,9 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
             if (emojiTabs.recentTab != null) {
                 emojiTabs.recentTab.setOnLongClickListener(e -> {
                     onRecentLongClick();
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        try {
-                            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-                        } catch (Exception ignore) {
-                        }
+                    try {
+                        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+                    } catch (Exception ignore) {
                     }
                     return true;
                 });
@@ -946,7 +942,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         emojiSearchGridView.setVisibility(View.GONE);
         gridViewContainer.addView(emojiSearchGridView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL, 0, 0, 0, 0));
         contentView.addView(gridViewContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP, 0, type == TYPE_EXPANDABLE_REACTIONS || type == TYPE_STICKER_SET_EMOJI || type == TYPE_EFFECTS ? 0 : 36 + (1 / AndroidUtilities.density), 0, 0));
-
+        
         scrollHelper = new RecyclerAnimationScrollHelper(emojiGridView, layoutManager);
         scrollHelper.setAnimationCallback(new RecyclerAnimationScrollHelper.AnimationCallback() {
             @Override
@@ -969,11 +965,9 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                 if (type == TYPE_TAGS || type == TYPE_STICKER_SET_EMOJI) return false;
                 if (view instanceof ImageViewEmoji && (type == TYPE_REACTIONS || type == TYPE_EXPANDABLE_REACTIONS)) {
                     incrementHintUse();
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        try {
-                            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                        } catch (Exception ignored) {}
-                    }
+                    try {
+                        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                    } catch (Exception ignored) {}
                     ImageViewEmoji imageViewEmoji = (ImageViewEmoji) view;
                     if (!imageViewEmoji.isDefaultReaction && !UserConfig.getInstance(currentAccount).isPremium()) {
                         TLRPC.Document document = imageViewEmoji.span.document;
@@ -1039,11 +1033,9 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                     };
                     dialog.show();
 
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        try {
-                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-                        } catch (Exception ignore) {}
-                    }
+                    try {
+                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+                    } catch (Exception ignore) {}
                     return true;
                 }
                 return false;
@@ -1083,30 +1075,24 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                     onEmojiClick(viewEmoji, viewEmoji.span);
                 }
                 if (type != TYPE_REACTIONS && type != TYPE_TAGS) {
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        try {
-                            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-                        } catch (Exception ignore) {}
-                    }
+                    try {
+                        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+                    } catch (Exception ignore) {}
                 }
             } else if (view instanceof ImageView) {
                 onEmojiClick(view, null);
                 if (type != TYPE_REACTIONS && type != TYPE_TAGS) {
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        try {
-                            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-                        } catch (Exception ignore) {}
-                    }
+                    try {
+                        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+                    } catch (Exception ignore) {}
                 }
             } else if (view instanceof EmojiPackExpand) {
                 EmojiPackExpand button = (EmojiPackExpand) view;
                 expand(position, button);
                 if (type != TYPE_REACTIONS && type != TYPE_TAGS) {
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        try {
-                            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-                        } catch (Exception ignore) {}
-                    }
+                    try {
+                        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+                    } catch (Exception ignore) {}
                 }
             } else if (view != null) {
                 view.callOnClick();
@@ -3597,7 +3583,7 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
         } else if (type == TYPE_EMOJI_STATUS_CHANNEL || type == TYPE_EMOJI_STATUS_CHANNEL_TOP) {
             if (MessagesController.getInstance(account).getMainSettings().getBoolean("resetemojipacks", true)) {
                 MediaDataController.getInstance(account).loadStickers(MediaDataController.TYPE_EMOJIPACKS, false, false);
-                MessagesController.getInstance(account).getMainSettings().edit().putBoolean("resetemojipacks", false).apply();
+                MessagesController.getInstance(account).getMainSettings().edit().putBoolean("resetemojipacks", false).commit();
             }
             MediaDataController.getInstance(account).fetchEmojiStatuses(2, false);
             MediaDataController.getInstance(account).loadRestrictedStatusEmojis();
@@ -6111,11 +6097,9 @@ public class SelectAnimatedEmojiDialog extends FrameLayout implements Notificati
                 }
             }, () -> {
                 if (date != null) {
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        try {
-                            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-                        } catch (Exception ignore) {}
-                    }
+                    try {
+                        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+                    } catch (Exception ignore) {}
                     onEndPartly(date);
                 }
             }, !showback);

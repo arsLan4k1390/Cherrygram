@@ -61,7 +61,7 @@ public class JoinGroupAlert extends BottomSheet {
         super(context, false, resourcesProvider);
         setApplyBottomPadding(false);
         setApplyTopPadding(false);
-        fixNavigationBar(chatInvite == null || chatInvite.request_needed ? getThemedColor(Theme.key_dialogBackground) : getThemedColor(Theme.key_windowBackgroundWhite));
+        fixNavigationBar(getThemedColor(Theme.key_windowBackgroundWhite));
 
         fragment = parentFragment;
         if (obj instanceof TLRPC.ChatInvite) {

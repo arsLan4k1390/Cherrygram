@@ -379,16 +379,6 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
     }
 
     @Override
-    public int getNavigationBarColor() {
-        return getThemedColor(Theme.key_windowBackgroundWhite);
-    }
-
-    @Override
-    public void setNavigationBarColor(int color) {
-        super.setNavigationBarColor(color);
-    }
-
-    @Override
     public View createView(Context context) {
         fragmentView = contentView = new SizeNotifierFrameLayout(context) {
             {
@@ -1288,9 +1278,10 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
         bottomOverlayContainer = new FrameLayout(context) {
             @Override
             protected void dispatchDraw(Canvas canvas) {
-                super.dispatchDraw(canvas);
                 int bottom = Theme.chat_composeShadowDrawable.getIntrinsicHeight();
-                canvas.drawLine(0, bottom, getWidth(), bottom, Theme.dividerPaint);
+                Theme.chat_composeShadowDrawable.setBounds(0, 0, getMeasuredWidth(), bottom);
+                Theme.chat_composeShadowDrawable.draw(canvas);
+                super.dispatchDraw(canvas);
             }
         };
         bottomOverlayChatText = new UnreadCounterTextView(context);
@@ -2173,7 +2164,7 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
         }, e -> {
             if (e != null && "INVITE_REQUEST_SENT".equals(e.text)) {
                 SharedPreferences preferences = MessagesController.getNotificationsSettings(currentAccount);
-                preferences.edit().putLong("dialog_join_requested_time_" + -chatId, System.currentTimeMillis()).apply();
+                preferences.edit().putLong("dialog_join_requested_time_" + -chatId, System.currentTimeMillis()).commit();
                 JoinGroupAlert.showBulletin(getContext(), this, ChatObject.isChannelAndNotMegaGroup(getCurrentChat()));
                 updateChatInfo(true);
                 return false;
@@ -3948,10 +3939,6 @@ public class TopicsFragment extends BaseFragment implements NotificationCenter.N
                     }
                 }
             }
-        }
-
-        if (isOpen && bottomPannelVisible) {
-            setNavigationBarColor(getNavigationBarColor());
         }
     }
 

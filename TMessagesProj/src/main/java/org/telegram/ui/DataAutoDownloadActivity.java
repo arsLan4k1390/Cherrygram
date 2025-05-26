@@ -24,7 +24,6 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,8 +52,6 @@ import org.telegram.ui.Components.SlideChooseView;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class DataAutoDownloadActivity extends BaseFragment {
 
@@ -134,26 +131,8 @@ public class DataAutoDownloadActivity extends BaseFragment {
     }
 
     @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
-
         if (currentType == 0) {
             actionBar.setTitle(LocaleController.getString(R.string.AutoDownloadOnMobileData));
         } else if (currentType == 1) {
@@ -225,7 +204,7 @@ public class DataAutoDownloadActivity extends BaseFragment {
                 } else {
                     DownloadController.getInstance(currentAccount).currentRoamingPreset = currentPresetNum;
                 }
-                editor.apply();
+                editor.commit();
 
                 cell.setChecked(!checked);
                 DownloadController.getInstance(currentAccount).checkAutodownloadSettings();
@@ -306,7 +285,7 @@ public class DataAutoDownloadActivity extends BaseFragment {
                     } else {
                         DownloadController.getInstance(currentAccount).currentRoamingPreset = currentPresetNum;
                     }
-                    editor.apply();
+                    editor.commit();
 
                     cell.setChecked(!checked);
                     RecyclerView.ViewHolder holder = listView.findContainingViewHolder(view);
@@ -535,7 +514,7 @@ public class DataAutoDownloadActivity extends BaseFragment {
                         } else {
                             DownloadController.getInstance(currentAccount).currentRoamingPreset = currentPresetNum;
                         }
-                        editor.apply();
+                        editor.commit();
                         builder.getDismissRunnable().run();
 
                         RecyclerView.ViewHolder holder = listView.findContainingViewHolder(view);
@@ -874,7 +853,7 @@ public class DataAutoDownloadActivity extends BaseFragment {
                         }
                         SharedPreferences.Editor editor = MessagesController.getMainSettings(currentAccount).edit();
                         editor.putInt(key2, currentPresetNum);
-                        editor.apply();
+                        editor.commit();
                         DownloadController.getInstance(currentAccount).checkAutodownloadSettings();
                         for (int a = 0; a < 4; a++) {
                             RecyclerView.ViewHolder holder = listView.findViewHolderForAdapterPosition(photosRow + a);
@@ -943,18 +922,6 @@ public class DataAutoDownloadActivity extends BaseFragment {
 
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{HeaderCell.class, NotificationsCheckCell.class, SlideChooseView.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
-        } else {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));

@@ -203,8 +203,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public class GroupCallActivity extends BottomSheet implements NotificationCenter.NotificationCenterDelegate, VoIPService.StateListener {
 
     public final static int TABLET_LIST_SIZE = 320;
@@ -489,11 +487,9 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
         if (call == null || !scheduled || VoIPService.getSharedInstance() == null) {
             return;
         }
-        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-            try {
-                muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-            } catch (Exception ignored) {}
-        }
+        try {
+            muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+        } catch (Exception ignored) {}
         updateMuteButton(MUTE_BUTTON_STATE_MUTE, true);
         AndroidUtilities.runOnUIThread(unmuteRunnable, 80);
         scheduled = false;
@@ -1931,9 +1927,6 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
             }
         };
         setOnDismissListener(dialog -> {
-            if (parentActivity.getActionBarLayout().getFragmentStack().isEmpty()) {
-                return;
-            }
             BaseFragment fragment = parentActivity.getActionBarLayout().getFragmentStack().get(parentActivity.getActionBarLayout().getFragmentStack().size() - 1);
             if (anyEnterEventSent) {
                 if (fragment instanceof ChatActivity) {
@@ -4675,9 +4668,9 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
                         updateMuteButton(MUTE_BUTTON_STATE_UNMUTE, true);
                         if (VoIPService.getSharedInstance() != null) {
                             VoIPService.getSharedInstance().setMicMute(true, true, false);
-                            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
+                            try {
                                 muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                            }
+                            } catch (Exception ignored) {}
                         }
                         attachedRenderersTmp.clear();
                         attachedRenderersTmp.addAll(attachedRenderers);
@@ -4848,19 +4841,15 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
                         }
                         updateMuteButton(MUTE_BUTTON_STATE_MUTE, true);
                         VoIPService.getSharedInstance().setMicMute(false, false, true);
-                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                            try {
-                                muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                            } catch (Exception ignored) {}
-                        }
+                        try {
+                            muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                        } catch (Exception ignored) {}
                     } else {
                         updateMuteButton(MUTE_BUTTON_STATE_UNMUTE, true);
                         VoIPService.getSharedInstance().setMicMute(true, false, true);
-                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                            try {
-                                muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                            } catch (Exception ignored) {}
-                        }
+                        try {
+                            muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                        } catch (Exception ignored) {}
                     }
                 }
             }
@@ -7543,7 +7532,7 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
         if (preferences.getBoolean("reminderhint", false)) {
             return;
         }
-        preferences.edit().putBoolean("reminderhint", true).apply();
+        preferences.edit().putBoolean("reminderhint", true).commit();
         if (reminderHintView == null) {
             reminderHintView = new HintView(getContext(), 8);
             reminderHintView.setAlpha(0.0f);

@@ -7,19 +7,24 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.CharacterStyle;
+import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.SparseBooleanArray;
 
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ChatActivity;
+import org.telegram.ui.Components.AnimatedEmojiSpan;
 import org.telegram.ui.Components.MessagePreviewView;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import java.util.Collections;
+import java.util.List;
 
 public class MessagePreviewParams {
 
@@ -179,7 +184,7 @@ public class MessagePreviewParams {
     public boolean isSecret;
     public boolean multipleUsers;
 
-    public boolean hideForwardSendersName = CherrygramChatsConfig.INSTANCE.getNoAuthorship();
+    public boolean hideForwardSendersName;
     public boolean hideCaption;
     public boolean willSeeSenders;
 
@@ -497,7 +502,6 @@ public class MessagePreviewParams {
             }
             if (header != null) {
                 message.fwd_from = header;
-                message.fwd_from.date = messageObject.messageOwner.date;
                 message.flags |= TLRPC.MESSAGE_FLAG_FWD;
             }
         }

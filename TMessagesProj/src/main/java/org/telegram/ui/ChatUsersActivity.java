@@ -34,7 +34,6 @@ import android.widget.FrameLayout;
 
 import androidx.collection.LongSparseArray;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -92,8 +91,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ChatUsersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -163,7 +160,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
     private int gigaConvertRow;
     private int gigaInfoRow;
 
-//    private int recentActionsRow;
+    private int recentActionsRow;
     private boolean antiSpamToggleLoading;
     private int antiSpamRow;
     private int antiSpamInfoRow;
@@ -318,7 +315,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
         if (currentChat == null) {
             return;
         }
-//        recentActionsRow = -1;
+        recentActionsRow = -1;
         antiSpamRow = -1;
         antiSpamInfoRow = -1;
         addNewRow = -1;
@@ -426,7 +423,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 }
             }
 
-            if (!ChatObject.isChannel(currentChat) && currentChat.creator || currentChat.megagroup && !currentChat.gigagroup && ChatObject.canBlockUsers(currentChat) || !ChatObject.hasAdminRights(currentChat)) {
+            if (!ChatObject.isChannel(currentChat) && currentChat.creator || currentChat.megagroup && !currentChat.gigagroup && ChatObject.canBlockUsers(currentChat)) {
                 if (participantsDivider2Row == -1) {
                     participantsDivider2Row = rowCount++;
                 }
@@ -446,7 +443,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 dontRestrictBoostersInfoRow = rowCount++;
             }
 
-            if (ChatObject.isChannel(currentChat) && ChatObject.hasAdminRights(currentChat)) {
+            if (ChatObject.isChannel(currentChat)) {
                 if (participantsDivider2Row == -1) {
                     participantsDivider2Row = rowCount++;
                 }
@@ -537,7 +534,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 }
             }
         } else if (type == TYPE_USERS) {
-            if (ChatObject.isChannel(currentChat) && ChatObject.hasAdminRights(currentChat)) {
+            if (ChatObject.isChannel(currentChat)) {
                 if (!ChatObject.isChannelAndNotMegaGroup(currentChat) && !needOpenSearch) {
                     hideMembersRow = rowCount++;
                     hideMembersInfoRow = rowCount++;
@@ -602,28 +599,10 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
     }
 
     @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    @Override
     public View createView(Context context) {
         searching = false;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
-
         actionBar.setAllowOverlayTitle(true);
         if (type == TYPE_KICKED) {
             actionBar.setTitle(getString("ChannelPermissions", R.string.ChannelPermissions));
@@ -660,7 +639,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 }
             }
         });
-        if (selectType != SELECT_TYPE_MEMBERS || type == TYPE_USERS || ChatObject.hasAdminRights(currentChat) && (type == TYPE_BANNED || type == TYPE_KICKED)) {
+        if (selectType != SELECT_TYPE_MEMBERS || type == TYPE_USERS || type == TYPE_BANNED || type == TYPE_KICKED) {
             searchListViewAdapter = new SearchAdapter(context);
             ActionBarMenu menu = actionBar.createMenu();
             searchItem = menu.addItem(search_button, R.drawable.ic_ab_search).setIsSearchField(true).setActionBarMenuItemSearchListener(new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
@@ -670,9 +649,6 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                     if (doneItem != null) {
                         doneItem.setVisibility(View.GONE);
                     }
-                    actionBar.setSearchTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText), true);
-                    actionBar.setSearchTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), false);
-                    actionBar.setSearchCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                 }
 
                 @Override
@@ -867,7 +843,6 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                 listViewAdapter.notifyItemChanged(payRow);
             } else if (listAdapter) {
                 if (isExpandableSendMediaRow(position)) {
-                    if (!ChatObject.canBlockUsers(currentChat)) return;
                     CheckBoxCell checkBoxCell = (CheckBoxCell) view;
                     if (position == sendMediaPhotosRow) {
                         defaultBannedRights.send_photos = !defaultBannedRights.send_photos;
@@ -1058,10 +1033,10 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                         presentFragment(fragment);
                     }
                     return;
-                } /*else if (position == recentActionsRow) {
+                } else if (position == recentActionsRow) {
                     presentFragment(new ChannelAdminLogActivity(currentChat));
                     return;
-                }*/ else if (position == antiSpamRow) {
+                } else if (position == antiSpamRow) {
                     final TextCell textCell = (TextCell) view;
                     if (info != null && !info.antispam && getParticipantsCount() < getMessagesController().telegramAntispamGroupSizeMin) {
                         BulletinFactory.of(this).createSimpleBulletin(R.raw.msg_antispam, AndroidUtilities.replaceTags(LocaleController.formatPluralString("ChannelAntiSpamForbidden", getMessagesController().telegramAntispamGroupSizeMin))).show();
@@ -1167,7 +1142,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                     return;
                 } else if (position > permissionsSectionRow && position <= Math.max(manageTopicsRow, changeInfoRow)) {
                     TextCheckCell2 checkCell = (TextCheckCell2) view;
-                    if (position != sendMediaRow && !checkCell.isEnabled()) {
+                    if (!checkCell.isEnabled()) {
                         return;
                     }
                     if (checkCell.hasIcon()) {
@@ -1306,7 +1281,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                             final boolean canEdit = canEditAdmin;
                             final String rankFinal = rank;
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                            builder.setTitle(getString(R.string.CG_AppName));
+                            builder.setTitle(getString("AppName", R.string.AppName));
                             builder.setMessage(LocaleController.formatString("AdminWillBeRemoved", R.string.AdminWillBeRemoved, UserObject.getUserName(user)));
                             builder.setPositiveButton(getString("OK", R.string.OK), (dialog, which) -> openRightsEdit(user.id, participant, ar, br, rankFinal, canEdit, selectType == SELECT_TYPE_ADMIN ? 0 : 1, false));
                             builder.setNegativeButton(getString("Cancel", R.string.Cancel), null);
@@ -3172,7 +3147,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
             if (viewType == VIEW_TYPE_CHECK) {
                 return true;
             }
-            if (viewType == 7 || viewType == VIEW_TYPE_EXPANDABLE_SWITCH || viewType == VIEW_TYPE_INNER_CHECK) {
+            if (viewType == 7 || viewType == VIEW_TYPE_EXPANDABLE_SWITCH) {
                 return ChatObject.canBlockUsers(currentChat);
             } else if (viewType == 0) {
                 ManageChatUserCell cell = (ManageChatUserCell) holder.itemView;
@@ -3286,7 +3261,6 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                     SlideChooseView chooseView = new SlideChooseView(mContext);
                     view = chooseView;
                     chooseView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    chooseView.setAllowSlide(ChatObject.hasAdminRights(currentChat));
                     chooseView.setOptions(
                             selectedSlowmode,
                             getString("SlowmodeOff", R.string.SlowmodeOff),
@@ -3360,10 +3334,10 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                     boolean showJoined = false;
                     if (position >= participantsStartRow && position < participantsEndRow) {
                         lastRow = participantsEndRow;
-                        showJoined = ChatObject.isChannel(currentChat);
+                        showJoined = ChatObject.isChannel(currentChat) && !currentChat.megagroup;
                     } else if (position >= contactsStartRow && position < contactsEndRow) {
                         lastRow = contactsEndRow;
-                        showJoined = ChatObject.isChannel(currentChat);
+                        showJoined = ChatObject.isChannel(currentChat) && !currentChat.megagroup;
                     } else {
                         lastRow = botEndRow;
                     }
@@ -3530,9 +3504,9 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                                 actionCell.setText(getString(R.string.AddMember), null, R.drawable.msg_contact_add, showDivider);
                             }
                         }
-                    } /*else if (position == recentActionsRow) {
+                    } else if (position == recentActionsRow) {
                         actionCell.setText(getString(R.string.EventLog), null, R.drawable.msg_log, antiSpamRow > recentActionsRow);
-                    }*/ else if (position == addNew2Row) {
+                    } else if (position == addNew2Row) {
                         actionCell.setColors(Theme.key_windowBackgroundWhiteBlueIcon, Theme.key_windowBackgroundWhiteBlueButton);
                         boolean showDivider = !(loadingUsers && !firstLoaded) && membersHeaderRow == -1 && !participants.isEmpty();
                         actionCell.setText(getString("ChannelInviteViaLink", R.string.ChannelInviteViaLink), null, R.drawable.msg_link2, showDivider);
@@ -3600,7 +3574,6 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
                         checkCell.setCollapseArrow(String.format(Locale.US, "%d/9", sentMediaCount), !sendMediaExpanded, new Runnable() {
                             @Override
                             public void run() {
-                                if (!ChatObject.canBlockUsers(currentChat)) return;
                                 boolean checked = !checkCell.isChecked();
                                 checkCell.setChecked(checked);
                                 setSendMediaEnabled(checked);
@@ -3727,7 +3700,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
 
         @Override
         public int getItemViewType(int position) {
-            if (position == addNewRow || position == addNew2Row/* || position == recentActionsRow*/ || position == gigaConvertRow) {
+            if (position == addNewRow || position == addNew2Row || position == recentActionsRow || position == gigaConvertRow) {
                 return 2;
             } else if (position >= participantsStartRow && position < participantsEndRow ||
                     position >= botStartRow && position < botEndRow ||
@@ -3908,7 +3881,7 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
         public void fillPositions(SparseIntArray sparseIntArray) {
             sparseIntArray.clear();
             int pointer = 0;
-//            put(++pointer, recentActionsRow, sparseIntArray);
+            put(++pointer, recentActionsRow, sparseIntArray);
             put(++pointer, addNewRow, sparseIntArray);
             put(++pointer, addNew2Row, sparseIntArray);
             put(++pointer, addNewSectionRow, sparseIntArray);
@@ -4016,18 +3989,6 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
 
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{HeaderCell.class, ManageChatUserCell.class, ManageChatTextCell.class, TextCheckCell2.class, TextSettingsCell.class, SlideChooseView.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
-        } else {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));

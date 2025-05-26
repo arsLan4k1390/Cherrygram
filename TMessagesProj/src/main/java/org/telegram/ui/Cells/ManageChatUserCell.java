@@ -291,7 +291,7 @@ public class ManageChatUserCell extends FrameLayout {
                         statusTextView.setText(LocaleController.getString(R.string.Online));
                     } else {
                         statusTextView.setTextColor(statusColor);
-                        statusTextView.setText(LocaleController.formatUserStatusIOS(currentAccount, currentUser));
+                        statusTextView.setText(LocaleController.formatUserStatus(currentAccount, currentUser));
                     }
                 }
             }

@@ -47,7 +47,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.DocumentObject;
 import org.telegram.messenger.FileLoader;
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.ImageReceiver;
@@ -1514,16 +1513,6 @@ public class EmojiPacksAlert extends BottomSheet implements NotificationCenter.N
             } catch (Exception e) {
                 FileLog.e(e);
             }
-        } else if (id == 3) {
-            String stickerSetID = String.valueOf(stickerSet.set.id);
-            try {
-                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                android.content.ClipData clip = android.content.ClipData.newPlainText("label", stickerSetID);
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(getContext(), LocaleController.getString("TextCopied", R.string.TextCopied), Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
         }
     }
 
@@ -1739,7 +1728,6 @@ public class EmojiPacksAlert extends BottomSheet implements NotificationCenter.N
                 addView(optionsButton, LayoutHelper.createFrame(40, 40, Gravity.TOP | Gravity.RIGHT, 0, 5, 5 - backgroundPaddingLeft / AndroidUtilities.density, 0));
                 optionsButton.addSubItem(1, R.drawable.msg_share, LocaleController.getString(R.string.StickersShare));
                 optionsButton.addSubItem(2, R.drawable.msg_link, LocaleController.getString(R.string.CopyLink));
-                optionsButton.addSubItem(3, R.drawable.msg_info, LocaleController.getString(R.string.CG_CopySetId));
                 optionsButton.setOnClickListener(v -> optionsButton.toggleSubMenu());
                 optionsButton.setDelegate(EmojiPacksAlert.this::onSubItemClick);
                 optionsButton.setContentDescription(LocaleController.getString(R.string.AccDescrMoreOptions));

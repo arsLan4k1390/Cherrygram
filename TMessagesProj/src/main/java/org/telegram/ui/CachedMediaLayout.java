@@ -120,12 +120,8 @@ public class CachedMediaLayout extends FrameLayout implements NestedSizeNotifier
         viewPagerFixed.setAllowDisallowInterceptTouch(false);
         addView(viewPagerFixed, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, 0, 0, 48, 0, 0));
         addView(tabs = viewPagerFixed.createTabsView(true, 3), LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48));
-        divider = new View(getContext()) {
-            @Override
-            protected void onDraw(Canvas canvas) {
-                canvas.drawLine(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight() - 1, Theme.dividerPaint);
-            }
-        };
+        divider = new View(getContext());
+        divider.setBackgroundColor(Theme.getColor(Theme.key_divider));
         addView(divider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 1, 0, 0, 48, 0, 0));
         divider.getLayoutParams().height = 1;
         viewPagerFixed.setAdapter(new ViewPagerFixed.Adapter() {

@@ -144,8 +144,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public class EmojiView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     private final static int TAB_EMOJI = 0;
@@ -1473,8 +1471,6 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         this.allowAnimatedEmoji = needAnimatedEmoji;
         this.resourcesProvider = resourcesProvider;
 
-        boolean showAnimatedEmoji = needAnimatedEmoji && ((chatFull != null && chatFull.emojiset != null) || UserConfig.getInstance(currentAccount).isPremium());
-
         if (frozenAtStart) {
             freeze(true);
         }
@@ -1555,7 +1551,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         emojiTab.view = emojiContainer;
         allTabs.add(emojiTab);
 
-        if (showAnimatedEmoji) {
+        if (needAnimatedEmoji) {
             MediaDataController.getInstance(currentAccount).checkStickers(MediaDataController.TYPE_EMOJIPACKS);
             MediaDataController.getInstance(currentAccount).checkFeaturedEmoji();
             animatedEmojiTextColorFilter = new PorterDuffColorFilter(getThemedColor(Theme.key_featuredStickers_addButton), PorterDuff.Mode.SRC_IN);
@@ -1734,7 +1730,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
             }
         });
 
-        emojiTabs = new EmojiTabsStrip(context, resourcesProvider, true, false, true, showAnimatedEmoji, 0, fragment != null ? () -> {
+        emojiTabs = new EmojiTabsStrip(context, resourcesProvider, true, false, true, needAnimatedEmoji, 0, fragment != null ? () -> {
             if (delegate != null) {
                 delegate.onEmojiSettingsClick(emojiAdapter.frozenEmojiPacks);
             }
@@ -2478,7 +2474,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                 } else if (event.getAction() == MotionEvent.ACTION_CANCEL || event.getAction() == MotionEvent.ACTION_UP) {
                     backspacePressed = false;
                     if (!backspaceOnce) {
-                        if (delegate != null && delegate.onBackspace() && !CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
+                        if (delegate != null && delegate.onBackspace()) {
                             try {
                                 backspaceButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                             } catch (Exception ignore) {}
@@ -2489,7 +2485,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                 return true;
             }
         };
-        backspaceButton.setHapticFeedbackEnabled(!CherrygramChatsConfig.INSTANCE.getDisableVibration());
+        backspaceButton.setHapticFeedbackEnabled(true);
         backspaceButton.setImageResource(R.drawable.smiles_tab_clear);
         backspaceButton.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_chat_emojiPanelBackspace), PorterDuff.Mode.MULTIPLY));
         backspaceButton.setScaleType(ImageView.ScaleType.CENTER);
@@ -5126,7 +5122,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
         }
         if (currentPage != newPage) {
             currentPage = newPage;
-            MessagesController.getGlobalEmojiSettings().edit().putInt("selected_page", newPage).apply();
+            MessagesController.getGlobalEmojiSettings().edit().putInt("selected_page", newPage).commit();
         }
     }
 
@@ -5153,7 +5149,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
             if (!backspacePressed) {
                 return;
             }
-            if (delegate != null && delegate.onBackspace() && !CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
+            if (delegate != null && delegate.onBackspace()) {
                 try {
                     backspaceButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                 } catch (Exception ignore) {}
@@ -6479,7 +6475,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                         MediaDataController mediaDataController = MediaDataController.getInstance(currentAccount);
                         ArrayList<TLRPC.StickerSetCovered> featured = mediaDataController.getFeaturedStickerSets();
                         if (!featured.isEmpty()) {
-                            MessagesController.getEmojiSettings(currentAccount).edit().putLong("featured_hidden", featured.get(0).set.id).apply();
+                            MessagesController.getEmojiSettings(currentAccount).edit().putLong("featured_hidden", featured.get(0).set.id).commit();
                             if (stickersGridAdapter != null) {
                                 stickersGridAdapter.notifyItemRangeRemoved(1, 2);
                             }
@@ -6849,7 +6845,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                             return;
                         }
                         long lastSetId = featuredEmojiSets.get(0).set.id;
-                        MessagesController.getEmojiSettings(currentAccount).edit().putLong("emoji_featured_hidden", lastSetId).apply();
+                        MessagesController.getEmojiSettings(currentAccount).edit().putLong("emoji_featured_hidden", lastSetId).commit();
                         if (emojiAdapter != null) {
                             emojiAdapter.notifyItemRangeRemoved(1, 3);
                         }
@@ -7401,7 +7397,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
             }
             ArrayList<Integer> prevRowHashCodes = new ArrayList<>(rowHashCodes);
 
-            /*final MediaDataController mediaDataController = MediaDataController.getInstance(currentAccount);
+            final MediaDataController mediaDataController = MediaDataController.getInstance(currentAccount);
             ArrayList<TLRPC.StickerSetCovered> featured = mediaDataController.getFeaturedEmojiSets();
             featuredEmojiSets.clear();
             for (int a = 0, N = featured.size(); a < N; a++) {
@@ -7409,7 +7405,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                 if (!mediaDataController.isStickerPackInstalled(set.set.id) || installedEmojiSets.contains(set.set.id)) {
                     featuredEmojiSets.add(set);
                 }
-            }*/
+            }
 
             processEmoji(updateEmojipack);
             updateRows();

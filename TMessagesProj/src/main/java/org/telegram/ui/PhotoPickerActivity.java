@@ -100,8 +100,6 @@ import org.telegram.ui.Components.StickerEmptyView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public class PhotoPickerActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     public interface PhotoPickerActivityDelegate {
@@ -1153,11 +1151,9 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
                 view.getLocationInWindow(location);
                 sendPopupWindow.showAtLocation(view, Gravity.LEFT | Gravity.TOP, location[0] + view.getMeasuredWidth() - sendPopupLayout.getMeasuredWidth() + AndroidUtilities.dp(8), location[1] - sendPopupLayout.getMeasuredHeight() - AndroidUtilities.dp(2));
                 sendPopupWindow.dimBehind();
-                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    try {
-                        view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                    } catch (Exception ignored) {}
-                }
+                try {
+                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                } catch (Exception ignored) {}
 
                 return false;
             });
@@ -1322,7 +1318,7 @@ public class PhotoPickerActivity extends BaseFragment implements NotificationCen
         for (int a = 0, N = recentSearches.size(); a < N; a++) {
             editor.putString("recent" + a, recentSearches.get(a));
         }
-        editor.apply();
+        editor.commit();
     }
 
     private void loadRecentSearch() {

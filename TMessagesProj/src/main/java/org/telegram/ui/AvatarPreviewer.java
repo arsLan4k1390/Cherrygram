@@ -158,10 +158,7 @@ public class AvatarPreviewer {
         OPEN_GROUP("OpenGroup2", R.string.OpenGroup2, R.drawable.msg_discussion),
         SEND_MESSAGE("SendMessage", R.string.SendMessage, R.drawable.msg_discussion),
         MENTION("Mention", R.string.Mention, R.drawable.msg_mention),
-        SEARCH_MESSAGES("AvatarPreviewSearchMessages", R.string.AvatarPreviewSearchMessages, R.drawable.msg_search),
-        CG_KICK("KickFromGroup", R.string.KickFromGroup, R.drawable.msg_remove),
-        CG_CHANGE_PERMS("ChangePermissions", R.string.ChangePermissions, R.drawable.msg_permissions),
-        CG_CHANGE_ADMIN_PERMS("EditAdminRights", R.string.EditAdminRights, R.drawable.msg_admins);
+        SEARCH_MESSAGES("AvatarPreviewSearchMessages", R.string.AvatarPreviewSearchMessages, R.drawable.msg_search);
 
         private final String labelKey;
         private final int labelResId;

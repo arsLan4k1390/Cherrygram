@@ -24,13 +24,10 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.text.Layout;
 import android.text.SpannableString;
-import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.transition.ChangeBounds;
@@ -54,7 +51,6 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
-import org.telegram.messenger.UserConfig;
 import org.telegram.ui.Adapters.FiltersView;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.BackupImageView;
@@ -66,9 +62,6 @@ import org.telegram.ui.Components.SizeNotifierFrameLayout;
 import org.telegram.ui.Components.SnowflakesEffect;
 
 import java.util.ArrayList;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class ActionBar extends FrameLayout {
 
@@ -83,7 +76,7 @@ public class ActionBar extends FrameLayout {
     }
 
     private INavigationLayout.BackButtonState backButtonState = INavigationLayout.BackButtonState.BACK;
-    public UnreadImageView backButtonImageView;
+    public ImageView backButtonImageView;
     private BackupImageView avatarSearchImageView;
     private Drawable backButtonDrawable;
     private final SimpleTextView[] titleTextView = new SimpleTextView[2];
@@ -128,7 +121,7 @@ public class ActionBar extends FrameLayout {
     private Runnable lastRunnable;
     private boolean titleOverlayShown;
     private Runnable titleActionRunnable;
-    private boolean castShadows = !CherrygramAppearanceConfig.INSTANCE.getDisableToolBarShadow();
+    private boolean castShadows = true;
 
     protected boolean isSearchFieldVisible;
     public float searchFieldVisibleAlpha;
@@ -190,7 +183,7 @@ public class ActionBar extends FrameLayout {
         if (backButtonImageView != null) {
             return;
         }
-        backButtonImageView = new UnreadImageView(getContext());
+        backButtonImageView = new ImageView(getContext());
         backButtonImageView.setScaleType(ImageView.ScaleType.CENTER);
         backButtonImageView.setBackgroundDrawable(Theme.createSelectorDrawable(itemsBackgroundColor));
         backButtonImageView.setPadding(dp(1), 0, 0, 0);
@@ -324,7 +317,7 @@ public class ActionBar extends FrameLayout {
                     }
                 }
 
-                if (/*Theme.canStartHolidayAnimation() ||*/ CherrygramAppearanceConfig.INSTANCE.getDrawSnowInActionBar()) {
+                if (Theme.canStartHolidayAnimation()) {
                     if (snowflakesEffect == null) {
                         snowflakesEffect = new SnowflakesEffect(0);
                     }
@@ -368,7 +361,7 @@ public class ActionBar extends FrameLayout {
             return;
         }
         subtitleTextView = new SimpleTextView(getContext());
-        subtitleTextView.setGravity(CherrygramAppearanceConfig.INSTANCE.getCenterTitle() ? Gravity.CENTER : Gravity.LEFT);
+        subtitleTextView.setGravity(Gravity.LEFT);
         subtitleTextView.setVisibility(GONE);
         subtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
         addView(subtitleTextView, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
@@ -379,7 +372,7 @@ public class ActionBar extends FrameLayout {
             return;
         }
         additionalSubtitleTextView = new SimpleTextView(getContext());
-        additionalSubtitleTextView.setGravity(CherrygramAppearanceConfig.INSTANCE.getCenterTitle() ? Gravity.CENTER : Gravity.LEFT);
+        additionalSubtitleTextView.setGravity(Gravity.LEFT);
         additionalSubtitleTextView.setVisibility(GONE);
         additionalSubtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
         addView(additionalSubtitleTextView, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
@@ -421,7 +414,7 @@ public class ActionBar extends FrameLayout {
             return;
         }
         titleTextView[i] = new SimpleTextView(getContext());
-        titleTextView[i].setGravity(CherrygramAppearanceConfig.INSTANCE.getCenterTitle() ? Gravity.CENTER : Gravity.LEFT | Gravity.CENTER_VERTICAL);
+        titleTextView[i].setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
         if (titleColorToSet != 0) {
             titleTextView[i].setTextColor(titleColorToSet);
         } else {
@@ -454,16 +447,14 @@ public class ActionBar extends FrameLayout {
         if (titleTextView[0] != null) {
             titleTextView[0].setVisibility(value != null && !isSearchFieldVisible ? VISIBLE : INVISIBLE);
             titleTextView[0].setText(lastTitle = value);
-            if (UserConfig.getInstance(UserConfig.selectedAccount).isPremium()) {
-                if (attached && lastRightDrawable instanceof AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) {
-                    ((AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) lastRightDrawable).setParentView(null);
-                }
-                titleTextView[0].setRightDrawable(lastRightDrawable = rightDrawable);
-                if (attached && lastRightDrawable instanceof AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) {
-                    ((AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) lastRightDrawable).setParentView(titleTextView[0]);
-                }
-                titleTextView[0].setRightDrawableOnClick(rightDrawableOnClickListener);
+            if (attached && lastRightDrawable instanceof AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) {
+                ((AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) lastRightDrawable).setParentView(null);
             }
+            titleTextView[0].setRightDrawable(lastRightDrawable = rightDrawable);
+            if (attached && lastRightDrawable instanceof AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) {
+                ((AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) lastRightDrawable).setParentView(titleTextView[0]);
+            }
+            titleTextView[0].setRightDrawableOnClick(rightDrawableOnClickListener);
         }
         fromBottom = false;
     }
@@ -680,7 +671,7 @@ public class ActionBar extends FrameLayout {
         canvas.translate(front ? getWidth() * progress * 0.5f : -getWidth() * 0.4f * (1f - progress), 0);
         for (int i = 0; i < getChildCount(); i++) {
             View ch = getChildAt(i);
-            if ((!hideBackDrawable || ch != backButtonImageView) && ch.getVisibility() == View.VISIBLE && ch.getAlpha() != 0 && !(ch instanceof ActionBarMenu)) {
+            if ((!hideBackDrawable || ch != backButtonImageView) && ch.getVisibility() == View.VISIBLE && !(ch instanceof ActionBarMenu)) {
                 canvas.save();
                 canvas.translate(ch.getX(), ch.getY());
                 ch.draw(canvas);
@@ -1265,7 +1256,7 @@ public class ActionBar extends FrameLayout {
 
         for (int i = 0; i < 2; i++) {
             if (titleTextView[0] != null && titleTextView[0].getVisibility() != GONE || subtitleTextView != null && subtitleTextView.getVisibility() != GONE) {
-                int availableWidth = CherrygramAppearanceConfig.INSTANCE.getCenterTitle() ? (width - dp(120)) : width - (menu != null ? menu.getMeasuredWidth() : 0) - dp(16) - textLeft - titleRightMargin;
+                int availableWidth = width - (menu != null ? menu.getMeasuredWidth() : 0) - dp(16) - textLeft - titleRightMargin;
 
                 if (((fromBottom && i == 0) || (!fromBottom && i == 1)) && overlayTitleAnimation && titleAnimationRunning) {
                     titleTextView[i].setTextSize(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 20);
@@ -1361,29 +1352,17 @@ public class ActionBar extends FrameLayout {
                         textTop = (getCurrentActionBarHeight() - titleTextView[i].getTextHeight()) / 2;
                     }
                 }
-                if (CherrygramAppearanceConfig.INSTANCE.getCenterTitle()) {
-                    titleTextView[i].layout(getMeasuredWidth() / 2 - titleTextView[i].getMeasuredWidth() / 2, additionalTop + textTop - titleTextView[i].getPaddingTop(), getMeasuredWidth() / 2 + titleTextView[i].getMeasuredWidth() / 2, additionalTop + textTop + titleTextView[i].getTextHeight() - titleTextView[i].getPaddingTop() + titleTextView[i].getPaddingBottom());
-                } else {
-                    titleTextView[i].layout(textLeft, additionalTop + textTop - titleTextView[i].getPaddingTop(), textLeft + titleTextView[i].getMeasuredWidth(), additionalTop + textTop + titleTextView[i].getTextHeight() - titleTextView[i].getPaddingTop() + titleTextView[i].getPaddingBottom());
-                }
+                titleTextView[i].layout(textLeft, additionalTop + textTop - titleTextView[i].getPaddingTop(), textLeft + titleTextView[i].getMeasuredWidth(), additionalTop + textTop + titleTextView[i].getTextHeight() - titleTextView[i].getPaddingTop() + titleTextView[i].getPaddingBottom());
             }
         }
         if (subtitleTextView != null && subtitleTextView.getVisibility() != GONE) {
             int textTop = getCurrentActionBarHeight() / 2 + (getCurrentActionBarHeight() / 2 - subtitleTextView.getTextHeight()) / 2 - dp(2);
-            if (CherrygramAppearanceConfig.INSTANCE.getCenterTitle()) {
-                subtitleTextView.layout(getMeasuredWidth() / 2 - subtitleTextView.getMeasuredWidth() / 2, additionalTop + textTop, getMeasuredWidth() / 2 + subtitleTextView.getMeasuredWidth() / 2, additionalTop + textTop + subtitleTextView.getTextHeight());
-            } else {
-                subtitleTextView.layout(textLeft, additionalTop + textTop, textLeft + subtitleTextView.getMeasuredWidth(), additionalTop + textTop + subtitleTextView.getTextHeight());
-            }
+            subtitleTextView.layout(textLeft, additionalTop + textTop, textLeft + subtitleTextView.getMeasuredWidth(), additionalTop + textTop + subtitleTextView.getTextHeight());
         }
 
         if (additionalSubtitleTextView != null && additionalSubtitleTextView.getVisibility() != GONE) {
             int textTop = getCurrentActionBarHeight() / 2 + (getCurrentActionBarHeight() / 2 - additionalSubtitleTextView.getTextHeight()) / 2 - dp(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 1 : 1);
-            if (CherrygramAppearanceConfig.INSTANCE.getCenterTitle()) {
-                additionalSubtitleTextView.layout(getMeasuredWidth() / 2 - additionalSubtitleTextView.getMeasuredWidth() / 2, additionalTop + textTop, getMeasuredWidth() / 2 + additionalSubtitleTextView.getMeasuredWidth() / 2, additionalTop + textTop + additionalSubtitleTextView.getTextHeight());
-            } else {
-                additionalSubtitleTextView.layout(textLeft, additionalTop + textTop, textLeft + additionalSubtitleTextView.getMeasuredWidth(), additionalTop + textTop + additionalSubtitleTextView.getTextHeight());
-            }
+            additionalSubtitleTextView.layout(textLeft, additionalTop + textTop, textLeft + additionalSubtitleTextView.getMeasuredWidth(), additionalTop + textTop + additionalSubtitleTextView.getTextHeight());
         }
 
         if (avatarSearchImageView != null) {
@@ -1647,7 +1626,6 @@ public class ActionBar extends FrameLayout {
     }
 
     public void setCastShadows(boolean value) {
-        if (CherrygramAppearanceConfig.INSTANCE.getDisableToolBarShadow()) return;
         if (castShadows != value && getParent() instanceof View) {
             ((View) getParent()).invalidate();
             invalidate();
@@ -1736,44 +1714,6 @@ public class ActionBar extends FrameLayout {
                 if (crossfade && fromBottom) {
                     subtitleTextView.setVisibility(View.GONE);
                 }
-
-                requestLayout();
-            }
-        }).start();
-        requestLayout();
-    }
-
-    public void setTitleAnimatedX(CharSequence title, Drawable rightDrawable, boolean forward, long duration) {
-        if (titleTextView[0] == null || title == null) {
-            setTitle(title, rightDrawable);
-            return;
-        }
-        if (titleTextView[1] != null) {
-            if (titleTextView[1].getParent() != null) {
-                ViewGroup viewGroup = (ViewGroup) titleTextView[1].getParent();
-                viewGroup.removeView(titleTextView[1]);
-            }
-            titleTextView[1] = null;
-        }
-        titleTextView[1] = titleTextView[0];
-        titleTextView[0] = null;
-        setTitle(title, rightDrawable);
-        titleTextView[0].setAlpha(0);
-        titleTextView[0].setTranslationX(forward ? AndroidUtilities.dp(20) : -AndroidUtilities.dp(20));
-        titleTextView[0].animate().alpha(1f).translationX(0).setDuration(duration).start();
-
-        titleAnimationRunning = true;
-        ViewPropertyAnimator a = titleTextView[1].animate().alpha(0);
-        a.translationX(forward ? -AndroidUtilities.dp(20) : AndroidUtilities.dp(20));
-        a.setDuration(duration).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                if (titleTextView[1] != null && titleTextView[1].getParent() != null) {
-                    ViewGroup viewGroup = (ViewGroup) titleTextView[1].getParent();
-                    viewGroup.removeView(titleTextView[1]);
-                }
-                titleTextView[1] = null;
-                titleAnimationRunning = false;
 
                 requestLayout();
             }
@@ -1931,56 +1871,6 @@ public class ActionBar extends FrameLayout {
         super.dispatchDraw(canvas);
     }
 
-    private StaticLayout countLayout;
-
-    public class UnreadImageView extends ImageView {
-        public UnreadImageView(Context context) {
-            super(context);
-        }
-
-        private int unreadCount = 0;
-        private RectF rect = new RectF();
-
-        @Override
-        public void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-            if (countLayout == null || unreadCount == 0)
-                return;
-
-            Paint paint = Theme.dialogs_countPaint;
-//            String unreadCountString = unreadCount > 99 ? "99+" : Integer.toString(unreadCount);
-            String unreadCountString = unreadCount > 999 ? "999+" : Integer.toString(unreadCount);
-            int countWidth = Math.max(AndroidUtilities.dp(12), (int) Math.ceil(Theme.dialogs_countTextPaint.measureText(unreadCountString)));
-            int countLeft = getMeasuredWidth() - countWidth - AndroidUtilities.dp(20);
-            int countTop = 0;
-
-            int x = countLeft - AndroidUtilities.dp(5.5f);
-            rect.set(x, countTop, x + countWidth + AndroidUtilities.dp(11), countTop + AndroidUtilities.dp(23));
-            canvas.drawRoundRect(rect, 11.5f * AndroidUtilities.density, 11.5f * AndroidUtilities.density, paint);
-            canvas.save();
-            canvas.translate(countLeft, countTop + AndroidUtilities.dp(4));
-            countLayout.draw(canvas);
-            canvas.restore();
-        }
-
-        public void setUnread(int count) {
-            if (count != unreadCount) {
-                unreadCount = count;
-//                String countString = count > 99 ? "99+" : Integer.toString(count);
-                String countString = count > 999 ? "999+" : Integer.toString(count);
-                int countWidth = count == 0 ? 0 : Math.max(AndroidUtilities.dp(12), (int) Math.ceil(Theme.dialogs_countTextPaint.measureText(countString)));
-                countLayout = new StaticLayout(countString, Theme.dialogs_countTextPaint, countWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 0.0f, false);
-                invalidate();
-            }
-        }
-    }
-
-    public void unreadBadgeSetCount(int count) {
-        if (backButtonImageView != null && CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton()) {
-            backButtonImageView.setUnread(count);
-        }
-    }
-
     public void setForceSkipTouches(boolean forceSkipTouches) {
         this.forceSkipTouches = forceSkipTouches;
     }
@@ -2013,25 +1903,4 @@ public class ActionBar extends FrameLayout {
     public FrameLayout getTitlesContainer() {
         return titlesContainer;
     }
-
-    /** Cherrygram start */
-    public void onDrawCrossfadeBackground(Canvas canvas) {
-        if (blurredBackground && actionBarColor != Color.TRANSPARENT) {
-            rectTmp.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
-            blurScrimPaint.setColor(actionBarColor);
-            contentView.drawBlurRect(canvas, getY(), rectTmp, blurScrimPaint, true);
-        } else {
-            Drawable drawable = getBackground();
-            if (drawable != null) {
-                drawable.setBounds(0, 0, getWidth(), getHeight());
-                drawable.draw(canvas);
-            }
-        }
-    }
-
-    public int getItemsColor() {
-        return itemsColor;
-    }
-    /** Cherrygram finish */
-
 }

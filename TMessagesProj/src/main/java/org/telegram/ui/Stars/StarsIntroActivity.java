@@ -2583,6 +2583,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 }
             }
             super.show();
+            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
         }
 
         @Override
@@ -2907,8 +2909,6 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 }
             }
             super.show();
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starOptionsLoaded);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
         }
 
         @Override

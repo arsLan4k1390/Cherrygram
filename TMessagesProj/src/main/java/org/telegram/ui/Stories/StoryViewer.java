@@ -1580,7 +1580,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
         windowView.setClipChildren(false);
 
         if (ATTACH_TO_FRAGMENT) {
-            if (fragment != null && fragment.getParentActivity() instanceof LaunchActivity) {
+            if (fragment.getParentActivity() instanceof LaunchActivity) {
                 LaunchActivity activity = (LaunchActivity) fragment.getParentActivity();
                 activity.requestCustomNavigationBar();
             }
@@ -1651,7 +1651,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
         if (!ATTACH_TO_FRAGMENT) {
             globalInstances.add(this);
         }
-        if (fragment != null ) AndroidUtilities.hideKeyboard(fragment.getFragmentView());
+        AndroidUtilities.hideKeyboard(fragment.getFragmentView());
     }
 
     static int J = 0;

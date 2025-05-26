@@ -10,8 +10,6 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-
 public class StatusBadgeComponent {
 
     private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable statusDrawable;
@@ -38,16 +36,16 @@ public class StatusBadgeComponent {
         if (chat != null && chat.verified) {
             statusDrawable.set(verifiedDrawable = (verifiedDrawable == null ? new CombinedDrawable(Theme.dialogs_verifiedDrawable, Theme.dialogs_verifiedCheckDrawable) : verifiedDrawable), animated);
             statusDrawable.setColor(null);
-        } else if (chat != null && DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0 && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+        } else if (chat != null && DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0) {
             statusDrawable.set(DialogObject.getEmojiStatusDocumentId(chat.emoji_status), animated);
             statusDrawable.setColor(colorFilter);
         } else if (user != null && user.verified) {
             statusDrawable.set(verifiedDrawable = (verifiedDrawable == null ? new CombinedDrawable(Theme.dialogs_verifiedDrawable, Theme.dialogs_verifiedCheckDrawable) : verifiedDrawable), animated);
             statusDrawable.setColor(null);
-        } else if (user != null && DialogObject.getEmojiStatusDocumentId(user.emoji_status) != 0 && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+        } else if (user != null && DialogObject.getEmojiStatusDocumentId(user.emoji_status) != 0) {
             statusDrawable.set(DialogObject.getEmojiStatusDocumentId(user.emoji_status), animated);
             statusDrawable.setColor(colorFilter);
-        } else if (user != null && user.premium && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+        } else if (user != null && user.premium) {
             statusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, animated);
             statusDrawable.setColor(colorFilter);
         } else {

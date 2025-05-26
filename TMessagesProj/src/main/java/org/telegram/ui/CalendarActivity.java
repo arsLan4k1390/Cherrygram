@@ -1663,9 +1663,4 @@ public class CalendarActivity extends BaseFragment implements NotificationCenter
         int color = Theme.getColor(Theme.key_windowBackgroundWhite, null, true);
         return ColorUtils.calculateLuminance(color) > 0.7f;
     }
-
-    @Override
-    public int getNavigationBarColor() {
-        return getThemedColor(Theme.key_windowBackgroundWhite);
-    }
 }

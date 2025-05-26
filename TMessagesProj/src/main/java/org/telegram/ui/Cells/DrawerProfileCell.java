@@ -8,7 +8,6 @@
 
 package org.telegram.ui.Cells;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -25,7 +24,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
-import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -36,6 +34,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.DialogObject;
@@ -57,7 +56,6 @@ import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
-import org.telegram.ui.Components.AudioPlayerAlert;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.CubicBezierInterpolator;
@@ -74,18 +72,13 @@ import org.telegram.ui.ThemeActivity;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.misc.CherrygramExtras;
-import uz.unnarsx.cherrygram.preferences.drawer.helpers.DrawerBitmapHelper;
-
 public class DrawerProfileCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     private BackupImageView avatarImageView;
     private SimpleTextView nameTextView;
-    private AudioPlayerAlert.ClippingTextViewSwitcher phoneTextView;
+    private TextView phoneTextView;
     private ImageView shadowView;
     private ImageView arrowView;
-    private ImageView gradientBackground;
     private RLottieImageView darkThemeView;
     private static RLottieDrawable sunDrawable;
     private boolean updateRightDrawable = true;
@@ -99,7 +92,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     private Paint backPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private Integer currentColor;
     private Integer currentMoonColor;
-    public SnowflakesEffect snowflakesEffect;
+    private SnowflakesEffect snowflakesEffect;
     private boolean accountsShown;
     private int darkThemeBackgroundColor;
     public static boolean switchingTheme;
@@ -111,18 +104,8 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     StarParticlesView.Drawable starParticlesDrawable;
     PremiumGradient.PremiumGradientTools gradientTools;
 
-    private final ImageReceiver imageReceiver;
-    private boolean avatarAsDrawerBackground = false;
-
     public DrawerProfileCell(Context context, DrawerLayoutContainer drawerLayoutContainer) {
         super(context);
-
-        imageReceiver = new ImageReceiver(this);
-        imageReceiver.setCrossfadeWithOldImage(true);
-        imageReceiver.setForceCrossfade(true);
-
-        gradientBackground = new ImageView(context);
-        addView(gradientBackground, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.BOTTOM));
 
         shadowView = new ImageView(context);
         shadowView.setVisibility(INVISIBLE);
@@ -190,18 +173,12 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         nameTextView.setRightDrawableOutside(true);
         addView(nameTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 52, 28));
 
-        phoneTextView = new AudioPlayerAlert.ClippingTextViewSwitcher(context) {
-            @Override
-            protected TextView createTextView() {
-                TextView textView = new TextView(context);
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
-                textView.setLines(1);
-                textView.setMaxLines(1);
-                textView.setSingleLine(true);
-                textView.setGravity(Gravity.LEFT);
-                return textView;
-            }
-        };
+        phoneTextView = new TextView(context);
+        phoneTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
+        phoneTextView.setLines(1);
+        phoneTextView.setMaxLines(1);
+        phoneTextView.setSingleLine(true);
+        phoneTextView.setGravity(Gravity.LEFT);
         addView(phoneTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 52, 9));
 
         arrowView = new ImageView(context);
@@ -212,7 +189,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
 
         boolean playDrawable;
         if (playDrawable = sunDrawable == null) {
-            sunDrawable = new RLottieDrawable(R.raw.sun_outline, "" + R.raw.sun_outline, AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
+            sunDrawable = new RLottieDrawable(R.raw.sun, "" + R.raw.sun, AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
             sunDrawable.setPlayInDirectionOfCustomEndFrame(true);
             if (Theme.isCurrentThemeDay()) {
                 sunDrawable.setCustomEndFrame(0);
@@ -302,7 +279,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         });
         addView(darkThemeView, LayoutHelper.createFrame(48, 48, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 6, 90));
 
-        if (/*Theme.getEventType() == 0*/ CherrygramAppearanceConfig.INSTANCE.getDrawSnowInDrawer()) {
+        if (Theme.getEventType() == 0) {
             snowflakesEffect = new SnowflakesEffect(0);
             snowflakesEffect.setColorKey(Theme.key_chats_menuName);
         }
@@ -501,7 +478,6 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         status.attach();
         updateColors();
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.cg_updateDrawerAvatar);
         for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++){
             NotificationCenter.getInstance(i).addObserver(this, NotificationCenter.currentUserPremiumStatusChanged);
         }
@@ -512,7 +488,6 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         super.onDetachedFromWindow();
         status.detach();
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.cg_updateDrawerAvatar);
         for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; i++){
             NotificationCenter.getInstance(i).removeObserver(this, NotificationCenter.currentUserPremiumStatusChanged);
         }
@@ -568,7 +543,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         boolean drawCatsShadow = false;
         int color;
         int darkBackColor = 0;
-        if (!avatarAsDrawerBackground && !useImageBackground && Theme.hasThemeKey(Theme.key_chats_menuTopShadowCats)) {
+        if (!useImageBackground && Theme.hasThemeKey(Theme.key_chats_menuTopShadowCats)) {
             color = Theme.getColor(Theme.key_chats_menuTopShadowCats);
             drawCatsShadow = true;
         } else {
@@ -582,12 +557,6 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             currentColor = color;
             shadowView.getDrawable().setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY));
         }
-        int colorBackground = Theme.getColor(Theme.key_chats_menuBackground);
-        @SuppressLint("DrawAllocation") GradientDrawable gd2 = new GradientDrawable(
-                GradientDrawable.Orientation.BOTTOM_TOP,
-                new int[] {colorBackground, CherrygramExtras.INSTANCE.getTransparentColor(colorBackground, 0)}
-        );
-        gradientBackground.setBackground(gd2);
         color = Theme.getColor(Theme.key_chats_menuName);
         if (currentMoonColor == null || currentMoonColor != color) {
             currentMoonColor = color;
@@ -598,49 +567,18 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             sunDrawable.setLayerColor("Path 5.**", currentMoonColor);
             sunDrawable.commitApplyLayerColors();
         }
-        if (CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar()
-                && CherrygramAppearanceConfig.INSTANCE.getDrawerGradient()
-                && CherrygramExtras.INSTANCE.isLight(colorBackground)
-        ) {
-            nameTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-        } else {
-            nameTextView.setTextColor(Theme.getColor(Theme.key_chats_menuName));
-        }
-        if (CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar()
-                && DrawerBitmapHelper.INSTANCE.getCurrentAccountBitmap() != null
-                && DrawerBitmapHelper.INSTANCE.getCurrentAccountBitmap().getBitmap() != null
-                && DrawerBitmapHelper.INSTANCE.getCurrentAccountBitmap().getBitmap().getWidth() != 0
-                && DrawerBitmapHelper.INSTANCE.getCurrentAccountBitmap().getBitmap().getHeight() != 0
-        ) {
-            backgroundDrawable = DrawerBitmapHelper.INSTANCE.getCurrentAccountBitmap();
-            useImageBackground = true;
-        }
-        if (avatarAsDrawerBackground || useImageBackground) {
-            if (CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar()
-                    && CherrygramAppearanceConfig.INSTANCE.getDrawerGradient()
-                    && CherrygramExtras.INSTANCE.isLight(colorBackground)
-            ) {
-                phoneTextView.getTextView().setTextColor(CherrygramExtras.INSTANCE.getTransparentColor(Theme.getColor(Theme.key_dialogTextBlack), 0.4f));
-            } else {
-                phoneTextView.getTextView().setTextColor(Theme.getColor(Theme.key_chats_menuPhone));
-            }
+        nameTextView.setTextColor(Theme.getColor(Theme.key_chats_menuName));
+        if (useImageBackground) {
+            phoneTextView.setTextColor(Theme.getColor(Theme.key_chats_menuPhone));
             if (shadowView.getVisibility() != VISIBLE) {
                 shadowView.setVisibility(VISIBLE);
             }
-            if (avatarAsDrawerBackground) {
-                imageReceiver.setImageCoords(0, 0, getWidth(), getHeight());
-                imageReceiver.draw(canvas);
-                darkBackColor = Theme.getColor(Theme.key_listSelector);
-            } else if (backgroundDrawable instanceof ColorDrawable || backgroundDrawable instanceof GradientDrawable) {
+            if (backgroundDrawable instanceof ColorDrawable || backgroundDrawable instanceof GradientDrawable) {
                 backgroundDrawable.setBounds(0, 0, getMeasuredWidth(), getMeasuredHeight());
                 backgroundDrawable.draw(canvas);
                 darkBackColor = Theme.getColor(Theme.key_listSelector);
             } else if (backgroundDrawable instanceof BitmapDrawable) {
-                Bitmap bitmap = ((BitmapDrawable) backgroundDrawable).getBitmap().copy(Bitmap.Config.ARGB_8888, true);
-                if (bitmap == null) return;
-                if (CherrygramAppearanceConfig.INSTANCE.getDrawerDarken()) {
-                    DrawerBitmapHelper.INSTANCE.darkenBitmap(bitmap);
-                }
+                Bitmap bitmap = ((BitmapDrawable) backgroundDrawable).getBitmap();
                 float scaleX = (float) getMeasuredWidth() / (float) bitmap.getWidth();
                 float scaleY = (float) getMeasuredHeight() / (float) bitmap.getHeight();
                 float scale = Math.max(scaleX, scaleY);
@@ -662,14 +600,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             if (shadowView.getVisibility() != visibility) {
                 shadowView.setVisibility(visibility);
             }
-            if (CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar()
-                    && CherrygramAppearanceConfig.INSTANCE.getDrawerGradient()
-                    && CherrygramExtras.INSTANCE.isLight(colorBackground)
-            ) {
-                phoneTextView.getTextView().setTextColor(CherrygramExtras.INSTANCE.getTransparentColor(Theme.getColor(Theme.key_dialogTextBlack), 0.4f));
-            } else {
-                phoneTextView.getTextView().setTextColor(Theme.getColor(Theme.key_chats_menuPhoneCats));
-            }
+            phoneTextView.setTextColor(Theme.getColor(Theme.key_chats_menuPhoneCats));
             super.onDraw(canvas);
             darkBackColor = Theme.getColor(Theme.key_listSelector);
         }
@@ -716,11 +647,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     }
 
     public boolean isInAvatar(float x, float y) {
-        if (avatarAsDrawerBackground) {
-            return y <= arrowView.getTop();
-        } else {
-            return x >= avatarImageView.getLeft() && x <= avatarImageView.getRight() && y >= avatarImageView.getTop() && y <= avatarImageView.getBottom();
-        }
+        return x >= avatarImageView.getLeft() && x <= avatarImageView.getRight() && y >= avatarImageView.getTop() && y <= avatarImageView.getBottom();
     }
 
     public boolean hasAvatar() {
@@ -742,12 +669,7 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
     private int lastAccount = -1;
     private TLRPC.User lastUser = null;
     private Drawable premiumStar = null;
-
     public void setUser(TLRPC.User user, boolean accounts) {
-        setUser(user, accounts, true);
-    }
-
-    public void setUser(TLRPC.User user, boolean accounts, boolean updateAvatar) {
         int account = UserConfig.selectedAccount;
         if (account != lastAccount) {
             if (lastAccount >= 0) {
@@ -798,34 +720,10 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
         }
         animatedStatus.setColor(Theme.getColor(Theme.isCurrentThemeDark() ? Theme.key_chats_verifiedBackground : Theme.key_chats_menuPhoneCats));
         status.setColor(Theme.getColor(Theme.isCurrentThemeDark() ? Theme.key_chats_verifiedBackground : Theme.key_chats_menuPhoneCats));
-        if (!TextUtils.isEmpty(user.username)) {
-            phoneTextView.setText("@" + user.username);
-        } else {
-            phoneTextView.setText(LocaleController.getString(R.string.MobileHidden));
-        }
+        phoneTextView.setText(PhoneFormat.getInstance().format("+" + user.phone));
         AvatarDrawable avatarDrawable = new AvatarDrawable(user);
         avatarDrawable.setColor(Theme.getColor(Theme.key_avatar_backgroundInProfileBlue));
         avatarImageView.setForUserOrChat(user, avatarDrawable);
-        if (CherrygramAppearanceConfig.INSTANCE.getDrawerAvatar()) {
-            if (!updateAvatar) return;
-            if (CherrygramAppearanceConfig.INSTANCE.getDrawerGradient()) {
-                gradientBackground.setVisibility(VISIBLE);
-            } else {
-                gradientBackground.setVisibility(INVISIBLE);
-            }
-
-            if (CherrygramAppearanceConfig.INSTANCE.getDrawerSmallAvatar()) {
-                avatarImageView.setVisibility(VISIBLE);
-            } else {
-                avatarImageView.setVisibility(INVISIBLE);
-            }
-
-            DrawerBitmapHelper.INSTANCE.setAccountBitmap(user);
-        } else {
-            avatarAsDrawerBackground = false;
-            avatarImageView.setVisibility(VISIBLE);
-            gradientBackground.setVisibility(INVISIBLE);
-        }
         applyBackground(true);
         updateRightDrawable = true;
     }
@@ -876,10 +774,8 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             if ((flags & MessagesController.UPDATE_MASK_NAME) != 0 || (flags & MessagesController.UPDATE_MASK_AVATAR) != 0 ||
                 (flags & MessagesController.UPDATE_MASK_STATUS) != 0 || (flags & MessagesController.UPDATE_MASK_PHONE) != 0 ||
                 (flags & MessagesController.UPDATE_MASK_EMOJI_STATUS) != 0) {
-                setUser(UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser(), accountsShown, false);
+                setUser(UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser(), accountsShown);
             }
-        } else if (id == NotificationCenter.cg_updateDrawerAvatar) {
-            setUser(UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser(), accountsShown, true);
         }
     }
 
@@ -907,5 +803,4 @@ public class DrawerProfileCell extends FrameLayout implements NotificationCenter
             darkThemeView.playAnimation();
         }
     }
-
 }

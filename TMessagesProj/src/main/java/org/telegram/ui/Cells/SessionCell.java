@@ -341,15 +341,9 @@ public class SessionCell extends FrameLayout {
             colorKey = Theme.key_avatar_backgroundCyan;
             colorKey2 = Theme.key_avatar_background2Cyan;
         } else if (platform.contains("android")) {
-            if (session.app_name.contains("Cherrygram")) {
-                iconId = R.drawable.cg_sessions_icon;
-                colorKey = Theme.key_cgGradient2;
-                colorKey2 = Theme.key_cgGradient1;
-            } else {
-                iconId = deviceModel.contains("tab") ? R.drawable.device_tablet_android : R.drawable.device_phone_android;
-                colorKey = Theme.key_avatar_backgroundGreen;
-                colorKey2 = Theme.key_avatar_background2Green;
-            }
+            iconId = deviceModel.contains("tab") ? R.drawable.device_tablet_android : R.drawable.device_phone_android;
+            colorKey = Theme.key_avatar_backgroundGreen;
+            colorKey2 = Theme.key_avatar_background2Green;
         } else if (platform.contains("fragment")) {
             iconId = R.drawable.fragment;
             colorKey = -1;
@@ -387,9 +381,7 @@ public class SessionCell extends FrameLayout {
         iconDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_avatar_text), PorterDuff.Mode.SRC_IN));
         Drawable bgDrawable = new CircleGradientDrawable(dp(sz), colorKey == -1 ? 0xFF000000 : Theme.getColor(colorKey), colorKey2 == -1 ? 0xFF000000 : Theme.getColor(colorKey2));
         CombinedDrawable drawable = new CombinedDrawable(bgDrawable, iconDrawable);
-        if (session.app_name.contains("Cherrygram")) {
-            drawable.left = dp(-0.5f);
-        } else if (platform != null && platform.contains("fragment")) {
+        if (platform != null && platform.contains("fragment")) {
             drawable.setIconSize((int) (iconDrawable.getIntrinsicWidth() / 44.0f * sz), (int) (iconDrawable.getIntrinsicHeight() / 44.0f * sz));
         }
         return drawable;

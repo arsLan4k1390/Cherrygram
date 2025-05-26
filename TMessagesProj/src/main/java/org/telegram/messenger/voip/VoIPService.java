@@ -91,8 +91,6 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-import androidx.core.graphics.drawable.IconCompat;
 
 import org.json.JSONObject;
 import org.telegram.messenger.AccountInstance;
@@ -107,7 +105,6 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaController;
-import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
@@ -166,8 +163,6 @@ import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
 @SuppressLint("NewApi")
 public class VoIPService extends Service implements SensorEventListener, AudioManager.OnAudioFocusChangeListener, VoIPController.ConnectionStateListener, NotificationCenter.NotificationCenterDelegate, VoIPServiceState {
@@ -3376,7 +3371,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 					hashes.remove(oldest);
 				}
 			}
-			nprefs.edit().putStringSet("calls_access_hashes", hashes).apply();
+			nprefs.edit().putStringSet("calls_access_hashes", hashes).commit();
 
 			boolean sysAecAvailable = false, sysNsAvailable = false;
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -3974,7 +3969,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 		if (groupCall != null) {
 			intent.putExtra("currentAccount", currentAccount);
 		}
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+		Notification.Builder builder = new Notification.Builder(this)
 				.setContentText(name)
 				.setContentIntent(PendingIntent.getActivity(this, 50, intent, PendingIntent.FLAG_MUTABLE));
 		if (isConference()) {
@@ -3985,28 +3980,29 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			builder.setSmallIcon(isMicMute() ? R.drawable.voicechat_muted : R.drawable.voicechat_active);
 		} else {
 			builder.setContentTitle(LocaleController.getString(R.string.VoipOutgoingCall));
-			builder.setSmallIcon(CGResourcesHelper.INSTANCE.getProperNotificationIcon());
-			builder.setOngoing(true);
+			builder.setSmallIcon(R.drawable.ic_call);
+            builder.setOngoing(true);
 		}
-		builder.setPriority(Notification.PRIORITY_MAX);
-		builder.setShowWhen(false);
-		builder.setColor(0xff282e31);
-		builder.setColorized(true);
-		Intent endIntent = new Intent(this, VoIPActionsReceiver.class);
-		endIntent.setAction(getPackageName() + ".END_CALL");
-		androidx.core.app.Person caller = new androidx.core.app.Person.Builder()
-				.setIcon(IconCompat.createWithAdaptiveBitmap(MediaDataController.convertBitmapToAdaptive(photo)))
-				.setName(name != null ? name : "_")
-				.build();
-		NotificationCompat.CallStyle callStyle = NotificationCompat.CallStyle.forOngoingCall(caller, PendingIntent.getBroadcast(this, 0, endIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE));
-		callStyle.setIsVideo(videoCall);
-		builder.setStyle(callStyle);
-		if (isConference()) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			Intent endIntent = new Intent(this, VoIPActionsReceiver.class);
+			endIntent.setAction(getPackageName() + ".END_CALL");
+			if (isConference()) {
 				builder.addAction(R.drawable.ic_call_end_white_24dp, LocaleController.getString(R.string.VoipConferenceLeave), PendingIntent.getBroadcast(this, 0, endIntent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT));
 			} else if (groupCall != null) {
-			builder.setContentText(ChatObject.isChannelOrGiga(chat) ? LocaleController.getString("VoipLiveStream", R.string.VoipLiveStream) : LocaleController.getString("VoipVoiceChat", R.string.VoipVoiceChat));
-		} else {
-			builder.setContentText(LocaleController.getString("VoipOutgoingCall", R.string.VoipOutgoingCall));
+				builder.addAction(R.drawable.ic_call_end_white_24dp, ChatObject.isChannelOrGiga(chat) ? LocaleController.getString(R.string.VoipChannelLeaveAlertTitle) : LocaleController.getString(R.string.VoipGroupLeaveAlertTitle), PendingIntent.getBroadcast(this, 0, endIntent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT));
+			} else {
+				builder.addAction(R.drawable.ic_call_end_white_24dp, LocaleController.getString(R.string.VoipEndCall), PendingIntent.getBroadcast(this, 0, endIntent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT));
+			}
+			builder.setPriority(Notification.PRIORITY_MAX);
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			builder.setShowWhen(false);
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			builder.setColor(0xff282e31);
+			builder.setColorized(true);
+		} else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			builder.setColor(0xff2ca5e0);
 		}
 		if (Build.VERSION.SDK_INT >= 26) {
 			NotificationsController.checkOtherNotificationsChannel();
@@ -4522,7 +4518,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			if (error == null) {
 				String data = ((TLRPC.TL_dataJSON) response).data;
 				Instance.setGlobalServerConfig(data);
-				preferences.edit().putString("voip_server_config", data).apply();
+				preferences.edit().putString("voip_server_config", data).commit();
 			}
 		});
 	}
@@ -4556,24 +4552,23 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 	}
 
 	public static String convertStreamToString(InputStream is) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        String line;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-        }
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		StringBuilder sb = new StringBuilder();
+		String line = null;
+		while ((line = reader.readLine()) != null) {
+			sb.append(line).append("\n");
+		}
+		reader.close();
 		return sb.toString();
 	}
 
-    public static String getStringFromFile(String filePath) throws Exception {
-        File fl = new File(filePath);
-        String ret;
-        try (FileInputStream fin = new FileInputStream(fl)) {
-            ret = convertStreamToString(fin);
-        }
-        return ret;
-    }
+	public static String getStringFromFile(String filePath) throws Exception {
+		File fl = new File(filePath);
+		FileInputStream fin = new FileInputStream(fl);
+		String ret = convertStreamToString(fin);
+		fin.close();
+		return ret;
+	}
 
 	public boolean hasRate() {
 		return needRateCall || forceRating;
@@ -5145,6 +5140,14 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			placeholder.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
 			placeholder.draw(new Canvas(bitmap));
 		}
+
+		Canvas canvas = new Canvas(bitmap);
+		Path circlePath = new Path();
+		circlePath.addCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2, bitmap.getWidth() / 2, Path.Direction.CW);
+		circlePath.toggleInverseFillType();
+		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+		paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+		canvas.drawPath(circlePath, paint);
 		return bitmap;
 	}
 
@@ -5154,7 +5157,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 
 		Notification.Builder builder = new Notification.Builder(this)
 				.setContentTitle(video ? LocaleController.getString(R.string.VoipInVideoCallBranding) : LocaleController.getString(R.string.VoipInCallBranding))
-				.setSmallIcon(CGResourcesHelper.INSTANCE.getProperNotificationIcon())
+				.setSmallIcon(R.drawable.ic_call)
 				.setContentIntent(PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_MUTABLE));
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			SharedPreferences nprefs = MessagesController.getGlobalNotificationsSettings();
@@ -5177,7 +5180,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 					}
 					nm.deleteNotificationChannel("incoming_calls4" + chanIndex);
 					chanIndex++;
-					nprefs.edit().putInt("calls_notification_channel", chanIndex).apply();
+					nprefs.edit().putInt("calls_notification_channel", chanIndex).commit();
 				} else {
 					needCreate = false;
 				}
@@ -5254,7 +5257,7 @@ public class VoIPService extends Service implements SensorEventListener, AudioMa
 			}
 			Person person = new Person.Builder()
 					.setName(personName)
-					.setIcon(Icon.createWithAdaptiveBitmap(MediaDataController.convertBitmapToAdaptive(avatar))).build();
+					.setIcon(Icon.createWithAdaptiveBitmap(avatar)).build();
 			Notification.CallStyle notificationStyle = Notification.CallStyle.forIncomingCall(person, endPendingIntent, answerPendingIntent);
 
 			builder.setStyle(notificationStyle);

@@ -1818,14 +1818,6 @@
     <string name="Notifications">Notifications</string>
     <string name="ChangePermissions">Change permissions</string>
     <string name="KickFromGroup">Remove from group</string>
-    <string name="UpgradeGroup">Upgrade to Supergroup</string>
-    <string name="ConvertGroup">Convert to Supergroup</string>
-    <string name="ConvertGroupMenu">Convert to supergroup</string>
-    <string name="ConvertGroupAlertWarning">Warning</string>
-    <string name="ConvertGroupAlert">This action is irreversible. It is not possible to downgrade a supergroup to a regular group.</string>
-    <string name="ConvertGroupInfo">**Members limit reached.**\n\nTo go over the limit and get additional features, upgrade to a supergroup:\n\n• Supergroups can get up to %1$s\n• New members can see the full message history\n• Deleted messages will disappear for all members\n• Admins can add a description to the group\n• Creator can set a public link for the group</string>
-    <string name="ConvertGroupInfo2">**In supergroups:**\n\n• New members can see the full message history\n• Deleted messages will disappear for all members\n• Admins can add a description to the group\n• Creator can set a public link for the group</string>
-    <string name="ConvertGroupInfo3">**Note:** this action can\'t be undone.</string>
     <!--contact info view-->
     <string name="ShareContact">Share contact</string>
     <string name="AddContact">Add to contacts</string>

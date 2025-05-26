@@ -19,7 +19,6 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -40,12 +39,9 @@ import org.telegram.ui.FilterCreateActivity;
 
 import java.util.Set;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-
 public class DrawerActionCell extends FrameLayout {
 
     private BackupImageView imageView;
-    private ImageView imageView1;
     private TextView textView;
     private int currentId;
     private RectF rect = new RectF();
@@ -54,23 +50,16 @@ public class DrawerActionCell extends FrameLayout {
     public DrawerActionCell(Context context) {
         super(context);
 
-        int frameSize = 24;
-        if (CherrygramAppearanceConfig.INSTANCE.getIconReplacement() == CherrygramAppearanceConfig.ICON_REPLACE_VKUI) frameSize = 26;
-
         imageView = new BackupImageView(context);
         imageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_menuItemIcon), PorterDuff.Mode.SRC_IN));
         imageView.getImageReceiver().setFileLoadingPriority(FileLoader.PRIORITY_HIGH);
-
-        imageView1 = new ImageView(context);
-        imageView1.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_menuItemIcon), PorterDuff.Mode.SRC_IN));
 
         textView = new TextView(context);
         textView.setTextColor(Theme.getColor(Theme.key_chats_menuItemText));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         textView.setTypeface(AndroidUtilities.bold());
         textView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-        addView(imageView, LayoutHelper.createFrame(frameSize, frameSize, Gravity.LEFT | Gravity.TOP, 19, 12, 0, 0));
-        addView(imageView1, LayoutHelper.createFrame(frameSize, frameSize, Gravity.LEFT | Gravity.TOP, 19, 12, 0, 0));
+        addView(imageView, LayoutHelper.createFrame(24, 24, Gravity.LEFT | Gravity.TOP, 19, 12, 0, 0));
         addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 72, 0, 16, 0));
 
         setWillNotDraw(false);
@@ -84,7 +73,7 @@ public class DrawerActionCell extends FrameLayout {
         boolean error = currentError;
         if (!error && currentId == 8) {
             Set<String> suggestions = MessagesController.getInstance(UserConfig.selectedAccount).pendingSuggestions;
-            error = /*suggestions.contains("VALIDATE_PHONE_NUMBER") ||*/ suggestions.contains("VALIDATE_PASSWORD");
+            error = suggestions.contains("VALIDATE_PHONE_NUMBER") || suggestions.contains("VALIDATE_PASSWORD");
         }
         if (error) {
             int countTop = AndroidUtilities.dp(12.5f);
@@ -118,7 +107,7 @@ public class DrawerActionCell extends FrameLayout {
         currentId = id;
         try {
             textView.setText(text);
-            imageView1.setImageResource(resId);
+            imageView.setImageResource(resId);
         } catch (Throwable e) {
             FileLog.e(e);
         }
@@ -142,7 +131,7 @@ public class DrawerActionCell extends FrameLayout {
     public void updateTextAndIcon(String text, int resId) {
         try {
             textView.setText(text);
-            imageView1.setImageResource(resId);
+            imageView.setImageResource(resId);
         } catch (Throwable e) {
             FileLog.e(e);
         }

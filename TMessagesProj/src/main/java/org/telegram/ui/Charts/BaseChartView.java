@@ -41,8 +41,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public abstract class BaseChartView<T extends ChartData, L extends LineViewData> extends View implements ChartPickerDelegate.Listener {
 
     public SharedUiComponents sharedUiComponents;
@@ -1515,11 +1513,9 @@ public abstract class BaseChartView<T extends ChartData, L extends LineViewData>
         legendSignatureView.setVisibility(VISIBLE);
         selectionA = 1f;
         moveLegend(chartFullWidth * (pickerDelegate.pickerStart) - HORIZONTAL_PADDING);
-        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-            try {
-                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-            } catch (Exception ignored) {}
-        }
+        try {
+            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+        } catch (Exception ignored) {}
     }
 
     public long getStartDate() {

@@ -20,7 +20,6 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
@@ -143,11 +142,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.PermissionsUtils;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class ChatAttachAlert extends BottomSheet implements NotificationCenter.NotificationCenterDelegate, BottomSheet.BottomSheetDelegateInterface {
 
@@ -2407,22 +2401,17 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         showLayout(restrictedLayout = new ChatAttachRestrictedLayout(1, this, getContext(), resourcesProvider));
                     }
                     showLayout(photoLayout);
-                } else if (num == 1390) {
-                    if (!photosEnabled && !videosEnabled && checkCanRemoveRestrictionsByBoosts()) {
-                        return;
-                    }
-                    if (CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.SYSTEM_CAMERA) {
-                        if (currentAttachLayout != null && currentAttachLayout != photoLayout) showLayout(photoLayout);
-                        openCameraLayout();
-                    } else {
-                        onLongClickCameraButton();
-                    }
                 } else if (num == 3) {
                     if (!musicEnabled && checkCanRemoveRestrictionsByBoosts()) {
                         return;
                     }
-                    if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isAudioPermissionGranted()) {
-                        PermissionsUtils.requestAudioPermission(activity);
+                    if (Build.VERSION.SDK_INT >= 33) {
+                        if (activity.checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                            activity.requestPermissions(new String[]{Manifest.permission.READ_MEDIA_AUDIO}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
+                            return;
+                        }
+                    } else if (Build.VERSION.SDK_INT >= 23 && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        AndroidUtilities.findActivity(getContext()).requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
                         return;
                     }
                     openAudioLayout(true);
@@ -2430,8 +2419,14 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     if (!documentsEnabled && checkCanRemoveRestrictionsByBoosts()) {
                         return;
                     }
-                    if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isStoragePermissionGranted()) {
-                        PermissionsUtils.requestStoragePermission(activity);
+                    if (Build.VERSION.SDK_INT >= 33) {
+                        if (activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED ||
+                                activity.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
+                            activity.requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
+                            return;
+                        }
+                    } else if (Build.VERSION.SDK_INT >= 23 && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        AndroidUtilities.findActivity(getContext()).requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
                         return;
                     }
                     openDocumentsLayout(true);
@@ -2457,22 +2452,11 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         restrictedLayout = new ChatAttachRestrictedLayout(6, this, getContext(), resourcesProvider);
                         showLayout(restrictedLayout);
                     } else {
-                        if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
-                            boolean locationDenied = Build.VERSION.SDK_INT >= 23 && AndroidUtilities.findActivity(getContext()) != null && AndroidUtilities.findActivity(getContext()).checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
-                            if (locationDenied) {
-                                createLocationRequiredDialog(getContext(), AndroidUtilities.findActivity(getContext()),
-                                        () -> AlertsCreator.createLocationRequiredDialog(getContext(), true).show(),
-                                        this::showLocationLayout).show();
-                            } else {
-                                showLocationLayout();
-                            }
-                        } else {
-                            if (locationLayout == null) {
-                                layouts[5] = locationLayout = new ChatAttachAlertLocationLayout(this, getContext(), resourcesProvider);
-                                locationLayout.setDelegate((location, live, notify, scheduleDate, payStars) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate, payStars));
-                            }
-                            showLayout(locationLayout);
+                        if (locationLayout == null) {
+                            layouts[5] = locationLayout = new ChatAttachAlertLocationLayout(this, getContext(), resourcesProvider);
+                            locationLayout.setDelegate((location, live, notify, scheduleDate, payStars) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate, payStars));
                         }
+                        showLayout(locationLayout);
                     }
                 } else if (num == 9) {
                     if (!pollsEnabled && checkCanRemoveRestrictionsByBoosts()) {
@@ -2538,12 +2522,6 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     return false;
                 }
                 onLongClickBotButton(button.attachMenuBot, button.currentUser);
-                return true;
-            } else if (position == buttonsAdapter.cameraButton) {
-                if (!photosEnabled && !videosEnabled) {
-                    showLayout(restrictedLayout = new ChatAttachRestrictedLayout(1, this, getContext(), resourcesProvider));
-                }
-                onLongClickCameraButton();
                 return true;
             }
             return false;
@@ -3479,7 +3457,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     }
                 });
             }
-            if (canHaveStars && chatActivity != null && ChatObject.isChannelAndNotMegaGroup(chatActivity.getCurrentChat()) && chatActivity.getCurrentChatInfo() != null && chatActivity.getCurrentChatInfo().paid_media_allowed) {
+            if (editingMessageObject == null && canHaveStars && chatActivity != null && ChatObject.isChannelAndNotMegaGroup(chatActivity.getCurrentChat()) && chatActivity.getCurrentChatInfo() != null && chatActivity.getCurrentChatInfo().paid_media_allowed) {
                 ActionBarMenuSubItem item = options.add(R.drawable.menu_feature_paid, getString(R.string.PaidMediaButton), null).getLast();
                 item.setOnClickListener(v -> {
                     if (photoLayout == null) return;
@@ -3518,11 +3496,9 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
             messageSendPreview.show();
 
-            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                try {
-                    view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                } catch (Exception ignored) {}
-            }
+            try {
+                view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+            } catch (Exception ignored) {}
 
             return true;
         });
@@ -3788,7 +3764,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             TLRPC.Chat chat = chatActivity.getCurrentChat();
             TLRPC.User user = chatActivity.getCurrentUser();
             if (user != null || ChatObject.isChannel(chat) && chat.megagroup || !ChatObject.isChannel(chat)) {
-                MessagesController.getNotificationsSettings(currentAccount).edit().putBoolean("silent_" + chatActivity.getDialogId(), !notify).apply();
+                MessagesController.getNotificationsSettings(currentAccount).edit().putBoolean("silent_" + chatActivity.getDialogId(), !notify).commit();
             }
         }
         if (checkCaption(getCommentView().getText())) {
@@ -3965,7 +3941,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             int width = Math.max(nextAttachLayout.getWidth(), currentAttachLayout.getWidth());
             if (nextAttachLayout instanceof ChatAttachAlertPhotoLayoutPreview) {
                 nextAttachLayout.setTranslationX(width);
-                if (currentAttachLayout instanceof ChatAttachAlertPhotoLayout && !CherrygramCameraConfig.INSTANCE.getDisableAttachCamera()) {
+                if (currentAttachLayout instanceof ChatAttachAlertPhotoLayout) {
                     ChatAttachAlertPhotoLayout photoLayout = (ChatAttachAlertPhotoLayout) currentAttachLayout;
                     if (photoLayout.cameraView != null) {
                         photoLayout.cameraView.setVisibility(View.INVISIBLE);
@@ -3975,7 +3951,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 }
             } else {
                 currentAttachLayout.setTranslationX(-width);
-                if (nextAttachLayout == photoLayout && !CherrygramCameraConfig.INSTANCE.getDisableAttachCamera()) {
+                if (nextAttachLayout == photoLayout) {
                     ChatAttachAlertPhotoLayout photoLayout = (ChatAttachAlertPhotoLayout) nextAttachLayout;
                     if (photoLayout.cameraView != null) {
                         photoLayout.cameraView.setVisibility(View.VISIBLE);
@@ -4564,10 +4540,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     }
 
     private void setNavBarAlpha(float alpha) {
-        if (baseFragment == null) {
-            return;
-        }
-        navBarColor = ColorUtils.blendARGB(baseFragment.getNavigationBarColor(), getThemedColor(Theme.key_dialogBackground), alpha);
+        navBarColor = ColorUtils.setAlphaComponent(getThemedColor(Theme.key_windowBackgroundGray), Math.min(255, Math.max(0, (int) (255 * alpha))));
         AndroidUtilities.setNavigationBarColor(getWindow(), navBarColor, false);
         AndroidUtilities.setLightNavigationBar(getWindow(), AndroidUtilities.computePerceivedBrightness(navBarColor) > 0.721);
         getContainer().invalidate();
@@ -5391,7 +5364,6 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
         private Context mContext;
         private int galleryButton;
-        private int cameraButton;
 
         private int attachBotsStartRow;
         private int attachBotsEndRow;
@@ -5435,9 +5407,6 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     if (position == galleryButton) {
                         attachButton.setTextAndIcon(1, getString("ChatGallery", R.string.ChatGallery), Theme.chat_attachButtonDrawables[0], Theme.key_chat_attachGalleryBackground, Theme.key_chat_attachGalleryText);
                         attachButton.setTag(1);
-                    } else if (position == cameraButton) {
-                        attachButton.setTextAndIcon(1390, LocaleController.getString(R.string.VoipCamera), Theme.chat_attachCameraButton, Theme.key_chat_attachGalleryBackground, Theme.key_chat_attachGalleryText);
-                        attachButton.setTag(1390);
                     } else if (position == documentButton) {
                         attachButton.setTextAndIcon(4, getString("ChatDocument", R.string.ChatDocument), Theme.chat_attachButtonDrawables[2], Theme.key_chat_attachFileBackground, Theme.key_chat_attachFileText);
                         attachButton.setTag(4);
@@ -5498,7 +5467,6 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         public void notifyDataSetChanged() {
             buttonsCount = 0;
             galleryButton = -1;
-            cameraButton = -1;
             documentButton = -1;
             musicButton = -1;
             pollButton = -1;
@@ -5509,7 +5477,6 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             attachBotsEndRow = -1;
             if (!(baseFragment instanceof ChatActivity)) {
                 galleryButton = buttonsCount++;
-                if (CherrygramCameraConfig.INSTANCE.getDisableAttachCamera()) cameraButton = buttonsCount++;
                 documentButton = buttonsCount++;
                 if (allowEnterCaption) {
                     musicButton = buttonsCount++;
@@ -5522,7 +5489,6 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 } else {
                     if (editType == EDITMEDIA_TYPE_PHOTOVIDEO) {
                         galleryButton = buttonsCount++;
-                        if (CherrygramCameraConfig.INSTANCE.getDisableAttachCamera()) cameraButton = buttonsCount++;
                     }
                     if (editType == EDITMEDIA_TYPE_FILE) {
                         documentButton = buttonsCount++;
@@ -5535,7 +5501,6 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 TLRPC.User user = baseFragment instanceof ChatActivity ? ((ChatActivity) baseFragment).getCurrentUser() : null;
                 final boolean paidUser = user != null && ((ChatActivity) baseFragment).getMessagesController().getSendPaidMessagesStars(user.id) > 0;
                 galleryButton = buttonsCount++;
-                if (CherrygramCameraConfig.INSTANCE.getDisableAttachCamera()) cameraButton = buttonsCount++;
                 if ((photosEnabled || videosEnabled) && !paidUser) {
                     if (baseFragment instanceof ChatActivity && !((ChatActivity) baseFragment).isInScheduleMode() && !((ChatActivity) baseFragment).isSecretChat() && ((ChatActivity) baseFragment).getChatMode() != ChatActivity.MODE_QUICK_REPLIES) {
                         ChatActivity chatActivity = (ChatActivity) baseFragment;
@@ -5843,56 +5808,6 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
         mentionContainer.getAdapter().setNeedBotContext(false);
     }
 
-    public interface OnPermissionNotGranted {
-        void run();
-    }
-
-    public interface OnPermissionGranted {
-        void run();
-    }
-
-    private void showLocationLayout() {
-        if (locationLayout == null) {
-            layouts[5] = locationLayout = new ChatAttachAlertLocationLayout(this, getContext(), resourcesProvider);
-            locationLayout.setDelegate((location, live, notify, scheduleDate, payStars) -> ((ChatActivity) baseFragment).didSelectLocation(location, live, notify, scheduleDate, payStars));
-        }
-        showLayout(locationLayout);
-    }
-
-    private Dialog createLocationRequiredDialog(Context ctx, Activity activity, OnPermissionNotGranted onPermissionNotGranted, OnPermissionGranted onPermissionGranted) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(AndroidUtilities.replaceTags(LocaleController.getString(R.string.CG_LocationPermission)));
-        sb.append("\n");
-        sb.append("\n");
-        sb.append(AndroidUtilities.replaceTags(LocaleController.getString(R.string.CG_LocationPermission_Desc)));
-
-        return new AlertDialog.Builder(ctx)
-                .setMessage(sb)
-                .setTopAnimation(R.raw.permission_request_location, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, Theme.getColor(Theme.key_dialogTopBackground))
-                .setPositiveButton(LocaleController.getString("OK", R.string.OK), (dialogInterface, i) -> {
-                    String[] permissions = Build.VERSION.SDK_INT >= 29 ?
-                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_MEDIA_LOCATION} :
-                            new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-                    activity.requestPermissions(permissions, BasePermissionsActivity.REQUEST_CODE_GEOLOCATION);
-
-
-                    if (Build.VERSION.SDK_INT >= 23 && AndroidUtilities.findActivity(getContext()) != null
-                            && AndroidUtilities.findActivity(getContext()).checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-                    {
-                        AndroidUtilities.runOnUIThread(() -> {
-                            if (onPermissionGranted != null)
-                                onPermissionGranted.run();
-                        });
-                    } else {
-                        if (onPermissionNotGranted != null)
-                            AndroidUtilities.runOnUIThread(onPermissionNotGranted::run);
-                    }
-
-                })
-                .setNegativeButton(LocaleController.getString("ContactsPermissionAlertNotNow", R.string.ContactsPermissionAlertNotNow), null)
-                .create();
-    }
-
     public void setCaptionAbove(boolean above) {
         setCaptionAbove(above, true);
     }
@@ -5990,26 +5905,4 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     private void toggleCaptionAbove() {
         setCaptionAbove(!captionAbove);
     }
-
-    /** Cherrygram start */
-    private void openCameraLayout() {
-        if (!photosEnabled && !videosEnabled) {
-            showLayout(restrictedLayout = new ChatAttachRestrictedLayout(1, this, getContext(), resourcesProvider));
-        }
-        photoLayout.checkCamera(false);
-        photoLayout.openCamera(true);
-    }
-
-    public void onLongClickCameraButton() {
-        if (!photosEnabled && !videosEnabled && checkCanRemoveRestrictionsByBoosts()) {
-            return;
-        }
-        if (delegate != null) {
-            AlertsCreator.ensurePaidMessageConfirmation(currentAccount, getDialogId(), (currentAttachLayout == null ? 1 : currentAttachLayout.getSelectedItemsCount()) + getAdditionalMessagesCount(), payStars -> {
-                delegate.didPressedButton(0, false, true, 0, 0, false, false, payStars);
-            });
-        }
-    }
-    /** Cherrygram finish */
-
 }

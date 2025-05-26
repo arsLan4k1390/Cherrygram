@@ -10,7 +10,6 @@ package org.telegram.ui;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.getTypeface;
-import static org.telegram.messenger.AndroidUtilities.lerp;
 import static org.telegram.messenger.AndroidUtilities.replaceArrows;
 import static org.telegram.messenger.AndroidUtilities.replaceSingleTag;
 import static org.telegram.messenger.LocaleController.formatString;
@@ -109,7 +108,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.safetynet.SafetyNet;
+import com.google.android.gms.tasks.Task;
+import com.google.android.play.core.integrity.IntegrityManager;
+import com.google.android.play.core.integrity.IntegrityManagerFactory;
+import com.google.android.play.core.integrity.IntegrityTokenRequest;
+import com.google.android.play.core.integrity.IntegrityTokenResponse;
+import com.googlecode.mp4parser.boxes.apple.AppleNameBox;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
@@ -147,14 +155,12 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.CheckBoxCell;
-import org.telegram.ui.Cells.DialogCell;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.AnimatedPhoneNumberEditText;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
-import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.CombinedDrawable;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.CustomPhoneKeyboardView;
@@ -208,8 +214,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
-
-import uz.unnarsx.cherrygram.helpers.QrHelper;
 
 @SuppressLint("HardwareIds")
 public class LoginActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
@@ -324,7 +328,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     private boolean checkPermissions = true;
     private boolean checkShowPermissions = true;
     private boolean newAccount;
-    private boolean syncContacts = false;
+    private boolean syncContacts = true;
     private boolean testBackend = false;
 
     @ActivityMode
@@ -482,17 +486,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
     private boolean isInCancelAccountDeletionMode() {
         return activityMode == MODE_CANCEL_ACCOUNT_DELETION;
-    }
-
-    @Override
-    public int getNavigationBarColor() {
-        return getThemedColor(Theme.key_windowBackgroundWhite);
-    }
-
-    @Override
-    public void setNavigationBarColor(int color) {
-        color = getNavigationBarColor();
-        super.setNavigationBarColor(color);
     }
 
     @Override
@@ -1018,7 +1011,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("logininfo2" + (newAccount ? "_" + currentAccount : ""), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
-        editor.apply();
+        editor.commit();
     }
 
     private void putBundleToEditor(Bundle bundle, SharedPreferences.Editor editor, String prefix) {
@@ -1638,7 +1631,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             SharedPreferences.Editor editor = preferences.edit();
             editor.clear();
             putBundleToEditor(bundle, editor, null);
-            editor.apply();
+            editor.commit();
         } catch (Exception e) {
             FileLog.e(e);
         }
@@ -1795,7 +1788,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
     private boolean isRequestingFirebaseSms;
     private void fillNextCodeParams(Bundle params, TLRPC.auth_SentCode res, boolean animate) {
-        /*if (res instanceof TLRPC.TL_auth_sentCodePaymentRequired) {
+        if (res instanceof TLRPC.TL_auth_sentCodePaymentRequired) {
             final TLRPC.TL_auth_sentCodePaymentRequired auth = (TLRPC.TL_auth_sentCodePaymentRequired) res;
             params.putString("product", auth.store_product);
             params.putString("phoneHash", auth.phone_code_hash);
@@ -1916,7 +1909,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 resendCodeFromSafetyNet(params, res, "GOOGLE_PLAY_SERVICES_NOT_AVAILABLE");
             }
             return;
-        }*/
+        }
 
         params.putString("phoneHash", res.phone_code_hash);
         if (res.next_type instanceof TLRPC.TL_auth_codeTypeCall) {
@@ -2003,9 +1996,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private CheckBoxCell syncContactsBox;
         private CheckBoxCell testBackendCheckBox;
 
-        AlertDialog qrDialog = null;
-        ImageView imageView = null;
-
         @CountryState
         private int countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
         private CountrySelectActivity.Country currentCountry;
@@ -2020,52 +2010,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private boolean ignoreOnPhoneChangePaste = false;
         private boolean nextPressed = false;
         private boolean confirmedNumber = false;
-
-        ButtonsBox buttonsBox;
-        TextView qrButton, proxyButton;
-
-        class ButtonsBox extends FrameLayout {
-
-            private Paint paint = new Paint();
-            private float[] radii = new float[8];
-            private Path path = new Path();
-
-            public ButtonsBox(Context context) {
-                super(context);
-                setWillNotDraw(false);
-                paint.setColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-            }
-
-            private float t;
-            public void setT(float t) {
-                this.t = t;
-                invalidate();
-            }
-
-            private void setRadii(float left, float right) {
-                radii[0] = radii[1] = radii[6] = radii[7] = left;
-                radii[2] = radii[3] = radii[4] = radii[5] = right;
-            }
-
-            @Override
-            protected void onDraw(Canvas canvas) {
-                super.onDraw(canvas);
-
-                final float cx = getMeasuredWidth() / 2f;
-
-                path.rewind();
-                AndroidUtilities.rectTmp.set(0, 0, cx - lerp(0, dp(4), t), getMeasuredHeight());
-                setRadii(dp(8), lerp(0, dp(8), t));
-                path.addRoundRect(AndroidUtilities.rectTmp, radii, Path.Direction.CW);
-                canvas.drawPath(path, paint);
-
-                path.rewind();
-                AndroidUtilities.rectTmp.set(cx + lerp(0, dp(4), t), 0, getMeasuredWidth(), getMeasuredHeight());
-                setRadii(lerp(0, dp(8), t), dp(8));
-                path.addRoundRect(AndroidUtilities.rectTmp, radii, Path.Direction.CW);
-                canvas.drawPath(path, paint);
-            }
-        }
 
         public PhoneView(Context context) {
             super(context);
@@ -2492,58 +2436,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 return false;
             });
 
-            buttonsBox = new ButtonsBox(context);
-            SpannableStringBuilder spannableStringBuilder;
-            addView(buttonsBox, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 46, Gravity.FILL_HORIZONTAL | Gravity.BOTTOM, 22, 24, 22, 14));
-
-            proxyButton = new TextView(context) {
-                @Override
-                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                    super.onMeasure(
-                            MeasureSpec.makeMeasureSpec((MeasureSpec.getSize(widthMeasureSpec) - dp(8)) / 2, MeasureSpec.EXACTLY),
-                            MeasureSpec.makeMeasureSpec(dp(46), MeasureSpec.EXACTLY)
-                    );
-                }
-            };
-            proxyButton.setGravity(Gravity.CENTER);
-            proxyButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-            proxyButton.setBackground(Theme.AdaptiveRipple.filledRect(getThemedColor(Theme.key_featuredStickers_addButton), 8));
-            proxyButton.setTypeface(getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
-            proxyButton.setTextSize(14);
-            spannableStringBuilder = new SpannableStringBuilder();
-            spannableStringBuilder.append("..").setSpan(new ColoredImageSpan(ContextCompat.getDrawable(context, R.drawable.msg2_proxy_off)), 0, 1, 0);
-            spannableStringBuilder.setSpan(new DialogCell.FixedWidthSpan(AndroidUtilities.dp(8)), 1, 2, 0);
-            spannableStringBuilder.append(LocaleController.getString("Proxy", R.string.Proxy));
-            spannableStringBuilder.append(".").setSpan(new DialogCell.FixedWidthSpan(AndroidUtilities.dp(5)), spannableStringBuilder.length() - 1, spannableStringBuilder.length(), 0);
-            proxyButton.setText(spannableStringBuilder);
-            proxyButton.setOnClickListener(v -> presentFragment(new ProxyListActivity()));
-            buttonsBox.addView(proxyButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT));
-
-            qrButton = new TextView(context) {
-                @Override
-                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                    super.onMeasure(
-                            MeasureSpec.makeMeasureSpec((MeasureSpec.getSize(widthMeasureSpec) - dp(8)) / 2, MeasureSpec.EXACTLY),
-                            MeasureSpec.makeMeasureSpec(dp(46), MeasureSpec.EXACTLY)
-                    );
-                }
-            };
-            qrButton.setGravity(Gravity.CENTER);
-            qrButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-            qrButton.setBackground(Theme.AdaptiveRipple.filledRect(getThemedColor(Theme.key_featuredStickers_addButton), 8));
-            qrButton.setTypeface(getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
-            qrButton.setTextSize(14);
-            spannableStringBuilder = new SpannableStringBuilder();
-            spannableStringBuilder.append("..").setSpan(new ColoredImageSpan(ContextCompat.getDrawable(context, R.drawable.msg_qr_mini)), 0, 1, 0);
-            spannableStringBuilder.setSpan(new DialogCell.FixedWidthSpan(AndroidUtilities.dp(8)), 1, 2, 0);
-            spannableStringBuilder.append(LocaleController.getString(R.string.CG_QRLoginTitle));
-            spannableStringBuilder.append(".").setSpan(new DialogCell.FixedWidthSpan(AndroidUtilities.dp(5)), spannableStringBuilder.length() - 1, spannableStringBuilder.length(), 0);
-            qrButton.setText(spannableStringBuilder);
-            qrButton.setOnClickListener(view -> exportLoginToken(true));
-            buttonsBox.addView(qrButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.RIGHT));
-
             int bottomMargin = 72;
-            if (/*newAccount && */activityMode == MODE_LOGIN) {
+            if (newAccount && activityMode == MODE_LOGIN) {
                 syncContactsBox = new CheckBoxCell(context, 2);
                 syncContactsBox.setText(getString("SyncContacts", R.string.SyncContacts), "", syncContacts, false);
                 addView(syncContactsBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
@@ -2563,7 +2457,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 });
             }
 
-            /*final boolean allowTestBackend = BuildVars.DEBUG_VERSION || TEST_BACKEND_IN_STORE;
+            final boolean allowTestBackend = BuildVars.DEBUG_VERSION || TEST_BACKEND_IN_STORE;
             if (allowTestBackend && activityMode == MODE_LOGIN) {
                 testBackendCheckBox = new CheckBoxCell(context, 2);
                 testBackendCheckBox.setText(getString(R.string.DebugTestBackend), "", testBackend = getConnectionsManager().isTestBackend(), false);
@@ -2583,7 +2477,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     }
                     loadCountries();
                 });
-            }*/
+            }
             if (bottomMargin > 0 && !AndroidUtilities.isSmallScreen()) {
                 Space bottomSpacer = new Space(context);
                 bottomSpacer.setMinimumHeight(AndroidUtilities.dp(bottomMargin));
@@ -2592,7 +2486,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             HashMap<String, String> languageMap = new HashMap<>();
 
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(getResources().getAssets().open("countries.txt")))) {
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(getResources().getAssets().open("countries.txt")));
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String[] args = line.split(";");
@@ -2613,6 +2508,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     }
                     languageMap.put(args[1], args[2]);
                 }
+                reader.close();
             } catch (Exception e) {
                 FileLog.e(e);
             }
@@ -2697,19 +2593,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 }
                             }
                         }
-                        CountrySelectActivity.Country countryWithCode = new CountrySelectActivity.Country();
-                        String test_code = "999";
-                        countryWithCode.name = "Test Number";
-                        countryWithCode.code = test_code;
-                        countryWithCode.shortname = "YL";
-
-                        countriesArray.add(countryWithCode);
-                        List<CountrySelectActivity.Country> countryList = codesMap.get(test_code);
-                        if (countryList == null) {
-                            codesMap.put(test_code, countryList = new ArrayList<>());
-                        }
-                        countryList.add(countryWithCode);
-                        phoneFormatMap.put(test_code, Collections.singletonList("XX X XXXX"));
 
                         if (activityMode == MODE_CHANGE_PHONE_NUMBER) {
                             String number = PhoneFormat.stripExceptNumbers(UserConfig.getInstance(currentAccount).getClientPhone());
@@ -3020,14 +2903,13 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 }
                                 if (!permissionsItems.isEmpty()) {
                                     SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-//                                    if (preferences.getBoolean("firstlogin", true) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
-                                    if (getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
-                                        preferences.edit().putBoolean("firstlogin", false).apply();
+                                    if (preferences.getBoolean("firstlogin", true) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
+                                        preferences.edit().putBoolean("firstlogin", false).commit();
                                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
 
                                         builder.setPositiveButton(getString("Continue", R.string.Continue), null);
                                         int resId;
-                                        /*if (!allowCall && (!allowCancelCall || !allowReadCallLog)) {
+                                        if (!allowCall && (!allowCancelCall || !allowReadCallLog)) {
                                             builder.setMessage(getString("AllowReadCallAndLog", R.string.AllowReadCallAndLog));
                                             resId = R.raw.calls_log;
                                         } else if (!allowCancelCall || !allowReadCallLog) {
@@ -3036,9 +2918,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                         } else {
                                             builder.setMessage(getString("AllowReadCall", R.string.AllowReadCall));
                                             resId = R.raw.incoming_calls;
-                                        }*/
-                                        builder.setMessage(LocaleController.getString("AllowReadCall", R.string.AllowReadCall));
-                                        resId = R.raw.incoming_calls;
+                                        }
                                         builder.setTopAnimation(resId, 46, false, Theme.getColor(Theme.key_dialogTopBackground));
                                         permissionsDialog = showDialog(builder.create());
                                         confirmedNumber = true;
@@ -3100,14 +2980,13 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     }
                     if (!permissionsItems.isEmpty()) {
                         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-//                        if (preferences.getBoolean("firstlogin", true) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
-                        if (getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
-                            preferences.edit().putBoolean("firstlogin", false).apply();
+                        if (preferences.getBoolean("firstlogin", true) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_CALL_LOG)) {
+                            preferences.edit().putBoolean("firstlogin", false).commit();
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
 
                             builder.setPositiveButton(getString("Continue", R.string.Continue), null);
                             int resId;
-                            /*if (!allowCall && (!allowCancelCall || !allowReadCallLog)) {
+                            if (!allowCall && (!allowCancelCall || !allowReadCallLog)) {
                                 builder.setMessage(getString("AllowReadCallAndLog", R.string.AllowReadCallAndLog));
                                 resId = R.raw.calls_log;
                             } else if (!allowCancelCall || !allowReadCallLog) {
@@ -3116,9 +2995,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                             } else {
                                 builder.setMessage(getString("AllowReadCall", R.string.AllowReadCall));
                                 resId = R.raw.incoming_calls;
-                            }*/
-                            builder.setMessage(LocaleController.getString("AllowReadCall", R.string.AllowReadCall));
-                            resId = R.raw.incoming_calls;
+                            }
                             builder.setTopAnimation(resId, 46, false, Theme.getColor(Theme.key_dialogTopBackground));
                             permissionsDialog = showDialog(builder.create());
                             confirmedNumber = true;
@@ -3145,15 +3022,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
             String phone = PhoneFormat.stripExceptNumbers("" + codeField.getText() + phoneField.getText());
             if (activityMode == MODE_LOGIN) {
-                if (!testBackend && "999".equals(codeField.getText().toString())) {
-                    testBackend = true;
-                    if (testBackendCheckBox != null) {
-                        testBackendCheckBox.setChecked(true, true);
-                    }
-                    if (!getConnectionsManager().isTestBackend()) {
-                        getConnectionsManager().switchBackend(false);
-                    }
-                }
                 if (getParentActivity() instanceof LaunchActivity) {
                     for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
                         UserConfig userConfig = UserConfig.getInstance(a);
@@ -3164,7 +3032,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         if (PhoneNumberUtils.compare(phone, userPhone) && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
                             final int num = a;
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                            builder.setTitle(getString(R.string.CG_AppName));
+                            builder.setTitle(getString(R.string.AppName));
                             builder.setMessage(getString("AccountAlreadyLoggedIn", R.string.AccountAlreadyLoggedIn));
                             builder.setPositiveButton(getString("AccountSwitch", R.string.AccountSwitch), (dialog, which) -> {
                                 if (UserConfig.selectedAccount != num) {
@@ -3380,7 +3248,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 Runnable r = () -> {
                                     SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                                     if (preferences.getBoolean("firstloginshow", true) || getParentActivity().shouldShowRequestPermissionRationale(Manifest.permission.READ_PHONE_STATE)) {
-                                        preferences.edit().putBoolean("firstloginshow", false).apply();
+                                        preferences.edit().putBoolean("firstloginshow", false).commit();
                                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
 
                                         builder.setTopAnimation(R.raw.incoming_calls, 46, false, Theme.getColor(Theme.key_dialogTopBackground));
@@ -3529,173 +3397,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
         }
 
-        public void exportLoginToken(boolean show) {
-            getNotificationCenter().removeObserver(this, NotificationCenter.onUpdateLoginToken);
-
-            Context context = getContext();
-            if (context == null) {
-                return;
-            }
-
-            if (show)  {
-                getConnectionsManager().cleanup(false);
-            } else if (qrDialog == null || !qrDialog.isShowing()) {
-                return;
-            }
-
-            TLRPC.TL_auth_exportLoginToken req = new TLRPC.TL_auth_exportLoginToken();
-            req.api_hash = BuildVars.APP_HASH;
-            req.api_id = BuildVars.APP_ID;
-            for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
-                UserConfig userConfig = UserConfig.getInstance(a);
-                if (userConfig.isClientActivated()) {
-                    long uid = userConfig.getClientUserId();
-                    req.except_ids.add(uid);
-                }
-            }
-
-            AlertDialog progressDialog = new AlertDialog(getParentActivity(), AlertDialog.ALERT_TYPE_SPINNER);
-            int requestId = getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-                progressDialog.dismiss();
-                if (error == null) {
-                    if (response instanceof TLRPC.TL_auth_loginToken) {
-                        getNotificationCenter().addObserver(this, NotificationCenter.onUpdateLoginToken);
-                        TLRPC.TL_auth_loginToken res = (TLRPC.TL_auth_loginToken) response;
-                        if (show) {
-                            LinearLayout linearLayout = new LinearLayout(context);
-                            linearLayout.setOrientation(LinearLayout.VERTICAL);
-                            linearLayout.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT, 4, 4, 4, 4));
-
-                            TextView titleTextView = new TextView(context);
-                            titleTextView.setTypeface(getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
-                            titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-                            titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-                            titleTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-                            titleTextView.setText(LocaleController.getString(R.string.CG_QRLoginTitle));
-                            linearLayout.addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 24, 8, 0));
-
-                            TextView descriptionTextView = new TextView(context);
-                            descriptionTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-                            descriptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-                            descriptionTextView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-                            descriptionTextView.setText(LocaleController.getString(R.string.CG_QRLoginMessage));
-                            descriptionTextView.setPadding(0, AndroidUtilities.dp(8), 0, 0);
-                            linearLayout.addView(descriptionTextView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 0, 8, 0));
-
-                            imageView = new ImageView(context) {
-                                @Override
-                                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                                    int size = MeasureSpec.getSize(widthMeasureSpec);
-                                    super.onMeasure(MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY));
-                                }
-                            };
-                            imageView.setScaleType(ImageView.ScaleType.FIT_XY);
-                            imageView.setOutlineProvider(new ViewOutlineProvider() {
-                                @Override
-                                public void getOutline(View view, Outline outline) {
-                                    outline.setRoundRect(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight(), AndroidUtilities.dp(12));
-                                }
-                            });
-                            imageView.setClipToOutline(true);
-
-                            linearLayout.addView(imageView, LayoutHelper.createLinear(240, 240, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 24, 24, 24, 24));
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                            builder.setView(linearLayout);
-                            qrDialog = builder.create();
-                            qrDialog.setOnDismissListener(d -> getNotificationCenter().removeObserver(this, NotificationCenter.onUpdateLoginToken));
-                            showDialog(qrDialog);
-                        }
-                        String link = "tg://login?token=" + Base64.encodeToString(res.token, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
-                        imageView.setImageBitmap(QrHelper.createQR(link));
-                        long expires = res.expires - getConnectionsManager().getCurrentTime();
-                        if (expires < 0) {
-                            expires = 20;
-                        }
-                        AndroidUtilities.runOnUIThread(() -> exportLoginToken(false), expires * 1000L);
-                    } else if (response instanceof TLRPC.TL_auth_loginTokenSuccess) {
-                        if (qrDialog != null) {
-                            qrDialog.dismiss();
-                        }
-                        postDelayed(() -> {
-                            AndroidUtilities.hideKeyboard(codeField);
-                            onAuthSuccess((TLRPC.TL_auth_authorization) ((TLRPC.TL_auth_loginTokenSuccess) response).authorization);
-                        }, 150);
-                    } else if (response instanceof TLRPC.TL_auth_loginTokenMigrateTo) {
-                        if (qrDialog != null) {
-                            qrDialog.dismiss();
-                        }
-                        showDoneButton(true, true);
-                        TLRPC.TL_auth_loginTokenMigrateTo res = (TLRPC.TL_auth_loginTokenMigrateTo) response;
-
-                        ConnectionsManager.native_moveToDatacenter(currentAccount, res.dc_id);
-                        TLRPC.TL_auth_importLoginToken request = new TLRPC.TL_auth_importLoginToken();
-                        request.token = res.token;
-                        getConnectionsManager().sendRequest(request, (response1, error1) -> AndroidUtilities.runOnUIThread(() -> {
-                            if (error1 == null) {
-                                if (response1 instanceof TLRPC.TL_auth_loginTokenSuccess) {
-                                    postDelayed(() -> {
-                                        showDoneButton(false, true);
-                                        AndroidUtilities.hideKeyboard(codeField);
-                                        onAuthSuccess((TLRPC.TL_auth_authorization) ((TLRPC.TL_auth_loginTokenSuccess) response1).authorization);
-                                    }, 150);
-                                }
-                            } else if (error1.text != null) {
-                                handleError(error1.text);
-                            }
-                        }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagTryDifferentDc | ConnectionsManager.RequestFlagEnableUnauthorized);
-                    }
-                } else if (error.text != null) {
-                    handleError(error.text);
-                }
-
-            }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagTryDifferentDc | ConnectionsManager.RequestFlagEnableUnauthorized);
-            progressDialog.setOnCancelListener(dialog -> {
-                getConnectionsManager().cancelRequest(requestId, true);
-                if (qrDialog != null) {
-                    qrDialog.dismiss();
-                }
-            });
-            progressDialog.showDelayed(300);
-        }
-
-        private void handleError(String errorText) {
-            if (qrDialog != null) {
-                qrDialog.dismiss();
-            }
-            if (errorText.contains("SESSION_PASSWORD_NEEDED")) {
-                TL_account.getPassword req = new TL_account.getPassword();
-                getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-                    nextPressed = false;
-                    showDoneButton(false, true);
-                    if (error == null) {
-                        TL_account.Password password = (TL_account.Password) response;
-                        if (!TwoStepVerificationActivity.canHandleCurrentPassword(password, true)) {
-                            AlertsCreator.showUpdateAppAlert(getParentActivity(), LocaleController.getString("UpdateAppAlert", R.string.UpdateAppAlert), true);
-                            return;
-                        }
-                        Bundle bundle = new Bundle();
-                        SerializedData data = new SerializedData(password.getObjectSize());
-                        password.serializeToStream(data);
-                        bundle.putString("password", Utilities.bytesToHex(data.toByteArray()));
-                        setPage(VIEW_PASSWORD, true, bundle, false);
-                    } else {
-                        needShowAlert(LocaleController.getString("AppName", R.string.AppName), error.text);
-                    }
-                }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
-            } else if (errorText.startsWith("FLOOD_WAIT")) {
-                needShowAlert(LocaleController.getString("AppName", R.string.AppName), LocaleController.getString("FloodWait", R.string.FloodWait));
-            } else {
-                needShowAlert(LocaleController.getString("AppName", R.string.AppName), errorText);
-            }
-        }
-
         @Override
         public void didReceivedNotification(int id, int account, Object... args) {
             if (id == NotificationCenter.emojiLoaded) {
                 countryButton.getCurrentView().invalidate();
-            } else if (id == NotificationCenter.onUpdateLoginToken) {
-                exportLoginToken(false);
             }
         }
     }
@@ -6054,7 +5759,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             signInWithGoogleView.setMaxLines(2);
 
             SpannableStringBuilder str = new SpannableStringBuilder("d ");
-            Drawable dr = ContextCompat.getDrawable(context, com.google.android.gms.auth.api.R.drawable.googleg_standard_color_18);
+            Drawable dr = ContextCompat.getDrawable(context, R.drawable.googleg_standard_color_18);
             dr.setBounds(0, AndroidUtilities.dp(9), AndroidUtilities.dp(18), AndroidUtilities.dp(18 + 9));
             str.setSpan(new ImageSpan(dr, ImageSpan.ALIGN_BOTTOM), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             str.setSpan(new ReplacementSpan() {
@@ -6399,7 +6104,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             signInWithGoogleView.setMaxLines(2);
 
             SpannableStringBuilder str = new SpannableStringBuilder("d ");
-            Drawable dr = ContextCompat.getDrawable(context, R.drawable.camera_icon_system);
+            Drawable dr = ContextCompat.getDrawable(context, R.drawable.googleg_standard_color_18);
             dr.setBounds(0, AndroidUtilities.dp(9), AndroidUtilities.dp(18), AndroidUtilities.dp(18 + 9));
             str.setSpan(new ImageSpan(dr, ImageSpan.ALIGN_BOTTOM), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             str.setSpan(new ReplacementSpan() {
@@ -8929,7 +8634,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             showProxyButton(false, animated);
         }
     }
-
+    
     private boolean proxyButtonVisible;
     private Runnable showProxyButtonDelayed;
     private void showProxyButtonDelayed() {
@@ -10157,12 +9862,4 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         clearSheets();
         parentLayout = null;
     }
-
-    /** Cherrygram start */
-    @Override
-    public boolean isActionBarCrossfadeEnabled() {
-        return false;
-    }
-    /** Cherrygram finish */
-
 }

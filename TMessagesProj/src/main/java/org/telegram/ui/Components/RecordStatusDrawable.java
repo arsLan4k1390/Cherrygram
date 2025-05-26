@@ -15,9 +15,6 @@ import android.graphics.RectF;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.ChatActivity;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class RecordStatusDrawable extends StatusDrawable {
 
@@ -37,16 +34,6 @@ public class RecordStatusDrawable extends StatusDrawable {
             currentPaint.setStrokeCap(Paint.Cap.ROUND);
             currentPaint.setStrokeWidth(AndroidUtilities.dp(2));
         }
-    }
-
-    public RecordStatusDrawable(boolean createPaint, ChatActivity parentFragment) {
-        if (createPaint) {
-            currentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            currentPaint.setStyle(Paint.Style.STROKE);
-            currentPaint.setStrokeCap(Paint.Cap.ROUND);
-            currentPaint.setStrokeWidth(AndroidUtilities.dp(2));
-        }
-        this.chatActivity = parentFragment;
     }
 
     public void setIsChat(boolean value) {
@@ -91,15 +78,7 @@ public class RecordStatusDrawable extends StatusDrawable {
             paint.setStrokeWidth(AndroidUtilities.dp(2));
         }
         canvas.save();
-
-        if (centerChatTitle && chatActivity != null) {
-            float centerX = getBounds().centerX() - AndroidUtilities.dp(8);
-            float centerY = getIntrinsicHeight() / 2f + AndroidUtilities.dp(isChat ? 1 : 2);
-            canvas.translate(centerX, centerY);
-        } else {
-            canvas.translate(0, getIntrinsicHeight() / 2 + AndroidUtilities.dp(isChat ? 1 : 2));
-        }
-
+        canvas.translate(0, getIntrinsicHeight() / 2 + AndroidUtilities.dp(isChat ? 1 : 2));
         for (int a = 0; a < 4; a++) {
             if (a == 0) {
                 paint.setAlpha((int) (alpha * progress));
@@ -135,17 +114,11 @@ public class RecordStatusDrawable extends StatusDrawable {
 
     @Override
     public int getIntrinsicWidth() {
-        return centerChatTitle && chatActivity != null ? AndroidUtilities.dp(14) : AndroidUtilities.dp(18);
+        return AndroidUtilities.dp(18);
     }
 
     @Override
     public int getIntrinsicHeight() {
         return AndroidUtilities.dp(14);
     }
-
-    /** Cherrygram start */
-    private boolean centerChatTitle = CherrygramChatsConfig.INSTANCE.getCenterChatTitle();
-    private ChatActivity chatActivity;
-    /** Cherrygram finish */
-
 }

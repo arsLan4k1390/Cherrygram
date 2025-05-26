@@ -9,6 +9,8 @@ import android.security.keystore.KeyProperties;
 
 import androidx.annotation.RequiresApi;
 
+import org.telegram.messenger.support.fingerprint.FingerprintManagerCompat;
+
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
@@ -16,8 +18,6 @@ import java.security.KeyStoreException;
 import java.util.Locale;
 
 import javax.crypto.Cipher;
-
-import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class FingerprintController {
@@ -102,7 +102,8 @@ public class FingerprintController {
     }
 
     public static void checkKeyReady(boolean notifyCheckFingerprint) {
-        if (!isKeyReady() && AndroidUtilities.isKeyguardSecure() && CGBiometricPrompt.hasBiometricEnrolled()) {
+        if (!isKeyReady() && AndroidUtilities.isKeyguardSecure() && FingerprintManagerCompat.from(ApplicationLoader.applicationContext).isHardwareDetected()
+                && FingerprintManagerCompat.from(ApplicationLoader.applicationContext).hasEnrolledFingerprints()) {
             Utilities.globalQueue.postRunnable(() -> generateNewKey(notifyCheckFingerprint));
         }
     }

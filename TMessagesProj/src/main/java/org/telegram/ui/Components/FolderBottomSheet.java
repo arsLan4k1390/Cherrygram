@@ -50,10 +50,8 @@ import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
-import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.Vector;
@@ -978,7 +976,7 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
                     view = new TextInfoPrivacyCell(getContext());
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
                 } else if (viewType == VIEW_TYPE_USER) {
-                    GroupCreateUserCell userCell = new GroupCreateUserCell(getContext(), 1, 0, false, true);
+                    GroupCreateUserCell userCell = new GroupCreateUserCell(getContext(), 1, 0, false);
                     userCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     view = userCell;
                 } else if (viewType == VIEW_TYPE_HEADER) {
@@ -1038,37 +1036,6 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
                                 status = getString(R.string.MegaPublic);
                             }
                         }
-
-                        userCell.joinButtonView.setOnClickListener(view -> {
-                            String text;
-                            if (alreadyJoined.contains(-chat.id)) {
-                                if (ChatObject.isChannelAndNotMegaGroup(chat)) {
-                                    text = LocaleController.getString("FolderLinkAlreadySubscribed", R.string.FolderLinkAlreadySubscribed);
-                                } else {
-                                    text = LocaleController.getString("FolderLinkAlreadyJoined", R.string.FolderLinkAlreadyJoined);
-                                }
-                            } else {
-                                MessagesController.getInstance(currentAccount).addUserToChat(chat.id, UserConfig.getInstance(currentAccount).getCurrentUser(), 0, null, null, null);
-                                if (ChatObject.isChannelAndNotMegaGroup(chat)) {
-                                    text = LocaleController.getString("ChannelJoined", R.string.ChannelJoined);
-                                } else {
-                                    text = LocaleController.getString("ChannelMegaJoined", R.string.ChannelMegaJoined);
-                                }
-                                userCell.joinButtonView.setVisibility(View.INVISIBLE);
-                            }
-
-                            ArrayList<TLObject> dids = new ArrayList<>();
-                            dids.add(chat);
-                            BulletinFactory.of(bulletinContainer, null).createChatsBulletin(dids, text, null).setDuration(Bulletin.DURATION_LONG).show();
-                            /*BulletinFactory.global().createSimpleBulletin(R.raw.chats_infotip, text)
-                                    .setDuration(Bulletin.DURATION_LONG)
-                                    .show();*/
-                            dids.clear();
-                        });
-                        userCell.joinButtonView.setOnLongClickListener(view -> {
-                            Browser.openUrl(getContext(), "https://t.me/" + chat.username);
-                            return false;
-                        });
                     }
                     userCell.setTag(did);
                     userCell.getCheckBox().getCheckBoxBase().setAlpha(alreadyJoined.contains(did) ? .5f : 1f);

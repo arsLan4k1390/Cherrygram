@@ -8,8 +8,10 @@
 
 package org.telegram.ui.Components;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
@@ -29,13 +31,12 @@ import org.telegram.messenger.SendMessagesHelper;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
+import org.telegram.ui.BasePermissionsActivity;
 import org.telegram.ui.PhotoAlbumPickerActivity;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-
-import uz.unnarsx.cherrygram.core.PermissionsUtils;
 
 public class WallpaperUpdater {
 
@@ -110,10 +111,17 @@ public class WallpaperUpdater {
     public void openGallery() {
         if (parentFragment != null) {
             final Activity activity = parentFragment.getParentActivity();
-            if (Build.VERSION.SDK_INT >= 23 && activity != null) {
-                if (!PermissionsUtils.isImagesPermissionGranted()) {
-                    PermissionsUtils.requestImagesPermission(activity);
-                    return;
+            if (activity != null) {
+                if (Build.VERSION.SDK_INT >= 33) {
+                    if (activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                        activity.requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
+                        return;
+                    }
+                } else if (Build.VERSION.SDK_INT >= 23) {
+                    if (activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                        activity.requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
+                        return;
+                    }
                 }
             }
             PhotoAlbumPickerActivity fragment = new PhotoAlbumPickerActivity(PhotoAlbumPickerActivity.SELECT_TYPE_WALLPAPER, false, false, null);
@@ -151,9 +159,8 @@ public class WallpaperUpdater {
                     currentWallpaperPath = new File(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE), Utilities.random.nextInt() + ".jpg");
                     Point screenSize = AndroidUtilities.getRealScreenSize();
                     Bitmap bitmap = ImageLoader.loadBitmap(info.path, null, screenSize.x, screenSize.y, true);
-                    try (FileOutputStream stream = new FileOutputStream(currentWallpaperPath)) {
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
-                    }
+                    FileOutputStream stream = new FileOutputStream(currentWallpaperPath);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
                     delegate.didSelectWallpaper(currentWallpaperPath, bitmap, true);
                 }
             }
@@ -180,24 +187,35 @@ public class WallpaperUpdater {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == 10) {
                 AndroidUtilities.addMediaToGallery(currentPicturePath);
-                currentWallpaperPath = new File(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE), Utilities.random.nextInt() + ".jpg");
-                Point screenSize = AndroidUtilities.getRealScreenSize();
-                Bitmap bitmap = ImageLoader.loadBitmap(currentPicturePath, null, screenSize.x, screenSize.y, true);
-                try (FileOutputStream stream = new FileOutputStream(currentWallpaperPath)) {
+                FileOutputStream stream = null;
+                try {
+                    currentWallpaperPath = new File(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE), Utilities.random.nextInt() + ".jpg");
+                    Point screenSize = AndroidUtilities.getRealScreenSize();
+                    Bitmap bitmap = ImageLoader.loadBitmap(currentPicturePath, null, screenSize.x, screenSize.y, true);
+                    stream = new FileOutputStream(currentWallpaperPath);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
                     delegate.didSelectWallpaper(currentWallpaperPath, bitmap, false);
                 } catch (Exception e) {
                     FileLog.e(e);
+                } finally {
+                    try {
+                        if (stream != null) {
+                            stream.close();
+                        }
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                    }
                 }
                 currentPicturePath = null;
             } else if (requestCode == 11) {
                 if (data == null || data.getData() == null) {
                     return;
                 }
-                currentWallpaperPath = new File(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE), Utilities.random.nextInt() + ".jpg");
-                Point screenSize = AndroidUtilities.getRealScreenSize();
-                Bitmap bitmap = ImageLoader.loadBitmap(null, data.getData(), screenSize.x, screenSize.y, true);
-                try (FileOutputStream stream = new FileOutputStream(currentWallpaperPath)) {
+                try {
+                    currentWallpaperPath = new File(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE), Utilities.random.nextInt() + ".jpg");
+                    Point screenSize = AndroidUtilities.getRealScreenSize();
+                    Bitmap bitmap = ImageLoader.loadBitmap(null, data.getData(), screenSize.x, screenSize.y, true);
+                    FileOutputStream stream = new FileOutputStream(currentWallpaperPath);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
                     delegate.didSelectWallpaper(currentWallpaperPath, bitmap, false);
                 } catch (Exception e) {

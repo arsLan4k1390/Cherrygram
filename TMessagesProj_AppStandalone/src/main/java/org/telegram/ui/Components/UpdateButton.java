@@ -12,8 +12,6 @@ import android.graphics.Canvas;
 import android.graphics.LinearGradient;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.RectF;
 import android.graphics.Shader;
 import android.os.Build;
 import android.util.TypedValue;
@@ -33,7 +31,7 @@ import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.IUpdateButton;
 
-import uz.unnarsx.cherrygram.core.updater.UpdaterUtils;
+import java.io.File;
 
 public class UpdateButton extends IUpdateButton {
 
@@ -52,12 +50,10 @@ public class UpdateButton extends IUpdateButton {
             setBackground(Theme.getSelectorDrawable(0x40ffffff, false));
         }
         setOnClickListener(v -> {
+            if (!SharedConfig.isAppUpdateAvailable()) return;
             Activity activity = AndroidUtilities.findActivity(getContext());
             if (activity == null) return;
-
-            if (UpdaterUtils.updateFileExists()) {
-                UpdaterUtils.installApk(activity, UpdaterUtils.apkFile.getAbsolutePath());
-            }
+            AndroidUtilities.openForView(SharedConfig.pendingAppUpdate.document, true, activity);
         });
 
         icon = new RadialProgress2(this);
@@ -84,15 +80,10 @@ public class UpdateButton extends IUpdateButton {
     @Override
     public void draw(Canvas canvas) {
         if (updateGradient != null) {
-            Path path = new Path();
-            RectF rect = new RectF(0, 0, getWidth(), getHeight());
-            path.addRoundRect(rect, dp(24), dp(24), Path.Direction.CW);
-
             paint.setColor(0xffffffff);
             paint.setShader(updateGradient);
             updateGradient.setLocalMatrix(matrix);
-            canvas.drawRoundRect(0, 0, getMeasuredWidth(), getMeasuredHeight(), dp(24), dp(24), paint);
-            canvas.clipPath(path);
+            canvas.drawRect(0, 0, getMeasuredWidth(), getMeasuredHeight(), paint);
             icon.setBackgroundGradientDrawable(updateGradient);
             icon.draw(canvas);
         }
@@ -104,7 +95,7 @@ public class UpdateButton extends IUpdateButton {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         int width = MeasureSpec.getSize(widthMeasureSpec);
         if (lastGradientWidth != width) {
-            updateGradient = new LinearGradient(0, 0, width, 0, new int[]{0xff8C2D4C, 0xffE54C7F}, new float[]{0.0f, 1.0f}, Shader.TileMode.CLAMP);
+            updateGradient = new LinearGradient(0, 0, width, 0, new int[]{0xff69BF72, 0xff53B3AD}, new float[]{0.0f, 1.0f}, Shader.TileMode.CLAMP);
             lastGradientWidth = width;
         }
         int x = (getMeasuredWidth() - textView.getMeasuredWidth()) / 2;
@@ -129,8 +120,10 @@ public class UpdateButton extends IUpdateButton {
     @Keep
     public void update(boolean animated) {
         final boolean show;
-        if (UpdaterUtils.updateFileExists()) {
-            show = true;
+        if (SharedConfig.isAppUpdateAvailable()) {
+            final String fileName = FileLoader.getAttachFileName(SharedConfig.pendingAppUpdate.document);
+            final File path = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(SharedConfig.pendingAppUpdate.document, true);
+            show = path.exists();
         } else {
             show = false;
         }

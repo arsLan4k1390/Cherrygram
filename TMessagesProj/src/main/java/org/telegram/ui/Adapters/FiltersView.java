@@ -596,6 +596,12 @@ public class FiltersView extends RecyclerListView {
         return false;
     }
 
+    @Override
+    public void onDraw(Canvas c) {
+        super.onDraw(c);
+        c.drawRect(0, getMeasuredHeight() - 1, getMeasuredWidth(), getMeasuredHeight(), Theme.dividerPaint);
+    }
+
     public void updateColors() {
         getRecycledViewPool().clear();
 

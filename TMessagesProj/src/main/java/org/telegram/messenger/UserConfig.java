@@ -24,8 +24,8 @@ import java.util.Arrays;
 public class UserConfig extends BaseController {
 
     public static int selectedAccount;
-    public final static int MAX_ACCOUNT_DEFAULT_COUNT = 10; //Was 3
-    public final static int MAX_ACCOUNT_COUNT = 10; //Was 4
+    public final static int MAX_ACCOUNT_DEFAULT_COUNT = 3;
+    public final static int MAX_ACCOUNT_COUNT = 4;
 
     private final Object sync = new Object();
     private volatile boolean configLoaded;
@@ -503,7 +503,7 @@ public class UserConfig extends BaseController {
     }
 
     public void setPinnedDialogsLoaded(int folderId, boolean loaded) {
-        getPreferences().edit().putBoolean("2pinnedDialogsLoaded" + folderId, loaded).apply();
+        getPreferences().edit().putBoolean("2pinnedDialogsLoaded" + folderId, loaded).commit();
     }
 
     public void clearPinnedDialogsLoaded() {
@@ -528,7 +528,7 @@ public class UserConfig extends BaseController {
     }
 
     public void setTotalDialogsCount(int folderId, int totalDialogsLoadCount) {
-        getPreferences().edit().putInt("2totalDialogsLoadCount" + (folderId == 0 ? "" : folderId), totalDialogsLoadCount).apply();
+        getPreferences().edit().putInt("2totalDialogsLoadCount" + (folderId == 0 ? "" : folderId), totalDialogsLoadCount).commit();
     }
 
     public long[] getDialogLoadOffsets(int folderId) {
@@ -551,7 +551,7 @@ public class UserConfig extends BaseController {
         editor.putLong("2dialogsLoadOffsetChannelId" + (folderId == 0 ? "" : folderId), dialogsLoadOffsetChannelId);
         editor.putLong("2dialogsLoadOffsetAccess" + (folderId == 0 ? "" : folderId), dialogsLoadOffsetAccess);
         editor.putBoolean("hasValidDialogLoadIds", true);
-        editor.apply();
+        editor.commit();
     }
 
     public boolean isPremium() {

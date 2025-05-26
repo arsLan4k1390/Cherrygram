@@ -10,6 +10,7 @@ package org.telegram.messenger;
 
 import static org.telegram.messenger.LocaleController.getString;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -219,12 +220,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
-import uz.unnarsx.cherrygram.core.PermissionsUtils;
-
 public class AndroidUtilities {
     public final static int LIGHT_STATUS_BAR_OVERLAY = 0x0f000000, DARK_STATUS_BAR_OVERLAY = 0x33000000;
 
@@ -234,9 +229,6 @@ public class AndroidUtilities {
     public final static int REPLACING_TAG_TYPE_LINK_NBSP = 3;
     public final static int REPLACING_TAG_TYPE_UNDERLINE = 4;
 
-    public final static String TYPEFACE_ROBOTO_CONDENSED_BOLD = "fonts/rcondensedbold.ttf";
-    public final static String TYPEFACE_ROBOTO_REGULAR = "fonts/rregular.ttf";
-    public final static String TYPEFACE_ROBOTO_ITALIC = "fonts/ritalic.ttf";
     public final static String TYPEFACE_ROBOTO_MEDIUM = "fonts/rmedium.ttf";
     public final static String TYPEFACE_ROBOTO_MEDIUM_ITALIC = "fonts/rmediumitalic.ttf";
     public final static String TYPEFACE_ROBOTO_MONO = "fonts/rmono.ttf";
@@ -282,7 +274,6 @@ public class AndroidUtilities {
     public static int navigationBarHeight = 0;
     public static boolean firstConfigurationWas;
     public static float density = 1;
-    public static int densityDpi = 380;
     public static Point displaySize = new Point();
     public static float screenRefreshRate = 60;
     public static float screenMaxRefreshRate = 60;
@@ -1707,9 +1698,9 @@ public class AndroidUtilities {
             if (f.exists()) {
                 return;
             }
-            try (FileWriter writer = new FileWriter(f)){
-                writer.flush();
-            }
+            FileWriter writer = new FileWriter(f);
+            writer.flush();
+            writer.close();
         } catch (Throwable e) {
             FileLog.e(e, false);
         }
@@ -2309,67 +2300,29 @@ public class AndroidUtilities {
     public static Typeface getTypeface(String assetPath) {
         synchronized (typefaceCache) {
             if (!typefaceCache.containsKey(assetPath)) {
-                Typeface t;
                 try {
-                    if (CherrygramCoreConfig.INSTANCE.getSystemFonts()) {
-                        switch (assetPath) {
-                            case TYPEFACE_ROBOTO_MONO:
-                                t = Typeface.MONOSPACE;
-                                break;
-                            case TYPEFACE_ROBOTO_CONDENSED_BOLD:
-                                t = Typeface.create("sans-serif-condensed", Typeface.BOLD);
-                                break;
-                            case TYPEFACE_ROBOTO_MEDIUM_ITALIC:
-                                if (FontHelper.isMediumWeightSupported()) {
-                                    t = Typeface.create("sans-serif-medium", Typeface.ITALIC);
-                                } else {
-                                    t = Typeface.create("sans-serif", Typeface.BOLD_ITALIC);
-                                }
-                                break;
-                            case TYPEFACE_ROBOTO_MEDIUM:
-                                if (FontHelper.isMediumWeightSupported()) {
-                                    t = Typeface.create("sans-serif-medium", Typeface.NORMAL);
-                                } else {
-                                    t = Typeface.create("sans-serif", Typeface.BOLD);
-                                }
-                                break;
-                            case TYPEFACE_ROBOTO_ITALIC:
-                                t = Build.VERSION.SDK_INT >= 28 ? Typeface.create(Typeface.SANS_SERIF, 400, true) : Typeface.create("sans-serif", Typeface.ITALIC);
-                                break;
-                            default:
-                                t = Build.VERSION.SDK_INT >= 28 ? Typeface.create(Typeface.SANS_SERIF, 400, false) : Typeface.create("sans-serif", Typeface.NORMAL);
-                                break;
+                    Typeface t;
+                    if (Build.VERSION.SDK_INT >= 26) {
+                        Typeface.Builder builder = new Typeface.Builder(ApplicationLoader.applicationContext.getAssets(), assetPath);
+                        if (assetPath.contains("medium")) {
+                            builder.setWeight(700);
                         }
+                        if (assetPath.contains("italic")) {
+                            builder.setItalic(true);
+                        }
+                        t = builder.build();
                     } else {
-                        if (Build.VERSION.SDK_INT >= 26) {
-                            Typeface.Builder builder = new Typeface.Builder(ApplicationLoader.applicationContext.getAssets(), assetPath);
-                            if (assetPath.contains("medium")) {
-                                builder.setWeight(700);
-                            }
-                            if (assetPath.contains("italic")) {
-                                builder.setItalic(true);
-                            }
-                            t = builder.build();
-                        } else {
-                            t = Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), assetPath);
-                        }
+                        t = Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), assetPath);
                     }
+                    typefaceCache.put(assetPath, t);
                 } catch (Exception e) {
                     if (BuildVars.LOGS_ENABLED) {
                         FileLog.e("Could not get typeface '" + assetPath + "' because " + e.getMessage());
                     }
                     return null;
                 }
-                typefaceCache.put(assetPath, t);
-                return t;
             }
             return typefaceCache.get(assetPath);
-        }
-    }
-
-    public static void clearTypefaceCache() {
-        synchronized (typefaceCache) {
-            typefaceCache.clear();
         }
     }
 
@@ -2401,9 +2354,7 @@ public class AndroidUtilities {
     }
 
     public static int getShadowHeight() {
-        if (CherrygramAppearanceConfig.INSTANCE.getDisableDividers()) {
-            return 0;
-        } else if (density >= 4.0f) {
+        if (density >= 4.0f) {
             return 3;
         } else if (density >= 2.0f) {
             return 2;
@@ -2713,7 +2664,6 @@ public class AndroidUtilities {
         try {
             float oldDensity = density;
             density = context.getResources().getDisplayMetrics().density;
-            densityDpi = context.getResources().getDisplayMetrics().densityDpi;
             float newDensity = density;
             if (firstConfigurationWas && Math.abs(oldDensity - newDensity) > 0.001) {
                 Theme.reloadAllResources(context);
@@ -2769,7 +2719,6 @@ public class AndroidUtilities {
             }
             fillStatusBarHeight(context, true);
             if (BuildVars.LOGS_ENABLED) {
-                FileLog.e("densityDpi = " + densityDpi);
                 FileLog.e("density = " + density + " display size = " + displaySize.x + " " + displaySize.y + " " + displayMetrics.xdpi + "x" + displayMetrics.ydpi + ", screen layout: " + configuration.screenLayout + ", statusbar height: " + statusBarHeight + ", navbar height: " + navigationBarHeight);
             }
             ViewConfiguration vc = ViewConfiguration.get(context);
@@ -2900,9 +2849,6 @@ public class AndroidUtilities {
     }
 
     public static boolean isTabletForce() {
-        if (CherrygramCoreConfig.INSTANCE.getTabletMode() != CherrygramCoreConfig.TABLET_MODE_AUTO) {
-            return CherrygramCoreConfig.INSTANCE.getTabletMode() == CherrygramCoreConfig.TABLET_MODE_ENABLE;
-        }
         return ApplicationLoader.applicationContext != null && ApplicationLoader.applicationContext.getResources().getBoolean(R.bool.isTablet);
     }
 
@@ -2930,7 +2876,7 @@ public class AndroidUtilities {
     }
 
     public static boolean isTablet() {
-        return isTabletInternal() /*&& !SharedConfig.forceDisableTabletMode*/;
+        return isTabletInternal() && !SharedConfig.forceDisableTabletMode;
     }
 
     public static boolean isSmallScreen() {
@@ -2966,7 +2912,7 @@ public class AndroidUtilities {
 
     public static int getPhotoSize() {
         if (photoSize == null) {
-            photoSize = CherrygramChatsConfig.INSTANCE.getLargePhotos() ? 2560 : 1280;
+            photoSize = 1280;
         }
         return photoSize;
     }
@@ -3599,7 +3545,13 @@ public class AndroidUtilities {
         if (
             secretChat ||
             !BuildVars.NO_SCOPED_STORAGE ||
-            Build.VERSION.SDK_INT >= 23 && PermissionsUtils.isImagesPermissionGranted()
+            (
+                Build.VERSION.SDK_INT >= 33 &&
+                ApplicationLoader.applicationContext.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED
+            ) || (
+                Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 33 &&
+                ApplicationLoader.applicationContext.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+            )
         ) {
             return FileLoader.getDirectory(FileLoader.MEDIA_DIR_IMAGE);
         }
@@ -4047,27 +3999,29 @@ public class AndroidUtilities {
         if (bytes == null) {
             return null;
         }
-        try (final ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
-            for (int i = 0; i < bytes.length; i++) {
-                final int b = bytes[i];
-                if (b == '=') {
-                    try {
-                        final int u = Character.digit((char) bytes[++i], 16);
-                        final int l = Character.digit((char) bytes[++i], 16);
-                        buffer.write((char) ((u << 4) + l));
-                    } catch (Exception e) {
-                        FileLog.e(e);
-                        return null;
-                    }
-                } else {
-                    buffer.write(b);
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        for (int i = 0; i < bytes.length; i++) {
+            final int b = bytes[i];
+            if (b == '=') {
+                try {
+                    final int u = Character.digit((char) bytes[++i], 16);
+                    final int l = Character.digit((char) bytes[++i], 16);
+                    buffer.write((char) ((u << 4) + l));
+                } catch (Exception e) {
+                    FileLog.e(e);
+                    return null;
                 }
+            } else {
+                buffer.write(b);
             }
-            return buffer.toByteArray();
+        }
+        byte[] array = buffer.toByteArray();
+        try {
+            buffer.close();
         } catch (Exception e) {
             FileLog.e(e);
         }
-        return null;
+        return array;
     }
 
     public static boolean copyFile(InputStream sourceFile, File destFile) throws IOException {
@@ -4723,7 +4677,7 @@ public class AndroidUtilities {
                 editor.putString("proxy_secret", secret);
                 info = new SharedConfig.ProxyInfo(address, p, "", "", secret);
             }
-            editor.apply();
+            editor.commit();
 
             SharedConfig.currentProxy = SharedConfig.addProxy(info);
 
@@ -5735,11 +5689,12 @@ public class AndroidUtilities {
         File file = new File(cachePath, fileName);
         try (FileOutputStream out = new FileOutputStream(file)) {
             bitmap.compress(format, 87, out);
+            out.close();
+            return FileProvider.getUriForFile(ApplicationLoader.applicationContext, ApplicationLoader.getApplicationId() + ".provider", file);
         } catch (Exception e) {
             FileLog.e(e);
-            return null;
         }
-        return FileProvider.getUriForFile(ApplicationLoader.applicationContext, ApplicationLoader.getApplicationId() + ".provider", file);
+        return null;
     }
 
     public static boolean isNumeric(String str) {
@@ -6329,22 +6284,6 @@ public class AndroidUtilities {
             }
         }
         return isHonor;
-    }
-
-    public static void selectionSort(ArrayList<CharSequence> x, ArrayList<String> y) {
-        for (int i = 0; i < x.size() - 1; i++) {
-            for (int j = i + 1; j < x.size(); j++) {
-                if (x.get(i).toString().compareTo(x.get(j).toString()) > 0) {
-                    CharSequence temp = x.get(i);
-                    x.set(i, x.get(j));
-                    x.set(j, temp);
-
-                    String tempStr = y.get(i);
-                    y.set(i, y.get(j));
-                    y.set(j, tempStr);
-                }
-            }
-        }
     }
 
     public static CharSequence withLearnMore(CharSequence text, Runnable onClick) {

@@ -18,6 +18,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -29,38 +30,29 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.multidex.MultiDex;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import org.json.JSONObject;
-import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.voip.VideoCapturerDevice;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Adapters.DrawerLayoutAdapter;
 import org.telegram.ui.Components.ForegroundDetector;
+import org.telegram.ui.Components.Premium.boosts.BoostRepository;
 import org.telegram.ui.IUpdateButton;
 import org.telegram.ui.IUpdateLayout;
-import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.LauncherIconController;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
-
-import kotlin.coroutines.Continuation;
-import kotlin.coroutines.CoroutineContext;
-import kotlin.coroutines.EmptyCoroutineContext;
-import uz.unnarsx.cherrygram.camera.CameraXUtils;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 
 public class ApplicationLoader extends Application {
 
@@ -86,7 +78,6 @@ public class ApplicationLoader extends Application {
     public static volatile boolean mainInterfacePausedStageQueue = true;
     public static boolean canDrawOverlays;
     public static volatile long mainInterfacePausedStageQueueTime;
-    public static boolean hasPlayServices;
 
     private static PushListenerController.IPushListenerServiceProvider pushProvider;
     private static IMapsProvider mapsProvider;
@@ -179,7 +170,7 @@ public class ApplicationLoader extends Application {
         } catch (Exception e) {
             FileLog.e(e);
         }
-        return new File("/data/data/uz.unnarsx.cherrygram/files");
+        return new File("/data/data/org.telegram.messenger/files");
     }
 
     public static void postInitApplication() {
@@ -206,7 +197,7 @@ public class ApplicationLoader extends Application {
 
                     }
 
-                    boolean isSlow = CherrygramExperimentalConfig.INSTANCE.getSlowNetworkMode();
+                    boolean isSlow = isConnectionSlow();
                     for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
                         ConnectionsManager.getInstance(a).checkConnection();
                         FileLoader.getInstance(a).onNetworkChanged(isSlow);
@@ -239,23 +230,6 @@ public class ApplicationLoader extends Application {
         }
 
         SharedConfig.loadConfig();
-        hasPlayServices = checkPlayServices();
-        CameraXUtils.loadCameraXSizes();
-        if (!CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
-            Continuation<Object> suspendResult = new Continuation<>() {
-                @NonNull
-                @Override
-                public CoroutineContext getContext() {
-                    return EmptyCoroutineContext.INSTANCE;
-                }
-
-                @Override
-                public void resumeWith(@NonNull Object o) {
-
-                }
-            };
-            KotlinFragmentsManager.INSTANCE.checkConnection(suspendResult);
-        }
         SharedPrefsHelper.init(applicationContext);
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) { //TODO improve account
             UserConfig.getInstance(a).loadConfig();
@@ -364,19 +338,11 @@ public class ApplicationLoader extends Application {
         if (preferences.contains("pushService")) {
             enabled = preferences.getBoolean("pushService", true);
         } else {
-            enabled = preferences.getBoolean("keepAliveService", false);
+            enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", false);
         }
         if (enabled) {
             try {
-                if (BuildVars.LOGS_ENABLED) {
-                    Log.d("TFOSS", "Trying to start push service every 10 minutes");
-                    Log.d("TFOSS", "Starting push service...");
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && CherrygramExperimentalConfig.INSTANCE.getResidentNotification()) {
-                    applicationContext.startForegroundService(new Intent(applicationContext, NotificationsService.class));
-                } else {
-                    applicationContext.startService(new Intent(applicationContext, NotificationsService.class));
-                }
+                applicationContext.startService(new Intent(applicationContext, NotificationsService.class));
             } catch (Throwable ignore) {
 
             }
@@ -412,9 +378,9 @@ public class ApplicationLoader extends Application {
         }, 1000);
     }
 
-    public static boolean checkPlayServices() {
+    private boolean checkPlayServices() {
         try {
-            int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(ApplicationLoader.applicationContext);
+            int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
             return resultCode == ConnectionResult.SUCCESS;
         } catch (Exception e) {
             FileLog.e(e);
@@ -727,18 +693,4 @@ public class ApplicationLoader extends Application {
     public File getDownloadedUpdateFile() {
         return null;
     }
-
-
-    public boolean checkCgUpdates(BaseFragment fragment) {
-        return false;
-    }
-
-    public boolean checkCgUpdatesManually(BaseFragment fragment, LaunchActivity launchActivity, Browser.Progress progress) {
-        return false;
-    }
-
-    public boolean showUpdaterSettings(BaseFragment fragment) {
-        return false;
-    }
-
 }

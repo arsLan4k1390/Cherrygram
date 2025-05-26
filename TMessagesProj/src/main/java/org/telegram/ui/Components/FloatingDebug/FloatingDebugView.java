@@ -328,7 +328,7 @@ public class FloatingDebugView extends FrameLayout implements NotificationCenter
         mPrefs.edit()
                 .putFloat("x", fabXSpring.getSpring().getFinalPosition())
                 .putFloat("y", fabYSpring.getSpring().getFinalPosition())
-                .apply();
+                .commit();
     }
 
     private void updateDrawables() {

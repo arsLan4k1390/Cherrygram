@@ -22,12 +22,12 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.DownloadController;
 import org.telegram.messenger.ImageLoader;
 import org.telegram.messenger.LocaleController;
@@ -59,8 +59,6 @@ import org.telegram.ui.Components.voip.VoIPHelper;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class DataSettingsActivity extends BaseFragment {
 
@@ -176,15 +174,13 @@ public class DataSettingsActivity extends BaseFragment {
 //        autoplaySectionRow = rowCount++;
         streamSectionRow = rowCount++;
         enableStreamRow = rowCount++;
-        enableMkvRow = rowCount++;
-        enableAllStreamRow = rowCount++;
-        /*if (BuildVars.DEBUG_VERSION) {
+        if (BuildVars.DEBUG_VERSION) {
             enableMkvRow = rowCount++;
             enableAllStreamRow = rowCount++;
         } else {
             enableAllStreamRow = -1;
             enableMkvRow = -1;
-        }*/
+        }
         enableAllStreamInfoRow = rowCount++;
 
         enableCacheStreamRow = -1;//rowCount++;
@@ -259,26 +255,8 @@ public class DataSettingsActivity extends BaseFragment {
     }
 
     @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
-
         actionBar.setTitle(LocaleController.getString(R.string.DataSettings));
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);
@@ -370,7 +348,7 @@ public class DataSettingsActivity extends BaseFragment {
                     SharedPreferences.Editor editor = MessagesController.getMainSettings(currentAccount).edit();
                     editor.putString(key, preset.toString());
                     editor.putInt(key2, 3);
-                    editor.apply();
+                    editor.commit();
 
                     cell.setChecked(!checked);
                     RecyclerView.ViewHolder holder = listView.findContainingViewHolder(view);
@@ -425,7 +403,7 @@ public class DataSettingsActivity extends BaseFragment {
                         editor.putInt("currentRoamingPreset", DownloadController.getInstance(currentAccount).currentRoamingPreset = 3);
                         editor.putString(key, preset.toString());
                     }
-                    editor.apply();
+                    editor.commit();
                     DownloadController.getInstance(currentAccount).checkAutodownloadSettings();
                     for (int a = 0; a < 3; a++) {
                         DownloadController.getInstance(currentAccount).savePresetToServer(a);
@@ -481,7 +459,7 @@ public class DataSettingsActivity extends BaseFragment {
                                     break;
                             }
                             if (val != -1) {
-                                preferences.edit().putInt("VoipDataSaving", val).apply();
+                                preferences.edit().putInt("VoipDataSaving", val).commit();
                                 updateVoipUseLessData = true;
                             }
                             if (listAdapter != null) {
@@ -975,18 +953,6 @@ public class DataSettingsActivity extends BaseFragment {
 
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{TextSettingsCell.class, TextCheckCell.class, HeaderCell.class, NotificationsCheckCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
-        } else {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));

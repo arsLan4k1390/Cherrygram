@@ -21,7 +21,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -385,11 +384,6 @@ public class EmbedBottomSheet extends BottomSheet {
                     customViewCallback.onCustomViewHidden();
                 }
                 customView = null;
-            }
-
-            @Override
-            public Bitmap getDefaultVideoPoster() {
-                return Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
             }
         });
 

@@ -2,6 +2,7 @@ package org.telegram.ui.web;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.lerp;
+import static org.telegram.messenger.LocaleController.formatString;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.app.Activity;
@@ -34,6 +35,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
+
+import com.google.android.gms.safetynet.SafeBrowsingThreat;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -68,12 +71,11 @@ import org.telegram.ui.Components.UniversalRecyclerView;
 import org.telegram.ui.Stars.StarsIntroActivity;
 import org.telegram.ui.WrappedResourceProvider;
 
+import java.net.IDN;
 import java.net.URLDecoder;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 
 public class AddressBarList extends FrameLayout {
 
@@ -1118,7 +1120,7 @@ public class AddressBarList extends FrameLayout {
             for (int i = 0; i < links.size(); ++i) {
                 min_id = Math.min(min_id, links.get(i).getId());
             }
-            MediaDataController.getInstance(currentAccount).loadMedia(ChatsHelper2.INSTANCE.getCustomChatID(), links.isEmpty() ? 30 : 50, min_id == Integer.MAX_VALUE ? 0 : min_id, 0, MediaDataController.MEDIA_URL, 0, 1, guid, 0, null, query);
+            MediaDataController.getInstance(currentAccount).loadMedia(selfId, links.isEmpty() ? 30 : 50, min_id == Integer.MAX_VALUE ? 0 : min_id, 0, MediaDataController.MEDIA_URL, 0, 1, guid, 0, null, query);
         }
 
         @Override

@@ -297,7 +297,7 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
         backgroundColor = getThemedColor(Theme.key_dialogBackground);
         final boolean isDark = AndroidUtilities.computePerceivedBrightness(backgroundColor) < 0.721f;
         blurredNativeBackground = supportsNativeBlur() && progressViewStyle == ALERT_TYPE_MESSAGE;
-        blurredBackground = (blurredNativeBackground || !supportsNativeBlur()/* && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH && LiteMode.isEnabled(LiteMode.FLAG_CHAT_BLUR)*/) && isDark;
+        blurredBackground = (blurredNativeBackground || !supportsNativeBlur() && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_HIGH && LiteMode.isEnabled(LiteMode.FLAG_CHAT_BLUR)) && isDark;
 
         backgroundPaddings = new Rect();
         if (progressStyle != ALERT_TYPE_SPINNER || blurredBackground) {
@@ -801,14 +801,12 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
                 protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
                     boolean result = super.drawChild(canvas, child, drawingTime);
                     if (shadow[0].getPaint().getAlpha() != 0) {
-//                        shadow[0].setBounds(0, getScrollY(), getMeasuredWidth(), getScrollY() + dp(3));
-//                        shadow[0].draw(canvas);
-                        canvas.drawLine(0, getScrollY(), getMeasuredWidth(), getScrollY(), Theme.dividerPaint);
+                        shadow[0].setBounds(0, getScrollY(), getMeasuredWidth(), getScrollY() + dp(3));
+                        shadow[0].draw(canvas);
                     }
                     if (shadow[1].getPaint().getAlpha() != 0) {
-//                        shadow[1].setBounds(0, getScrollY() + getMeasuredHeight() - dp(3), getMeasuredWidth(), getScrollY() + getMeasuredHeight());
-//                        shadow[1].draw(canvas);
-                        canvas.drawLine(0, getScrollY() + getMeasuredHeight(), getMeasuredWidth(), getScrollY() + getMeasuredHeight(), Theme.dividerPaint);
+                        shadow[1].setBounds(0, getScrollY() + getMeasuredHeight() - dp(3), getMeasuredWidth(), getScrollY() + getMeasuredHeight());
+                        shadow[1].draw(canvas);
                     }
                     return result;
                 }

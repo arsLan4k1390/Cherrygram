@@ -34,9 +34,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
-import uz.unnarsx.cherrygram.core.PermissionsUtils;
-
 @RequiresApi(api = Build.VERSION_CODES.R)
 public class FilesMigrationService extends Service {
 
@@ -64,7 +61,7 @@ public class FilesMigrationService extends Service {
         Notification notification = new Notification.Builder(this, NotificationsController.OTHER_NOTIFICATIONS_CHANNEL)
                 .setContentTitle(getText(R.string.MigratingFiles))
                 .setAutoCancel(false)
-                .setSmallIcon(CGResourcesHelper.INSTANCE.getProperNotificationIcon())
+                .setSmallIcon(R.drawable.notification)
                 .build();
 
         isRunning = true;
@@ -178,7 +175,7 @@ public class FilesMigrationService extends Service {
                 Notification notification = new Notification.Builder(FilesMigrationService.this, NotificationsController.OTHER_NOTIFICATIONS_CHANNEL)
                         .setContentTitle(getText(R.string.MigratingFiles))
                         .setContentText(String.format("%s/%s", currentCount, totalFilesCount))
-                        .setSmallIcon(CGResourcesHelper.INSTANCE.getProperNotificationIcon())
+                        .setSmallIcon(R.drawable.notification)
                         .setAutoCancel(false)
                         .setProgress(totalFilesCount, currentCount, false)
                         .build();
@@ -287,12 +284,25 @@ public class FilesMigrationService extends Service {
         public void migrateOldFolder() {
             Activity activity = fragment.getParentActivity();
             boolean canWrite = activity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
-            boolean canRead = PermissionsUtils.isStoragePermissionGranted();
+            boolean canRead = (
+                Build.VERSION.SDK_INT >= 33 && (
+                    activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED &&
+                    activity.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) == PackageManager.PERMISSION_GRANTED &&
+                    activity.checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) == PackageManager.PERMISSION_GRANTED
+                ) ||
+                Build.VERSION.SDK_INT < 33 && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+            );
 
             if (!canRead || !canWrite) {
                 ArrayList<String> permissions = new ArrayList<>();
                 if (!canRead) {
-                    PermissionsUtils.requestStoragePermission(activity);
+                    if (Build.VERSION.SDK_INT >= 33) {
+                        permissions.add(Manifest.permission.READ_MEDIA_IMAGES);
+                        permissions.add(Manifest.permission.READ_MEDIA_VIDEO);
+                        permissions.add(Manifest.permission.READ_MEDIA_AUDIO);
+                    } else {
+                        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+                    }
                 }
                 if (!canWrite) {
                     permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);

@@ -64,8 +64,6 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public class ThemesHorizontalListCell extends RecyclerListView implements NotificationCenter.NotificationCenterDelegate {
 
     public static byte[] bytes = new byte[1024];
@@ -199,11 +197,9 @@ public class ThemesHorizontalListCell extends RecyclerListView implements Notifi
                     if (action == MotionEvent.ACTION_DOWN) {
                         pressed = true;
                     } else {
-                        if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                            try {
-                                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-                            } catch (Exception ignored) {}
-                        }
+                        try {
+                            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
+                        } catch (Exception ignored) {}
                         showOptionsForTheme(themeInfo);
                     }
                 }
@@ -746,7 +742,7 @@ public class ThemesHorizontalListCell extends RecyclerListView implements Notifi
 
         SharedPreferences.Editor editor = ApplicationLoader.applicationContext.getSharedPreferences("themeconfig", Activity.MODE_PRIVATE).edit();
         editor.putString(currentType == ThemeActivity.THEME_TYPE_NIGHT || themeInfo.isDark() ? "lastDarkTheme" : "lastDayTheme", themeInfo.getKey());
-        editor.apply();
+        editor.commit();
 
         if (currentType == ThemeActivity.THEME_TYPE_NIGHT) {
             if (themeInfo == Theme.getCurrentNightTheme()) {

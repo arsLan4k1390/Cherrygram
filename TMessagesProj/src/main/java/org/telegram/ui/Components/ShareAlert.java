@@ -122,9 +122,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public class ShareAlert extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
     private FrameLayout frameLayout;
@@ -353,7 +350,6 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
 
         private View searchBackground;
         private ImageView searchIconImageView;
-        private ImageView menuIconImageView;
         private ImageView clearSearchImageView;
         private CloseProgressDrawable2 progressDrawable;
         private EditTextBoldCursor searchEditText;
@@ -371,15 +367,6 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             searchIconImageView.setImageResource(R.drawable.smiles_inputsearch);
             searchIconImageView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_dialogSearchIcon), PorterDuff.Mode.MULTIPLY));
             addView(searchIconImageView, LayoutHelper.createFrame(36, 36, Gravity.LEFT | Gravity.TOP, 16, 11, 0, 0));
-
-            menuIconImageView = new ImageView(context);
-            menuIconImageView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_actionBarActionModeDefaultSelector), 1));
-            menuIconImageView.setScaleType(ImageView.ScaleType.CENTER);
-            menuIconImageView.setImageResource(R.drawable.ic_ab_other);
-            menuIconImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogSearchIcon), PorterDuff.Mode.MULTIPLY));
-            menuIconImageView.setOnClickListener((v) -> ChatsHelper2.showForwardMenu(ShareAlert.this, SearchField.this));
-
-            addView(menuIconImageView, LayoutHelper.createFrame(36, 36, Gravity.RIGHT | Gravity.TOP, 0, 11, 16, 0));
 
             clearSearchImageView = new ImageView(context);
             clearSearchImageView.setScaleType(ImageView.ScaleType.CENTER);
@@ -506,7 +493,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
     public ShareAlert(final Context context, ChatActivity fragment, ArrayList<MessageObject> messages, final String text, final String text2, boolean channel, final String copyLink, final String copyLink2, boolean fullScreen, boolean forCall, boolean includeStory, Integer video_timestamp, Theme.ResourcesProvider theme) {
         super(context, true, theme);
         this.resourcesProvider = theme;
-        this.includeStory = CherrygramChatsConfig.INSTANCE.getShareDrawStoryButton() && includeStory;
+        this.includeStory = includeStory;
 
         parentActivity = AndroidUtilities.findActivity(context);
 
@@ -1751,8 +1738,10 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         };
         writeButton.setCircleSize(dp(64));
         writeButtonContainer.addView(writeButton, LayoutHelper.createFrame(100, 100, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 0, 0));
-        writeButton.setOnClickListener(v -> sendInternalCherry());
-//        writeButton.setOnLongClickListener(v -> onSendLongClick(writeButton));
+        writeButton.setOnClickListener(v -> sendInternal(true));
+        writeButton.setOnLongClickListener(v -> {
+            return onSendLongClick(writeButton);
+        });
 
         textPaint.setTextSize(dp(12));
         textPaint.setTypeface(AndroidUtilities.bold());
@@ -3710,193 +3699,6 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
                 }
             }
         }
-    }
-
-    protected void sendInternalCherry() {
-        for (int a = 0; a < selectedDialogs.size(); a++) {
-            long key = selectedDialogs.keyAt(a);
-            if (AlertsCreator.checkSlowMode(getContext(), currentAccount, key, frameLayout2.getTag() != null && commentTextView.length() > 0)) {
-                return;
-            }
-        }
-
-        CharSequence[] text = new CharSequence[] { commentTextView.getText() };
-        ArrayList<TLRPC.MessageEntity> entities = MediaDataController.getInstance(currentAccount).getEntities(text, true);
-        final int video_timestamp;
-        if (timestampCheckbox != null && timestampCheckbox.isChecked()) {
-            video_timestamp = timestamp;
-        } else {
-            video_timestamp = -1;
-        }
-
-        long totalPrice = 0;
-        int messagesCount = 0;
-        ArrayList<Long> paidDialogIds = new ArrayList<>();
-        if (sendingMessageObjects != null) {
-            for (int a = 0; a < selectedDialogs.size(); a++) {
-                final long did = selectedDialogs.keyAt(a);
-                long thisPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(did);
-                if (thisPrice <= 0) {
-                    thisPrice = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
-                }
-                if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                    if (thisPrice > 0) messagesCount++;
-                    totalPrice += thisPrice;
-                }
-                if (thisPrice > 0) messagesCount++;
-                totalPrice += thisPrice;
-                if (thisPrice > 0 && !paidDialogIds.contains(did)) {
-                    paidDialogIds.add(did);
-                }
-            }
-        } else {
-            int num;
-            if (switchView != null) {
-                num = switchView.currentTab;
-            } else {
-                num = 0;
-            }
-            if (storyItem != null) {
-                for (int a = 0; a < selectedDialogs.size(); a++) {
-                    final long did = selectedDialogs.keyAt(a);
-                    long thisPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(did);
-                    if (thisPrice <= 0) {
-                        thisPrice = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
-                    }
-                    if (storyItem != null) {
-                        if (frameLayout2.getTag() != null && commentTextView.length() > 0 && text[0] != null) {
-                            if (thisPrice > 0) messagesCount++;
-                            totalPrice += thisPrice;
-                        }
-                    }
-                    if (thisPrice > 0) messagesCount++;
-                    totalPrice += thisPrice;
-                    if (thisPrice > 0 && !paidDialogIds.contains(did)) {
-                        paidDialogIds.add(did);
-                    }
-                }
-            } else if (sendingText[num] != null) {
-                for (int a = 0; a < selectedDialogs.size(); a++) {
-                    final long did = selectedDialogs.keyAt(a);
-                    long thisPrice = MessagesController.getInstance(currentAccount).getSendPaidMessagesStars(did);
-                    if (thisPrice <= 0) {
-                        thisPrice = DialogObject.getMessagesStarsPrice(MessagesController.getInstance(currentAccount).isUserContactBlocked(did));
-                    }
-                    if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                        if (thisPrice > 0) messagesCount++;
-                        totalPrice += thisPrice;
-                    }
-                    if (thisPrice > 0) messagesCount++;
-                    totalPrice += thisPrice;
-                    if (thisPrice > 0 && !paidDialogIds.contains(did)) {
-                        paidDialogIds.add(did);
-                    }
-                }
-            }
-        }
-
-        AlertsCreator.ensurePaidMessagesMultiConfirmation(currentAccount, paidDialogIds, messagesCount, prices -> {
-            boolean hadPaid = false;
-            if (sendingMessageObjects != null) {
-                List<Long> removeKeys = new ArrayList<>();
-                for (int a = 0; a < selectedDialogs.size(); a++) {
-                    long key = selectedDialogs.keyAt(a);
-                    final Long price = prices == null ? (Long) 0L : prices.get(key);
-                    if (price != null && price > 0) hadPaid = true;
-                    TLRPC.TL_forumTopic topic = selectedDialogTopics.get(selectedDialogs.get(key));
-                    MessageObject replyTopMsg = topic != null ? new MessageObject(currentAccount, topic.topicStartMessage, false, false) : null;
-                    if (replyTopMsg != null) {
-                        replyTopMsg.isTopicMainMessage = true;
-                    }
-                    int result;
-                    if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                        SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, replyTopMsg, replyTopMsg, null, true, entities, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false);
-                        params.payStars = price == null ? 0 : price;
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
-                    }
-                    if (!CherrygramChatsConfig.INSTANCE.getForwardAuthorship() || !CherrygramChatsConfig.INSTANCE.getForwardCaptions()) {
-                        result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, true, !CherrygramChatsConfig.INSTANCE.getForwardCaptions(), CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg, video_timestamp, price == null ? 0 : price);
-                    } else {
-                        result = SendMessagesHelper.getInstance(currentAccount).sendMessage(sendingMessageObjects, key, false, false, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, replyTopMsg, video_timestamp, price == null ? 0 : price);
-                    }
-                    if (result != 0) {
-                        removeKeys.add(key);
-                    }
-                    if (selectedDialogs.size() == 1) {
-                        AlertsCreator.showSendMediaAlert(result, parentFragment, null);
-
-                        if (result != 0) {
-                            break;
-                        }
-                    }
-                }
-                for (long key : removeKeys) {
-                    TLRPC.Dialog dialog = selectedDialogs.get(key);
-                    selectedDialogs.remove(key);
-                    if (dialog != null) {
-                        selectedDialogTopics.remove(dialog);
-                    }
-                }
-                if (!selectedDialogs.isEmpty()) {
-                    onSend(selectedDialogs, sendingMessageObjects.size(), selectedDialogs.size() == 1 ? selectedDialogTopics.get(selectedDialogs.valueAt(0)) : null, !hadPaid);
-                }
-            } else {
-                int num;
-                if (switchView != null) {
-                    num = switchView.currentTab;
-                } else {
-                    num = 0;
-                }
-                if (storyItem != null) {
-                    for (int a = 0; a < selectedDialogs.size(); a++) {
-                        long key = selectedDialogs.keyAt(a);
-                        final Long price = prices == null ? (Long) 0L : prices.get(key);
-                        if (price != null && price > 0) hadPaid = true;
-                        TLRPC.TL_forumTopic topic = selectedDialogTopics.get(selectedDialogs.get(key));
-                        MessageObject replyTopMsg = topic != null ? new MessageObject(currentAccount, topic.topicStartMessage, false, false) : null;
-
-                        SendMessagesHelper.SendMessageParams params;
-                        if (storyItem == null) {
-                            if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                                params = SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, replyTopMsg, replyTopMsg, null, true, entities, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false);
-                            } else {
-                                params = SendMessagesHelper.SendMessageParams.of(sendingText[num], key, replyTopMsg, replyTopMsg, null, true, null, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false);
-                            }
-                        } else {
-                            if (frameLayout2.getTag() != null && commentTextView.length() > 0 && text[0] != null) {
-                                SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(text[0].toString(), key, null, replyTopMsg, null, true, null, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false));
-                            }
-                            params = SendMessagesHelper.SendMessageParams.of(null, key, replyTopMsg, replyTopMsg, null, true, null, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false);
-                            params.sendingStory = storyItem;
-                        }
-                        params.payStars = price == null ? 0 : price;
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
-                    }
-                } else if (sendingText[num] != null) {
-                    for (int a = 0; a < selectedDialogs.size(); a++) {
-                        long key = selectedDialogs.keyAt(a);
-                        final Long price = prices == null ? (Long) 0L : prices.get(key);
-                        if (price != null && price > 0) hadPaid = true;
-                        TLRPC.TL_forumTopic topic = selectedDialogTopics.get(selectedDialogs.get(key));
-                        MessageObject replyTopMsg = topic != null ? new MessageObject(currentAccount, topic.topicStartMessage, false, false) : null;
-
-                        if (frameLayout2.getTag() != null && commentTextView.length() > 0) {
-                            SendMessagesHelper.SendMessageParams params = SendMessagesHelper.SendMessageParams.of(text[0] == null ? null : text[0].toString(), key, replyTopMsg, replyTopMsg, null, true, entities, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false);
-                            params.payStars = price == null ? 0 : price;
-                            SendMessagesHelper.getInstance(currentAccount).sendMessage(params);
-                        }
-                        SendMessagesHelper.SendMessageParams params2 = SendMessagesHelper.SendMessageParams.of(sendingText[num], key, replyTopMsg, replyTopMsg, null, true, null, null, null, CherrygramChatsConfig.INSTANCE.getForwardNotify(), 0, null, false);
-                        params2.payStars = price == null ? 0 : price;
-                        SendMessagesHelper.getInstance(currentAccount).sendMessage(params2);
-                    }
-                }
-                onSend(selectedDialogs, 1, selectedDialogTopics.get(selectedDialogs.valueAt(0)), !hadPaid);
-            }
-            if (delegate != null) {
-                delegate.didShare();
-            }
-            dismiss();
-        });
     }
 
     private String getLink() {

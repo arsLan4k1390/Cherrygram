@@ -78,8 +78,6 @@ import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.camera.CameraXView;
-
 public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
     private final static boolean AVOID_SYSTEM_CUTOUT_FULLSCREEN = false;
 
@@ -784,7 +782,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
 
         @Override
         protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
-            if (child instanceof CameraView || child instanceof CameraXView) {
+            if (child instanceof CameraView) {
                 if (shouldOverlayCameraViewOverNavBar()) {
                     drawNavigationBar(canvas, 1f);
                 }
@@ -1077,7 +1075,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
     public BottomSheet(Context context, boolean needFocus) {
         this(context, needFocus, null);
     }
-
+    
     public BottomSheet(Context context, boolean needFocus, Theme.ResourcesProvider resourcesProvider) {
         super(context, R.style.TransparentDialog);
         this.resourcesProvider = resourcesProvider;
@@ -1178,7 +1176,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
     }
 
     public void fixNavigationBar() {
-        fixNavigationBar(getThemedColor(Theme.key_dialogBackground));
+        fixNavigationBar(getThemedColor(Theme.key_windowBackgroundGray));
     }
 
     public void fixNavigationBar(int bgColor) {
@@ -1221,8 +1219,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
 
         if (useLightStatusBar && Build.VERSION.SDK_INT >= 23) {
             int color = Theme.getColor(Theme.key_actionBarDefault, null, true);
-            final float brightness = AndroidUtilities.computePerceivedBrightness(color);
-            if (brightness >= 0.721f) {
+            if (color == 0xffffffff) {
                 int flags = container.getSystemUiVisibility();
                 flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
                 container.setSystemUiVisibility(flags);
@@ -1380,9 +1377,8 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
         useLightStatusBar = value;
         if (Build.VERSION.SDK_INT >= 23) {
             int color = Theme.getColor(Theme.key_actionBarDefault, null, true);
-            final float brightness = AndroidUtilities.computePerceivedBrightness(color);
             int flags = container.getSystemUiVisibility();
-            if (useLightStatusBar && brightness >= 0.721f) {
+            if (useLightStatusBar && color == 0xffffffff) {
                 flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
             } else {
                 flags &=~ View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;

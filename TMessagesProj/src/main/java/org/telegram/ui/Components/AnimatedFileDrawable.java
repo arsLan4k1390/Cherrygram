@@ -28,7 +28,6 @@ import android.view.View;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimatedFileDrawableStream;
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.DispatchQueuePoolBackground;
@@ -46,8 +45,6 @@ import java.util.ArrayList;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import uz.unnarsx.cherrygram.chats.helpers.StickersHelper;
 
 public class AnimatedFileDrawable extends BitmapDrawable implements Animatable, BitmapsCache.Cacheable {
 
@@ -549,12 +546,6 @@ public class AnimatedFileDrawable extends BitmapDrawable implements Animatable, 
         if (isWebmSticker) {
             PRERENDER_FRAME = false;
             useSharedQueue = true;
-            if (document != null) {
-                if (StickersHelper.INSTANCE.setToBlock(document)) {
-                    StickersHelper.INSTANCE.copyStickerFromAssets();
-                    path = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "stickers/cherrygram.webm");
-                }
-            }
         }
     }
 

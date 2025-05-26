@@ -56,8 +56,6 @@ import org.telegram.ui.ActionBar.Theme;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-
 public class ViewPagerFixed extends FrameLayout {
 
     private Theme.ResourcesProvider resourcesProvider;
@@ -1341,8 +1339,6 @@ public class ViewPagerFixed extends FrameLayout {
         ValueAnimator tabsAnimator;
         private float animationValue;
 
-        int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
-
         public TabsView(Context context) {
             this(context, false, 8, null);
         }
@@ -1361,13 +1357,9 @@ public class ViewPagerFixed extends FrameLayout {
             deletePaint.setStrokeWidth(dp(1.5f));
 
             selectorDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, null);
-            float rad = AndroidUtilities.dpf2(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 10 : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 30 : 3);
-            if (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_ROUNDED || tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
-                selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
-            } else {
-                selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
-            }
-            selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey, resourcesProvider), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
+            float rad = AndroidUtilities.dpf2(3);
+            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
+            selectorDrawable.setColor(Theme.getColor(tabLineColorKey, resourcesProvider));
 
             setHorizontalScrollBarEnabled(false);
             listView = new RecyclerListView(context) {
@@ -1411,9 +1403,13 @@ public class ViewPagerFixed extends FrameLayout {
                 ((DefaultItemAnimator) listView.getItemAnimator()).setDelayAnimations(false);
             }
 
-            listView.setSelectorType(tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 100 : tabsSelectorType);
-            if (tabsSelectorType < 3) listView.setSelectorRadius(6);
-            listView.setSelectorDrawableColor(tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x00 : Theme.getColor(selectorColorKey, resourcesProvider));
+            listView.setSelectorType(tabsSelectorType);
+            if (tabsSelectorType == 3) {
+                listView.setSelectorRadius(0);
+            } else {
+                listView.setSelectorRadius(6);
+            }
+            listView.setSelectorDrawableColor(Theme.getColor(selectorColorKey, resourcesProvider));
             listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) {
                 @Override
                 public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
@@ -1706,19 +1702,9 @@ public class ViewPagerFixed extends FrameLayout {
                             indicatorX = (int) AndroidUtilities.lerp(lastDrawnIndicatorX, indicatorX, indicatorProgress2);
                             indicatorWidth = (int) AndroidUtilities.lerp(lastDrawnIndicatorW, indicatorWidth, indicatorProgress2);
                         }
-                        selectorDrawable.setBounds(
-                                indicatorX - (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
-                                (int) (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(15) * (1f - hideProgress) : height - AndroidUtilities.dpr(4) + hideProgress * AndroidUtilities.dpr(4)),
-                                indicatorX + indicatorWidth + (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
-                                (int) (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(15) * (1f - hideProgress) : height + hideProgress * AndroidUtilities.dpr(4))
-                        );
-                        if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI && CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
-    //                    selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), 0));
-                            selectorDrawable.setStroke(AndroidUtilities.dp(1), Theme.getColor(activeTextColorKey));
-                        }
-                        if (tabStyle != CherrygramAppearanceConfig.TAB_STYLE_TEXT)
-                            selectorDrawable.draw(canvas);
-                        }
+                        selectorDrawable.setBounds(indicatorX, (int) (height - AndroidUtilities.dpr(4) + hideProgress * AndroidUtilities.dpr(4)), indicatorX + indicatorWidth, (int) (height + hideProgress * AndroidUtilities.dpr(4)));
+                        selectorDrawable.draw(canvas);
+                    }
                 }
                 if (crossfadeBitmap != null) {
                     crossfadePaint.setAlpha((int) (crossfadeAlpha * 255));
@@ -1751,7 +1737,7 @@ public class ViewPagerFixed extends FrameLayout {
         }
 
         public void updateColors() {
-            selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey, resourcesProvider), tabStyle >= 3 ? 0x2F : 0xFF));
+            selectorDrawable.setColor(Theme.getColor(tabLineColorKey, resourcesProvider));
             listView.invalidateViews();
             listView.invalidate();
             invalidate();

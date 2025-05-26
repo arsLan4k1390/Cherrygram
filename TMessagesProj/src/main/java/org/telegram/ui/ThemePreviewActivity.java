@@ -161,8 +161,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-
 public class ThemePreviewActivity extends BaseFragment implements DownloadController.FileDownloadProgressListener, NotificationCenter.NotificationCenterDelegate {
 
     public final ThemeDelegate themeDelegate = new ThemeDelegate() {
@@ -611,13 +609,6 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
         dimAmount = dim;
     }
 
-    @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
     @SuppressLint("Recycle")
     @Override
     public View createView(Context context) {
@@ -687,16 +678,6 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
         actionBar.setBackButtonDrawable(new MenuDrawable());
         actionBar.setAddToContainer(false);
         actionBar.setTitle(LocaleController.getString(R.string.ThemePreview));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
 
         page1 = new FrameLayout(context) {
             @Override
@@ -875,18 +856,6 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             actionBar2.setOccupyStatusBar(false);
         }
         actionBar2.setBackButtonDrawable(new BackDrawable(false));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar2.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar2.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar2.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar2.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar2.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar2.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            actionBar2.setSubtitleColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText));
-            //actionBar2.setCastShadows(false);
-        }
-
         actionBar2.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -1183,12 +1152,10 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 dropDown.setMaxLines(1);
                 dropDown.setEllipsize(TextUtils.TruncateAt.END);
                 dropDown.setTextColor(getThemedColor(Theme.key_actionBarDefaultTitle));
-                if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) dropDown.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                 dropDown.setTypeface(AndroidUtilities.bold());
                 dropDown.setText(LocaleController.getString(R.string.ColorPickerMainColor));
                 Drawable dropDownDrawable = context.getResources().getDrawable(R.drawable.ic_arrow_drop_down).mutate();
                 dropDownDrawable.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarDefaultTitle), PorterDuff.Mode.MULTIPLY));
-                if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) dropDownDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), PorterDuff.Mode.MULTIPLY));
                 dropDown.setCompoundDrawablesWithIntrinsicBounds(null, null, dropDownDrawable, null);
                 dropDown.setCompoundDrawablePadding(dp(4));
                 dropDown.setPadding(0, 0, dp(10), 0);
@@ -1449,7 +1416,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             if (screenType == SCREEN_TYPE_CHANGE_BACKGROUND) {
                 final boolean drawShadow = insideBottomSheet();
                 bottomOverlayChat = new FrameLayout(context) {
-
+                    
                     private LinearGradient gradient;
                     private int gradientHeight;
                     private final Paint gradientPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG);
@@ -1462,7 +1429,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                         AndroidUtilities.multiplyBrightnessColorMatrix(colorMatrix, 0.65f);
                         colorFilter = new ColorMatrixColorFilter(colorMatrix);
                     }
-
+                    
                     @Override
                     protected void dispatchDraw(Canvas canvas) {
                         if (drawShadow) {
@@ -2399,7 +2366,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                     MessagesController.getInstance(applyingTheme.account).saveTheme(applyingTheme, null, false, false);
                     SharedPreferences.Editor editor = ApplicationLoader.applicationContext.getSharedPreferences("themeconfig", Activity.MODE_PRIVATE).edit();
                     editor.putString("lastDayTheme", applyingTheme.getKey());
-                    editor.apply();
+                    editor.commit();
                 }
                 BaseFragment lastFragment = getParentLayout().getFragmentStack().get(Math.max(0, getParentLayout().getFragmentStack().size() - 2));
                 finishFragment();
@@ -3145,9 +3112,9 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             Drawable background = backgroundImage.getBackground();
             Bitmap bitmap = backgroundImage.getImageReceiver().getBitmap();
             if (background instanceof MotionBackgroundDrawable) {
-                try (FileOutputStream stream = new FileOutputStream(toFile)) {
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 87, stream);
-                }
+                FileOutputStream stream = new FileOutputStream(toFile);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 87, stream);
+                stream.close();
             } else {
                 Bitmap dst = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
                 Canvas canvas = new Canvas(dst);
@@ -3159,9 +3126,9 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
                 paint.setAlpha((int) (255 * currentIntensity));
                 canvas.drawBitmap(bitmap, 0, 0, paint);
 
-                try (FileOutputStream stream = new FileOutputStream(toFile)) {
-                    dst.compress(Bitmap.CompressFormat.JPEG, 87, stream);
-                }
+                FileOutputStream stream = new FileOutputStream(toFile);
+                dst.compress(Bitmap.CompressFormat.JPEG, 87, stream);
+                stream.close();
             }
 
         } catch (Throwable e) {
@@ -4050,7 +4017,7 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             if (colorType != 3) {
                 return;
             }
-            preferences.edit().putBoolean("bganimationhint", true).apply();
+            preferences.edit().putBoolean("bganimationhint", true).commit();
             animationHint.showForView(messagesCheckBoxView[0], true);
         }, 500);
     }
@@ -4751,38 +4718,24 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
 
             int date = (int) (System.currentTimeMillis() / 1000);
             DialogCell.CustomDialog customDialog = new DialogCell.CustomDialog();
-            customDialog.name = "unn::ars X";
-            customDialog.message = "\uD83C\uDF52";
-            customDialog.id = 2003;
+            customDialog.name = LocaleController.getString(R.string.ThemePreviewDialog1);
+            customDialog.message = LocaleController.getString(R.string.ThemePreviewDialogMessage1);
+            customDialog.id = 0;
             customDialog.unread_count = 0;
             customDialog.pinned = true;
             customDialog.muted = false;
             customDialog.type = 0;
             customDialog.date = date;
-            customDialog.verified = true;
+            customDialog.verified = false;
             customDialog.isMedia = false;
             customDialog.sent = DialogCell.SENT_STATE_READ;
             dialogs.add(customDialog);
 
             customDialog = new DialogCell.CustomDialog();
-            customDialog.name = LocaleController.getString(R.string.CG_AppName) + " \uD83C\uDF52";
+            customDialog.name = LocaleController.getString(R.string.ThemePreviewDialog2);
             customDialog.message = LocaleController.getString(R.string.ThemePreviewDialogMessage2);
-            customDialog.id = 1390;
+            customDialog.id = 1;
             customDialog.unread_count = 2;
-            customDialog.pinned = false;
-            customDialog.muted = false;
-            customDialog.type = 0;
-            customDialog.date = date - 60 * 60;
-            customDialog.verified = false;
-            customDialog.isMedia = false;
-            customDialog.sent = DialogCell.SENT_STATE_NOTHING;
-            dialogs.add(customDialog);
-
-            customDialog = new DialogCell.CustomDialog();
-            customDialog.name = "exteraGram";
-            customDialog.message = LocaleController.getString(R.string.CG_FollowChannelLink);
-            customDialog.id = 1391;
-            customDialog.unread_count = 1;
             customDialog.pinned = false;
             customDialog.muted = false;
             customDialog.type = 0;
@@ -5720,18 +5673,6 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
         ArrayList<ThemeDescription> items = new ArrayList<>();
         items.add(new ThemeDescription(page1, ThemeDescription.FLAG_BACKGROUND, null, null, null, descriptionDelegate, Theme.key_windowBackgroundWhite));
         items.add(new ThemeDescription(viewPager, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));
-
-        /*if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
-        } else {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-        }*/
 
         items.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         items.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));

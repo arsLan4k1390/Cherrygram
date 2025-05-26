@@ -54,7 +54,7 @@ public class ChatsWidgetProvider extends AppWidgetProvider {
             editor.remove("type" + appWidgetIds[a]);
             editor.remove("deleted" + appWidgetIds[a]);
         }
-        editor.apply();
+        editor.commit();
     }
 
     private static int getCellsForSize(int size) {
@@ -83,7 +83,7 @@ public class ChatsWidgetProvider extends AppWidgetProvider {
             if (accountId == -1) {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putInt("account" + appWidgetId, UserConfig.selectedAccount);
-                editor.putInt("type" + appWidgetId, EditWidgetActivity.TYPE_CHATS).apply();
+                editor.putInt("type" + appWidgetId, EditWidgetActivity.TYPE_CHATS).commit();
             }
             ArrayList<Long> selectedDialogs = new ArrayList<>();
             if (accountId >= 0) {

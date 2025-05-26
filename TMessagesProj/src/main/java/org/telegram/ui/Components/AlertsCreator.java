@@ -115,7 +115,6 @@ import org.telegram.ui.Cells.TextColorCell;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.Components.voip.VoIPHelper;
-import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.LanguageSelectActivity;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.LoginActivity;
@@ -149,9 +148,6 @@ import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-
-import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class AlertsCreator {
     public final static int PERMISSIONS_REQUEST_TOP_ICON_SIZE = 72;
@@ -640,7 +636,7 @@ public class AlertsCreator {
             return null;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+        builder.setTitle(LocaleController.getString(R.string.AppName));
         builder.setMessage(text);
         builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
         if (updateApp) {
@@ -799,7 +795,7 @@ public class AlertsCreator {
             return null;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle(title == null ? LocaleController.getString(R.string.CG_AppName) : title);
+        builder.setTitle(title == null ? LocaleController.getString(R.string.AppName) : title);
         builder.setMessage(text);
         if (positiveButton == null) {
             builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
@@ -1074,7 +1070,7 @@ public class AlertsCreator {
                             editor.putInt("notify2_" + did, 0);
                         }
                         MessagesStorage.getInstance(currentAccount).setDialogFlags(did, 0);
-                        editor.apply();
+                        editor.commit();
                         TLRPC.Dialog dialog = MessagesController.getInstance(currentAccount).dialogs_dict.get(did);
                         if (dialog != null) {
                             dialog.notify_settings = new TLRPC.TL_peerNotifySettings();
@@ -1368,7 +1364,7 @@ public class AlertsCreator {
                         SerializedData data = new SerializedData();
                         res.user.serializeToStream(data);
                         editor.putString("support_user", Base64.encodeToString(data.toByteArray(), Base64.DEFAULT));
-                        editor.apply();
+                        editor.commit();
                         data.cleanup();
                         try {
                             progressDialog.dismiss();
@@ -2121,12 +2117,8 @@ public class AlertsCreator {
                 }
             } else if (clear) {
                 cell[0].setText(LocaleController.formatString(R.string.ClearHistoryOptionAlso, UserObject.getFirstName(user)), "", false, false);
-//                deleteForAll[0] = CherrygramChatsConfig.INSTANCE.getDeleteForAll(); //Clear history
-//                cell[0].setText(LocaleController.formatString("ClearHistoryOptionAlso", R.string.ClearHistoryOptionAlso, UserObject.getFirstName(user)), "", CherrygramChatsConfig.INSTANCE.getDeleteForAll(), false);
             } else {
-                cell[0].setText(LocaleController.formatString("DeleteMessagesOptionAlso", R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", false, false);
-//                deleteForAll[0] = CherrygramChatsConfig.INSTANCE.getDeleteForAll(); //Delete chat
-//                cell[0].setText(LocaleController.formatString("DeleteMessagesOptionAlso", R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", CherrygramChatsConfig.INSTANCE.getDeleteForAll(), false);
+                cell[0].setText(LocaleController.formatString(R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", false, false);
             }
             cell[0].setPadding(LocaleController.isRTL ? dp(16) : dp(8), 0, LocaleController.isRTL ? dp(8) : dp(16), 0);
             frameLayout.addView(cell[0], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.LEFT, 0, 0, 0, 0));
@@ -2362,24 +2354,11 @@ public class AlertsCreator {
             }
         });
         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-        if (DialogsActivity.askPasscode) {
-            CGBiometricPrompt.prompt(fragment.getParentActivity(),
-                    () -> {
-                        AlertDialog alertDialog = builder.create();
-                        fragment.showDialog(alertDialog);
-                        TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                        if (button != null) {
-                            button.setTextColor(Theme.getColor(Theme.key_text_RedBold));
-                        }
-                    }
-            );
-        } else {
-            AlertDialog alertDialog = builder.create();
-            fragment.showDialog(alertDialog);
-            TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            if (button != null) {
-                button.setTextColor(Theme.getColor(Theme.key_text_RedBold));
-            }
+        AlertDialog alertDialog = builder.create();
+        fragment.showDialog(alertDialog);
+        TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (button != null) {
+            button.setTextColor(Theme.getColor(Theme.key_text_RedBold));
         }
     }
 
@@ -2464,7 +2443,7 @@ public class AlertsCreator {
             if (chat != null) {
                 cell[0].setText(LocaleController.getString(R.string.DeleteMessagesOptionAlsoChat), "", false, false);
             } else {
-                cell[0].setText(LocaleController.formatString(R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", false, false);
+                cell[0].setText(LocaleController.formatString("DeleteMessagesOptionAlso", R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", false, false);
             }
 
             cell[0].setPadding(LocaleController.isRTL ? dp(16) : dp(8), 0, LocaleController.isRTL ? dp(8) : dp(16), 0);
@@ -2552,7 +2531,7 @@ public class AlertsCreator {
         AlertDialog dialog = new AlertDialog.Builder(context).setView(frameLayout)
                 .setPositiveButton(LocaleController.getString(R.string.Call), (dialogInterface, i) -> {
                     final TLRPC.UserFull userFull = fragment.getMessagesController().getUserFull(user.id);
-                    VoIPHelper.startCall(user, videoCall, userFull != null && userFull.video_calls_available, fragment.getParentActivity(), userFull, fragment.getAccountInstance(), true);
+                    VoIPHelper.startCall(user, videoCall, userFull != null && userFull.video_calls_available, fragment.getParentActivity(), userFull, fragment.getAccountInstance());
                 })
                 .setNegativeButton(LocaleController.getString(R.string.Cancel), null)
                 .create();
@@ -5277,14 +5256,10 @@ public class AlertsCreator {
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getParentActivity());
-        builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+        builder.setTitle(LocaleController.getString(R.string.AppName));
         builder.setMessage(LocaleController.formatString("FloodWaitTime", R.string.FloodWaitTime, timeString));
         builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
         fragment.showDialog(builder.create(), true, null);
-    }
-
-    public static void showSendMediaAlert(int result, final BaseFragment fragment) {
-        showSendMediaAlert(result, fragment, null);
     }
 
     public static void showSendMediaAlert(int result, final BaseFragment fragment, Theme.ResourcesProvider resourcesProvider) {
@@ -5344,7 +5319,7 @@ public class AlertsCreator {
             return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getParentActivity());
-        builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+        builder.setTitle(LocaleController.getString(R.string.AppName));
         switch (error) {
             case "PEER_FLOOD":
                 builder.setMessage(LocaleController.getString(R.string.NobodyLikesSpam2));
@@ -5527,7 +5502,7 @@ public class AlertsCreator {
                 }
                 NotificationsController.getInstance(UserConfig.selectedAccount).deleteNotificationChannelGlobal(globalType);
             }
-            editor.apply();
+            editor.commit();
             if (onSelect != null) {
                 onSelect.run();
             }
@@ -5548,7 +5523,7 @@ public class AlertsCreator {
             } else {
                 editor.putInt("ChannelLed", 0);
             }
-            editor.apply();
+            editor.commit();
             if (onSelect != null) {
                 onSelect.run();
             }
@@ -5558,7 +5533,7 @@ public class AlertsCreator {
                 final SharedPreferences preferences13 = MessagesController.getNotificationsSettings(UserConfig.selectedAccount);
                 SharedPreferences.Editor editor = preferences13.edit();
                 editor.remove("color_" + key);
-                editor.apply();
+                editor.commit();
                 if (onSelect != null) {
                     onSelect.run();
                 }
@@ -5669,7 +5644,7 @@ public class AlertsCreator {
                         NotificationsController.getInstance(UserConfig.selectedAccount).deleteNotificationChannelGlobal(NotificationsController.TYPE_PRIVATE);
                     }
                 }
-                editor.apply();
+                editor.commit();
                 builder.getDismissRunnable().run();
                 if (onSelect != null) {
                     onSelect.run();
@@ -6073,7 +6048,7 @@ public class AlertsCreator {
                     }
                     NotificationsController.getInstance(UserConfig.selectedAccount).deleteNotificationChannelGlobal(globalType);
                 }
-                editor.apply();
+                editor.commit();
                 builder.getDismissRunnable().run();
                 if (onSelect != null) {
                     onSelect.run();
@@ -6126,7 +6101,7 @@ public class AlertsCreator {
                 } else {
                     editor.putInt("popupChannel", selected[0]);
                 }
-                editor.apply();
+                editor.commit();
                 builder.getDismissRunnable().run();
                 if (onSelect != null) {
                     onSelect.run();
@@ -6320,7 +6295,7 @@ public class AlertsCreator {
             }
         }
 
-        final boolean[] deleteForAll = {CherrygramChatsConfig.INSTANCE.getDeleteForAll()};
+        final boolean[] deleteForAll = new boolean[1];
         boolean canRevokeInbox = user != null && MessagesController.getInstance(currentAccount).canRevokePmInbox;
         int revokeTimeLimit;
         if (user != null) {
@@ -6514,10 +6489,9 @@ public class AlertsCreator {
                 CheckBoxCell cell = new CheckBoxCell(activity, 1, resourcesProvider);
                 cell.setBackgroundDrawable(Theme.getSelectorDrawable(false));
                 if (canDeleteInbox) {
-//                    deleteForAll[0] = CherrygramChatsConfig.INSTANCE.getDeleteForAll();
-                    cell.setText(LocaleController.formatString("DeleteMessagesOptionAlso", R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", CherrygramChatsConfig.INSTANCE.getDeleteForAll(), false); //Personal messages
+                    cell.setText(LocaleController.formatString("DeleteMessagesOptionAlso", R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", false, false);
                 } else if (chat != null && (hasNotOut || myMessagesCount == count)) {
-                    cell.setText(LocaleController.getString(R.string.DeleteForAll), "", CherrygramChatsConfig.INSTANCE.getDeleteForAll(), false); //legacy groups
+                    cell.setText(LocaleController.getString(R.string.DeleteForAll), "", false, false);
                 } else {
                     cell.setText(LocaleController.getString(R.string.DeleteMessagesOption), "", false, false);
                 }
@@ -6791,7 +6765,7 @@ public class AlertsCreator {
         if (preferences.getBoolean("themehint", false)) {
             return;
         }
-        preferences.edit().putBoolean("themehint", true).apply();
+        preferences.edit().putBoolean("themehint", true).commit();
         try {
             Toast.makeText(fragment.getParentActivity(), LocaleController.getString(R.string.CreateNewThemeHelp), Toast.LENGTH_LONG).show();
         } catch (Exception e) {

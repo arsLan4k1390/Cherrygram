@@ -274,7 +274,7 @@ public class DownloadController extends BaseController implements NotificationCe
             currentWifiPreset = preferences.getInt("currentWifiPreset", 3);
             currentRoamingPreset = preferences.getInt("currentRoamingPreset", 3);
             if (!newConfig) {
-                preferences.edit().putBoolean("newConfig", true).apply();
+                preferences.edit().putBoolean("newConfig", true).commit();
             }
         } else {
             int[] mobileDataDownloadMask = new int[4];
@@ -317,7 +317,7 @@ public class DownloadController extends BaseController implements NotificationCe
             editor.putInt("currentMobilePreset", currentMobilePreset = 3);
             editor.putInt("currentWifiPreset", currentWifiPreset = 3);
             editor.putInt("currentRoamingPreset", currentRoamingPreset = 3);
-            editor.apply();
+            editor.commit();
         }
 
         AndroidUtilities.runOnUIThread(() -> {
@@ -390,7 +390,7 @@ public class DownloadController extends BaseController implements NotificationCe
                 editor.putString("preset0", lowPreset.toString());
                 editor.putString("preset1", mediumPreset.toString());
                 editor.putString("preset2", highPreset.toString());
-                editor.apply();
+                editor.commit();
                 String str1 = lowPreset.toString();
                 String str2 = mediumPreset.toString();
                 String str3 = highPreset.toString();

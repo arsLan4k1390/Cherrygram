@@ -63,7 +63,7 @@ public class ThemePreviewDrawable extends BitmapDrawable {
             gradientRotation = 45;
         }
 
-        Drawable backDrawable = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.ic_ab_back).mutate();
+        Drawable backDrawable = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.preview_back).mutate();
         Theme.setDrawableColor(backDrawable, actionBarIconColor);
         Drawable otherDrawable = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.preview_dots).mutate();
         Theme.setDrawableColor(otherDrawable, actionBarIconColor);

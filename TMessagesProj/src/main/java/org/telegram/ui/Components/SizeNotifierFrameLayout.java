@@ -35,6 +35,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.text.MeasuredText;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -43,6 +44,7 @@ import androidx.annotation.NonNull;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.ActionBar;
@@ -53,9 +55,7 @@ import org.telegram.ui.BlurSettingsBottomSheet;
 import org.telegram.ui.ChatBackgroundDrawable;
 
 import java.util.ArrayList;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
+import java.util.HashSet;
 
 public class SizeNotifierFrameLayout extends FrameLayout {
 
@@ -551,7 +551,7 @@ public class SizeNotifierFrameLayout extends FrameLayout {
     }
 
     private void checkSnowflake(Canvas canvas) {
-        if (backgroundView != null && CherrygramAppearanceConfig.INSTANCE.getDrawSnowInChat() /*Theme.canStartHolidayAnimation() && LiteMode.isEnabled(LiteMode.FLAG_CHAT_BACKGROUND)*/) {
+        if (backgroundView != null && Theme.canStartHolidayAnimation() && LiteMode.isEnabled(LiteMode.FLAG_CHAT_BACKGROUND)) {
             if (snowflakesEffect == null) {
                 snowflakesEffect = new SnowflakesEffect(1);
             }
@@ -605,11 +605,6 @@ public class SizeNotifierFrameLayout extends FrameLayout {
         }
 
         int blurAlpha = Color.alpha(Theme.getColor(Theme.key_chat_BlurAlphaSlow));
-
-        if (CherrygramDebugConfig.INSTANCE.getForceChatBlurEffect()) {
-            blurAlpha = CherrygramDebugConfig.INSTANCE.getForceChatBlurEffectIntensity();
-        }
-
         if (blurAlpha == 255) {
             return;
         }
@@ -949,9 +944,6 @@ public class SizeNotifierFrameLayout extends FrameLayout {
         if (!SharedConfig.chatBlurEnabled()) {
             canvas.drawRect(rectTmp, blurScrimPaint);
             return;
-        }
-        if (CherrygramDebugConfig.INSTANCE.getForceChatBlurEffect()) {
-            blurAlpha = CherrygramDebugConfig.INSTANCE.getForceChatBlurEffectIntensity();
         }
         if (DRAW_USING_RENDERNODE()) {
             if (!canvas.isHardwareAccelerated()) {

@@ -90,9 +90,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public class FragmentContextView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate, VoIPService.StateListener {
     public final static int STYLE_NOT_SET = -1,
             STYLE_AUDIO_PLAYER = 0,
@@ -124,6 +121,7 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
     private ChatActivityInterface chatActivity;
     private View applyingView;
     private FrameLayout frameLayout;
+    private View shadow;
     private View selector;
     private RLottieImageView importingImageView;
     private RLottieImageView muteButton;
@@ -384,6 +382,10 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
         selector = new View(context);
         frameLayout.addView(selector, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
+        shadow = new View(context);
+        shadow.setBackgroundResource(R.drawable.blockpanel_shadow);
+        addView(shadow, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 2, Gravity.LEFT | Gravity.TOP, 0, 36, 0, 0));
+
         playButton = new ImageView(context);
         playButton.setScaleType(ImageView.ScaleType.CENTER);
         playButton.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_inappPlayerPlayPause), PorterDuff.Mode.MULTIPLY));
@@ -573,11 +575,9 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
                 isMuted = false;
 
                 AndroidUtilities.runOnUIThread(toggleMicRunnable, 90);
-                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    try {
-                        muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                    } catch (Exception ignore) {}
-                }
+                try {
+                    muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                } catch (Exception ignore) {}
             };
 
 
@@ -671,11 +671,9 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
             }
             muteButton.playAnimation();
             Theme.getFragmentContextViewWavesDrawable().updateState(true);
-            if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                try {
-                    muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                } catch (Exception ignore) {}
-            }
+            try {
+                muteButton.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+            } catch (Exception ignore) {}
         });
 
         closeButton = new ImageView(context);
@@ -802,19 +800,6 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
                 fragment.showDialog(importingAlert);
                 checkImport(false);
             }
-        });
-        setOnLongClickListener(v -> {
-            if (currentStyle == STYLE_AUDIO_PLAYER) {
-                MessageObject messageObject = MediaController.getInstance().getPlayingMessageObject();
-                if (fragment != null && messageObject != null) {
-                    if (messageObject.isVoice()) {
-                        if (getContext() instanceof LaunchActivity) {
-                            fragment.showDialog(new AudioPlayerAlert(getContext(), resourcesProvider));
-                        }
-                    }
-                }
-            }
-            return false;
         });
     }
 
@@ -1120,6 +1105,7 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
             avatars.setLayoutParams(LayoutHelper.createFrame(108, getStyleHeight(), Gravity.LEFT | Gravity.TOP));
         }
         frameLayout.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, getStyleHeight(), Gravity.TOP | Gravity.LEFT, 0, 0, 0, 0));
+        shadow.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 2, Gravity.LEFT | Gravity.TOP, 0, getStyleHeight(), 0, 0));
 
         if (topPadding > 0 && topPadding != AndroidUtilities.dp2(getStyleHeight())) {
             updatePaddings();
@@ -1127,8 +1113,8 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
         }
         if (style == STYLE_IMPORTING_MESSAGES) {
             selector.setBackground(Theme.getSelectorDrawable(false));
-            frameLayout.setBackgroundColor(getThemedColor((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground));
-            frameLayout.setTag((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground);
+            frameLayout.setBackgroundColor(getThemedColor(Theme.key_inappPlayerBackground));
+            frameLayout.setTag(Theme.key_inappPlayerBackground);
 
             for (int i = 0; i < 2; i++) {
                 TextView textView = i == 0 ? titleTextView.getTextView() : titleTextView.getNextTextView();
@@ -1157,8 +1143,8 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
             titleTextView.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 36, Gravity.LEFT | Gravity.TOP, 35, 0, 36, 0));
         } else if (style == STYLE_AUDIO_PLAYER || style == STYLE_LIVE_LOCATION) {
             selector.setBackground(Theme.getSelectorDrawable(false));
-            frameLayout.setBackgroundColor(getThemedColor((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground));
-            frameLayout.setTag((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground);
+            frameLayout.setBackgroundColor(getThemedColor(Theme.key_inappPlayerBackground));
+            frameLayout.setTag(Theme.key_inappPlayerBackground);
 
             subtitleTextView.setVisibility(GONE);
             joinButton.setVisibility(GONE);
@@ -1195,8 +1181,8 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
             }
         } else if (style == STYLE_INACTIVE_GROUP_CALL) {
             selector.setBackground(Theme.getSelectorDrawable(false));
-            frameLayout.setBackgroundColor(getThemedColor((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground));
-            frameLayout.setTag((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground);
+            frameLayout.setBackgroundColor(getThemedColor(Theme.key_inappPlayerBackground));
+            frameLayout.setTag(Theme.key_inappPlayerBackground);
             muteButton.setVisibility(GONE);
             subtitleTextView.setVisibility(VISIBLE);
 
@@ -1317,7 +1303,6 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
                 NotificationCenter.getInstance(a).removeObserver(this, NotificationCenter.historyImportProgressChanged);
             }
             NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.messagePlayingSpeedChanged);
-            NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.fileLoaded); // ram leak
             NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.didStartedCall);
             NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.didEndCall);
             NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.webRtcSpeakerAmplitudeEvent);

@@ -123,11 +123,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
-
 public class MessagesController extends BaseController implements NotificationCenter.NotificationCenterDelegate {
 
     public int lastKnownSessionsCount;
@@ -1174,8 +1169,6 @@ public class MessagesController extends BaseController implements NotificationCe
 
         public ArrayList<TL_chatlists.TL_exportedChatlistInvite> invites = null;
 
-        public String emoticon;
-
         private static int dialogFilterPointer = 10;
         public int localId = dialogFilterPointer++;
         public boolean locked;
@@ -1495,7 +1488,7 @@ public class MessagesController extends BaseController implements NotificationCe
         ringtoneSizeMax = mainPreferences.getInt("ringtoneSizeMax", 1024_00);
         pmReadDateExpirePeriod = mainPreferences.getInt("pmReadDateExpirePeriod", 7 * 86400);
         suggestStickersApiOnly = mainPreferences.getBoolean("suggestStickersApiOnly", false);
-        roundVideoSize = mainPreferences.getInt("roundVideoSize", CherrygramCameraConfig.INSTANCE.getVideoMessagesResolution()); //was 384
+        roundVideoSize = mainPreferences.getInt("roundVideoSize", 384);
         roundVideoBitrate = mainPreferences.getInt("roundVideoBitrate", 1000);
         roundAudioBitrate = mainPreferences.getInt("roundAudioBitrate", 64);
         pendingSuggestions = mainPreferences.getStringSet("pendingSuggestions", null);
@@ -1532,7 +1525,7 @@ public class MessagesController extends BaseController implements NotificationCe
         premiumInvoiceSlug = mainPreferences.getString("premiumInvoiceSlug", null);
         premiumBotUsername = mainPreferences.getString("premiumBotUsername", null);
         premiumLocked = mainPreferences.getBoolean("premiumLocked", false);
-        starsLocked = mainPreferences.getBoolean("starsLocked", false);
+        starsLocked = mainPreferences.getBoolean("starsLocked", true);
         transcribeButtonPressed = mainPreferences.getInt("transcribeButtonPressed", 0);
         forumUpgradeParticipantsMin = mainPreferences.getInt("forumUpgradeParticipantsMin", 200);
         topicsPinnedLimit = mainPreferences.getInt("topicsPinnedLimit", 3);
@@ -5333,7 +5326,7 @@ public class MessagesController extends BaseController implements NotificationCe
                 SharedPreferences.Editor editor = mainPreferences.edit();
                 editor.putStringSet("pendingSuggestions", pendingSuggestions);
                 editor.putStringSet("dismissedSuggestions", dismissedSuggestions);
-                editor.apply();
+                editor.commit();
                 getNotificationCenter().postNotificationName(NotificationCenter.newSuggestionsAvailable);
             } else {
                 return;
@@ -5489,7 +5482,7 @@ public class MessagesController extends BaseController implements NotificationCe
             editor.putString("suggestedLangCode", suggestedLangCode);
             editor.putBoolean("forceTryIpV6", forceTryIpV6);
             editor.putString("autologinToken", autologinToken = config.autologin_token);
-            editor.apply();
+            editor.commit();
 
             getConnectionsManager().setForceTryIpV6(forceTryIpV6);
             LocaleController.getInstance().checkUpdateForCurrentRemoteLocale(currentAccount, config.lang_pack_version, config.base_lang_pack_version);
@@ -6073,11 +6066,11 @@ public class MessagesController extends BaseController implements NotificationCe
         DialogsActivity.dialogsLoaded[currentAccount] = false;
 
         SharedPreferences.Editor editor = notificationsPreferences.edit();
-        editor.clear().apply();
+        editor.clear().commit();
         editor = emojiPreferences.edit();
-        editor.putLong("lastGifLoadTime", 0).putLong("lastStickersLoadTime", 0).putLong("lastStickersLoadTimeMask", 0).putLong("lastStickersLoadTimeFavs", 0).apply();
+        editor.putLong("lastGifLoadTime", 0).putLong("lastStickersLoadTime", 0).putLong("lastStickersLoadTimeMask", 0).putLong("lastStickersLoadTimeFavs", 0).commit();
         editor = mainPreferences.edit();
-        editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("gifhint").remove("reminderhint").remove("soundHint").remove("dcDomainName2").remove("webFileDatacenterId").remove("themehint").remove("showFiltersTooltip").remove("transcribeButtonPressed").apply();
+        editor.remove("archivehint").remove("proximityhint").remove("archivehint_l").remove("gifhint").remove("reminderhint").remove("soundHint").remove("dcDomainName2").remove("webFileDatacenterId").remove("themehint").remove("showFiltersTooltip").remove("transcribeButtonPressed").commit();
 
         SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("shortcut_widget", Activity.MODE_PRIVATE);
         SharedPreferences.Editor widgetEditor = null;
@@ -6111,7 +6104,7 @@ public class MessagesController extends BaseController implements NotificationCe
             }
         }
         if (widgetEditor != null) {
-            widgetEditor.apply();
+            widgetEditor.commit();
         }
         if (chatsWidgets != null) {
             for (int a = 0, N = chatsWidgets.size(); a < N; a++) {
@@ -6767,7 +6760,7 @@ public class MessagesController extends BaseController implements NotificationCe
             return;
         }
         installReferer = referer;
-        mainPreferences.edit().putString("installReferer", referer).apply();
+        mainPreferences.edit().putString("installReferer", referer).commit();
     }
 
     public void putEncryptedChat(TLRPC.EncryptedChat encryptedChat, boolean fromCache) {
@@ -7401,7 +7394,7 @@ public class MessagesController extends BaseController implements NotificationCe
         SharedPreferences.Editor editor = notificationsPreferences.edit();
         editor.putInt("dialog_bar_vis3" + dialogId, 3);
         editor.remove("dialog_bar_invite" + dialogId);
-        editor.apply();
+        editor.commit();
         if (!DialogObject.isEncryptedDialog(dialogId)) {
             TLRPC.TL_messages_hidePeerSettingsBar req = new TLRPC.TL_messages_hidePeerSettingsBar();
             if (currentUser != null) {
@@ -7421,7 +7414,7 @@ public class MessagesController extends BaseController implements NotificationCe
         }
         SharedPreferences.Editor editor = notificationsPreferences.edit();
         editor.putInt("dialog_bar_vis3" + dialogId, 3);
-        editor.apply();
+        editor.commit();
         if (DialogObject.isEncryptedDialog(dialogId)) {
             if (currentEncryptedChat == null || currentEncryptedChat.access_hash == 0) {
                 return;
@@ -7564,7 +7557,7 @@ public class MessagesController extends BaseController implements NotificationCe
         }));
     }
 
-    public void processNewChannelDifferenceParams(int pts, int pts_count, long channelId) {
+    protected void processNewChannelDifferenceParams(int pts, int pts_count, long channelId) {
         if (BuildVars.LOGS_ENABLED) {
             FileLog.d("processNewChannelDifferenceParams pts = " + pts + " pts_count = " + pts_count + " channeldId = " + channelId);
         }
@@ -9119,7 +9112,7 @@ public class MessagesController extends BaseController implements NotificationCe
             promoDialogId = 0;
             proxyDialogAddress = null;
             nextPromoInfoCheckTime = getConnectionsManager().getCurrentTime() + 60 * 60;
-            getGlobalMainSettings().edit().putLong("proxy_dialog", promoDialogId).remove("proxyDialogAddress").putInt("nextPromoInfoCheckTime", nextPromoInfoCheckTime).apply();
+            getGlobalMainSettings().edit().putLong("proxy_dialog", promoDialogId).remove("proxyDialogAddress").putInt("nextPromoInfoCheckTime", nextPromoInfoCheckTime).commit();
         });
         removePromoDialog();
     }
@@ -9968,7 +9961,7 @@ public class MessagesController extends BaseController implements NotificationCe
             } else {
                 nextTosCheckTime = getConnectionsManager().getCurrentTime() + 60 * 60;
             }
-            notificationsPreferences.edit().putInt("nextTosCheckTime", nextTosCheckTime).apply();
+            notificationsPreferences.edit().putInt("nextTosCheckTime", nextTosCheckTime).commit();
         });
     }
 
@@ -10041,9 +10034,6 @@ public class MessagesController extends BaseController implements NotificationCe
                 promoDialogId = did;
                 if (res.proxy) {
                     promoDialogType = PROMO_TYPE_PROXY;
-                    if (CherrygramPrivacyConfig.INSTANCE.getHideProxySponsor()) {
-                        noDialog = true;
-                    }
                 } else if (!TextUtils.isEmpty(res.psa_type)) {
                     promoDialogType = PROMO_TYPE_PSA;
                     promoPsaType = res.psa_type;
@@ -10068,7 +10058,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     editor.remove("promo_psa_type");
                 }
                 editor.putInt("nextPromoInfoCheckTime", nextPromoInfoCheckTime);
-                editor.apply();
+                editor.commit();
 
                 if (!noDialog) {
                     AndroidUtilities.runOnUIThread(() -> {
@@ -10224,7 +10214,7 @@ public class MessagesController extends BaseController implements NotificationCe
             }
             if (noDialog) {
                 promoDialogId = 0;
-                getGlobalMainSettings().edit().putLong("proxy_dialog", promoDialogId).remove("proxyDialogAddress").putInt("nextPromoInfoCheckTime", nextPromoInfoCheckTime).apply();
+                getGlobalMainSettings().edit().putLong("proxy_dialog", promoDialogId).remove("proxyDialogAddress").putInt("nextPromoInfoCheckTime", nextPromoInfoCheckTime).commit();
                 checkingPromoInfoRequestId = 0;
                 checkingPromoInfo = false;
                 AndroidUtilities.runOnUIThread(this::removePromoDialog);
@@ -10234,7 +10224,7 @@ public class MessagesController extends BaseController implements NotificationCe
             promoDialogId = 0;
             proxyDialogAddress = null;
             nextPromoInfoCheckTime = getConnectionsManager().getCurrentTime() + 60 * 60;
-            getGlobalMainSettings().edit().putLong("proxy_dialog", promoDialogId).remove("proxyDialogAddress").putInt("nextPromoInfoCheckTime", nextPromoInfoCheckTime).apply();
+            getGlobalMainSettings().edit().putLong("proxy_dialog", promoDialogId).remove("proxyDialogAddress").putInt("nextPromoInfoCheckTime", nextPromoInfoCheckTime).commit();
             AndroidUtilities.runOnUIThread(this::removePromoDialog);
         }
     }
@@ -10302,7 +10292,6 @@ public class MessagesController extends BaseController implements NotificationCe
                     if (pu.action instanceof TLRPC.TL_sendMessageRecordAudioAction) {
                         if (isGroup) {
                             text = LocaleController.formatString("IsRecordingAudio", R.string.IsRecordingAudio, getUserNameForTyping(user));
-                            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) text = getUserNameForTyping(user);
                         } else {
                             text = LocaleController.getString(R.string.RecordingAudio);
                         }
@@ -10310,7 +10299,6 @@ public class MessagesController extends BaseController implements NotificationCe
                     } else if (pu.action instanceof TLRPC.TL_sendMessageRecordRoundAction) {
                         if (isGroup) {
                             text = LocaleController.formatString("IsRecordingRound", R.string.IsRecordingRound, getUserNameForTyping(user));
-                            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) text = getUserNameForTyping(user);
                         } else {
                             text = LocaleController.getString(R.string.RecordingRound);
                         }
@@ -10339,7 +10327,6 @@ public class MessagesController extends BaseController implements NotificationCe
                     } else if (pu.action instanceof TLRPC.TL_sendMessageRecordVideoAction) {
                         if (isGroup) {
                             text = LocaleController.formatString("IsRecordingVideo", R.string.IsRecordingVideo, getUserNameForTyping(user));
-                            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) text = getUserNameForTyping(user);
                         } else {
                             text = LocaleController.getString(R.string.RecordingVideoStatus);
                         }
@@ -10397,7 +10384,6 @@ public class MessagesController extends BaseController implements NotificationCe
                     } else {
                         if (isGroup) {
                             text = LocaleController.formatString("IsTypingGroup", R.string.IsTypingGroup, getUserNameForTyping(user));
-                            if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) text = getUserNameForTyping(user);
                         } else {
                             text = LocaleController.getString(R.string.Typing);
                         }
@@ -10420,35 +10406,18 @@ public class MessagesController extends BaseController implements NotificationCe
                         }
                     }
                     if (label.length() != 0) {
-                        if (CherrygramChatsConfig.INSTANCE.getCenterChatTitle()) {
-                            String input = label.toString();
-                            int commaIndex = input.indexOf(',');
-                            String output = (commaIndex != -1) ? input.substring(0, commaIndex).trim() : input.trim();
-
-                            if (label.length() < 25) {
-                                text = label.toString();
-                            } else {
-                                String plural = LocaleController.getPluralString("CG_AndMoreTypingGroup", arr.size() - 1);
-                                try {
-                                    text = String.format(plural, output, arr.size() - 1);
-                                } catch (Exception e) {
-                                    text = "LOC_ERR: CG_AndMoreTypingGroup";
-                                }
-                            }
+                        if (count == 1) {
+                            text = LocaleController.formatString("IsTypingGroup", R.string.IsTypingGroup, label.toString());
                         } else {
-                            if (count == 1) {
-                                text = LocaleController.formatString("IsTypingGroup", R.string.IsTypingGroup, label.toString());
-                            } else {
-                                if (arr.size() > 2) {
-                                    String plural = LocaleController.getPluralString("AndMoreTypingGroup", arr.size() - 2);
-                                    try {
-                                        text = String.format(plural, label.toString(), arr.size() - 2);
-                                    } catch (Exception e) {
-                                        text = "LOC_ERR: AndMoreTypingGroup";
-                                    }
-                                } else {
-                                    text = LocaleController.formatString("AreTypingGroup", R.string.AreTypingGroup, label.toString());
+                            if (arr.size() > 2) {
+                                String plural = LocaleController.getPluralString("AndMoreTypingGroup", arr.size() - 2);
+                                try {
+                                    text = String.format(plural, label.toString(), arr.size() - 2);
+                                } catch (Exception e) {
+                                    text = "LOC_ERR: AndMoreTypingGroup";
                                 }
+                            } else {
+                                text = LocaleController.formatString("AreTypingGroup", R.string.AreTypingGroup, label.toString());
                             }
                         }
                         type = 0;
@@ -11270,7 +11239,7 @@ public class MessagesController extends BaseController implements NotificationCe
             if (error == null) {
                 AndroidUtilities.runOnUIThread(() -> {
                     /*installReferer = null;
-                    mainPreferences.edit().remove("installReferer").apply();*/
+                    mainPreferences.edit().remove("installReferer").commit();*/
 
                     TLRPC.TL_help_recentMeUrls res = (TLRPC.TL_help_recentMeUrls) response;
                     putUsers(res.users, false);
@@ -11588,7 +11557,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     editor1.putInt("EnableGroup2", Integer.MAX_VALUE);
                     editor1.putInt("EnableChannel2", Integer.MAX_VALUE);
                 }
-                editor1.remove("EnableGroup").apply();
+                editor1.remove("EnableGroup").commit();
             }
             if (preferences.contains("EnableAll")) {
                 boolean enabled = preferences.getBoolean("EnableAll", true);
@@ -11598,10 +11567,10 @@ public class MessagesController extends BaseController implements NotificationCe
                 if (!enabled) {
                     editor1.putInt("EnableAll2", Integer.MAX_VALUE);
                 }
-                editor1.remove("EnableAll").apply();
+                editor1.remove("EnableAll").commit();
             }
             if (editor1 != null) {
-                editor1.apply();
+                editor1.commit();
             }
 
             loadingNotificationSettings = 4;
@@ -11741,7 +11710,7 @@ public class MessagesController extends BaseController implements NotificationCe
                 SharedPreferences.Editor editor = notificationsPreferences.edit();
                 enableJoined = response instanceof TLRPC.TL_boolFalse;
                 editor.putBoolean("EnableContactJoined", enableJoined);
-                editor.apply();
+                editor.commit();
                 getUserConfig().notificationsSignUpSettingsLoaded = true;
                 getUserConfig().saveConfig(false);
             }));
@@ -14589,15 +14558,7 @@ public class MessagesController extends BaseController implements NotificationCe
         }, ConnectionsManager.RequestFlagInvokeAfter);
     }
 
-    public void deleteParticipantFromChat(long chatId, TLRPC.User user, TLRPC.ChatFull info) {
-        deleteParticipantFromChat(chatId, user, null, info, false, false);
-    }
-
     public void deleteParticipantFromChat(long chatId, TLRPC.User user, TLRPC.Chat chat, boolean forceDelete, boolean revoke) {
-        deleteParticipantFromChat(chatId, user, chat, null, forceDelete, revoke);
-    }
-
-    public void deleteParticipantFromChat(long chatId, TLRPC.User user, TLRPC.Chat chat, TLRPC.ChatFull info, boolean forceDelete, boolean revoke) {
         if (user == null && chat == null) {
             return;
         }
@@ -15709,16 +15670,7 @@ public class MessagesController extends BaseController implements NotificationCe
                                     }
                                     arr.add(obj);
                                 }
-                                // This somehow fixed unread messages
-                                AndroidUtilities.runOnUIThread(() -> {
-                                    for (int a = 0; a < messages.size(); a++) {
-                                        long key = messages.keyAt(a);
-                                        ArrayList<MessageObject> value = messages.valueAt(a);
-                                        updateInterfaceWithMessages(key, value, 0);
-                                    }
-                                    getNotificationCenter().postNotificationName(NotificationCenter.dialogsNeedReload);
-                                });
-                                // This somehow fixed unread messages
+
                                 getMessagesStorage().getStorageQueue().postRunnable(() -> {
                                     if (!pushMessages.isEmpty()) {
                                         AndroidUtilities.runOnUIThread(() -> getNotificationsController().processNewMessages(pushMessages, !(res instanceof TLRPC.TL_updates_differenceSlice), false, null));
@@ -18762,10 +18714,10 @@ public class MessagesController extends BaseController implements NotificationCe
                         getMediaDataController().addNewStickerSet(update.stickerset);
                     } else if (baseUpdate instanceof TLRPC.TL_updateSavedGifs) {
                         SharedPreferences.Editor editor2 = emojiPreferences.edit();
-                        editor2.putLong("lastGifLoadTime", 0).apply();
+                        editor2.putLong("lastGifLoadTime", 0).commit();
                     } else if (baseUpdate instanceof TLRPC.TL_updateRecentStickers) {
                         SharedPreferences.Editor editor2 = emojiPreferences.edit();
-                        editor2.putLong("lastStickersLoadTime", 0).apply();
+                        editor2.putLong("lastStickersLoadTime", 0).commit();
                     } else if (baseUpdate instanceof TLRPC.TL_updateDraftMessage) {
                         TLRPC.TL_updateDraftMessage update = (TLRPC.TL_updateDraftMessage) baseUpdate;
                         forceDialogsUpdate = true;
@@ -19089,8 +19041,6 @@ public class MessagesController extends BaseController implements NotificationCe
                     } else if (baseUpdate instanceof TLRPC.TL_updatePendingJoinRequests) {
                         TLRPC.TL_updatePendingJoinRequests update = (TLRPC.TL_updatePendingJoinRequests) baseUpdate;
                         getMemberRequestsController().onPendingRequestsUpdated(update);
-                    } else if (baseUpdate instanceof TLRPC.TL_updateLoginToken) {
-                        getNotificationCenter().postNotificationName(NotificationCenter.onUpdateLoginToken);
                     } else if (baseUpdate instanceof TLRPC.TL_updateSavedRingtones) {
                         getMediaDataController().ringtoneDataStore.loadUserRingtones(true);
                     } else if (baseUpdate instanceof TLRPC.TL_updateTranscribeAudio) {
@@ -19168,7 +19118,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     }
                 }
                 if (editor != null) {
-                    editor.apply();
+                    editor.commit();
                     getNotificationCenter().postNotificationName(NotificationCenter.notificationsSettingsUpdated);
                 }
                 getMessagesStorage().updateUsers(dbUsersStatus, true, true, true);
@@ -19391,7 +19341,7 @@ public class MessagesController extends BaseController implements NotificationCe
                             editor.remove("diditemo" + key);
                         }
                     }
-                    editor.apply();
+                    editor.commit();
                 }
                 if (markAsReadMessagesOutboxFinal != null) {
                     for (int b = 0, size = markAsReadMessagesOutboxFinal.size(); b < size; b++) {
@@ -20550,16 +20500,12 @@ public class MessagesController extends BaseController implements NotificationCe
         if (reasons.isEmpty()) {
             return null;
         }
-        if (ApplicationLoader.isStandaloneBuild()) {
-            return null;
-        } else {
-            for (int a = 0, N = reasons.size(); a < N; a++) {
-                TLRPC.RestrictionReason reason = reasons.get(a);
-                if (ignoreRestrictionReasons != null && ignoreRestrictionReasons.contains(reason.reason)) continue;
-                if ("sensitive".equals(reason.reason)) continue;
-                if ("all".equals(reason.platform) || !ApplicationLoader.isStandaloneBuild() && !BuildVars.isBetaApp() && "android".equals(reason.platform)) {
-                    return reason.text;
-                }
+        for (int a = 0, N = reasons.size(); a < N; a++) {
+            TLRPC.RestrictionReason reason = reasons.get(a);
+            if (ignoreRestrictionReasons != null && ignoreRestrictionReasons.contains(reason.reason)) continue;
+            if ("sensitive".equals(reason.reason)) continue;
+            if ("all".equals(reason.platform) || !ApplicationLoader.isStandaloneBuild() && !BuildVars.isBetaApp() && "android".equals(reason.platform)) {
+                return reason.text;
             }
         }
         return null;
@@ -21600,9 +21546,6 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public boolean storiesEnabled() {
-        if (CherrygramCoreConfig.INSTANCE.getHideStories()) {
-            return false;
-        }
         switch (storiesPosting) {
             case "premium":
                 return getUserConfig().isPremium();

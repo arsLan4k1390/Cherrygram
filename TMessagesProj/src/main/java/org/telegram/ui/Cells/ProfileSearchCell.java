@@ -65,8 +65,6 @@ import org.telegram.ui.Components.Text;
 import org.telegram.ui.NotificationsSettingsActivity;
 import org.telegram.ui.Stories.StoriesUtilities;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-
 import java.util.Locale;
 
 public class ProfileSearchCell extends BaseCell implements NotificationCenter.NotificationCenterDelegate, Theme.Colorable {
@@ -202,13 +200,9 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
         ad = sponsoredPeer;
     }
 
-    private boolean allowEmojiStatus = !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses();
+    private boolean allowEmojiStatus = true;
     public void setAllowEmojiStatus(boolean allowEmojiStatus) {
-        if (CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
-            this.allowEmojiStatus = false;
-        } else {
-            this.allowEmojiStatus = allowEmojiStatus;
-        }
+        this.allowEmojiStatus = allowEmojiStatus;
     }
     public void setData(Object object, TLRPC.EncryptedChat ec, CharSequence n, CharSequence s, boolean needCount, boolean saved) {
         currentName = n;
@@ -444,7 +438,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             }
             nameLockTop = dp(21);
             drawCheck = user.verified;
-            drawPremium = !savedMessages && MessagesController.getInstance(currentAccount).isPremiumUser(user) && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses();
+            drawPremium = !savedMessages && MessagesController.getInstance(currentAccount).isPremiumUser(user);
             updateStatus(drawCheck, user, null, false);
         } else if (contact != null) {
             dialog_id = 0;
@@ -627,7 +621,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
                         isOnline = new boolean[1];
                     }
                     isOnline[0] = false;
-                    statusString = LocaleController.formatUserStatusIOS(currentAccount, user, isOnline);
+                    statusString = LocaleController.formatUserStatus(currentAccount, user, isOnline);
                     if (isOnline[0]) {
                         currentStatusPaint = Theme.dialogs_onlinePaint;
                     }

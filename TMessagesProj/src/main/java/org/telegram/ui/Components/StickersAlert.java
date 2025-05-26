@@ -59,7 +59,6 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
@@ -1115,7 +1114,6 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
         containerView.addView(optionsButton, LayoutHelper.createFrame(40, 40, Gravity.TOP | Gravity.RIGHT, 0, 5, 5, 0));
         optionsButton.addSubItem(1, R.drawable.msg_share, LocaleController.getString(R.string.StickersShare));
         optionsButton.addSubItem(2, R.drawable.msg_link, LocaleController.getString(R.string.CopyLink));
-        optionsButton.addSubItem(6, R.drawable.msg_info, LocaleController.getString(R.string.CG_CopySetId));
 
         optionsButton.setOnClickListener(v -> {
             checkOptions();
@@ -1417,16 +1415,6 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
                 dismiss();
                 MediaDataController.getInstance(currentAccount).toggleStickerSet(getContext(), stickerSet, 1, parentFragment, false, false);
             });
-        } else if (id == 6) {
-            String stickerSetID = String.valueOf(stickerSet.set.id);
-            try {
-                android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                android.content.ClipData clip = android.content.ClipData.newPlainText("label", stickerSetID);
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(getContext(), LocaleController.getString("TextCopied", R.string.TextCopied), Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
         }
     }
 

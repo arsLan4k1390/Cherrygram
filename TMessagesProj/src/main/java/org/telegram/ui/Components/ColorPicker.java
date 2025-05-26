@@ -393,7 +393,7 @@ public class ColorPicker extends FrameLayout {
 
         addButton = new ImageView(getContext());
         addButton.setBackground(Theme.createSelectorDrawable(getThemedColor(Theme.key_dialogButtonSelector), 1));
-        addButton.setImageResource(R.drawable.poll_add_plus);
+        addButton.setImageResource(R.drawable.msg_add);
         addButton.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), PorterDuff.Mode.MULTIPLY));
         addButton.setScaleType(ImageView.ScaleType.CENTER);
         addButton.setOnClickListener(v -> {

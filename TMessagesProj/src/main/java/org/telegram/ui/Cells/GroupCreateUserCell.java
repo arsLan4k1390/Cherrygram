@@ -26,7 +26,6 @@ import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -97,8 +96,6 @@ public class GroupCreateUserCell extends FrameLayout {
     private TL_account.RequirementToContact blockedOverridden;
     private boolean showPremiumBlocked;
 
-    public ImageView joinButtonView;
-
     public boolean isBlocked() {
         return premiumBlocked;
     }
@@ -131,18 +128,10 @@ public class GroupCreateUserCell extends FrameLayout {
     }
 
     public GroupCreateUserCell(Context context, int checkBoxType, int pad, boolean selfAsSaved) {
-        this(context, checkBoxType, pad, selfAsSaved, false, null, false);
-    }
-
-    public GroupCreateUserCell(Context context, int checkBoxType, int pad, boolean selfAsSaved, boolean needJoinButton) {
-        this(context, checkBoxType, pad, selfAsSaved, false, null, needJoinButton);
+        this(context, checkBoxType, pad, selfAsSaved, false, null);
     }
 
     public GroupCreateUserCell(Context context, int checkBoxType, int pad, boolean selfAsSaved, boolean forCall, Theme.ResourcesProvider resourcesProvider) {
-        this(context, checkBoxType, pad, selfAsSaved, forCall, resourcesProvider, false);
-    }
-
-    public GroupCreateUserCell(Context context, int checkBoxType, int pad, boolean selfAsSaved, boolean forCall, Theme.ResourcesProvider resourcesProvider, boolean needJoinButton) {
         super(context);
         this.resourcesProvider = resourcesProvider;
         this.checkBoxType = checkBoxType;
@@ -186,17 +175,6 @@ public class GroupCreateUserCell extends FrameLayout {
             paint = new Paint(Paint.ANTI_ALIAS_FLAG);
             paint.setStyle(Paint.Style.STROKE);
             paint.setStrokeWidth(AndroidUtilities.dp(2));
-        }
-
-        if (needJoinButton) {
-            joinButtonView = new ImageView(context);
-            joinButtonView.setImageResource(R.drawable.msg2_chats_add);
-            joinButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_player_actionBarSelector, resourcesProvider)));
-            joinButtonView.setScaleType(ImageView.ScaleType.CENTER);
-            joinButtonView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
-            joinButtonView.setVisibility(GONE);
-            joinButtonView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-            addView(joinButtonView, LayoutHelper.createFrame(40, 40, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 8 : 0, 0, LocaleController.isRTL ? 0 : 8, 0));
         }
 
         setWillNotDraw(false);
@@ -491,7 +469,7 @@ public class GroupCreateUserCell extends FrameLayout {
                         } else {
                             statusTextView.setTag(Theme.key_windowBackgroundWhiteGrayText);
                             statusTextView.setTextColor(Theme.getColor(forceDarkTheme ? Theme.key_voipgroup_lastSeenText : Theme.key_windowBackgroundWhiteGrayText, resourcesProvider));
-                            statusTextView.setText(LocaleController.formatUserStatusIOS(currentAccount, currentUser));
+                            statusTextView.setText(LocaleController.formatUserStatus(currentAccount, currentUser));
                         }
                     }
                     statusTextView.setEmojiColor(statusTextView.getTextColor());
@@ -571,10 +549,6 @@ public class GroupCreateUserCell extends FrameLayout {
         }
 
         updatePremiumBlocked(false);
-
-        if (joinButtonView != null) {
-            joinButtonView.setVisibility(VISIBLE);
-        }
     }
 
     private PremiumGradient.PremiumGradientTools premiumGradient;

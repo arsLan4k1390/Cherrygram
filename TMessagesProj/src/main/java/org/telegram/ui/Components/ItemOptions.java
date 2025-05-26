@@ -139,7 +139,7 @@ public class ItemOptions {
     public boolean swipeback;
 
     private ItemOptions(BaseFragment fragment, View scrimView, boolean swipeback) {
-        if (fragment == null && fragment.getContext() == null) {
+        if (fragment.getContext() == null) {
             return;
         }
 
@@ -239,27 +239,19 @@ public class ItemOptions {
         if (!condition) {
             return this;
         }
-        return add(iconResId, iconDrawable, text, Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, null, onClickListener);
+        return add(iconResId, iconDrawable, text, Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, onClickListener);
     }
 
     public ItemOptions add(CharSequence text, Runnable onClickListener) {
-        return add(0, text, false, null, onClickListener);
+        return add(0, text, false, onClickListener);
     }
 
     public ItemOptions add(int iconResId, CharSequence text, Runnable onClickListener) {
-        return add(iconResId, text, false, null, onClickListener);
-    }
-
-    public ItemOptions add(int iconResId, CharSequence text, Runnable onLongClickListener, Runnable onClickListener) {
-        return add(iconResId, text, false, onLongClickListener, onClickListener);
+        return add(iconResId, text, false, onClickListener);
     }
 
     public ItemOptions add(int iconResId, CharSequence text, boolean isRed, Runnable onClickListener) {
-        return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, null, onClickListener);
-    }
-
-    public ItemOptions add(int iconResId, CharSequence text, boolean isRed, Runnable onLongClickListener, Runnable onClickListener) {
-        return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, onLongClickListener, onClickListener);
+        return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, onClickListener);
     }
 
     public ItemOptions add(int iconResId, CharSequence text, int color, Runnable onClickListener) {
@@ -267,14 +259,10 @@ public class ItemOptions {
     }
 
     public ItemOptions add(int iconResId, CharSequence text, int iconColorKey, int textColorKey, Runnable onClickListener) {
-        return add(iconResId, null, text, iconColorKey, textColorKey, null, onClickListener);
+        return add(iconResId, null, text, iconColorKey, textColorKey, onClickListener);
     }
 
-    public ItemOptions add(int iconResId, CharSequence text, int iconColorKey, int textColorKey, Runnable onLongClickListener, Runnable onClickListener) {
-        return add(iconResId, null, text, iconColorKey, textColorKey, onLongClickListener, onClickListener);
-    }
-
-    public ItemOptions add(int iconResId, Drawable iconDrawable, CharSequence text, int iconColorKey, int textColorKey, Runnable onLongClickListener, Runnable onClickListener) {
+    public ItemOptions add(int iconResId, Drawable iconDrawable, CharSequence text, int iconColorKey, int textColorKey, Runnable onClickListener) {
         if (context == null) {
             return this;
         }
@@ -294,14 +282,7 @@ public class ItemOptions {
             if (onClickListener != null) {
                 onClickListener.run();
             }
-            dismiss();
-        });
-        subItem.setOnLongClickListener(view1 -> {
-            if (onLongClickListener != null) {
-                onLongClickListener.run();
-            }
-            dismiss();
-            return false;
+            if (dismissWithButtons) dismiss();
         });
         if (minWidthDp > 0) {
             subItem.setMinimumWidth(dp(minWidthDp));
@@ -673,7 +654,6 @@ public class ItemOptions {
             if (onClickListener != null) {
                 onClickListener.run();
             }
-            if (dismissWithButtons) dismiss();
         });
         addView(userButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 52));
 
@@ -1402,9 +1382,7 @@ public class ItemOptions {
                             scrimView.getHeight() + viewAdditionalOffsets.bottom
                         );
                     }
-                    if (!(scrimView.getParent() instanceof UserCell)) {
-                        scrimViewBackground.draw(canvas);
-                    }
+                    scrimViewBackground.draw(canvas);
                 }
                 if (scrimViewPadding > 0 || scrimViewRoundRadius > 0) {
                     clipPath.rewind();
@@ -1457,10 +1435,8 @@ public class ItemOptions {
                             scrimView.getHeight() + viewAdditionalOffsets.bottom
                         );
                     }
-                    if (!(scrimView.getParent() instanceof UserCell)) {
-                        scrimViewBackground.setAlpha((int) (0xFF * dimProgress));
-                        scrimViewBackground.draw(canvas);
-                    }
+                    scrimViewBackground.setAlpha((int) (0xFF * dimProgress));
+                    scrimViewBackground.draw(canvas);
                 }
                 if (scrimViewPadding > 0 || scrimViewRoundRadius > 0) {
                     clipPath.rewind();

@@ -34,8 +34,6 @@ import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-
 public class PagerSlidingTabStrip extends HorizontalScrollView {
 
     public interface IconTabProvider {
@@ -73,8 +71,6 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
     private Theme.ResourcesProvider resourcesProvider;
     private int lastScrollX = 0;
-
-    int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
 
     public PagerSlidingTabStrip(Context context, Theme.ResourcesProvider resourcesProvider) {
         super(context);
@@ -162,9 +158,11 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
             }
         };
         tab.setFocusable(true);
-        RippleDrawable rippleDrawable = (RippleDrawable) Theme.createSelectorDrawable(getThemedColor(Theme.key_chat_emojiBottomPanelIcon), Theme.RIPPLE_MASK_CIRCLE_20DP, AndroidUtilities.dp(18));
-        Theme.setRippleDrawableForceSoftware(rippleDrawable);
-        tab.setBackground(rippleDrawable);
+        if (Build.VERSION.SDK_INT >= 21) {
+            RippleDrawable rippleDrawable = (RippleDrawable) Theme.createSelectorDrawable(getThemedColor(Theme.key_chat_emojiBottomPanelIcon), Theme.RIPPLE_MASK_CIRCLE_20DP, AndroidUtilities.dp(18));
+            Theme.setRippleDrawableForceSoftware(rippleDrawable);
+            tab.setBackground(rippleDrawable);
+        }
         tab.setImageDrawable(drawable);
         tab.setScaleType(ImageView.ScaleType.CENTER);
         tab.setOnClickListener(v -> {
@@ -187,9 +185,11 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
         tab.setTextColor(getThemedColor(Theme.key_chat_emojiPanelBackspace));
         tab.setFocusable(true);
         tab.setGravity(Gravity.CENTER);
-        RippleDrawable rippleDrawable = (RippleDrawable) Theme.createSelectorDrawable(getThemedColor(Theme.key_chat_emojiBottomPanelIcon), Theme.RIPPLE_MASK_CIRCLE_TO_BOUND_EDGE);
-        Theme.setRippleDrawableForceSoftware(rippleDrawable);
-        if (tabStyle < CherrygramAppearanceConfig.TAB_STYLE_VKUI) tab.setBackground(rippleDrawable);
+//        if (Build.VERSION.SDK_INT >= 21) {
+//            RippleDrawable rippleDrawable = (RippleDrawable) Theme.createSelectorDrawable(getThemedColor(Theme.key_chat_emojiBottomPanelIcon), Theme.RIPPLE_MASK_CIRCLE_TO_BOUND_EDGE);
+//            Theme.setRippleDrawableForceSoftware(rippleDrawable);
+//            tab.setBackground(rippleDrawable);
+//        }
         tab.setText(text);
         tab.setOnClickListener(v -> {
             if (pager.getAdapter() instanceof IconTabProvider) {
@@ -197,7 +197,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
                     return;
                 }
             }
-            pager.setCurrentItem(position, true);
+            pager.setCurrentItem(position, false);
         });
         tab.setPadding(AndroidUtilities.dp(18), 0, AndroidUtilities.dp(18), 0);
         tabsContainer.addView(tab, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 10, 0, 10, 0));
@@ -297,19 +297,8 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
             if (indicatorHeight != 0) {
                 rectPaint.setColor(indicatorColor);
-                AndroidUtilities.rectTmp.set(lineLeft, height - indicatorHeight, lineRight, height);
-                if (tabStyle != CherrygramAppearanceConfig.TAB_STYLE_TEXT) {
-                    if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
-                        rectPaint.setAlpha(0x2F);
-                        int sideBound = (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0);
-                        AndroidUtilities.rectTmp.set(
-                                lineLeft - sideBound, tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 14 : 15) : (height - indicatorHeight),
-                                lineRight + sideBound, tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 14 : 15) : height
-                        );
-                    }
-                    float r = tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(30) : indicatorHeight / 2f;
-                    canvas.drawRoundRect(AndroidUtilities.rectTmp, r, r, rectPaint);
-                }
+                AndroidUtilities.rectTmp.set(lineLeft - AndroidUtilities.dp(12), AndroidUtilities.dp(6), lineRight  + AndroidUtilities.dp(12), height - AndroidUtilities.dp(6));
+                canvas.drawRoundRect(AndroidUtilities.rectTmp, AndroidUtilities.rectTmp.height() / 2f, AndroidUtilities.rectTmp.height() / 2f, rectPaint);
             }
         }
 

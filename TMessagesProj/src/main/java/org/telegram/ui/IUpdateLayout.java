@@ -12,8 +12,6 @@ public abstract class IUpdateLayout {
     @Keep
     public void updateFileProgress(Object[] args) {}
     @Keep
-    public void updateFileProgress(float progress) {}
-    @Keep
     public void createUpdateUI(int currentAccount) {}
     @Keep
     public void updateAppUpdateViews(int currentAccount, boolean animated) {}

@@ -83,8 +83,6 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-
 public class StoriesController {
 
     public final static int STATE_READ = 0;
@@ -273,9 +271,6 @@ public class StoriesController {
     }
 
     public boolean hasStories() {
-        if (CherrygramCoreConfig.INSTANCE.getHideStories()) {
-            return false;
-        }
         return (dialogListStories != null && dialogListStories.size() > 0) || hasSelfStories();
     }
 
@@ -488,10 +483,6 @@ public class StoriesController {
                     if (user == null) {
                         continue;
                     }
-                    if (CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers() && !user.stories_hidden) {
-                        toggleHidden(dialogId, true, true, true);
-                        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("добавил в архив истории от юзера: " + dialogId);
-                    }
                     if (user.stories_hidden) {
                         addUserToHiddenList(userStories);
                     } else {
@@ -502,10 +493,6 @@ public class StoriesController {
                     TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
                     if (chat == null) {
                         continue;
-                    }
-                    if (CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels() && !chat.stories_hidden) {
-                        toggleHidden(dialogId, true, true, true);
-                        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("добавил в архив истории от чата/канала: " + dialogId);
                     }
                     if (chat.stories_hidden) {
                         addUserToHiddenList(userStories);

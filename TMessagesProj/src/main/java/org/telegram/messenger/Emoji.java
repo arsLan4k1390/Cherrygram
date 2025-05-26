@@ -40,9 +40,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
-
 public class Emoji {
 
     private final static HashMap<CharSequence, DrawableInfo> rects = new HashMap<>();
@@ -284,7 +281,6 @@ public class Emoji {
     public static class SimpleEmojiDrawable extends EmojiDrawable {
         private DrawableInfo info;
         private static Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
-        private static Paint textPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
         private static Rect rect = new Rect();
         private boolean invert;
 
@@ -322,14 +318,6 @@ public class Emoji {
                 b = getDrawRect();
             } else {
                 b = getBounds();
-            }
-
-            if (CherrygramCoreConfig.INSTANCE.getSystemEmoji()) {
-                String emoji = fixEmoji(EmojiData.data[info.page][info.emojiIndex]);
-                textPaint.setTypeface(FontHelper.getSystemEmojiTypeface());
-                textPaint.setTextSize(b.height() * 0.8f);
-                canvas.drawText(emoji, 0, emoji.length(), b.left, b.bottom - b.height() * 0.225f, textPaint);
-                return;
             }
 
             if (!canvas.quickReject(b.left, b.top, b.right, b.bottom, Canvas.EdgeType.AA)) {
@@ -587,7 +575,7 @@ public class Emoji {
     }
 
     public static CharSequence replaceEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, boolean createNew, int[] emojiOnly, int alignment, float scale) {
-        if (/*SharedConfig.useSystemEmoji ||*/ cs == null || cs.length() == 0) {
+            if (SharedConfig.useSystemEmoji || cs == null || cs.length() == 0) {
             return cs;
         }
         Spannable s;
@@ -657,7 +645,7 @@ public class Emoji {
     }
 
     public static CharSequence replaceWithRestrictedEmoji(CharSequence cs, Paint.FontMetricsInt fontMetrics, Runnable update) {
-        if (/*SharedConfig.useSystemEmoji ||*/ cs == null || cs.length() == 0) {
+        if (SharedConfig.useSystemEmoji || cs == null || cs.length() == 0) {
             return cs;
         }
 
@@ -896,12 +884,12 @@ public class Emoji {
             stringBuilder.append("=");
             stringBuilder.append(entry.getValue());
         }
-        preferences.edit().putString("emojis2", stringBuilder.toString()).apply();
+        preferences.edit().putString("emojis2", stringBuilder.toString()).commit();
     }
 
     public static void clearRecentEmoji() {
         SharedPreferences preferences = MessagesController.getGlobalEmojiSettings();
-        preferences.edit().putBoolean("filled_default", true).apply();
+        preferences.edit().putBoolean("filled_default", true).commit();
         emojiUseHistory.clear();
         recentEmoji.clear();
         saveRecentEmoji();
@@ -938,7 +926,7 @@ public class Emoji {
                         }
                     }
                 }
-                preferences.edit().remove("emojis").apply();
+                preferences.edit().remove("emojis").commit();
                 saveRecentEmoji();
             } else {
                 str = preferences.getString("emojis2", "");
@@ -955,7 +943,7 @@ public class Emoji {
                     for (int i = 0; i < DEFAULT_RECENT.length; i++) {
                         emojiUseHistory.put(DEFAULT_RECENT[i], DEFAULT_RECENT.length - i);
                     }
-                    preferences.edit().putBoolean("filled_default", true).apply();
+                    preferences.edit().putBoolean("filled_default", true).commit();
                     saveRecentEmoji();
                 }
             }
@@ -990,6 +978,6 @@ public class Emoji {
             stringBuilder.append("=");
             stringBuilder.append(entry.getValue());
         }
-        preferences.edit().putString("color", stringBuilder.toString()).apply();
+        preferences.edit().putString("color", stringBuilder.toString()).commit();
     }
 }

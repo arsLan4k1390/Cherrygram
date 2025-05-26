@@ -8,13 +8,9 @@
 
 package org.telegram.ui;
 
-import static android.content.Context.ACTIVITY_SERVICE;
-import static org.webrtc.ContextUtils.getApplicationContext;
-
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -27,7 +23,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.StatFs;
 import android.text.SpannableString;
@@ -118,7 +113,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Objects;
 
 public class CacheControlActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
@@ -138,7 +132,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private static final int VIEW_TYPE_SECTION_LOADING = 12;
     private static final int VIEW_TYPE_CLEAR_CACHE_BUTTON = 13;
     private static final int VIEW_TYPE_MAX_CACHE_SIZE = 14;
-    private static final int VIEW_TYPE_KABOOM = 15;
 
     public static final int KEEP_MEDIA_TYPE_USER = 0;
     public static final int KEEP_MEDIA_TYPE_GROUP = 1;
@@ -182,7 +175,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private CacheChart cacheChart;
     private CacheChartHeader cacheChartHeader;
     private ClearCacheButtonInternal clearCacheButton;
-    private KaboomButtonInternal kaboomButton;
 
     public static volatile boolean canceled = false;
 
@@ -204,7 +196,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     public final static int TYPE_OTHER = 6;
     public final static int TYPE_STORIES = 7;
 
-    private static final int kaboom_id = 1390;
     private static final int delete_id = 1;
     private static final int other_id = 2;
     private static final int clear_database_id = 3;
@@ -212,7 +203,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private boolean loadingDialogs;
     private NestedSizeNotifierLayout nestedSizeNotifierLayout;
 
-    private ActionBarMenuSubItem kaboomItem;
     private ActionBarMenuSubItem clearDatabaseItem;
     private ActionBarMenuSubItem resetDatabaseItem;
     private void updateDatabaseItemSize() {
@@ -796,10 +786,8 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         if (hasCache) {
             sectionsEndRow = itemInners.size();
             itemInners.add(new ItemInner(VIEW_TYPE_CLEAR_CACHE_BUTTON, null, null));
-            itemInners.add(new ItemInner(VIEW_TYPE_KABOOM, null, null));
             itemInners.add(ItemInner.asInfo(LocaleController.getString(R.string.StorageUsageInfo)));
         } else {
-            itemInners.add(new ItemInner(VIEW_TYPE_KABOOM, null, null));
             sectionsEndRow = -1;
         }
 
@@ -1268,8 +1256,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     clearDatabase(false);
                 } else if (id == reset_database_id) {
                     clearDatabase(true);
-                } else if (id == kaboom_id) {
-                    kaboomDurov(context);
                 }
             }
         });
@@ -1319,10 +1305,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             resetDatabaseItem.setSelectorColor(Theme.multAlpha(Theme.getColor(Theme.key_text_RedRegular), .12f));
         }
         updateDatabaseItemSize();
-
-        kaboomItem = otherItem.addSubItem(kaboom_id, R.drawable.msg_delete, "Kaboom");
-        kaboomItem.setIconColor(Theme.getColor(Theme.key_text_RedRegular));
-        kaboomItem.setTextColor(Theme.getColor(Theme.key_text_RedRegular));
 
         listAdapter = new ListAdapter(context);
 
@@ -2571,9 +2553,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                 case VIEW_TYPE_CLEAR_CACHE_BUTTON:
                     view = clearCacheButton = new ClearCacheButtonInternal(mContext);
                     break;
-                case VIEW_TYPE_KABOOM:
-                    view = kaboomButton = new KaboomButtonInternal(mContext);
-                    break;
                 case VIEW_TYPE_MAX_CACHE_SIZE:
                     SlideChooseView slideChooseView2 = new SlideChooseView(mContext);
                     view = slideChooseView2;
@@ -3235,123 +3214,5 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             return false;
         }
         return super.onBackPressed();
-    }
-
-    private void kaboomDurov(Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-        builder.setTitle("Kaboom");
-        builder.setMessage(LocaleController.getString(R.string.CG_Kaboom));
-        builder.setPositiveButton("Kaboom!", (dialogInterface, i) -> {
-            try {
-                if (Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT) {
-                    ((ActivityManager) context.getSystemService(ACTIVITY_SERVICE)).clearApplicationUserData();
-                } else {
-                    Runtime.getRuntime().exec("pm clear " + getApplicationContext().getPackageName());
-                }
-            } catch (Exception durovrelogin) {
-                durovrelogin.printStackTrace();
-            }
-        });
-        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-        AlertDialog alertDialog = builder.create();
-        alertDialog.setOnShowListener(dialog1 -> {
-            TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            button.setTextColor(Theme.getColor(Theme.key_text_RedRegular));
-            button.setEnabled(false);
-            var buttonText = button.getText();
-            new CountDownTimer(5000, 100) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    button.setText(String.format(Locale.getDefault(), "%s (%d)", buttonText, millisUntilFinished / 1000 + 1));
-                }
-
-                @Override
-                public void onFinish() {
-                    button.setText(buttonText);
-                    button.setEnabled(true);
-                }
-            }.start();
-        });
-        showDialog(alertDialog);
-    }
-
-    public static class KaboomButton extends FrameLayout {
-        FrameLayout button;
-        AnimatedTextView.AnimatedTextDrawable textView;
-        AnimatedTextView.AnimatedTextDrawable valueTextView;
-
-        public KaboomButton(Context context) {
-            super(context);
-
-            button = new FrameLayout(context) {
-                @Override
-                protected void dispatchDraw(Canvas canvas) {
-                    final int margin = AndroidUtilities.dp(8);
-                    int x = (int) ((getMeasuredWidth() - margin - valueTextView.getCurrentWidth() + textView.getCurrentWidth()) / 2);
-
-                    if (LocaleController.isRTL) {
-                        super.dispatchDraw(canvas);
-                    } else {
-                        textView.setBounds(0, 0, x, getHeight());
-                        textView.draw(canvas);
-
-                        valueTextView.setBounds(x + AndroidUtilities.dp(8), 0, getWidth(), getHeight());
-                        valueTextView.draw(canvas);
-                    }
-                }
-
-                @Override
-                protected boolean verifyDrawable(@NonNull Drawable who) {
-                    return who == valueTextView || who == textView || super.verifyDrawable(who);
-                }
-            };
-            button.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_text_RedRegular, 8));
-
-            textView = new AnimatedTextView.AnimatedTextDrawable(true, true, true);
-            textView.setAnimationProperties(.25f, 0, 300, CubicBezierInterpolator.EASE_OUT_QUINT);
-            textView.setCallback(button);
-            textView.setTextSize(AndroidUtilities.dp(14));
-            textView.setText("Kaboom");
-            textView.setGravity(Gravity.RIGHT);
-            textView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
-            textView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-
-            valueTextView = new AnimatedTextView.AnimatedTextDrawable(true, true, true);
-            valueTextView.setAnimationProperties(.25f, 0, 300, CubicBezierInterpolator.EASE_OUT_QUINT);
-            valueTextView.setCallback(button);
-            valueTextView.setTextSize(AndroidUtilities.dp(14));
-            valueTextView.setTypeface(AndroidUtilities.getTypeface("fonts/rmedium.ttf"));
-            valueTextView.setTextColor(Theme.adaptHSV(Theme.getColor(Theme.key_featuredStickers_addButton), -.46f, +.08f));
-            valueTextView.setText("");
-
-            setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-            addView(button, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.FILL, 16, 16, 16, 16));
-        }
-
-        @Override
-        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            super.onMeasure(
-                    MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY),
-                    heightMeasureSpec
-            );
-        }
-
-        public void setDisabled(boolean disabled) {
-            button.animate().cancel();
-            button.animate().alpha(disabled ? .65f : 1f).start();
-            button.setClickable(!disabled);
-        }
-    }
-
-    private class KaboomButtonInternal extends KaboomButton {
-
-        public KaboomButtonInternal(Context context) {
-            super(context);
-            ((MarginLayoutParams) button.getLayoutParams()).topMargin = AndroidUtilities.dp(5);
-            button.setOnClickListener(e -> {
-                kaboomDurov(context);
-            });
-        }
-
     }
 }

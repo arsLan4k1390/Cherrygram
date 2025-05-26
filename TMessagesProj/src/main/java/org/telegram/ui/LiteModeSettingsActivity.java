@@ -70,8 +70,6 @@ import org.telegram.ui.Components.ThanosEffect;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-
 public class LiteModeSettingsActivity extends BaseFragment {
 
     FrameLayout contentView;
@@ -85,26 +83,8 @@ public class LiteModeSettingsActivity extends BaseFragment {
     private int FLAGS_CHAT;
 
     @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
-
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString(R.string.PowerUsage));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
@@ -159,7 +139,7 @@ public class LiteModeSettingsActivity extends BaseFragment {
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putBoolean("view_animations", !animations);
                     SharedConfig.setAnimationsEnabled(!animations);
-                    editor.apply();
+                    editor.commit();
                     ((TextCell) view).setChecked(!animations);
                 }
             }
@@ -527,7 +507,7 @@ public class LiteModeSettingsActivity extends BaseFragment {
             switchView.setVisibility(GONE);
             switchView.setColors(Theme.key_switchTrack, Theme.key_switchTrackChecked, Theme.key_windowBackgroundWhite, Theme.key_windowBackgroundWhite);
             switchView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-            addView(switchView, LayoutHelper.createFrame(39, 50, Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT), 19, 0, 19, 0));
+            addView(switchView, LayoutHelper.createFrame(37, 50, Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT), 19, 0, 19, 0));
 
             checkBoxView = new CheckBox2(context, 21);
             checkBoxView.setColor(Theme.key_radioBackgroundChecked, Theme.key_checkboxDisabled, Theme.key_checkboxCheck);

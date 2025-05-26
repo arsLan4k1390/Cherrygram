@@ -20,7 +20,6 @@ import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -109,7 +108,6 @@ import org.telegram.ui.Cells.SharingLiveLocationCell;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
-import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.ChatAttachAlertLocationLayout;
 import org.telegram.ui.Components.CombinedDrawable;
 import org.telegram.ui.Components.CubicBezierInterpolator;
@@ -910,7 +908,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                 hintView.hide();
             }
             SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-            preferences.edit().putInt("proximityhint", 3).apply();
+            preferences.edit().putInt("proximityhint", 3).commit();
             LocationController.SharingLocationInfo info = getLocationController().getSharingLocationInfo(dialogId);
             if (canUndo) {
                 undoView[0].hide(true, 1);
@@ -997,17 +995,6 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             @Override
             protected void onDirectionClick() {
                 openDirections(null);
-            }
-
-            @Override
-            protected void onCopyCoordinatesClick() {
-                if (messageObject != null) {
-                    String lat = String.valueOf(messageObject.messageOwner.media.geo.lat);
-                    String lon = String.valueOf(messageObject.messageOwner.media.geo._long);
-                    if (AndroidUtilities.addToClipboard(lat + "," + lon)) {
-                        BulletinFactory.of(getParentLayout().getLastFragment()).createCopyBulletin(LocaleController.getString(R.string.TextCopied)).show();
-                    }
-                }
             }
 
             private boolean firstSet = true;
@@ -1175,7 +1162,6 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             }
             return false;
         });
-        TLRPC.Chat finalChat = chat;
         listView.setOnItemClickListener((view, position) -> {
             selectedMarkerId = -1;
             if (locationType == LOCATION_TYPE_GROUP) {
@@ -1244,31 +1230,12 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             } else if (locationType == LOCATION_TYPE_LIVE && getLocationController().isSharingLocation(dialogId) && adapter.getItemViewType(position) == LocationActivityAdapter.VIEW_TYPE_LIVE_LOCATION) {
                 openShareLiveLocation(getLocationController().getSharingLocationInfo(dialogId).period != 0x7FFFFFFF, 0);
             } else if (position == 2 && locationType == 1 || position == 1 && locationType == 2 || position == 3 && locationType == 3) {
-                TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle(LocaleController.getString("StopLiveLocationAlertToTitle", R.string.StopLiveLocationAlertToTitle));
-
-                if (finalChat != null) {
-                    builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("StopLiveLocationAlertToGroupText", R.string.StopLiveLocationAlertToGroupText, finalChat.title)));
-                } else if (user != null) {
-                    builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("StopLiveLocationAlertToUserText", R.string.StopLiveLocationAlertToUserText, UserObject.getFirstName(user))));
-                } else {
-                    builder.setMessage(LocaleController.getString("AreYouSure", R.string.AreYouSure));
-                }
-
-                builder.setPositiveButton(LocaleController.getString("Stop", R.string.Stop), (dialogInterface, i) -> {
+                if (getLocationController().isSharingLocation(dialogId)) {
                     getLocationController().removeSharingLocation(dialogId);
                     adapter.notifyDataSetChanged();
                     finishFragment();
-                });
-                builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-
-                AlertDialog alertDialog = builder.create();
-                builder.show();
-
-                TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                if (button != null) {
-                    button.setTextColor(getThemedColor(Theme.key_text_RedBold));
+                } else {
+                    openShareLiveLocation(false, 0);
                 }
             } else {
                 Object object = adapter.getItem(position);
@@ -1763,7 +1730,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                 SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                 int lastTime = preferences.getInt("backgroundloc", 0);
                 if (Math.abs(System.currentTimeMillis() / 1000 - lastTime) > 24 * 60 * 60 && activity.checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    preferences.edit().putInt("backgroundloc", (int) (System.currentTimeMillis() / 1000)).apply();
+                    preferences.edit().putInt("backgroundloc", (int) (System.currentTimeMillis() / 1000)).commit();
                     AlertsCreator.createBackgroundLocationPermissionDialog(activity, getMessagesController().getUser(getUserConfig().getClientUserId()), () -> openShareLiveLocation(expand, askWithRadius), null).show();
                     return;
                 }
@@ -2243,7 +2210,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
         int val = preferences.getInt("proximityhint", 0);
         if (val < 3) {
-            preferences.edit().putInt("proximityhint", ++val).apply();
+            preferences.edit().putInt("proximityhint", ++val).commit();
             if (DialogObject.isUserDialog(dialogId)) {
                 TLRPC.User user = getMessagesController().getUser(dialogId);
                 hintView.setText(LocaleController.formatString("ProximityTooltioUser", R.string.ProximityTooltioUser, UserObject.getFirstName(user)));

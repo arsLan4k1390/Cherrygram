@@ -52,6 +52,9 @@ import android.widget.TextView;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
 import androidx.dynamicanimation.animation.FloatValueHolder;
 import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
@@ -74,9 +77,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
+import java.util.concurrent.Executor;
 
 public class PasscodeView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
     private final static float BACKGROUND_SPRING_STIFFNESS = 300f;
@@ -161,9 +162,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
                 return;
             }
             try {
-                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-                }
+                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
             } catch (Exception e) {
                 FileLog.e(e);
             }
@@ -286,9 +285,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
                 return false;
             }
             try {
-                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-                }
+                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
             } catch (Exception e) {
                 FileLog.e(e);
             }
@@ -479,6 +476,9 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
     private Rect rect = new Rect();
 
     private PasscodeViewDelegate delegate;
+
+    private final static int id_fingerprint_textview = 1000;
+    private final static int id_fingerprint_imageview = 1001;
 
     private SpringAnimation backgroundAnimationSpring;
     private LinkedList<Runnable> backgroundSpringQueue = new LinkedList<>();
@@ -1186,11 +1186,39 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         }
         Activity parentActivity = AndroidUtilities.findActivity(getContext());
         if (parentActivity != null && fingerprintView.getVisibility() == VISIBLE && !ApplicationLoader.mainInterfacePaused && (!(parentActivity instanceof LaunchActivity) || ((LaunchActivity) parentActivity).allowShowFingerprintDialog(this))) {
-            CGBiometricPrompt.prompt(parentActivity,
-                    () -> processDone(true),
-                    () -> showPin(true)
-            );
-            showPin(false);
+            try {
+                if (BiometricManager.from(getContext()).canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()) {
+                    final Executor executor = ContextCompat.getMainExecutor(getContext());
+                    BiometricPrompt prompt = new BiometricPrompt(LaunchActivity.instance, executor, new BiometricPrompt.AuthenticationCallback() {
+                        @Override
+                        public void onAuthenticationError(int errMsgId, @NonNull CharSequence errString) {
+                            FileLog.d("PasscodeView onAuthenticationError " + errMsgId + " \"" + errString + "\"");
+                            showPin(true);
+                        }
+
+                        @Override
+                        public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                            FileLog.d("PasscodeView onAuthenticationSucceeded");
+                            processDone(true);
+                        }
+
+                        @Override
+                        public void onAuthenticationFailed() {
+                            FileLog.d("PasscodeView onAuthenticationFailed");
+                            showPin(true);
+                        }
+                    });
+                    final BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                            .setTitle(LocaleController.getString(R.string.UnlockToUse))
+                            .setNegativeButtonText(LocaleController.getString(R.string.UsePIN))
+                            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG)
+                            .build();
+                    prompt.authenticate(promptInfo);
+                    showPin(false);
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
         }
     }
 
@@ -1216,7 +1244,8 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         Activity parentActivity = AndroidUtilities.findActivity(getContext());
         if (Build.VERSION.SDK_INT >= 23 && parentActivity != null && SharedConfig.useFingerprintLock) {
             try {
-                if (CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()) {
+                FingerprintManagerCompat fingerprintManager = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
+                if (fingerprintManager.isHardwareDetected() && fingerprintManager.hasEnrolledFingerprints() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()) {
                     hasFingerprint = true;
                     fingerprintView.setVisibility(VISIBLE);
                 } else {
@@ -1344,13 +1373,11 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
                     imageView.getAnimatedDrawable().setCustomEndFrame(37);
                     imageView.playAnimation();
                     showPin(true);
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        AndroidUtilities.runOnUIThread(() -> {
-                            try {
-                                imageView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                            } catch (Exception ignore) {}
-                        }, 350);
-                    }
+                    AndroidUtilities.runOnUIThread(() -> {
+                        try {
+                            imageView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                        } catch (Exception ignore) {}
+                    }, 350);
                     AnimatorSet animatorSet = new AnimatorSet();
                     ArrayList<Animator> animators = new ArrayList<>();
                     int w = AndroidUtilities.displaySize.x;

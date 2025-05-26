@@ -46,7 +46,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -104,8 +103,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class NotificationsCustomSettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -212,7 +209,7 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
     private void deleteException(NotificationsSettingsActivity.NotificationException exception, View view, int position) {
         final String key = NotificationsController.getSharedPrefKey(exception.did, 0);
         final SharedPreferences prefs = getNotificationsSettings();
-        prefs.edit().remove("stories_" + key).apply();
+        prefs.edit().remove("stories_" + key).commit();
         if (autoExceptions != null) {
             autoExceptions.remove(exception);
         }
@@ -240,7 +237,7 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
         exception.notify = mute ? Integer.MAX_VALUE : 0;
         if (exception.auto) {
             exception.auto = false;
-            edit.putBoolean("stories_" + key, !mute).apply();
+            edit.putBoolean("stories_" + key, !mute).commit();
             if (autoExceptions != null) {
                 autoExceptions.remove(exception);
             }
@@ -252,12 +249,12 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
             // auto = false
             // (un)mute
         } else if (isTopPeer) {
-            edit.putBoolean("stories_" + key, !mute).apply();
+            edit.putBoolean("stories_" + key, !mute).commit();
         } else if (mute ? (storiesEnabled == null || !storiesEnabled) : (storiesEnabled != null && storiesEnabled)) {
             deleteException(exception, view, position);
             return;
         } else {
-            edit.putBoolean("stories_" + key, !mute).apply();
+            edit.putBoolean("stories_" + key, !mute).commit();
         }
 
         if (view instanceof UserCell) {
@@ -352,29 +349,11 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
     }
 
     @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    @Override
     public View createView(Context context) {
         searching = false;
         searchWas = false;
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
-
         actionBar.setAllowOverlayTitle(true);
         if (currentType == -1) {
             actionBar.setTitle(getString("NotificationsExceptions", R.string.NotificationsExceptions));
@@ -790,7 +769,7 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
                             dialog.notify_settings = new TLRPC.TL_peerNotifySettings();
                         }
                     }
-                    editor.apply();
+                    editor.commit();
                     for (int a = 0, N = exceptions.size(); a < N; a++) {
                         NotificationsSettingsActivity.NotificationException exception = exceptions.get(a);
                         getNotificationsController().updateServerNotificationsSettings(exception.did, topicId, false);
@@ -943,7 +922,7 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(storiesAuto);
                 }
-                editor.apply();
+                editor.commit();
                 if (storiesAuto != showAutoExceptions) {
                     toggleShowAutoExceptions();
                 }
@@ -971,7 +950,7 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
                     enabled = preferences.getBoolean("EnablePreviewChannel", true);
                     editor.putBoolean("EnablePreviewChannel", !enabled);
                 }
-                editor.apply();
+                editor.commit();
                 getNotificationsController().updateServerNotificationsSettings(currentType);
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(!enabled);
@@ -1579,7 +1558,7 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
                 }
             }
             getNotificationsController().deleteNotificationChannelGlobal(currentType);
-            editor.apply();
+            editor.commit();
             getNotificationsController().updateServerNotificationsSettings(currentType);
             RecyclerView.ViewHolder holder = listView.findViewHolderForAdapterPosition(requestCode);
             if (holder != null) {
@@ -2200,18 +2179,6 @@ public class NotificationsCustomSettingsActivity extends BaseFragment implements
 
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{HeaderCell.class, TextCheckCell.class, TextColorCell.class, TextSettingsCell.class, UserCell.class, NotificationsCheckCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
-        } else {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));

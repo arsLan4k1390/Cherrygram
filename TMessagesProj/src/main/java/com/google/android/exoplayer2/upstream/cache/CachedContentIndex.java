@@ -941,16 +941,15 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 
     private void addOrUpdateRow(SQLiteDatabase writableDatabase, CachedContent cachedContent)
         throws IOException {
-      try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-          writeContentMetadata(cachedContent.getMetadata(), new DataOutputStream(outputStream));
-          byte[] data = outputStream.toByteArray();
+      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      writeContentMetadata(cachedContent.getMetadata(), new DataOutputStream(outputStream));
+      byte[] data = outputStream.toByteArray();
 
-          ContentValues values = new ContentValues();
-          values.put(COLUMN_ID, cachedContent.id);
-          values.put(COLUMN_KEY, cachedContent.key);
-          values.put(COLUMN_METADATA, data);
-          writableDatabase.replaceOrThrow(checkNotNull(tableName), /* nullColumnHack= */ null, values);
-      }
+      ContentValues values = new ContentValues();
+      values.put(COLUMN_ID, cachedContent.id);
+      values.put(COLUMN_KEY, cachedContent.key);
+      values.put(COLUMN_METADATA, data);
+      writableDatabase.replaceOrThrow(checkNotNull(tableName), /* nullColumnHack= */ null, values);
     }
 
     private static void delete(DatabaseProvider databaseProvider, String hexUid)

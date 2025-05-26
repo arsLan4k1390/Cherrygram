@@ -83,8 +83,6 @@ import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL10;
 
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
-
 public class IntroActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     private final static int ICON_WIDTH_DP = 200, ICON_HEIGHT_DP = 150;
 
@@ -125,7 +123,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         MessagesController.getGlobalMainSettings().edit().putLong("intro_crashed_time", System.currentTimeMillis()).apply();
 
         titles = new String[]{
-                CGResourcesHelper.INSTANCE.getAppName(),
+                LocaleController.getString(R.string.Page1Title),
                 LocaleController.getString(R.string.Page2Title),
                 LocaleController.getString(R.string.Page3Title),
                 LocaleController.getString(R.string.Page5Title),
@@ -188,7 +186,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         };
         scrollView.addView(frameContainerView, LayoutHelper.createScroll(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
 
-        darkThemeDrawable = new RLottieDrawable(R.raw.sun_outline, String.valueOf(R.raw.sun_outline), AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
+        darkThemeDrawable = new RLottieDrawable(R.raw.sun, String.valueOf(R.raw.sun), AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
         darkThemeDrawable.setPlayInDirectionOfCustomEndFrame(true);
         darkThemeDrawable.beginApplyLayerColors();
         darkThemeDrawable.commitApplyLayerColors();
@@ -774,7 +772,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
             loadTexture(R.drawable.intro_tg_plane, 21);
             loadTexture(v -> {
                 Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                paint.setColor(0xFFA23454); // It's logo color, it should not be colored by the theme
+                paint.setColor(0xFF2CA5E0); // It's logo color, it should not be colored by the theme
                 int size = AndroidUtilities.dp(ICON_HEIGHT_DP);
                 Bitmap bm = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
                 Canvas c = new Canvas(bm);

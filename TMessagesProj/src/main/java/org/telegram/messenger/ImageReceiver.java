@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.BlendMode;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ComposeShader;
 import android.graphics.Matrix;
@@ -32,6 +33,8 @@ import android.view.View;
 
 import androidx.annotation.Keep;
 
+import com.google.android.exoplayer2.util.Log;
+
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.Components.AnimatedFileDrawable;
@@ -46,9 +49,8 @@ import org.telegram.ui.Components.VectorAvatarThumbDrawable;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 public class ImageReceiver implements NotificationCenter.NotificationCenterDelegate {
 
@@ -444,7 +446,7 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
                         }
                     }
                 }
-                if (!CherrygramCoreConfig.INSTANCE.getDisableAnimatedAvatars() && vectorImageMarkup == null && animationEnabled && MessagesController.getInstance(currentAccount).isPremiumUser(user) && user.photo.has_video && LiteMode.isEnabled(LiteMode.FLAG_AUTOPLAY_VIDEOS)) {
+                if (vectorImageMarkup == null && animationEnabled && MessagesController.getInstance(currentAccount).isPremiumUser(user) && user.photo.has_video && LiteMode.isEnabled(LiteMode.FLAG_AUTOPLAY_VIDEOS)) {
                     final TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(user.id);
                     if (userFull == null) {
                         MessagesController.getInstance(currentAccount).loadFullUser(user, currentGuid, false);

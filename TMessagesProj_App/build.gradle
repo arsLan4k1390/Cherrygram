@@ -1,8 +1,4 @@
-import java.nio.file.Files
-import java.nio.file.Paths
-
 apply plugin: 'com.android.application'
-apply plugin: 'com.google.firebase.crashlytics'
 
 repositories {
     mavenCentral()
@@ -13,7 +9,7 @@ configurations {
     compile.exclude module: 'support-v4'
 }
 
-configurations.configureEach {
+configurations.all {
     exclude group: 'com.google.firebase', module: 'firebase-core'
     exclude group: 'androidx.recyclerview', module: 'recyclerview'
 }
@@ -26,8 +22,8 @@ dependencies {
 }
 
 android {
-    compileSdk 36
-    buildToolsVersion = '36.0.0'
+    compileSdkVersion 34
+    buildToolsVersion '34.0.0'
 
     defaultConfig.applicationId = APP_PACKAGE
 
@@ -39,26 +35,30 @@ android {
         disable 'BlockedPrivateApi'
     }
 
+    dexOptions {
+        jumboMode = true
+    }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
 
         coreLibraryDesugaringEnabled true
     }
 
     signingConfigs {
         debug {
-            storeFile file('../Your_Key.jks')
-            storePassword 'Your_Password'
-            keyAlias 'Your_Alias'
-            keyPassword 'Your_Password'
+            storeFile file("../TMessagesProj/config/release.keystore")
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
         }
 
         release {
-            storeFile file('../Your_Key.jks')
-            storePassword 'Your_Password'
-            keyAlias 'Your_Alias'
-            keyPassword 'Your_Password'
+            storeFile file("../TMessagesProj/config/release.keystore")
+            storePassword RELEASE_STORE_PASSWORD
+            keyAlias RELEASE_KEY_ALIAS
+            keyPassword RELEASE_KEY_PASSWORD
         }
     }
 
@@ -66,8 +66,8 @@ android {
         debug {
             debuggable true
             jniDebuggable true
-            signingConfig signingConfigs.release
-//            applicationIdSuffix ".beta"
+            signingConfig signingConfigs.debug
+            applicationIdSuffix ".beta"
             minifyEnabled false
             shrinkResources false
             multiDexEnabled true
@@ -79,9 +79,9 @@ android {
             debuggable false
             jniDebuggable false
             signingConfig signingConfigs.release
-//            applicationIdSuffix ".web"
+            applicationIdSuffix ".web"
             minifyEnabled true
-            shrinkResources true
+            shrinkResources false
             multiDexEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
@@ -92,7 +92,7 @@ android {
             jniDebuggable false
             signingConfig signingConfigs.release
             minifyEnabled true
-            shrinkResources true
+            shrinkResources false
             multiDexEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
             ndk.debugSymbolLevel = 'FULL'
@@ -111,13 +111,12 @@ android {
         manifest.srcFile '../TMessagesProj/config/release/AndroidManifest.xml'
     }
 
-    flavorDimensions = ["minApi"]
+    flavorDimensions "minApi"
 
     productFlavors {
         bundleAfat {
             ndk {
-                //noinspection ChromeOsAbiSupport
-                abiFilters "armeabi-v7a", "arm64-v8a"/*, "x86", "x86_64"*/
+                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
             ext {
                 abiVersionCode = 1
@@ -125,8 +124,7 @@ android {
         }
         bundleAfat_SDK23 {
             ndk {
-                //noinspection ChromeOsAbiSupport
-                abiFilters "armeabi-v7a", "arm64-v8a"/*, "x86", "x86_64"*/
+                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
             sourceSets.debug {
                 manifest.srcFile '../TMessagesProj/config/debug/AndroidManifest_SDK23.xml'
@@ -141,8 +139,7 @@ android {
         }
         afat {
             ndk {
-                //noinspection ChromeOsAbiSupport
-                abiFilters "armeabi-v7a", "arm64-v8a"/*, "x86", "x86_64"*/
+                abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
             }
             sourceSets.debug {
                 manifest.srcFile '../TMessagesProj/config/debug/AndroidManifest_SDK23.xml'
@@ -161,12 +158,10 @@ android {
 
     defaultConfig.versionCode = Integer.parseInt(APP_VERSION_CODE)
 
-    applicationVariants.configureEach { variant ->
-        variant.outputs.configureEach { output ->
-            def abi = output.getFilter('ABI')
-            if (abi == null) abi = 'universal'
-            outputFileName = "Cherrygram-PlayStore-${APP_VERSION_NAME_CHERRY}-TG-${defaultConfig.versionName}-${abi}.apk"
-            output.versionCodeOverride = defaultConfig.versionCode * 10
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "app.apk"
+            output.versionCodeOverride = defaultConfig.versionCode * 10 + variant.productFlavors.get(0).abiVersionCode
         }
     }
 
@@ -178,7 +173,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 34
         versionName APP_VERSION_NAME
         ndkVersion "21.4.7075529"
@@ -190,7 +185,7 @@ android {
         externalNativeBuild {
             cmake {
                 version '3.10.2'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
+                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-16'
             }
         }
     }
@@ -202,85 +197,6 @@ android {
 
     lintOptions {
         checkReleaseBuilds false
-    }
-
-    bundle {
-        language {
-            enableSplit = false
-        }
-    }
-
-    splits.abi {
-        enable true
-        reset()
-        //noinspection ChromeOsAbiSupport
-        include "arm64-v8a", "armeabi-v7a"
-        universalApk true
-    }
-}
-
-/** *
- *
- * CI/CD is used for copying APKs to Desktop
- *
- * **/
-
-static def loadEnv(filePath) {
-    def env = [:]
-    Files.lines(Paths.get(filePath)).each { line ->
-        if (line && !line.startsWith("#")) {
-            def (key, value) = line.split('=', 2)
-            env[key.trim()] = value?.trim()
-        }
-    }
-    return env
-}
-
-def env = loadEnv("${project.rootDir}/secrets_for_ci.env")
-
-env.each { key, value ->
-    ext."$key" = value
-}
-
-static def isWindows() {
-    def osName = System.getProperty('os.name').toLowerCase()
-    return osName.contains('win')
-}
-
-static def isMacOS() {
-    def osName = System.getProperty('os.name').toLowerCase()
-    return osName.contains('mac')
-}
-
-static def isWindowsOrMacOS() {
-    def osName = System.getProperty('os.name').toLowerCase()
-    return osName.contains('win') || osName.contains('mac')
-}
-
-def desktopPath
-if (isWindows()) {
-    desktopPath = "C:/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
-} else if (isMacOS()) {
-    desktopPath = "/Users/${SYSTEM_USERNAME}/Desktop/Cherry/Stable"
-}
-
-tasks.register('copyFiles', Copy) {
-    from "${projectDir}/afat/release/"
-    include '**/*.aab'
-    into desktopPath
-}
-
-tasks.configureEach { task ->
-    if (task.name == 'extractProguardFiles') {
-        task.doFirst {
-            delete "${projectDir}/afat/release/"
-        }
-    }
-
-    if (task.name == 'bundleAfatRelease') {
-        if (isWindowsOrMacOS()) {
-            task.finalizedBy 'copyFiles'
-        }
     }
 }
 

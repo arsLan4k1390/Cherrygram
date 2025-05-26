@@ -220,12 +220,6 @@ import java.util.Locale;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
-
 public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate, ImageReceiver.ImageReceiverDelegate, DownloadController.FileDownloadProgressListener, TextSelectionHelper.SelectableView, NotificationCenter.NotificationCenterDelegate {
     private final static int TIME_APPEAR_MS = 200;
     private final static int UPLOADING_ALLOWABLE_ERROR = 1024 * 1024;
@@ -525,9 +519,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         }
 
         default void didPressReplyMessage(ChatMessageCell cell, int id, float x, float y, boolean longpress) {
-        }
-
-        default void didLongPressReply(ChatMessageCell cell) {
         }
 
         default boolean isProgressLoading(ChatMessageCell cell, int type) {
@@ -1473,7 +1464,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     private int timeTextWidth;
     public int timeX;
     public int signWidth;
-    private SpannableStringBuilder currentTimeString;
+    private CharSequence currentTimeString;
     private boolean drawTime = true;
     private boolean forceNotDrawTime;
     private Paint drillHolePaint;
@@ -3581,7 +3572,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                         imagePressed = true;
                         result = true;
                     }
-                } else if (!currentMessageObject.isAnyKindOfSticker() || currentMessageObject.getInputStickerSet() != null || currentMessageObject.isAnimatedEmoji() || currentMessageObject.isDice() || currentMessageObject.getInputStickerSet() == null && currentMessageObject.isSticker()) {
+                } else if (!currentMessageObject.isAnyKindOfSticker() || currentMessageObject.getInputStickerSet() != null || currentMessageObject.isAnimatedEmoji() || currentMessageObject.isDice()) {
                     if (x >= photoImage.getImageX() && x <= photoImage.getImageX() + photoImage.getImageWidth() && y >= photoImage.getImageY() && y <= photoImage.getImageY() + photoImage.getImageHeight()) {
                         if (isRoundVideo) {
                             if ((x - photoImage.getCenterX()) * (x - photoImage.getCenterX()) + (y - photoImage.getCenterY()) * (y - photoImage.getCenterY()) < (photoImage.getImageWidth() / 2f) * (photoImage.getImageWidth() / 2)) {
@@ -4519,9 +4510,9 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
     private boolean checkPinchToZoom(MotionEvent ev) {
         PinchToZoomHelper pinchToZoomHelper = delegate == null ? null : delegate.getPinchToZoomHelper();
-        if (currentMessageObject == null || !photoImage.hasNotThumb() || pinchToZoomHelper == null || /*currentMessageObject.isSticker() ||*/
-                /*currentMessageObject.isAnimatedEmoji() ||*/ (currentMessageObject.isVideo() && !autoPlayingMedia) ||
-                isRoundVideo || /*currentMessageObject.isAnimatedSticker() ||*/ (currentMessageObject.isDocument() && !currentMessageObject.isGif()) || currentMessageObject.needDrawBluredPreview()) {
+        if (currentMessageObject == null || !photoImage.hasNotThumb() || pinchToZoomHelper == null || currentMessageObject.isSticker() ||
+                currentMessageObject.isAnimatedEmoji() || (currentMessageObject.isVideo() && !autoPlayingMedia) ||
+                isRoundVideo || currentMessageObject.isAnimatedSticker() || (currentMessageObject.isDocument() && !currentMessageObject.isGif()) || currentMessageObject.needDrawBluredPreview()) {
             return false;
         }
         return pinchToZoomHelper.checkPinchToZoom(ev, this, photoImage, null, null, currentMessageObject, mediaSpoilerEffect2 == null ? 0 : mediaSpoilerEffect2.getAttachIndex(this));
@@ -4794,7 +4785,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 if (lastTime != currentProgress) {
                     lastTime = currentProgress;
                     String timeString = AndroidUtilities.formatShortDuration(currentProgress, (int) duration);
-                    timeString = String.format("%s %s", timeString + ",", AndroidUtilities.formatFileSize(documentAttach.size));
                     int timeWidth = (int) Math.ceil(Theme.chat_audioTimePaint.measureText(timeString));
                     durationLayout = new StaticLayout(timeString, Theme.chat_audioTimePaint, timeWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
                 }
@@ -8054,7 +8044,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
 
                 int maxVote = 0;
-                if (!animatePollAnswer && pollVoteInProgress && vibrateOnPollVote && !CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
+                if (!animatePollAnswer && pollVoteInProgress && vibrateOnPollVote) {
                     try {
                         performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                     } catch (Exception ignored) {}
@@ -8791,13 +8781,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                             photoHeight = (int) maxHeight;
                         }
                     }
-
-                    float modifier = CherrygramChatsConfig.INSTANCE.getSlider_stickerAmplifier() / 100f;
-                    photoWidth = (int) (photoWidth * modifier);
-                    photoHeight = (int) (photoHeight * modifier);
-                    maxWidth = (int) (maxWidth * modifier);
-                    maxHeight = (int) (maxHeight * modifier);
-
                     Object parentObject = messageObject;
                     int w = (int) (photoWidth / AndroidUtilities.density);
                     int h = (int) (photoHeight / AndroidUtilities.density);
@@ -8952,15 +8935,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     } else if (drawAvatar) {
                         photoWidth -= dp(52);
                     }
-
-                    float modifier;
-                    if (messageObject.type == MessageObject.TYPE_GIF) {
-                        modifier = CherrygramChatsConfig.INSTANCE.getSlider_gifsAmplifier() / 100f;
-                    } else {
-                        modifier = CherrygramChatsConfig.INSTANCE.getSlider_mediaAmplifier() / 100f;
-                    }
-                    photoWidth = (int) (photoWidth * modifier);
-                    photoHeight = (int) (photoHeight * modifier);
 
                     boolean needQualityPreview = false;
 
@@ -10448,37 +10422,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             }
         }
         resetPressedLink(-1);
-
-        if (replyPressed) {
-            UserConfig getUserConfig = UserConfig.getInstance(currentAccount);
-            ChatsHelper getChatsHelper = ChatsHelper.getInstance(currentAccount);
-            MessagesController getMessagesController = MessagesController.getInstance(currentAccount);
-
-            if (currentMessageObject != null && currentMessageObject.replyMessageObject != null
-                    && currentMessageObject.replyMessageObject.messageOwner.from_id != null && currentMessageObject.replyMessageObject.messageOwner.from_id.user_id != 0
-                    && getMessagesController.getUser(currentMessageObject.replyMessageObject.messageOwner.from_id.user_id) != null
-            ) {
-                long emojiDocumentId = getChatsHelper.getEmojiIdFromReply(currentMessageObject, currentUser);
-
-                if (emojiDocumentId != 0 && UserObject.getEmojiId(getUserConfig.getCurrentUser()) != emojiDocumentId) {
-                    delegate.didLongPressReply(this);
-                    return true;
-                }
-            }
-        }
-
-        if (pressedBotButton != -1) {
-            var button = botButtons.get(pressedBotButton);
-            if (button != null && button.button != null) {
-                if (button.selectorDrawable != null) {
-                    button.selectorDrawable.setState(StateSet.NOTHING);
-                }
-                button.setPressed(false);
-                delegate.didLongPressBotButton(this, button.button);
-                return true;
-            }
-        }
-
         if (buttonPressed != 0 || miniButtonPressed != 0 || videoButtonPressed != 0 || pressedBotButton != -1) {
             buttonPressed = 0;
             miniButtonPressed = 0;
@@ -11062,7 +11005,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             if (name.length() == 0) {
                 name = getString("AttachDocument", R.string.AttachDocument);
             }
-            docTitleLayout = StaticLayoutEx.createStaticLayout(name, Theme.chat_docNamePaint, maxWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false, TextUtils.TruncateAt.MIDDLE, maxWidth, 3, false);
+            docTitleLayout = StaticLayoutEx.createStaticLayout(name, Theme.chat_docNamePaint, maxWidth, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false, TextUtils.TruncateAt.MIDDLE, maxWidth, 2, false);
             docTitleOffsetX = Integer.MIN_VALUE;
             int width;
             if (docTitleLayout != null && docTitleLayout.getLineCount() > 0) {
@@ -16369,7 +16312,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 signString = null;
             }
         }
-        CharSequence timeString;
+        String timeString;
         TLRPC.User author = null;
         if (currentMessageObject.isFromUser()) {
             author = MessagesController.getInstance(currentAccount).getUser(fromId);
@@ -16401,40 +16344,36 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         } else if (currentMessageObject.isRepostPreview) {
             timeString = LocaleController.formatSmallDateChat(messageObject.messageOwner.date) + ", " + LocaleController.getInstance().getFormatterDay().format((long) (messageObject.messageOwner.date) * 1000);
         } else if (edited) {
-            timeString = ChatsHelper.createEditedString(currentMessageObject);
-        } else if (CherrygramChatsConfig.INSTANCE.getMsgForwardDate() && (currentMessageObject.isSaved && currentMessageObject.messageOwner.fwd_from != null && (currentMessageObject.messageOwner.fwd_from.date != 0 || currentMessageObject.messageOwner.fwd_from.saved_date != 0))) {
+            timeString = getString(R.string.EditedMessage) + " " + LocaleController.getInstance().getFormatterDay().format((long) (messageObject.messageOwner.date) * 1000);
+        } else if (currentMessageObject.isSaved && currentMessageObject.messageOwner.fwd_from != null && (currentMessageObject.messageOwner.fwd_from.date != 0 || currentMessageObject.messageOwner.fwd_from.saved_date != 0)) {
             int date = currentMessageObject.messageOwner.fwd_from.saved_date;
             if (date == 0) {
                 date = currentMessageObject.messageOwner.fwd_from.date;
             }
             timeString = LocaleController.formatSeenDate(date);
         } else {
-            timeString = !currentMessageObject.isMusic() && messageObject.messageOwner.forwards > 0 ? ChatsHelper.createForwardedString(messageObject) : LocaleController.getInstance().getFormatterDay().format((long) (messageObject.messageOwner.date) * 1000);
+            timeString = LocaleController.getInstance().getFormatterDay().format((long) (messageObject.messageOwner.date) * 1000);
         }
-        currentTimeString = new SpannableStringBuilder(timeString);
+        if (currentMessageObject.messageOwner.video_processing_pending) {
+            timeString = LocaleController.formatString(R.string.ScheduledTimeApprox, timeString);
+        }
         if (signString != null) {
             if (messageObject.messageOwner.via_business_bot_id != 0) {
-                currentTimeString.append(", ");
+                currentTimeString = timeString + ", ";
             } else if (messageObject.messageOwner.fwd_from != null && messageObject.messageOwner.fwd_from.imported) {
-                currentTimeString.insert(0, " ");
+                currentTimeString = " " + timeString;
             } else {
-                currentTimeString.insert(0, ", ");
+                currentTimeString = ", " + timeString;
             }
+        } else {
+            currentTimeString = timeString;
         }
         final long starsPrice = currentMessageObject.getDialogId() < 0 ? getStarsPrice() : 0;
         if (starsPrice > 0) {
-            currentTimeString = currentTimeString.insert(0, TextUtils.concat("⭐️", AndroidUtilities.formatWholeNumber((int) starsPrice, 0), "  "));
+            currentTimeString = TextUtils.concat("⭐️", AndroidUtilities.formatWholeNumber((int) starsPrice, 0), "  ", currentTimeString);
             currentTimeString = StarsIntroActivity.replaceStars(currentTimeString, 0.8f, null, 0, dp(-.33f), 0.94f);
         }
         timeTextWidth = timeWidth = (int) Math.ceil(Theme.chat_timePaint.measureText(currentTimeString, 0, currentTimeString == null ? 0 : currentTimeString.length()));
-        if (timeString instanceof SpannableStringBuilder) {
-            if (!messageObject.isMusic() && messageObject.messageOwner.forwards > 0 && ChatsHelper.forwardsDrawable != null) {
-                timeTextWidth = timeWidth += ChatsHelper.forwardsDrawable.getIntrinsicWidth();
-            }
-            if (edited && CherrygramChatsConfig.INSTANCE.getShowPencilIcon() && ChatsHelper.editedDrawable != null) {
-                timeTextWidth = timeWidth += ChatsHelper.editedDrawable.getIntrinsicWidth();
-            }
-        }
         if (currentMessageObject.scheduled && currentMessageObject.messageOwner.date == 0x7FFFFFFE || currentMessageObject.notime) {
             timeWidth -= dp(8);
         }
@@ -16491,9 +16430,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         }
         if (effectId != 0 && !currentMessageObject.notime) {
             timeWidth += dp(14 + 4);
-        }
-        if (currentMessageObject.messageOwner.video_processing_pending) {
-            timeString = LocaleController.formatString(R.string.ScheduledTimeApprox, timeString);
         }
         if (signString != null) {
             if (availableTimeWidth == 0) {
@@ -16920,11 +16856,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                     }
 
                     forwardedNameWidth = getMaxNameWidth();
-                    if (CherrygramChatsConfig.INSTANCE.getMsgForwardDate() && !currentMessageObject.isSaved) {
-                        forwardedString = String.format("➥ %s", CGResourcesHelper.INSTANCE.createDateAndTime(messageObject.messageOwner.fwd_from.date));
-                    } else {
-                        forwardedString = getForwardedMessageText(messageObject);
-                    }
+                    forwardedString = getForwardedMessageText(messageObject);
                     if (hasPsaHint) {
                         forwardedNameWidth -= dp(36);
                     }
@@ -17501,7 +17433,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     }
 
     private Object getAuthorStatus() {
-        if (CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) return null;
         if (currentUser != null) {
             Long emojiStatusId = UserObject.getEmojiStatusDocumentId(currentUser);
             if (emojiStatusId != null) {
@@ -17788,7 +17719,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             int addX;
             final int widthForButtons = getWidthForButtons();
             if (currentMessageObject != null && currentMessageObject.isOutOwner()) {
-                addX = getMeasuredWidth() - getWidthForButtons() - dp(10);
+                addX = getMeasuredWidth() - widthForButtons - dp(10);
             } else {
                 addX = backgroundDrawableLeft + dp(mediaBackground || drawPinnedBottom ? 1 : 7);
             }
@@ -17814,7 +17745,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             int addX;
             final int widthForButtons = getWidthForButtons();
             if (currentMessageObject != null && currentMessageObject.isOutOwner()) {
-                addX = getMeasuredWidth() - widthForButtons - dp(10);
+                addX = getMeasuredWidth() - getWidthForButtons() - dp(10);
             } else {
                 addX = backgroundDrawableLeft + dp(mediaBackground || drawPinnedBottom ? 1 : 7);
             }
@@ -17995,7 +17926,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         if ((!autoPlayingMedia || !MediaController.getInstance().isPlayingMessageAndReadyToDraw(currentMessageObject) || isRoundVideo) && !transitionParams.animateBackgroundBoundsInner && !(currentMessageObject != null && currentMessageObject.preview)) {
             drawOverlays(canvas);
         }
-        if ((drawTime || !mediaBackground) && !forceNotDrawTime && !transitionParams.animateBackgroundBoundsInner && !(enterTransitionInProgress && !currentMessageObject.isVoice()) && (!currentMessageObject.isQuickReply() || currentMessageObject.isSendError()) && (!currentMessageObject.isAnyKindOfSticker() || !CherrygramChatsConfig.INSTANCE.getHideStickerTime())) {
+        if ((drawTime || !mediaBackground) && !forceNotDrawTime && !transitionParams.animateBackgroundBoundsInner && !(enterTransitionInProgress && !currentMessageObject.isVoice()) && (!currentMessageObject.isQuickReply() || currentMessageObject.isSendError())) {
             drawTime(canvas, 1f, false);
         }
 
@@ -18993,7 +18924,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             if (drawSideButton == SIDE_BUTTON_SPONSORED_CLOSE) {
                 sideStartY = dp(6);
             } else {
-                sideStartY = layoutHeight + transitionParams.deltaBottom - dp(36);
+                sideStartY = layoutHeight + transitionParams.deltaBottom - dp(41);
                 if (currentMessageObject.type == MessageObject.TYPE_EMOJIS && currentMessageObject.textWidth < timeTextWidth) {
                     sideStartY -= dp(22);
                 }
@@ -20023,7 +19954,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 // draw reply background
                 leftRad = bottomRad; // line redesign
                 replyLine.setLoading(loading);
-                replyLine.drawBackground(canvas, replySelectorRect, leftRad, rightRad, bottomRad, alpha, isReplyQuote, currentMessageObject.shouldDrawWithoutBackground() || !CherrygramAppearanceConfig.INSTANCE.getReplyBackground());
+                replyLine.drawBackground(canvas, replySelectorRect, leftRad, rightRad, bottomRad, alpha, isReplyQuote, currentMessageObject.shouldDrawWithoutBackground());
 
                 if (replySelector == null) {
                     replySelector = Theme.createRadSelectorDrawable(replySelectorColor = rippleColor, 0, 0);
@@ -23275,7 +23206,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     public float getEventX(MotionEvent event) {
         return event.getX();
     }
-
+    
     public float getEventY(MotionEvent event) {
         return event.getY() - starsPriceTopPadding;
     }
@@ -23700,8 +23631,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                         sb.append(LocaleController.formatString("AccDescrMusicInfo", R.string.AccDescrMusicInfo, currentMessageObject.getMusicAuthor(), currentMessageObject.getMusicTitle()));
                         sb.append(", ");
                         sb.append(LocaleController.formatDuration((int) currentMessageObject.getDuration()));
-                        sb.append(", ");
-                        sb.append(AndroidUtilities.formatFileSize(documentAttach.size));
                     } else if (currentMessageObject.isVoice() || isRoundVideo) {
                         sb.append(", ");
                         sb.append(LocaleController.formatDuration((int) currentMessageObject.getDuration()));
@@ -24964,7 +24893,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
             }
             if (edited && !lastDrawingEdited && timeLayout != null) {
-                String editedStr = getString(R.string.EditedMessage);
+                String editedStr = getString("EditedMessage", R.string.EditedMessage);
                 CharSequence text = timeLayout.getText();
                 int i = text.toString().indexOf(editedStr);
                 if (i >= 0) {
@@ -25613,7 +25542,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
 
     public void drawVideoTimestamps(Canvas canvas, int color) {
         if (currentMessageObject == null || controlsAlpha <= 0 || !photoImage.getVisible()) return;
-        if (CherrygramDebugConfig.INSTANCE.getHideVideoTimestamp()) return;
         float progress;
         if (!currentMessageObject.openedInViewer && currentMessageObject.getVideoStartsTimestamp() != -1) {
             progress = currentMessageObject.getVideoStartsTimestamp() / (float) currentMessageObject.getDuration();

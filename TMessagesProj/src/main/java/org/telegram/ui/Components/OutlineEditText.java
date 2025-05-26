@@ -14,8 +14,8 @@ public class OutlineEditText extends OutlineTextContainerView {
 
     EditTextBoldCursor editText;
 
-    public OutlineEditText(Context context, Theme.ResourcesProvider resourcesProvider) {
-        super(context, resourcesProvider);
+    public OutlineEditText(Context context) {
+        super(context);
 
         editText = new EditTextBoldCursor(context) {
             @Override

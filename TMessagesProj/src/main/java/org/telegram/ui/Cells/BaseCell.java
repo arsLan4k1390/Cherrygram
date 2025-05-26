@@ -16,19 +16,21 @@ import android.graphics.RenderNode;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import org.telegram.messenger.FileLog;
+import org.telegram.messenger.LiteMode;
 import org.telegram.messenger.SharedConfig;
+import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
 
 public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLayout.IViewWithInvalidateCallback {
@@ -50,11 +52,9 @@ public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLay
             if (checkingForLongPress && getParent() != null && currentPressCount == pressCount) {
                 checkingForLongPress = false;
                 if (onLongPress()) {
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        try {
-                            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                        } catch (Exception ignore) {}
-                    }
+                    try {
+                        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+                    } catch (Exception ignore) {}
                     MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_CANCEL, 0, 0, 0);
                     onTouchEvent(event);
                     event.recycle();
@@ -72,7 +72,7 @@ public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLay
         super(context);
         setWillNotDraw(false);
         setFocusable(true);
-        setHapticFeedbackEnabled(!CherrygramChatsConfig.INSTANCE.getDisableVibration());
+        setHapticFeedbackEnabled(true);
     }
 
     public static void setDrawableBounds(Drawable drawable, int x, int y) {

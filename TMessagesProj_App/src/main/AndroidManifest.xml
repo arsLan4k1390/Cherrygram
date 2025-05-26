@@ -19,7 +19,5 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-
     </application>
-
 </manifest>

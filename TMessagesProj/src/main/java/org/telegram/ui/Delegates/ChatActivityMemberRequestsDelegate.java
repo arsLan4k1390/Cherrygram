@@ -3,7 +3,6 @@ package org.telegram.ui.Delegates;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
-import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
@@ -65,13 +64,7 @@ public class ChatActivityMemberRequestsDelegate {
 
     public View getView() {
         if (root == null) {
-            root = new BlurredFrameLayout(fragment.getParentActivity(), sizeNotifierFrameLayout) {
-                @Override
-                protected void onDraw(Canvas canvas) {
-                    super.onDraw(canvas);
-                    canvas.drawLine(0, getMeasuredHeight() - AndroidUtilities.dp(2), getMeasuredWidth(), getMeasuredHeight() - AndroidUtilities.dp(2), Theme.dividerPaint);
-                }
-            };
+            root = new BlurredFrameLayout(fragment.getParentActivity(), sizeNotifierFrameLayout);
             root.setBackgroundColor(fragment.getThemedColor(Theme.key_chat_topPanelBackground));
             root.setVisibility(View.GONE);
             pendingRequestsEnterOffset = -getViewHeight();

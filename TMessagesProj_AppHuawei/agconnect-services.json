@@ -26,22 +26,22 @@
 		"SG_back":"connect-ws-dra.hispace.dbankcloud.com"
 	},
 	"client":{
-		"cp_id":"2640998000000190746",
-		"product_id":"99536292102547904",
-		"client_id":"959347491197701760",
-		"client_secret":"F4AD4CFD013A84B74CBF44B52A4CE9E30EF0B76BFCDF2522467AEEA07AC35D81",
-		"project_id":"99536292102547904",
-		"app_id":"106911607",
-		"api_key":"DAEDAEejqYiUoCSYeifJgh54XeJpY+4pwPaOzz5yCRFGao0Uzjmw+gGdN1o2MbTKwFXVMGqGFyfjFkWMg8VCuIubebvxluHXrngrjA==",
-		"package_name":"uz.unnarsx.cherrygram"
+		"cp_id":"890971000000000430",
+		"product_id":"9105385871708127577",
+		"client_id":"199221217075397696",
+		"client_secret":"1BA95A459EAFAD0B04A8F5138E5BE9533DAEF4CADCF49AAB67ABF6502D68BAC8",
+		"project_id":"9105385871708127577",
+		"app_id":"101184875",
+		"api_key":"DAEDAEehEkTAPVhW2szdQNNLzBVS1Re7Pw98QkLMvgGZaEEUc8JLBVi2qhMh2vWw9h/Yq2PwtSGxZzFrSmLAQIysf7Tvo4BAadcblA==",
+		"package_name":"org.telegram.messenger"
 	},
 	"oauth_client":{
-		"client_id":"106911607",
+		"client_id":"101184875",
 		"client_type":1
 	},
 	"app_info":{
-		"app_id":"106911607",
-		"package_name":"uz.unnarsx.cherrygram"
+		"app_id":"101184875",
+		"package_name":"org.telegram.messenger"
 	},
 	"service":{
 		"analytics":{
@@ -75,17 +75,17 @@
 	"configuration_version":"3.0",
 	"appInfos":[
 		{
-			"package_name":"uz.unnarsx.cherrygram",
+			"package_name":"org.telegram.messenger",
 			"client":{
-				"app_id":"106911607"
+				"app_id":"101184875"
 			},
 			"app_info":{
-				"package_name":"uz.unnarsx.cherrygram",
-				"app_id":"106911607"
+				"package_name":"org.telegram.messenger",
+				"app_id":"101184875"
 			},
 			"oauth_client":{
 				"client_type":1,
-				"client_id":"106911607"
+				"client_id":"101184875"
 			}
 		}
 	]

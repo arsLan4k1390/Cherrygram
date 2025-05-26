@@ -50,8 +50,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
-
 public class SharedConfig {
     /**
      * V2: Ping and check time serialized
@@ -758,7 +756,7 @@ public class SharedConfig {
     }
 
     public static boolean isAppUpdateAvailable() {
-        /*if (pendingAppUpdate == null || pendingAppUpdate.document == null || !ApplicationLoader.isStandaloneBuild()) {
+        if (pendingAppUpdate == null || pendingAppUpdate.document == null || !ApplicationLoader.isStandaloneBuild()) {
             return false;
         }
         int currentVersion;
@@ -769,8 +767,7 @@ public class SharedConfig {
             FileLog.e(e);
             currentVersion = buildVersion();
         }
-        return pendingAppUpdateBuildVersion == currentVersion;*/
-        return false;
+        return pendingAppUpdateBuildVersion == currentVersion;
     }
 
     public static boolean setNewAppVersionAvailable(TLRPC.TL_help_appUpdate update) {
@@ -1720,9 +1717,6 @@ public class SharedConfig {
     }
 
     public static boolean canBlurChat() {
-        if (CherrygramDebugConfig.INSTANCE.getForceChatBlurEffect()) {
-            return true;
-        }
         return getDevicePerformanceClass() >= (Build.VERSION.SDK_INT >= 31 ? PERFORMANCE_CLASS_AVERAGE : PERFORMANCE_CLASS_HIGH) || BuildVars.DEBUG_PRIVATE_VERSION;
     }
 

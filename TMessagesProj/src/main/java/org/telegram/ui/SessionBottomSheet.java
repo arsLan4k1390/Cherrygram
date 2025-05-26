@@ -1,7 +1,5 @@
 package org.telegram.ui;
 
-import static org.telegram.messenger.AndroidUtilities.dp;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Canvas;
@@ -32,9 +30,7 @@ import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.Cells.SessionCell;
 import org.telegram.ui.Components.BulletinFactory;
-import org.telegram.ui.Components.CombinedDrawable;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RLottieImageView;
 import org.telegram.ui.Components.Switch;
@@ -364,16 +360,9 @@ public class SessionBottomSheet extends BottomSheet {
             colorKey = Theme.key_avatar_backgroundCyan;
             colorKey2 = Theme.key_avatar_background2Cyan;
         } else if (platform.contains("android")) {
-            if (session.app_name.contains("Cherrygram")) {
-                animation = false;
-                iconId = R.drawable.cg_sessions_icon;
-                colorKey = Theme.key_cgGradient2;
-                colorKey2 = Theme.key_cgGradient1;
-            } else {
-                iconId = R.raw.android_30;
-                colorKey = Theme.key_avatar_backgroundGreen;
-                colorKey2 = Theme.key_avatar_background2Green;
-            }
+            iconId = R.raw.android_30;
+            colorKey = Theme.key_avatar_backgroundGreen;
+            colorKey2 = Theme.key_avatar_background2Green;
         } else {
             if (session.app_name.toLowerCase().contains("desktop")) {
                 iconId = R.raw.windows_30;
@@ -386,37 +375,14 @@ public class SessionBottomSheet extends BottomSheet {
             }
         }
 
-        if (!(platform.contains("android") && session.app_name.contains("Cherrygram"))) {
-            imageView.setBackground(Theme.createCircleDrawable(AndroidUtilities.dp(42), Theme.getColor(colorKey)));
-//            imageView.setBackground(new SessionCell.CircleGradientDrawable(AndroidUtilities.dp(42), Theme.getColor(colorKey), Theme.getColor(colorKey2)));
-        }
-
+        imageView.setBackground(Theme.createCircleDrawable(AndroidUtilities.dp(42), Theme.getColor(colorKey)));
+//        imageView.setBackground(new SessionCell.CircleGradientDrawable(AndroidUtilities.dp(42), Theme.getColor(colorKey), Theme.getColor(colorKey2)));
         if (animation) {
             int[] colors = new int[]{0x000000, Theme.getColor(colorKey)};
             imageView.setAnimation(iconId, 50, 50, colors);
         } else {
-            if (platform.contains("android") && session.app_name.contains("Cherrygram")) {
-                imageView.setImageDrawable(createCherryDrawable());
-            } else {
-                imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), iconId));
-            }
+            imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), iconId));
         }
-    }
-
-    private static CombinedDrawable createCherryDrawable() {
-        int iconId;
-        int colorKey, colorKey2;
-
-        iconId = R.drawable.cg_sessions_icon_big;
-        colorKey = Theme.key_cgGradient2;
-        colorKey2 = Theme.key_cgGradient1;
-
-        Drawable iconDrawable = ContextCompat.getDrawable(ApplicationLoader.applicationContext, iconId).mutate();
-        iconDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_avatar_text), PorterDuff.Mode.SRC_IN));
-        Drawable bgDrawable = new SessionCell.CircleGradientDrawable(dp(70), colorKey == -1 ? 0xFF000000 : Theme.getColor(colorKey), colorKey2 == -1 ? 0xFF000000 : Theme.getColor(colorKey2));
-        CombinedDrawable cd = new CombinedDrawable(bgDrawable, iconDrawable);
-        cd.left = dp(-0.5f);
-        return cd;
     }
 
     private static class ItemView extends FrameLayout {
@@ -453,7 +419,7 @@ public class SessionBottomSheet extends BottomSheet {
             if (needSwitch) {
                 switchView = new Switch(context);
                 switchView.setDrawIconType(1);
-                addView(switchView, LayoutHelper.createFrame(39, 40, Gravity.RIGHT | Gravity.CENTER_VERTICAL, 21, 0, 21, 0));
+                addView(switchView, LayoutHelper.createFrame(37, 40, Gravity.RIGHT | Gravity.CENTER_VERTICAL, 21, 0, 21, 0));
             }
         }
 

@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import androidx.core.content.FileProvider;
 
 import org.json.JSONObject;
-import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.web.BuildConfig;
 import org.telegram.messenger.web.R;
 import org.telegram.tgnet.ConnectionsManager;
@@ -36,10 +35,6 @@ import org.telegram.ui.SMSSubscribeSheet;
 
 import java.io.File;
 import java.util.ArrayList;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.updater.UpdaterBottomSheet;
-import uz.unnarsx.cherrygram.core.updater.UpdaterUtils;
 
 public class ApplicationLoaderImpl extends ApplicationLoader {
     @Override
@@ -82,9 +77,9 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
     @Override
     public boolean openApkInstall(Activity activity, TLRPC.Document document) {
         boolean exists = false;
-        /*try {
-            final String fileName = FileLoader.getAttachFileName(document);
-            final File f = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(document, true);
+        try {
+            String fileName = FileLoader.getAttachFileName(document);
+            File f = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(document, true);
             if (exists = f.exists()) {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -102,37 +97,28 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
             }
         } catch (Exception e) {
             FileLog.e(e);
-        }*/
+        }
         return exists;
     }
 
     @Override
     public boolean showUpdateAppPopup(Context context, TLRPC.TL_help_appUpdate update, int account) {
-        /*try {
+        try {
             (new UpdateAppAlertDialog(context, update, account)).show();
         } catch (Exception e) {
             FileLog.e(e);
         }
-        return true;*/
-        return false;
+        return true;
     }
 
     @Override
     public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenu, ViewGroup sideMenuContainer) {
-        if (CherrygramCoreConfig.INSTANCE.getUpdatesNewUI()) {
-            return new UpdateLayout(activity, sideMenu, sideMenuContainer);
-        } else {
-            return null;
-        }
+        return new UpdateLayout(activity, sideMenu, sideMenuContainer);
     }
 
     @Override
     public IUpdateButton takeUpdateButton(Context context) {
-        if (CherrygramCoreConfig.INSTANCE.getUpdatesNewUI()) {
-            return new UpdateButton(context);
-        } else {
-            return null;
-        }
+        return new UpdateButton(context);
     }
 
     @Override
@@ -309,31 +295,4 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
         }
         return null;
     }
-
-    @Override
-    public boolean checkCgUpdates(BaseFragment fragment) {
-        try {
-            UpdaterUtils.checkUpdates(fragment, false);
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
-        return true;
-    }
-
-    @Override
-    public boolean checkCgUpdatesManually(BaseFragment fragment, LaunchActivity launchActivity, Browser.Progress progress) {
-        UpdaterUtils.checkUpdates(fragment, true, () -> launchActivity.showBulletin(factory -> factory.createErrorBulletin(LocaleController.getString(R.string.UP_Not_Found))), null, progress);
-        return true;
-    }
-
-    @Override
-    public boolean showUpdaterSettings(BaseFragment fragment) {
-        try {
-            UpdaterBottomSheet.showAlert(fragment, false, null);
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
-        return true;
-    }
-
 }

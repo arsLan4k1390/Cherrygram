@@ -100,7 +100,6 @@ public class AvatarDrawable extends Drawable {
     public static final int AVATAR_TYPE_NEW_CHATS = 24;
     public static final int AVATAR_TYPE_PREMIUM = 25;
     public static final int AVATAR_TYPE_STARS = 26;
-    public static final int AVATAR_TYPE_EBLAN = 27;
 
     /**
      * Matches {@link org.telegram.ui.Components.AvatarConstructorFragment#defaultColors}
@@ -253,11 +252,7 @@ public class AvatarDrawable extends Drawable {
         rotate45Background = false;
         hasAdvancedGradient = false;
         hasGradient = false;
-        if (avatarType == AVATAR_TYPE_EBLAN) {
-            hasGradient = true;
-            color = getThemedColor(Theme.key_cgGradient1);
-            color2 = getThemedColor(Theme.key_cgGradient2);
-        } else if (avatarType == AVATAR_TYPE_REGISTER) {
+        if (avatarType == AVATAR_TYPE_REGISTER) {
             color = color2 = Theme.getColor(Theme.key_chats_actionBackground);
         } else if (avatarType == AVATAR_TYPE_ARCHIVED) {
             color = color2 = getThemedColor(Theme.key_avatar_backgroundArchivedHidden);
@@ -634,9 +629,7 @@ public class AvatarDrawable extends Drawable {
         } else if (avatarType != 0 || customIconDrawable != null) {
             Drawable drawable;
 
-            if (avatarType == AVATAR_TYPE_EBLAN) {
-                drawable = Theme.avatarDrawables[24];
-            } else if (customIconDrawable != null) {
+            if (customIconDrawable != null) {
                 drawable = customIconDrawable;
             } else if (avatarType == AVATAR_TYPE_SAVED) {
                 drawable = Theme.avatarDrawables[0];

@@ -49,15 +49,10 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LanguageDetector;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
-import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
-import org.telegram.messenger.UserConfig;
-import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
-import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
-import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.FloatingActionMode;
 import org.telegram.ui.ActionBar.FloatingToolbar;
 import org.telegram.ui.ActionBar.Theme;
@@ -66,15 +61,11 @@ import org.telegram.ui.Components.AnimatedEmojiSpan;
 import org.telegram.ui.Components.CornerPath;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
-import org.telegram.ui.Components.TranslateAlert2;
+import org.telegram.ui.RestrictedLanguagesSelectActivity;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.SelectableView> {
-
-    protected BaseFragment baseFragment;
 
     protected int textX;
     protected int textY;
@@ -281,11 +272,9 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                 textY = maybeTextY;
 
                 selectedView = newView;
-                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    try {
-                        textSelectionOverlay.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-                    } catch (Exception ignored) {}
-                }
+                try {
+                    textSelectionOverlay.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+                } catch (Exception ignored) {}
                 AndroidUtilities.cancelRunOnUIThread(showActionsRunnable);
                 AndroidUtilities.runOnUIThread(showActionsRunnable);
                 showHandleViews();
@@ -1411,7 +1400,6 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
     }
 
     private static final int TRANSLATE = 3;
-    private static final int SEARCH = 4;
     private ActionMode.Callback createActionCallback() {
         final ActionMode.Callback callback = new ActionMode.Callback() {
             @Override
@@ -1420,7 +1408,6 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                 menu.add(Menu.NONE, R.id.menu_quote, 1, LocaleController.getString(R.string.Quote));
                 menu.add(Menu.NONE, android.R.id.selectAll, 2, android.R.string.selectAll);
                 menu.add(Menu.NONE, TRANSLATE, 3, LocaleController.getString(R.string.TranslateMessage));
-                menu.add(Menu.NONE, SEARCH, 4, LocaleController.getString(R.string.AvatarPreviewSearchMessages));
                 return true;
             }
 
@@ -1440,28 +1427,26 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                     } else {
                         menu.getItem(2).setVisible(true);
                     }
-                    menu.getItem(SEARCH).setVisible(canCopy());
                 }
-                menu.getItem(3).setVisible(LanguageDetector.hasSupport() && getSelectedText() != null);
-                if (/*onTranslateListener != null &&*/ LanguageDetector.hasSupport() && getSelectedText() != null) {
+                if (onTranslateListener != null && LanguageDetector.hasSupport() && getSelectedText() != null) {
                     LanguageDetector.detectLanguage(getSelectedText().toString(), lng -> {
                         translateFromLanguage = lng;
-//                        updateTranslateButton(menu);
+                        updateTranslateButton(menu);
                     }, err -> {
                         FileLog.e("mlkit: failed to detect language in selection");
                         FileLog.e(err);
                         translateFromLanguage = null;
-//                        updateTranslateButton(menu);
+                        updateTranslateButton(menu);
                     });
                 } else {
                     translateFromLanguage = null;
-//                    updateTranslateButton(menu);
+                    updateTranslateButton(menu);
                 }
                 return true;
             }
 
             private String translateFromLanguage = null;
-            /*private void updateTranslateButton(Menu menu) {
+            private void updateTranslateButton(Menu menu) {
                 String translateToLanguage = LocaleController.getInstance().getCurrentLocale().getLanguage();
                 menu.getItem(3).setVisible(
                     onTranslateListener != null && (
@@ -1471,7 +1456,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                         ) || !LanguageDetector.hasSupport()
                     )
                 );
-            }*/
+            }
 
             @Override
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
@@ -1495,19 +1480,15 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                     AndroidUtilities.runOnUIThread(showActionsRunnable);
                     return true;
                 } else if (itemId == TRANSLATE) {
-                    /*if (onTranslateListener != null) {
+                    if (onTranslateListener != null) {
                         String translateToLanguage = LocaleController.getInstance().getCurrentLocale().getLanguage();
                         onTranslateListener.run(getSelectedText(), translateFromLanguage, translateToLanguage, () -> showActions());
-                    }*/
-                    translateText();
+                    }
                     hideActions();
                     return true;
                 } else if (itemId == R.id.menu_quote) {
                     quoteText();
                     hideActions();
-                    return true;
-                } else if (itemId == SEARCH) {
-                    searchText(getSelectedText());
                     return true;
                 } else {
                     clear();
@@ -1619,32 +1600,10 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
         if (!isInSelectionMode()) {
             return;
         }
-
-        MessageObject messageObject = null;
-        if (selectedView instanceof ChatMessageCell) {
-            messageObject = ((ChatMessageCell) selectedView).getMessageObject();
-        }
-        if (messageObject == null) {
-            return;
-        }
-
-        MessagesController mc = MessagesController.getInstance(UserConfig.selectedAccount);
-        boolean noforwards = mc.isChatNoForwards(messageObject.getChatId()) || messageObject.messageOwner.noforwards || messageObject.getDialogId() == UserObject.VERIFY;
-        boolean noforwardsOrPaidMedia = noforwards || messageObject.type == MessageObject.TYPE_PAID_MEDIA;
-
         CharSequence str = getSelectedText();
         if (str == null) {
             return;
         }
-
-        String fromLang = messageObject.messageOwner.originalLanguage;
-        String toLang = TranslateAlert2.getToLanguage();
-        ArrayList<TLRPC.MessageEntity> entities = messageObject.messageOwner != null ? messageObject.messageOwner.entities : null;
-
-        TranslateAlert2 alert = TranslateAlert2.showAlert(parentView.getContext(), baseFragment, UserConfig.selectedAccount, fromLang, toLang, str, entities, noforwardsOrPaidMedia, null, this::showActions);
-        alert.setDimBehindAlpha(140);
-        alert.setDimBehind(true);
-        clear(true);
     }
 
     protected CharSequence getSelectedText() {
@@ -3406,9 +3365,4 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
     protected boolean canCopy() {
         return true;
     }
-
-    protected void searchText(CharSequence selectedText) {
-
-    }
-
 }

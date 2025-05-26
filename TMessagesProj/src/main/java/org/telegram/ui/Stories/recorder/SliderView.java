@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewConfiguration;
 
 import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LocaleController;
@@ -36,8 +35,6 @@ public class SliderView extends View {
     public static final int TYPE_WARMTH = 1;
     public static final int TYPE_INTENSITY = 2;
     public static final int TYPE_DIMMING = 3;
-
-    public static final int TYPE_EXPOSURE = 10;
 
     private final int currentType;
 
@@ -93,9 +90,6 @@ public class SliderView extends View {
                 text2.setText(LocaleController.getString(R.string.FlashIntensity));
             } else if (currentType == TYPE_DIMMING) {
                 text2.setText(LocaleController.getString(R.string.WallpaperDimming));
-            } else if (currentType == TYPE_EXPOSURE) {
-                text2.setTextSize(dp(12));
-                text2.setText(LocaleController.getString(R.string.CP_Exposure));
             }
         }
         text.setText("");
@@ -248,18 +242,8 @@ public class SliderView extends View {
 //            text.setTextColor(warmthColor);
 //            text2.setTextColor(warmthColor);
             whitePaint.setColor(warmthColor);
-        } else if (currentType == TYPE_EXPOSURE) {
-            final int warmthColor = getColorForExposure(value);
-            whitePaint.setColor(warmthColor);
         }
         invalidate();
-    }
-
-    public static int getColorForExposure(float warmth) {
-        if (warmth < .5f) {
-            return ColorUtils.blendARGB(0xFF303030, 0xFF999999, Utilities.clamp(warmth / .5f, 1, 0));
-        }
-        return ColorUtils.blendARGB(0xFF999999, 0xffffffff, Utilities.clamp((warmth - .5f) / .5f, 1, 0));
     }
 
     private float r;
@@ -284,9 +268,6 @@ public class SliderView extends View {
             // TODO: fix this nonsense
             w = (int) Math.min(textPaint.measureText(LocaleController.getString(R.string.StoryAudioRemove)) + dp(88), MeasureSpec.getSize(widthMeasureSpec));
             h = dp(48);
-        } else if (currentType == TYPE_EXPOSURE) {
-            w = dp(200);
-            h = dp(30);
         } else {
             w = dp(190);
             h = dp(44);

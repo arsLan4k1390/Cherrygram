@@ -14,9 +14,6 @@ import android.graphics.Paint;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.ChatActivity;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class SendingFileDrawable extends StatusDrawable {
 
@@ -34,16 +31,6 @@ public class SendingFileDrawable extends StatusDrawable {
             currentPaint.setStrokeCap(Paint.Cap.ROUND);
             currentPaint.setStrokeWidth(AndroidUtilities.dp(2));
         }
-    }
-
-    public SendingFileDrawable(boolean createPaint, ChatActivity parentFragment) {
-        if (createPaint) {
-            currentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            currentPaint.setStyle(Paint.Style.STROKE);
-            currentPaint.setStrokeCap(Paint.Cap.ROUND);
-            currentPaint.setStrokeWidth(AndroidUtilities.dp(2));
-        }
-        this.chatActivity = parentFragment;
     }
 
     @Override
@@ -92,26 +79,9 @@ public class SendingFileDrawable extends StatusDrawable {
             } else {
                 paint.setAlpha(255);
             }
-            if (centerChatTitle && chatActivity != null) {
-                float totalWidth = AndroidUtilities.dp(22);
-
-                float centerX = getBounds().centerX() - AndroidUtilities.dp(2);
-                float startX = centerX - totalWidth / 2f;
-
-                float offset = AndroidUtilities.dp(5) * a + AndroidUtilities.dp(5) * progress;
-                float side = startX + offset;
-
-                float topY = AndroidUtilities.dp(isChat ? 3 : 4);
-                float midY = AndroidUtilities.dp(isChat ? 7 : 8);
-                float bottomY = AndroidUtilities.dp(isChat ? 11 : 12);
-
-                canvas.drawLine(side, topY, side + AndroidUtilities.dp(4), midY, paint);
-                canvas.drawLine(side, bottomY, side + AndroidUtilities.dp(4), midY, paint);
-            } else {
-                float side = AndroidUtilities.dp(5) * a + AndroidUtilities.dp(5) * progress;
-                canvas.drawLine(side, AndroidUtilities.dp(isChat ? 3 : 4), side + AndroidUtilities.dp(4), AndroidUtilities.dp(isChat ? 7 : 8), paint);
-                canvas.drawLine(side, AndroidUtilities.dp(isChat ? 11 : 12), side + AndroidUtilities.dp(4), AndroidUtilities.dp(isChat ? 7 : 8), paint);
-            }
+            float side = AndroidUtilities.dp(5) * a + AndroidUtilities.dp(5) * progress;
+            canvas.drawLine(side, AndroidUtilities.dp(isChat ? 3 : 4), side + AndroidUtilities.dp(4), AndroidUtilities.dp(isChat ? 7 : 8), paint);
+            canvas.drawLine(side, AndroidUtilities.dp(isChat ? 11 : 12), side + AndroidUtilities.dp(4), AndroidUtilities.dp(isChat ? 7 : 8), paint);
         }
 
         if (started) {
@@ -136,17 +106,11 @@ public class SendingFileDrawable extends StatusDrawable {
 
     @Override
     public int getIntrinsicWidth() {
-        return centerChatTitle && chatActivity != null ? AndroidUtilities.dp(14) : AndroidUtilities.dp(18);
+        return AndroidUtilities.dp(18);
     }
 
     @Override
     public int getIntrinsicHeight() {
         return AndroidUtilities.dp(14);
     }
-
-    /** Cherrygram start */
-    private boolean centerChatTitle = CherrygramChatsConfig.INSTANCE.getCenterChatTitle();
-    private ChatActivity chatActivity;
-    /** Cherrygram finish */
-
 }

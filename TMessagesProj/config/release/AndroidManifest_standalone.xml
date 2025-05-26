@@ -24,6 +24,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
 
     <permission android:name="${applicationId}.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
@@ -33,9 +34,9 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
-        android:icon="@mipmap/icon_launcher_cherry"
-        android:roundIcon="@mipmap/icon_launcher_cherry"
-        android:label="@string/CG_AppName"
+        android:icon="@mipmap/ic_launcher_sa"
+        android:roundIcon="@mipmap/ic_launcher_sa"
+        android:label="@string/AppName"
         android:theme="@style/Theme.TMessages.Start"
         android:hardwareAccelerated="@bool/useHardwareAcceleration"
         android:largeHeap="true"
@@ -43,7 +44,87 @@
         android:requestLegacyExternalStorage="true"
         tools:replace="android:supportsRtl">
 
-        <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyBd1yu9V_Z-ktNND67u1gF0zH6AjMDRVoM" />
+        <activity-alias
+            android:enabled="false"
+            android:name="org.telegram.messenger.VintageIcon"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_6_launcher_sa"
+            android:roundIcon="@mipmap/icon_6_launcher_sa"
+            android:exported="true"
+            tools:node="replace">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="org.telegram.messenger.AquaIcon"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_4_launcher_sa"
+            android:roundIcon="@mipmap/icon_4_launcher_sa"
+            android:exported="true"
+            tools:node="replace">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="org.telegram.messenger.PremiumIcon"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_3_launcher_sa"
+            android:roundIcon="@mipmap/icon_3_launcher_sa"
+            android:exported="true"
+            tools:node="replace">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="org.telegram.messenger.TurboIcon"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_5_launcher_sa"
+            android:roundIcon="@mipmap/icon_5_launcher_sa"
+            android:exported="true"
+            tools:node="replace">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="org.telegram.messenger.NoxIcon"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@mipmap/icon_2_launcher_sa"
+            android:roundIcon="@mipmap/icon_2_launcher_sa"
+            android:exported="true"
+            tools:node="replace">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyA-t0jLPjUt2FxrA8VPK2EiYHcYcboIR6k" />
 
         <service
             android:name="org.telegram.messenger.GcmPushListenerService" android:exported="true">
@@ -54,8 +135,30 @@
 
         <uses-library android:name="com.google.android.maps" android:required="false"/>
 
-        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="false" />
-        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="true" />
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
+
+        <receiver
+            tools:replace="android:enabled"
+            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+            android:enabled="false"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.measurement.UPLOAD" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="org.telegram.messenger.SMSResultService"
+            android:exported="false">
+        </receiver>
+
+
+        <service
+            tools:replace="android:enabled"
+            android:name="com.google.android.gms.measurement.AppMeasurementService"
+            android:enabled="false"
+            android:exported="false" />
 
     </application>
 

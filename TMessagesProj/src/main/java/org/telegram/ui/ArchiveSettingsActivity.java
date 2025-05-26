@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,9 +33,6 @@ import org.telegram.ui.Components.RecyclerListView;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public class ArchiveSettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private RecyclerListView listView;
@@ -48,28 +44,10 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
     private int shiftDp = -3;
 
     @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(LocaleController.getString(R.string.ArchiveSettings));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
-
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -131,10 +109,6 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
                 settings.archive_and_mute_new_noncontact_peers = !settings.archive_and_mute_new_noncontact_peers;
                 ((TextCheckCell) view).setChecked(settings.archive_and_mute_new_noncontact_peers);
                 changed = true;
-            } else if (item.id == 10) {
-                CherrygramChatsConfig.INSTANCE.setUnarchiveOnSwipe(!CherrygramChatsConfig.INSTANCE.getUnarchiveOnSwipe());
-                ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getUnarchiveOnSwipe());
-                changed = true;
             }
         });
 
@@ -169,9 +143,6 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
         items.add(new ItemInner(VIEW_TYPE_HEADER, 6, LocaleController.getString("NewChatsFromNonContacts")));
         items.add(new ItemInner(VIEW_TYPE_CHECK, 7, LocaleController.getString("NewChatsFromNonContactsCheck")));
         items.add(new ItemInner(VIEW_TYPE_SHADOW, 8, LocaleController.getString("ArchiveAndMuteInfo")));
-
-        items.add(new ItemInner(VIEW_TYPE_HEADER, 9, LocaleController.getString(R.string.CG_AppName)));
-        items.add(new ItemInner(VIEW_TYPE_CHECK, 10, LocaleController.getString(R.string.CG_SwipeToUnarchive)));
 
         if (adapter == null) {
             return;
@@ -257,9 +228,6 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
                 } else if (item.id == 7) {
                     checked = settings.archive_and_mute_new_noncontact_peers;
                     cell.setCheckBoxIcon(getUserConfig().isPremium() || getMessagesController().autoarchiveAvailable ? 0 : R.drawable.permission_locked);
-                } else if (item.id == 10) {
-                    checked = CherrygramChatsConfig.INSTANCE.getUnarchiveOnSwipe();
-                    cell.setCheckBoxIcon(0);
                 } else {
                     return;
                 }
@@ -326,8 +294,6 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
                         ((TextCheckCell) child).setChecked(settings.keep_archived_folders);
                     } else if (item.id == 7) {
                         ((TextCheckCell) child).setChecked(settings.archive_and_mute_new_noncontact_peers);
-                    } else if (item.id == 10) {
-                        ((TextCheckCell) child).setChecked(CherrygramChatsConfig.INSTANCE.getUnarchiveOnSwipe());
                     }
                 }
             }

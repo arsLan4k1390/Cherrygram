@@ -9,7 +9,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
@@ -22,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -292,13 +290,6 @@ public class PhotoViewerWebView extends FrameLayout {
             cookieManager.setAcceptThirdPartyCookies(webView, true);
         }
 
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public Bitmap getDefaultVideoPoster() {
-                return Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
-            }
-        });
-
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
@@ -344,15 +335,16 @@ public class PhotoViewerWebView extends FrameLayout {
                                     .toString().getBytes("UTF-8"));
                             out.close();
 
-                            byte[] buffer = new byte[10240];
-                            int c;
-                            String str;
-                            try (InputStream in = con.getResponseCode() == 200 ? con.getInputStream() : con.getErrorStream();ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-                                while ((c = in.read(buffer)) != -1) {
-                                    bos.write(buffer, 0, c);
-                                }
-                                str = bos.toString("UTF-8");
+                            InputStream in = con.getResponseCode() == 200 ? con.getInputStream() : con.getErrorStream();
+                            byte[] buffer = new byte[10240]; int c;
+                            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                            while ((c = in.read(buffer)) != -1) {
+                                bos.write(buffer, 0, c);
                             }
+                            bos.close();
+                            in.close();
+
+                            String str = bos.toString("UTF-8");
                             JSONObject obj = new JSONObject(str);
                             JSONObject storyboards = obj.optJSONObject("storyboards");
                             if (storyboards != null) {
@@ -747,16 +739,16 @@ public class PhotoViewerWebView extends FrameLayout {
                         FileLog.e(e);
                     }
                 }
-                String str;
-                try (InputStream in = getContext().getAssets().open("youtube_embed.html");ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-                    byte[] buffer = new byte[10240];
-                    int c;
-                    while ((c = in.read(buffer)) != -1) {
-                        bos.write(buffer, 0, c);
-                    }
-                    str=bos.toString("UTF-8");
+                InputStream in = getContext().getAssets().open("youtube_embed.html");
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                byte[] buffer = new byte[10240];
+                int c;
+                while ((c = in.read(buffer)) != -1) {
+                    bos.write(buffer, 0, c);
                 }
-                webView.loadDataWithBaseURL("https://messenger.telegram.org/", String.format(Locale.US, str, currentYoutubeId, seekToTime), "text/html", "UTF-8", "https://youtube.com");
+                bos.close();
+                in.close();
+                webView.loadDataWithBaseURL("https://messenger.telegram.org/", String.format(Locale.US, bos.toString("UTF-8"), currentYoutubeId, seekToTime), "text/html", "UTF-8", "https://youtube.com");
             } else {
                 HashMap<String, String> args = new HashMap<>();
                 args.put("Referer", "messenger.telegram.org");

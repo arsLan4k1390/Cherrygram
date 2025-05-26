@@ -5,9 +5,6 @@ import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-import static org.telegram.messenger.AndroidUtilities.dp;
-import static org.telegram.messenger.LocaleController.getString;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -70,7 +67,6 @@ import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.FlickerLoadingView;
-import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.ProfileGalleryView;
 import org.telegram.ui.Components.RecyclerListView;
@@ -246,7 +242,7 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                 if (user == null) {
                     return;
                 }
-                /*fragment.getMessagesController().putUser(user, false);
+                fragment.getMessagesController().putUser(user, false);
                 boolean isLandscape = AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y;
                 boolean showProfile = user.photo == null || isLandscape;
                 if (showProfile) {
@@ -263,39 +259,7 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                     previewDialog.setImporter(importer, cell.getAvatarImageView());
                     previewDialog.setOnDismissListener(dialog -> previewDialog = null);
                     previewDialog.show();
-                }*/
-                RecyclerListView parentListView = (RecyclerListView) cell.getParent();
-                ItemOptions.makeOptions(cell, fragment.getResourceProvider(), parentListView)
-                        .add(R.drawable.msg_requests, isChannel ? getString(R.string.AddToChannel) : getString(R.string.AddToGroup), () -> {
-                            if (importer != null) {
-                                fragment.dismissCurrentDialog();
-                                onAddClicked(importer);
-                            }
-                        })
-                        .add(R.drawable.msg_remove, getString(R.string.DismissRequest), true, () -> {
-                            if (importer != null) {
-                                fragment.dismissCurrentDialog();
-                                onDismissClicked(importer);
-                            }
-                        })
-                        .add(R.drawable.msg_discussion, getString(R.string.SendMessage), () -> {
-                            fragment.dismissCurrentDialog();
-
-                            Bundle args = new Bundle();
-                            args.putLong("user_id", importer.user_id);
-                            ChatActivity chatActivity = new ChatActivity(args);
-                            fragment.presentFragment(chatActivity);
-                        })
-                        .addGap()
-                        .addProfile(user, getString(R.string.ViewProfile), () -> {
-                            fragment.dismissCurrentDialog();
-                            fragment.presentFragment(ProfileActivity.of(user.id));
-                        })
-                        .setDrawScrim(false)
-                        .setGravity(Gravity.CENTER)
-                        .forceBottom(false)
-                        .translate(0, dp(100))
-                        .show();
+                }
             }, isSearchExpanded ? 100 : 0);
         }
     }

@@ -75,7 +75,6 @@ public:
     void setPushConnectionEnabled(bool value);
     void applyDnsConfig(NativeByteBuffer *buffer, std::string phone, int32_t date);
     int64_t checkProxy(std::string address, uint16_t port, std::string username, std::string password, std::string secret, onRequestTimeFunc requestTimeFunc, jobject ptr1);
-    void moveToDatacenter(uint32_t datacenterId);
 
 #ifdef ANDROID
     void sendRequest(TLObject *object, onCompleteFunc onComplete, onQuickAckFunc onQuickAck, onWriteToSocketFunc onWriteToSocket, onRequestClearFunc onClear, uint32_t flags, uint32_t datacenterId, ConnectionType connectionType, bool immediate, int32_t requestToken);
@@ -104,6 +103,7 @@ private:
     void clearRequestsForDatacenter(Datacenter *datacenter, HandshakeType type);
     void registerForInternalPushUpdates();
     void processRequestQueue(uint32_t connectionType, uint32_t datacenterId);
+    void moveToDatacenter(uint32_t datacenterId);
     void authorizeOnMovingDatacenter();
     void authorizedOnMovingDatacenter();
     Datacenter *getDatacenterWithId(uint32_t datacenterId);

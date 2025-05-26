@@ -74,15 +74,11 @@ public class VoIPHelper {
 	private static final int VOIP_SUPPORT_ID = 4244000;
 
 	public static void startCall(TLRPC.User user, boolean videoCall, boolean canVideoCall, final Activity activity, TLRPC.UserFull userFull, AccountInstance accountInstance) {
-		startCall(user, videoCall, canVideoCall, activity, userFull, accountInstance, false);
-	}
-
-	public static void startCall(TLRPC.User user, boolean videoCall, boolean canVideoCall, final Activity activity, TLRPC.UserFull userFull, AccountInstance accountInstance, boolean confirmed) {
-        if (accountInstance == null ? MessagesController.getInstance(UserConfig.selectedAccount).isFrozen() : accountInstance.getMessagesController().isFrozen()) {
-            AccountFrozenAlert.show(accountInstance == null ? UserConfig.selectedAccount : accountInstance.getCurrentAccount());
-            return;
-        }
-        if (userFull != null && userFull.phone_calls_private) {
+		if (accountInstance == null ? MessagesController.getInstance(UserConfig.selectedAccount).isFrozen() : accountInstance.getMessagesController().isFrozen()) {
+			AccountFrozenAlert.show(accountInstance == null ? UserConfig.selectedAccount : accountInstance.getCurrentAccount());
+			return;
+		}
+		if (userFull != null && userFull.phone_calls_private) {
 			new AlertDialog.Builder(activity)
 					.setTitle(LocaleController.getString(R.string.VoipFailed))
 					.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("CallNotAvailable", R.string.CallNotAvailable,
@@ -107,14 +103,6 @@ public class VoIPHelper {
 				bldr.show();
 			} catch (Exception e) {
 				FileLog.e(e);
-			}
-			return;
-		}
-
-		if (!confirmed && activity instanceof LaunchActivity) {
-			final BaseFragment lastFragment = ((LaunchActivity) activity).getActionBarLayout().getLastFragment();
-			if (lastFragment != null) {
-				AlertsCreator.createCallDialogAlert(lastFragment, lastFragment.getMessagesController().getUser(user.id), videoCall);
 			}
 			return;
 		}
@@ -745,7 +733,7 @@ public class VoIPHelper {
 			boolean force = preferences.getBoolean("dbg_force_tcp_in_calls", false);
 			SharedPreferences.Editor editor = preferences.edit();
 			editor.putBoolean("dbg_force_tcp_in_calls", !force);
-			editor.apply();
+			editor.commit();
 			tcpCell.setChecked(!force);
 		});
 		ll.addView(tcpCell);
@@ -757,7 +745,7 @@ public class VoIPHelper {
 				boolean force = preferences.getBoolean("dbg_dump_call_stats", false);
 				SharedPreferences.Editor editor = preferences.edit();
 				editor.putBoolean("dbg_dump_call_stats", !force);
-				editor.apply();
+				editor.commit();
 				dumpCell.setChecked(!force);
 			});
 			ll.addView(dumpCell);
@@ -770,7 +758,7 @@ public class VoIPHelper {
 				boolean force = preferences.getBoolean("dbg_force_connection_service", false);
 				SharedPreferences.Editor editor = preferences.edit();
 				editor.putBoolean("dbg_force_connection_service", !force);
-				editor.apply();
+				editor.commit();
 				connectionServiceCell.setChecked(!force);
 			});
 			ll.addView(connectionServiceCell);

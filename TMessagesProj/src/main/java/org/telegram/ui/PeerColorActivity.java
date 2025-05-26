@@ -3071,12 +3071,4 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
         final TLRPC.TL_emojiStatusCollectible a = (TLRPC.TL_emojiStatusCollectible) emoji_status;
         return a.collectible_id == b.collectible_id;
     }
-
-    /** Cherrygram start */
-    @Override
-    public boolean isActionBarCrossfadeEnabled() {
-        return false;
-    }
-    /** Cherrygram finish */
-
 }

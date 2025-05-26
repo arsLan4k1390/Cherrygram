@@ -31,6 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.LocaleController;
 import org.telegram.tgnet.TLRPC;
@@ -38,6 +39,7 @@ import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AnimatedTextView;
+import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RLottieDrawable;
 import org.telegram.ui.Components.RLottieImageView;
@@ -49,11 +51,11 @@ import org.telegram.ui.Stories.recorder.HintView2;
 public class TextCell extends FrameLayout {
 
     public final SimpleTextView textView;
-    public final SimpleTextView subtitleView;
+    private final SimpleTextView subtitleView;
     public final AnimatedTextView valueTextView;
     public final SimpleTextView valueSpoilersTextView;
     public final RLottieImageView imageView;
-    public Switch checkBox;
+    private Switch checkBox;
     private ImageView valueImageView;
     public int leftPadding;
     private boolean needDivider;
@@ -136,7 +138,7 @@ public class TextCell extends FrameLayout {
         if (needCheck) {
             checkBox = new Switch(context, resourcesProvider);
             checkBox.setColors(Theme.key_switchTrack, Theme.key_switchTrackChecked, Theme.key_windowBackgroundWhite, Theme.key_windowBackgroundWhite);
-            addView(checkBox, LayoutHelper.createFrame(39, 40, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, 22, 0, 22, 0));
+            addView(checkBox, LayoutHelper.createFrame(37, 20, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, 22, 0, 22, 0));
         }
 
         setFocusable(true);
@@ -207,7 +209,7 @@ public class TextCell extends FrameLayout {
             valueImageView.measure(MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST), MeasureSpec.makeMeasureSpec(height, MeasureSpec.AT_MOST));
         }
         if (checkBox != null) {
-            checkBox.measure(MeasureSpec.makeMeasureSpec(dp(39), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(30), MeasureSpec.EXACTLY));
+            checkBox.measure(MeasureSpec.makeMeasureSpec(dp(37), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(20), MeasureSpec.EXACTLY));
         }
         setMeasuredDimension(width, height + (needDivider ? 1 : 0));
     }
@@ -631,13 +633,9 @@ public class TextCell extends FrameLayout {
             checkBox.setVisibility(VISIBLE);
             checkBox.setChecked(checked, false);
         }
-        if (resId != 0) {
-            imageView.setVisibility(VISIBLE);
-            imageView.setPadding(0, dp(7), 0, 0);
-            imageView.setImageResource(resId);
-        } else {
-            imageView.setVisibility(GONE);
-        }
+        imageView.setVisibility(VISIBLE);
+        imageView.setPadding(0, dp(7), 0, 0);
+        imageView.setImageResource(resId);
         needDivider = divider;
         setWillNotDraw(!needDivider);
         if (emojiDrawable != null) {

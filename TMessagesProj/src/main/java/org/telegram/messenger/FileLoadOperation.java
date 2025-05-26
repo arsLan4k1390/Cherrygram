@@ -31,8 +31,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipException;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
-
 public class FileLoadOperation {
 
     private final boolean FULL_LOGS = false;
@@ -288,14 +286,10 @@ public class FileLoadOperation {
     }
 
     private void updateParams() {
-        if ((CherrygramExperimentalConfig.INSTANCE.getDownloadSpeedBoost() == CherrygramExperimentalConfig.BOOST_AVERAGE || (preloadPrefixSize > 0 || MessagesController.getInstance(currentAccount).getfileExperimentalParams)) && !forceSmallChunk) {
+        if ((preloadPrefixSize > 0 || MessagesController.getInstance(currentAccount).getfileExperimentalParams) && !forceSmallChunk) {
             downloadChunkSizeBig = 1024 * 512;
             maxDownloadRequests = 8;
             maxDownloadRequestsBig = 8;
-        } else if (CherrygramExperimentalConfig.INSTANCE.getDownloadSpeedBoost() == CherrygramExperimentalConfig.BOOST_EXTREME) {
-            downloadChunkSizeBig = 1024 * 1024;
-            maxDownloadRequests = 12;
-            maxDownloadRequestsBig = 12;
         } else {
             downloadChunkSizeBig = 1024 * 128;
             maxDownloadRequests = 4;
@@ -1586,9 +1580,9 @@ public class FileLoadOperation {
                 if (cacheFileTempLocal != null) {
                     if (ungzip) {
                         try {
-                            try (GZIPInputStream gzipInputStream = new GZIPInputStream(new FileInputStream(cacheFileTempLocal))) {
-                                FileLoader.copyFile(gzipInputStream, cacheFileGzipTemp, 1024 * 1024 * 2);
-                            }
+                            GZIPInputStream gzipInputStream = new GZIPInputStream(new FileInputStream(cacheFileTempLocal));
+                            FileLoader.copyFile(gzipInputStream, cacheFileGzipTemp, 1024 * 1024 * 2);
+                            gzipInputStream.close();
                             cacheFileTempLocal.delete();
                             cacheFileTempLocal = cacheFileGzipTemp;
                             ungzip = false;

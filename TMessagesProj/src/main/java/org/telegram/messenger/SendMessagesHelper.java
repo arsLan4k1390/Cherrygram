@@ -102,9 +102,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
-
 public class SendMessagesHelper extends BaseController implements NotificationCenter.NotificationCenterDelegate {
 
     public static final int MEDIA_TYPE_DICE = 11;
@@ -275,7 +272,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 uploadSet.remove(path);
             }
         }
-
+        
         private void addUploadProgress(String path, long sz, float progress) {
             uploadProgresses.put(path, progress);
             uploadSize.put(path, sz);
@@ -785,7 +782,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 retriedToSendArray[index] = value;
             }
         }
-
+        
         public int topMessageId;
 
         public TLRPC.InputMedia inputUploadMedia;
@@ -1918,13 +1915,11 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                     }
                     SendMessageParams sendMessageParams = SendMessageParams.of((TLRPC.TL_document) finalDocument, null, null, peer, replyToMsg, replyToTopMsg, null, null, null, null, notify, scheduleDate, 0, parentObject, sendAnimationData, false);
                     sendMessageParams.replyToStoryItem = storyItem;
-                    sendMessageParams.hasMediaSpoilers = CherrygramChatsConfig.INSTANCE.getGifSpoilers();
                     sendMessageParams.replyQuote = quote;
                     sendMessageParams.quick_reply_shortcut = quick_reply_shortcut;
                     sendMessageParams.quick_reply_shortcut_id = quick_reply_shortcut_id;
                     sendMessageParams.payStars = stars;
                     sendMessage(sendMessageParams);
-                    CherrygramChatsConfig.INSTANCE.setGifSpoilers(false);
                 });
             });
         } else {
@@ -7766,11 +7761,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     }
 
     public TLRPC.TL_photo generatePhotoSizes(TLRPC.TL_photo photo, String path, Uri imageUri) {
-        int maxSize = CherrygramChatsConfig.INSTANCE.getLargePhotos() ? 2560 : 1280;
-        Bitmap bitmap = ImageLoader.loadBitmap(path, imageUri, maxSize, maxSize, true);
-        if (bitmap == null && CherrygramChatsConfig.INSTANCE.getLargePhotos()) {
-            bitmap = ImageLoader.loadBitmap(path, imageUri, 1280, 1280, true);
-        }
+        Bitmap bitmap = ImageLoader.loadBitmap(path, imageUri, AndroidUtilities.getPhotoSize(), AndroidUtilities.getPhotoSize(), true);
         if (bitmap == null) {
             bitmap = ImageLoader.loadBitmap(path, imageUri, 800, 800, true);
         }
@@ -7779,7 +7770,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         if (size != null) {
             sizes.add(size);
         }
-        size = ImageLoader.scaleAndSaveImage(bitmap, maxSize, maxSize, true, 80, false, 101, 101);
+        size = ImageLoader.scaleAndSaveImage(bitmap, AndroidUtilities.getPhotoSize(), AndroidUtilities.getPhotoSize(), true, 80, false, 101, 101);
         if (size != null) {
             sizes.add(size);
         }
@@ -8832,16 +8823,12 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             File bigFile = FileLoader.getInstance(accountInstance.getCurrentAccount()).getPathToAttach(bigSize, false);
             boolean bigExists = bigFile.exists();
             if (!smallExists || !bigExists) {
-                int maxSize = CherrygramChatsConfig.INSTANCE.getLargePhotos() ? 2560 : 1280;
-                Bitmap bitmap = ImageLoader.loadBitmap(path, uri, maxSize, maxSize, true);
-                if (bitmap == null && CherrygramChatsConfig.INSTANCE.getLargePhotos()) {
-                    bitmap = ImageLoader.loadBitmap(path, uri, 1280, 1280, true);
-                }
+                Bitmap bitmap = ImageLoader.loadBitmap(path, uri, AndroidUtilities.getPhotoSize(), AndroidUtilities.getPhotoSize(), true);
                 if (bitmap == null) {
                     bitmap = ImageLoader.loadBitmap(path, uri, 800, 800, true);
                 }
                 if (!bigExists) {
-                    TLRPC.PhotoSize size = ImageLoader.scaleAndSaveImage(bigSize, bitmap, Bitmap.CompressFormat.JPEG, true, maxSize, maxSize, 80, false, 101, 101,false);
+                    TLRPC.PhotoSize size = ImageLoader.scaleAndSaveImage(bigSize, bitmap, Bitmap.CompressFormat.JPEG, true, AndroidUtilities.getPhotoSize(), AndroidUtilities.getPhotoSize(), 80, false, 101, 101,false);
                     if (size != bigSize) {
                         photo.sizes.add(0, size);
                     }
@@ -9918,32 +9905,14 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         int compressionsCount;
 
         float maxSize = Math.max(videoEditedInfo.originalWidth, videoEditedInfo.originalHeight);
-        if (CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality()) {
-            if (maxSize > 3840) {
-                compressionsCount = 7;
-            } else if (maxSize > 2560) {
-                compressionsCount = 6;
-            } else if (maxSize > 1920) {
-                compressionsCount = 5;
-            } else if (maxSize > 1280) {
-                compressionsCount = 4;
-            } else if (maxSize > 854) {
-                compressionsCount = 3;
-            } else if (maxSize > 480) {
-                compressionsCount = 2;
-            } else {
-                compressionsCount = 1;
-            }
+        if (maxSize > 1280) {
+            compressionsCount = 4;
+        } else if (maxSize > 854) {
+            compressionsCount = 3;
+        } else if (maxSize > 640) {
+            compressionsCount = 2;
         } else {
-            if (maxSize > 1280) {
-                compressionsCount = 4;
-            } else if (maxSize > 854) {
-                compressionsCount = 3;
-            } else if (maxSize > 640) {
-                compressionsCount = 2;
-            } else {
-                compressionsCount = 1;
-            }
+            compressionsCount = 1;
         }
 
         int selectedCompression = Math.round(DownloadController.getInstance(UserConfig.selectedAccount).getMaxVideoBitrate() / (100f / compressionsCount));
@@ -9953,45 +9922,21 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         }
         boolean needCompress = false;
         if (new File(videoPath).length() < 1024L * 1024L * 1000L) {
-            if (selectedCompression != compressionsCount || Math.max(videoEditedInfo.originalWidth, videoEditedInfo.originalHeight) > (CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality() ? 3840 : 1280)) {
+            if (selectedCompression != compressionsCount || Math.max(videoEditedInfo.originalWidth, videoEditedInfo.originalHeight) > 1280) {
                 needCompress = true;
-                if (CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality()) {
-                    switch (selectedCompression) {
-                        case 1:
-                            maxSize = 480.0f;
-                            break;
-                        case 2:
-                            maxSize = 854.0f;
-                            break;
-                        default:
-                        case 3:
-                            maxSize = 1280.0f;
-                            break;
-                        case 4:
-                            maxSize = 1920.0f;
-                            break;
-                        case 5:
-                            maxSize = 2560.0f;
-                            break;
-                        case 6:
-                            maxSize = 3840.0f;
-                            break;
-                    }
-                } else {
-                    switch (selectedCompression) {
-                        case 1:
-                            maxSize = 432.0f;
-                            break;
-                        case 2:
-                            maxSize = 640.0f;
-                            break;
-                        case 3:
-                            maxSize = 848.0f;
-                            break;
-                        default:
-                            maxSize = 1280.0f;
-                            break;
-                    }
+                switch (selectedCompression) {
+                    case 1:
+                        maxSize = 432.0f;
+                        break;
+                    case 2:
+                        maxSize = 640.0f;
+                        break;
+                    case 3:
+                        maxSize = 848.0f;
+                        break;
+                    default:
+                        maxSize = 1280.0f;
+                        break;
                 }
                 float scale = videoEditedInfo.originalWidth > videoEditedInfo.originalHeight ? maxSize / videoEditedInfo.originalWidth : maxSize / videoEditedInfo.originalHeight;
                 videoEditedInfo.resultWidth = Math.round(videoEditedInfo.originalWidth * scale / 2) * 2;

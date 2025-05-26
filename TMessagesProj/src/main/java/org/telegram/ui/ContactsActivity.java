@@ -30,6 +30,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -52,7 +53,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.collection.LongSparseArray;
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -107,10 +107,6 @@ import org.telegram.ui.Stories.StoriesListPlaceProvider;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
-import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ContactsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -248,28 +244,9 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
     }
 
     @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    @Override
     public View createView(Context context) {
         searching = false;
         searchWas = false;
-
-        actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
 
         actionBar.setAllowOverlayTitle(true);
         if (destroyAfterSelect) {
@@ -332,9 +309,6 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                 if (sortItem != null) {
                     sortItem.setVisibility(View.GONE);
                 }
-                actionBar.setSearchTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText), true);
-                actionBar.setSearchTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), false);
-                actionBar.setSearchCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             }
 
             @Override
@@ -543,17 +517,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                             Bundle args = new Bundle();
                             args.putLong("user_id", user.id);
                             if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
-                                if (getParentActivity() != null
-                                        && user.id != 0
-                                        && ChatsPasswordHelper.INSTANCE.getShouldRequireBiometricsToOpenChats()
-                                        && ChatsPasswordHelper.INSTANCE.isChatLocked(user.id)
-                                ) {
-                                    CGBiometricPrompt.prompt(getParentActivity(), () -> {
-                                        presentFragment(new ChatActivity(args), needFinishFragment);
-                                    });
-                                } else {
-                                    presentFragment(new ChatActivity(args), false);
-                                }
+                                presentFragment(new ChatActivity(args), needFinishFragment);
                             }
                         }
                     }
@@ -647,7 +611,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 presentFragment(new ChannelCreateActivity(args));
                             } else {
                                 presentFragment(new ActionIntroActivity(ActionIntroActivity.ACTION_TYPE_CHANNEL_CREATE));
-                                preferences.edit().putBoolean("channel_intro", true).apply();
+                                preferences.edit().putBoolean("channel_intro", true).commit();
                             }
                         }
                     }
@@ -671,17 +635,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 Bundle args = new Bundle();
                                 args.putLong("user_id", user.id);
                                 if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
-                                    if (getParentActivity() != null
-                                            && user.id != 0
-                                            && ChatsPasswordHelper.INSTANCE.getShouldRequireBiometricsToOpenChats()
-                                            && ChatsPasswordHelper.INSTANCE.isChatLocked(user.id)
-                                    ) {
-                                        CGBiometricPrompt.prompt(getParentActivity(), () -> {
-                                            presentFragment(new ChatActivity(args), needFinishFragment);
-                                        });
-                                    } else {
-                                        presentFragment(new ChatActivity(args), false);
-                                    }
+                                    presentFragment(new ChatActivity(args), needFinishFragment);
                                 }
                             }
                         }
@@ -696,7 +650,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                         }
                         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
                         builder.setMessage(LocaleController.getString(R.string.InviteUser));
-                        builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+                        builder.setTitle(LocaleController.getString(R.string.AppName));
                         final String arg1 = usePhone;
                         builder.setPositiveButton(LocaleController.getString(R.string.OK), (dialogInterface, i) -> {
                             try {
@@ -933,7 +887,6 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         ActionBar actionBar = super.createActionBar(context);
         actionBar.setBackground(null);
         actionBar.setAddToContainer(false);
-        actionBar.setOccupyStatusBar(!AndroidUtilities.isTablet());
         return actionBar;
     }
 
@@ -1082,7 +1035,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                 }
             }
             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-            builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+            builder.setTitle(LocaleController.getString(R.string.AppName));
             String message = LocaleController.formatStringSimple(selectAlertString, UserObject.getUserName(user));
             EditTextBoldCursor editText = null;
             if (!user.bot && needForwardCount) {
@@ -1273,7 +1226,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                     if (grantResults[a] == PackageManager.PERMISSION_GRANTED) {
                         ContactsController.getInstance(currentAccount).forceImportContacts();
                     } else {
-                        MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askAboutContacts", askAboutContacts = false).apply();
+                        MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askAboutContacts", askAboutContacts = false).commit();
                         if (SystemClock.elapsedRealtime() - permissionRequestTime < 200) {
                             try {
                                 Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -1437,14 +1390,12 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         RLottieImageView previousFab = dialogsActivity.getFloatingButton();
         View previousFabContainer = previousFab.getParent() != null ? (View) previousFab.getParent() : null;
         if (floatingButton != null && (floatingButtonContainer == null || previousFabContainer == null || previousFab.getVisibility() != View.VISIBLE || Math.abs(previousFabContainer.getTranslationY()) > AndroidUtilities.dp(4) || Math.abs(floatingButtonContainer.getTranslationY()) > AndroidUtilities.dp(4))) {
-            if (floatingButton != null) {
-                if (stories) {
-                    floatingButton.setAnimation(R.raw.write_contacts_fab_icon_camera, 56, 56);
-                } else {
-                    floatingButton.setAnimation(R.raw.write_contacts_fab_icon, 52, 52);
-                }
-                floatingButton.getAnimatedDrawable().setCurrentFrame(floatingButton.getAnimatedDrawable().getFramesCount() - 1);
+            if (stories) {
+                floatingButton.setAnimation(R.raw.write_contacts_fab_icon_camera, 56, 56);
+            } else {
+                floatingButton.setAnimation(R.raw.write_contacts_fab_icon, 52, 52);
             }
+            floatingButton.getAnimatedDrawable().setCurrentFrame(floatingButton.getAnimatedDrawable().getFramesCount() - 1);
             return null;
         }
         previousFabContainer.setVisibility(View.GONE);
@@ -1660,18 +1611,6 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         };
 
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
-        } else {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));

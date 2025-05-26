@@ -15,6 +15,12 @@ import android.util.Base64;
 import androidx.annotation.Keep;
 
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.gms.tasks.Task;
+import com.google.android.play.core.integrity.IntegrityManager;
+import com.google.android.play.core.integrity.IntegrityManagerFactory;
+import com.google.android.play.core.integrity.IntegrityTokenRequest;
+import com.google.android.play.core.integrity.IntegrityTokenResponse;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -38,8 +44,8 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.StatsController;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
-import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.Components.VideoPlayer;
+import org.telegram.ui.LoginActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -67,11 +73,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
-import uz.unnarsx.cherrygram.core.helpers.ErrorDatabaseHelper;
 
 import javax.net.ssl.SSLException;
 
@@ -382,9 +383,6 @@ public class ConnectionsManager extends BaseController {
                         if (BuildVars.LOGS_ENABLED && error.code != -2000) {
                             FileLog.e(object + " got error " + error.code + " " + error.text);
                         }
-                        if (CherrygramDebugConfig.INSTANCE.getShowRPCErrors() && !CherrygramCoreConfig.INSTANCE.isStandaloneStableBuild() && !CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
-                            ErrorDatabaseHelper.INSTANCE.showErrorToast(object, errorText);
-                        }
                     }
                     if ((connectionType & ConnectionTypeDownload) != 0 && VideoPlayer.activePlayers.isEmpty()) {
                         long ping_time = native_getCurrentPingTime(currentAccount);
@@ -573,7 +571,7 @@ public class ConnectionsManager extends BaseController {
             FileLog.d("selected ip strategy " + selectedStrategy);
         }
         native_setIpStrategy(currentAccount, selectedStrategy);
-        native_setNetworkAvailable(currentAccount, ApplicationLoader.isNetworkOnline(), ApplicationLoader.getCurrentNetworkType(), CherrygramExperimentalConfig.INSTANCE.getSlowNetworkMode());
+        native_setNetworkAvailable(currentAccount, ApplicationLoader.isNetworkOnline(), ApplicationLoader.getCurrentNetworkType(), ApplicationLoader.isConnectionSlow());
     }
 
     public void setPushConnectionEnabled(boolean value) {
@@ -658,7 +656,7 @@ public class ConnectionsManager extends BaseController {
 
     public void switchBackend(boolean restart) {
         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-        preferences.edit().remove("language_showed2").apply();
+        preferences.edit().remove("language_showed2").commit();
         native_switchBackend(currentAccount, restart);
     }
 
@@ -944,7 +942,6 @@ public class ConnectionsManager extends BaseController {
     public static native int native_getConnectionState(int currentAccount);
     public static native void native_setUserId(int currentAccount, long id);
     public static native void native_init(int currentAccount, int version, int layer, int apiId, String deviceModel, String systemVersion, String appVersion, String langCode, String systemLangCode, String configPath, String logPath, String regId, String cFingerprint, String installer, String packageId, int timezoneOffset, long userId, boolean userPremium, boolean enablePushConnection, boolean hasNetwork, int networkType, int performanceClass);
-    public static native void native_moveToDatacenter(int currentAccount, int datacenterId);
     public static native void native_setProxySettings(int currentAccount, String address, int port, String username, String password, String secret);
     public static native void native_setLangCode(int currentAccount, String langCode);
     public static native void native_setRegId(int currentAccount, String regId);
@@ -1078,6 +1075,8 @@ public class ConnectionsManager extends BaseController {
         }
 
         protected ResolvedDomain doInBackground(Void... voids) {
+            ByteArrayOutputStream outbuf = null;
+            InputStream httpConnectionStream = null;
             boolean done = false;
             try {
                 URL downloadUrl = new URL("https://www.google.com/resolve?name=" + currentHostName + "&type=A");
@@ -1087,22 +1086,23 @@ public class ConnectionsManager extends BaseController {
                 httpConnection.setConnectTimeout(1000);
                 httpConnection.setReadTimeout(2000);
                 httpConnection.connect();
+                httpConnectionStream = httpConnection.getInputStream();
 
-                JSONObject jsonObject;
-                try (InputStream httpConnectionStream = httpConnection.getInputStream();ByteArrayOutputStream outbuf = new ByteArrayOutputStream()) {
-                    byte[] data = new byte[1024 * 32];
-                    while (true) {
-                        int read = httpConnectionStream.read(data);
-                        if (read > 0) {
-                            outbuf.write(data, 0, read);
-                        } else if (read == -1) {
-                            break;
-                        } else {
-                            break;
-                        }
+                outbuf = new ByteArrayOutputStream();
+
+                byte[] data = new byte[1024 * 32];
+                while (true) {
+                    int read = httpConnectionStream.read(data);
+                    if (read > 0) {
+                        outbuf.write(data, 0, read);
+                    } else if (read == -1) {
+                        break;
+                    } else {
+                        break;
                     }
-                     jsonObject = new JSONObject(outbuf.toString("UTF-8"));
                 }
+
+                JSONObject jsonObject = new JSONObject(new String(outbuf.toByteArray()));
                 if (jsonObject.has("Answer")) {
                     JSONArray array = jsonObject.getJSONArray("Answer");
                     int len = array.length();
@@ -1117,6 +1117,21 @@ public class ConnectionsManager extends BaseController {
                 done = true;
             } catch (Throwable e) {
                 FileLog.e(e, false);
+            } finally {
+                try {
+                    if (httpConnectionStream != null) {
+                        httpConnectionStream.close();
+                    }
+                } catch (Throwable e) {
+                    FileLog.e(e, false);
+                }
+                try {
+                    if (outbuf != null) {
+                        outbuf.close();
+                    }
+                } catch (Exception ignore) {
+
+                }
             }
             if (!done) {
                 try {
@@ -1386,6 +1401,7 @@ public class ConnectionsManager extends BaseController {
     private static class FirebaseTask extends AsyncTask<Void, Void, NativeByteBuffer> {
 
         private int currentAccount;
+        private FirebaseRemoteConfig firebaseRemoteConfig;
 
         public FirebaseTask(int instance) {
             super();
@@ -1397,14 +1413,52 @@ public class ConnectionsManager extends BaseController {
                 if (native_isTestBackend(currentAccount) != 0) {
                     throw new Exception("test backend");
                 }
-                Utilities.stageQueue.postRunnable(() -> {
-                    if (BuildVars.LOGS_ENABLED) {
-                        FileLog.d("failed to get firebase result");
-                        FileLog.d("start dns txt task");
-                    }
-                    GoogleDnsLoadTask task = new GoogleDnsLoadTask(currentAccount);
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null, null, null);
-                    currentTask = task;
+                firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+                String currentValue = firebaseRemoteConfig.getString("ipconfigv3");
+                if (BuildVars.LOGS_ENABLED) {
+                    FileLog.d("current firebase value = " + currentValue);
+                }
+
+                firebaseRemoteConfig.fetch(0).addOnCompleteListener(finishedTask -> {
+                    final boolean success = finishedTask.isSuccessful();
+                    Utilities.stageQueue.postRunnable(() -> {
+                        if (success) {
+                            firebaseRemoteConfig.activate().addOnCompleteListener(finishedTask2 -> {
+                                FileLog.d("6. currentTask = null");
+                                currentTask = null;
+                                String config = firebaseRemoteConfig.getString("ipconfigv3");
+                                if (!TextUtils.isEmpty(config)) {
+                                    byte[] bytes = Base64.decode(config, Base64.DEFAULT);
+                                    try {
+                                        NativeByteBuffer buffer = new NativeByteBuffer(bytes.length);
+                                        buffer.writeBytes(bytes);
+                                        int date = (int) (firebaseRemoteConfig.getInfo().getFetchTimeMillis() / 1000);
+                                        native_applyDnsConfig(currentAccount, buffer.address, AccountInstance.getInstance(currentAccount).getUserConfig().getClientPhone(), date);
+                                    } catch (Exception e) {
+                                        FileLog.e(e);
+                                    }
+                                } else {
+                                    if (BuildVars.LOGS_ENABLED) {
+                                        FileLog.d("failed to get firebase result");
+                                        FileLog.d("start dns txt task");
+                                    }
+                                    GoogleDnsLoadTask task = new GoogleDnsLoadTask(currentAccount);
+                                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null, null, null);
+                                    FileLog.d("7. currentTask = GoogleDnsLoadTask");
+                                    currentTask = task;
+                                }
+                            });
+                        } else {
+                            if (BuildVars.LOGS_ENABLED) {
+                                FileLog.d("failed to get firebase result 2");
+                                FileLog.d("start dns txt task");
+                            }
+                            GoogleDnsLoadTask task = new GoogleDnsLoadTask(currentAccount);
+                            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, null, null, null);
+                            FileLog.d("7. currentTask = GoogleDnsLoadTask");
+                            currentTask = task;
+                        }
+                    });
                 });
             } catch (Throwable e) {
                 Utilities.stageQueue.postRunnable(() -> {
@@ -1463,7 +1517,37 @@ public class ConnectionsManager extends BaseController {
         AndroidUtilities.runOnUIThread(() -> {
             long start = System.currentTimeMillis();
             FileLog.d("account"+currentAccount+": server requests integrity classic check with project = "+project+" nonce = " + nonce);
-            native_receivedIntegrityCheckClassic(currentAccount, requestToken, nonce, "PLAYINTEGRITY_FAILED_EXCEPTION_NULL");
+            IntegrityManager integrityManager = IntegrityManagerFactory.create(ApplicationLoader.applicationContext);
+            final long project_id;
+            try {
+                project_id = Long.parseLong(project);
+            } catch (Exception e) {
+                FileLog.d("account"+currentAccount+": integrity check failes to parse project id");
+                native_receivedIntegrityCheckClassic(currentAccount, requestToken, nonce, "PLAYINTEGRITY_FAILED_EXCEPTION_NOPROJECT");
+                return;
+            }
+            Task<IntegrityTokenResponse> integrityTokenResponse = integrityManager.requestIntegrityToken(IntegrityTokenRequest.builder().setNonce(nonce).setCloudProjectNumber(project_id).build());
+            integrityTokenResponse
+                .addOnSuccessListener(r -> {
+                    final String token = r.token();
+
+                    if (token == null) {
+                        FileLog.e("account"+currentAccount+": integrity check gave null token in " + (System.currentTimeMillis() - start) + "ms");
+                        native_receivedIntegrityCheckClassic(currentAccount, requestToken, nonce, "PLAYINTEGRITY_FAILED_EXCEPTION_NULL");
+                        return;
+                    }
+
+                    FileLog.d("account"+currentAccount+": integrity check successfully gave token: " + token + " in " + (System.currentTimeMillis() - start) + "ms");
+                    try {
+                        native_receivedIntegrityCheckClassic(currentAccount, requestToken, nonce, token);
+                    } catch (Exception e) {
+                        FileLog.e("receivedIntegrityCheckClassic failed", e);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    FileLog.e("account"+currentAccount+": integrity check failed to give a token in " + (System.currentTimeMillis() - start) + "ms", e);
+                    native_receivedIntegrityCheckClassic(currentAccount, requestToken, nonce, "PLAYINTEGRITY_FAILED_EXCEPTION_" + LoginActivity.errorString(e));
+                });
         });
     }
 

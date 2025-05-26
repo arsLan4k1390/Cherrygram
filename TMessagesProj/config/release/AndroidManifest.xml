@@ -20,9 +20,9 @@
     <permission android:name="${applicationId}.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
 
     <application
-        android:icon="@mipmap/icon_launcher_cherry"
-        android:roundIcon="@mipmap/icon_launcher_cherry"
-        android:label="@string/CG_AppName"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:label="@string/AppName"
         android:theme="@style/Theme.TMessages.Start"
         android:hardwareAccelerated="@bool/useHardwareAcceleration"
         android:largeHeap="true"
@@ -30,7 +30,7 @@
         android:requestLegacyExternalStorage="true"
         tools:replace="android:supportsRtl">
 
-        <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyBd1yu9V_Z-ktNND67u1gF0zH6AjMDRVoM" />
+        <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyA-t0jLPjUt2FxrA8VPK2EiYHcYcboIR6k" />
 
         <service
             android:name="org.telegram.messenger.GcmPushListenerService" android:exported="true">
@@ -41,8 +41,24 @@
 
         <uses-library android:name="com.google.android.maps" android:required="false"/>
 
-        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="false" />
-        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="true" />
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
+
+        <receiver
+            tools:replace="android:enabled"
+            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+            android:enabled="false"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.measurement.UPLOAD" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            tools:replace="android:enabled"
+            android:name="com.google.android.gms.measurement.AppMeasurementService"
+            android:enabled="false"
+            android:exported="false" />
 
     </application>
 

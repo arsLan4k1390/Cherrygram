@@ -18,7 +18,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
@@ -27,7 +26,6 @@ import android.view.View;
 import android.view.ViewParent;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -236,13 +234,6 @@ public class WebviewActivity extends BaseFragment {
             }
         }
 
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public Bitmap getDefaultVideoPoster() {
-                return Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
-            }
-        });
-
         webView.setWebViewClient(new WebViewClient() {
 
             private boolean isInternalUrl(String url) {
@@ -413,7 +404,7 @@ public class WebviewActivity extends BaseFragment {
             messageObject.messageOwner.serializeToStream(serializedData);
             editor.putString(hash + "_m", Utilities.bytesToHex(serializedData.toByteArray()));
             editor.putString(hash + "_link", "https://" + MessagesController.getInstance(messageObject.currentAccount).linkPrefix + "/" + username + (TextUtils.isEmpty(short_name) ? "" : "?game=" + short_name));
-            editor.apply();
+            editor.commit();
             Browser.openUrl(parentActivity, url, false);
             serializedData.cleanup();
         } catch (Exception e) {

@@ -78,14 +78,14 @@ public class TranslateController extends BaseController {
 
     public boolean isChatTranslateEnabled() {
         if (chatTranslateEnabled == null) {
-            chatTranslateEnabled = messagesController.getMainSettings().getBoolean("translate_chat_button", false);
+            chatTranslateEnabled = messagesController.getMainSettings().getBoolean("translate_chat_button", true);
         }
         return chatTranslateEnabled;
     }
 
     public boolean isContextTranslateEnabled() {
         if (contextTranslateEnabled == null) {
-            contextTranslateEnabled = messagesController.getMainSettings().getBoolean("translate_button", MessagesController.getGlobalMainSettings().getBoolean("translate_button", true));
+            contextTranslateEnabled = messagesController.getMainSettings().getBoolean("translate_button", MessagesController.getGlobalMainSettings().getBoolean("translate_button", false));
         }
         return contextTranslateEnabled;
     }

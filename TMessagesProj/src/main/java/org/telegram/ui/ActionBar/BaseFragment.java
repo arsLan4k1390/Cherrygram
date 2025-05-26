@@ -61,10 +61,6 @@ import org.telegram.ui.bots.BotWebViewAttachedSheet;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
-import uz.unnarsx.cherrygram.chats.helpers.MessageHelper;
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-
 public abstract class BaseFragment {
 
     protected boolean isFinished;
@@ -73,7 +69,7 @@ public abstract class BaseFragment {
     protected int currentAccount = UserConfig.selectedAccount;
 
     public View fragmentView;
-    public INavigationLayout parentLayout;
+    protected INavigationLayout parentLayout;
     protected ActionBar actionBar;
     protected boolean inPreviewMode;
     protected boolean inMenuMode;
@@ -273,10 +269,7 @@ public abstract class BaseFragment {
     }
 
     public boolean isActionBarCrossfadeEnabled() {
-        if (getLastStoryViewer() != null && getLastStoryViewer().attachedToParent()) {
-            return false;
-        }
-        return actionBar != null && !actionBar.isActionModeShowed();
+        return actionBar != null;
     }
 
     public INavigationLayout.BackButtonState getBackButtonState() {
@@ -853,7 +846,7 @@ public abstract class BaseFragment {
         return getAccountInstance().getMessagesController();
     }
 
-    public ContactsController getContactsController() {
+    protected ContactsController getContactsController() {
         return getAccountInstance().getContactsController();
     }
 
@@ -911,7 +904,7 @@ public abstract class BaseFragment {
 
     public void setFragmentPanTranslationOffset(int offset) {
         if (parentLayout != null) {
-            parentLayout.setFragmentPanTranslationOffset(offset, this);
+            parentLayout.setFragmentPanTranslationOffset(offset);
         }
     }
 
@@ -1072,7 +1065,7 @@ public abstract class BaseFragment {
     }
 
     public int getNavigationBarColor() {
-        int color = Theme.getColor(CherrygramAppearanceConfig.INSTANCE.getFlatNavbar() ? Theme.key_chat_messagePanelBackground : Theme.key_windowBackgroundGray, getResourceProvider());
+        int color = Theme.getColor(Theme.key_windowBackgroundGray, getResourceProvider());
         if (sheetsStack != null) {
             for (int i = 0; i < sheetsStack.size(); ++i) {
                 AttachedSheet sheet = sheetsStack.get(i);
@@ -1334,15 +1327,5 @@ public abstract class BaseFragment {
         public Runnable onPreFinished;
         public boolean occupyNavigationBar;
     }
-
-    /** Cherrygram start */
-    public MessageHelper getMessageHelper() {
-        return MessageHelper.getInstance(currentAccount);
-    }
-
-    public ChatsHelper getChatsHelper() {
-        return ChatsHelper.getInstance(currentAccount);
-    }
-    /** Cherrygram finish*/
 
 }

@@ -154,9 +154,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.chats.JsonBottomSheet;
-
 public class ChannelAdminLogActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     protected TLRPC.Chat currentChat;
@@ -346,7 +343,6 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.messagePlayingProgressDidChanged);
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.didSetNewWallpapper);
         notificationsLocker.unlock();
-        Bulletin.removeDelegate(this);
     }
 
     private void updateEmptyPlaceholder() {
@@ -858,7 +854,6 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
         actionBar.setAddToContainer(false);
         actionBar.setOccupyStatusBar(Build.VERSION.SDK_INT >= 21 && !AndroidUtilities.isTablet());
         actionBar.setBackButtonDrawable(new BackDrawable(false));
-
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(final int id) {
@@ -1428,8 +1423,9 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             @Override
             public void onDraw(Canvas canvas) {
                 int bottom = Theme.chat_composeShadowDrawable.getIntrinsicHeight();
+                Theme.chat_composeShadowDrawable.setBounds(0, 0, getMeasuredWidth(), bottom);
+                Theme.chat_composeShadowDrawable.draw(canvas);
                 canvas.drawRect(0, bottom, getMeasuredWidth(), getMeasuredHeight(), Theme.chat_composeBackgroundPaint);
-                canvas.drawLine(0, bottom, getMeasuredWidth(), bottom, Theme.dividerPaint);
             }
         };
         bottomOverlayChat.setWillNotDraw(false);
@@ -1580,9 +1576,6 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
     private final static int OPTION_RESTRICT = 33;
     private final static int OPTION_REPORT_FALSE_POSITIVE = 34;
     private final static int OPTION_BAN = 35;
-
-    //Cherrygram
-    private final static int OPTION_DETAILS = 1390;
 
     private boolean createMenu(View v) {
         return createMenu(v, 0, 0);
@@ -1795,12 +1788,6 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                 icons.add(R.drawable.msg_calls);
                 options.add(OPTION_CALL);
             }
-        }
-
-        if (CherrygramChatsConfig.INSTANCE.getShowJSON()) {
-            items.add("JSON");
-            options.add(OPTION_DETAILS);
-            icons.add(R.drawable.msg_info);
         }
 
         boolean callbackSent = false;
@@ -2172,7 +2159,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                                 return;
                             }
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                            builder.setTitle(getString(R.string.CG_AppName));
+                            builder.setTitle(getString("AppName", R.string.AppName));
                             builder.setMessage(getString("IncorrectTheme", R.string.IncorrectTheme));
                             builder.setPositiveButton(getString("OK", R.string.OK), null);
                             showDialog(builder.create());
@@ -2187,7 +2174,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                                 return;
                             }
                             AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                            builder.setTitle(getString(R.string.CG_AppName));
+                            builder.setTitle(getString("AppName", R.string.AppName));
                             builder.setMessage(getString("IncorrectLocalization", R.string.IncorrectLocalization));
                             builder.setPositiveButton(getString("OK", R.string.OK), null);
                             showDialog(builder.create());
@@ -2356,11 +2343,6 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                         BulletinFactory.createRemoveFromChatBulletin(this, user, currentChat.title).show();
                     }
                 }
-                break;
-            }
-            case OPTION_DETAILS: {
-                JsonBottomSheet.getMessageId(selectedObject);
-                JsonBottomSheet.showAlert(getContext(), getResourceProvider(), this, selectedObject, currentChat);
                 break;
             }
         }
@@ -2760,9 +2742,9 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             File f = AndroidUtilities.getSharingDirectory();
             f.mkdirs();
             f = new File(f, "vcard.vcf");
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(f))) {
-                writer.write(vcard);
-            }
+            BufferedWriter writer = new BufferedWriter(new FileWriter(f));
+            writer.write(vcard);
+            writer.close();
             showDialog(new PhonebookShareAlert(this, null, user, null, f, first_name, last_name));
         } catch (Exception e) {
             FileLog.e(e);
@@ -2781,7 +2763,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
             return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-        builder.setTitle(getString(R.string.CG_AppName));
+        builder.setTitle(getString("AppName", R.string.AppName));
         builder.setPositiveButton(getString("OK", R.string.OK), null);
         if (message.type == MessageObject.TYPE_VIDEO) {
             builder.setMessage(getString("NoPlayerInstalled", R.string.NoPlayerInstalled));
@@ -3672,15 +3654,6 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
 
         });
         inviteLinkBottomSheet.show();
-    }
-
-    @Override
-    public int getNavigationBarColor() {
-        int color = Theme.getColor(Theme.key_chat_messagePanelBackground);
-        if (getLastStoryViewer() != null && getLastStoryViewer().attachedToParent()) {
-            return getLastStoryViewer().getNavigationBarColor(color);
-        }
-        return color;
     }
 
     @Override

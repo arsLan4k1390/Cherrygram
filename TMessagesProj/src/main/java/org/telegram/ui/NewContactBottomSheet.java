@@ -128,7 +128,7 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
         contentLayout.addView(frameLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 0, 0, 0));
 
 
-        firstNameField = new OutlineEditText(context, resourcesProvider);
+        firstNameField = new OutlineEditText(context);
         firstNameField.getEditText().setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
         firstNameField.getEditText().setImeOptions(EditorInfo.IME_ACTION_NEXT);
         firstNameField.setHint(LocaleController.getString(R.string.FirstName));
@@ -146,7 +146,7 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
             return false;
         });
 
-        lastNameField = new OutlineEditText(context, resourcesProvider);
+        lastNameField = new OutlineEditText(context);
         lastNameField.setBackground(null);
         lastNameField.getEditText().setInputType(InputType.TYPE_TEXT_FLAG_CAP_SENTENCES | InputType.TYPE_TEXT_FLAG_AUTO_CORRECT);
         lastNameField.getEditText().setImeOptions(EditorInfo.IME_ACTION_NEXT);
@@ -517,7 +517,8 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
 
         HashMap<String, String> languageMap = new HashMap<>();
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(ApplicationLoader.applicationContext.getResources().getAssets().open("countries.txt")))) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(ApplicationLoader.applicationContext.getResources().getAssets().open("countries.txt")));
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] args = line.split(";");
@@ -538,6 +539,7 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
                 }
                 languageMap.put(args[1], args[2]);
             }
+            reader.close();
         } catch (Exception e) {
             FileLog.e(e);
         }
@@ -702,12 +704,14 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
 
     public static String getPhoneNumber(Context context, TLRPC.User user, String number, boolean withCoutryCode) {
         HashMap<String, String> codesMap = new HashMap<>();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(context.getResources().getAssets().open("countries.txt")))) {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(context.getResources().getAssets().open("countries.txt")));
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] args = line.split(";");
                 codesMap.put(args[0], args[2]);
             }
+            reader.close();
         } catch (Exception e) {
             FileLog.e(e);
         }

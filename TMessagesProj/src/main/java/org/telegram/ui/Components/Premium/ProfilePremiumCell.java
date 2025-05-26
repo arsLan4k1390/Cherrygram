@@ -17,11 +17,7 @@ public class ProfilePremiumCell extends TextCell {
 
     public ProfilePremiumCell(Context context, int type, Theme.ResourcesProvider resourcesProvider) {
         super(context, resourcesProvider);
-        if (type == 3) {
-            colorKey = Theme.key_cgGradient2;
-        } else {
-            colorKey = type == 1 ? Theme.key_starsGradient1 : Theme.key_premiumGradient2;
-        }
+        colorKey = type == 1 ? Theme.key_starsGradient1 : Theme.key_premiumGradient2;
     }
 
     @Override

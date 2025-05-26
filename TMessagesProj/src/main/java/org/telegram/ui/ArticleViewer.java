@@ -222,9 +222,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
-
 public class ArticleViewer implements NotificationCenter.NotificationCenterDelegate {
 
     public static final boolean BOTTOM_ACTION_BAR = false;
@@ -622,7 +619,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putInt("iv_font_size", SharedConfig.ivFontSize);
-                        editor.apply();
+                        editor.commit();
                         pages[0].getAdapter().searchTextOffset.clear();
                         updatePaintSize();
                         invalidate();
@@ -1251,11 +1248,9 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             if (checkingForLongPress && windowView != null) {
                 checkingForLongPress = false;
                 if (pressedLink != null) {
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        try {
-                            windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                        } catch (Exception ignored) {}
-                    }
+                    try {
+                        windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                    } catch (Exception ignored) {}
                     showCopyPopup(pressedLink.getSpan().getUrl());
                     pressedLink = null;
                     pressedLinkOwnerLayout = null;
@@ -1268,17 +1263,16 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                     } else {
                         textSelectionHelper.trySelect(pressedLinkOwnerView);
                     }
-                    if (textSelectionHelper.isInSelectionMode() && !CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
+                    if (textSelectionHelper.isInSelectionMode()) {
                         try {
                             windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                         } catch (Exception ignored) {}
                     }
                 } else if (pressedLinkOwnerLayout != null && pressedLinkOwnerView != null) {
-                    if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                        try {
-                            windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                        } catch (Exception ignored) {}
-                    }
+                    try {
+                        windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                    } catch (Exception ignored) {}
+
                     int[] location = new int[2];
                     pressedLinkOwnerView.getLocationInWindow(location);
                     int y = location[1] + pressedLayoutY - dp(54);
@@ -3525,7 +3519,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
     }
 
     private void updatePaintFonts() {
-        ApplicationLoader.applicationContext.getSharedPreferences("articles", Activity.MODE_PRIVATE).edit().putInt("font_type", selectedFont).apply();
+        ApplicationLoader.applicationContext.getSharedPreferences("articles", Activity.MODE_PRIVATE).edit().putInt("font_type", selectedFont).commit();
         Typeface typefaceNormal = selectedFont == 0 ? Typeface.DEFAULT : Typeface.SERIF;
         Typeface typefaceItalic = selectedFont == 0 ? AndroidUtilities.getTypeface("fonts/ritalic.ttf") : Typeface.create("serif", Typeface.ITALIC);
         Typeface typefaceBold = selectedFont == 0 ? AndroidUtilities.bold() : Typeface.create("serif", Typeface.BOLD);
@@ -4345,9 +4339,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 }
                 url = BotWebViewContainer.magic2tonsite(url);
                 final long selfId = UserConfig.getInstance(currentAccount).getClientUserId();
-                long chatID = ChatsHelper2.INSTANCE.getCustomChatID();
-
-                SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(url, chatID));
+                SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of(url, selfId));
                 TLRPC.TL_message msg = new TLRPC.TL_message();
                 msg.peer_id = new TLRPC.TL_peerUser();
                 msg.peer_id.user_id = selfId;
@@ -4365,7 +4357,9 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                     }
                     BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
                     if (lastFragment != null) {
-                        lastFragment.presentFragment(ChatActivity.of(chatID));
+                        Bundle args = new Bundle();
+                        args.putLong("user_id", selfId);
+                        lastFragment.presentFragment(new ChatActivity(args));
                     }
                 })).show(true);
             } else if (id == WebActionBar.bookmarks_item) {
@@ -5191,7 +5185,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                             pagesStack.set(0, webPage);
                         }
                         if (pagesStack.size() == 1) {
-                            ApplicationLoader.applicationContext.getSharedPreferences("articles", Activity.MODE_PRIVATE).edit().remove("article" + webPage.id).apply();
+                            ApplicationLoader.applicationContext.getSharedPreferences("articles", Activity.MODE_PRIVATE).edit().remove("article" + webPage.id).commit();
                             updateInterfaceForCurrentPage(webPage, false, openingAbove ? 1 : 0);
                             if (anchorFinal != null) {
                                 scrollToAnchor(anchorFinal, false);
@@ -5432,7 +5426,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             }
             SharedPreferences.Editor editor = ApplicationLoader.applicationContext.getSharedPreferences("articles", Activity.MODE_PRIVATE).edit();
             String key = "article" + pages[0].adapter.currentPage.id;
-            editor.putInt(key, position).putInt(key + "o", offset).putBoolean(key + "r", AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y).apply();
+            editor.putInt(key, position).putInt(key + "o", offset).putBoolean(key + "r", AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y).commit();
         }
     }
 
@@ -8451,11 +8445,6 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                             customViewCallback.onCustomViewHidden();
                         }
                         customView = null;
-                    }
-
-                    @Override
-                    public Bitmap getDefaultVideoPoster() {
-                        return Bitmap.createBitmap(50, 50, Bitmap.Config.ARGB_8888);
                     }
                 });
 
@@ -13659,7 +13648,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 pageLayout.webViewContainer.loadUrl(UserConfig.selectedAccount, lastUrl);
             }
         }
-
+        
         public void enrich(PageLayout pageLayout) {
             BotWebViewContainer.MyWebView webView = pageLayout.webViewContainer.getWebView();
             if (webView != null) {

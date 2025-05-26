@@ -192,8 +192,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-import uz.unnarsx.cherrygram.misc.Constants;
-
 public class PeerStoriesView extends SizeNotifierFrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     public static boolean DISABLE_STORY_REPOSTING = false;
@@ -3617,12 +3615,12 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
         buttonTextView.setOnClickListener(v -> {
             if (ApplicationLoader.isStandaloneBuild()) {
                 if (LaunchActivity.instance != null) {
-                    LaunchActivity.instance.checkCgUpdates(storyViewer.fragment, null, true);
+                    LaunchActivity.instance.checkAppUpdate(true, null);
                 }
-            } /*else if (BuildVars.isHuaweiStoreApp()){
+            } else if (BuildVars.isHuaweiStoreApp()){
                 Browser.openUrl(getContext(), BuildVars.HUAWEI_STORE_URL);
-            }*/ else {
-                Browser.openUrl(getContext(), Constants.UPDATE_APP_URL);
+            } else {
+                Browser.openUrl(getContext(), BuildVars.PLAYSTORE_APP_URL);
             }
         });
         linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));

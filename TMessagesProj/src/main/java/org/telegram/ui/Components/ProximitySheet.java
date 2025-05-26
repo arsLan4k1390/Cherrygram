@@ -37,8 +37,6 @@ import org.telegram.ui.ActionBar.Theme;
 
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-
 public class ProximitySheet extends FrameLayout {
 
     private VelocityTracker velocityTracker = null;
@@ -202,9 +200,7 @@ public class ProximitySheet extends FrameLayout {
         kmPicker.setTextOffset(AndroidUtilities.dp(20));
         final NumberPicker.OnValueChangeListener onValueChangeListener = (picker, oldVal, newVal) -> {
             try {
-                if (!CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                }
+                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
             } catch (Exception ignore) {
 
             }

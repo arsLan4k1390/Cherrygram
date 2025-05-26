@@ -207,7 +207,7 @@ public class SecretChatHelper extends BaseController {
                 if (dialog.folder_id == 1) {
                     SharedPreferences.Editor editor = MessagesController.getNotificationsSettings(currentAccount).edit();
                     editor.putBoolean("dialog_bar_archived" + dialog_id, true);
-                    editor.apply();
+                    editor.commit();
                 }
                 getMessagesController().dialogs_dict.put(dialog.id, dialog);
                 getMessagesController().allDialogs.add(dialog);
@@ -2016,7 +2016,7 @@ public class SecretChatHelper extends BaseController {
                                     FileLog.e(e);
                                 }
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                                builder.setTitle(LocaleController.getString(R.string.CG_AppName));
+                                builder.setTitle(LocaleController.getString(R.string.AppName));
                                 builder.setMessage(LocaleController.getString(R.string.CreateEncryptedChatError));
                                 builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
                                 builder.show().setCanceledOnTouchOutside(true);

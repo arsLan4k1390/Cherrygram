@@ -47,7 +47,6 @@ import android.widget.TextView;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -106,14 +105,13 @@ import org.telegram.ui.web.WebBrowserSettings;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class ThemeActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -446,7 +444,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             SharedPreferences preferences = MessagesController.getGlobalMainSettings();
             SharedPreferences.Editor editor = preferences.edit();
             editor.putInt("bubbleRadius", SharedConfig.bubbleRadius);
-            editor.apply();
+            editor.commit();
 
             RecyclerView.ViewHolder holder = listView.findViewHolderForAdapterPosition(textSizeRow);
             if (holder != null && holder.itemView instanceof TextSizeCell) {
@@ -485,7 +483,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             }
             SharedPreferences.Editor editor = preferences.edit();
             editor.putInt("fons_size", SharedConfig.fontSize);
-            editor.apply();
+            editor.commit();
 
             Theme.createCommonMessageResources();
 
@@ -651,9 +649,9 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             chatListRow = rowCount++;
             chatListInfoRow = rowCount++;
 
-//            appIconHeaderRow = rowCount++;
-//            appIconSelectorRow = rowCount++;
-//            appIconShadowRow = rowCount++;
+            appIconHeaderRow = rowCount++;
+            appIconSelectorRow = rowCount++;
+            appIconShadowRow = rowCount++;
 
             swipeGestureHeaderRow = rowCount++;
             swipeGestureRow = rowCount++;
@@ -685,10 +683,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             sendByEnterRow = rowCount++;
             distanceRow = rowCount++;
             otherSectionRow = rowCount++;
-
-            appIconHeaderRow = rowCount++;
-            appIconSelectorRow = rowCount++;
-            appIconShadowRow = rowCount++;
         } else {
             nightDisabledRow = rowCount++;
             nightScheduledRow = rowCount++;
@@ -905,28 +899,10 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
     }
 
     @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    @Override
     public View createView(Context context) {
         lastIsDarkTheme = !Theme.isCurrentThemeDay();
 
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
-
         actionBar.setAllowOverlayTitle(false);
         if (AndroidUtilities.isTablet()) {
             actionBar.setOccupyStatusBar(false);
@@ -934,7 +910,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         if (currentType == THEME_TYPE_THEMES_BROWSER) {
             actionBar.setTitle(getString("BrowseThemes", R.string.BrowseThemes));
             ActionBarMenu menu = actionBar.createMenu();
-            sunDrawable = new RLottieDrawable(R.raw.sun_outline, "" + R.raw.sun_outline, dp(28), dp(28), true, null);
+            sunDrawable = new RLottieDrawable(R.raw.sun, "" + R.raw.sun, dp(28), dp(28), true, null);
             if (lastIsDarkTheme) {
                 sunDrawable.setCurrentFrame(sunDrawable.getFramesCount() - 1);
             } else {
@@ -1095,7 +1071,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean("view_animations", !animations);
                 SharedConfig.setAnimationsEnabled(!animations);
-                editor.apply();
+                editor.commit();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(!animations);
                 }
@@ -1108,7 +1084,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                 boolean send = preferences.getBoolean("send_by_enter", false);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean("send_by_enter", !send);
-                editor.apply();
+                editor.commit();
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(!send);
                 }
@@ -1338,7 +1314,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                     SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putInt("sortContactsBy", which);
-                    editor.apply();
+                    editor.commit();
                     if (listAdapter != null) {
                         listAdapter.notifyItemChanged(position);
                     }
@@ -1534,7 +1510,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
         }
         int fontSize = AndroidUtilities.isTablet() ? 18 : 16;
         Theme.ThemeInfo currentTheme = Theme.getCurrentTheme();
-        if (SharedConfig.fontSize != fontSize || SharedConfig.bubbleRadius != 17/* || !currentTheme.firstAccentIsDefault || currentTheme.currentAccentId != Theme.DEFALT_THEME_ACCENT_ID || accent != null && accent.overrideWallpaper != null && !Theme.DEFAULT_BACKGROUND_SLUG.equals(accent.overrideWallpaper.slug)*/) {
+        if (SharedConfig.fontSize != fontSize || SharedConfig.bubbleRadius != 17 || !currentTheme.firstAccentIsDefault || currentTheme.currentAccentId != Theme.DEFALT_THEME_ACCENT_ID || accent != null && accent.overrideWallpaper != null && !Theme.DEFAULT_BACKGROUND_SLUG.equals(accent.overrideWallpaper.slug)) {
             menuItem.showSubItem(reset_settings);
         } else {
             menuItem.hideSubItem(reset_settings);
@@ -2000,10 +1976,20 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
                             result.append(ThemeColors.getStringName(i)).append("=").append(defaultColors[i]).append("\n");
                         }
                         currentFile = new File(ApplicationLoader.getFilesDirFixed(), "default_theme.attheme");
-                        try (FileOutputStream stream = new FileOutputStream(currentFile)) {
+                        FileOutputStream stream = null;
+                        try {
+                            stream = new FileOutputStream(currentFile);
                             stream.write(AndroidUtilities.getStringBytes(result.toString()));
                         } catch (Exception e) {
                             FileLog.e(e);
+                        } finally {
+                            try {
+                                if (stream != null) {
+                                    stream.close();
+                                }
+                            } catch (Exception e) {
+                                FileLog.e(e);
+                            }
                         }
                     } else if (themeInfo.assetName != null) {
                         currentFile = Theme.getAssetFile(themeInfo.assetName);
@@ -2668,18 +2654,6 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
 
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{TextSettingsCell.class, TextCheckCell.class, HeaderCell.class, BrightnessControlCell.class, ThemeTypeCell.class, TextSizeCell.class, BubbleRadiusCell.class, ChatListCell.class, NotificationsCheckCell.class, ThemesHorizontalListCell.class, TintRecyclerListView.class, TextCell.class, PeerColorActivity.ChangeNameColorCell.class, SwipeGestureSettingsView.class, DefaultThemesPreviewCell.class, AppIconsSelectorCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
-        } else {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));

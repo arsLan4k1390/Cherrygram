@@ -31,10 +31,10 @@ public class NotificationDismissReceiver extends BroadcastReceiver {
             NotificationsController.getInstance(currentAccount).processIgnoreStoryReactions();
         } else if (dialogId == 0) {
             FileLog.d("set dismissDate of global to " + date);
-            MessagesController.getNotificationsSettings(currentAccount).edit().putInt("dismissDate", date).apply();
+            MessagesController.getNotificationsSettings(currentAccount).edit().putInt("dismissDate", date).commit();
         } else {
             FileLog.d("set dismissDate of " + dialogId + " to " + date);
-            MessagesController.getNotificationsSettings(currentAccount).edit().putInt("dismissDate" + dialogId, date).apply();
+            MessagesController.getNotificationsSettings(currentAccount).edit().putInt("dismissDate" + dialogId, date).commit();
         }
     }
 }

@@ -43,29 +43,19 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
-import org.telegram.ui.Components.Bulletin;
-import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CheckBox2;
 import org.telegram.ui.Components.CheckBoxSquare;
-import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.ScaleStateListAnimator;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.NotificationsSettingsActivity;
-import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.Stories.StoriesListPlaceProvider;
 import org.telegram.ui.Stories.StoriesUtilities;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
-import uz.unnarsx.cherrygram.misc.Constants;
 
 public class UserCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
@@ -77,8 +67,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
     private CheckBoxSquare checkBoxBig;
     private ImageView checkBox3;
     private TextView adminTextView;
-    public TextView addButton;
-    private ImageView mutualView;
+    private TextView addButton;
     private Drawable premiumDrawable;
     private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable botVerification;
     private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable emojiStatus;
@@ -112,16 +101,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         public void openStory(long dialogId, Runnable onDone) {
             UserCell.this.openStory(dialogId, onDone);
         }
-
-        @Override
-        public void onLongPress() {
-            BaseFragment fragment = LaunchActivity.getLastFragment();
-            TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
-
-            if (fragment != null && storyParams != null && storyParams.child != null && user != null) {
-                showContactItems(fragment, storyParams.child, user);
-            }
-        }
     };
 
     public void openStory(long dialogId, Runnable runnable) {
@@ -135,22 +114,18 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
     protected long dialogId;
 
     public UserCell(Context context, int padding, int checkbox, boolean admin) {
-        this(context, padding, checkbox, admin, false, null, false, false);
+        this(context, padding, checkbox, admin, false, null);
     }
 
     public UserCell(Context context, int padding, int checkbox, boolean admin, Theme.ResourcesProvider resourcesProvider) {
-        this(context, padding, checkbox, admin, false, resourcesProvider, false, false);
+        this(context, padding, checkbox, admin, false, resourcesProvider);
     }
 
     public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton) {
-        this(context, padding, checkbox, admin, needAddButton, null, false, false);
+        this(context, padding, checkbox, admin, needAddButton, null);
     }
 
-    public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton, boolean needMutualIcon, boolean allowLongPress) {
-        this(context, padding, checkbox, admin, needAddButton, null, needMutualIcon, allowLongPress);
-    }
-
-    public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton, Theme.ResourcesProvider resourcesProvider, boolean needMutualIcon, boolean allowLongPress) {
+    public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton, Theme.ResourcesProvider resourcesProvider) {
         super(context);
         this.resourcesProvider = resourcesProvider;
 
@@ -180,7 +155,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             protected void onDraw(Canvas canvas) {
                 if (storiable) {
                     storyParams.originalAvatarRect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
-                    storyParams.allowLongress = allowLongPress;
                     StoriesUtilities.drawAvatarWithStory(dialogId, canvas, imageReceiver, storyParams);
                 } else {
                     super.onDraw(canvas);
@@ -195,22 +169,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                 return super.onTouchEvent(event);
             }
         };
-        avatarImageView.setOnClickListener(v -> {
-            BaseFragment fragment = LaunchActivity.getLastFragment();
-            
-            if (fragment != null) fragment.presentFragment(ProfileActivity.of(dialogId));
-        });
-        if (allowLongPress) {
-            avatarImageView.setOnLongClickListener(v -> {
-                BaseFragment fragment = LaunchActivity.getLastFragment();
-                TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
-
-                if (fragment != null && user != null) {
-                    showContactItems(fragment, v, user);
-                }
-                return true;
-            });
-        }
         avatarImageView.setRoundRadius(dp(24));
         addView(avatarImageView, LayoutHelper.createFrame(46, 46, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, LocaleController.isRTL ? 0 : 7 + padding, 6, LocaleController.isRTL ? 7 + padding : 0, 0));
         setClipChildren(false);
@@ -224,7 +182,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
 
         botVerification = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(nameTextView, dp(20));
         emojiStatus = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(nameTextView, dp(20));
-        cherrygramStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(nameTextView, dp(20));
 
         statusTextView = new SimpleTextView(context);
         statusTextView.setTextSize(15);
@@ -262,17 +219,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             addView(adminTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.TOP, LocaleController.isRTL ? 23 : 0, 10, LocaleController.isRTL ? 0 : 23, 0));
         }
 
-        if (needMutualIcon) {
-            mutualView = new ImageView(context);
-            mutualView.setImageResource(R.drawable.ic_round_swap_horiz_24);
-            mutualView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_player_actionBarSelector, resourcesProvider)));
-            mutualView.setScaleType(ImageView.ScaleType.CENTER);
-            mutualView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
-            mutualView.setVisibility(GONE);
-            mutualView.setOnClickListener(v -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_ERROR, LocaleController.getString("AP_MutualContactsDescription", R.string.AP_MutualContacts_Description)));
-            mutualView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
-            addView(mutualView, LayoutHelper.createFrame(40, 40, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 8 : 0, 0, LocaleController.isRTL ? 0 : 8, 0));
-        }
         setFocusable(true);
     }
 
@@ -578,9 +524,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                 case "existing_chats":
                     avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_EXISTING_CHATS);
                     break;
-                case "saved_cg":
-                    avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_SAVED);
-                    break;
             }
             avatarImageView.setImage(null, "50_50", avatarDrawable);
             currentStatus = "";
@@ -643,7 +586,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             botVerification.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
             nameTextView.setLeftDrawable(botVerification);
         }
-        if (currentUser != null && MessagesController.getInstance(currentAccount).isPremiumUser(currentUser) && !MessagesController.getInstance(currentAccount).premiumFeaturesBlocked() && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+        if (currentUser != null && MessagesController.getInstance(currentAccount).isPremiumUser(currentUser) && !MessagesController.getInstance(currentAccount).premiumFeaturesBlocked()) {
             if (DialogObject.getEmojiStatusDocumentId(currentUser.emoji_status) != 0) {
                 emojiStatus.set(DialogObject.getEmojiStatusDocumentId(currentUser.emoji_status), false);
                 emojiStatus.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
@@ -669,7 +612,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             nameTextView.setRightDrawable(null);
             nameTextView.setRightDrawableTopPadding(0);
         }
-        checkCherrygramBadges(nameTextView, currentUser);
         if (currentStatus != null) {
             statusTextView.setTextColor(statusColor);
             statusTextView.setText(currentStatus);
@@ -687,7 +629,8 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
                     statusTextView.setText(getString(R.string.Online));
                 } else {
                     statusTextView.setTextColor(statusColor);
-                    statusTextView.setText(CherrygramDebugConfig.INSTANCE.getOldTimeStyle() ? LocaleController.formatUserStatus(currentAccount, currentUser) : LocaleController.formatUserStatusIOS(currentAccount, currentUser));                }
+                    statusTextView.setText(LocaleController.formatUserStatus(currentAccount, currentUser));
+                }
             }
         }
 
@@ -710,13 +653,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         nameTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         if (adminTextView != null) {
             adminTextView.setTextColor(Theme.getColor(Theme.key_profile_creatorIcon, resourcesProvider));
-        }
-
-        if (mutualView != null) {
-            mutualView.setVisibility(currentUser != null && currentUser.mutual_contact ? VISIBLE : GONE);
-            if (currentUser != null && currentUser.mutual_contact) {
-                nameTextView.setContentDescription(nameTextView.getText() + " (" + LocaleController.getString("AP_MutualContacts_Description", R.string.AP_MutualContacts_Description) + ")");
-            }
         }
     }
 
@@ -763,7 +699,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
         emojiStatus.attach();
         botVerification.attach();
-        cherrygramStatusDrawable.attach();
     }
 
     @Override
@@ -772,7 +707,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
         emojiStatus.detach();
         botVerification.detach();
-        cherrygramStatusDrawable.detach();
         storyParams.onDetachFromWindow();
     }
 
@@ -846,65 +780,4 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             closeView.setOnClickListener(onClick);
         }
     }
-
-    private void showContactItems(BaseFragment fragment, View view, TLRPC.User user) {
-        ItemOptions filterOptions = ItemOptions.makeOptions(fragment, view)
-                .setViewAdditionalOffsets(0, AndroidUtilities.dp(8), 0, 0)
-                .setScrimViewBackground(Theme.createRoundRectDrawable(0, 0, Theme.getColor(Theme.key_windowBackgroundWhite)))
-
-                /*.add(R.drawable.msg_openprofile, LocaleController.getString(R.string.OpenProfile),
-                        () -> fragment.presentFragment(ProfileActivity.of(dialogId))
-                )*/
-                .add(R.drawable.msg_discussion, LocaleController.getString(R.string.SendMessage),
-                        () -> fragment.presentFragment(ChatActivity.of(dialogId))
-                )
-                .addIf(user.username != null, R.drawable.msg_mention, LocaleController.getString(R.string.ProfileCopyUsername), () -> {
-                    AndroidUtilities.addToClipboard("@" + user.username);
-                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.UsernameCopied)).show();
-                })
-                .addIf(user.phone != null, R.drawable.msg_calls, LocaleController.getString(R.string.FragmentPhoneCopy), () -> {
-                    AndroidUtilities.addToClipboard("+" + user.phone);
-                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.PhoneCopied)).show();
-                })
-                .addIf(fragment instanceof ProfileActivity && user.id != 0, R.drawable.msg_copy, LocaleController.getString(R.string.CG_CopyID), () -> {
-                    AndroidUtilities.addToClipboard("" + user.id);
-                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.TextCopied)).show();
-                })
-                .addGap()
-                .addProfile(user, getString(R.string.ViewProfile), () -> {
-                    fragment.presentFragment(ProfileActivity.of(user.id));
-                });
-
-        filterOptions.setGravity(Gravity.RIGHT)
-                .show();
-    }
-
-    /** Cherrygram start */
-    private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cherrygramStatusDrawable;
-
-    private void checkCherrygramBadges(SimpleTextView nameTextView, TLRPC.User user) {
-        if (user == null) return;
-        long emojiDocumentId;
-        boolean showParticles = false;
-        boolean forceBra = user.id == Constants.Cherrygram_Owner;
-
-        if (DonatesManager.INSTANCE.didUserDonate(user.id) || forceBra) {
-            emojiDocumentId = forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
-            showParticles = forceBra;
-        } else {
-            emojiDocumentId = 0;
-            nameTextView.setRightDrawable2(null);
-        }
-
-        if (emojiDocumentId != 0) {
-            cherrygramStatusDrawable.set(emojiDocumentId, false);
-            cherrygramStatusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
-            cherrygramStatusDrawable.setParticles(showParticles, showParticles);
-
-            nameTextView.setRightDrawable2(cherrygramStatusDrawable);
-            nameTextView.setRightDrawableInside(true);
-        }
-    }
-    /** Cherrygram finish */
-
 }

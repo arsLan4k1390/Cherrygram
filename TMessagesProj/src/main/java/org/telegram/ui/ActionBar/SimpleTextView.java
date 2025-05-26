@@ -130,8 +130,6 @@ public class SimpleTextView extends View implements Drawable.Callback {
     private boolean rightDrawableHidden;
     private OnClickListener rightDrawableOnClickListener;
     private boolean maybeClick;
-    private OnClickListener rightDrawable2OnClickListener;
-    private boolean maybeClick2;
     private float touchDownX, touchDownY;
 
     private AnimatedEmojiSpan.EmojiGroupedSpans emojiStack;
@@ -1299,13 +1297,9 @@ public class SimpleTextView extends View implements Drawable.Callback {
         rightDrawableOnClickListener = onClickListener;
     }
 
-    public void setRightDrawable2OnClick(OnClickListener onClickListener) {
-        rightDrawable2OnClickListener = onClickListener;
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (rightDrawableOnClickListener != null && rightDrawable != null && !maybeClick2) {
+        if (rightDrawableOnClickListener != null && rightDrawable != null) {
             AndroidUtilities.rectTmp.set(rightDrawableX - dp(16), rightDrawableY - dp(16), rightDrawableX + dp(16), rightDrawableY + dp(16));
             if (event.getAction() == MotionEvent.ACTION_DOWN && AndroidUtilities.rectTmp.contains((int) event.getX(), (int) event.getY())) {
                 maybeClick = true;
@@ -1334,40 +1328,7 @@ public class SimpleTextView extends View implements Drawable.Callback {
                 getParent().requestDisallowInterceptTouchEvent(false);
             }
         }
-        if (rightDrawable2OnClickListener != null && rightDrawable2 != null && !maybeClick) {
-            if (rightDrawable != null) {
-                AndroidUtilities.rectTmp.set(rightDrawableX - dp(45), rightDrawableY - dp(45), rightDrawableX + dp(45), rightDrawableY + dp(45));
-            } else {
-                AndroidUtilities.rectTmp.set(getTextWidth() - dp(16), getTextHeight() - dp(16),getTextWidth() + dp(16), getTextHeight() + dp(16));
-            }
-            if (event.getAction() == MotionEvent.ACTION_DOWN && AndroidUtilities.rectTmp.contains((int) event.getX(), (int) event.getY())) {
-                maybeClick2 = true;
-                touchDownX = event.getX();
-                touchDownY = event.getY();
-                getParent().requestDisallowInterceptTouchEvent(true);
-                if (rightDrawable2 instanceof PressableDrawable) {
-                    ((PressableDrawable) rightDrawable2).setPressed(true);
-                }
-            } else if (event.getAction() == MotionEvent.ACTION_MOVE && maybeClick2) {
-                if (Math.abs(event.getX() - touchDownX) >= AndroidUtilities.touchSlop || Math.abs(event.getY() - touchDownY) >= AndroidUtilities.touchSlop) {
-                    maybeClick2 = false;
-                    getParent().requestDisallowInterceptTouchEvent(false);
-                    if (rightDrawable2 instanceof PressableDrawable) {
-                        ((PressableDrawable) rightDrawable2).setPressed(false);
-                    }
-                }
-            } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_CANCEL) {
-                if (maybeClick2 && event.getAction() == MotionEvent.ACTION_UP) {
-                    rightDrawable2OnClickListener.onClick(this);
-                    if (rightDrawable2 instanceof PressableDrawable) {
-                        ((PressableDrawable) rightDrawable2).setPressed(false);
-                    }
-                }
-                maybeClick2 = false;
-                getParent().requestDisallowInterceptTouchEvent(false);
-            }
-        }
-        return super.onTouchEvent(event) || maybeClick || maybeClick2;
+        return super.onTouchEvent(event) || maybeClick;
     }
 
     public static interface PressableDrawable {
