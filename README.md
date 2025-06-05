@@ -9,7 +9,7 @@ This repo contains the official source code for [Telegram App for Android](https
 ## Current Maintainers
 
 - [arsLan4k1390](https://github.com/arsLan4k1390)
-- you? :)
+- You? :)
 
 ## Contributors
 
