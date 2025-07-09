@@ -185,6 +185,7 @@ public class BackupHelper {
         mainconfig.add("AP_OneUI_SwitchStyle");
         mainconfig.add("AP_DisableDividers");
         mainconfig.add("AP_CenterTitle");
+        mainconfig.add("AP_iosSearchPanel");
         mainconfig.add("AP_ToolBarShadow");
         mainconfig.add("AP_OverrideHeaderColor");
         mainconfig.add("AP_FlatNavBar");

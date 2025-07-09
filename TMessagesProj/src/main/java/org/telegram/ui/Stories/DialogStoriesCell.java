@@ -76,11 +76,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public class DialogStoriesCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
     public final static int TYPE_DIALOGS = 0;
     public final static int TYPE_ARCHIVE= 1;
-    private static final float COLLAPSED_DIS = 18;
+    private static final float COLLAPSED_DIS = CherrygramAppearanceConfig.INSTANCE.getCenterTitle() ? 12 : 14; // was 18
     private static final float ITEM_WIDTH = 70;
     private static final int FAKE_TOP_PADDING = 4;
 
@@ -108,7 +110,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
 
     private HintView2 premiumHint;
 
-    public static final int COLLAPSED_SIZE = 28;
+    public static final int COLLAPSED_SIZE = CherrygramAppearanceConfig.INSTANCE.getCenterTitle() ? 24 : 28;
 
     boolean updateOnIdleState;
     private int clipTop;
@@ -223,6 +225,10 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         titleView.setTypeface(AndroidUtilities.bold());
         titleView.setPadding(0, AndroidUtilities.dp(8), 0, AndroidUtilities.dp(8));
         titleView.setTextSize(AndroidUtilities.dp(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 20));
+        titleView.setOnWidthUpdatedListener(() -> {
+            requestLayout();
+            invalidate();
+        });
         addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
         titleView.setAlpha(0f);
@@ -253,7 +259,9 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                     if (cell.getAlpha() != 1f) {
                         canvas.saveLayerAlpha((float) -AndroidUtilities.dp(4), -AndroidUtilities.dp(4), AndroidUtilities.dp(50), AndroidUtilities.dp(50), (int) (255 * cell.getAlpha()), Canvas.ALL_SAVE_FLAG);
                     }
-                    canvas.scale(cell.getScaleX(), cell.getScaleY(), AndroidUtilities.dp(14), cell.getCy());
+//                    cell.setScaleX(0.5f);
+//                    cell.setScaleY(0.5f); // Костыль, так мы не делаем
+                    canvas.scale(cell.getScaleX(), cell.getScaleY(), AndroidUtilities.dp(COLLAPSED_DIS), cell.getCy());
                     cell.draw(canvas);
                     canvas.restoreToCount(restoreCount);
                 }
@@ -482,6 +490,10 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             currentTitle = LocaleController.formatPluralString("Stories", totalCount);
         }
 
+        if (CherrygramAppearanceConfig.INSTANCE.getCenterTitle() && type != DialogStoriesCell.TYPE_ARCHIVE) {
+            currentTitle = LocaleController.getString(R.string.FilterChats);
+        }
+
         if (!hasOverlayText) {
             titleView.setText(currentTitle, animated && !LocaleController.isRTL);
         }
@@ -536,7 +548,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         float y = AndroidUtilities.lerp(0, getMeasuredHeight() - ActionBar.getCurrentActionBarHeight() - AndroidUtilities.dp(4), collapsedProgress1);
         recyclerListView.setTranslationY(y);
         listViewMini.setTranslationY(y);
-        listViewMini.setTranslationX(AndroidUtilities.dp(68));
+        listViewMini.setTranslationX(getOffsetX(titleView, miniItems));
 
         for (int i = 0; i < viewsDrawInParent.size(); i++) {
             viewsDrawInParent.get(i).drawInParent = false;
@@ -620,7 +632,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                     } else {
                         toX = AndroidUtilities.dp(COLLAPSED_DIS) * 2;
                     }
-                    toX += AndroidUtilities.dp(68);
+                    toX += getOffsetX(titleView, miniItems);
                     cell.setTranslationX(AndroidUtilities.lerp(0, toX - cell.getLeft(), CubicBezierInterpolator.EASE_OUT.getInterpolation(collapsedProgress)));
                     if (drawInParent) {
                         viewsDrawInParent.add(cell);
@@ -674,9 +686,19 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         float progress = Math.min(collapsedProgress, collapsedProgress2);
         if (progress != 0) {
             float offset = (titleView.getMeasuredHeight() - titleView.getTextHeight()) / 2f;
+
+            if (CherrygramAppearanceConfig.INSTANCE.getCenterTitle()) {
+                offset -= AndroidUtilities.dp(1.65F);
+            }
+
             titleView.setTranslationY(y + AndroidUtilities.dp(14) - offset + AndroidUtilities.dp(FAKE_TOP_PADDING));
             int cellWidth = AndroidUtilities.dp(72);
             lastViewRight += -cellWidth + AndroidUtilities.dp(6) + getAvatarRight(cellWidth, collapsedProgress) + AndroidUtilities.dp(12);
+
+            if (CherrygramAppearanceConfig.INSTANCE.getCenterTitle()) {
+                lastViewRight -= AndroidUtilities.dp(7);
+            }
+
             // float toX = AndroidUtilities.dp(28) * Math.min(1, animateToCount) + AndroidUtilities.dp(14) * Math.max(0, animateToCount - 1);
             titleView.setTranslationX(lastViewRight);
             titleView.getDrawable().setRightPadding(lastViewRight + actionBar.menu.getItemsMeasuredWidth(false) * progress);
@@ -889,7 +911,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
     public void openStoryRecorder(long dialogId) {
         if (dialogId == 0) {
             final StoriesController.StoryLimit storyLimit = MessagesController.getInstance(currentAccount).getStoriesController().checkStoryLimit();
-            if (storyLimit != null) {
+            if (storyLimit != null && storyLimit.active(currentAccount)) {
                 fragment.showDialog(new LimitReachedBottomSheet(fragment, getContext(), storyLimit.getLimitReachedType(), currentAccount, null));
                 return;
             }
@@ -1361,7 +1383,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
                     for (int i = 0; i < uploadingOrEditingStories.size(); i++) {
                         uploadingProgress += uploadingOrEditingStories.get(i).progress;
                     }
-                    uploadingProgress = uploadingProgress / uploadingOrEditingStories.size();
+                    uploadingProgress = (storiesController.uploadedStories + uploadingProgress) / (storiesController.uploadedStories + uploadingOrEditingStories.size());
                     lastUploadingCloseFriends = closeFriends = uploadingOrEditingStories.get(uploadingOrEditingStories.size() - 1).isCloseFriends();
                 }
                 invalidate();
@@ -1843,4 +1865,19 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         }
         return super.onTouchEvent(event);
     }
+
+    /** Cherrygram start*/
+    private float getOffsetX(AnimatedTextView titleView, ArrayList<Item> miniItems) {
+        float offsetX;
+        if (CherrygramAppearanceConfig.INSTANCE.getCenterTitle()) {
+            float iconsWidth = AndroidUtilities.dp(COLLAPSED_SIZE * miniItems.size() - COLLAPSED_DIS * (miniItems.size() - 1));
+            float totalWidth = iconsWidth + titleView.width() + AndroidUtilities.dp(3F); // + spacing
+
+            offsetX = (getMeasuredWidth() - totalWidth) / 2f;
+        } else {
+            offsetX = AndroidUtilities.dp(68);
+        }
+        return offsetX;
+    }
+    /** Cherrygram finish*/
 }

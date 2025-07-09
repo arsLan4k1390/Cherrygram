@@ -173,6 +173,7 @@
     <string name="AP_SystemEmoji">Использовать системные эмодзи</string>
     <string name="AP_ShowPencilIcon">Иконка карандаша для изменённых сообщений</string>
     <string name="AP_CenterTitle">Центрирование заголовка</string>
+    <string name="AP_iosSearchPanel">Панель поиска в стиле iOS</string>
     <string name="AP_OverrideHeader">Изменение цвета заголовков</string>
     <string name="AP_OverrideHeader_Desc">Заголовки будут такого же цвета, как и основной фон</string>
     <string name="AP_DisableDividers">Отключить разделители</string>

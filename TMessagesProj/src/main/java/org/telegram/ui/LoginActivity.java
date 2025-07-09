@@ -15,6 +15,7 @@ import static org.telegram.messenger.AndroidUtilities.replaceArrows;
 import static org.telegram.messenger.AndroidUtilities.replaceSingleTag;
 import static org.telegram.messenger.LocaleController.formatString;
 import static org.telegram.messenger.LocaleController.getString;
+import static org.telegram.messenger.MessagesController.findUpdatesAndRemove;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -46,11 +47,14 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.telephony.PhoneNumberUtils;
+import android.telephony.SignalStrength;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
@@ -216,7 +220,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     public final static boolean ENABLE_PASTED_TEXT_PROCESSING = false;
     private final static int SHOW_DELAY = SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_AVERAGE ? 150 : 100;
 
-    public static final boolean TEST_BACKEND_IN_STORE = true;
+    public static final boolean TEST_BACKEND_IN_STORE = false;
 
     public final static int AUTH_TYPE_MESSAGE = 1,
             AUTH_TYPE_SMS = 2,
@@ -1789,8 +1793,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         return str.toUpperCase().replaceAll(" ", "_");
     }
 
-    public void open(TLRPC.auth_SentCode res) {
-        fillNextCodeParams(new Bundle(), res, true);
+    public void open(String phone, TLRPC.auth_SentCode res) {
+        Bundle params = new Bundle();
+        params.putString("phone", "+" + phone);
+        params.putString("ephone", "+" + phone);
+        params.putString("phoneFormated", phone);
+        fillNextCodeParams(params, res, true);
     }
 
     private boolean isRequestingFirebaseSms;
@@ -2563,7 +2571,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 });
             }
 
-            /*final boolean allowTestBackend = BuildVars.DEBUG_VERSION || TEST_BACKEND_IN_STORE;
+            /*final boolean allowTestBackend = (BuildVars.DEBUG_VERSION || TEST_BACKEND_IN_STORE) || getConnectionsManager().isTestBackend();
             if (allowTestBackend && activityMode == MODE_LOGIN) {
                 testBackendCheckBox = new CheckBoxCell(context, 2);
                 testBackendCheckBox.setText(getString(R.string.DebugTestBackend), "", testBackend = getConnectionsManager().isTestBackend(), false);
@@ -2600,6 +2608,13 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     countryWithCode.name = args[2];
                     countryWithCode.code = args[0];
                     countryWithCode.shortname = args[1];
+                    if (!TextUtils.equals(countryWithCode.code, "FT")) {
+                        final String localizedName = LocaleController.getCountryName(countryWithCode.shortname);
+                        if (!TextUtils.isEmpty(localizedName) && !TextUtils.equals(countryWithCode.shortname, localizedName)) {
+                            countryWithCode.defaultName = countryWithCode.name;
+                            countryWithCode.name = localizedName;
+                        }
+                    }
                     countriesArray.add(0, countryWithCode);
 
                     List<CountrySelectActivity.Country> countryList = codesMap.get(args[0]);
@@ -4166,7 +4181,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         getConnectionsManager().sendRequest(req, null, ConnectionsManager.RequestFlagWithoutLogin);
                         new AlertDialog.Builder(context)
                                 .setTitle(getString(R.string.RestorePasswordNoEmailTitle))
-                                .setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("DidNotGetTheCodeInfo", R.string.DidNotGetTheCodeInfo, phone)))
+                                .setMessage(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.DidNotGetTheCodeInfo, phone)))
                                 .setNeutralButton(getString(R.string.DidNotGetTheCodeHelpButton), (dialog, which) -> {
                                     try {
                                         PackageInfo pInfo = ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0);
@@ -4175,8 +4190,79 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                         Intent mailer = new Intent(Intent.ACTION_SENDTO);
                                         mailer.setData(Uri.parse("mailto:"));
                                         mailer.putExtra(Intent.EXTRA_EMAIL, new String[]{"sms@telegram.org"});
-                                        mailer.putExtra(Intent.EXTRA_SUBJECT, "Android registration/login issue " + version + " " + emailPhone);
-                                        mailer.putExtra(Intent.EXTRA_TEXT, "Phone: " + requestPhone + "\nApp version: " + version + "\nOS version: SDK " + Build.VERSION.SDK_INT + "\nDevice Name: " + Build.MANUFACTURER + Build.MODEL + (finalNetworkOperator != null ? "\nOperator: " + finalNetworkOperator : "") + "\nLocale: " + Locale.getDefault() + "\nError: " + lastError);
+                                        mailer.putExtra(Intent.EXTRA_SUBJECT, emailPhone + " Android Registration/Login Issue " + version);
+                                        StringBuilder text = new StringBuilder();
+                                        text.append("Phone: ").append(requestPhone).append("\n");
+                                        try {
+                                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+                                                final SubscriptionManager subscriptionManager = SubscriptionManager.from(getContext());
+                                                List<SubscriptionInfo> infos = null;
+                                                if (Build.VERSION.SDK_INT >= 30) {
+                                                    infos = subscriptionManager.getCompleteActiveSubscriptionInfoList();
+                                                }
+                                                if ((infos == null || infos.isEmpty()) && Build.VERSION.SDK_INT >= 28) {
+                                                    infos = subscriptionManager.getAccessibleSubscriptionInfoList();
+                                                }
+                                                if (infos == null || infos.isEmpty()) {
+                                                    infos = subscriptionManager.getActiveSubscriptionInfoList();
+                                                }
+                                                if (infos != null) {
+                                                    for (SubscriptionInfo info : infos) {
+                                                        final String number = info.getNumber();
+                                                        if (!TextUtils.isEmpty(number)) {
+                                                            text.append("SIM");
+                                                            text.append(info.getSimSlotIndex());
+                                                            text.append(": ").append(number);
+                                                            if (!TextUtils.isEmpty(info.getCarrierName())) {
+                                                                text.append(" (").append(info.getCarrierName()).append(")");
+                                                            }
+                                                            text.append("\n");
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                try {
+                                                    final TelephonyManager tm = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
+                                                    final String number = tm.getLine1Number();
+                                                    if (!TextUtils.isEmpty(number)) {
+                                                        text.append("SIM: ").append(number).append("\n");
+                                                    }
+                                                } catch (Exception e) {
+                                                    FileLog.e(e);
+                                                }
+                                            }
+                                        } catch (Exception e) {
+                                            FileLog.e(e);
+                                        }
+                                        text.append("App version: ").append(version).append("\n");
+                                        text.append("OS version: SDK ").append(Build.VERSION.SDK_INT).append("\n");
+                                        text.append("Device: ").append(Build.MANUFACTURER + " " + Build.MODEL + " (" + Build.DEVICE + ")").append("\n");
+                                        if (finalNetworkOperator != null) {
+                                            text.append("Operator: ").append(finalNetworkOperator).append("\n");
+                                        }
+                                        text.append("Locale: ").append(Locale.getDefault()).append("\n");
+                                        if (AndroidUtilities.isInAirplaneMode(context)) {
+                                            text.append("In airplane mode\n");
+                                        }
+                                        text.append("Wi-Fi: ").append(AndroidUtilities.isWifiEnabled(context) ? "Enabled" : "Disabled").append("\n");
+                                        if (Build.VERSION.SDK_INT >= 23) {
+                                            try {
+                                                TelephonyManager tm = context.getSystemService(TelephonyManager.class);
+                                                ConnectivityManager cm = context.getSystemService(ConnectivityManager.class);
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                                    SignalStrength signal = tm.getSignalStrength();
+                                                    if (signal != null) {
+                                                        text.append("Signal: ").append(signal.getLevel()).append("/4\n");
+                                                    }
+                                                }
+                                            } catch (Exception e) {
+                                                FileLog.e(e);
+                                            }
+                                        }
+                                        if (!TextUtils.isEmpty(lastError)) {
+                                            text.append("Error: ").append(lastError).append("\n");
+                                        }
+                                        mailer.putExtra(Intent.EXTRA_TEXT, text.toString());
                                         getContext().startActivity(Intent.createChooser(mailer, "Send email..."));
                                     } catch (Exception e) {
                                         needShowAlert(getString(R.string.AppName), getString("NoMailInstalled", R.string.NoMailInstalled));
@@ -9965,7 +10051,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             cells[2] = new ExplainStarsSheet.FeatureCell(context, ExplainStarsSheet.FeatureCell.STYLE_SHEET);
             cells[2].set(R.drawable.menu_feature_hands, AndroidUtilities.replaceArrows(replaceSingleTag(getString(R.string.SMSFee3Title), () -> {
-                presentFragment(new PremiumPreviewFragment("sms"));
+                final PremiumPreviewFragment fragment = new PremiumPreviewFragment("sms");
+                fragment.setCurrentAccount(currentAccount);
+                presentFragment(fragment);
             }), true, dp(8f / 3f), dp(1)), getString(R.string.SMSFee3Text));
             addView(cells[2], LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL | Gravity.TOP, 0, 0, 0, 6));
 
@@ -10086,6 +10174,20 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                                             req2.purpose = purpose;
                                                             getConnectionsManager().sendRequest(req2, (response, error) -> {
                                                                 if (response instanceof TLRPC.Updates) {
+                                                                    for (TLRPC.TL_updateSentPhoneCode u : findUpdatesAndRemove((TLRPC.Updates) response, TLRPC.TL_updateSentPhoneCode.class)) {
+                                                                        AndroidUtilities.runOnUIThread(() -> {
+                                                                            LoginActivity fragment = LaunchActivity.findFragment(LoginActivity.class);
+                                                                            if (fragment == null) {
+                                                                                fragment = new LoginActivity(currentAccount);
+                                                                                BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
+                                                                                if (lastFragment != null) {
+                                                                                    lastFragment.presentFragment(fragment);
+                                                                                }
+                                                                            }
+                                                                            fragment.open(purpose.phone_number, u.sent_code);
+                                                                        });
+                                                                    }
+
                                                                     getMessagesController().processUpdates((TLRPC.Updates) response, false);
 
                                                                     BillingController.getInstance().consumeGiftPurchase(purchase, req.purpose, null);

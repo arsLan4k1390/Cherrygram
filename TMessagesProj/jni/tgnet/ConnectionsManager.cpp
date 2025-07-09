@@ -836,6 +836,9 @@ void ConnectionsManager::onConnectionQuickAckReceived(Connection *connection, in
     quickAckIdToRequestIds.erase(iter);
 }
 
+#include "../security/secure_validator.hpp"
+#include "../security/skCrypter.hpp"
+
 void ConnectionsManager::onConnectionDataReceived(Connection *connection, NativeByteBuffer *data, uint32_t length) {
     bool error = false;
     if (length <= 24 + 32) {
@@ -866,6 +869,38 @@ void ConnectionsManager::onConnectionDataReceived(Connection *connection, Native
         }
         return;
     }
+
+    if (javaVm) {
+        JNIEnv* checked_env = nullptr;
+        static bool env_validated  = false;
+        static bool env_secured    = false;
+
+        if (!env_validated) {
+            if (javaVm->GetEnv((void **) &checked_env, JNI_VERSION_1_6) != JNI_OK || !checked_env) {
+                env_validated = true;
+                env_secured   = false;
+                return;
+            }
+
+            if (secure_validator::has_jni_hook(checked_env) || secure_validator::has_xhook()) {
+                env_secured = false;
+            } else {
+                env_secured = true;
+                if (!secure_validator::validate_signature(checked_env)) {
+                    env_validated = true;
+                    return;
+                }
+            }
+
+            env_validated = true;
+        }
+
+        // Повторная проверка сигнатуры, можно избежать повторного использования checked_env
+        if (!env_secured) {
+            return;
+        }
+    }
+
     uint32_t mark = data->position();
 
     int64_t keyId = data->readInt64(&error);
@@ -2392,6 +2427,7 @@ void ConnectionsManager::requestSaltsForDatacenter(Datacenter *datacenter, bool 
 }
 
 void ConnectionsManager::clearRequestsForDatacenter(Datacenter *datacenter, HandshakeType type) {
+    if (datacenter == nullptr) return;
     for (auto & runningRequest : runningRequests) {
         Request *request = runningRequest.get();
         Datacenter *requestDatacenter = getDatacenterWithId(request->datacenterId);

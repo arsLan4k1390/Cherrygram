@@ -63,6 +63,7 @@ import org.telegram.ui.Stories.StoriesListPlaceProvider;
 import org.telegram.ui.Stories.StoriesUtilities;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
 import uz.unnarsx.cherrygram.misc.Constants;
@@ -356,7 +357,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             }
         } catch (Exception ignore) {}
         currentName = name;
-        storiable = !(object instanceof String);
+        storiable = !(object instanceof String) && !CherrygramCoreConfig.INSTANCE.getHideStories();
         currentObject = object;
         currentDrawable = resId;
         needDivider = divider;

@@ -695,25 +695,4 @@ public class ChatsHelper extends BaseController {
         }
     }
 
-    /*public static ArrayList<TLRPC.MessageEntity> checkLockedChatsEntities(MessageObject messageObject, ArrayList<TLRPC.MessageEntity> original) {
-        if (ChatsPasswordHelper.INSTANCE.getAskPasscodeForChats() && messageObject.messageOwner.message != null
-                && messageObject.getChatId() != 0 && (
-                        ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(messageObject.getChatId()))
-                        || ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.Passcode_Array).contains(String.valueOf(-messageObject.getChatId()))
-                )
-        ) {
-            ArrayList<TLRPC.MessageEntity> entities = new ArrayList<>(original);
-            var spoiler = new TLRPC.TL_messageEntitySpoiler();
-            spoiler.offset = 0;
-            spoiler.length = messageObject.messageOwner.message.length();
-            entities.add(spoiler);
-            return entities;
-        } else {
-            return original;
-        }
-    }
-
-    public static ArrayList<TLRPC.MessageEntity> checkLockedChatsEntities(MessageObject messageObject) {
-        return checkLockedChatsEntities(messageObject, messageObject.messageOwner.entities);
-    }*/
 }

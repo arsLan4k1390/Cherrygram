@@ -4,6 +4,7 @@
 afat/
 build/
 obj/
+/TMessagesProj/jni/security/
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/helpers/UserHelper.java

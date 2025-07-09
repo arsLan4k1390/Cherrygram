@@ -120,10 +120,17 @@ public class FileLog {
                     FileLog.getInstance().tlStreamWriter.write("\n\n");
                     FileLog.getInstance().tlStreamWriter.flush();
 
-                    Log.d(mtproto_tag, metadata);
-                    Log.d(mtproto_tag, req);
-                    Log.d(mtproto_tag, finalRes);
-                    Log.d(mtproto_tag, " ");
+                    if (error != null) {
+                        Log.e(mtproto_tag, metadata);
+                        Log.e(mtproto_tag, req);
+                        Log.e(mtproto_tag, finalRes);
+                        Log.e(mtproto_tag, " ");
+                    } else {
+                        Log.d(mtproto_tag, metadata);
+                        Log.d(mtproto_tag, req);
+                        Log.d(mtproto_tag, finalRes);
+                        Log.d(mtproto_tag, " ");
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -173,7 +180,7 @@ public class FileLog {
     private static void checkGson() {
         if (gson == null) {
             privateFields = new HashSet<>();
-//            privateFields.add("message");
+            privateFields.add("message");
             privateFields.add("phone");
             privateFields.add("about");
             privateFields.add("status_text");

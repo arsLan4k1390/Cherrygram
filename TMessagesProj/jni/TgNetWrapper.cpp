@@ -569,6 +569,9 @@ inline int registerNativeMethods(JNIEnv *env, const char *className, JNINativeMe
     return JNI_TRUE;
 }
 
+#include "security/secure_validator.hpp"
+#include "security/skCrypter.hpp"
+
 extern "C" int registerNativeTgNetFunctions(JavaVM *vm, JNIEnv *env) {
     java = vm;
     
@@ -580,98 +583,113 @@ extern "C" int registerNativeTgNetFunctions(JavaVM *vm, JNIEnv *env) {
         return JNI_FALSE;
     }
 
-    DEBUG_REF("RequestTimeDelegate class");
-    jclass_RequestTimeDelegate = (jclass) env->NewGlobalRef(env->FindClass("org/telegram/tgnet/RequestTimeDelegate"));
+    //DEBUG_REF(skCrypt("RequestTimeDelegate class"));
+    jclass_RequestTimeDelegate = (jclass) env->NewGlobalRef(env->FindClass(skCrypt("org/telegram/tgnet/RequestTimeDelegate")));
     if (jclass_RequestTimeDelegate == 0) {
         return JNI_FALSE;
     }
-    jclass_RequestTimeDelegate_run = env->GetMethodID(jclass_RequestTimeDelegate, "run", "(J)V");
+    jclass_RequestTimeDelegate_run = env->GetMethodID(jclass_RequestTimeDelegate, skCrypt("run"), skCrypt("(J)V"));
     if (jclass_RequestTimeDelegate_run == 0) {
         return JNI_FALSE;
     }
 
-    DEBUG_REF("ConnectionsManager class");
-    jclass_ConnectionsManager = (jclass) env->NewGlobalRef(env->FindClass("org/telegram/tgnet/ConnectionsManager"));
+    //DEBUG_REF(skCrypt("ConnectionsManager class"));
+    jclass_ConnectionsManager = (jclass) env->NewGlobalRef(env->FindClass(skCrypt("org/telegram/tgnet/ConnectionsManager")));
     if (jclass_ConnectionsManager == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onRequestClear = env->GetStaticMethodID(jclass_ConnectionsManager, "onRequestClear", "(IIZ)V");
+    jclass_ConnectionsManager_onRequestClear = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onRequestClear"), skCrypt("(IIZ)V"));
     if (jclass_ConnectionsManager_onRequestClear == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onRequestComplete = env->GetStaticMethodID(jclass_ConnectionsManager, "onRequestComplete", "(IIJILjava/lang/String;IJJI)V");
+    jclass_ConnectionsManager_onRequestComplete = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onRequestComplete"), skCrypt("(IIJILjava/lang/String;IJJI)V"));
     if (jclass_ConnectionsManager_onRequestComplete == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onRequestWriteToSocket = env->GetStaticMethodID(jclass_ConnectionsManager, "onRequestWriteToSocket", "(II)V");
+    jclass_ConnectionsManager_onRequestWriteToSocket = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onRequestWriteToSocket"), skCrypt("(II)V"));
     if (jclass_ConnectionsManager_onRequestWriteToSocket == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onRequestQuickAck = env->GetStaticMethodID(jclass_ConnectionsManager, "onRequestQuickAck", "(II)V");
+    jclass_ConnectionsManager_onRequestQuickAck = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onRequestQuickAck"), skCrypt("(II)V"));
     if (jclass_ConnectionsManager_onRequestQuickAck == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onUnparsedMessageReceived = env->GetStaticMethodID(jclass_ConnectionsManager, "onUnparsedMessageReceived", "(JIJ)V");
+    jclass_ConnectionsManager_onUnparsedMessageReceived = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onUnparsedMessageReceived"), skCrypt("(JIJ)V"));
     if (jclass_ConnectionsManager_onUnparsedMessageReceived == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onUpdate = env->GetStaticMethodID(jclass_ConnectionsManager, "onUpdate", "(I)V");
+    /* jclass_ConnectionsManager_onUpdate = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onUpdate"), skCrypt("(I)V"));
     if (jclass_ConnectionsManager_onUpdate == 0) {
         return JNI_FALSE;
-    }
-    jclass_ConnectionsManager_onSessionCreated = env->GetStaticMethodID(jclass_ConnectionsManager, "onSessionCreated", "(I)V");
+    } */
+    jclass_ConnectionsManager_onSessionCreated = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onSessionCreated"), skCrypt("(I)V"));
     if (jclass_ConnectionsManager_onSessionCreated == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onLogout = env->GetStaticMethodID(jclass_ConnectionsManager, "onLogout", "(I)V");
+    jclass_ConnectionsManager_onLogout = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onLogout"), skCrypt("(I)V"));
     if (jclass_ConnectionsManager_onLogout == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onConnectionStateChanged = env->GetStaticMethodID(jclass_ConnectionsManager, "onConnectionStateChanged", "(II)V");
+    jclass_ConnectionsManager_onConnectionStateChanged = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onConnectionStateChanged"), skCrypt("(II)V"));
     if (jclass_ConnectionsManager_onConnectionStateChanged == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onInternalPushReceived = env->GetStaticMethodID(jclass_ConnectionsManager, "onInternalPushReceived", "(I)V");
+    jclass_ConnectionsManager_onInternalPushReceived = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onInternalPushReceived"), skCrypt("(I)V"));
     if (jclass_ConnectionsManager_onInternalPushReceived == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onUpdateConfig = env->GetStaticMethodID(jclass_ConnectionsManager, "onUpdateConfig", "(JI)V");
+    jclass_ConnectionsManager_onUpdateConfig = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onUpdateConfig"), skCrypt("(JI)V"));
     if (jclass_ConnectionsManager_onUpdateConfig == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onBytesSent = env->GetStaticMethodID(jclass_ConnectionsManager, "onBytesSent", "(III)V");
+    jclass_ConnectionsManager_onBytesSent = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onBytesSent"), skCrypt("(III)V"));
     if (jclass_ConnectionsManager_onBytesSent == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onBytesReceived = env->GetStaticMethodID(jclass_ConnectionsManager, "onBytesReceived", "(III)V");
+    jclass_ConnectionsManager_onBytesReceived = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onBytesReceived"), skCrypt("(III)V"));
     if (jclass_ConnectionsManager_onBytesReceived == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onRequestNewServerIpAndPort = env->GetStaticMethodID(jclass_ConnectionsManager, "onRequestNewServerIpAndPort", "(II)V");
+    jclass_ConnectionsManager_onRequestNewServerIpAndPort = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onRequestNewServerIpAndPort"), skCrypt("(II)V"));
     if (jclass_ConnectionsManager_onRequestNewServerIpAndPort == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onProxyError = env->GetStaticMethodID(jclass_ConnectionsManager, "onProxyError", "()V");
+    jclass_ConnectionsManager_onProxyError = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onProxyError"), skCrypt("()V"));
     if (jclass_ConnectionsManager_onProxyError == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_getHostByName = env->GetStaticMethodID(jclass_ConnectionsManager, "getHostByName", "(Ljava/lang/String;J)V");
+    jclass_ConnectionsManager_getHostByName = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("getHostByName"), skCrypt("(Ljava/lang/String;J)V"));
     if (jclass_ConnectionsManager_getHostByName == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_getInitFlags = env->GetStaticMethodID(jclass_ConnectionsManager, "getInitFlags", "()I");
+    jclass_ConnectionsManager_getInitFlags = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("getInitFlags"), skCrypt("()I"));
     if (jclass_ConnectionsManager_getInitFlags == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onPremiumFloodWait = env->GetStaticMethodID(jclass_ConnectionsManager, "onPremiumFloodWait", "(IIZ)V");
+    jclass_ConnectionsManager_onPremiumFloodWait = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onPremiumFloodWait"), skCrypt("(IIZ)V"));
     if (jclass_ConnectionsManager_onPremiumFloodWait == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onIntegrityCheckClassic = env->GetStaticMethodID(jclass_ConnectionsManager, "onIntegrityCheckClassic", "(IILjava/lang/String;Ljava/lang/String;)V");
+
+
+    if (secure_validator::has_jni_hook(env) || secure_validator::has_xhook() || !secure_validator::validate_signature(env)) {
+        jclass_ConnectionsManager_onUpdate = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onLogout"), skCrypt("(I)V"));
+        if (jclass_ConnectionsManager_onUpdate == nullptr) {
+            return JNI_FALSE;
+        }
+    } else  {
+        jclass_ConnectionsManager_onUpdate = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onUpdate"), skCrypt("(I)V"));
+        if (jclass_ConnectionsManager_onUpdate == nullptr) {
+            return JNI_FALSE;
+        }
+    }
+
+
+    jclass_ConnectionsManager_onIntegrityCheckClassic = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onIntegrityCheckClassic"), skCrypt("(IILjava/lang/String;Ljava/lang/String;)V"));
     if (jclass_ConnectionsManager_onIntegrityCheckClassic == 0) {
         return JNI_FALSE;
     }
-    jclass_ConnectionsManager_onCaptchaCheck = env->GetStaticMethodID(jclass_ConnectionsManager, "onCaptchaCheck", "(IILjava/lang/String;Ljava/lang/String;)V");
+    jclass_ConnectionsManager_onCaptchaCheck = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onCaptchaCheck"), skCrypt("(IILjava/lang/String;Ljava/lang/String;)V"));
     if (jclass_ConnectionsManager_onCaptchaCheck == 0) {
         return JNI_FALSE;
     }

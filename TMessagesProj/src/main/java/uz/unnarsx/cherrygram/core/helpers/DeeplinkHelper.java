@@ -27,6 +27,7 @@ import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry;
+import uz.unnarsx.cherrygram.preferences.folders.FoldersPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator;
 
 public class DeeplinkHelper {
@@ -54,6 +55,7 @@ public class DeeplinkHelper {
                 case "cg_donate", "cg_donates" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createDonate();
                 case "cg_drawer" -> fragment = new DrawerPreferencesEntry();
                 case "cg_experimental" -> fragment = new ExperimentalPreferencesEntry();
+                case "cg_folders", "cg_tabs" -> fragment = new FoldersPreferencesEntry();
                 case "cg_general" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createGeneral();
                 case "cg_premium" -> {
                     // Fuckoff :)

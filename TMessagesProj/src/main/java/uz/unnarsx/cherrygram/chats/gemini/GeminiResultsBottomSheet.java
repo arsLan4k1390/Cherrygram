@@ -654,6 +654,9 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
             }
             AndroidUtilities.selectionSort(names, targetLanguages);
 
+            targetLanguages.add(0, LocaleController.getInstance().getCurrentLocale().getLanguage());
+            names.add(0, getString(R.string.Default));
+
             ActionBarPopupWindow.ActionBarPopupWindowLayout layout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(getContext()) {
                 @Override
                 protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

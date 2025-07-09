@@ -174,6 +174,7 @@ object CGResourcesHelper {
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE -> R.drawable.msg_saved_filled_solar
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> R.drawable.msg_share_filled
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> R.drawable.msg_translate_filled_solar
+            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI -> R.drawable.msg_translate_filled_solar
             else -> R.drawable.filled_button_reply
         }
     }

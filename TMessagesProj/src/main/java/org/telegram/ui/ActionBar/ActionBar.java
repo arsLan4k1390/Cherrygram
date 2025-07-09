@@ -24,13 +24,10 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.text.Layout;
 import android.text.SpannableString;
-import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.transition.ChangeBounds;
@@ -58,6 +55,7 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.ui.Adapters.FiltersView;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.BackupImageView;
+import org.telegram.ui.Components.CounterView;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.EllipsizeSpanAnimator;
 import org.telegram.ui.Components.FireworksEffect;
@@ -1233,6 +1231,8 @@ public class ActionBar extends FrameLayout {
         if (backButtonImageView != null && backButtonImageView.getVisibility() != GONE) {
             backButtonImageView.measure(MeasureSpec.makeMeasureSpec(dp(54), MeasureSpec.EXACTLY), actionBarHeightSpec);
             textLeft = dp(AndroidUtilities.isTablet() ? 80 : 72);
+
+            if (countLayout != null) countLayout.measure(MeasureSpec.makeMeasureSpec(dp(100), MeasureSpec.EXACTLY), actionBarHeightSpec);
         } else {
             textLeft = dp(AndroidUtilities.isTablet() ? 26 : 18);
         }
@@ -1321,7 +1321,7 @@ public class ActionBar extends FrameLayout {
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
-            if (child.getVisibility() == GONE || child == titleTextView[0] || child == titleTextView[1] || child == subtitleTextView || child == menu || child == backButtonImageView || child == additionalSubtitleTextView || child == avatarSearchImageView) {
+            if (child.getVisibility() == GONE || child == titleTextView[0] || child == titleTextView[1] || child == subtitleTextView || child == menu || child == backButtonImageView || countLayout != null && child == countLayout || child == additionalSubtitleTextView || child == avatarSearchImageView) {
                 continue;
             }
             measureChildWithMargins(child, widthMeasureSpec, 0, MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.EXACTLY), 0);
@@ -1340,6 +1340,8 @@ public class ActionBar extends FrameLayout {
         if (backButtonImageView != null && backButtonImageView.getVisibility() != GONE) {
             backButtonImageView.layout(0, additionalTop, backButtonImageView.getMeasuredWidth(), additionalTop + backButtonImageView.getMeasuredHeight());
             textLeft = dp(AndroidUtilities.isTablet() ? 80 : 72);
+
+            if (countLayout != null) countLayout.layout(dp(30), additionalTop - dp(15), countLayout.getMeasuredWidth(), additionalTop + countLayout.getMeasuredHeight());
         } else {
             textLeft = dp(AndroidUtilities.isTablet() ? 26 : 18);
         }
@@ -1398,7 +1400,7 @@ public class ActionBar extends FrameLayout {
         int childCount = getChildCount();
         for (int i = 0; i < childCount; i++) {
             View child = getChildAt(i);
-            if (child.getVisibility() == GONE || child == titleTextView[0] || child == titleTextView[1] || child == subtitleTextView || child == menu || child == backButtonImageView || child == additionalSubtitleTextView || child == avatarSearchImageView) {
+            if (child.getVisibility() == GONE || child == titleTextView[0] || child == titleTextView[1] || child == subtitleTextView || child == menu || child == backButtonImageView || countLayout != null && child == countLayout || child == additionalSubtitleTextView || child == avatarSearchImageView) {
                 continue;
             }
 
@@ -1931,56 +1933,6 @@ public class ActionBar extends FrameLayout {
         super.dispatchDraw(canvas);
     }
 
-    private StaticLayout countLayout;
-
-    public class UnreadImageView extends ImageView {
-        public UnreadImageView(Context context) {
-            super(context);
-        }
-
-        private int unreadCount = 0;
-        private RectF rect = new RectF();
-
-        @Override
-        public void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-            if (countLayout == null || unreadCount == 0)
-                return;
-
-            Paint paint = Theme.dialogs_countPaint;
-//            String unreadCountString = unreadCount > 99 ? "99+" : Integer.toString(unreadCount);
-            String unreadCountString = unreadCount > 999 ? "999+" : Integer.toString(unreadCount);
-            int countWidth = Math.max(AndroidUtilities.dp(12), (int) Math.ceil(Theme.dialogs_countTextPaint.measureText(unreadCountString)));
-            int countLeft = getMeasuredWidth() - countWidth - AndroidUtilities.dp(20);
-            int countTop = 0;
-
-            int x = countLeft - AndroidUtilities.dp(5.5f);
-            rect.set(x, countTop, x + countWidth + AndroidUtilities.dp(11), countTop + AndroidUtilities.dp(23));
-            canvas.drawRoundRect(rect, 11.5f * AndroidUtilities.density, 11.5f * AndroidUtilities.density, paint);
-            canvas.save();
-            canvas.translate(countLeft, countTop + AndroidUtilities.dp(4));
-            countLayout.draw(canvas);
-            canvas.restore();
-        }
-
-        public void setUnread(int count) {
-            if (count != unreadCount) {
-                unreadCount = count;
-//                String countString = count > 99 ? "99+" : Integer.toString(count);
-                String countString = count > 999 ? "999+" : Integer.toString(count);
-                int countWidth = count == 0 ? 0 : Math.max(AndroidUtilities.dp(12), (int) Math.ceil(Theme.dialogs_countTextPaint.measureText(countString)));
-                countLayout = new StaticLayout(countString, Theme.dialogs_countTextPaint, countWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 0.0f, false);
-                invalidate();
-            }
-        }
-    }
-
-    public void unreadBadgeSetCount(int count) {
-        if (backButtonImageView != null && CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton()) {
-            backButtonImageView.setUnread(count);
-        }
-    }
-
     public void setForceSkipTouches(boolean forceSkipTouches) {
         this.forceSkipTouches = forceSkipTouches;
     }
@@ -2015,6 +1967,53 @@ public class ActionBar extends FrameLayout {
     }
 
     /** Cherrygram start */
+    private CounterView countLayout;
+
+    public class UnreadImageView extends ImageView {
+        private int unreadCount = 0;
+
+        public UnreadImageView(Context context) {
+            super(context);
+        }
+
+        public void createUnreadView(int count) {
+            if (countLayout != null) {
+                return;
+            }
+            countLayout = new CounterView(getContext(), resourcesProvider) {
+                @Override
+                public void invalidate() {
+                    super.invalidate();
+                }
+            };
+            countLayout.setReverse(true);
+            countLayout.setGravity(Gravity.LEFT);
+
+            addView(countLayout, LayoutHelper.createFrame(54, 54, Gravity.LEFT | Gravity.TOP));
+            countLayout.setOnClickListener(v -> backButtonImageView.callOnClick());
+
+            setUnread(count);
+        }
+
+        public void checkUnreadView(int count) {
+            if (!CherrygramChatsConfig.INSTANCE.getUnreadBadgeOnBackButton()) return;
+            if (countLayout == null) {
+                createUnreadView(count);
+            } else {
+                setUnread(count);
+            }
+        }
+
+        public void setUnread(int count) {
+            countLayout.setVisibility(count > 0 ? VISIBLE : GONE);
+            if (count != unreadCount) {
+                unreadCount = count;
+                countLayout.setCount(count, true);
+            }
+        }
+
+    }
+
     public void onDrawCrossfadeBackground(Canvas canvas) {
         if (blurredBackground && actionBarColor != Color.TRANSPARENT) {
             rectTmp.set(0, 0, getMeasuredWidth(), getMeasuredHeight());

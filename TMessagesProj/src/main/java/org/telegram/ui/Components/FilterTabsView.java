@@ -32,6 +32,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.Property;
 import android.util.SparseIntArray;
+import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,6 +64,7 @@ import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.chats.GlobalSearchView;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.preferences.folders.helpers.FolderIconHelper;
 
@@ -70,6 +72,8 @@ public class FilterTabsView extends FrameLayout {
 
     int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
     int tabMode = CherrygramAppearanceConfig.INSTANCE.getTabMode();
+
+    private final Theme.ResourcesProvider resourcesProvider;
 
     public int getCurrentTabStableId() {
         return positionToStableId.get(currentPosition, -1);
@@ -124,14 +128,10 @@ public class FilterTabsView extends FrameLayout {
         public boolean isLocked;
         public boolean noanimate;
 
-        public Tab(int i, String t, ArrayList<TLRPC.MessageEntity> entities, boolean noanimate, String emoticon) {
-            id = i;
-            realTitle = t != null ? new SpannableStringBuilder(t) : new SpannableStringBuilder("");
-
-            realTitle = Emoji.replaceEmoji(realTitle, textPaint.getFontMetricsInt(), false);
-            title = (tabMode == CherrygramAppearanceConfig.TAB_TYPE_ICON) ? "" : realTitle;
-//            MessageObject.addEntitiesToText(title, e, false, false, false, true);
-            realTitle = MessageObject.replaceAnimatedEmoji(realTitle, entities, textPaint.getFontMetricsInt());
+        public Tab(int i, CharSequence title, boolean noanimate, String emoticon) {
+            this.id = i;
+            this.title = (tabMode == CherrygramAppearanceConfig.TAB_TYPE_ICON) ? "" : title;
+            this.realTitle = title;
             this.emoticon = (i != Integer.MAX_VALUE) ? (emoticon != null ? emoticon : "") : "\uD83D\uDCAC";
             this.noanimate = noanimate;
         }
@@ -170,7 +170,6 @@ public class FilterTabsView extends FrameLayout {
 //            MessageObject.addEntitiesToText(title, newEntities, false, false, false, true);
             title = MessageObject.replaceAnimatedEmoji(title, newEntities, textPaint.getFontMetricsInt());
             this.noanimate = noanimate;
-            realTitle = newTitle;
             return true;
         }
     }
@@ -503,10 +502,10 @@ public class FilterTabsView extends FrameLayout {
 
             if (animateCounterEnter || counterText != null || showRemove && (isEditing || editingStartAnimationProgress != 0)) {
                 if (aBackgroundColorKey < 0) {
-                    textCounterPaint.setColor(Theme.getColor(backgroundColorKey));
+                    textCounterPaint.setColor(Theme.getColor(backgroundColorKey, resourcesProvider));
                 } else {
-                    int color1 = Theme.getColor(backgroundColorKey);
-                    int color2 = Theme.getColor(aBackgroundColorKey);
+                    int color1 = Theme.getColor(backgroundColorKey, resourcesProvider);
+                    int color2 = Theme.getColor(aBackgroundColorKey, resourcesProvider);
                     textCounterPaint.setColor(ColorUtils.blendARGB(color1, color2, animationValue));
                 }
                 if (Theme.hasThemeKey(unreadKey) && Theme.hasThemeKey(unreadOtherKey)) {
@@ -874,7 +873,7 @@ public class FilterTabsView extends FrameLayout {
         }
     }
 
-    private final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
+    public final TextPaint textPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private final TextPaint textCounterPaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private final Paint deletePaint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
     private final Paint counterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -979,8 +978,8 @@ public class FilterTabsView extends FrameLayout {
         public void setValue(FilterTabsView object, float value) {
             animationValue = value;
 
-            int color1 = Theme.getColor(tabLineColorKey);
-            int color2 = Theme.getColor(aTabLineColorKey);
+            int color1 = Theme.getColor(tabLineColorKey, resourcesProvider);
+            int color2 = Theme.getColor(aTabLineColorKey, resourcesProvider);
             selectorDrawable.setColor(ColorUtils.setAlphaComponent(ColorUtils.blendARGB(color1, color2, value), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
 
             listView.invalidateViews();
@@ -994,8 +993,9 @@ public class FilterTabsView extends FrameLayout {
         }
     };
 
-    public FilterTabsView(Context context) {
+    public FilterTabsView(Context context, Theme.ResourcesProvider resourcesProvider) {
         super(context);
+        this.resourcesProvider = resourcesProvider;
         textCounterPaint.setTextSize(AndroidUtilities.dp(13));
         textCounterPaint.setTypeface(AndroidUtilities.bold());
         textPaint.setTextSize(AndroidUtilities.dp(15));
@@ -1221,7 +1221,11 @@ public class FilterTabsView extends FrameLayout {
                 invalidate();
             }
         });
-        addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+        globalSearchView = new GlobalSearchView(context, new SizeNotifierFrameLayout(context));
+        addView(globalSearchView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+        addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER, 0, getTabsHeight(), 0, 0));
     }
 
     public void setDelegate(FilterTabsViewDelegate filterTabsViewDelegate) {
@@ -1326,6 +1330,13 @@ public class FilterTabsView extends FrameLayout {
         selectedTabId = -1;
     }
 
+    public CharSequence text(String t, ArrayList<TLRPC.MessageEntity> e)  {
+        CharSequence title = t != null ? new SpannableStringBuilder(t) : new SpannableStringBuilder("");
+        title = Emoji.replaceEmoji(title, textPaint.getFontMetricsInt(), false);
+        title = MessageObject.replaceAnimatedEmoji(title, e, textPaint.getFontMetricsInt());
+        return title;
+    }
+
     public void addTab(int id, int stableId, String text, ArrayList<TLRPC.MessageEntity> entities, boolean noanimate, boolean isDefault, boolean isLocked, String emoticon) {
         int position = tabs.size();
         if (position == 0 && selectedTabId == -1) {
@@ -1338,7 +1349,26 @@ public class FilterTabsView extends FrameLayout {
             currentPosition = position;
         }
 
-        Tab tab = new Tab(id, text, entities, noanimate, emoticon);
+        Tab tab = new Tab(id, text(text, entities), noanimate, emoticon);
+        tab.isDefault = isDefault;
+        tab.isLocked = isLocked;
+        allTabsWidth += tab.getWidth(true) + FolderIconHelper.getPaddingTab();
+        tabs.add(tab);
+    }
+
+    public void addTab(int id, int stableId, CharSequence text, boolean noanimate, boolean isDefault, boolean isLocked, String emoticon) {
+        int position = tabs.size();
+        if (position == 0 && selectedTabId == -1) {
+            selectedTabId = id;
+        }
+        positionToId.put(position, id);
+        positionToStableId.put(position, stableId);
+        idToPosition.put(id, position);
+        if (selectedTabId != -1 && selectedTabId == id) {
+            currentPosition = position;
+        }
+
+        Tab tab = new Tab(id, text, noanimate, emoticon);
         tab.isDefault = isDefault;
         tab.isLocked = isLocked;
         allTabsWidth += tab.getWidth(true) + FolderIconHelper.getPaddingTab();
@@ -1361,6 +1391,19 @@ public class FilterTabsView extends FrameLayout {
         adapter.notifyDataSetChanged();
         delegate.onTabSelected(tabs.get(currentPosition), false, false);
         oldAnimatedTab = currentPosition;
+    }
+
+    public void setColors(int line, int active, int unactive, int selector, int background) {
+        tabLineColorKey = line;
+        backgroundColorKey = background;
+        activeTextColorKey = active;
+        unactiveTextColorKey = unactive;
+        selectorDrawable.setColor(Theme.getColor(tabLineColorKey, resourcesProvider));
+        listView.setSelectorDrawableColor(Theme.getColor(selector, resourcesProvider));
+
+        listView.invalidateViews();
+        listView.invalidate();
+        invalidate();
     }
 
     public void animateColorsTo(int line, int active, int unactive, int selector, int background) {
@@ -1466,7 +1509,15 @@ public class FilterTabsView extends FrameLayout {
                 canvas.translate(listView.getTranslationX(), 0);
                 canvas.scale(listView.getScaleX(), 1f, listView.getPivotX() + listView.getX(), listView.getPivotY());
                 updateSelector();
-                selectorDrawable.setBounds((int) indicatorX - (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(15) : height - AndroidUtilities.dpr(4), (int) (indicatorX + indicatorWidth) + (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(15) : height);
+
+                int offsetY = tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(getTabsHeight()) : 0;
+                selectorDrawable.setBounds(
+                        (int) indicatorX - (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
+                        (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(15) : height - AndroidUtilities.dpr(4)) + offsetY,
+                        (int) (indicatorX + indicatorWidth) + (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
+                        (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(15) : height) + offsetY
+                );
+
                 if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI && CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
 //                    selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), 0));
                     selectorDrawable.setStroke(AndroidUtilities.dp(1), Theme.getColor(activeTextColorKey));
@@ -1947,7 +1998,7 @@ public class FilterTabsView extends FrameLayout {
             if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
                 listView.cancelClickRunnables(false);
                 viewHolder.itemView.setPressed(true);
-                viewHolder.itemView.setBackgroundColor(Theme.getColor(backgroundColorKey));
+                viewHolder.itemView.setBackgroundColor(Theme.getColor(backgroundColorKey, resourcesProvider));
             } else {
                 AndroidUtilities.cancelRunOnUIThread(resetDefaultPosition);
                 AndroidUtilities.runOnUIThread(resetDefaultPosition, 320);
@@ -2036,4 +2087,17 @@ public class FilterTabsView extends FrameLayout {
             selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
         }
     }
+
+    /** Cherrygram start */
+    private GlobalSearchView globalSearchView;
+
+    private int getTabsHeight() {
+        return CherrygramAppearanceConfig.INSTANCE.getIosSearchPanel() ? 22 : 0;
+    }
+
+    public GlobalSearchView getGlobalSearchView() {
+        return globalSearchView;
+    }
+    /** Cherrygram finish */
+
 }

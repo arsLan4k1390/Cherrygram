@@ -59,9 +59,12 @@ import org.telegram.ui.Components.CheckBox2;
 import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.CombinedDrawable;
 import org.telegram.ui.Components.CubicBezierInterpolator;
+import org.telegram.ui.Components.Forum.ForumUtilities;
+import org.telegram.ui.Components.PhotoBubbleClip;
 import org.telegram.ui.Components.Premium.PremiumGradient;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.Text;
+import org.telegram.ui.FilterCreateActivity;
 import org.telegram.ui.NotificationsSettingsActivity;
 import org.telegram.ui.Stories.StoriesUtilities;
 
@@ -72,6 +75,7 @@ import java.util.Locale;
 public class ProfileSearchCell extends BaseCell implements NotificationCenter.NotificationCenterDelegate, Theme.Colorable {
 
     public boolean dontDrawAvatar;
+    private PhotoBubbleClip bubbleClip;
     private CharSequence currentName;
     public ImageReceiver avatarImage;
     private AvatarDrawable avatarDrawable;
@@ -407,7 +411,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
     }
 
     public void buildLayout() {
-        CharSequence nameString;
+        CharSequence nameString = null;
         TextPaint currentNamePaint;
 
         drawNameLock = false;
@@ -429,6 +433,12 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
         } else if (chat != null) {
             dialog_id = -chat.id;
             drawCheck = chat.verified;
+            if (chat.monoforum) {
+                TLRPC.Chat mfChat = MessagesController.getInstance(currentAccount).getChat(chat.linked_monoforum_id);
+                if (mfChat != null) {
+                    drawCheck = mfChat.verified;
+                }
+            }
             if (!LocaleController.isRTL) {
                 nameLeft = dp(AndroidUtilities.leftBaseline);
             } else {
@@ -488,15 +498,27 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
 
         if (currentName != null) {
             nameString = currentName;
-        } else {
-            String nameString2 = "";
-            if (chat != null) {
-                nameString2 = AndroidUtilities.removeRTL(AndroidUtilities.removeDiacritics(chat.title));
-            } else if (user != null) {
-                nameString2 = AndroidUtilities.removeRTL(AndroidUtilities.removeDiacritics(UserObject.getUserName(user)));
-            }
-            nameString = nameString2.replace('\n', ' ');
         }
+        if (chat != null) {
+            if (chat.monoforum) {
+                TLRPC.Chat mfChat = MessagesController.getInstance(currentAccount).getChat(chat.linked_monoforum_id);
+                if (mfChat != null) {
+                    final SpannableStringBuilder sb = new SpannableStringBuilder(AndroidUtilities.escape(mfChat.title));
+                    sb.append(" ");
+                    final int index = sb.length();
+                    sb.append(getString(R.string.MonoforumSpan));
+                    sb.setSpan(new FilterCreateActivity.TextSpan(getString(R.string.MonoforumSpan), 9.33f, Theme.key_windowBackgroundWhiteGrayText, resourcesProvider), index, sb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                    nameString = sb;
+                } else if (nameString == null) {
+                    nameString = AndroidUtilities.removeRTL(AndroidUtilities.removeDiacritics(chat.title));
+                }
+            } else if (nameString == null) {
+                nameString = AndroidUtilities.removeRTL(AndroidUtilities.removeDiacritics(chat.title));
+            }
+        } else if (nameString == null && user != null) {
+            nameString = AndroidUtilities.removeRTL(AndroidUtilities.removeDiacritics(UserObject.getUserName(user)));
+        }
+        nameString = AndroidUtilities.replaceNewLines(nameString);
         if (nameString.length() == 0) {
             if (user != null && user.phone != null && user.phone.length() != 0) {
                 nameString = PhoneFormat.getInstance().format("+" + user.phone);
@@ -658,6 +680,8 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
                 } else {
                     if (chat.has_geo) {
                         statusString = getString(R.string.MegaLocation);
+                    } else if (ChatObject.isMonoForum(chat)) {
+                        statusString = getString(R.string.MonoforumMessages);
                     } else if (!ChatObject.isPublic(chat)) {
                         statusString = getString(R.string.MegaPrivate).toLowerCase();
                     } else {
@@ -810,8 +834,12 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
                     thumb = chat.photo.strippedBitmap;
                 }
             }
-            avatarDrawable.setInfo(currentAccount, chat);
-            avatarImage.setImage(ImageLocation.getForUserOrChat(chat, ImageLocation.TYPE_SMALL), "50_50", ImageLocation.getForUserOrChat(chat, ImageLocation.TYPE_STRIPPED), "50_50", thumb, chat, 0);
+            if (chat.monoforum) {
+                ForumUtilities.setMonoForumAvatar(currentAccount, chat, avatarDrawable, avatarImage);
+            } else {
+                avatarDrawable.setInfo(currentAccount, chat);
+                avatarImage.setImage(ImageLocation.getForUserOrChat(chat, ImageLocation.TYPE_SMALL), "50_50", ImageLocation.getForUserOrChat(chat, ImageLocation.TYPE_STRIPPED), "50_50", thumb, chat, 0);
+            }
         } else if (contact != null) {
             avatarDrawable.setInfo(0, contact.first_name, contact.last_name);
             avatarImage.setImage(null, null, avatarDrawable, null, null, 0);
@@ -820,7 +848,7 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             avatarImage.setImage(null, null, avatarDrawable, null, null, 0);
         }
 
-        avatarImage.setRoundRadius(rectangularAvatar ? dp(10) : chat != null && chat.forum ? dp(16) : dp(23));
+        avatarImage.setRoundRadius(chat != null && chat.monoforum ? 0 : rectangularAvatar ? dp(10) : chat != null && chat.forum ? dp(16) : dp(23));
         if (mask != 0) {
             boolean continueUpdate = false;
             if ((mask & MessagesController.UPDATE_MASK_AVATAR) != 0 && user != null || (mask & MessagesController.UPDATE_MASK_CHAT_AVATAR) != 0 && chat != null) {
@@ -844,6 +872,8 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
                 String newName;
                 if (user != null) {
                     newName = user.first_name + user.last_name;
+                } else if (chat.monoforum) {
+                    newName = ForumUtilities.getMonoForumTitle(currentAccount, chat);
                 } else {
                     newName = chat.title;
                 }
@@ -871,7 +901,9 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
             }
             lastName = user.first_name + user.last_name;
         } else if (chat != null) {
-            lastName = chat.title;
+            lastName = chat.monoforum ?
+                ForumUtilities.getMonoForumTitle(currentAccount, chat) :
+                chat.title;
         }
 
         lastAvatar = photo;
@@ -1005,6 +1037,16 @@ public class ProfileSearchCell extends BaseCell implements NotificationCenter.No
 
         if (dontDrawAvatar) {
 
+        } else if (chat != null && chat.monoforum) {
+            if (bubbleClip == null) {
+                bubbleClip = new PhotoBubbleClip();
+            }
+            bubbleClip.setBounds((int) avatarStoryParams.originalAvatarRect.centerX(), (int) avatarStoryParams.originalAvatarRect.centerY(), (int) (avatarStoryParams.originalAvatarRect.width() / 2));
+            canvas.save();
+            canvas.clipPath(bubbleClip);
+            avatarImage.setImageCoords(avatarStoryParams.originalAvatarRect);
+            avatarImage.draw(canvas);
+            canvas.restore();
         } else if (user != null) {
             StoriesUtilities.drawAvatarWithStory(user.id, canvas, avatarImage, avatarStoryParams);
         } else if (chat != null) {

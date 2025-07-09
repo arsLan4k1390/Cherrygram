@@ -46,6 +46,7 @@ object CherrygramAppearanceConfig: CoroutineScope by CoroutineScope(
     var oneUI_SwitchStyle by sharedPreferences.boolean("AP_OneUI_SwitchStyle", true)
     var disableDividers by sharedPreferences.boolean("AP_DisableDividers", true)
     var centerTitle by sharedPreferences.boolean("AP_CenterTitle", true)
+    var iosSearchPanel by sharedPreferences.boolean("AP_iosSearchPanel", false)
     var disableToolBarShadow by sharedPreferences.boolean("AP_ToolBarShadow", true)
     var overrideHeaderColor by sharedPreferences.boolean("AP_OverrideHeaderColor", true)
     var flatNavbar by sharedPreferences.boolean("AP_FlatNavBar", true)

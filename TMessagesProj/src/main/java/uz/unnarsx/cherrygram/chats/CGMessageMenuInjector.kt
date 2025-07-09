@@ -45,6 +45,7 @@ object CGMessageMenuInjector {
         linearLayout.orientation = LinearLayout.VERTICAL
 
         val isVoiceOrVideoMessage = selectedObject.type == MessageObject.TYPE_VOICE || selectedObject.type == MessageObject.TYPE_ROUND_VIDEO
+        val isVoiceMessage = selectedObject.type == MessageObject.TYPE_VOICE
         val isPhoto = selectedObject.type == MessageObject.TYPE_PHOTO
 
         val backCell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
@@ -94,13 +95,24 @@ object CGMessageMenuInjector {
             sections.add(cell)
         }
 
-        if (!TextUtils.isEmpty(selectedObject.messageOwner.message)) {
+        if (!TextUtils.isEmpty(selectedObject.messageOwner.message) || isVoiceMessage) {
             val cell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
             cell.setTextAndIcon(getString(R.string.CP_GeminiAI_Summarize), R.drawable.magic_stick_solar)
             cell.setOnClickListener {
                 GeminiResultsBottomSheet.setMessageObject(selectedObject)
                 GeminiResultsBottomSheet.setCurrentChat(chatActivity.currentChat)
-                chatActivity.processSelectedOption(ChatActivity.OPTION_SUMMARIZE_GEMINI)
+                if (isVoiceMessage) {
+                    GeminiSDKImplementation.injectGeminiForMedia(
+                        chatActivity,
+                        chatActivity,
+                        selectedObject,
+                        false,
+                        true,
+                        true
+                    )
+                } else {
+                    chatActivity.processSelectedOption(ChatActivity.OPTION_SUMMARIZE_GEMINI)
+                }
             }
             sections.add(cell)
         }
@@ -117,7 +129,8 @@ object CGMessageMenuInjector {
                     chatActivity,
                     selectedObject,
                     false,
-                    true
+                    true,
+                    false
                 )
             }
             sections.add(cell)
@@ -134,6 +147,7 @@ object CGMessageMenuInjector {
                     chatActivity,
                     chatActivity,
                     selectedObject,
+                    false,
                     false,
                     false
                 )
@@ -153,6 +167,7 @@ object CGMessageMenuInjector {
                     chatActivity,
                     selectedObject,
                     true,
+                    false,
                     false
                 )
             }
@@ -273,6 +288,20 @@ object CGMessageMenuInjector {
             items.add(getString(R.string.CG_ToSaved))
             options.add(ChatActivity.OPTION_SAVE_MESSAGE_CHAT)
             icons.add(R.drawable.msg_saved)
+        }
+    }
+
+    fun injectViewStatistics(
+        chatActivity: ChatActivity,
+        message: MessageObject,
+        items: ArrayList<CharSequence?>,
+        options: ArrayList<Int?>,
+        icons: ArrayList<Int?>
+    ) {
+        if (message.messageOwner.forwards > 0 && ChatObject.hasAdminRights(chatActivity.currentChat) && !message.isForwarded) {
+            items.add(getString(R.string.ViewStatistics))
+            options.add(ChatActivity.OPTION_STATISTICS)
+            icons.add(R.drawable.msg_stats)
         }
     }
 

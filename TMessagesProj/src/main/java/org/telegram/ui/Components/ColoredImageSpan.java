@@ -173,17 +173,9 @@ public class ColoredImageSpan extends ReplacementSpan {
             if (rotate != 1f) {
                 canvas.rotate(rotate, drawable.getBounds().centerX(), drawable.getBounds().centerY());
             }
-            if (CherrygramChatsConfig.INSTANCE.getShowPencilIcon()) {
-                if (alpha != 1f || paint.getAlpha() != 0xFF && !ignorePaintAlpha) {
-                    var multiplier = ignorePaintAlpha ? 255 : paint.getAlpha();
-                    drawable.setAlpha((int) (alpha * multiplier));
-                }
-            } else {
-                if (drawableColorIsPaintColor) {
-                    drawable.setAlpha((int) (0xFF * alpha * (paint.getAlpha() / (float) Color.alpha(drawableColor))));
-                } else {
-                    drawable.setAlpha((int) (paint.getAlpha() * alpha));
-                }
+            if (alpha != 1f || paint.getAlpha() != 0xFF && !ignorePaintAlpha) {
+                var multiplier = ignorePaintAlpha ? 255 : paint.getAlpha();
+                drawable.setAlpha((int) (alpha * multiplier));
             }
             drawable.draw(canvas);
         }

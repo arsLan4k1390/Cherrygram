@@ -116,12 +116,14 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     const val DOUBLE_TAP_ACTION_SAVE = 3
     const val DOUBLE_TAP_ACTION_EDIT = 4
     const val DOUBLE_TAP_ACTION_TRANSLATE = 5
+    const val DOUBLE_TAP_ACTION_TRANSLATE_GEMINI = 6
     var doubleTapAction by sharedPreferences.int("CP_DoubleTapAction", DOUBLE_TAP_ACTION_REACTION)
 
     const val MESSAGE_SLIDE_ACTION_REPLY = 0
     const val MESSAGE_SLIDE_ACTION_SAVE = 1
     const val MESSAGE_SLIDE_ACTION_TRANSLATE = 2
     const val MESSAGE_SLIDE_ACTION_DIRECT_SHARE = 3
+    const val MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI = 4
     var messageSlideAction by sharedPreferences.int("CP_MessageSlideAction", MESSAGE_SLIDE_ACTION_REPLY)
     /** Messages finish **/
 

@@ -343,7 +343,7 @@ public class ThemePreviewMessagesCell extends LinearLayout {
                             return false;
                         }
                         boolean added = getMessageObject().selectReaction(ReactionsLayoutInBubble.VisibleReaction.fromEmojicon(MediaDataController.getInstance(currentAccount).getDoubleTapReaction()), false, false);
-                        setMessageObject(getMessageObject(), null, false, false);
+                        setMessageObject(getMessageObject(), null, false, false, false);
                         requestLayout();
                         ReactionsEffectOverlay.removeCurrent(false);
                         if (added) {
@@ -478,7 +478,7 @@ public class ThemePreviewMessagesCell extends LinearLayout {
             if (messageObject == null) {
                 continue;
             }
-            cells[a].setMessageObject(messageObject, null, false, false);
+            cells[a].setMessageObject(messageObject, null, false, false, false);
             addView(cells[a], LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         }
     }

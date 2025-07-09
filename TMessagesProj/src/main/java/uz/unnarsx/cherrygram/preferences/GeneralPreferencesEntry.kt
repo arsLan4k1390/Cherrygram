@@ -12,6 +12,7 @@ package uz.unnarsx.cherrygram.preferences
 import androidx.core.util.Pair
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController.getString
+import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LaunchActivity
@@ -103,6 +104,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramCoreConfig.hideStories
                 }) {
                     CherrygramCoreConfig.hideStories = it
+                    bf.notificationCenter.postNotificationName(NotificationCenter.storiesEnabledUpdate);
                 }
             }
             textIcon {

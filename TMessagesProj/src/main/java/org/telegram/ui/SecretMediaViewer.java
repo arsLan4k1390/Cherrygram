@@ -981,7 +981,7 @@ public class SecretMediaViewer implements NotificationCenter.NotificationCenterD
             windowLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         }
         windowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_SECURE;
-        centerImage.setParentView(containerView);
+        AndroidUtilities.logFlagSecure();        centerImage.setParentView(containerView);
         centerImage.setForceCrossfade(true);
 
         View overlay = textSelectionHelper.getOverlayView(windowView.getContext());

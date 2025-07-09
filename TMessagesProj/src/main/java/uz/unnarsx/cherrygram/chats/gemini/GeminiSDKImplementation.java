@@ -138,7 +138,7 @@ public class GeminiSDKImplementation {
 
         AndroidUtilities.runOnUIThread(() -> {
             try {
-                progressDialog.show();
+                if (!baseFragment.getParentActivity().isFinishing()) progressDialog.show();
             } catch (Exception e) {
                 FileLog.e(e);
             }
@@ -148,13 +148,23 @@ public class GeminiSDKImplementation {
 
         Bitmap inputBitmap = getBitmapFromFile(mediaFile);
 
-        if (inputBitmap != null && !ocr) { // Describing picture
-            String lang = LocaleController.getInstance().getCurrentLocale().getLanguage();
-            content.addText("What is the object in this picture? Answer in " + lang + " language.");
+        if (inputBitmap != null || ocr) {
+            String imagePrompt;
+
+            if (ocr) { // OCR - Optical Character Recognition
+                imagePrompt = "You are an OCR assistant. Extract and return only the exact text written in the image. " +
+                        "Preserve the original language and formatting as much as possible. " +
+                        "Do not translate, interpret, or explain the text. Output only the plain extracted text, without any introductions or extra words.";
+                content.addText(imagePrompt);
+            } else { // Describing picture
+                String lang = LocaleController.getInstance().getCurrentLocale().getLanguage();
+                imagePrompt = "Describe the content of the image clearly and concisely in the " + lang + " language. " +
+                        "Focus on the main objects, people, or scene. Do not add any explanations or introductions. " +
+                        "Output only the description.";
+                content.addText(imagePrompt);
+            }
             content.addImage(inputBitmap);
-        } else if (inputBitmap != null && ocr) { // OCR - Optical Character Recognition
-            content.addText("What text is written in the picture? Answer without further ado.");
-            content.addImage(inputBitmap);
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + imagePrompt);
         } else if (translateText) { // Message translation
             String lang = capitalFirst(languageName(CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()));
 
@@ -169,20 +179,33 @@ public class GeminiSDKImplementation {
             byte[] audioBytes = readBytesCompat(mediaFile);
             Part audioPart = new BlobPart("audio/ogg", audioBytes);
 
-            String ocrPrompt = "You are a speech-to-text transcriber. Accurately transcribe the spoken content from the provided audio without translating it. " +
-                    "Keep the original language of the speaker. Do not explain or comment on the content. " +
-                    "Return only the plain transcribed text, without any headers, summaries, or formatting.";
+            String voiceToTextPrompt;
 
-            content.addText(ocrPrompt);
+            if (summarize) {
+                voiceToTextPrompt = "You are an assistant that transcribes and then summarizes spoken content. " +
+                        "First, accurately and fully transcribe the voice message, keeping the original language. " +
+                        "Then, briefly summarize the transcribed text in the same language. " +
+                        "Output only the final summary. Do not include the full transcription, " +
+                        "and do not add any extra words like 'Summary' or 'Transcription'. " +
+                        "Do not explain or comment. The output must be plain and concise.";
+                content.addText(voiceToTextPrompt);
+            } else {
+                voiceToTextPrompt = "You are a speech-to-text transcriber. Accurately transcribe the spoken content from the provided audio without translating it. " +
+                        "Keep the original language of the speaker. Do not explain or comment on the content. " +
+                        "Return only the plain transcribed text, without any headers, summaries, or formatting.";
+                content.addText(voiceToTextPrompt);
+            }
+
             content.addPart(audioPart);
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + voiceToTextPrompt);
         } else { // Answer only to text
-            String summarizeString = summarize ? "Summarize the following message briefly in the language " +
-                    "it is written in. Output only the summary, without any additional text or phrases in the start or the end of the message " +
-                    "like \"Summary\" or \"Here is the summary\". The text to summarize: " : " ";
+            String summarizeString = summarize ? "Summarize the following text briefly and clearly in the same language it is written in. " +
+                    "Do not include any introductions, labels, or closing remarks. " +
+                    "Return only the summary as plain text. The text to summarize:" : " ";
 
-            String prompt = summarizeString + inputText.toString();
-            content.addText(prompt);
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + prompt);
+            String textPrompt = summarizeString + inputText.toString();
+            content.addText(textPrompt);
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + textPrompt);
         }
         content.build();
 
@@ -202,16 +225,11 @@ public class GeminiSDKImplementation {
 
                     AndroidUtilities.runOnUIThread(() -> {
                         try {
-                            if (progressDialog.isShowing()) progressDialog.dismiss();
+                            if (!baseFragment.getParentActivity().isFinishing() && progressDialog.isShowing()) progressDialog.dismiss();
                         } catch (Exception e) {
                             FileLog.e(e);
                         }
                     });
-
-                    AlertDialog dialog = new AlertDialog(baseFragment.getContext(), AlertDialog.ALERT_TYPE_MESSAGE, baseFragment.getResourceProvider());
-                    dialog.setTitle(getString(R.string.CP_GeminiAI_Header));
-                    dialog.setMessage(resultText);
-                    dialog.setPositiveButton(getString(R.string.OK), null);
 
                     if (translateText || transcribe || summarize || inputBitmap != null || ocr) {
                         int subtitle = getBottomSheetSubtitle(translateText, transcribe, summarize, inputBitmap, ocr);
@@ -237,7 +255,7 @@ public class GeminiSDKImplementation {
 
                 AndroidUtilities.runOnUIThread(() -> {
                     try {
-                        if (progressDialog.isShowing()) progressDialog.dismiss();
+                        if (!baseFragment.getParentActivity().isFinishing() && progressDialog.isShowing()) progressDialog.dismiss();
                     } catch (Exception e) {
                         FileLog.e(e);
                     }
@@ -247,12 +265,16 @@ public class GeminiSDKImplementation {
                     // Cause fucking Google
                     // throws an "com.google.ai.client.generativeai.type.ServerException: Unexpected Response"
 
-                    AndroidUtilities.runOnUIThread(() -> new AlertDialog.Builder(baseFragment.getContext(), AlertDialog.ALERT_TYPE_MESSAGE, baseFragment.getResourceProvider())
-                            .setTitle(getString(R.string.CP_GeminiAI_Header))
-                            .setMessage(ex.getMessage())
-                            .setPositiveButton(getString(R.string.OK), null)
-                            .create()
-                            .show());
+                    AndroidUtilities.runOnUIThread(() -> {
+                        if (baseFragment.getParentActivity() != null && !baseFragment.getParentActivity().isFinishing()) {
+                            new AlertDialog.Builder(baseFragment.getContext(), AlertDialog.ALERT_TYPE_MESSAGE, baseFragment.getResourceProvider())
+                                    .setTitle(getString(R.string.CP_GeminiAI_Header))
+                                    .setMessage(ex.getMessage())
+                                    .setPositiveButton(getString(R.string.OK), null)
+                                    .create()
+                                    .show();
+                        }
+                    });
                 } else {
                     BulletinFactory.global()
                             .createErrorBulletin(ex.getMessage(), baseFragment.getResourceProvider())
@@ -271,17 +293,18 @@ public class GeminiSDKImplementation {
             ChatActivity chatActivity,
             MessageObject messageObject,
             boolean isOCR,
-            boolean transcribe
+            boolean transcribe,
+            boolean summarize
     ) {
         if (getMediaFile(messageObject, baseFragment).exists()) {
             initGeminiConfig(
                     baseFragment,
                     chatActivity,
-                    "", false, false,
+                    "", false, summarize,
                     getMediaFile(messageObject, baseFragment),
                     isOCR, transcribe
             );
-            if (transcribe && !messageObject.isOut() && messageObject.isContentUnread()) baseFragment.getMessagesController().markMessageContentAsRead(messageObject);
+            if ((transcribe || summarize) && !messageObject.isOut() && messageObject.isContentUnread()) baseFragment.getMessagesController().markMessageContentAsRead(messageObject);
         } else {
             showDownloadAlert(baseFragment);
         }

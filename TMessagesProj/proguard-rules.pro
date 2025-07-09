@@ -145,12 +145,6 @@
 -keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO$ErrorDetail {*;}
 -keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO$ErrorDetails{*;}
 -keep class uz.unnarsx.cherrygram.chats.gemini.GeminiErrorDTO$Metadata {*;}
--keepnames class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO.* { <fields>; }
--keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO.** {*;}
--keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO$Response { *; }
--keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO$Candidate { *; }
--keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO$Content { *; }
--keep class uz.unnarsx.cherrygram.chats.gemini.GeminiDTO$Part { *; }
 
 # Keep all class member names of CameraX
 -keep class androidx.camera.extensions.** { *; }

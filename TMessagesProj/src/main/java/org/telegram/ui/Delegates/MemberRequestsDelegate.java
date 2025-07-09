@@ -242,11 +242,11 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
             MemberRequestCell cell = (MemberRequestCell) view;
             AndroidUtilities.runOnUIThread(() -> {
                 importer = cell.getImporter();
-                TLRPC.User user = users.get(importer.user_id);
+                /*TLRPC.User user = users.get(importer.user_id);
                 if (user == null) {
                     return;
                 }
-                /*fragment.getMessagesController().putUser(user, false);
+                fragment.getMessagesController().putUser(user, false);
                 boolean isLandscape = AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y;
                 boolean showProfile = user.photo == null || isLandscape;
                 if (showProfile) {
@@ -264,6 +264,13 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                     previewDialog.setOnDismissListener(dialog -> previewDialog = null);
                     previewDialog.show();
                 }*/
+
+                TLRPC.User currentUser = MessagesController.getInstance(currentAccount).getUser(importer.user_id);
+                final TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(importer.user_id);
+                if (userFull == null) {
+                    MessagesController.getInstance(currentAccount).loadUserInfo(currentUser, false, 0);
+                }
+                TLRPC.User user = users.get(importer.user_id);
                 RecyclerListView parentListView = (RecyclerListView) cell.getParent();
                 ItemOptions.makeOptions(cell, fragment.getResourceProvider(), parentListView)
                         .add(R.drawable.msg_requests, isChannel ? getString(R.string.AddToChannel) : getString(R.string.AddToGroup), () -> {

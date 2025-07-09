@@ -20,12 +20,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
 
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
 import org.telegram.messenger.support.fingerprint.FingerprintManagerCompat;
+import org.telegram.ui.LaunchActivity;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
@@ -50,7 +50,7 @@ public class CGBiometricPrompt {
     }
 
     public static void callBiometricPrompt(Activity activity, CGBiometricListener listener) {
-        new BiometricPrompt((FragmentActivity) activity, ContextCompat.getMainExecutor(activity), new BiometricPrompt.AuthenticationCallback() {
+        new BiometricPrompt(LaunchActivity.instance, ContextCompat.getMainExecutor(activity), new BiometricPrompt.AuthenticationCallback() {
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);

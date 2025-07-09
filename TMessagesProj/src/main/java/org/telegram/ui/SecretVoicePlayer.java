@@ -260,6 +260,7 @@ public class SecretVoicePlayer extends Dialog {
         }
         if (!BuildVars.DEBUG_PRIVATE_VERSION) {
             params.flags |= WindowManager.LayoutParams.FLAG_SECURE;
+            AndroidUtilities.logFlagSecure();
         }
         params.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
         params.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
@@ -537,7 +538,7 @@ public class SecretVoicePlayer extends Dialog {
                     return false;
                 }
             });
-            myCell.setMessageObject(messageObject, cell.getCurrentMessagesGroup(), cell.pinnedBottom, cell.pinnedTop);
+            myCell.setMessageObject(messageObject, cell.getCurrentMessagesGroup(), cell.pinnedBottom, cell.pinnedTop, false);
             if (!isRound) {
                 audioVisualizerDrawable = new AudioVisualizerDrawable();
                 audioVisualizerDrawable.setParentView(myCell);

@@ -179,6 +179,7 @@
     <string name="AP_SystemEmoji">Use system emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
     <string name="AP_CenterTitle">Center title in action bar</string>
+    <string name="AP_iosSearchPanel">IOS-styled search panel</string>
     <string name="AP_OverrideHeader">Override headers color</string>
     <string name="AP_OverrideHeader_Desc">Headers will be the same color as the main background</string>
     <string name="AP_DisableDividers">Disable dividers</string>

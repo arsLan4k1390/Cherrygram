@@ -59,6 +59,7 @@ import java.io.File;
 import java.util.Collections;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 public class StoriesUtilities {
 
@@ -83,7 +84,7 @@ public class StoriesUtilities {
 
     public static void drawAvatarWithStory(long dialogId, Canvas canvas, ImageReceiver avatarImage, AvatarStoryParams params) {
         StoriesController storiesController = MessagesController.getInstance(UserConfig.selectedAccount).getStoriesController();
-        boolean hasStories = storiesController.hasStories(dialogId);
+        boolean hasStories = storiesController.hasStories(dialogId) && !CherrygramCoreConfig.INSTANCE.getHideStories();
         drawAvatarWithStory(dialogId, canvas, avatarImage, UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId() != dialogId && hasStories, params);
     }
 

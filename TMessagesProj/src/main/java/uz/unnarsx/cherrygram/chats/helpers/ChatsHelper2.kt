@@ -22,7 +22,6 @@ import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
-import org.telegram.ui.AvatarPreviewer
 import org.telegram.ui.Cells.ChatMessageCell
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.ChatRightsEditActivity
@@ -32,6 +31,7 @@ import org.telegram.ui.Components.ShareAlert
 import org.telegram.ui.Components.TranslateAlert2
 import org.telegram.ui.Components.UndoView
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet
+import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
@@ -279,11 +279,11 @@ object ChatsHelper2 {
     fun getCustomChatID(): Long {
         val preferences = MessagesController.getMainSettings(UserConfig.selectedAccount)
         val savedMessagesChatID =
-            preferences.getString("CP_CustomChatIDSM", UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId().toString())
+            preferences.getString("CP_CustomChatIDSM", UserConfig.getInstance(UserConfig.selectedAccount).clientUserId.toString())
         val chatID = savedMessagesChatID!!.replace("-100", "-").toLong()
 
         return if (CherrygramExperimentalConfig.customChatForSavedMessages) chatID
-        else UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId()
+        else UserConfig.getInstance(UserConfig.selectedAccount).clientUserId
     }
     /** Custom chat id for Saved Messages finish **/
 
@@ -322,7 +322,7 @@ object ChatsHelper2 {
     fun showJsonMenu(sa: JsonBottomSheet, field: FrameLayout, messageObject: MessageObject) {
         ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
             .addIf(
-                messageObject.messageOwner.action !is TLRPC.TL_messageActionSetChatWallPaper,
+                messageObject.messageOwner !is TLRPC.TL_messageService,
                 R.drawable.msg_info,
                 if (sa.isJacksonSupportedAndEnabled) "Switch to GSON" else "Switch to Jackson"
             ) {
@@ -352,7 +352,6 @@ object ChatsHelper2 {
     /** JSON menu finish **/
 
     /** Message slide action start **/
-    @JvmStatic
     fun injectChatActivityMsgSlideAction(cf: ChatActivity, msg: MessageObject, isChannel: Boolean, classGuid: Int) {
         when (CherrygramChatsConfig.messageSlideAction) {
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_REPLY -> {
@@ -390,6 +389,15 @@ object ChatsHelper2 {
                 ) { cf.dimBehindView(false) }
                 alert.setDimBehindAlpha(100)
                 alert.setDimBehind(true)
+            }
+            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI -> {
+                if (msg == null && msg.messageOwner == null && msg.messageOwner.message == null) {
+                    return
+                }
+
+                GeminiResultsBottomSheet.setMessageObject(msg)
+                GeminiResultsBottomSheet.setCurrentChat(cf.currentChat)
+                cf.processGeminiWithText(msg, null, true, false)
             }
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> {
                 // Direct Share

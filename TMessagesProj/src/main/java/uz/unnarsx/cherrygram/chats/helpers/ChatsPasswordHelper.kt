@@ -106,11 +106,6 @@ object ChatsPasswordHelper {
                 !FingerprintController.checkDeviceFingerprintsChanged()
     }
 
-    fun shouldRequireBiometricsToOpenArchive(): Boolean {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил shouldRequireBiometricsToOpenArchive")
-        return CherrygramPrivacyConfig.askBiometricsToOpenArchive && Build.VERSION.SDK_INT >= 23
-    }
-
     fun askPasscodeBeforeDelete(): Boolean {
         if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил askPasscodeBeforeDelete")
         return CherrygramPrivacyConfig.askPasscodeBeforeDelete &&

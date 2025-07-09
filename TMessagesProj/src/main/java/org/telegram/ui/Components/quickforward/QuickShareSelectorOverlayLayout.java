@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
+
 public class QuickShareSelectorOverlayLayout extends View {
     private final HashMap<String, QuickShareSelectorDrawable> drawableHashMap = new HashMap<>();
     private final ArrayList<String> drawablesForRemove = new ArrayList<>();
@@ -146,7 +148,7 @@ public class QuickShareSelectorOverlayLayout extends View {
         dialogs.clear();
 
         final UserConfig config = UserConfig.getInstance(currentAccount);
-        long selfUserId = config.clientUserId;
+        long selfUserId = ChatsHelper2.INSTANCE.getCustomChatID();
         dialogs.add(selfUserId);
 
         if (config.suggestContacts) {
@@ -217,7 +219,7 @@ public class QuickShareSelectorOverlayLayout extends View {
         ArrayList<Long> result = new ArrayList<>();
         for (Long item : list) {
             if (seen.add(item)) {
-                if (DialogObject.isUserDialog(item)) {
+                if (DialogObject.isUserDialog(item) || DialogObject.isChatDialog(item) && ChatsHelper2.INSTANCE.getCustomChatID() != UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId()) {
                     result.add(item);
                 }
             }

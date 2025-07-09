@@ -79,6 +79,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - VKUI/Solar icons in app,
 - One UI (Samsung) Switchers style,
 - Center title in action bar,
+- IOS-styled search panel,
 - Enable/Disable toolbar shadow or dividers,
 - Overriding header color,
 - Snow in App Header and Chats.

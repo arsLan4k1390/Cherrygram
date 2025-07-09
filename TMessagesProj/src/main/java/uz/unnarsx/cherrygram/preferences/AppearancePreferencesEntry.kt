@@ -18,12 +18,13 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.DialogsActivity
 import org.telegram.ui.LaunchActivity
+import uz.unnarsx.cherrygram.chats.GlobalSearchView
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
-import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert
 import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.folders.FoldersPreferencesEntry
+import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.list
@@ -112,11 +113,24 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
 
             switch {
                 title = getString(R.string.AP_CenterTitle)
+
                 contract({
                     return@contract CherrygramAppearanceConfig.centerTitle
                 }) {
                     CherrygramAppearanceConfig.centerTitle = it
                     bf.parentLayout.rebuildAllFragmentViews(true, true)
+                }
+            }
+            switch {
+                title = getString(R.string.AP_iosSearchPanel)
+
+                contract({
+                    return@contract CherrygramAppearanceConfig.iosSearchPanel
+                }) {
+                    CherrygramAppearanceConfig.iosSearchPanel = it
+                    GlobalSearchView.saveFoldersExistence()
+
+                    bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
             }
             switch {

@@ -67,8 +67,6 @@ import org.telegram.ui.Components.LinkPath;
 import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.RecyclerListView;
 
-import java.io.IOException;
-
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
@@ -246,22 +244,26 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
     }
 
     public void colorizeJson(MessageObject messageObject) {
-        String jsonString = "";
+        String jsonString;
 
-        if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetChatWallPaper || !isJacksonSupportedAndEnabled()) {
+        if (messageObject.messageOwner instanceof TLRPC.TL_messageService || !isJacksonSupportedAndEnabled()) {
             try {
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 jsonString = gson.toJson(messageObject.messageOwner);
             } catch (Exception e) {
+                FileLog.e(e);
                 CherrygramChatsConfig.INSTANCE.setJacksonJSON_Provider(true);
+                jsonString = getString(R.string.SafetyNetErrorOccurred);
             }
         } else {
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.enable(SerializationFeature.INDENT_OUTPUT);
                 jsonString = mapper.writeValueAsString(messageObject.messageOwner);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 FileLog.e(e);
+                CherrygramChatsConfig.INSTANCE.setJacksonJSON_Provider(false);
+                jsonString = getString(R.string.SafetyNetErrorOccurred);
             }
         }
 
@@ -498,7 +500,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             sb.append("message ID: ");
             sb.append(messageId);
             sb.append("\nJSON Library: ");
-            sb.append(messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetChatWallPaper || !isJacksonSupportedAndEnabled() ? "Google GSON" : "Jackson");
+            sb.append(messageObject.messageOwner instanceof TLRPC.TL_messageService || !isJacksonSupportedAndEnabled() ? "Google GSON" : "Jackson");
             messageIdTextView.setText(sb);
             messageIdTextView.setPadding(0, dp(2), 0, dp(2));
             messageIdTextView.setOnClickListener(v -> {

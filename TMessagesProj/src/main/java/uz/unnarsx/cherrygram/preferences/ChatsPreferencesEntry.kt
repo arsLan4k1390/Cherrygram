@@ -208,7 +208,8 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                         Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_REPLY, getString(R.string.Reply)),
                         Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_SAVE, getString(R.string.CG_ToSaved)),
                         Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_EDIT, getString(R.string.Edit)),
-                        Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_TRANSLATE, getString(R.string.TranslateMessage))
+                        Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_TRANSLATE, getString(R.string.TranslateMessage)),
+                        Pair(CherrygramChatsConfig.DOUBLE_TAP_ACTION_TRANSLATE_GEMINI, getString(R.string.TranslateMessage) + " - " + getString(R.string.CP_GeminiAI_Header))
                     )
                 }, {
                     return@contract when (CherrygramChatsConfig.doubleTapAction) {
@@ -217,6 +218,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                         CherrygramChatsConfig.DOUBLE_TAP_ACTION_SAVE -> getString(R.string.CG_ToSaved)
                         CherrygramChatsConfig.DOUBLE_TAP_ACTION_EDIT -> getString(R.string.Edit)
                         CherrygramChatsConfig.DOUBLE_TAP_ACTION_TRANSLATE -> getString(R.string.TranslateMessage)
+                        CherrygramChatsConfig.DOUBLE_TAP_ACTION_TRANSLATE_GEMINI -> getString(R.string.TranslateMessage) + " - " + getString(R.string.CP_GeminiAI_Header)
                         else -> getString(R.string.Disable)
                     }
                 }) {
@@ -231,12 +233,14 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                         Pair(CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_REPLY, getString(R.string.Reply)),
                         Pair(CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE, getString(R.string.CG_ToSaved)),
                         Pair(CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE, getString(R.string.TranslateMessage)),
+                        Pair(CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI, getString(R.string.TranslateMessage) + " - " + getString(R.string.CP_GeminiAI_Header)),
                         Pair(CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE, getString(R.string.DirectShare))
                     )
                 }, {
                     return@contract when (CherrygramChatsConfig.messageSlideAction) {
                         CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE -> getString(R.string.CG_ToSaved)
                         CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> getString(R.string.TranslateMessage)
+                        CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI -> getString(R.string.TranslateMessage) + " - " + getString(R.string.CP_GeminiAI_Header)
                         CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> getString(R.string.DirectShare)
                         else -> getString(R.string.Reply)
                     }

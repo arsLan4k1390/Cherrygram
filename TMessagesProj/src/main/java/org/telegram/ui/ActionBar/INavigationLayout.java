@@ -285,7 +285,7 @@ public interface INavigationLayout {
         } else if (fragment instanceof DialogsActivity && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is dialogs activity");
 
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
+            if (getParentActivity() != null && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive()
                     && fragment.arguments.getInt("folderId") != 0
                     && fragment.arguments.getInt("folderId") == 1
             ) {
@@ -302,30 +302,7 @@ public interface INavigationLayout {
     }
 
     default boolean presentFragment(BaseFragment fragment, boolean removeLast) {
-//        return presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast)); // forwards
-        AtomicBoolean fragment1 = new AtomicBoolean(false);
-        if (fragment instanceof ChatActivity && !removeLast && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity1");
-
-            long userID = fragment.arguments.getLong("user_id");
-            long chatID = fragment.arguments.getLong("chat_id");
-
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
-                    && (
-                            userID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(userID)
-                            || chatID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(chatID)
-                    )
-            ) {
-                CGBiometricPrompt.prompt(getParentActivity(),
-                        () -> fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast)))
-                );
-            } else {
-                fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast)));
-            }
-            return fragment1.get();
-        } else {
-            return presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast));
-        }
+        return presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast));
     }
 
     default boolean presentFragmentAsPreview(BaseFragment fragment) {

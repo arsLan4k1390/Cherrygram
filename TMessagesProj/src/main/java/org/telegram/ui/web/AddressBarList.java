@@ -65,7 +65,6 @@ import org.telegram.ui.Components.Text;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalRecyclerView;
-import org.telegram.ui.Stars.StarsIntroActivity;
 import org.telegram.ui.WrappedResourceProvider;
 
 import java.net.URLDecoder;
@@ -602,7 +601,7 @@ public class AddressBarList extends FrameLayout {
             }
 
             @Override
-            public void bindView(View view, UItem item, boolean divider) {
+            public void bindView(View view, UItem item, boolean divider, UniversalAdapter adapter, UniversalRecyclerView listView) {
                 Address2View cell = (Address2View) view;
                 if (item.object == null) {
                     cell.setAsShowMore((AddressBarList) item.object2);
@@ -907,7 +906,7 @@ public class AddressBarList extends FrameLayout {
             }
 
             @Override
-            public void bindView(View view, UItem item, boolean divider) {
+            public void bindView(View view, UItem item, boolean divider, UniversalAdapter adapter, UniversalRecyclerView listView) {
                 BookmarkView cell = (BookmarkView) view;
                 if (item.object2 instanceof MessageObject) {
                     cell.set((MessageObject) (item.object2), item.accent, item.subtext == null ? null : item.subtext.toString(), item.checked, divider);
