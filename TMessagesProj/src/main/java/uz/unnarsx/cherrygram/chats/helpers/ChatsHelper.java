@@ -40,6 +40,7 @@ import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BaseController;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.DialogObject;
+import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
@@ -69,6 +70,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
 import org.telegram.ui.Components.ScrimOptions;
 import org.telegram.ui.Components.ShareAlert;
+import org.telegram.ui.Components.TranscribeButton;
 import org.telegram.ui.Components.UndoView;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PeerColorActivity;
@@ -179,22 +181,7 @@ public class ChatsHelper extends BaseController {
         }
     }
 
-    public void addMessageToClipboardAsSticker(MessageObject selectedObject, Runnable callback) {
-        String path = getPathToMessage(selectedObject);
-
-        try {
-            Bitmap image = BitmapFactory.decodeFile(path);
-            if (image != null && !TextUtils.isEmpty(path)) {
-                File file = new File(path.endsWith(".jpg") ? path.replace(".jpg", ".webp") : path + ".webp");
-                FileOutputStream stream = new FileOutputStream(file);
-                image.compress(Bitmap.CompressFormat.WEBP, 50, stream);
-                stream.close();
-                addFileToClipboard(file, callback);
-            }
-        } catch (Exception ignored) {}
-    }
-
-    private String getPathToMessage(MessageObject messageObject) {
+    public String getPathToMessage(MessageObject messageObject) {
         String path = messageObject.messageOwner.attachPath;
         if (!TextUtils.isEmpty(path)) {
             File temp = new File(path);
@@ -369,7 +356,7 @@ public class ChatsHelper extends BaseController {
             buttonText.setText(LocaleController.formatPluralString("CG_MessageContainsCustomReactions", getCustomReactionsCount(selectedObject)));
 
             button.addView(buttonText, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
-            button.setOnClickListener(e -> chatActivity.processSelectedOption(ChatActivity.OPTION_GET_CUSTOM_REACTIONS));
+            button.setOnClickListener(e -> chatActivity.processSelectedOption(ChatActivityHelper.OPTION_GET_CUSTOM_REACTIONS));
 
             popupLayout.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
             popupLayout.precalculateHeight();
@@ -440,7 +427,7 @@ public class ChatsHelper extends BaseController {
         if (actionMode == null) {
             return;
         }
-        View item = actionMode.getItem(ChatActivity.OPTION_SELECT_BETWEEN);
+        View item = actionMode.getItem(ChatActivityHelper.OPTION_SELECT_BETWEEN);
         if (item == null) {
             return;
         }
@@ -461,9 +448,8 @@ public class ChatsHelper extends BaseController {
             case CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE:
                 createCGShareAlertSelected(chatActivity);
                 break;
-            default:
             case CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP:
-                CGFeatureHooks.switchNoAuthor(true);
+                CGFeatureHooks.INSTANCE.switchNoAuthor(true);
                 chatActivity.openForward(false);
                 break;
         }
@@ -494,9 +480,9 @@ public class ChatsHelper extends BaseController {
                 LaunchActivity.makeRipple(chatActivity.bottomMessagesActionContainer.getLeft(), chatActivity.bottomMessagesActionContainer.getBottom(), 5);
             }
 
-            chatActivity.replyButton.setText(CGResourcesHelper.getLeftButtonText(noForwards));
+            chatActivity.replyButton.setText(CGResourcesHelper.INSTANCE.getLeftButtonText(noForwards));
 
-            Drawable image = chatActivity.getContext().getResources().getDrawable(CGResourcesHelper.getLeftButtonDrawable(noForwards)).mutate();
+            Drawable image = chatActivity.getContext().getResources().getDrawable(CGResourcesHelper.INSTANCE.getLeftButtonDrawable(noForwards)).mutate();
             image.setColorFilter(new PorterDuffColorFilter(chatActivity.getThemedColor(Theme.key_actionBarActionModeDefaultIcon), PorterDuff.Mode.MULTIPLY));
             chatActivity.replyButton.setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
         }, resourcesProvider);
@@ -693,6 +679,70 @@ public class ChatsHelper extends BaseController {
         } catch (CharacterCodingException e) {
             return Base64.encodeToString(data, Base64.NO_PADDING | Base64.NO_WRAP);
         }
+    }
+
+    public CharSequence getMessageText(MessageObject selectedObject, MessageObject.GroupedMessages selectedObjectGroup) {
+        CharSequence messageTextToTranslate = null;
+        if (selectedObject.type != MessageObject.TYPE_EMOJIS && selectedObject.type != MessageObject.TYPE_ANIMATED_STICKER && selectedObject.type != MessageObject.TYPE_STICKER) {
+            messageTextToTranslate = getMessageCaption(selectedObject, selectedObjectGroup);
+            if (messageTextToTranslate == null && selectedObject.isPoll()) {
+                try {
+                    TLRPC.Poll poll = ((TLRPC.TL_messageMediaPoll) selectedObject.messageOwner.media).poll;
+                    StringBuilder pollText = new StringBuilder(poll.question.text).append("\n");
+                    for (TLRPC.PollAnswer answer : poll.answers)
+                        pollText.append("\n\uD83D\uDD18 ").append(answer.text == null ? "" : answer.text.text);
+                    messageTextToTranslate = pollText.toString();
+                } catch (Exception e) {
+                }
+            }
+            if (messageTextToTranslate == null && MessageObject.isMediaEmpty(selectedObject.messageOwner)) {
+                messageTextToTranslate = getMessageContent(selectedObject);
+            }
+            if (messageTextToTranslate != null && Emoji.fullyConsistsOfEmojis(messageTextToTranslate)) {
+                messageTextToTranslate = null;
+            }
+        }
+        return messageTextToTranslate;
+    }
+
+    private CharSequence getMessageCaption(MessageObject messageObject, MessageObject.GroupedMessages group) {
+        String restrictionReason = getMessagesController().getRestrictionReason(messageObject.messageOwner.restriction_reason);
+        if (!TextUtils.isEmpty(restrictionReason)) {
+            return restrictionReason;
+        }
+        if (messageObject.isVoiceTranscriptionOpen() && !TranscribeButton.isTranscribing(messageObject)) {
+            return messageObject.getVoiceTranscription();
+        }
+        if (messageObject.caption != null) {
+            return messageObject.caption;
+        }
+        if (group == null) {
+            return null;
+        }
+        CharSequence caption = null;
+        for (int a = 0, N = group.messages.size(); a < N; a++) {
+            MessageObject message = group.messages.get(a);
+            if (message.caption != null) {
+                if (caption != null) {
+                    return null;
+                }
+                caption = message.caption;
+            }
+        }
+        return caption;
+    }
+
+    public CharSequence getMessageContent(MessageObject messageObject) {
+        SpannableStringBuilder str = new SpannableStringBuilder();
+        String restrictionReason = getMessagesController().getRestrictionReason(messageObject.messageOwner.restriction_reason);
+        if (!TextUtils.isEmpty(restrictionReason)) {
+            str.append(restrictionReason);
+        } else if (messageObject.caption != null) {
+            str.append(messageObject.caption);
+        } else {
+            str.append(messageObject.messageText);
+        }
+        return str;
     }
 
 }

@@ -2593,7 +2593,7 @@ public class AlertsCreator {
         frameLayout.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, (LocaleController.isRTL ? 21 : 76), 11, (LocaleController.isRTL ? 76 : 21), 0));
         frameLayout.addView(messageTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, 24, 57, 24, 9));
 
-        AlertDialog dialog = new AlertDialog.Builder(context).setView(frameLayout)
+        AlertDialog dialog = new AlertDialog.Builder(context, fragment.getResourceProvider()).setView(frameLayout)
                 .setPositiveButton(LocaleController.getString(R.string.Call), (dialogInterface, i) -> {
                     final TLRPC.UserFull userFull = fragment.getMessagesController().getUserFull(user.id);
                     VoIPHelper.startCall(user, videoCall, userFull != null && userFull.video_calls_available, fragment.getParentActivity(), userFull, fragment.getAccountInstance(), true);

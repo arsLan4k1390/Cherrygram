@@ -21939,9 +21939,7 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public boolean storiesEnabled() {
-        if (CherrygramCoreConfig.INSTANCE.getHideStories()) {
-            return false;
-        }
+        if (CherrygramCoreConfig.INSTANCE.getHideStories()) return false;
         switch (storiesPosting) {
             case "premium":
                 return getUserConfig().isPremium();

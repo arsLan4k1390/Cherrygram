@@ -52,7 +52,7 @@ dependencies {
 
     compileOnly 'org.checkerframework:checker-qual:2.5.2'
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.0'
-    implementation 'com.google.firebase:firebase-messaging:24.1.1'
+    implementation 'com.google.firebase:firebase-messaging:24.1.2'
     implementation 'com.google.firebase:firebase-config:22.1.2'
     implementation 'com.google.firebase:firebase-appindexing:20.0.0'
     implementation 'com.google.android.gms:play-services-maps:19.2.0'
@@ -64,21 +64,21 @@ dependencies {
     implementation 'com.googlecode.mp4parser:isoparser:1.0.6'
     implementation 'com.stripe:stripe-android:2.0.2'
     implementation 'com.google.mlkit:language-id:16.1.1'
-    implementation 'com.android.billingclient:billing:6.0.1'
-    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'com.android.billingclient:billing:7.1.1' // 8.x breaks QueryProductDetailsResult
+    implementation 'com.google.code.gson:gson:2.13.1'
 
     //Cherrygram
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.1'
     implementation 'com.google.android.play:review:2.0.2'
-    implementation 'com.google.firebase:firebase-analytics:22.4.0'
-    implementation 'com.google.firebase:firebase-crashlytics:19.4.3'
+    implementation 'com.google.firebase:firebase-analytics:22.5.0'
+    implementation 'com.google.firebase:firebase-crashlytics:19.4.4'
     implementation 'com.google.ai.client.generativeai:generativeai:0.9.0'
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
 
     // CameraX Implementation
-    def camerax_version = '1.5.0-beta01'
+    def camerax_version = '1.5.0-beta02'
     implementation "androidx.camera:camera-camera2:${camerax_version}"
     implementation "androidx.camera:camera-core:${camerax_version}"
     implementation "androidx.camera:camera-extensions:${camerax_version}"
@@ -99,7 +99,7 @@ dependencies {
     }
     implementation 'com.google.android.recaptcha:recaptcha:18.4.0'
 
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
 }
 
 def isWindows = String.valueOf(DefaultNativePlatform.currentOperatingSystem.toFamilyName() == OperatingSystemFamily.WINDOWS)

@@ -1150,9 +1150,9 @@ public class NotificationsController extends BaseController {
                             } else if (CherrygramChatsConfig.INSTANCE.getVibrateInChats() == CherrygramChatsConfig.VIBRATION_WAVE_FORM) {
                                 VibrateUtil.INSTANCE.makeWaveVibration();
                             } else if (CherrygramChatsConfig.INSTANCE.getVibrateInChats() == CherrygramChatsConfig.VIBRATION_KEYBOARD_TAP) {
-                                VibrateUtil.vibrate(HapticFeedbackConstants.KEYBOARD_TAP);
+                                VibrateUtil.INSTANCE.vibrate(HapticFeedbackConstants.KEYBOARD_TAP);
                             } else if (CherrygramChatsConfig.INSTANCE.getVibrateInChats() == CherrygramChatsConfig.VIBRATION_LONG) {
-                                VibrateUtil.vibrate();
+                                VibrateUtil.INSTANCE.vibrate();
                             }
                         }
                     }

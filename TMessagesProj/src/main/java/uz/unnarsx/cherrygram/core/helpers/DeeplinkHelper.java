@@ -46,13 +46,13 @@ public class DeeplinkHelper {
         if (segments.size() == 1) {
             var segment = segments.get(0).toLowerCase(Locale.US);
             switch (segment) {
-                case "cg_settings", "cg_main" -> fragment = CherrygramPreferencesNavigator.createMainMenu();
+                case "cg_settings", "cg_main" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createMainMenu();
                 case "cg_about" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createAbout();
                 case "cg_appearance" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createAppearance();
                 case "cg_camera", "cg_cam" -> fragment = new CameraPreferencesEntry();
                 case "cg_chats" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createChats();
                 case "cg_debug" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createDebug();
-                case "cg_donate", "cg_donates" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createDonate();
+                case "cg_donate", "cg_donates", "cg_support", "cg_badge" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createDonate();
                 case "cg_drawer" -> fragment = new DrawerPreferencesEntry();
                 case "cg_experimental" -> fragment = new ExperimentalPreferencesEntry();
                 case "cg_folders", "cg_tabs" -> fragment = new FoldersPreferencesEntry();

@@ -36,6 +36,7 @@ import android.text.TextUtils;
 import android.text.style.CharacterStyle;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
+import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
 
@@ -105,6 +106,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 
 @SuppressWarnings("unchecked")
@@ -905,7 +907,7 @@ public class MediaDataController extends BaseController {
         if (type == TYPE_PREMIUM_STICKERS) {
             return new ArrayList<>(recentStickers[type]);
         }
-        ArrayList<TLRPC.Document> result = new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), 20)));
+        ArrayList<TLRPC.Document> result = new ArrayList<>(arrayList.subList(0, Math.min(arrayList.size(), CherrygramChatsConfig.INSTANCE.getSlider_RecentStickersAmplifier() + 1)));
         if (firstEmpty && !result.isEmpty() && !StickersAlert.DISABLE_STICKER_EDITOR) {
             result.add(0, new TLRPC.TL_documentEmpty());
         }
@@ -1011,7 +1013,8 @@ public class MediaDataController extends BaseController {
                     }
                 });
             }
-            maxCount = getMessagesController().maxRecentStickersCount;
+//            maxCount = getMessagesController().maxRecentStickersCount;
+            maxCount = CherrygramChatsConfig.INSTANCE.getSlider_RecentStickersAmplifier() + 1;
         }
         if (recentStickers[type].size() > maxCount || remove) {
             TLRPC.Document old = remove ? document : recentStickers[type].remove(recentStickers[type].size() - 1);
@@ -2067,7 +2070,8 @@ public class MediaDataController extends BaseController {
 //                            maxCount = getMessagesController().maxFaveStickersCount;
                             maxCount = UserConfig.getInstance(currentAccount).isPremium() ? getMessagesController().stickersFavedLimitPremium : getMessagesController().stickersFavedLimitDefault;
                         } else {
-                            maxCount = getMessagesController().maxRecentStickersCount;
+//                            maxCount = getMessagesController().maxRecentStickersCount;
+                            maxCount = CherrygramChatsConfig.INSTANCE.getSlider_RecentStickersAmplifier() + 1;
                         }
                     }
                     database.beginTransaction();
@@ -3909,7 +3913,7 @@ public class MediaDataController extends BaseController {
                     req.saved_reaction.add(reaction.toTLReaction());
                     req.flags |= 8;
                 }
-                req.filter = ChatsHelper2.getSearchFilterType();
+                req.filter = ChatsHelper2.INSTANCE.getSearchFilterType();
                 mergeReqId = getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                     if (lastMergeDialogId == mergeDialogId) {
                         mergeReqId = 0;
@@ -3994,7 +3998,7 @@ public class MediaDataController extends BaseController {
             req.saved_reaction.add(reaction.toTLReaction());
             req.flags |= 8;
         }
-        req.filter = ChatsHelper2.getSearchFilterType();
+        req.filter = ChatsHelper2.INSTANCE.getSearchFilterType();
         lastSearchQuery = query;
         long queryWithDialogFinal = queryWithDialog;
         String finalQuery = query;

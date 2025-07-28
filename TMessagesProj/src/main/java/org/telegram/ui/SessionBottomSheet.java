@@ -32,9 +32,7 @@ import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.Cells.SessionCell;
 import org.telegram.ui.Components.BulletinFactory;
-import org.telegram.ui.Components.CombinedDrawable;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RLottieImageView;
 import org.telegram.ui.Components.Switch;
@@ -369,9 +367,9 @@ public class SessionBottomSheet extends BottomSheet {
         } else if (platform.contains("android")) {
             if (session.app_name.contains("Cherrygram")) {
                 animation = false;
-                iconId = R.drawable.cg_sessions_icon;
-                colorKey = Theme.key_cgGradient2;
-                colorKey2 = Theme.key_cgGradient1;
+                iconId = R.drawable.cg_logo_notch;
+                colorKey = 0x00000000;
+                colorKey2 = 0x00000000;
             } else {
                 iconId = R.raw.android_30;
                 colorKey = Theme.key_avatar_backgroundGreen;
@@ -389,7 +387,7 @@ public class SessionBottomSheet extends BottomSheet {
             }
         }
 
-        if (!(platform.contains("android") && session.app_name.contains("Cherrygram"))) {
+        if (!(session.app_name.contains("Cherrygram"))) {
             imageView.setBackground(Theme.createCircleDrawable(AndroidUtilities.dp(42), Theme.getColor(colorKey)));
 //            imageView.setBackground(new SessionCell.CircleGradientDrawable(AndroidUtilities.dp(42), Theme.getColor(colorKey), Theme.getColor(colorKey2)));
         }
@@ -398,28 +396,19 @@ public class SessionBottomSheet extends BottomSheet {
             int[] colors = new int[]{0x000000, Theme.getColor(colorKey)};
             imageView.setAnimation(iconId, 50, 50, colors);
         } else {
-            if (platform.contains("android") && session.app_name.contains("Cherrygram")) {
-                imageView.setImageDrawable(createCherryDrawable());
+            if (session.app_name.contains("Cherrygram")) {
+                Drawable iconDrawable = ContextCompat.getDrawable(getContext(), !Theme.isCurrentThemeDay() ? R.drawable.cg_logo_notch_white : R.drawable.cg_logo_notch);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dp(70), dp(70));
+                params.topMargin = dp(15);
+                params.gravity = Gravity.CENTER;
+
+                imageView.setImageDrawable(iconDrawable);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY); // Чтобы растянуть лого
+                imageView.setLayoutParams(params);
             } else {
                 imageView.setImageDrawable(ContextCompat.getDrawable(getContext(), iconId));
             }
         }
-    }
-
-    private static CombinedDrawable createCherryDrawable() {
-        int iconId;
-        int colorKey, colorKey2;
-
-        iconId = R.drawable.cg_sessions_icon_big;
-        colorKey = Theme.key_cgGradient2;
-        colorKey2 = Theme.key_cgGradient1;
-
-        Drawable iconDrawable = ContextCompat.getDrawable(ApplicationLoader.applicationContext, iconId).mutate();
-        iconDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_avatar_text), PorterDuff.Mode.SRC_IN));
-        Drawable bgDrawable = new SessionCell.CircleGradientDrawable(dp(70), colorKey == -1 ? 0xFF000000 : Theme.getColor(colorKey), colorKey2 == -1 ? 0xFF000000 : Theme.getColor(colorKey2));
-        CombinedDrawable cd = new CombinedDrawable(bgDrawable, iconDrawable);
-        cd.left = dp(-0.5f);
-        return cd;
     }
 
     private static class ItemView extends FrameLayout {

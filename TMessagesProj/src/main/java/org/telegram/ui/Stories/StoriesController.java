@@ -241,9 +241,7 @@ public class StoriesController {
     }
 
     public boolean hasStories(long dialogId) {
-        if (CherrygramCoreConfig.INSTANCE.getHideStories()) {
-            return false;
-        }
+        if (CherrygramCoreConfig.INSTANCE.getHideStories()) return false;
         if (dialogId == 0) {
             return false;
         }
@@ -261,9 +259,6 @@ public class StoriesController {
     }
 
     public TL_stories.PeerStories getStoriesFromFullPeer(long dialogId) {
-        if (CherrygramCoreConfig.INSTANCE.getHideStories()) {
-            return null;
-        }
         if (dialogId > 0) {
             TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(dialogId);
             if (userFull != null && userFull.stories != null && !userFull.stories.checkedExpired) {
@@ -280,9 +275,7 @@ public class StoriesController {
     }
 
     public boolean hasStories() {
-        if (CherrygramCoreConfig.INSTANCE.getHideStories()) {
-            return false;
-        }
+        if (CherrygramCoreConfig.INSTANCE.getHideStories()) return false;
         return (dialogListStories != null && dialogListStories.size() > 0) || hasSelfStories();
     }
 
@@ -1076,6 +1069,7 @@ public class StoriesController {
     }
 
     public boolean hasSelfStories() {
+        if (CherrygramCoreConfig.INSTANCE.getHideStories()) return false;
         long clientUserId = UserConfig.getInstance(currentAccount).clientUserId;
         TL_stories.PeerStories storyItem = allStoriesMap.get(clientUserId);
         if (storyItem != null && !storyItem.stories.isEmpty()) {

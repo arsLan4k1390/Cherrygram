@@ -210,7 +210,6 @@ object ChatsHelper2 {
         participantsIDs.clear()
     }
 
-    @JvmStatic
     fun getActiveUsername(userId: Long): String {
         val user: TLRPC.User = MessagesController.getInstance(UserConfig.selectedAccount).getUser(userId)
         var username: String? = null
@@ -234,7 +233,6 @@ object ChatsHelper2 {
     /** Avatar admin actions finish **/
 
     /** Chat search filter start **/
-    @JvmStatic
     fun getSearchFilterType(): TLRPC.MessagesFilter {
         val filter: TLRPC.MessagesFilter = when (CherrygramChatsConfig.messagesSearchFilter) {
             CherrygramChatsConfig.FILTER_PHOTOS -> {
@@ -288,7 +286,6 @@ object ChatsHelper2 {
     /** Custom chat id for Saved Messages finish **/
 
     /** Direct share menu start **/
-    @JvmStatic
     fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {
 //        val options: ItemOptions = ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
         ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
@@ -318,7 +315,6 @@ object ChatsHelper2 {
     /** Direct share menu finish **/
 
     /** JSON menu start **/
-    @JvmStatic
     fun showJsonMenu(sa: JsonBottomSheet, field: FrameLayout, messageObject: MessageObject) {
         ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
             .addIf(

@@ -15,9 +15,12 @@ import android.graphics.RecordingCanvas;
 import android.graphics.RenderNode;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Build;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 
@@ -192,11 +195,14 @@ public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLay
                 renderNode = null;
             }
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && renderNode != null && !forceNotCacheNextFrame && canvas.isHardwareAccelerated()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && renderNode != null && !forceNotCacheNextFrame && canvas.isHardwareAccelerated() && isAttachedToWindow()) {
             renderNode.setPosition(0, 0, getWidth(), getHeight());
             RecordingCanvas recordingCanvas = renderNode.beginRecording();
-            super.draw(recordingCanvas);
-            renderNode.endRecording();
+            try {
+                super.draw(recordingCanvas);
+            } finally {
+                renderNode.endRecording();
+            }
             canvas.drawRenderNode(renderNode);
         } else {
             super.draw(canvas);
@@ -217,8 +223,11 @@ public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLay
 
         @Override
         public boolean setState(@NonNull int[] stateSet) {
-            if (getCallback() instanceof BaseCell) {
-                ((BaseCell) getCallback()).forceNotCacheNextFrame();
+            if (getCallback() instanceof BaseCell cell) {
+                if (!cell.isAttachedToWindow()) {
+                    return false;
+                }
+                cell.forceNotCacheNextFrame();
             }
             return super.setState(stateSet);
         }
@@ -232,4 +241,43 @@ public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLay
             }
         }
     }
+
+    /** Cherrygram start */
+    private void applyRippleIfNeeded() { // Huawei tablets crash, tnx to ChatGPT for help || java.lang.IllegalStateException: Cannot start this animator on a detached view!
+        Drawable background = getBackground();
+        if (!(background instanceof RippleDrawableSafe)) {
+            ShapeDrawable shape = new ShapeDrawable(new RectShape());
+            shape.getPaint().setColor(0x00000000);
+
+            final RippleDrawableSafe ripple = new RippleDrawableSafe(
+                    ColorStateList.valueOf(0x22000000),
+                    shape,
+                    null
+            );
+            ripple.setCallback(this);
+
+            if (isAttachedToWindow()) {
+                setBackground(ripple);
+            } else {
+                addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {
+                        setBackground(ripple);
+                        removeOnAttachStateChangeListener(this);
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {}
+                });
+            }
+        }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        applyRippleIfNeeded();
+    }
+    /** Cherrygram finish */
+
 }

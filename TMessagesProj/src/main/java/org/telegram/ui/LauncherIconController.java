@@ -49,13 +49,13 @@ public class LauncherIconController {
         VIOLET_SUNSET_CHERRY_BRA("CG_Icon_Violet_Sunset_Bra", R.drawable.icon_background_violet_sunset, R.drawable.icon_foreground_cherry_bra, R.string.AP_ChangeIcon_Bra),
         SUNSET_CHERRY("CG_Icon_Sunset", R.drawable.icon_background_sunset, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunset),
         SUNRISE_CHERRY("CG_Icon_Sunrise", R.drawable.icon_background_sunrise, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Sunrise),
-        TURBO_CHERRY("CG_Icon_Turbo", R.drawable.icon_background_turbo, R.drawable.icon_foreground_cherry, R.string.AppIconTurbo),
-        NOX_CHERRY("CG_Icon_Night", R.mipmap.icon_background_nox, R.drawable.icon_foreground_cherry, R.string.AppIconNox),
+        TURBO_CHERRY("CG_Icon_Turbo", R.drawable.icon_5_background_sa, R.drawable.icon_foreground_cherry, R.string.AppIconTurbo),
+        NOX_CHERRY("CG_Icon_Night", R.mipmap.icon_2_background_sa, R.drawable.icon_foreground_cherry, R.string.AppIconNox),
         DARK_NY("CG_Icon_Dark_NY", R.drawable.icon_background_dark_ny, R.drawable.icon_foreground_cherry_bra, R.string.AP_ChangeIcon_Cherry_NY),
 
-        PREMIUM("PremiumIcon", R.drawable.icon_background_premium, R.mipmap.icon_foreground_premium, R.string.AppIconPremium, true),
-        TURBO("TurboIcon", R.drawable.icon_background_turbo, R.mipmap.icon_foreground_turbo, R.string.AppIconTurbo, true),
-        NOX("NoxIcon", R.mipmap.icon_background_nox, R.drawable.icon_foreground, R.string.AppIconNox, true);
+        PREMIUM("PremiumIcon", R.drawable.icon_3_background_sa, R.mipmap.icon_3_foreground, R.string.AppIconPremium, true),
+        TURBO("TurboIcon", R.drawable.icon_5_background_sa, R.mipmap.icon_5_foreground, R.string.AppIconTurbo, true),
+        NOX("NoxIcon", R.mipmap.icon_2_background_sa, R.drawable.icon_foreground, R.string.AppIconNox, true);
 
         public final String key;
         public final int background;

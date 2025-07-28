@@ -98,8 +98,8 @@ public class SlideControlView extends View {
             minusDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.zoom_minus, context.getTheme());
             plusDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.zoom_plus, context.getTheme());
         } else if (mode == SLIDER_MODE_EV) {
-            minusDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ev_minus, context.getTheme());
-            plusDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.ev_plus, context.getTheme());
+            minusDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.camera_moon_solar, context.getTheme());
+            plusDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.camera_sun_solar, context.getTheme());
         }
 
         progressDrawable = ResourcesCompat.getDrawable(context.getResources(), R.drawable.zoom_slide, context.getTheme());

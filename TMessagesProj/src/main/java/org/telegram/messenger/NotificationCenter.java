@@ -948,11 +948,6 @@ public class NotificationCenter {
 
     /** Cherrygram start */
     public static final int onUpdateLoginToken = totalEvents++;
-    public static final int cg_updateDrawerAvatar = totalEvents++;
-
-    public static final int cherrygramSettingsUpdated = totalEvents++;
-    public static final int cgGhostButtonUpdated = totalEvents++;
-    public static final int cgMessageDeleted = totalEvents++;
     /** Cherrygram finish */
 
 }

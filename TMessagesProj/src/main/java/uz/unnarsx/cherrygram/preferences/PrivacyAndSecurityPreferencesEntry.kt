@@ -9,9 +9,12 @@
 
 package uz.unnarsx.cherrygram.preferences
 
+import android.content.Intent
 import android.os.Build
 import android.os.Environment
+import android.provider.Settings
 import android.widget.Toast
+import androidx.biometric.BiometricPrompt
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.DialogObject
 import org.telegram.messenger.FileLog
@@ -21,6 +24,8 @@ import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.BulletinFactory
+import org.telegram.ui.LaunchActivity
 import org.telegram.ui.UsersSelectActivity
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
@@ -31,6 +36,7 @@ import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.hint
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
@@ -128,7 +134,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     CGBiometricPrompt.prompt(bf.parentActivity) {
                         AndroidUtilities.runOnUIThread({
                             val activity: UsersSelectActivity = getUsersSelectActivity()
-                            activity.setDelegate { ids: ArrayList<Long>, flags: Int ->
+                            activity.setDelegate { ids: ArrayList<Long>, _: Int ->
                                 val chatIds = ids.toSet()
                                 val lockedChats = ChatsPasswordHelper.getArrayList(ChatsPasswordHelper.PASSCODE_ARRAY).toMutableSet()
 
@@ -198,15 +204,66 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = Build.VERSION.SDK_INT >= 23
 
                 title = getString(R.string.SP_TestFingerprint)
                 icon = R.drawable.fingerprint
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    CGBiometricPrompt.prompt(bf.parentActivity) { AppRestartHelper.createDebugSuccessBulletin(bf) }
+                    CGBiometricPrompt.fixFingerprint(bf.context, object : CGBiometricPrompt.CGBiometricListener {
+
+                        override fun onSuccess(result: BiometricPrompt.AuthenticationResult) {
+                            handle()
+                        }
+
+                        override fun onFailed() {
+//                            showError(0)
+                        }
+
+                        override fun onError(error: Int, msg: CharSequence) {
+                            showError(error)
+                        }
+
+                        fun handle() {
+                            CGBiometricPrompt.cancelPendingAuthentications()
+                            CGBiometricPrompt.reloadFingerprintState()
+                            if (CGBiometricPrompt.hasFingerprintCached()) {
+                                AndroidUtilities.runOnUIThread({
+                                    BulletinFactory.of(bf).createSimpleBulletin(
+                                        R.raw.chats_infotip,
+                                        getString(R.string.SP_BiometricUnavailable_Test_Fixed),
+                                        getString(R.string.CG_RestartToApply),
+                                        getString(R.string.OK)
+                                    ) {
+                                        AppRestartHelper.triggerRebirth(bf.context, Intent(bf.context, LaunchActivity::class.java))
+                                    }.show()
+//                                    bf.parentLayout.rebuildAllFragmentViews(true, true)
+                                }, 300)
+                            } else {
+                                showError(0)
+                            }
+                        }
+
+                        fun showError(error: Int) {
+                            BulletinFactory.of(bf).createSimpleBulletin(
+                                R.raw.chats_infotip,
+                                getString(R.string.CG_AppCrashed) + if (error == 0) "" else " (e$error)",
+                                getString(R.string.SP_BiometricUnavailable_Test_Wrong_Desc),
+                                getString(R.string.Settings)
+                            ) {
+                                val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                    Intent(Settings.ACTION_FINGERPRINT_ENROLL)
+                                } else {
+                                    Intent(Settings.ACTION_SECURITY_SETTINGS)
+                                }
+                                bf.context.startActivity(intent)
+                            }.show()
+                        }
+                    })
+
                 }
             }
+            if (Build.VERSION.SDK_INT >= 23) hint(getString(R.string.SP_TestFingerprint_Desc))
         }
 
         category(getString(R.string.SP_Category_Account)) {
@@ -226,8 +283,8 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
         val chatsList = ArrayList<Long>()
         for (chatId in ChatsPasswordHelper.getArrayList(ChatsPasswordHelper.PASSCODE_ARRAY)) {
 
-            val user = MessagesController.getInstance(UserConfig.selectedAccount).getUser(chatId!!.toLong())
-            val chat = MessagesController.getInstance(UserConfig.selectedAccount).getChat(-chatId!!.toLong())
+            val user = MessagesController.getInstance(UserConfig.selectedAccount).getUser(chatId.toLong())
+            val chat = MessagesController.getInstance(UserConfig.selectedAccount).getChat(-chatId.toLong())
 
             if (user != null) {
                 chatsList.add(user.id)

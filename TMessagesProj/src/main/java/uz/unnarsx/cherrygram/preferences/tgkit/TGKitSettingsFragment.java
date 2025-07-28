@@ -84,10 +84,14 @@ public class TGKitSettingsFragment extends BaseFragment {
 
     private void initSettings() {
         for (TGKitCategory category : settings.categories) {
+            if (!category.isAvailable) continue;
+
             if (category.name != null) positions.put(rowCount++, new TGKitHeaderRow(category.name));
+
             for (TGKitPreference preference : category.preferences) {
                 if (preference.isAvailable) positions.put(rowCount++, preference);
             }
+
             positions.put(rowCount++, new TGKitSectionRow());
         }
     }
@@ -254,7 +258,14 @@ public class TGKitSettingsFragment extends BaseFragment {
                     break;
                 }
                 case 2: {
-                    ((HeaderCell) holder.itemView).setText(positions.get(position).title);
+                    HeaderCell cell = (HeaderCell) holder.itemView;
+                    cell.setText(positions.get(position).title);
+
+                    boolean donates = settings != null && settings.name.contains(getString(R.string.DP_SupportOptions));
+                    if (donates) {
+                        cell.setTopMargin(10);
+                        cell.setHeight(35);
+                    }
                     break;
                 }
                 case 3: {
@@ -276,9 +287,10 @@ public class TGKitSettingsFragment extends BaseFragment {
                 case 5: {
                     TextCell cell = (TextCell) holder.itemView;
                     ((TGKitTextIconRow) positions.get(position)).bindCell(cell);
-                    if (settings != null && settings.name.contains(getString(R.string.DP_Donate))) {
-                        cell.textView.setPadding(AndroidUtilities.dp(8), 0, 0, 0);
-                        cell.imageView.clearColorFilter();
+                    boolean donates = settings != null && settings.name.contains(getString(R.string.DP_SupportOptions));
+                    if (donates) {
+                        cell.getTextView().setPadding(AndroidUtilities.dp(8), 0, 0, 0);
+                        cell.getImageView().clearColorFilter();
                     }
                     break;
                 }
@@ -293,7 +305,15 @@ public class TGKitSettingsFragment extends BaseFragment {
                     break;
                 }
                 case 8: {
-                    ((TextInfoPrivacyCell) holder.itemView).setText(positions.get(position).title);
+                    TextInfoPrivacyCell cell = (TextInfoPrivacyCell) holder.itemView;
+
+                    boolean donates = settings != null && settings.name.contains(getString(R.string.DP_SupportOptions));
+                    if (donates) {
+                        cell.setTopPadding(5);
+                        cell.setBottomPadding(8);
+                        cell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    }
+                    cell.setText(positions.get(position).title);
                 }
             }
         }
@@ -354,9 +374,6 @@ public class TGKitSettingsFragment extends BaseFragment {
                     break;
                 case 8:
                     view = new TextInfoPrivacyCell(mContext);
-                    if (settings != null && settings.name.contains(getString(R.string.DP_Donate))) {
-                        view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    }
                     break;
                 default:
                     view = new ShadowSectionCell(mContext);

@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
 
 public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
 
@@ -265,6 +267,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
         int settingsIcon;
         int inviteIcon;
         int helpIcon;
+        int giftIcon = R.drawable.menu_gift;
         if (eventType == 0) {
             newGroupIcon = R.drawable.msg_groups_ny;
             //newSecretIcon = R.drawable.msg_secret_ny;
@@ -275,6 +278,9 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             settingsIcon = R.drawable.msg_settings_ny;
             /*inviteIcon = R.drawable.msg_invite_ny;
             helpIcon = R.drawable.msg_help_ny;*/
+            if (CherrygramAppearanceConfig.INSTANCE.getIconReplacement() == CherrygramAppearanceConfig.ICON_REPLACE_SOLAR) {
+                giftIcon = R.drawable.msg_help_14_solar;
+            }
         } else if (eventType == 1) {
             newGroupIcon = R.drawable.msg_groups_14;
             //newSecretIcon = R.drawable.msg_secret_14;
@@ -285,6 +291,9 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             settingsIcon = R.drawable.msg_settings_14;
             /*inviteIcon = R.drawable.msg_secret_ny;
             helpIcon = R.drawable.msg_help;*/
+            if (CherrygramAppearanceConfig.INSTANCE.getIconReplacement() == CherrygramAppearanceConfig.ICON_REPLACE_SOLAR) {
+                giftIcon = R.drawable.msg_help_14_solar;
+            }
         } else if (eventType == 2) {
             newGroupIcon = R.drawable.msg_groups_hw;
             //newSecretIcon = R.drawable.msg_secret_hw;
@@ -348,6 +357,11 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
                     showDivider = true;
                 }
             }
+        }
+
+        boolean available = DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
+        if (CherrygramAppearanceConfig.INSTANCE.getMarketPlaceDrawerButton() && available) {
+            items.add(new Item(1003, CGResourcesHelper.INSTANCE.capitalize(LocaleController.getString(R.string.Gift2Myself)), giftIcon));
         }
         if (showDivider) {
             items.add(null); // divider

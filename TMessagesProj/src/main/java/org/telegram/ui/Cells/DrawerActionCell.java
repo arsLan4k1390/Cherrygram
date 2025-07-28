@@ -8,12 +8,13 @@
 
 package org.telegram.ui.Cells;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -29,18 +30,22 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessagesController;
+import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SvgHelper;
 import org.telegram.messenger.UserConfig;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.BackupImageView;
+import org.telegram.ui.Components.BubbleCounterPath;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.FilterCreateActivity;
+import org.telegram.ui.Stars.StarsController;
 
 import java.util.Set;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 
 public class DrawerActionCell extends FrameLayout {
 
@@ -100,6 +105,69 @@ public class DrawerActionCell extends FrameLayout {
             int h = Theme.dialogs_errorDrawable.getIntrinsicHeight();
             Theme.dialogs_errorDrawable.setBounds((int) (rect.centerX() - w / 2), (int) (rect.centerY() - h / 2), (int) (rect.centerX() + w / 2), (int) (rect.centerY() + h / 2));
             Theme.dialogs_errorDrawable.draw(canvas);
+        }
+
+        if (currentId == 1001 && !CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList()) {
+            int counter = MessagesStorage.getInstance(UserConfig.selectedAccount).getArchiveUnreadCount();
+            if (counter <= 0) {
+                return;
+            }
+
+            String text = String.valueOf(counter);
+            int countTop = AndroidUtilities.dp(12.5f);
+            int textWidth = (int) Math.ceil(Theme.dialogs_countTextPaint.measureText(text));
+            int countWidth = Math.max(AndroidUtilities.dp(10), textWidth);
+            int countLeft = getMeasuredWidth() - countWidth - AndroidUtilities.dp(25);
+
+            int x = countLeft - AndroidUtilities.dp(5.5f);
+            rect.set(x, countTop, x + countWidth + AndroidUtilities.dp(14), countTop + AndroidUtilities.dp(23));
+
+            @SuppressLint("DrawAllocation") RectF counterPathRect = new RectF();
+            @SuppressLint("DrawAllocation") Path counterPath = new Path();
+            if (counterPath == null || counterPathRect == null || !counterPathRect.equals(rect)) {
+                if (counterPathRect == null) {
+                    counterPathRect = new RectF(rect);
+                } else {
+                    counterPathRect.set(rect);
+                }
+                if (counterPath == null) {
+                    counterPath = new Path();
+                }
+                BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, AndroidUtilities.dp(11.5f));
+            }
+            //canvas.drawRoundRect(rect, 11.5f * AndroidUtilities.density, 11.5f * AndroidUtilities.density, Theme.dialogs_countGrayPaint);
+            canvas.drawPath(counterPath, Theme.dialogs_countGrayPaint);
+            canvas.drawText(text, rect.left + (rect.width() - textWidth) / 2, countTop + AndroidUtilities.dp(16), Theme.dialogs_countTextPaint);
+        }
+
+        if (currentId == 1003) {
+            long counter = StarsController.getInstance(UserConfig.selectedAccount).getBalance().amount;
+
+            String text = counter + " ⭐️";
+
+            int countTop = AndroidUtilities.dp(12.5f);
+            int textWidth = (int) Math.ceil(Theme.dialogs_countTextPaint.measureText(text));
+            int countWidth = Math.max(AndroidUtilities.dp(10), textWidth);
+            int countLeft = getMeasuredWidth() - countWidth - AndroidUtilities.dp(25);
+
+            int x = countLeft - AndroidUtilities.dp(5.5f);
+            rect.set(x, countTop, x + countWidth + AndroidUtilities.dp(14), countTop + AndroidUtilities.dp(23));
+
+            @SuppressLint("DrawAllocation") RectF counterPathRect = new RectF();
+            @SuppressLint("DrawAllocation") Path counterPath = new Path();
+            if (counterPath == null || counterPathRect == null || !counterPathRect.equals(rect)) {
+                if (counterPathRect == null) {
+                    counterPathRect = new RectF(rect);
+                } else {
+                    counterPathRect.set(rect);
+                }
+                if (counterPath == null) {
+                    counterPath = new Path();
+                }
+                BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, AndroidUtilities.dp(11.5f));
+            }
+            canvas.drawRoundRect(rect, 11.5f * AndroidUtilities.density, 11.5f * AndroidUtilities.density, Theme.dialogs_countGrayPaint);
+            canvas.drawText(text, rect.left + (rect.width() - textWidth) / 2, countTop + AndroidUtilities.dp(16), Theme.dialogs_countTextPaint);
         }
     }
 

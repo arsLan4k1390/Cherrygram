@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelLink">Падпісвайцеся на @Cherry_Gram!</string>
+    <string name="CG_FollowChannelTitle">Падпісацца на афіцыйны канал</string>
+    <string name="CG_FollowChannelInfo">Падключыцеся да нашага канала, каб быць у курсе ўсіх навін і функцый Cherrygram!</string>
+    <string name="CG_DoNotRemindAgain">Больш не нагадваць</string>
+    <!--Telegram screens-->
+    <string name="CG_RegistrationDate">Дата рэгістрацыі:</string>
+    <string name="CG_RegistrationDateNewer">Навейшы, чым %s</string>
+    <string name="CG_RegistrationDateOlder">Старэй, чым %s</string>
+    <string name="CG_RegistrationDateApproximately">Прыблізна %s</string>
+    <string name="CG_RegistrationDateFailed">Памылка атрымання даты рэгістрацыі.</string>
+    <!--Sign in screen-->
+    <string name="CG_QRLoginTitle">QR логін</string>
+    <string name="CG_QRLoginMessage">Сканіраванне QR-кода з іншага прылады для ўваходу ў сістэму.</string>
+    <!--Sign in screen-->
+    <!--Last seen status-->
+    <string name="CG_LastSeenNow">apošni raz tolki što</string>
+    <string name="CG_LastSeenMinutes_one">apošni raz  %1$d chvilinu tamu</string>
+    <string name="CG_LastSeenMinutes_few">apošni raz %1$d chvilinaŭ tamu</string>
+    <string name="CG_LastSeenMinutes_many">apošni raz %1$d chvilinaŭ tamu</string>
+    <string name="CG_LastSeenMinutes_other">apošni raz %1$d chvilinaŭ tamu</string>
+    <string name="CG_LastSeenHours_one">apošni raz %1$d hadzinu tamu</string>
+    <string name="CG_LastSeenHours_few">apošni raz %1$d hadzin tamu</string>
+    <string name="CG_LastSeenHours_many">apošni raz %1$d hadzin tamu</string>
+    <string name="CG_LastSeenHours_other">apošni raz %1$d hadzin tamu</string>
+    <!--Last seen status-->
+    <!--Telegram Folders Settings-->
+    <string name="CG_FoldersType_Header">Тып значка ўкладкі</string>
+    <string name="CG_FoldersTypeTitles">Толькі загалозагаловак</string>
+    <string name="CG_FoldersTypeIcons">Толькі значок</string>
+    <string name="CG_FoldersTypeIconsTitles">Значок з загалозагалоўкам</string>
+    <string name="CG_ChooseFolderIcon">Выбраць значок</string>
+    <string name="CP_NewTabs_NoCounter">Схаваць лічыльнік ва ўкладках</string>
+    <string name="CP_NewTabs_NoCounter_Desc">Гэта схавае лічыльнік непрачытаных паведамленняў</string>
+    <!--Telegram Folders Settings-->
+    <!--Chats screen-->
+    <string name="CG_JumpToBeginning">Да пачатку</string>
+    <string name="CG_DeleteAllFromSelf">Выдаліць уласныя паведамленні</string>
+    <string name="CG_DeleteAllFromSelfAlert">Папярэджанне! Гэта прывядзе да **выдалення ўсіх вашых паведамленняў** у гэтым чаце для **ўсіх** удзельнікаў.</string>
+    <string name="CG_DeleteAllFromSelfAlertBefore">Папярэджанне! Гэта **выдаліць усе паведамленні ад вас да %s** у гэтым чаце для **ўсіх** удзельнікаў.</string>
+    <string name="CG_DeleteAllFromSelfBefore">Перад...</string>
+    <string name="CG_DeleteAllFromSelfAdmin">З правамі адміністратара</string>
+    <string name="CG_DeleteAllFromSelfDone">Усе вашы паведамленні выдалены</string>
+    <string name="CG_ClearFromCache">Ачысціць з кэша</string>
+    <string name="CG_ClearedFromCache">Ачышчана з кэша</string>
+    <string name="CG_ViewUserHistory">Гісторыя паведамленняў</string>
+    <string name="CG_ToSaved">Захаваць паведамленне</string>
+    <string name="CG_CreateMention">Стварыць згадку</string>
+    <string name="CG_CreateCode">Стварыць код</string>
+    <string name="CG_CreateCodeLanguage">Мова</string>
+    <string name="CG_Without_Authorship">Без аўтарства</string>
+    <!--Location screen-->
+    <string name="CG_LocationPermission">Cherrygram патрабуецца ваша месцазнаходжанне, каб вы маглі дзяліцца ёй з сябрамі. У вас запытаюць доступ да месцазнаходжання (калі вы выкарыстоўваеце праграму).</string>
+    <string name="CG_LocationPermission_Desc">Аднак, калі вы хаціце дзяліцца сваім месцазнаходжаннем, калі Cherrygram закрыты ці згорнуты, перайдзіце да \"Трансляцыя месцазнаходжання\". Пакуль вы не пагадзіцеся, па-за праграмай яно не будзе даступна.</string>
+    <!--Location screen-->
+    <!--Search filter-->
+    <string name="CG_SearchFilter">Фільтр па выніках пошуку</string>
+    <string name="CG_SearchFilter_None">Не фільтраваць</string>
+    <string name="CG_SearchFilter_Photos">Фота</string>
+    <string name="CG_SearchFilter_Videos">Відэа</string>
+    <string name="CG_SearchFilter_VoiceMessages">Галасавыя паведамленні</string>
+    <string name="CG_SearchFilter_VideoMessages">Відэапаведамленні</string>
+    <string name="CG_SearchFilter_Files">Файлы/Дакументы</string>
+    <string name="CG_SearchFilter_Music">Музыка</string>
+    <string name="CG_SearchFilter_GIFs">GIF</string>
+    <string name="CG_SearchFilter_Geolocation">Геалакацыя</string>
+    <string name="CG_SearchFilter_Contacts">Кантакты</string>
+    <string name="CG_SearchFilter_MyMentions">Мае згадванні</string>
+    <!--Search filter-->
+    <!--Chats screen-->
+    <!--Misc-->
+    <string name="CG_Restart">Перазапусціць прыкладанне</string>
+    <string name="CG_RestartToApply">Перазапусціце дадатак, каб прымяніць змены</string>
+    <string name="CG_PushService">Сэрвіс апавяшчэнняў Cherrygram.</string>
+    <string name="CG_ForceClean">Прымусова ачысціць кэш Telegram</string>
+    <string name="CG_ForceCleanInfo">Выкарыстоўвайце гэта, калі Вы доўга бачыце \"Падлік…\" пры спробе ачысткі кэшу.\nГэта выдаліць УСЕ з Вашага кэшу - будзьце асцярожныя!</string>
+    <string name="CG_ForceCleanInfo1">Вы сапраўды хочаце выдаліць УСЕ з Вашага кэшу Telegram?</string>
+    <string name="CG_Kaboom">Доступ да гэтай функцыі можна атрымаць без пароля Cherrygram, праз сістэмныя наладкі. Гэтая функцыя цалкам выдаляе ўсе дадзеныя прыкладання. Яе можна выкарыстоўваць у аварыйных сітуацыях.</string>
+    <string name="CG_AppCrashed">Нешта пайшло не так</string>
+    <string name="CG_AppCrashedDesc">Cherrygram перастаў працаваць.  Калі ласка, адпраўце логі распрацоўкам, каб яны маглі як мага хутчэй выправіць гэтую памылку.</string>
+    <string name="CG_CopyReportDetails">Скапіяваць дэталі справаздачы</string>
+    <string name="CG_ReportDetailsCopied">Дэталі справаздачы скапіяваныя ў буфер абмену.</string>
+    <string name="CG_TranslationLanguage">Мова перакладу</string>
+    <string name="CG_CopyPhoto">Капіяваць фота</string>
+    <string name="CG_CopyPhotoAsSticker">Капіяваць фота як стыкер</string>
+    <string name="CG_PhotoCopied">Фота скапіравана ў буфер абмену.</string>
+    <string name="CG_SaveSticker">Захаваць стыкер</string>
+    <string name="CG_StickerSavedHint">Стыкер захаваны ў загрузкі</string>
+    <string name="CG_CopySetId">Скапіраваць ID набору</string>
+    <string name="CG_ExportSettings">Экспарт налад</string>
+    <string name="CG_ImportSettings">Імпарт налад</string>
+    <string name="CG_ImportSettingsAlert">Перазапісаць налады дадатку\? Імпарт налад з ненадзейных крыніц можа прывесці да непрацаздольнасці дадатку.</string>
+    <string name="CG_OpenStickerPack">Націсніце для адкрыцця стыкеру</string>
+    <string name="CG_OpenEmojiPack">Націсніце для адкрыцця эмодзі</string>
+    <string name="CG_ReplyContainsEmojiPack">Hety adkaz utrymvaje **%s** emodzi</string>
+    <string name="CG_GetEmojiPack">Atrymać emodzi</string>
+    <string name="CG_ProfileBackground">Užyć fon profilu</string>
+    <string name="CG_MessageContainsCustomReactions_one">Рэакцыі ўтрымліваюць кастамную эмодзі \nиз %1$d набору.</string>
+    <string name="CG_MessageContainsCustomReactions_other">Рэакцыі ўтрымліваюць кастамныя эмодзі \nиз %1$d набораў.</string>
+    <!--Misc-->
+    <!--Telegram screens-->
+    <!--Cherrygram screens-->
+    <!--Cherrygram Preferences-->
+    <string name="CGP_AdvancedSettings">Налады Cherrygram</string>
+    <string name="CGP_About_Desc">Эксперыментальная мадыфікацыя дадатку Telegram. Націсніце тут, каб прачытаць спіс функцый.</string>
+    <string name="CGP_Header_About">Аб Cherrygram</string>
+    <string name="CGP_Header_About_Desc">Абнаўлення, зыходны код і многае іншае</string>
+    <string name="CGP_Links">Спасылкі</string>
+    <string name="CGP_ToChannel">Афіцыйны канал</string>
+    <string name="CGP_ToChat">Афіцыйны чат</string>
+    <string name="CGP_Source">Зыходны код</string>
+    <string name="CGP_Crowdin">Дапамажы нам з перакладам</string>
+    <string name="CGP_Header_Categories">Катэгорыі</string>
+    <!--Cherrygram Preferences-->
+    <!--General Preferences-->
+    <string name="AP_Header_General">Асноўныя</string>
+    <!--General Preferences-->
+    <!--Appearance Preferences-->
+    <string name="AP_Header_Appearance">Знешні выгляд</string>
+    <string name="AP_RedesignCategory">Рэдызайн</string>
+    <string name="AP_IconReplacements">Змена іконак</string>
+    <string name="AP_Old_Notification_Icon">Стандартна іконка паведамленняў (Telegram)</string>
+    <string name="AP_ChangeIcon_Cherry_NY">Навагодняя</string>
+    <string name="AP_ChangeIcon_Default">Па ўмаўчанні</string>
+    <string name="AP_ChangeIcon_Dark">Цёмны</string>
+    <string name="AP_ChangeIcon_White">Белая</string>
+    <string name="AP_ChangeIcon_Laguna">Лагуна</string>
+    <string name="AP_ChangeIcon_Green">Зялёная</string>
+    <string name="AP_ChangeIcon_Lavanda">Лаванда</string>
+    <string name="AP_ChangeIcon_Sunset">Заход</string>
+    <string name="AP_ChangeIcon_Sunrise">Узыход</string>
+    <string name="AP_IconReplacement_VKUI">Іконкі VKUI</string>
+    <string name="AP_IconReplacement_Solar">Іконкі Solar ад @Design480</string>
+    <string name="AP_IconReplacement_Default">Стандартны</string>
+    <string name="AP_OneUI_Switch_Style">Перамыкачы ў стылі OneUI</string>
+    <string name="AP_SystemEmoji">Выкарыстоўваць сістэмныя эмодзі</string>
+    <string name="AP_ShowPencilIcon">Іконка алоўка для рэдагавання паведамленняў</string>
+    <string name="AP_CenterTitle">Цэнтральны загаловак на панэлі дзеянняў</string>
+    <string name="AP_OverrideHeader">Змена колеру загалоўкаў</string>
+    <string name="AP_OverrideHeader_Desc">Загалоўкі будуць такога ж колеру, як і асноўны фон</string>
+    <string name="AP_DisableDividers">Адключыць падзельнікі</string>
+    <string name="AP_ToolBarShadow">Адключыць цень у тулбара</string>
+    <string name="AP_SystemFonts">Выкарыстоўваць сістэмны шрыфт</string>
+    <string name="CP_Snowflakes_Header">Сняжынкі</string>
+    <string name="CP_Snowflakes_AH">Загаловак дадатку</string>
+    <string name="CP_PremAndAnim_Header">Анімацыі і Premium функцыі</string>
+    <string name="CP_ProfileReplyBackground">Паведамленні і профілі</string>
+    <string name="CP_CustomizeProfile">Налада профілю</string>
+    <string name="CP_ProfileChannelPreview">Асабісты канал</string>
+    <string name="CP_ProfileBirthDatePreview">Дата нараджэння</string>
+    <string name="CP_ProfileBusinessPreview">Гадзіны працы і месцазнаходжанне</string>
+    <string name="CP_ProfileBackgroundColor">Фон у профілі</string>
+    <string name="CP_ProfileBackgroundEmoji">Эмодзі ў фоне профілю</string>
+    <string name="CP_CustomizeMessage">Налада паведамлення</string>
+    <string name="CP_ReplyBackground">Фон у адказах</string>
+    <string name="CP_ReplyCustomColors">Карыстацкі колер у адказах і папярэднім праглядзе спасылак</string>
+    <string name="CP_ReplyBackgroundEmoji">Эмодзі у адказах і прадпраглядзе спасылак</string>
+    <string name="CP_HideStories">Схаваць гісторыі</string>
+    <string name="CP_CustomWallpapers">Уласны фон у чатах</string>
+    <string name="CP_CustomWallpapers_Desc">Наладзьце ўласныя шпалеры ў чатах/групах/каналах</string>
+    <string name="CP_DisableAnimAvatars">Адключыць анімаваныя аватары</string>
+    <string name="CP_DisableReactionsOverlay">Адключыць рэакцыі</string>
+    <string name="CP_DisableReactionsOverlay_Desc">Гэта адключыць усплыўны спіс даступных рэакцый</string>
+    <string name="CP_DisableReactionAnim">Адключыць анімацыю рэакцыі</string>
+    <string name="CP_DisableReactionAnim_Desc">(у час рэакцыі на паведамленне)</string>
+    <string name="CP_DisablePremiumStatuses">Адключыць Premium статусы</string>
+    <string name="CP_DisablePremiumStatuses_Desc">Гэта адключыць эмодзі-статусы ўсюды, апроч бакавога меню</string>
+    <string name="CP_DisablePremStickAnim">Адключыць націскі на Premium стыкеры</string>
+    <string name="CP_DisablePremStickAnim_Desc">Нічога не будзе адбывацца калі Вы будзеце націскаць на Premium стыкер</string>
+    <string name="CP_DisablePremStickAutoPlay">Адключыць аўтапрайграванне Premium стыкераў</string>
+    <string name="CP_DisablePremStickAutoPlay_Desc">Premium анімацыя стыкераў не будзе прайграна аўтаматычна (функцыя не будзе працаваць калі Вы выключылі націскі на Premium стыкеры)</string>
+    <string name="CP_Filters_Header">Папкі</string>
+    <string name="AP_FolderNameInHeader">Назва папкі заміж \"Cherrygram\"</string>
+    <string name="AP_FolderNameInHeader_Desc">Гэта зменіць \"Cherrygram\" у загалоўку зверху на назву Вашай папкі (зручна пры адлюстраванні іконкаў замест назваў папкаў)</string>
+    <string name="CP_NewTabs_RemoveAllChats">Схаваць ўкладку \"Усе чаты\"</string>
+    <string name="AP_Tab_Style">Стыль укладкі</string>
+    <string name="AP_Tab_Style_Default">Стандартны</string>
+    <string name="AP_Tab_Style_Rounded">Авал</string>
+    <string name="AP_Tab_Style_Text">Тэкст</string>
+    <string name="AP_Tab_Style_Pills">Таблеткі</string>
+    <string name="AP_Tab_Style_Stroke">Дадаць абвядзенне</string>
+    <string name="AP_DrawerCategory">Бакавое меню</string>
+    <string name="AP_DrawerAvatar">Аватар як фон меню</string>
+    <string name="AP_DrawerShowAvatar">Паказаць аватар</string>
+    <string name="AP_DrawerDarken">Зацямніць фон</string>
+    <string name="AP_ShadeBackground">Градыентны фон</string>
+    <string name="AP_DrawerBlur">Размыццё фону</string>
+    <string name="AP_DrawerBlurIntensity">Інтэнсіўнасць размыцця</string>
+    <string name="AP_DrawerIconPack_Header">Набор іконкаў меню</string>
+    <string name="AP_DrawerButtonsCategory">Кнопкі меню</string>
+    <string name="AP_HideUserPhone_Show">Тыкніце, каб паказаць</string>
+    <string name="AP_HideUserPhone_Copy">Утрымлівайце для капіравання</string>
+    <string name="AP_MutualContacts_Description">Гэты кантакт з\'яўляецца ўзаемным.</string>
+    <string name="AP_ShowID">Паказаць ID і DC у профілях</string>
+    <!--Appearance Preferences-->
+    <!--Chats Preferences-->
+    <string name="CP_Header_Chats">Чаты</string>
+    <string name="CP_Header_Messages">Паведамленні</string>
+    <string name="CP_TimeOnStick">Схаваць час на стыкерах у чаце</string>
+    <string name="CP_ChatMenuShortcuts">Ярлыкі дзеянняў ў меню чата</string>
+    <string name="CP_AdminActions">Дзеянні для кіраўнікоў</string>
+    <string name="CP_MessageMenu">Меню паведамленняў</string>
+    <string name="AP_CenterChatsTitle">Цэнтраваць назву ў чатах</string>
+    <string name="CP_UnreadBadgeOnBackButton">Паказаць лічыльнік непрачытаных</string>
+    <string name="CP_UnreadBadgeOnBackButton_Desc">Уключыць лічыльнік непрачытаных чатаў на кнопцы «Назад» у адкрытым чаце</string>
+    <string name="CP_NoRounding">Адключыць акругленне лічб</string>
+    <string name="CP_DeleteForAll">Выкарыстоўваць \"Выдаліць для ўсіх\" па ўмаўчанні</string>
+    <string name="CP_DeleteForAll_Desc">Пры выдаленні паведамленняў галачка будзе ставіцца аўтаматычна.</string>
+    <string name="CP_ForwardMsgDate">Паказваць дату перасланага паведамлення</string>
+    <string name="CP_ShowSeconds">Паказваць час з секундамі</string>
+    <string name="CP_LeftBottomButtonAction">Дзеянне левай кнопкі</string>
+    <string name="CP_DoubleTapAction">Дзеянне пры падвойным націску</string>
+    <string name="CG_MsgSlideAction">Дзеянні пры смахванні</string>
+    <string name="CP_DisableSwipeToNext">Адключыць пераход на наступны канал</string>
+    <string name="CP_DisableSwipeToNext_Desc">Адключыце пераключэнне на наступны канал пры прагортцы любога канала</string>
+    <string name="CP_HideMuteUnmuteButton">Схаваць ніжнюю кнопку ў каналах</string>
+    <string name="CP_HideKbdOnScroll">Схаваць клавіятуру пры прагортцы</string>
+    <string name="CP_HideSendAsChannel">Схаваць \"Адправіць як канал\"</string>
+    <string name="CP_HideSendAsChannelDesc">Вы можаце трапіць у гэта меню праз доўгі націск кнопкі Эмодзі/Стыкераў/Анімацый</string>
+    <string name="CP_Header_Record">Медыя</string>
+    <string name="CP_SpoilersOnMedia">Эфект спойлера</string>
+    <string name="CP_SpoilersOnMedia_Desc">Эфект спойлера на выявах і відэа не будзе паказвацца, калі гэты пункт адключаны.</string>
+    <string name="CP_VoiceEnhancements">Паляпшэнне гуку</string>
+    <string name="CP_VoiceEnhancements_Desc">Падаўленне шуму і нармалізацыя голасу</string>
+    <string name="CP_PlayVideo">Прайграванне відэа пры націску кнопкі гучнасці</string>
+    <string name="CP_PlayVideo_Desc">Пры націску на кнопку гучнасці будзе ўлучана відэа на экране ў дыялогу</string>
+    <string name="CP_AutoPauseVideo">Запыніць відэа</string>
+    <string name="CP_AutoPauseVideo_Desc">Пры блакаванні экрана ці згортванні дадатку</string>
+    <string name="CP_DisableVibration">Адключыць вібрацыю</string>
+    <string name="CP_VideoSeekDuration">Naciśnicie dvojčy, kab znajści videa (dva razy)</string>
+    <string name="CP_Header_Notification">Апавяшчэнні</string>
+    <string name="CP_NotificationSound">Гук паведамлення</string>
+    <string name="CP_VibrateInChats">Вібрацыя чату</string>
+    <string name="CP_VibrateInChats_Desc">Выдаваць кароткую вібрацыю пры атрыманні паведамлення ў чатах</string>
+    <string name="CP_SilenceNonContacts">Заглушыць не-кантакты</string>
+    <string name="CP_SilenceNonContacts_Desc">Kali ŭklučana, paviedamleńni z hukam buduć prychodzić tolki ad kantaktaŭ. Vy možacie dadać čałavieka ŭ kantakty navat biez numara telefona, zrabicie heta ŭ jaho profili</string>
+    <!--Chats Preferences-->
+    <!--Camera Preferences-->
+    <string name="CP_Category_Camera">Kamera</string>
+    <string name="CP_CameraType">Typ kamery</string>
+    <string name="CP_Camera2Desc">Усе функцыі, што схаваны пры ўключэнні Camera2, не будуць працаваць з ёй.</string>
+    <string name="CP_CameraStabilisation">Стабілізацыя</string>
+    <string name="CP_CameraUW">Пачынаць з УШ</string>
+    <string name="CP_CameraUW_Desc">Запісваць відэапаведамленні з ультрашырокай камеры (калі API вашай прылады падтрымлівае)</string>
+    <string name="CP_CameraDualCamera">Двайная камера</string>
+    <string name="CP_CameraDualCamera_Desc">Запісвае відэа на абодзьвух камерах для хутчэйшага пераключэння. Выкарыстоўвае больш зараду.</string>
+    <string name="CP_DefaultCameraDesc">Vykarystoŭvajcie ŭbudavanuju kameru Telegram.</string>
+    <string name="CP_CameraXDesc">CameraX padtrymvajecca tolki na <![CDATA[<a href="https://developer.android.com/training/camerax/devices">abranych pryładach</a>]]>, padtrymka efektaŭ i linzaŭ zaležyć ad vašaha vytvorcy.</string>
+    <string name="CP_CameraQuality">Якасць камеры</string>
+    <string name="CP_CameraTypeSystem">Сістэмная</string>
+    <string name="CP_SystemCameraDesc">Дазваляе атрымаць доступ наўпрост да сістэмнай камеры (не ўжываецца да відэапаведамленняў).</string>
+    <string name="CP_CameraAspectRatio">Суадносіны бакоў камеры</string>
+    <string name="CP_RearCam">Выкарыстоўваць заднюю камеру</string>
+    <string name="CP_RearCam_Desc">Заміж франтальнай камеры пры запісе відэапаведамленняў</string>
+    <string name="CP_DisableCam">Адключыць камеру ў меню выбару фота</string>
+    <string name="CP_DisableCam_Desc">Уключыце гэта калі меню тармозіць</string>
+    <string name="CP_Header_Videomessages">Відэапаведамленні</string>
+    <string name="CP_ExposureSliderPosition">Размяшчэнне экспазіцыі</string>
+    <string name="CP_ZoomSliderPosition_Bottom">Унізе</string>
+    <string name="CP_ZoomSliderPosition_Right">Справа</string>
+    <string name="CP_ZoomSliderPosition_Left">Злева</string>
+    <string name="CP_Exposure">Экспазіцыя</string>
+    <!--Camera Preferences-->
+    <!--Experimental Preferences-->
+    <string name="EP_Category_Experimental">Эксперыментальны</string>
+    <string name="EP_NavigationAnimation">Навігацыйная анімацыя</string>
+    <string name="EP_NavigationAnimationBezier">Класічны</string>
+    <string name="EP_NavigationAnimationCrossfading">Эфект плаўнага згасання</string>
+    <string name="CG_ResidentNotification">Уключыць сталае паведамленне</string>
+    <string name="EP_PhotosSize">Адпраўляць вялікія фота (2560px)</string>
+    <string name="EP_CustomAppTitle">Назва дадатку</string>
+    <string name="EP_CustomChat">Карыстацкі чат для Захаванага</string>
+    <string name="EP_CustomChat_Desc">Усталюйце ID іншага чату/групы/канала, каб перасылаць туды паведамленні (праз кнопку ў панэлі дзеянняў, у меню паведамлення ці пры падвойным націску)</string>
+    <string name="EP_Network">Сетка</string>
+    <string name="EP_DownloadSpeedBoost">Павышэнне хуткасці загрузкі</string>
+    <string name="EP_DownloadSpeedBoostNone">Выкл</string>
+    <string name="EP_DownloadSpeedBoostAverage">Укл</string>
+    <string name="EP_DownloadSpeedBoostExtreme">Экстра</string>
+    <string name="EP_UploadloadSpeedBoost">Павелічэнне хуткасці аддачы</string>
+    <string name="EP_SlowNetworkMode">Рэжым павольнай сеткі</string>
+    <!--Experimental Preferences-->
+    <!--Security Preferences-->
+    <string name="SP_Category_PrivacyAndSecurity">Прыватнасць і бяспека</string>
+    <string name="SP_Header_Privacy">Прыватнасць</string>
+    <string name="SP_NoProxyPromo">Не паказваць спонсара проксі</string>
+    <string name="SP_GoogleAnalytics_Desc">Уключыўшы гэта, усе збоі дадаткаў (вылеты) і статыстыка будуць адпраўлены ў \"console.firebase.google.com\" для далейшага вывучэння распрацоўнікам.</string>
+    <string name="SP_CleanOld">Ачысціць стары кэш (/sdcard/Telegram)</string>
+    <string name="SP_RemovedS">Паспяхова выдалена</string>
+    <string name="SP_AskPinBeforeDelete">Пацвярждаць выдаленне біяметрыкай.</string>
+    <string name="SP_AskPinBeforeDelete_Desc">Калі вы захаціце выдаліць чат ці гісторыю, будзе патрабавацца пацверджане біяметрыяй. Код і біяметрыка ў сістэме павінны быць уключаны.</string>
+    <string name="SP_AllowUseSystemPasscode">Выкарыстоўваць сістэмны Код/Узор</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">Кнопка \"Скасаваць\" пры праверцы адбітка, будзе заменена на \"Код/Узор\" і дасць магчымасць разблакіраваць Cherrygram.</string>
+    <string name="SP_TestFingerprint">Тэст адбітка</string>
+    <string name="SP_Category_Account">Акаўнт</string>
+    <string name="SP_DeleteAccount">Выдаліць Telegram акаўнт</string>
+    <!--Security Preferences-->
+    <!--Updates Preferences-->
+    <string name="UP_Category_Updates">Абнаўленне</string>
+    <string name="UP_TapToCheckUpdates">Націсніце тут, каб атрымаць інфармацыю пра абнаўленні</string>
+    <string name="UP_LastCheck">Апошняя праверка</string>
+    <string name="UP_CurrentVersion">Бягучая версія</string>
+    <string name="UP_BuildType">Тып зборкі</string>
+    <string name="UP_BTRelease">Стабільная</string>
+    <string name="UP_BTBeta">Бэта</string>
+    <string name="UP_InstallBetas">Усталёўваць бэта-версіі</string>
+    <string name="UP_Auto_OTA">Праверка пры запуску</string>
+    <string name="UP_ClearUpdatesCache">Ачысціць кэш абнаўленняў</string>
+    <string name="UP_ClearedUpdatesCache">Вычышчана %1$s кэша.</string>
+    <string name="UP_NothingToClear">Няма чаго чысціць.</string>
+    <string name="UP_CheckForUpdates">Праверыць абнаўленні</string>
+    <string name="UP_Not_Found">Выкарыстоўваецца апошняя версія Cherrygram.</string>
+    <string name="UP_UpdateAvailable">Даступна абнаўленне!</string>
+    <string name="UP_Version">Версія</string>
+    <string name="UP_Changelog">Спіс змен:</string>
+    <string name="UP_ChangelogRead">Тыкніце, каб прачытаць</string>
+    <string name="UP_Download">Спампаваць</string>
+    <!--Updates Preferences-->
+    <!--Donations-->
+    <string name="DP_RateUs">Ацаніць Cherrygram</string>
+    <string name="DP_Donate_Method">Абярыце спосаб</string>
+    <!--Donations-->
+    <!--Cherrygram screens-->
+</resources>

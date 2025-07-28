@@ -10,27 +10,50 @@
 package uz.unnarsx.cherrygram.preferences
 
 import android.content.Intent
-import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ActionBar.Theme
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.hint
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
+import androidx.core.net.toUri
 
 class DonatePreferenceEntry : BasePreferencesEntry {
-    override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.DP_Donate)) {
+    override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.DP_SupportOptions)) {
         val isDarkMode: Boolean = !Theme.isCurrentThemeDay()
-        category(getString(R.string.Info)) {
+        val isBadgeAvailable: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+
+        category(getString(R.string.DP_CameraCutoutHeader), isBadgeAvailable) {
+            hint(AndroidUtilities.replaceTags(getString(R.string.DP_CameraCutoutDesc)))
+            switch {
+                title = getString(R.string.DP_CameraCutout)
+
+                contract({
+                    return@contract CherrygramCoreConfig.cgBrandedScreenshots
+                }) {
+                    CherrygramCoreConfig.cgBrandedScreenshots = it
+                    AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
+
+        }
+
+        category(getString(R.string.DP_DonateBadge)) {
             hint(CGResourcesHelper.getDonatesAdvice())
         }
+
         category(getString(R.string.DP_Donate_Method)) {
             textIcon {
                 icon = if (isDarkMode) R.drawable.card_visa_dark else R.drawable.card_visa_light
@@ -56,7 +79,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
 
                 listener = TGKitTextIconRow.TGTIListener {
                     val openURL = Intent(Intent.ACTION_VIEW)
-                    openURL.data = Uri.parse("https://tirikchilik.uz/arslan4k1390")
+                    openURL.data = "https://tirikchilik.uz/arslan4k1390".toUri()
                     bf.parentActivity.startActivity(openURL)
                 }
             }
@@ -84,7 +107,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    AndroidUtilities.addToClipboard("5614681912473893")
+                    AndroidUtilities.addToClipboard("5614683516520707")
                     Toast.makeText(bf.parentActivity, getString(R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
             }

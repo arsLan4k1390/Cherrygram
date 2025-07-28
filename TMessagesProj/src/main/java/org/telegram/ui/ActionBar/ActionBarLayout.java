@@ -1089,7 +1089,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         if (fragmentView == null) {
             fragmentView = lastFragment.createView(parentActivity);
             if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                VibrateUtil.disableHapticFeedback(fragmentView);
+                VibrateUtil.INSTANCE.disableHapticFeedback(fragmentView);
             }
         }
         ViewGroup parent = (ViewGroup) fragmentView.getParent();
@@ -1727,7 +1727,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         if (fragmentView == null) {
             fragmentView = fragment.createView(parentActivity);
             if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                VibrateUtil.disableHapticFeedback(fragmentView);
+                VibrateUtil.INSTANCE.disableHapticFeedback(fragmentView);
             }
         } else {
             ViewGroup parent = (ViewGroup) fragmentView.getParent();
@@ -2311,7 +2311,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             if (fragmentView == null) {
                 fragmentView = previousFragment.createView(parentActivity);
                 if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    VibrateUtil.disableHapticFeedback(fragmentView);
+                    VibrateUtil.INSTANCE.disableHapticFeedback(fragmentView);
                 }
             }
 
@@ -2498,7 +2498,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         if (fragmentView == null) {
             fragmentView = previousFragment.createView(parentActivity);
             if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                VibrateUtil.disableHapticFeedback(fragmentView);
+                VibrateUtil.INSTANCE.disableHapticFeedback(fragmentView);
             }
         } else {
             ViewGroup parent = (ViewGroup) fragmentView.getParent();

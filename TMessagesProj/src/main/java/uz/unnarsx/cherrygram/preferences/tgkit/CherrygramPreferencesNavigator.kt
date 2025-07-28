@@ -19,7 +19,7 @@ import uz.unnarsx.cherrygram.preferences.MainPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.PrivacyAndSecurityPreferencesEntry
 
 object CherrygramPreferencesNavigator {
-    @JvmStatic
+
     fun createMainMenu() = TGKitSettingsFragment(MainPreferencesEntry())
     fun createGeneral() = TGKitSettingsFragment(GeneralPreferencesEntry())
     fun createAppearance() = TGKitSettingsFragment(AppearancePreferencesEntry())

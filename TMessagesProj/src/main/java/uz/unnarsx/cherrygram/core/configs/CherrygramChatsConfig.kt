@@ -64,6 +64,9 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var geminiModelName by sharedPreferences.string("CP_GeminiModelName", " ")
     var geminiTemperatureValue by sharedPreferences.int("CP_GeminiTemperature", 5)
     /** Gemini AI finish **/
+
+    var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
+    var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
     /** Chats finish **/
 
     /** Messages start **/
@@ -160,6 +163,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     var noAuthorship by sharedPreferences.boolean("CG_NoAuthorship", false)
     var gifSpoilers by sharedPreferences.boolean("CG_GifSpoiler", false)
+    var photoAsSticker by sharedPreferences.boolean("CG_PhotoAsSticker", false)
 
     /** Translator start **/
     var translationKeyboardTarget by sharedPreferences.string("translationKeyboardTarget", "app")

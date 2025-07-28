@@ -37,6 +37,7 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
+import androidx.core.content.edit
 
 class DebugPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen("Debug // WIP") {
@@ -80,7 +81,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                             AndroidUtilities.replaceTags((if (currentClass == SharedConfig.PERFORMANCE_CLASS_AVERAGE) "**AVERAGE**" else "AVERAGE") + (if (trueClass == SharedConfig.PERFORMANCE_CLASS_AVERAGE) " (measured)" else "")),
                             AndroidUtilities.replaceTags((if (currentClass == SharedConfig.PERFORMANCE_CLASS_LOW) "**LOW**" else "LOW") + (if (trueClass == SharedConfig.PERFORMANCE_CLASS_LOW) " (measured)" else ""))
                         )
-                    ) { dialog: DialogInterface?, which: Int ->
+                    ) { _: DialogInterface?, which: Int ->
                         val newClass = 2 - which
                         if (newClass == trueClass) {
                             SharedConfig.overrideDevicePerformanceClass(-1)
@@ -213,22 +214,24 @@ class DebugPreferencesEntry : BasePreferencesEntry {
 
                     SharedConfig.setNoSoundHintShowed(false)
 
-                    var editor = MessagesController.getGlobalMainSettings().edit()
-                    editor.remove("archivehint").remove("proximityhint").remove("archivehint_l")
-                        .remove("speedhint").remove("gifhint").remove("reminderhint")
-                        .remove("soundHint").remove("themehint").remove("bganimationhint")
-                        .remove("filterhint").remove("n_0").remove("storyprvhint")
-                        .remove("storyhint").remove("storyhint2").remove("storydualhint")
-                        .remove("storysvddualhint").remove("stories_camera").remove("dualcam")
-                        .remove("dualmatrix").remove("dual_available").remove("archivehint")
-                        .remove("askNotificationsAfter").remove("askNotificationsDuration")
-                        .remove("viewoncehint").remove("taptostorysoundhint").remove("nothanos")
-                        .remove("voiceoncehint").remove("savedhint").remove("savedsearchhint")
-                        .remove("savedsearchtaghint").remove("groupEmojiPackHintShown")
-                        .remove("newppsms").remove("monetizationadshint").apply()
+                    MessagesController.getGlobalMainSettings().edit {
+                        remove("archivehint").remove("proximityhint").remove("archivehint_l")
+                            .remove("speedhint").remove("gifhint").remove("reminderhint")
+                            .remove("soundHint").remove("themehint").remove("bganimationhint")
+                            .remove("filterhint").remove("n_0").remove("storyprvhint")
+                            .remove("storyhint").remove("storyhint2").remove("storydualhint")
+                            .remove("storysvddualhint").remove("stories_camera").remove("dualcam")
+                            .remove("dualmatrix").remove("dual_available").remove("archivehint")
+                            .remove("askNotificationsAfter").remove("askNotificationsDuration")
+                            .remove("viewoncehint").remove("taptostorysoundhint").remove("nothanos")
+                            .remove("voiceoncehint").remove("savedhint").remove("savedsearchhint")
+                            .remove("savedsearchtaghint").remove("groupEmojiPackHintShown")
+                            .remove("newppsms").remove("monetizationadshint")
+                    }
 
-                    MessagesController.getEmojiSettings(UserConfig.selectedAccount).edit()
-                        .remove("featured_hidden").remove("emoji_featured_hidden").apply()
+                    MessagesController.getEmojiSettings(UserConfig.selectedAccount).edit {
+                        remove("featured_hidden").remove("emoji_featured_hidden")
+                    }
 
                     SharedConfig.textSelectionHintShows = 0
                     SharedConfig.lockRecordAudioVideoHint = 0
@@ -254,18 +257,17 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                     PersistColorPalette.getInstance(UserConfig.selectedAccount).cleanup()
 
                     val prefs: SharedPreferences = bf.messagesController.mainSettings
-                    editor = prefs.edit()
-                    editor.remove("peerColors").remove("profilePeerColors")
-                        .remove("boostingappearance").remove("bizbothint")
-                    for (key in prefs.all.keys) {
-                        if (key.contains("show_gift_for_") || key.contains("bdayhint_") || key.contains(
-                                "bdayanim_"
-                            )
-                        ) {
-                            editor.remove(key)
+                    prefs.edit {
+                        remove("peerColors")
+                        remove("profilePeerColors")
+                        remove("boostingappearance")
+                        remove("bizbothint")
+                        for (key in prefs.all.keys) {
+                            if (key.contains("show_gift_for_") || key.contains("bdayhint_") || key.contains("bdayanim_")) {
+                                remove(key)
+                            }
                         }
                     }
-                    editor.apply()
                     AppRestartHelper.createDebugSuccessBulletin(bf)
                 }
             }

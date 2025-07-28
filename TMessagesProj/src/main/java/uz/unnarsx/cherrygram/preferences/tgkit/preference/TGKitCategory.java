@@ -15,6 +15,14 @@ public class TGKitCategory {
     public String name;
     public List<TGKitPreference> preferences;
 
+    public boolean isAvailable = true;
+
+    public TGKitCategory(String name, boolean isAvailable, List<TGKitPreference> preferences) {
+        this.name = name;
+        this.preferences = preferences;
+        this.isAvailable = isAvailable;
+    }
+
     public TGKitCategory(String name, List<TGKitPreference> preferences) {
         this.name = name;
         this.preferences = preferences;

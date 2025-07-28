@@ -257,7 +257,15 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
         buttonTextView.setText(LocaleController.getString(R.string.CloseTranslation));
         buttonTextView.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
         buttonTextView.setOnClickListener(e -> dismiss());
-        buttonView.addView(buttonTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 16, 16));
+        buttonView.addView(buttonTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
+
+        ImageView copyButton = new ImageView(context);
+        copyButton.setScaleType(ImageView.ScaleType.CENTER);
+        copyButton.setImageResource(R.drawable.msg_copy);
+        copyButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider), PorterDuff.Mode.MULTIPLY));
+        copyButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
+        copyButton.setOnClickListener(v -> processCopyText(peer));
+        buttonView.addView(copyButton, LayoutHelper.createFrame(48, 48, Gravity.BOTTOM | Gravity.RIGHT, 0, 16, 16, 16));
 
         containerView.addView(buttonView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
 
@@ -945,6 +953,7 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
             AndroidUtilities.logFlagSecure();
         }
+        this.noForwards = noforwards;
     }
 
     @Override
@@ -1684,4 +1693,27 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
     public static void resetToLanguage() {
         MessagesController.getGlobalMainSettings().edit().remove("translate_to_language").apply();
     }
+
+    /** Cherrygram start */
+    private boolean noForwards;
+
+    private void processCopyText(TLRPC.InputPeer peer) {
+        if (noForwards) {
+            if (peer != null && peer.channel_id != 0) {
+                BulletinFactory.of(getContainer(), getResourcesProvider()).createErrorBulletin(LocaleController.getString(R.string.ForwardsRestrictedInfoChannel))
+                        .setDuration(Bulletin.DURATION_LONG)
+                        .show();
+            } else {
+                BulletinFactory.of(getContainer(), getResourcesProvider()).createErrorBulletin(LocaleController.getString(R.string.ForwardsRestrictedInfoGroup))
+                        .setDuration(Bulletin.DURATION_LONG)
+                        .show();
+            }
+        } else {
+            AndroidUtilities.addToClipboard(textView.getText());
+            BulletinFactory.of(getContainer(), getResourcesProvider()).createCopyBulletin(LocaleController.getString(R.string.TextCopied))
+                    .setDuration(Bulletin.DURATION_LONG)
+                    .show();
+        }
+    }
+    /** Cherrygram finish */
 }

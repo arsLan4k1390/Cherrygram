@@ -241,13 +241,19 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         copyButton.setOnClickListener(v -> {
             if (noforwardsOrPaidMedia) {
                 if (ChatObject.isChannel(currentChat) && !currentChat.megagroup) {
-                    BulletinFactory.of(getContainer(), getResourcesProvider()).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoChannel)).show();
+                    BulletinFactory.of(getContainer(), getResourcesProvider()).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoChannel))
+                            .setDuration(Bulletin.DURATION_LONG)
+                            .show();
                 } else {
-                    BulletinFactory.of(getContainer(), getResourcesProvider()).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoGroup)).show();
+                    BulletinFactory.of(getContainer(), getResourcesProvider()).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoGroup))
+                            .setDuration(Bulletin.DURATION_LONG)
+                            .show();
                 }
             } else {
                 AndroidUtilities.addToClipboard(textView.getText());
-                BulletinFactory.of(getContainer(), getResourcesProvider()).createCopyBulletin(getString(R.string.TextCopied)).show();
+                BulletinFactory.of(getContainer(), getResourcesProvider()).createCopyBulletin(getString(R.string.TextCopied))
+                        .setDuration(Bulletin.DURATION_LONG)
+                        .show();
             }
         });
         buttonView.addView(copyButton, LayoutHelper.createFrame(48, 48, Gravity.BOTTOM | Gravity.RIGHT, 0, 16, 16, 16));

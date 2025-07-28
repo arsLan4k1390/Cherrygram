@@ -22,6 +22,7 @@ import org.telegram.tgnet.TLRPC.TL_messageEntitySpoiler
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
+import androidx.core.content.edit
 
 object ChatsPasswordHelper {
 
@@ -31,9 +32,9 @@ object ChatsPasswordHelper {
 
     fun saveArrayList(list: ArrayList<String>, key: String) {
         MessagesController.getMainSettings(currentAccount)
-            .edit()
-            .putString(key, Gson().toJson(list))
-            .apply()
+            .edit {
+                putString(key, Gson().toJson(list))
+            }
     }
 
     fun getArrayList(key: String): ArrayList<String> {

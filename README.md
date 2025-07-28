@@ -106,13 +106,14 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Darken menu header background,
 - Gradient menu header background,
 - Blur menu header background and blur intensity,
-- Enable/Disable drawer buttons,
+- Enable/Disable drawer items,
 - Drawer icons set.
 
 *Cherrygram Chats Preferences:*
 - Configure admin shortcuts in chats,
 - Center chat title like on IOS,
 - Showing unread chats counter on "Back" button like on IOS,
+- Recent emojis and stickers counter (amplifier),
 - Ask before a call,
 - Hide keyboard while scrolling a chat,
 - Enable/Disable transition to the next channel,

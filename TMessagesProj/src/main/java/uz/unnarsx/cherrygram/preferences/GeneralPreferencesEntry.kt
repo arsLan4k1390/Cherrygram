@@ -104,7 +104,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramCoreConfig.hideStories
                 }) {
                     CherrygramCoreConfig.hideStories = it
-                    bf.notificationCenter.postNotificationName(NotificationCenter.storiesEnabledUpdate);
+                    bf.notificationCenter.postNotificationName(NotificationCenter.storiesEnabledUpdate)
                 }
             }
             textIcon {
@@ -232,6 +232,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
             prefTitle,
             prefIcon,
             prefCheck,
+            null,
             null,
             prefDivider,
             clickListener,

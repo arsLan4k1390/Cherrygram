@@ -7070,7 +7070,7 @@ public class RecyclerView extends ViewGroup implements ScrollingView,
                 TraceCompat.beginSection(TRACE_CREATE_VIEW_TAG);
                 final VH holder = onCreateViewHolder(parent, viewType);
                 if (CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
-                    VibrateUtil.disableHapticFeedback(holder.itemView);
+                    VibrateUtil.INSTANCE.disableHapticFeedback(holder.itemView);
                 }
                 if (holder.itemView.getParent() != null) {
                     throw new IllegalStateException("ViewHolder views must not be attached when"

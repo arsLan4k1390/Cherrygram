@@ -90,6 +90,10 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var updateAvailable by sharedPreferences.boolean("CG_UpdateAvailable", false)
     /** OTA finish **/
 
+    /** Misc start **/
+    var cgBrandedScreenshots by sharedPreferences.boolean("DP_BrandedScreenshots", false)
+    /** Misc finish **/
+
     /** Cherrygram build types start **/
     fun isStandaloneStableBuild(): Boolean {
         return ApplicationLoader.isStandaloneBuild() && !isDevBuild() && !isStandalonePremiumBuild() && !isStandaloneBetaBuild()

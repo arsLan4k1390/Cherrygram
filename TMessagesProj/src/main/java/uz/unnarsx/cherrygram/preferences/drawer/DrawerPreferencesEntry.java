@@ -42,6 +42,7 @@ import org.telegram.ui.Components.SnowflakesEffect;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.drawer.cells.BlurIntensityCell;
@@ -157,6 +158,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                     listAdapter.notifyItemRangeRemoved(showGradientRow, 4 + (CherrygramAppearanceConfig.INSTANCE.getDrawerBlur() ? 3:0));
                     updateRowsId(false);
                 }
+                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
             } else if (position == showAvatarRow) {
                 CherrygramAppearanceConfig.INSTANCE.setDrawerSmallAvatar(!CherrygramAppearanceConfig.INSTANCE.getDrawerSmallAvatar());
                 if (view instanceof TextCheckCell) {
@@ -165,6 +167,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
 
                 TransitionManager.beginDelayedTransition(profilePreviewCell);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
+                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
             } else if (position == drawerDarkenBackgroundRow) {
                 CherrygramAppearanceConfig.INSTANCE.setDrawerDarken(!CherrygramAppearanceConfig.INSTANCE.getDrawerDarken());
                 if (view instanceof TextCheckCell) {
@@ -173,6 +176,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
 
                 TransitionManager.beginDelayedTransition(profilePreviewCell);
                 listAdapter.notifyItemChanged(drawerRow, new Object());
+                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
             } else if (position == showGradientRow) {
                 CherrygramAppearanceConfig.INSTANCE.setDrawerGradient(!CherrygramAppearanceConfig.INSTANCE.getDrawerGradient());
                 if (view instanceof TextCheckCell) {
@@ -196,6 +200,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                     listAdapter.notifyItemRangeRemoved(drawerDividerRow, 3);
                 }
                 updateRowsId(false);
+                getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
             } else if (position == menuItemsRow) {
                 showDrawerItemsSelector();
             }
@@ -304,7 +309,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                     TextCell textCell = (TextCell) holder.itemView;
                     textCell.setColors(Theme.key_windowBackgroundWhiteBlueText4, Theme.key_windowBackgroundWhiteBlueText4);
                     if (position == menuItemsRow) {
-                        textCell.setTextAndIcon(getString(R.string.AP_DrawerButtonsCategory), R.drawable.msg_newfilter, false);
+                        textCell.setTextAndIcon(getString(R.string.AP_DrawerButtonsCategory), R.drawable.msg_list, false);
                     }
                     break;
             }
@@ -402,69 +407,134 @@ public class DrawerPreferencesEntry extends BaseFragment {
     }
 
     private void showDrawerItemsSelector() {
+        int eventType = Theme.getEventType();
+        if (CherrygramAppearanceConfig.INSTANCE.getEventType() > 0) {
+            eventType = CherrygramAppearanceConfig.INSTANCE.getEventType() - 1;
+        }
+        int newGroupIcon;
+        int newChannelIcon;
+        int contactsIcon;
+        int callsIcon;
+        int savedIcon;
+        int settingsIcon;
+        if (eventType == 0) {
+            newGroupIcon = R.drawable.msg_groups_ny;
+            newChannelIcon = R.drawable.msg_channel_ny;
+            contactsIcon = R.drawable.msg_contacts_ny;
+            callsIcon = R.drawable.msg_calls_ny;
+            savedIcon = R.drawable.msg_saved_ny;
+            settingsIcon = R.drawable.msg_settings_ny;
+        } else if (eventType == 1) {
+            newGroupIcon = R.drawable.msg_groups_14;
+            newChannelIcon = R.drawable.msg_channel_14;
+            contactsIcon = R.drawable.msg_contacts_14;
+            callsIcon = R.drawable.msg_calls_14;
+            savedIcon = R.drawable.msg_saved_14;
+            settingsIcon = R.drawable.msg_settings_14;
+        } else if (eventType == 2) {
+            newGroupIcon = R.drawable.msg_groups_hw;
+            newChannelIcon = R.drawable.msg_channel_hw;
+            contactsIcon = R.drawable.msg_contacts_hw;
+            callsIcon = R.drawable.msg_calls_hw;
+            savedIcon = R.drawable.msg_saved_hw;
+            settingsIcon = R.drawable.msg_settings_hw;
+        } else if (eventType == 3) {
+            newGroupIcon = R.drawable.menu_groups_cn;
+            newChannelIcon = R.drawable.menu_broadcast_cn;
+            contactsIcon = R.drawable.menu_contacts_cn;
+            callsIcon = R.drawable.menu_calls_cn;
+            savedIcon = R.drawable.menu_bookmarks_cn;
+            settingsIcon = R.drawable.menu_settings_cn;
+        } else {
+            newGroupIcon = R.drawable.msg_groups;
+            newChannelIcon = R.drawable.msg_channel;
+            contactsIcon = R.drawable.msg_contacts;
+            callsIcon = R.drawable.msg_calls;
+            savedIcon = R.drawable.msg_saved;
+            settingsIcon = R.drawable.msg_settings_old;
+        }
+
         ArrayList<String> prefTitle = new ArrayList<>();
         ArrayList<Integer> prefIcon = new ArrayList<>();
         ArrayList<Boolean> prefCheck = new ArrayList<>();
+        ArrayList<Boolean> prefDonate = new ArrayList<>();
         ArrayList<Boolean> prefDivider = new ArrayList<>();
         ArrayList<Runnable> clickListener = new ArrayList<>();
 
         prefTitle.add(getUserConfig().getEmojiStatus() != null ? getString(R.string.ChangeEmojiStatus) : getString(R.string.SetEmojiStatus));
         prefIcon.add(getUserConfig().getEmojiStatus() != null ? R.drawable.msg_status_edit : R.drawable.msg_status_set);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getChangeStatusDrawerButton());
+        prefDonate.add(false);
         prefDivider.add(false);
         clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setChangeStatusDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getChangeStatusDrawerButton()));
+
+        prefTitle.add(CGResourcesHelper.INSTANCE.capitalize(getString(R.string.Gift2Myself)));
+        prefIcon.add(R.drawable.menu_gift);
+        prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getMarketPlaceDrawerButton());
+        prefDonate.add(true);
+        prefDivider.add(false);
+        clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setMarketPlaceDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getMarketPlaceDrawerButton()));
 
         prefTitle.add(getString(R.string.MyProfile));
         prefIcon.add(R.drawable.left_status_profile);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getMyProfileDrawerButton());
+        prefDonate.add(false);
         prefDivider.add(true);
         clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setMyProfileDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getMyProfileDrawerButton()));
 
         prefTitle.add(getString(R.string.NewGroup));
-        prefIcon.add(R.drawable.msg_groups);
+        prefIcon.add(newGroupIcon);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getCreateGroupDrawerButton());
+        prefDonate.add(false);
         prefDivider.add(false);
         clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setCreateGroupDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCreateGroupDrawerButton()));
 
         prefTitle.add(getString(R.string.NewChannel));
-        prefIcon.add(R.drawable.msg_channel);
+        prefIcon.add(newChannelIcon);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getCreateChannelDrawerButton());
+        prefDonate.add(false);
         prefDivider.add(false);
         clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setCreateChannelDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCreateChannelDrawerButton()));
 
         prefTitle.add(getString(R.string.Contacts));
-        prefIcon.add(R.drawable.msg_contacts);
+        prefIcon.add(contactsIcon);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getContactsDrawerButton());
+        prefDonate.add(false);
         prefDivider.add(false);
         clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setContactsDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getContactsDrawerButton()));
 
         prefTitle.add(getString(R.string.Calls));
-        prefIcon.add(R.drawable.msg_calls);
+        prefIcon.add(callsIcon);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getCallsDrawerButton());
+        prefDonate.add(false);
         prefDivider.add(false);
         clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setCallsDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCallsDrawerButton()));
 
         prefTitle.add(getString(R.string.SavedMessages));
-        prefIcon.add(R.drawable.msg_saved);
+        prefIcon.add(savedIcon);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getSavedMessagesDrawerButton());
+        prefDonate.add(false);
         prefDivider.add(false);
         clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setSavedMessagesDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getSavedMessagesDrawerButton()));
 
         prefTitle.add(getString(R.string.ArchivedChats));
         prefIcon.add(R.drawable.msg_archive);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getArchivedChatsDrawerButton());
+        prefDonate.add(false);
         prefDivider.add(false);
         clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setArchivedChatsDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getArchivedChatsDrawerButton()));
 
         prefTitle.add(getString(R.string.AuthAnotherClient));
         prefIcon.add(R.drawable.msg_qrcode);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getScanQRDrawerButton());
+        prefDonate.add(false);
         prefDivider.add(true);
         clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setScanQRDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getScanQRDrawerButton()));
 
         prefTitle.add(getString(R.string.CGP_AdvancedSettings));
-        prefIcon.add(R.drawable.msg_settings);
+        prefIcon.add(settingsIcon);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getCGPreferencesDrawerButton());
+        prefDonate.add(false);
         prefDivider.add(false);
         clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setCGPreferencesDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getCGPreferencesDrawerButton()));
 
@@ -475,6 +545,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                 prefIcon,
                 prefCheck,
                 null,
+                prefDonate,
                 prefDivider,
                 clickListener,
                 () -> getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged)

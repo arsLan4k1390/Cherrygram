@@ -996,4 +996,11 @@ public class TextCell extends FrameLayout {
             subtitleView.setVisibility(View.GONE);
         }
     }
+
+    /** Cherrygram start */
+    public void setCheckBoxIcon(int icon) {
+        checkBox.setIcon(icon);
+    }
+    /** Cherrygram finish */
+
 }

@@ -1547,7 +1547,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 }
                 if (dyConsumed != 0 && type == TYPE_TOUCH) {
-                    hideFloatingButton(!(sharedMediaLayout == null || sharedMediaLayout.getClosestTab() == SharedMediaLayout.TAB_STORIES || sharedMediaLayout.getClosestTab() == SharedMediaLayout.TAB_ARCHIVED_STORIES) || dyConsumed > 0);
+                    hideFloatingButton(sharedMediaLayout == null || dyConsumed > 0);
                 }
             } catch (Throwable e) {
                 FileLog.e(e);
@@ -4247,7 +4247,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 builder1.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
                 showDialog(builder1.create());
             } else if (position == cgSettingsRow) {
-                presentFragment(CherrygramPreferencesNavigator.createMainMenu());
+                presentFragment(CherrygramPreferencesNavigator.INSTANCE.createMainMenu());
             } else if (position == languageRow) {
                 presentFragment(new LanguageSelectActivity());
             } else if (position == setUsernameRow) {
@@ -4359,7 +4359,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                     return false;
                 } else if (position == usernameRow && userInfo != null){
-                    String username = ChatsHelper2.getActiveUsername(userInfo.id);
+                    String username = ChatsHelper2.INSTANCE.getActiveUsername(userInfo.id);
                     try {
                         AndroidUtilities.addToClipboard("https://t.me/" + username);
                         BulletinFactory.of(ProfileActivity.this).createCopyBulletin(LocaleController.getString(R.string.LinkCopied)).show();
@@ -5566,7 +5566,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         storiesController.canSendStoryFor(getDialogId(), canSend -> {
             waitCanSendStoryRequest = false;
             showBoostsAlert = !canSend;
-            hideFloatingButton(!(sharedMediaLayout == null || sharedMediaLayout.getClosestTab() == SharedMediaLayout.TAB_STORIES || sharedMediaLayout.getClosestTab() == SharedMediaLayout.TAB_ARCHIVED_STORIES));
+            hideFloatingButton(sharedMediaLayout == null);
         }, false, resourcesProvider);
     }
 
@@ -5703,6 +5703,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void hideFloatingButton(boolean hide) {
+        if (CherrygramCoreConfig.INSTANCE.getHideStories() || sharedMediaLayout != null && !(sharedMediaLayout.scrollSlidingTextTabStrip.hasTab(SharedMediaLayout.TAB_STORIES) || sharedMediaLayout.scrollSlidingTextTabStrip.hasTab(SharedMediaLayout.TAB_ARCHIVED_STORIES))) {
+            hide = true;
+        }
         TLRPC.User bot = getMessagesController().getUser(userId);
         if (bot != null && bot.bot && bot.bot_can_edit && bot.bot_has_main_app) {
             StoriesController.BotPreviewsList list = (StoriesController.BotPreviewsList) getMessagesController().getStoriesController().getStoriesList(userId, StoriesController.StoriesList.TYPE_BOTS);
@@ -9962,7 +9965,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         fallbackImage.setImage(ImageLocation.getForPhoto(smallSize, getUserInfo().fallback_photo), "50_50", (Drawable) null, 0, null, UserConfig.getInstance(currentAccount).getCurrentUser(), 0);
                     }
                 } else {
-                    newString2 = LocaleController.getString(R.string.Online);
+                    newString2 = LocaleController.formatUserStatus(currentAccount, user, isOnline, shortStatus ? new boolean[1] : null);
+//                    newString2 = LocaleController.getString(R.string.Online);
                 }
             } else if (user.id == UserObject.VERIFY) {
                 newString2 = LocaleController.getString(R.string.VerifyCodesNotifications);
@@ -15057,17 +15061,25 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     private void checkCherrygramBadges(SimpleTextView[] nameTextView, int a, TLRPC.User user) {
         if (user == null) return;
+
         long emojiDocumentId;
+        boolean isPremium = false; // cg premium
+        boolean isDonated = DonatesManager.INSTANCE.didUserDonate(user.id);
         boolean forceBra = user.id == Constants.Cherrygram_Owner;
+        boolean showParticles = isPremium || forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(user.id);
 
-        if (DonatesManager.INSTANCE.didUserDonate(user.id) || forceBra) {
-            emojiDocumentId = forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
-
-            nameTextView[a].setRightDrawable2(getEmojiStatusDrawable(emojiDocumentId, false, forceBra, 22, a));
-            nameTextView[a].setRightDrawableInside(true);
+        if (isPremium && isDonated) {
+            emojiDocumentId = Constants.CHERRY_EMOJI_ID_VERIFIED_BRA;
+        } else if (isPremium || isDonated || forceBra) {
+            emojiDocumentId = (isPremium || forceBra) ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
         } else {
             emojiDocumentId = 0;
             nameTextView[a].setRightDrawable2(null);
+        }
+
+        if (emojiDocumentId != 0) {
+            nameTextView[a].setRightDrawable2(getEmojiStatusDrawable(emojiDocumentId, false, showParticles, 22, a));
+            nameTextView[a].setRightDrawableInside(true);
         }
 
         nameTextView[a].setRightDrawable2OnClick(v -> {

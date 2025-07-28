@@ -25,13 +25,11 @@ object VibrateUtil {
 
     lateinit var vibrator: Vibrator
 
-    @JvmStatic
     fun disableHapticFeedback(view: View) {
         view.isHapticFeedbackEnabled = false
         (view as? ViewGroup)?.children?.forEach(VibrateUtil::disableHapticFeedback)
     }
 
-    @JvmStatic
     @JvmOverloads
     fun vibrate(time: Long = 200L) {
 

@@ -63,7 +63,6 @@ import org.telegram.ui.Stories.StoriesListPlaceProvider;
 import org.telegram.ui.Stories.StoriesUtilities;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
 import uz.unnarsx.cherrygram.misc.Constants;
@@ -265,7 +264,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
 
         if (needMutualIcon) {
             mutualView = new ImageView(context);
-            mutualView.setImageResource(R.drawable.ic_round_swap_horiz_24);
+            mutualView.setImageResource(R.drawable.ic_mutual_contact);
             mutualView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_player_actionBarSelector, resourcesProvider)));
             mutualView.setScaleType(ImageView.ScaleType.CENTER);
             mutualView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
@@ -357,7 +356,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             }
         } catch (Exception ignore) {}
         currentName = name;
-        storiable = !(object instanceof String) && !CherrygramCoreConfig.INSTANCE.getHideStories();
+        storiable = !(object instanceof String);
         currentObject = object;
         currentDrawable = resId;
         needDivider = divider;
@@ -885,13 +884,17 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
 
     private void checkCherrygramBadges(SimpleTextView nameTextView, TLRPC.User user) {
         if (user == null) return;
-        long emojiDocumentId;
-        boolean showParticles = false;
-        boolean forceBra = user.id == Constants.Cherrygram_Owner;
 
-        if (DonatesManager.INSTANCE.didUserDonate(user.id) || forceBra) {
-            emojiDocumentId = forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
-            showParticles = forceBra;
+        long emojiDocumentId;
+        boolean isPremium = false; // cg premium
+        boolean isDonated = DonatesManager.INSTANCE.didUserDonate(user.id);
+        boolean forceBra = user.id == Constants.Cherrygram_Owner;
+        boolean showParticles = isPremium || forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(user.id);
+
+        if (isPremium && isDonated) {
+            emojiDocumentId = Constants.CHERRY_EMOJI_ID_VERIFIED_BRA;
+        } else if (isPremium || isDonated || forceBra) {
+            emojiDocumentId = (isPremium || forceBra) ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
         } else {
             emojiDocumentId = 0;
             nameTextView.setRightDrawable2(null);

@@ -205,6 +205,7 @@ import org.telegram.ui.Components.UndoView;
 import org.telegram.ui.Components.spoilers.SpoilerEffect2;
 import org.telegram.ui.Components.voip.RTMPStreamPipOverlay;
 import org.telegram.ui.Components.voip.VoIPHelper;
+import org.telegram.ui.Gifts.GiftSheet;
 import org.telegram.ui.Stars.ISuperRipple;
 import org.telegram.ui.Stars.StarGiftSheet;
 import org.telegram.ui.Stars.StarsController;
@@ -241,9 +242,11 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
+import uz.unnarsx.cherrygram.misc.LogoOverlayView;
 import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator;
 import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
 import uz.unnarsx.cherrygram.core.icons.CGUIResources;
@@ -427,6 +430,13 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         flagSecureReason.attach();
 
         super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && CherrygramCoreConfig.INSTANCE.getCgBrandedScreenshots()) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+            getWindow().getAttributes().layoutInDisplayCutoutMode = android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            ((ViewGroup) (getWindow().getDecorView())).addView(new LogoOverlayView(this));
+        }
+
         if (Build.VERSION.SDK_INT >= 24) {
             AndroidUtilities.isInMultiwindow = isInMultiWindowMode();
         }
@@ -730,7 +740,15 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     presentFragment(new DialogsActivity(args));
                     drawerLayoutContainer.closeDrawer(false);
                 } else if (id == 1002) {
-                    presentFragment(CherrygramPreferencesNavigator.createMainMenu());
+                    presentFragment(CherrygramPreferencesNavigator.INSTANCE.createMainMenu());
+                    drawerLayoutContainer.closeDrawer(false);
+                } else if (id == 1003) {
+                    if (getSafeLastFragment() != null && getSafeLastFragment().getContext() != null) {
+                        AndroidUtilities.runOnUIThread(() -> {
+                            GiftSheet alert = new GiftSheet(getSafeLastFragment().getContext(), currentAccount, UserConfig.getInstance(currentAccount).clientUserId, null, null);
+                            alert.show();
+                        });
+                    }
                     drawerLayoutContainer.closeDrawer(false);
                 }
             }
@@ -1638,6 +1656,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.currentUserPremiumStatusChanged);
             NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.chatSwitchedForum);
             NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.storiesEnabledUpdate);
+
+            NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starBalanceUpdated);
+            NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.starSubscriptionsLoaded);
         }
         currentAccount = UserConfig.selectedAccount;
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.openBoostForUsersDialog);
@@ -1661,6 +1682,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.currentUserPremiumStatusChanged);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.chatSwitchedForum);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.storiesEnabledUpdate);
+
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starSubscriptionsLoaded);
     }
 
     private void checkLayout() {
@@ -7600,6 +7624,12 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 drawerLayoutAdapter.notifyDataSetChanged();
             }
         }
+
+        if (id == NotificationCenter.starBalanceUpdated || id == NotificationCenter.starSubscriptionsLoaded) {
+            if (drawerLayoutAdapter != null) {
+                drawerLayoutAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     private void invalidateCachedViews(View parent) {
@@ -9088,7 +9118,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         if (CherrygramCoreConfig.INSTANCE.getAutoOTA()) {
             checkCgUpdates(getSafeLastFragment(), null, false);
         }
-        if (!CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) CherrygramExtras.checkChannelFollow(this, currentAccount);
+        if (!CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) CherrygramExtras.INSTANCE.checkChannelFollow(this, currentAccount);
     }
     /** Cherrygram finish */
 

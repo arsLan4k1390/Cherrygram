@@ -229,6 +229,8 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
+import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
+import uz.unnarsx.cherrygram.misc.Constants;
 
 public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate, ImageReceiver.ImageReceiverDelegate, DownloadController.FileDownloadProgressListener, TextSelectionHelper.SelectableView, NotificationCenter.NotificationCenterDelegate {
     private final static int TIME_APPEAR_MS = 200;
@@ -18134,10 +18136,22 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         if (CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) return null;
         if (currentUser != null) {
             Long emojiStatusId = UserObject.getEmojiStatusDocumentId(currentUser);
+
+            boolean forceBra = currentUser.id == Constants.Cherrygram_Owner;
+            boolean showParticles = forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(currentUser.id);
+
+            if (emojiStatusId == null && (DonatesManager.INSTANCE.didUserDonate(currentUser.id) || forceBra)) {
+                emojiStatusId = showParticles ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
+            }
+
             if (emojiStatusId != null) {
                 if (currentUser.emoji_status instanceof TLRPC.TL_emojiStatusCollectible) {
                     nameStatusSlug = ((TLRPC.TL_emojiStatusCollectible) currentUser.emoji_status).slug;
                 }
+
+                boolean isCherryEmojiApplied = emojiStatusId == Constants.CHERRY_EMOJI_ID || emojiStatusId == Constants.CHERRY_EMOJI_ID_BRA;
+                if (currentNameStatusDrawable != null && isCherryEmojiApplied) currentNameStatusDrawable.setParticles(showParticles, showParticles);
+
                 return emojiStatusId;
             } else if (currentUser.premium) {
                 return ContextCompat.getDrawable(ApplicationLoader.applicationContext, R.drawable.msg_premium_liststar).mutate();

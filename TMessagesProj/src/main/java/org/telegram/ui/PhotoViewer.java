@@ -8230,6 +8230,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                             public void sendSticker() {
                                 if (placeProvider == null)
                                     return;
+                                CherrygramChatsConfig.INSTANCE.setPhotoAsSticker(true);
                                 stickerEmptySent = true;
                                 generateThumb();
                                 photoEntry.imagePath = fullStickerPath;

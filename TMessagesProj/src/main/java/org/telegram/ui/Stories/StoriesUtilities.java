@@ -84,7 +84,7 @@ public class StoriesUtilities {
 
     public static void drawAvatarWithStory(long dialogId, Canvas canvas, ImageReceiver avatarImage, AvatarStoryParams params) {
         StoriesController storiesController = MessagesController.getInstance(UserConfig.selectedAccount).getStoriesController();
-        boolean hasStories = storiesController.hasStories(dialogId) && !CherrygramCoreConfig.INSTANCE.getHideStories();
+        boolean hasStories = storiesController.hasStories(dialogId);
         drawAvatarWithStory(dialogId, canvas, avatarImage, UserConfig.getInstance(UserConfig.selectedAccount).getClientUserId() != dialogId && hasStories, params);
     }
 
@@ -177,7 +177,7 @@ public class StoriesUtilities {
             params.inc = false;
         }
         params.showProgress = showProgress;
-        if (params.currentState == STATE_EMPTY && params.progressToSate == 1f) {
+        if (CherrygramCoreConfig.INSTANCE.getHideStories() || params.currentState == STATE_EMPTY && params.progressToSate == 1f) {
             avatarImage.setImageCoords(params.originalAvatarRect);
             avatarImage.draw(canvas);
             return;

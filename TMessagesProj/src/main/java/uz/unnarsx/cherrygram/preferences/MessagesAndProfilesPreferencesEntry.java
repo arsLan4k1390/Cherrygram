@@ -303,7 +303,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
                             textSettingsCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                             if (position == showDcIdSwitchRow) {
-                                textSettingsCell.setTextAndValue(getString(R.string.AP_ShowID), CGResourcesHelper.getShowDcIdText(), true);
+                                textSettingsCell.setTextAndValue(getString(R.string.AP_ShowID), CGResourcesHelper.INSTANCE.getShowDcIdText(), true);
                             }
                             break;
                         }

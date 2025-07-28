@@ -495,7 +495,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         public boolean isCropped;
         public int ttl;
         public long effectId;
-        public boolean highQuality = CherrygramChatsConfig.INSTANCE.getLargePhotos();
+        public boolean highQuality = CherrygramChatsConfig.INSTANCE.getLargePhotos() && !CherrygramChatsConfig.INSTANCE.getPhotoAsSticker();
 
         public CropState cropState;
 

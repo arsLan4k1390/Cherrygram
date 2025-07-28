@@ -144,7 +144,6 @@ object CGResourcesHelper {
     /** Camera finish **/
 
     /** Chats start **/
-    @JvmStatic
     fun getLeftButtonText(noForwards: Boolean): String {
         if (noForwards) return getString(R.string.Reply)
 
@@ -156,7 +155,6 @@ object CGResourcesHelper {
         }
     }
 
-    @JvmStatic
     fun getLeftButtonDrawable(noForwards: Boolean): Int {
         if (noForwards) return R.drawable.input_reply
 
@@ -168,7 +166,6 @@ object CGResourcesHelper {
         }
     }
 
-    @JvmStatic
     fun getReplyIconDrawable(): Int {
         return when (CherrygramChatsConfig.messageSlideAction) {
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE -> R.drawable.msg_saved_filled_solar
@@ -222,7 +219,6 @@ object CGResourcesHelper {
         )
     }
 
-    @JvmStatic
     fun getDownloadSpeedBoostText(): String { // ExperimentalPreferences.java:\Download speed boost
         return when (CherrygramExperimentalConfig.downloadSpeedBoost) {
             CherrygramExperimentalConfig.BOOST_NONE -> getString(R.string.EP_DownloadSpeedBoostNone)
@@ -267,7 +263,6 @@ object CGResourcesHelper {
         return getUrlNoUnderlineText(htmlParsed)
     }
 
-    @JvmStatic
     fun getShowDcIdText(): String { // MessagesAndProfilesPreferencesEntry.java:\Show dc id
         return when (CherrygramAppearanceConfig.showIDDC) {
             CherrygramAppearanceConfig.ID_ONLY -> "ID"
@@ -308,7 +303,7 @@ object CGResourcesHelper {
 
     fun capitalize(text: String): String {
         var capitalizeString = ""
-        if (text.trim { it <= ' ' } != "") {
+        if (text.trim() != "") {
             capitalizeString =
                 text.substring(0, 1).uppercase(Locale.getDefault()) + text.substring(1)
         }

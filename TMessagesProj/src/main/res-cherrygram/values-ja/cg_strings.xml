@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- by t.me/arsLan-->
+    <string name="CG_FollowChannelLink">\@Cherry_Gram を購読する!</string>
+    <string name="CG_FollowChannelTitle">公式チャンネルを購読する</string>
+    <string name="CG_FollowChannelInfo">チャンネルに参加して、Cherrygramのニュースや機能の最新情報を入手!</string>
+    <string name="CG_DoNotRemindAgain">今後は表示しない</string>
+    <!--Telegram screens-->
+    <string name="CG_RegistrationDate">アカウント登録日:</string>
+    <string name="CG_RegistrationDateNewer">%s より最新</string>
+    <string name="CG_RegistrationDateOlder">%s より古い</string>
+    <string name="CG_RegistrationDateApproximately">およそ %s</string>
+    <string name="CG_RegistrationDateFailed">登録日の取得に失敗しました。</string>
+    <!--Sign in screen-->
+    <string name="CG_QRLoginTitle">QRログイン</string>
+    <string name="CG_QRLoginMessage">別のデバイスでQRコードをスキャンしてログインする。</string>
+    <!--Sign in screen-->
+    <!--Last seen status-->
+    <string name="CG_LastSeenNow">最後を確認したのはたった今です。</string>
+    <string name="CG_LastSeenMinutes_one">最後を確認したのは %1$d 分前です。</string>
+    <string name="CG_LastSeenMinutes_few">最後を確認したのは %1$d 分前です。</string>
+    <string name="CG_LastSeenMinutes_many">最後を確認したのは %1$d 分前です。</string>
+    <string name="CG_LastSeenMinutes_other">最後を確認したのは %1$d 分前です。</string>
+    <string name="CG_LastSeenHours_one">最後を確認したのは %1$d 時間前です。</string>
+    <string name="CG_LastSeenHours_few">最後を確認したのは %1$d 時間前です。</string>
+    <string name="CG_LastSeenHours_many">最後を確認したのは %1$d 時間前です。</string>
+    <string name="CG_LastSeenHours_other">最後を確認したのは %1$d 時間前です。</string>
+    <!--Last seen status-->
+    <!--Typing status-->
+    <string name="CG_AndMoreTypingGroup_one">%1$s と %2$d 以上</string>
+    <string name="CG_AndMoreTypingGroup_other">%1$s と %2$d 以上</string>
+    <!--Typing status-->
+    <!--Telegram Folders Settings-->
+    <string name="CG_FoldersType_Header">タブアイコンの種類</string>
+    <string name="CG_FoldersTypeTitles">タイトルのみ</string>
+    <string name="CG_FoldersTypeIcons">アイコンのみ</string>
+    <string name="CG_FoldersTypeIconsTitles">タイトルとアイコン</string>
+    <string name="CG_ChooseFolderIcon">アイコンを選択してください</string>
+    <string name="CP_NewTabs_NoCounter">タブのカウンターを非表示</string>
+    <string name="CP_NewTabs_NoCounter_Desc">未読メッセージのカウンターを非表示にします。</string>
+    <string name="CG_SwipeToUnarchive">左にスワイプでアーカイブを解除</string>
+    <!--Telegram Folders Settings-->
+    <!--Chats screen-->
+    <string name="CG_JumpToBeginning">最初に戻る</string>
+    <string name="CG_DeleteAllFromSelf">自分のメッセージを削除する</string>
+    <string name="CG_DeleteAllFromSelfAlert">警告! このチャットで **すべての参加者** に対してあなたの **すべて** のメッセージを削除します。</string>
+    <string name="CG_DeleteAllFromSelfAlertBefore">警告! このチャットで **すべての参加者** に対してあなたの **%s** 以前のすべてのメッセージを削除します。</string>
+    <string name="CG_DeleteAllFromSelfBefore">以前...</string>
+    <string name="CG_DeleteAllFromSelfAdmin">管理者権限あり</string>
+    <string name="CG_DeleteAllFromSelfDone">すべてのメッセージが削除されました</string>
+    <string name="CG_ClearFromCache">キャッシュから消去</string>
+    <string name="CG_ClearedFromCache">キャッシュから消去しました</string>
+    <string name="CG_ViewUserHistory">メッセージの履歴</string>
+    <string name="CG_ToSaved">保存</string>
+    <string name="CG_CreateMention">返信を作成</string>
+    <string name="CG_CreateCode">コードを作成</string>
+    <string name="CG_CreateCodeLanguage">言語</string>
+    <string name="CG_FwdMenu_Authorship">送信者名</string>
+    <string name="CG_FwdMenu_Captions">キャプション</string>
+    <string name="CG_FwdMenu_Notify">通知</string>
+    <string name="CG_Without_Authorship">著作者権限なし</string>
+    <string name="CG_CopyTitle">タイトルをコピー</string>
+    <string name="CG_CopyCallback">コールバックデータをコピー</string>
+    <string name="CG_CopyInlineQuery">インラインクエリをコピー</string>
+    <string name="CG_CopyID">ユーザーIDをコピー</string>
+    <!--Location screen-->
+    <string name="CG_LocationPermission">Cherrygramは、あなたの位置情報を友人と共有するために、位置情報へのアクセスを必要とします。位置情報の使用を許可するかどうかを確認します(アプリが開いている間)。</string>
+    <string name="CG_LocationPermission_Desc">ただし、Cherrygramを終了してバックグラウンドになっている間にあなたの位置情報を友人に知らせたい場合は、「ライブロケーション」機能にアクセスしてください。 ライブロケーション機能を使用することに同意するまでは、位置情報をバックグラウンドで送信しません。</string>
+    <string name="CG_Copy_Coordinates">座標</string>
+    <!--Location screen-->
+    <!--Search filter-->
+    <string name="CG_SearchFilter">検索結果をフィルター</string>
+    <string name="CG_SearchFilter_None">なし</string>
+    <string name="CG_SearchFilter_Photos">写真</string>
+    <string name="CG_SearchFilter_Videos">動画</string>
+    <string name="CG_SearchFilter_VoiceMessages">ボイスメッセージ</string>
+    <string name="CG_SearchFilter_VideoMessages">ビデオメッセージ</string>
+    <string name="CG_SearchFilter_Files">ファイル/ドキュメント</string>
+    <string name="CG_SearchFilter_Music">音楽</string>
+    <string name="CG_SearchFilter_GIFs">GIF</string>
+    <string name="CG_SearchFilter_Geolocation">位置情報</string>
+    <string name="CG_SearchFilter_Contacts">連絡先</string>
+    <string name="CG_SearchFilter_MyMentions">自分の返信</string>
+    <!--Search filter-->
+    <!--Chats screen-->
+    <!--Misc-->
+    <string name="CG_UnknownCherrySettingsOption">Cherrygram の設定オプションにはありません。</string>
+    <string name="CG_Restart">アプリを再起動</string>
+    <string name="CG_RestartToApply">アプリを再起動後に適用されます</string>
+    <string name="CG_PushService">Cherrygramプッシュサービス</string>
+    <string name="CG_ForceClean">Telegramのキャッシュを強制的に消去</string>
+    <string name="CG_ForceCleanInfo">キャッシュを削除しようとしているときに｢計算中…｣と長く表示されます。\nこれはキャッシュからすべての物を削除します - 注意してください!</string>
+    <string name="CG_ForceCleanInfo1">本当にTelegramのキャッシュをすべて削除してもよろしいですか?</string>
+    <string name="CG_Kaboom">この機能はシステムの設定を通じて、Cherrygramのパスワードなしでアクセスすることができます。この機能はローカル(Cherrygram)のデータを完全に消去します。緊急時に使用できます。</string>
+    <string name="CG_AppCrashed">問題が発生しました</string>
+    <string name="CG_AppCrashedDesc">Cherrygramが動作しなくなりました。できるだけ早くこのバグを修正できるよう、開発者にログを送信してください。</string>
+    <string name="CG_CopyReportDetails">レポートの詳細をコピー</string>
+    <string name="CG_ReportDetailsCopied">レポートの詳細をクリップボードにコピーしました。</string>
+    <string name="CG_TranslationLanguage">翻訳する言語</string>
+    <string name="CG_CopyPhoto">写真をコピー</string>
+    <string name="CG_CopyPhotoAsSticker">写真をステッカーとしてコピー</string>
+    <string name="CG_PhotoCopied">写真をクリップボードにコピーしました。</string>
+    <string name="CG_SaveSticker">ステッカーを保存</string>
+    <string name="CG_StickerSavedHint">ステッカーを｢downloads｣に保存しました</string>
+    <string name="CG_CopySetId">セットIDをコピー</string>
+    <string name="CG_ExportSettings">設定をエクスポート</string>
+    <string name="CG_ImportSettings">設定をインポート</string>
+    <string name="CG_ImportSettingsAlert">設定を上書きしますか? 不明なソースから設定をインポートするとアプリが動作しなくなる可能性があります。</string>
+    <string name="CG_OpenStickerPack">タップでステッカーを入手</string>
+    <string name="CG_OpenEmojiPack">タップで絵文字を入手</string>
+    <string name="CG_ReplyContainsEmojiPack">この返信には **%s** 絵文字が含まれています。</string>
+    <string name="CG_GetEmojiPack">絵文字を入手</string>
+    <string name="CG_ProfileBackground">プロフィールの背景を適用する</string>
+    <string name="CG_MessageContainsCustomReactions_one">リアクションにはカスタム絵文字が含まれています。\n%1$d パックから。</string>
+    <string name="CG_MessageContainsCustomReactions_other">リアクションにはカスタム絵文字が含まれています。\n%1$d パックから。</string>
+    <!--Misc-->
+    <!--Telegram screens-->
+    <!--Cherrygram screens-->
+    <!--Cherrygram Preferences-->
+    <string name="CGP_AdvancedSettings">Cherrygramの設定</string>
+    <string name="CGP_About_Desc">An experimental Telegram app modification. Tap here to read the list of features.</string>
+    <string name="CGP_Header_About">Cherrygramについて</string>
+    <string name="CGP_Header_About_Desc">更新とソースコード、その他</string>
+    <string name="CGP_Links">リンク</string>
+    <string name="CGP_ToChannel">公式チャンネル</string>
+    <string name="CGP_ToChat">公式チャット</string>
+    <string name="CGP_Source">ソースコード</string>
+    <string name="CGP_Crowdin">翻訳を手伝う</string>
+    <string name="CGP_Header_Categories">カテゴリー</string>
+    <!--Cherrygram Preferences-->
+    <!--General Preferences-->
+    <string name="AP_Header_General">一般</string>
+    <!--General Preferences-->
+    <!--Appearance Preferences-->
+    <string name="AP_Header_Appearance">外観</string>
+    <string name="AP_RedesignCategory">再設計</string>
+    <string name="AP_IconReplacements">アイコンの置換</string>
+    <string name="AP_Old_Notification_Icon">デフォルトの通知アイコン (Telegram)</string>
+    <string name="AP_Tablet_Mode">タブレットモード</string>
+    <string name="AP_ChangeIcon_Cherry_NY">新年</string>
+    <string name="AP_ChangeIcon_Default">デフォルト</string>
+    <string name="AP_ChangeIcon_Dark">ダーク</string>
+    <string name="AP_ChangeIcon_White">ホワイト</string>
+    <string name="AP_ChangeIcon_Laguna">ラグナ</string>
+    <string name="AP_ChangeIcon_Green">グリーン</string>
+    <string name="AP_ChangeIcon_Lavanda">ラベンダー</string>
+    <string name="AP_ChangeIcon_Sunset">サンセット</string>
+    <string name="AP_ChangeIcon_Sunrise">サンライズ</string>
+    <string name="AP_IconReplacement_VKUI">VKUI</string>
+    <string name="AP_IconReplacement_Solar">Solar - @Design480</string>
+    <string name="AP_IconReplacement_Default">デフォルト</string>
+    <string name="AP_OneUI_Switch_Style">OneUIの切り替えスタイル</string>
+    <string name="AP_SystemEmoji">システムの絵文字を使用する</string>
+    <string name="AP_ShowPencilIcon">編集されたメッセージの鉛筆アイコン</string>
+    <string name="AP_CenterTitle">アクションバーのタイトルを中央に表示</string>
+    <string name="AP_iosSearchPanel">IOS-styled search panel</string>
+    <string name="AP_OverrideHeader">ヘッダーの色を上書き</string>
+    <string name="AP_OverrideHeader_Desc">ヘッダーはメインの背景と同じ色になります。</string>
+    <string name="AP_DisableDividers">区切り線を無効化</string>
+    <string name="AP_ToolBarShadow">ツールバーの影を無効化</string>
+    <string name="AP_SystemFonts">システムフォントを使用する</string>
+    <string name="CP_Snowflakes_Header">スノーフレーク</string>
+    <string name="CP_Snowflakes_AH">アプリヘッダー</string>
+    <string name="CP_PremAndAnim_Header">アニメーションとプレミアム機能</string>
+    <string name="CP_ProfileReplyBackground">メッセージとプロフィール</string>
+    <string name="CP_CustomizeProfile">プロフィールをカスタマイズ</string>
+    <string name="CP_ProfileChannelPreview">個人チャンネル</string>
+    <string name="CP_ProfileBirthDatePreview">生年月日</string>
+    <string name="CP_ProfileBusinessPreview">営業時間と場所</string>
+    <string name="CP_ProfileBackgroundColor">プロフィールの背景</string>
+    <string name="CP_ProfileBackgroundEmoji">プロフィールの背景の絵文字</string>
+    <string name="CP_CustomizeMessage">メッセージをカスタマイズ</string>
+    <string name="CP_ReplyBackground">返信の背景</string>
+    <string name="CP_ReplyCustomColors">返信とリンクのプレビューの色を変更</string>
+    <string name="CP_ReplyBackgroundEmoji">返信とリンクのプレビューの絵文字</string>
+    <string name="CP_HideStories">ストーリーを隠す (ローカル)</string>
+    <string name="CP_HideStories_Desc">チャットの一覧とプロフィールからストーリーを隠します。</string>
+    <string name="CP_ArchiveStories">ストーリーをアーカイブ</string>
+    <string name="CP_ArchiveStories_Desc">ストーリーは自動的アーカイブ化され、アーカイブに移動されます。</string>
+    <string name="CP_CustomWallpapers">チャットのカスタム背景</string>
+    <string name="CP_CustomWallpapers_Desc">プレミアムユーザー、ブーストされたチャンネル、チャット、グループ、チャンネルにカスタム壁紙を設定します。</string>
+    <string name="CP_DisableAnimAvatars">アニメーションアバターを無効化</string>
+    <string name="CP_DisableReactionsOverlay">リアクションのオーバーレイを無効化</string>
+    <string name="CP_DisableReactionsOverlay_Desc">利用可能なアクションを含むポップアップオーバーレイを無効化します。</string>
+    <string name="CP_DisableReactionAnim">リアクションアニメーションを無効化</string>
+    <string name="CP_DisableReactionAnim_Desc">(メッセージに反応した場合)</string>
+    <string name="CP_DisablePremiumStatuses">プレミアムの状態を無効化</string>
+    <string name="CP_DisablePremiumStatuses_Desc">ドロワー以外のすべての画面上でプレミアムの状態を無効化します。</string>
+    <string name="CP_DisablePremStickAnim">ステッカーのタップを無効化</string>
+    <string name="CP_DisablePremStickAnim_Desc">プレミアムステッカーをタップしても何も起こらなくなります。</string>
+    <string name="CP_DisablePremStickAutoPlay">ステッカーの自動再生を無効化</string>
+    <string name="CP_DisablePremStickAutoPlay_Desc">プレミアムステッカーの自動再生を無効化します (プレミアムステッカーのタップを無効化している場合は機能が動作しません)。</string>
+    <string name="CP_Filters_Header">フォルダ</string>
+    <string name="AP_FolderNameInHeader">フォルダ名を変更</string>
+    <string name="AP_FolderNameInHeader_Desc">アクションバーの｢Cherrygram｣がフォルダ名に変更されます (フォルダ名ではなくアイコンの表示だけになっている場合に役立ちます)。</string>
+    <string name="CP_NewTabs_RemoveAllChats">「すべてのチャット」タブを非表示</string>
+    <string name="AP_Tab_Style">タブのスタイル</string>
+    <string name="AP_Tab_Style_Default">デフォルト</string>
+    <string name="AP_Tab_Style_Rounded">丸い角</string>
+    <string name="AP_Tab_Style_Text">テキスト</string>
+    <string name="AP_Tab_Style_Pills">ピル</string>
+    <string name="AP_Tab_Style_Stroke">ストロークを追加</string>
+    <string name="AP_DrawerCategory">ドロワー</string>
+    <string name="AP_DrawerAvatar">写真をドロワーの背景にする</string>
+    <string name="AP_DrawerShowAvatar">アバターを表示</string>
+    <string name="AP_DrawerDarken">背景を暗くする</string>
+    <string name="AP_ShadeBackground">グラデーションの背景</string>
+    <string name="AP_DrawerBlur">背景をぼかす</string>
+    <string name="AP_DrawerBlurIntensity">ぼかしの強さ</string>
+    <string name="AP_DrawerIconPack_Header">ドロワーアイコンを設定</string>
+    <string name="AP_DrawerButtonsCategory">ドロワーボタン</string>
+    <string name="AP_HideUserPhone_Show">タップで表示</string>
+    <string name="AP_HideUserPhone_Copy">長押しでコピー</string>
+    <string name="AP_MutualContacts_Description">相互の連絡先です。</string>
+    <string name="AP_ShowID">プロフィールにIDとDCを表示</string>
+    <!--Appearance Preferences-->
+    <!--Chats Preferences-->
+    <string name="CP_Header_Chats">チャット</string>
+    <string name="CP_Header_Messages">メッセージ</string>
+    <string name="CP_TimeOnStick">ステッカーの時間表示を無効化</string>
+    <string name="CP_ChatMenuShortcuts">チャットメニューのショートカット</string>
+    <string name="CP_AdminActions">管理者のショートカット</string>
+    <string name="CP_MessageMenu">メッセージメニュー</string>
+    <string name="AP_CenterChatsTitle">チャットのタイトルを中央に表示する</string>
+    <string name="CP_UnreadBadgeOnBackButton">チャットの未読カウンターを表示</string>
+    <string name="CP_UnreadBadgeOnBackButton_Desc">開いているチャット上の戻るボタンで未読のチャットカウンターが有効化します。</string>
+    <string name="CP_NoRounding">四捨五入の表示を無効化</string>
+    <string name="CP_DeleteForAll">デフォルトで｢すべて削除｣を使用する</string>
+    <string name="CP_DeleteForAll_Desc">メッセージの削除時にチェックボックスが自動的に選択されます。</string>
+    <string name="CP_ForwardMsgDate">転送されたメッセージの日付を表示</string>
+    <string name="CP_ShowSeconds">送信時間に秒を表示する</string>
+    <string name="CP_LeftBottomButtonAction">左側のボタンのアクション</string>
+    <string name="CP_DoubleTapAction">ダブルタップアクション</string>
+    <string name="CG_MsgSlideAction">メッセージをスワイプ時のアクション</string>
+    <string name="CP_DisableSwipeToNext">次のチャンネルへの遷移を無効化</string>
+    <string name="CP_DisableSwipeToNext_Desc">チャンネルをスクロール時に次のチャンネルへの切り替えを無効化します。</string>
+    <string name="CP_HideMuteUnmuteButton">チャンネルの下部のボタンを非表示</string>
+    <string name="CP_HideKbdOnScroll">スクロール時にキーボードを非表示にするスクロールの強さ</string>
+    <string name="CP_HideSendAsChannel">｢チャンネルとして送信｣を非表示</string>
+    <string name="CP_HideSendAsChannelDesc">絵文字、ステッカー、GIFボタンを長押しでメニューにアクセスできます。</string>
+    <string name="CP_GeminiAI_API_Key">Gemini API キー</string>
+    <string name="CP_GeminiAI_API_Key_Desc">API キーを取得にするには、<![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]>を開いてください。</string>
+    <string name="CP_GeminiAI_Model">Gemini モデルコード</string>
+    <string name="CP_GeminiAI_Model_Desc">利用可能なモデルの一覧を取得するには、<![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]>を開いてください。</string>
+    <string name="CP_GeminiAI_Model_Selector">Gemini モデルの一覧</string>
+    <string name="CP_GeminiAI_Model_Selector_Desc">有効なAPI キー持っている場合は、ここをタップしてモデルを選択してフィールドを自動で入力します。</string>
+    <string name="CP_GeminiAI_Sample">サンプル:</string>
+    <string name="CP_GeminiAI_Instruction">Geminiを使用するには
+        この画面のすべての値をすべて入力する必要があります。
+        \n\nその後に任意のチャットを開いてメッセージを入力し、メッセージ送信ボタンを押し続けます。
+        \n\nさらに、AIを使用してメッセージに返信することもできます。これを行うには、チャット内の任意のテキストメッセージをタップします。
+    </string>
+    <string name="CP_GeminiAI_Temperature">温度</string>
+    <string name="CP_GeminiAI_Temperature_Desc">テキストの創造性を制御します。値を低くすると、テキストはより予測可能で焦点が絞られたものになり、値を大きくするとよりランダムで独創的なものになります。</string>
+    <string name="CP_GeminiAI_ExtractText">テキストを抽出 (OCR)</string>
+    <string name="CP_GeminiAI_Summarize">要約する</string>
+    <string name="CP_Header_Record">メディア</string>
+    <string name="CP_Messages_Size">メッセージバブルのサイズ</string>
+    <string name="CP_Slider_MediaAmplifier">写真と動画</string>
+    <string name="CP_Slider_MediaAmplifier_Hint">アルバムでは動作しません (グループされたメディア)</string>
+    <string name="CP_SpoilersOnMedia">ネタバレの効果</string>
+    <string name="CP_SpoilersOnMedia_Desc">この機能が無効化されている場合は、写真や動画のネタバレの効果が表示されません。</string>
+    <string name="CP_VoiceEnhancements">音声の強化</string>
+    <string name="CP_VoiceEnhancements_Desc">ノイズの抑制と音声のノーマライズがされます。</string>
+    <string name="CP_PlayVideo">音量ボタンをタップで動画を再生する</string>
+    <string name="CP_PlayVideo_Desc">音量ボタンをタップするとチャット内の動画が再生されます。</string>
+    <string name="CP_AutoPauseVideo">ビデオを自動で一時停止</string>
+    <string name="CP_AutoPauseVideo_Desc">画面をロックまたは背景に切り替え時に一時停止します。</string>
+    <string name="CP_DisableVibration">バイブレーションを無効化</string>
+    <string name="CP_VideoSeekDuration">ダブルタップで動画をシーク (秒単位)</string>
+    <string name="CP_Header_Notification">通知</string>
+    <string name="CP_NotificationSound">通知の音</string>
+    <string name="CP_VibrateInChats">チャット中のバイブレーション</string>
+    <string name="CP_VibrateInChats_Desc">チャットでメッセージを受信時に短いバイブレーションを出します。</string>
+    <string name="CP_SilenceNonContacts">連絡先にない場合はサイレントにする</string>
+    <string name="CP_SilenceNonContacts_Desc">有効化するとサウンド付きの通知は連絡先に登録されているユーザーのみになります。電話番号がなくても連絡先に追加することができます。</string>
+    <!--Chats Preferences-->
+    <!--Camera Preferences-->
+    <string name="CP_Category_Camera">カメラ</string>
+    <string name="CP_CameraType">カメラの種類</string>
+    <string name="CP_Camera2Desc">Camera2をONにすると非表示になるすべての機能は、Camera2が有効化されていると動作しなくなります。</string>
+    <string name="CP_CameraStabilisation">カメラの手ぶれ補正</string>
+    <string name="CP_CameraUW">超広角レンズで開始する</string>
+    <string name="CP_CameraUW_Desc">ビデオメッセージの録画を超広角レンズで開始します (使用しているデバイスのAPIがサポートしている場合)。</string>
+    <string name="CP_CameraDualCamera">デュアルカメラ</string>
+    <string name="CP_CameraDualCamera_Desc">両方のカメラでビデオメッセージをキャプチャして録画時のカメラの切り替えを高速化します。バッテリーの消費が激しくなります。</string>
+    <string name="CP_DefaultCameraDesc">Telegramの内蔵カメラ機能を使用します。</string>
+    <string name="CP_CameraXDesc">CameraXは<![CDATA[<a href="https://developer.android.com/training/camerax/devices">選ばれたデバイス</a>]]>でのみサポートされており、エフェクトやレンズのサポートに関しては製造元によって異なります。</string>
+    <string name="CP_CameraQuality">カメラの画質</string>
+    <string name="CP_CameraTypeSystem">システム</string>
+    <string name="CP_SystemCameraDesc">システムのカメラに直接アクセスします (ビデオメッセージには適用されません)。</string>
+    <string name="CP_CameraAspectRatio">カメラのアスペクト比</string>
+    <string name="CP_CenterCameraControlButtons">中央のコントロールボタン</string>
+    <string name="CP_CenterCameraControlButtons_Desc">中央のボタンをカメラとフラッシュライトに切り替えます。</string>
+    <string name="CP_RearCam">リアカメラを使用する</string>
+    <string name="CP_RearCam_Desc">ビデオメッセージでフロントカメラの代替として使用可能にします。</string>
+    <string name="CP_DisableCam">メディア選択でのカメラを無効化</string>
+    <string name="CP_DisableCam_Desc">ギャラリーボタンの隣にカメラボタンが表示されます。\nボタンを押すことでTelegramのカメラを開きます。ボタンを押し続けるとシステムのカメラが起動します。</string>
+    <string name="CP_Header_Videomessages">ビデオメッセージ</string>
+    <string name="CP_ExposureSliderPosition">露光スライダーの位置</string>
+    <string name="CP_ZoomSliderPosition_Bottom">下</string>
+    <string name="CP_ZoomSliderPosition_Right">右</string>
+    <string name="CP_ZoomSliderPosition_Left">左</string>
+    <string name="CP_Exposure">露光</string>
+    <!--Camera Preferences-->
+    <!--Experimental Preferences-->
+    <string name="EP_Category_Experimental">試験的</string>
+    <string name="EP_NavigationAnimation">ナビゲーションのアニメーション</string>
+    <string name="EP_NavigationAnimationBezier">クラシック</string>
+    <string name="EP_NavigationAnimationCrossfading">クロスフェード効果</string>
+    <string name="CG_ResidentNotification">常駐通知を表示</string>
+    <string name="EP_PhotosSize">大きな写真を送信 (2560px)</string>
+    <string name="EP_CustomAppTitle">アプリのタイトル</string>
+    <string name="EP_CustomChat">保存されたメッセージのチャット</string>
+    <string name="EP_CustomChat_Desc">他のチャット、グループ、チャンネルでIDを設定してメッセージを転送します (アクションバーのボタン、メッセージメニューまたはダブルタップ)。</string>
+    <string name="EP_CustomChat_Selected_Title">代わり</string>
+    <string name="EP_Network">ネットワーク</string>
+    <string name="EP_DownloadSpeedBoost">ダウンロード速度の高速化</string>
+    <string name="EP_DownloadSpeedBoostNone">OFF</string>
+    <string name="EP_DownloadSpeedBoostAverage">ON</string>
+    <string name="EP_DownloadSpeedBoostExtreme">エクストリーム</string>
+    <string name="EP_UploadloadSpeedBoost">アップロード速度の高速化</string>
+    <string name="EP_SlowNetworkMode">低速ネットワークモード</string>
+    <!--Experimental Preferences-->
+    <!--Security Preferences-->
+    <string name="SP_Category_PrivacyAndSecurity">プライバシーとセキュリティ</string>
+    <string name="SP_Header_Privacy">プライバシー</string>
+    <string name="SP_NoProxyPromo">プロキシスポンサーを表示しない</string>
+    <string name="SP_GoogleAnalytics_Desc">これを有効化することですべてのアプリのクラッシュや統計情報が、｢console.firebase.google.com｣に送信されます。開発者が問題の修正などを効率良く行えるようになります。</string>
+    <string name="SP_CleanOld">/sdcard/Telegram のキャッシュを削除</string>
+    <string name="SP_RemovedS">削除に成功しました</string>
+    <string name="SP_AskPinForChats">チャットを開始時に生体認証を要求</string>
+    <string name="SP_AskPinForChats_Desc">特定のチャットにアクセスするときにシステムパスワード(指紋認証、顔認証、PIN、またはパターン)が必要になります。有効化するには、チャット内の 3つのドットをタップします。</string>
+    <string name="SP_LockedChats">ロックされたチャット</string>
+    <string name="SP_LockedChats_Lock_Destination">ロックされた一覧を更新する</string>
+    <string name="SP_LockedChats_Lock_Destination_Sure">ロックされます</string>
+    <string name="SP_AskPinForArchive">アーカイブの展開時に生体認証を要求</string>
+    <string name="SP_AskPinForArchive_Desc">アーカイブされたチャットにアクセスするときにシステムパスワード(指紋認証、顔認証、PIN、またはパターン)が必要です。</string>
+    <string name="SP_HideArchive">チャット一覧からアーカイブを非表示</string>
+    <string name="SP_HideArchive_Desc">アーカイブはCherrygramチャンネルとしてマスクされます。\nドロワーからまたは検索ボタンを長押しでアーカイブを開くことができます。</string>
+    <string name="SP_AskPin">パスワードを要求</string>
+    <string name="SP_DoNotAskPin">パスワードを要求しない</string>
+    <string name="SP_AskPinBeforeDelete">チャットを削除時に生体認証を要求</string>
+    <string name="SP_AskPinBeforeDelete_Desc">チャットまたは履歴を削除する場合に指紋認証を要求します。パスコードと指紋認証を設定している必要があります。</string>
+    <string name="SP_AllowUseSystemPasscode">PINまたはパターンの使用を許可する</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">指紋認証のダイアログの｢キャンセル｣のボタンを｢PIN/パターン｣のボタンに置き換えることで、システムパスを使用してCherrygramのロックを解除できるようになります。</string>
+    <string name="SP_TestFingerprint">指紋認証のテスト</string>
+    <string name="SP_Category_Account">アカウント</string>
+    <string name="SP_DeleteAccount">Telegramアカウントを削除</string>
+    <!--Security Preferences-->
+    <!--Updates Preferences-->
+    <string name="UP_Category_Updates">更新</string>
+    <string name="UP_TapToCheckUpdates">ここをタップして更新に関する情報を取得</string>
+    <string name="UP_LastCheck">最終確認</string>
+    <string name="UP_CurrentVersion">現在のバージョン</string>
+    <string name="UP_BuildType">ビルドタイプ</string>
+    <string name="UP_BTRelease">Stable</string>
+    <string name="UP_BTBeta">Beta</string>
+    <string name="UP_InstallBetas">Betaバージョンをインストール</string>
+    <string name="UP_Auto_OTA">起動時に確認する</string>
+    <string name="UP_ClearUpdatesCache">更新のキャッシュを消去</string>
+    <string name="UP_ClearedUpdatesCache">キャッシュの%1$sを消去しました。</string>
+    <string name="UP_NothingToClear">消去する物はありません。</string>
+    <string name="UP_CheckForUpdates">更新を確認</string>
+    <string name="UP_Not_Found">Cherrygramは最新です。</string>
+    <string name="UP_UpdateAvailable">更新があります!</string>
+    <string name="UP_Version">バージョン</string>
+    <string name="UP_Changelog">更新履歴:</string>
+    <string name="UP_ChangelogRead">タップで読む</string>
+    <string name="UP_Download">ダウンロード</string>
+    <!--Updates Preferences-->
+    <!--Donations-->
+    <string name="DP_RateUs">Cherrygramを評価する</string>
+    <string name="DP_Donate_Desc">Cherrygramの開発をサポートして、素晴らしいバッジを手に入れましょう!
+    \nバッジを取得するには、支払いの証明(&gt;=2$)を<![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]>または<![CDATA[<a href="https://t.me/CherrygramSupport">Cherrygramのサポートチャット</a>]]>に送信してください。</string>
+    <string name="DP_Donate_Bulletin">**%s** は **Cherrygram** の貢献に成功しました!</string>
+    <string name="DP_Donate_Method">寄付の方法を選択</string>
+    <!--Donations-->
+    <!--Cherrygram screens-->
+</resources>

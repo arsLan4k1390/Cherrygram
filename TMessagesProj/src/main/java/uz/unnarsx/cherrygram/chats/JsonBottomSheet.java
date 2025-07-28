@@ -212,13 +212,19 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         copyButton.setOnClickListener(v -> {
             if (isNoForwards) {
                 if (ChatObject.isChannel(currentChat) && !currentChat.megagroup) {
-                    BulletinFactory.of(getContainer(), null).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoChannel)).show();
+                    BulletinFactory.of(getContainer(), getResourcesProvider()).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoChannel)).show()
+                            .setDuration(Bulletin.DURATION_LONG)
+                            .show();
                 } else {
-                    BulletinFactory.of(getContainer(), null).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoGroup)).show();
+                    BulletinFactory.of(getContainer(), getResourcesProvider()).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoGroup))
+                            .setDuration(Bulletin.DURATION_LONG)
+                            .show();
                 }
             } else {
                 AndroidUtilities.addToClipboard(textView.getText());
-                BulletinFactory.of(getContainer(), null).createCopyBulletin(getString(R.string.TextCopied)).show();
+                BulletinFactory.of(getContainer(), getResourcesProvider()).createCopyBulletin(getString(R.string.TextCopied))
+                        .setDuration(Bulletin.DURATION_LONG)
+                        .show();
             }
         });
         buttonView.addView(copyButton, LayoutHelper.createFrame(48, 48, Gravity.BOTTOM | Gravity.RIGHT, 0, 16, 16, 16));
@@ -457,7 +463,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
             menuIconImageView.setScaleType(ImageView.ScaleType.CENTER);
             menuIconImageView.setImageResource(R.drawable.ic_ab_other);
             menuIconImageView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_dialogSearchIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
-            menuIconImageView.setOnClickListener((v) -> ChatsHelper2.showJsonMenu(JsonBottomSheet.this, headerView, messageObject));
+            menuIconImageView.setOnClickListener((v) -> ChatsHelper2.INSTANCE.showJsonMenu(JsonBottomSheet.this, headerView, messageObject));
             addView(menuIconImageView, LayoutHelper.createFrame(36, 36, Gravity.RIGHT | Gravity.TOP, 0, 11, 16, 0));
 
             titleTextView = new TextView(context) {

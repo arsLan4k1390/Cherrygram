@@ -9105,7 +9105,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     }
 
     public static boolean shouldSendWebPAsSticker(String path, Uri uri) {
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        /*BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         try {
             if (path != null) {
@@ -9124,7 +9124,8 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         } catch (Exception e) {
             FileLog.e(e);
         }
-        return bmOptions.outWidth < 800 && bmOptions.outHeight < 800;
+        return bmOptions.outWidth < 800 && bmOptions.outHeight < 800;*/
+        return CherrygramChatsConfig.INSTANCE.getPhotoAsSticker();
     }
 
     @UiThread
@@ -9921,6 +9922,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             if (BuildVars.LOGS_ENABLED) {
                 FileLog.d("total send time = " + (System.currentTimeMillis() - beginTime));
             }
+            CherrygramChatsConfig.INSTANCE.setPhotoAsSticker(false);
         });
     }
 

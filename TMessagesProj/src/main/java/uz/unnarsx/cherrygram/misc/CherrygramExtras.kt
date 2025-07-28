@@ -45,7 +45,6 @@ object CherrygramExtras : CoroutineScope by MainScope() {
     }
 
     private val channelUsername = Constants.CG_CHANNEL_USERNAME
-    @JvmStatic
     fun checkChannelFollow(activity: Activity, currentAccount: Int) = AndroidUtilities.runOnUIThread {
 
         if (MessagesController.getMainSettings(currentAccount).getBoolean("update_channel_follow_skip", false)) return@runOnUIThread

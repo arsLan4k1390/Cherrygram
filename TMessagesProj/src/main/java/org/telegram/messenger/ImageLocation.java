@@ -175,6 +175,20 @@ public class ImageLocation {
                         return ImageLocation.getForPhoto(videoSize, userFull.profile_photo);
                     }
 
+                } else if (userFull != null && userFull.fallback_photo != null && userFull.fallback_photo.video_sizes != null && !userFull.fallback_photo.video_sizes.isEmpty()) {
+                    if (type == TYPE_VIDEO_BIG) {
+                        TLRPC.VideoSize videoSize = FileLoader.getClosestVideoSizeWithSize(userFull.fallback_photo.video_sizes, 1000);
+                        return ImageLocation.getForPhoto(videoSize, userFull.fallback_photo);
+                    } else {
+                        TLRPC.VideoSize videoSize = FileLoader.getClosestVideoSizeWithSize(userFull.fallback_photo.video_sizes, 100);
+                        for (int i = 0; i < userFull.fallback_photo.video_sizes.size(); i++) {
+                            if ("p".equals(userFull.fallback_photo.video_sizes.get(i).type)) {
+                                videoSize = userFull.fallback_photo.video_sizes.get(i);
+                                break;
+                            }
+                        }
+                        return ImageLocation.getForPhoto(videoSize, userFull.fallback_photo);
+                    }
                 }
             }
             return null;
@@ -453,4 +467,21 @@ public class ImageLocation {
         }
         return currentSize;
     }
+
+    /** Cherrygram start */
+    public static boolean doesUserHavePhoto(TLRPC.User user) {
+        boolean hasPhoto;
+
+        if (user != null && user.access_hash != 0 && user.photo != null && user.photo.photo_big != null) {
+            hasPhoto = true;
+        } else if (user != null) {
+            TLRPC.UserFull userFull = MessagesController.getInstance(UserConfig.selectedAccount).getUserFull(user.id);
+            hasPhoto = userFull != null && (userFull.profile_photo != null || userFull.fallback_photo != null);
+        } else {
+            hasPhoto = false;
+        }
+
+        return hasPhoto;
+    }
+    /** Cherrygram finish */
 }

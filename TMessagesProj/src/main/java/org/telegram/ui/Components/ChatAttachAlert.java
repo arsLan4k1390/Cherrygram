@@ -3558,7 +3558,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                     }
                 });
             }
-            if (canHaveStars && chatActivity != null && ChatObject.isChannelAndNotMegaGroup(chatActivity.getCurrentChat()) && chatActivity.getCurrentChatInfo() != null && chatActivity.getCurrentChatInfo().paid_media_allowed) {
+            if (editingMessageObject == null && canHaveStars && chatActivity != null && ChatObject.isChannelAndNotMegaGroup(chatActivity.getCurrentChat()) && chatActivity.getCurrentChatInfo() != null && chatActivity.getCurrentChatInfo().paid_media_allowed) {
                 ActionBarMenuSubItem item = options.add(R.drawable.menu_feature_paid, getString(R.string.PaidMediaButton), null).getLast();
                 item.setOnClickListener(v -> {
                     if (photoLayout == null) return;

@@ -63,6 +63,14 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     CherrygramChatsConfig.unreadBadgeOnBackButton = it
                 }
             }
+            textIcon {
+                title = getString(R.string.CP_Slider_RecentEmojisAndStickers)
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    AlertDialogSwitchers.showRecentEmojisAndStickers(bf)
+                }
+                divider = true
+            }
             switch {
                 title = getString(R.string.CP_DisableSwipeToNext)
                 description = getString(R.string.CP_DisableSwipeToNext_Desc)
@@ -489,6 +497,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
             prefIcon,
             prefCheck,
             null,
+            null,
             prefDivider,
             clickListener,
             null
@@ -561,6 +570,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
             prefIcon,
             prefCheck,
             prefCheckInvisible,
+            null,
             prefDivider,
             clickListener,
             null
@@ -630,6 +640,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
             prefIcon,
             prefCheck,
             prefCheckInvisible,
+            null,
             prefDivider,
             clickListener,
             null

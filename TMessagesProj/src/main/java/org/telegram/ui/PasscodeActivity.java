@@ -1108,7 +1108,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
 
     private void onPasscodeError() {
         if (getParentActivity() == null) return;
-        VibrateUtil.vibrate();
+        VibrateUtil.INSTANCE.vibrate();
         if (isPinCode()) {
             for (CodeNumberField f : codeFieldContainer.codeField) {
                 f.animateErrorProgress(1f);

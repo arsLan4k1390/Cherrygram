@@ -7762,12 +7762,14 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
                                     if (!query.equals(lastSearchEmojiString)) {
                                         return;
                                     }
-                                    AnimatedEmojiDrawable.getDocumentFetcher(currentAccount).putDocuments(emojis);
-                                    for (TLRPC.Document emoji : emojis) {
-                                        MediaDataController.KeywordResult keywordResult = new MediaDataController.KeywordResult();
-                                        keywordResult.emoji = "animated_" + emoji.id;
-                                        keywordResult.keyword = null;
-                                        searchResult.add(keywordResult);
+                                    if (SharedConfig.suggestAnimatedEmoji || UserConfig.getInstance(currentAccount).isPremium()) {
+                                        AnimatedEmojiDrawable.getDocumentFetcher(currentAccount).putDocuments(emojis);
+                                        for (TLRPC.Document emoji : emojis) {
+                                            MediaDataController.KeywordResult keywordResult = new MediaDataController.KeywordResult();
+                                            keywordResult.emoji = "animated_" + emoji.id;
+                                            keywordResult.keyword = null;
+                                            searchResult.add(keywordResult);
+                                        }
                                     }
                                     next.run();
                                 });

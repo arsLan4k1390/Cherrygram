@@ -15,6 +15,8 @@ import android.content.Context;
 import android.widget.LinearLayout;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.MediaDataController;
+import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -147,6 +149,102 @@ public class AlertDialogSwitchers {
             linearLayoutInviteContainer.addView(stickerSliderCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         }
         builder.setPositiveButton(getString(R.string.OK), null);
+        builder.setView(linearLayout);
+        fragment.showDialog(builder.create());
+    }
+
+    public static void showRecentEmojisAndStickers(BaseFragment fragment) {
+        if (fragment.getParentActivity() == null) {
+            return;
+        }
+        Context context = fragment.getParentActivity();
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle(getString(R.string.CP_Slider_RecentEmojisAndStickers));
+
+        LinearLayout linearLayout = new LinearLayout(context);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        LinearLayout linearLayoutInviteContainer = new LinearLayout(context);
+        linearLayoutInviteContainer.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(linearLayoutInviteContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+
+        int count = 2;
+        for (int a = 0; a < count; a++) {
+            HeaderCell headerCell = new HeaderCell(fragment.getContext(), fragment.getResourceProvider());
+            StickerSliderCell stickerSliderCell = new StickerSliderCell(fragment.getContext(), fragment.getResourceProvider());
+            TGKitSliderPreference.TGSLContract contract;
+            switch (a) {
+                case 0: {
+                    headerCell.setText(getString(R.string.Emoji), false);
+                    contract = new TGKitSliderPreference.TGSLContract() {
+                        @Override
+                        public void setValue(int value) {
+                            CherrygramChatsConfig.INSTANCE.setSlider_RecentEmojisAmplifier(value);
+                        }
+
+                        @Override
+                        public int getPreferenceValue() {
+                            return CherrygramChatsConfig.INSTANCE.getSlider_RecentEmojisAmplifier();
+                        }
+
+                        @Override
+                        public int getMin() {
+                            return 25;
+                        }
+
+                        @Override
+                        public int getMax() {
+                            return 80;
+                        }
+                    };
+                    contract.setValue(CherrygramChatsConfig.INSTANCE.getSlider_RecentEmojisAmplifier());
+                    stickerSliderCell.setContract(contract);
+                    break;
+                }
+                case 1: {
+                    headerCell.setText(getString(R.string.AccDescrStickers), false);
+                    contract = new TGKitSliderPreference.TGSLContract() {
+                        @Override
+                        public void setValue(int value) {
+                            CherrygramChatsConfig.INSTANCE.setSlider_RecentStickersAmplifier(value);
+                        }
+
+                        @Override
+                        public int getPreferenceValue() {
+                            return CherrygramChatsConfig.INSTANCE.getSlider_RecentStickersAmplifier();
+                        }
+
+                        @Override
+                        public int getMin() {
+                            return 10;
+                        }
+
+                        @Override
+                        public int getMax() {
+                            return 50;
+                        }
+                    };
+                    contract.setValue(CherrygramChatsConfig.INSTANCE.getSlider_RecentStickersAmplifier());
+                    stickerSliderCell.setContract(contract);
+                    break;
+                }
+            }
+            headerCell.setTag(a);
+            headerCell.setTextSize(16);
+            linearLayoutInviteContainer.addView(headerCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+
+            stickerSliderCell.setTag(a);
+            stickerSliderCell.setBackground(Theme.getSelectorDrawable(false));
+            linearLayoutInviteContainer.addView(stickerSliderCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+        }
+        builder.setPositiveButton(getString(R.string.OK), (dialogInterface, i) -> {
+            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.emojiLoaded);
+            fragment.getNotificationCenter().postNotificationName(NotificationCenter.recentDocumentsDidLoad, false, MediaDataController.TYPE_IMAGE);
+        });
+        builder.setOnDismissListener(dialog -> {
+            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.emojiLoaded);
+            fragment.getNotificationCenter().postNotificationName(NotificationCenter.recentDocumentsDidLoad, false, MediaDataController.TYPE_IMAGE);
+        });
         builder.setView(linearLayout);
         fragment.showDialog(builder.create());
     }

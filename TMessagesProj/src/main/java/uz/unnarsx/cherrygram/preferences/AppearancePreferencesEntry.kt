@@ -32,6 +32,7 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
+import androidx.core.content.edit
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.AP_Header_Appearance)) {
@@ -74,7 +75,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramAppearanceConfig.disableDividers
                 }) {
                     CherrygramAppearanceConfig.disableDividers = it
-                    Theme.applyCommonTheme();
+                    Theme.applyCommonTheme()
                     bf.parentLayout.rebuildAllFragmentViews(true, true)
                 }
             }
@@ -97,10 +98,9 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                         if (result.isEmpty()) {
                             result = defaultValue
                         }
-                        val editor =
-                            MessagesController.getMainSettings(UserConfig.selectedAccount).edit()
-                        editor.putString("CG_AppName", result)
-                        editor.apply()
+                        MessagesController.getMainSettings(UserConfig.selectedAccount).edit {
+                            putString("CG_AppName", result)
+                        }
                         bf.parentLayout.rebuildAllFragmentViews(true, true)
                         val previousFragment: BaseFragment? =
                             if (bf.parentLayout.fragmentStack.size > 2) bf.parentLayout.fragmentStack[bf.parentLayout.fragmentStack.size - 3] else null

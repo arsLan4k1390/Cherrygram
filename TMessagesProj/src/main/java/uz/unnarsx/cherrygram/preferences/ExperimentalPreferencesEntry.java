@@ -340,7 +340,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                         }
                         textCell.setTextAndValue(getString(R.string.EP_NavigationAnimation), value, true);
                     } else if (position == downloadSpeedBoostRow) {
-                        textCell.setTextAndValue(getString(R.string.EP_DownloadSpeedBoost), CGResourcesHelper.getDownloadSpeedBoostText(), true);
+                        textCell.setTextAndValue(getString(R.string.EP_DownloadSpeedBoost), CGResourcesHelper.INSTANCE.getDownloadSpeedBoostText(), true);
                     }
                     break;
                 case 5:

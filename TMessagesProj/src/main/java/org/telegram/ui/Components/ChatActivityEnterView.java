@@ -2602,7 +2602,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 }
             }
         });
-        if (CherrygramCoreConfig.INSTANCE.getHideSendAsChannel() && UserConfig.getInstance(currentAccount).isPremium()) {
+        if (CherrygramCoreConfig.INSTANCE.getHideSendAsChannel()) {
             emojiButton.setOnLongClickListener(v -> {
                 try {
                     v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);

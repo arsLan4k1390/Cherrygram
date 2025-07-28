@@ -28,6 +28,7 @@ import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.LayoutHelper
 import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation
+import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.GeminiPreferencesBottomSheet
@@ -81,7 +82,7 @@ object CGMessageMenuInjector {
             val cell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
             cell.setTextAndIcon(getString(R.string.Reply), R.drawable.menu_reply)
             cell.setOnClickListener {
-                chatActivity.processSelectedOption(ChatActivity.OPTION_REPLY_GEMINI)
+                chatActivity.processSelectedOption(ChatActivityHelper.OPTION_REPLY_GEMINI)
             }
             sections.add(cell)
         }
@@ -90,7 +91,7 @@ object CGMessageMenuInjector {
             val cell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
             cell.setTextAndIcon(getString(R.string.TranslateMessage), R.drawable.msg_translate)
             cell.setOnClickListener {
-                chatActivity.processSelectedOption(ChatActivity.OPTION_TRANSLATE_GEMINI)
+                chatActivity.processSelectedOption(ChatActivityHelper.OPTION_TRANSLATE_GEMINI)
             }
             sections.add(cell)
         }
@@ -111,7 +112,7 @@ object CGMessageMenuInjector {
                         true
                     )
                 } else {
-                    chatActivity.processSelectedOption(ChatActivity.OPTION_SUMMARIZE_GEMINI)
+                    chatActivity.processSelectedOption(ChatActivityHelper.OPTION_SUMMARIZE_GEMINI)
                 }
             }
             sections.add(cell)
@@ -122,16 +123,7 @@ object CGMessageMenuInjector {
             cell.setTextAndIcon(getString(R.string.PremiumPreviewVoiceToText), R.drawable.msg_photo_text_solar)
             cell.setOnClickListener {
                 chatActivity.closeMenu()
-                GeminiResultsBottomSheet.setMessageObject(selectedObject)
-                GeminiResultsBottomSheet.setCurrentChat(chatActivity.currentChat)
-                GeminiSDKImplementation.injectGeminiForMedia(
-                    chatActivity,
-                    chatActivity,
-                    selectedObject,
-                    false,
-                    true,
-                    false
-                )
+                chatActivity.processSelectedOption(ChatActivityHelper.OPTION_TRANSCRIBE_GEMINI)
             }
             sections.add(cell)
         }
@@ -219,12 +211,12 @@ object CGMessageMenuInjector {
     ) {
         if (CherrygramChatsConfig.showCopyPhoto) {
             items.add(getString(R.string.CG_CopyPhoto))
-            options.add(ChatActivity.OPTION_COPY_PHOTO)
+            options.add(ChatActivityHelper.OPTION_COPY_PHOTO)
             icons.add(R.drawable.msg_copy)
         }
         if (CherrygramChatsConfig.showCopyPhotoAsSticker) {
             items.add(getString(R.string.CG_CopyPhotoAsSticker))
-            options.add(ChatActivity.OPTION_COPY_PHOTO_AS_STICKER)
+            options.add(ChatActivityHelper.OPTION_COPY_PHOTO_AS_STICKER)
             icons.add(R.drawable.msg_sticker)
         }
     }
@@ -236,7 +228,7 @@ object CGMessageMenuInjector {
     ) {
         if (CherrygramChatsConfig.showClearFromCache) {
             items.add(getString(R.string.CG_ClearFromCache))
-            options.add(ChatActivity.OPTION_CLEAR_FROM_CACHE)
+            options.add(ChatActivityHelper.OPTION_CLEAR_FROM_CACHE)
             icons.add(R.drawable.msg_clear)
         }
     }
@@ -256,7 +248,7 @@ object CGMessageMenuInjector {
                     R.string.CG_Without_Authorship
                 )
             )
-            options.add(ChatActivity.OPTION_FORWARD_WO_AUTHOR)
+            options.add(ChatActivityHelper.OPTION_FORWARD_WO_AUTHOR)
             icons.add(R.drawable.msg_forward)
         }
     }
@@ -268,7 +260,7 @@ object CGMessageMenuInjector {
     ) {
         if (CherrygramChatsConfig.showViewHistory) {
             items.add(getString(R.string.CG_ViewUserHistory))
-            options.add(ChatActivity.OPTION_VIEW_HISTORY)
+            options.add(ChatActivityHelper.OPTION_VIEW_HISTORY)
             icons.add(R.drawable.msg_recent)
         }
     }
@@ -286,7 +278,7 @@ object CGMessageMenuInjector {
             ) && !message.isSponsored
         ) {
             items.add(getString(R.string.CG_ToSaved))
-            options.add(ChatActivity.OPTION_SAVE_MESSAGE_CHAT)
+            options.add(ChatActivityHelper.OPTION_SAVE_MESSAGE_CHAT)
             icons.add(R.drawable.msg_saved)
         }
     }
@@ -313,9 +305,23 @@ object CGMessageMenuInjector {
     ) {
         if (selectedObject?.isAnimatedSticker == false) {
             items.add(getString(R.string.CG_SaveSticker))
-            options.add(ChatActivity.OPTION_DOWNLOAD_STICKER)
+            options.add(ChatActivityHelper.OPTION_DOWNLOAD_STICKER)
             icons.add(R.drawable.msg_download)
         }
+    }
+
+    fun injectImportSettings(
+        items: ArrayList<CharSequence?>,
+        options: ArrayList<Int?>,
+        icons: ArrayList<Int?>
+    ) {
+        items.add(getString(R.string.SaveToDownloads))
+        options.add(ChatActivity.OPTION_SAVE_TO_DOWNLOADS_OR_MUSIC)
+        icons.add(R.drawable.msg_download)
+
+        options.add(ChatActivityHelper.OPTION_IMPORT_SETTINGS)
+        items.add(getString(R.string.CG_ImportSettings))
+        icons.add(R.drawable.msg_customize)
     }
 
     fun injectJSON(
@@ -325,7 +331,7 @@ object CGMessageMenuInjector {
     ) {
         if (CherrygramChatsConfig.showJSON) {
             items.add("JSON")
-            options.add(ChatActivity.OPTION_DETAILS)
+            options.add(ChatActivityHelper.OPTION_DETAILS)
             icons.add(R.drawable.msg_info)
         }
     }
@@ -428,6 +434,7 @@ object CGMessageMenuInjector {
             prefTitle,
             prefIcon,
             prefCheck,
+            null,
             null,
             prefDivider,
             clickListener,

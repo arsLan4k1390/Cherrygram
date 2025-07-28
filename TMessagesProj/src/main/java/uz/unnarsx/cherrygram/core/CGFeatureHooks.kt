@@ -15,7 +15,6 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 // Because manual editing of drklo's sources harms your mental health.
 object CGFeatureHooks {
 
-    @JvmStatic
     fun switchNoAuthor(b: Boolean) {
         // ...
         CherrygramChatsConfig.noAuthorship = b

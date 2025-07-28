@@ -132,8 +132,8 @@ public class FilterTabsView extends FrameLayout {
             this.id = i;
             this.title = (tabMode == CherrygramAppearanceConfig.TAB_TYPE_ICON) ? "" : title;
             this.realTitle = title;
-            this.emoticon = (i != Integer.MAX_VALUE) ? (emoticon != null ? emoticon : "") : "\uD83D\uDCAC";
             this.noanimate = noanimate;
+            this.emoticon = (i != Integer.MAX_VALUE) ? (emoticon != null ? emoticon : "") : "\uD83D\uDCAC";
         }
 
         public int getWidth(boolean store) {
@@ -415,7 +415,6 @@ public class FilterTabsView extends FrameLayout {
                 textHeight = textLayout.getHeight();
                 textOffsetX = (int) -textLayout.getLineLeft(0);
             }
-
 
             float titleOffsetX = 0;
             if (animateTextChange) {
@@ -1762,7 +1761,8 @@ public class FilterTabsView extends FrameLayout {
                 invalidated = true;
                 requestLayout();
                 allTabsWidth = 0;
-                if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats()) findDefaultTab().setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
+                if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats())
+                    findDefaultTab().setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
                 for (int b = 0; b < N; b++) {
                     allTabsWidth += tabs.get(b).getWidth(true) + FolderIconHelper.getPaddingTab();
                 }
@@ -1793,7 +1793,8 @@ public class FilterTabsView extends FrameLayout {
             listView.setItemAnimator(itemAnimator);
             adapter.notifyDataSetChanged();
             allTabsWidth = 0;
-            if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats()) findDefaultTab().setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
+            if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats())
+                findDefaultTab().setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
             for (int b = 0, N = tabs.size(); b < N; b++) {
                 allTabsWidth += tabs.get(b).getWidth(true) + FolderIconHelper.getPaddingTab();
             }
@@ -2077,17 +2078,6 @@ public class FilterTabsView extends FrameLayout {
     protected void onDefaultTabMoved() {
 
     }
-
-    public void updateSelector() {
-        selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
-        float rad = AndroidUtilities.dpf2(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 10 : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 30 : 3);
-        if (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_ROUNDED || tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
-            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
-        } else {
-            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
-        }
-    }
-
     /** Cherrygram start */
     private GlobalSearchView globalSearchView;
 
@@ -2097,6 +2087,23 @@ public class FilterTabsView extends FrameLayout {
 
     public GlobalSearchView getGlobalSearchView() {
         return globalSearchView;
+    }
+
+    public void selectDefaultTab() {
+        Tab defaultTab = findDefaultTab();
+        if (defaultTab == null) return;
+        if (defaultTab.id == getCurrentTabId()) return;
+        scrollToTab(defaultTab, defaultTab.id);
+    }
+
+    public void updateSelector() {
+        selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
+        float rad = AndroidUtilities.dpf2(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 10 : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 30 : 3);
+        if (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_ROUNDED || tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
+            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
+        } else {
+            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
+        }
     }
     /** Cherrygram finish */
 

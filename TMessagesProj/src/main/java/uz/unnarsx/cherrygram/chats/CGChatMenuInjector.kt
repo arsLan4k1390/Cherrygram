@@ -22,6 +22,7 @@ import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.ChatActivityEnterView
 import org.telegram.ui.Components.ChatAttachAlert
+import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2.getCustomChatID
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
@@ -92,13 +93,13 @@ object CGChatMenuInjector {
                 || currentChat != null && currentChat.id != 0L && ChatsPasswordHelper.isChatLocked(currentChat.id)
             ) {
                 headerItem.lazilyAddSubItem(
-                    ChatActivity.OPTION_DO_NOT_ASK_PASSCODE,
+                    ChatActivityHelper.OPTION_DO_NOT_ASK_PASSCODE,
                     R.drawable.msg_secret,
                     getString(R.string.SP_DoNotAskPin)
                 )
             } else {
                 headerItem.lazilyAddSubItem(
-                    ChatActivity.OPTION_ASK_PASSCODE,
+                    ChatActivityHelper.OPTION_ASK_PASSCODE,
                     R.drawable.msg_secret,
                     getString(R.string.SP_AskPin)
                 )
@@ -106,21 +107,21 @@ object CGChatMenuInjector {
         }
 
         if (CherrygramChatsConfig.shortcut_JumpToBegin) headerItem.lazilyAddSubItem(
-            ChatActivity.OPTION_JUMP_TO_BEGINNING,
+            ChatActivityHelper.OPTION_JUMP_TO_BEGINNING,
             R.drawable.ic_upward,
             getString(R.string.CG_JumpToBeginning)
         )
 
         if (currentChat != null && !isDeleteAllHidden(currentChat) && (ChatObject.isMegagroup(currentChat) || !ChatObject.isChannel(currentChat))) {
             if (CherrygramChatsConfig.shortcut_DeleteAll) headerItem.lazilyAddSubItem(
-                ChatActivity.OPTION_DELETE_ALL_FROM_SELF,
+                ChatActivityHelper.OPTION_DELETE_ALL_FROM_SELF,
                 R.drawable.msg_delete,
                 getString(R.string.CG_DeleteAllFromSelf)
             )
         }
 
         if (currentChat != null && !ChatObject.isChannel(currentChat) && currentChat.creator) headerItem.lazilyAddSubItem(
-                ChatActivity.OPTION_UPGRADE_GROUP,
+            ChatActivityHelper.OPTION_UPGRADE_GROUP,
                 R.drawable.ic_upward,
                 getString(R.string.UpgradeGroup)
         )
@@ -129,20 +130,20 @@ object CGChatMenuInjector {
             || currentUser != null && currentUser.id != abs(getCustomChatID())
         ) {
             if (CherrygramChatsConfig.shortcut_SavedMessages) headerItem.lazilyAddSubItem(
-                ChatActivity.OPTION_GO_TO_SAVED,
+                ChatActivityHelper.OPTION_GO_TO_SAVED,
                 R.drawable.msg_saved,
                 getString(R.string.SavedMessages)
             )
         }
 
         if (CherrygramChatsConfig.shortcut_Blur) headerItem.lazilyAddSubItem(
-            ChatActivity.OPTION_BLUR_SETTINGS,
+            ChatActivityHelper.OPTION_BLUR_SETTINGS,
             R.drawable.msg_theme,
             getString(R.string.BlurInChat)
         )
 
         if (CherrygramChatsConfig.shortcut_Browser) headerItem.lazilyAddSubItem(
-            ChatActivity.OPTION_OPEN_TELEGRAM_BROWSER,
+            ChatActivityHelper.OPTION_OPEN_TELEGRAM_BROWSER,
             R.drawable.msg_language,
             "Telegram Browser"
         )
@@ -156,43 +157,43 @@ object CGChatMenuInjector {
         if (isAnyButtonEnabled) headerItem.lazilyAddColoredGap()
 
         if (CherrygramChatsConfig.admins_Reactions && ChatObject.canChangeChatInfo(currentChat)) headerItem.lazilyAddSubItem(
-                ChatActivity.OPTION_FOR_ADMINS_REACTIONS,
+                ChatActivityHelper.OPTION_FOR_ADMINS_REACTIONS,
                 R.drawable.msg_reactions2,
                 getString(R.string.Reactions)
         )
 
         if (CherrygramChatsConfig.admins_Permissions && !(ChatObject.isChannel(currentChat) && !currentChat.megagroup) && !currentChat.gigagroup) headerItem.lazilyAddSubItem(
-                ChatActivity.OPTION_FOR_ADMINS_PERMISSIONS,
+                ChatActivityHelper.OPTION_FOR_ADMINS_PERMISSIONS,
                 R.drawable.msg_permissions,
                 getString(R.string.ChannelPermissions)
         )
 
         if (CherrygramChatsConfig.admins_Administrators) headerItem.lazilyAddSubItem(
-                ChatActivity.OPTION_FOR_ADMINS_ADMINISTRATORS,
+                ChatActivityHelper.OPTION_FOR_ADMINS_ADMINISTRATORS,
                 R.drawable.msg_admins,
                 getString(R.string.ChannelAdministrators)
         )
 
         if (CherrygramChatsConfig.admins_Members) headerItem.lazilyAddSubItem(
-                ChatActivity.OPTION_FOR_ADMINS_MEMBERS,
+                ChatActivityHelper.OPTION_FOR_ADMINS_MEMBERS,
                 R.drawable.msg_groups,
                 getString(R.string.ChannelMembers)
         )
 
         if (CherrygramChatsConfig.admins_Permissions && (ChatObject.isChannel(currentChat) && !currentChat.megagroup || currentChat.gigagroup)) headerItem.lazilyAddSubItem(
-                ChatActivity.OPTION_FOR_ADMINS_PERMISSIONS,
+                ChatActivityHelper.OPTION_FOR_ADMINS_PERMISSIONS,
                 R.drawable.msg_user_remove,
                 getString(R.string.ChannelBlacklist)
         )
 
         if (CherrygramChatsConfig.admins_Statistics && ChatObject.isBoostSupported(currentChat)) headerItem.lazilyAddSubItem(
-                ChatActivity.OPTION_FOR_ADMINS_STATISTICS,
+                ChatActivityHelper.OPTION_FOR_ADMINS_STATISTICS,
                 R.drawable.msg_stats,
                 getString(R.string.StatisticsAndBoosts)
         )
 
         if (CherrygramChatsConfig.admins_RecentActions) headerItem.lazilyAddSubItem(
-                ChatActivity.OPTION_FOR_ADMINS_RECENT_ACTIONS,
+                ChatActivityHelper.OPTION_FOR_ADMINS_RECENT_ACTIONS,
                 R.drawable.msg_log,
                 getString(R.string.EventLog)
         )

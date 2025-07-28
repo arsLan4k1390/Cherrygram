@@ -12,6 +12,7 @@ package uz.unnarsx.cherrygram.preferences
 import android.content.SharedPreferences
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+import androidx.core.content.edit
 
 class StringPreference(
         private val sharedPreferences: SharedPreferences,
@@ -20,7 +21,7 @@ class StringPreference(
 ) : ReadWriteProperty<Any, String> {
     override fun getValue(thisRef: Any, property: KProperty<*>): String = sharedPreferences.getString(key, defaultValue)!!
     override fun setValue(thisRef: Any, property: KProperty<*>, value: String) {
-        sharedPreferences.edit().putString(key, value).apply()
+        sharedPreferences.edit { putString(key, value) }
     }
 }
 
@@ -31,7 +32,7 @@ class IntPreference(
 ) : ReadWriteProperty<Any, Int> {
     override fun getValue(thisRef: Any, property: KProperty<*>): Int = sharedPreferences.getInt(key, defaultValue)
     override fun setValue(thisRef: Any, property: KProperty<*>, value: Int) {
-        sharedPreferences.edit().putInt(key, value).apply()
+        sharedPreferences.edit { putInt(key, value) }
     }
 }
 
@@ -42,7 +43,7 @@ class FloatPreference(
 ) : ReadWriteProperty<Any, Float> {
     override fun getValue(thisRef: Any, property: KProperty<*>): Float = sharedPreferences.getFloat(key, defaultValue)
     override fun setValue(thisRef: Any, property: KProperty<*>, value: Float) {
-        sharedPreferences.edit().putFloat(key, value).apply()
+        sharedPreferences.edit { putFloat(key, value) }
     }
 }
 
@@ -53,7 +54,7 @@ class BooleanPreference(
 ) : ReadWriteProperty<Any, Boolean> {
     override fun getValue(thisRef: Any, property: KProperty<*>): Boolean = sharedPreferences.getBoolean(key, defaultValue)
     override fun setValue(thisRef: Any, property: KProperty<*>, value: Boolean) {
-        sharedPreferences.edit().putBoolean(key, value).apply()
+        sharedPreferences.edit { putBoolean(key, value) }
     }
 }
 
@@ -64,7 +65,7 @@ class LongPreference(
 ) : ReadWriteProperty<Any, Long> {
     override fun getValue(thisRef: Any, property: KProperty<*>): Long = sharedPreferences.getLong(key, defaultValue)
     override fun setValue(thisRef: Any, property: KProperty<*>, value: Long) {
-        sharedPreferences.edit().putLong(key, value).apply()
+        sharedPreferences.edit { putLong(key, value) }
     }
 }
 

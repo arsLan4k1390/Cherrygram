@@ -18,6 +18,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
 
 @Suppress("DEPRECATION")
+@SuppressLint("UseCompatLoadingForDrawables")
 class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, wrapped.displayMetrics, wrapped.configuration) {
 
     private var activeReplacement: BaseIconReplace = CherrygramAppearanceConfig.getCurrentIconPack()
@@ -27,8 +28,8 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         clearCache()
     }
 
-    private val drawableCache = object : LinkedHashMap<Triple<Int, Int?, Int?>, Drawable?>(300, 0.75f, true) {
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Triple<Int, Int?, Int?>, Drawable?>?): Boolean {
+    private val drawableCache = object : LinkedHashMap<Triple<Int, Int?, Theme?>, Drawable?>(300, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Triple<Int, Int?, Theme?>, Drawable?>?): Boolean {
             if (size > 300) {
                 clearCache()
                 return true
@@ -48,13 +49,17 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         if (CherrygramCoreConfig.isDevBuild()) Log.d("CGUIResources", "🗑 Cache cleared automatically (limit exceeded)!")
     }
 
-    private fun getCachedDrawable(cacheKey: Triple<Int, Int?, Int?>, wrappedId: Int, loader: () -> Drawable?): Drawable? {
+    private fun getCachedDrawable(
+        cacheKey: Triple<Int, Int?, Theme?>,
+        wrappedId: Int,
+        loader: () -> Drawable?
+    ): Drawable? {
         return drawableCache.getOrPut(cacheKey) {
             cacheMisses++
             if (CherrygramCoreConfig.isDevBuild()) Log.w("CGUIResources", "🛑 Cache MISS ($cacheMisses misses) - Loading new drawable for id=$wrappedId, key=$cacheKey")
             loader()
         }?.let { drawable ->
-            drawable.constantState?.newDrawable()?.mutate() ?: drawable
+            drawable.constantState?.newDrawable(wrapped, cacheKey.third)?.mutate() ?: drawable
         }?.also {
             cacheHits++
             if (CherrygramCoreConfig.isDevBuild()) Log.d("CGUIResources", "✅ Cache HIT ($cacheHits hits) - Using cached drawable for id=$wrappedId, key=$cacheKey")
@@ -62,20 +67,18 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
     }
 
     @Deprecated("Deprecated in Java")
-    @SuppressLint("UseCompatLoadingForDrawables")
     @Throws(NotFoundException::class)
     override fun getDrawable(id: Int): Drawable? {
         val wrappedId = activeReplacement.wrap(id)
         val cacheKey = Triple(wrappedId, null, null)
 
-        return getCachedDrawable(cacheKey, wrappedId) { wrapped.getDrawable(wrappedId) }
+        return getCachedDrawable(cacheKey, wrappedId) { wrapped.getDrawable(wrappedId, null) }
     }
 
-    @SuppressLint("UseCompatLoadingForDrawables")
     @Throws(NotFoundException::class)
     override fun getDrawable(id: Int, theme: Theme?): Drawable? {
         val wrappedId = activeReplacement.wrap(id)
-        val cacheKey = Triple(wrappedId, null, theme?.hashCode())
+        val cacheKey = Triple(wrappedId, null, theme)
 
         return getCachedDrawable(cacheKey, wrappedId) { wrapped.getDrawable(wrappedId, theme) }
     }
@@ -86,12 +89,12 @@ class CGUIResources(private val wrapped: Resources) : Resources(wrapped.assets, 
         val wrappedId = activeReplacement.wrap(id)
         val cacheKey = Triple(wrappedId, density, null)
 
-        return getCachedDrawable(cacheKey, wrappedId) { wrapped.getDrawableForDensity(wrappedId, density) }
+        return getCachedDrawable(cacheKey, wrappedId) { wrapped.getDrawableForDensity(wrappedId, density, null) }
     }
 
     override fun getDrawableForDensity(id: Int, density: Int, theme: Theme?): Drawable? {
         val wrappedId = activeReplacement.wrap(id)
-        val cacheKey = Triple(wrappedId, density, theme?.hashCode())
+        val cacheKey = Triple(wrappedId, density, theme)
 
         return getCachedDrawable(cacheKey, wrappedId) { wrapped.getDrawableForDensity(wrappedId, density, theme) }
     }

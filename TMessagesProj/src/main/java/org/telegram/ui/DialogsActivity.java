@@ -3446,9 +3446,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 filterTabsView.getGlobalSearchView().setOnLongClickListener(v -> presentFragment(new DialogsActivity(args)));
             }
 
-            filterTabsViewIsVisible = isSearchPanelVisible();
+            filterTabsViewIsVisible = false;
             filterTabsView.setVisibility(View.GONE);
-            canShowFilterTabsView = isSearchPanelVisible();
+            canShowFilterTabsView = false;
             filterTabsView.setDelegate(new FilterTabsView.FilterTabsViewDelegate() {
 
                 private void showDeleteAlert(MessagesController.DialogFilter dialogFilter) {
@@ -5300,7 +5300,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 contentView.requestLayout();
                 fromScrollYProperty = scrollYOffset;
 
-                if (canShowFilterTabsView && filterTabsView != null) {
+                if (canShowFilterTabsView && filterTabsView != null || forceEnableFolders()) {
                     filterTabsView.setVisibility(View.VISIBLE);
                 }
                 transitionPage = viewPages[0];
@@ -7527,7 +7527,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         } else {
             AndroidUtilities.requestAdjustResize(getParentActivity(), classGuid);
         }
-        if (!show && filterTabsView != null && canShowFilterTabsView) {
+        if (!show && filterTabsView != null && canShowFilterTabsView || forceEnableFolders()) {
             filterTabsView.setVisibility(View.VISIBLE);
         }
         if (!show && dialogStoriesCell != null && dialogStoriesCellVisible) {
@@ -7759,7 +7759,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 filterTabsView.getTabsContainer().setAlpha(show ? 0.0f : 1.0f);
             }
             if (filterTabsView != null) {
-                if (canShowFilterTabsView && !show) {
+                if (canShowFilterTabsView && !show || forceEnableFolders()) { // тут
                     filterTabsView.setVisibility(View.VISIBLE);
                 } else {
                     filterTabsView.setVisibility(View.GONE);
@@ -8951,7 +8951,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
-    public boolean storiesEnabled = true;
+    public boolean storiesEnabled = !CherrygramCoreConfig.INSTANCE.getHideStories();
     private void updateStoriesPosting() {
         final boolean storiesEnabled = getMessagesController().storiesEnabled();
         if (this.storiesEnabled != storiesEnabled) {
@@ -13002,6 +13002,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     public void updateStoriesVisibility(boolean animated) {
+        if (CherrygramCoreConfig.INSTANCE.getHideStories()) return;
         if (dialogStoriesCell == null || storiesVisibilityAnimator != null || rightSlidingDialogContainer != null && rightSlidingDialogContainer.hasFragment() || searchIsShowed || actionBar.isActionModeShowed() || onlySelect) {
             return;
         }
@@ -13775,7 +13776,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     private boolean searchPanelVisible;
 
     private boolean isSearchPanelVisible() {
-        return searchPanelVisible;
+        return searchPanelVisible || forceEnableFolders();
+    }
+
+    private boolean forceEnableFolders() {
+        return CherrygramAppearanceConfig.INSTANCE.getIosSearchPanel() && filterTabsView != null && !filterTabsView.getGlobalSearchView().getFoldersExistence();
     }
 
     private void setSearchPanelVisibility(boolean visible) {
@@ -13787,6 +13792,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             return;
         }
         if (filterTabsView != null && filterTabsView.getGlobalSearchView() != null) {
+//            filterTabsView.selectDefaultTab();
             if (CherrygramAppearanceConfig.INSTANCE.getIosSearchPanel()) {
                 filterTabsView.getGlobalSearchView().setVisibility(View.VISIBLE);
                 searchItem.setVisibility(View.GONE);

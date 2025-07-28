@@ -23,6 +23,10 @@ fun TGKitScreen.category(name: String?, block: TGKitPreferences.() -> Unit) = ad
         TGKitCategory(name, mutableListOf<TGKitPreference>().apply(block))
 )
 
+fun TGKitScreen.category(name: String?, isAvailable: Boolean, block: TGKitPreferences.() -> Unit) = add(
+    TGKitCategory(name, isAvailable, mutableListOf<TGKitPreference>().apply(block))
+)
+
 fun TGKitPreferences.list(block: TGKitListPreference.() -> Unit) = add(TGKitListPreference().apply(block))
 fun TGKitPreferences.switch(block: TGKitSwitchPreference.() -> Unit) = add(TGKitSwitchPreference().apply(block))
 fun TGKitPreferences.slider(block: TGKitSliderPreference.() -> Unit) = add(TGKitSliderPreference().apply(block))

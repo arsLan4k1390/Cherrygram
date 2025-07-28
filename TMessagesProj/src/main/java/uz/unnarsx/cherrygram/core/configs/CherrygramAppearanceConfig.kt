@@ -100,8 +100,9 @@ object CherrygramAppearanceConfig: CoroutineScope by CoroutineScope(
     var drawerBlur by sharedPreferences.boolean("AP_DrawerBlur", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     var drawerBlurIntensity by sharedPreferences.int("AP_DrawerBlur_Intensity", 50)
 
-    /** Drawer buttons start **/
+    /** Drawer items start **/
     var changeStatusDrawerButton by sharedPreferences.boolean("AP_ChangeStatusDrawerButton", true)
+    var marketPlaceDrawerButton by sharedPreferences.boolean("AP_MarketplaceDrawerButton", false)
     /*var myStoriesDrawerButton by sharedPreferences.boolean("AP_MyStoriesDrawerButton", true)*/
     var myProfileDrawerButton by sharedPreferences.boolean("AP_MyProfileDrawerButton", true)
     var createGroupDrawerButton by sharedPreferences.boolean("AP_CreateGroupDrawerButton", false)
@@ -112,7 +113,7 @@ object CherrygramAppearanceConfig: CoroutineScope by CoroutineScope(
     var archivedChatsDrawerButton by sharedPreferences.boolean("AP_ArchivedChatsDrawerButton", true)
     var scanQRDrawerButton by sharedPreferences.boolean("AP_ScanQRDrawerButton", true)
     var cGPreferencesDrawerButton by sharedPreferences.boolean("AP_CGPreferencesDrawerButton", true)
-    /** Drawer buttons finish **/
+    /** Drawer items finish **/
 
     var eventType by sharedPreferences.int("AP_DrawerEventType", 0)
     /** Drawer finish **/

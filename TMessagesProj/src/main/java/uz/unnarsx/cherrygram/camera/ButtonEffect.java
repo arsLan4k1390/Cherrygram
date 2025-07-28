@@ -87,11 +87,11 @@ public class ButtonEffect extends RelativeLayout {
 
     private int getIconRes(int icon) {
         return switch (icon) {
-            case CameraXController.CAMERA_HDR -> R.drawable.round_hdr_on_black;
-            case CameraXController.CAMERA_NIGHT -> R.drawable.round_bedtime_black;
-            case CameraXController.CAMERA_AUTO -> R.drawable.round_auto_fix_high_black;
-            case CameraXController.CAMERA_WIDE -> R.drawable.round_landscape_black;
-            default -> R.drawable.round_photo_camera_black;
+            case CameraXController.CAMERA_HDR -> R.drawable.camera_hdr;
+            case CameraXController.CAMERA_NIGHT -> R.drawable.camera_moon_solar;
+            case CameraXController.CAMERA_AUTO -> R.drawable.magic_stick_filled_solar;
+            case CameraXController.CAMERA_WIDE -> R.drawable.camera_panorama_solar;
+            default -> R.drawable.instant_camera_attach_solar;
         };
     }
 

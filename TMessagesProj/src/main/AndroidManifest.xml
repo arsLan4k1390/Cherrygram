@@ -390,7 +390,7 @@
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.PremiumIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_premium"
+            android:icon="@mipmap/icon_3_launcher"
             android:exported="true">
 
             <intent-filter>
@@ -405,7 +405,7 @@
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.TurboIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_turbo"
+            android:icon="@mipmap/icon_5_launcher"
             android:exported="true">
 
             <intent-filter>
@@ -420,7 +420,7 @@
             android:enabled="false"
             android:name="uz.unnarsx.cherrygram.NoxIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_launcher_nox"
+            android:icon="@mipmap/icon_2_launcher"
             android:exported="true">
 
             <intent-filter>

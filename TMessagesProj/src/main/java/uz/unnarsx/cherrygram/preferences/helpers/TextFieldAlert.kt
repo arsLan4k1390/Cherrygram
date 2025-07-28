@@ -30,7 +30,6 @@ import org.telegram.ui.Components.LayoutHelper
 
 object TextFieldAlert {
 
-    @JvmStatic
     fun createFieldAlertForAppName(
         context: Context,
         title: String,
@@ -86,7 +85,6 @@ object TextFieldAlert {
         editText.layoutParams = layoutParams
     }
 
-    @JvmStatic
     fun createFieldAlert(
         context: Context,
         title: String,
@@ -139,8 +137,7 @@ object TextFieldAlert {
         editText.layoutParams = layoutParams
     }
 
-    /*@JvmStatic
-    fun createFieldAlertForGemini(
+    /*fun createFieldAlertForGemini(
         context: Context,
         title: String,
         defaultValue: String,

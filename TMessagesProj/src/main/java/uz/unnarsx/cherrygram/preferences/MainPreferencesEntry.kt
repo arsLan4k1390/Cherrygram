@@ -14,7 +14,6 @@ import org.telegram.messenger.*
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LaunchActivity
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.misc.CherrygramExtras
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
@@ -78,20 +77,14 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 isAvailable = ApplicationLoader.isStandaloneBuild()
 
                 icon = R.drawable.heart_angle_solar
-                title = getString(R.string.DP_Donate)
+                title = getString(if (isAvailable) R.string.DP_Support else R.string.DP_RateUs)
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(CherrygramPreferencesNavigator.createDonate())
-                }
-            }
-            textIcon {
-                isAvailable = CherrygramCoreConfig.isPlayStoreBuild()
-
-                icon = R.drawable.heart_angle_solar
-                title = getString(R.string.DP_RateUs)
-
-                listener = TGKitTextIconRow.TGTIListener {
-                    CherrygramExtras.requestReviewFlow(bf, bf.context, bf.parentActivity)
+                    if (isAvailable) {
+                        it.presentFragment(CherrygramPreferencesNavigator.createDonate())
+                    } else {
+                        CherrygramExtras.requestReviewFlow(bf, bf.context, bf.parentActivity)
+                    }
                 }
             }
             textIcon {
@@ -105,7 +98,7 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 title = getString(R.string.CG_ImportSettings)
                 icon = R.drawable.msg_photo_settings_solar
                 listener = TGKitTextIconRow.TGTIListener {
-                    BackupHelper.importSettings(bf)
+                    BackupHelper.importSettings(bf, bf.context)
                 }
             }
             textIcon {

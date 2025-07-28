@@ -25,7 +25,9 @@ import org.telegram.ui.Cells.TextCell;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
 import uz.unnarsx.cherrygram.preferences.ChatsPreferencesEntry;
+import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator;
 
 public class PopupHelper {
 
@@ -100,6 +102,7 @@ public class PopupHelper {
             ArrayList<Integer> prefIcon,
             ArrayList<Boolean> prefCheck,
             ArrayList<Boolean> prefCheckInvisible,
+            ArrayList<Boolean> donateLock,
             ArrayList<Boolean> prefDivider,
             ArrayList<Runnable> clickListener,
             Runnable dismissRunnable
@@ -120,13 +123,21 @@ public class PopupHelper {
                 textCell.getCheckBox().setVisibility(View.INVISIBLE);
             }
 
+            boolean requireDonate = donateLock != null && donateLock.get(a) && !DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
+            if (requireDonate) textCell.setCheckBoxIcon(R.drawable.permission_locked);
+
             linearLayout.addView(textCell);
             int finalA = a;
             textCell.setOnClickListener(v -> {
-                boolean newValue = !prefCheck.get(finalA);
-                prefCheck.set(finalA, newValue);
-                textCell.setChecked(newValue);
-                clickListener.get(finalA).run();
+                if (requireDonate) {
+                    fragment.dismissCurrentDialog();
+                    fragment.presentFragment(CherrygramPreferencesNavigator.INSTANCE.createDonate());
+                } else {
+                    boolean newValue = !prefCheck.get(finalA);
+                    prefCheck.set(finalA, newValue);
+                    textCell.setChecked(newValue);
+                    clickListener.get(finalA).run();
+                }
             });
         }
 

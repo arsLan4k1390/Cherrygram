@@ -112,7 +112,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
@@ -11951,9 +11950,9 @@ public class MessageObject {
 
         if (approval.balance_too_low) {
             ssb.append(AndroidUtilities.replaceTags(
-                    LocaleController.formatString(R.string.SuggestionAgreementNotEnoughStars,
-                            userName
-                    )));
+                LocaleController.formatString(R.string.SuggestionAgreementNotEnoughStars,
+                userName
+            )));
         } else if (approval.rejected) {
             boolean byAdmin = true;
             boolean fromYou = false;
@@ -11968,8 +11967,8 @@ public class MessageObject {
                 }
             }
             final int key = TextUtils.isEmpty(approval.reject_comment) ?
-                    (fromYou ? R.string.SuggestionAgreementDeclinedYou : R.string.SuggestionAgreementDeclinedThis):
-                    (fromYou ? R.string.SuggestionAgreementDeclinedYouComment : R.string.SuggestionAgreementDeclinedThisComment);
+                (fromYou ? R.string.SuggestionAgreementDeclinedYou : R.string.SuggestionAgreementDeclinedThis):
+                (fromYou ? R.string.SuggestionAgreementDeclinedYouComment : R.string.SuggestionAgreementDeclinedThisComment);
 
             ssb.append(AndroidUtilities.replaceTags(LocaleController.formatString(key, byAdmin ? channelName: userName)));
 
@@ -12001,16 +12000,16 @@ public class MessageObject {
                 ssb.append(AndroidUtilities.replaceTags(LocaleController.formatString(key, channelName, date)));
             } else {
                 final int key = isAdmin ?
-                        R.string.SuggestionAgreementReachedAdmin1PresentPerfect :
-                        R.string.SuggestionAgreementReachedUser1PresentPerfect;
+                    R.string.SuggestionAgreementReachedAdmin1PresentPerfect :
+                    R.string.SuggestionAgreementReachedUser1PresentPerfect;
 
                 ssb.append(AndroidUtilities.replaceTags(LocaleController.formatString(key, channelName)));
             }
             if (suggestionOffer.amount != null && !suggestionOffer.amount.isZero()) {
                 {
                     final String text = isAdmin ?
-                            LocaleController.formatString(R.string.SuggestionAgreementReachedAdmin2, userName, suggestionOffer.amount.asDecimalString()) :
-                            LocaleController.formatString(R.string.SuggestionAgreementReachedUser2, suggestionOffer.amount.asDecimalString());
+                        LocaleController.formatString(R.string.SuggestionAgreementReachedAdmin2, userName, suggestionOffer.amount.asDecimalString()) :
+                        LocaleController.formatString(R.string.SuggestionAgreementReachedUser2, suggestionOffer.amount.asDecimalString());
 
                     ssb.append("\n\n");
                     ssb.setSpan(new RelativeSizeSpan(0.6f), ssb.length() - 1, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -12018,8 +12017,8 @@ public class MessageObject {
                 }
                 {
                     final int key = isAdmin ?
-                            R.string.SuggestionAgreementReachedAdmin3:
-                            R.string.SuggestionAgreementReachedUser3;
+                        R.string.SuggestionAgreementReachedAdmin3:
+                        R.string.SuggestionAgreementReachedUser3;
 
                     ssb.append("\n\n");
                     ssb.setSpan(new RelativeSizeSpan(0.6f), ssb.length() - 1, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -12027,8 +12026,8 @@ public class MessageObject {
                 }
                 {
                     final int key = isAdmin ?
-                            R.string.SuggestionAgreementReachedAdmin4:
-                            R.string.SuggestionAgreementReachedUser4;
+                        R.string.SuggestionAgreementReachedAdmin4:
+                        R.string.SuggestionAgreementReachedUser4;
 
                     ssb.append("\n\n");
                     ssb.setSpan(new RelativeSizeSpan(0.6f), ssb.length() - 1, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -12091,7 +12090,7 @@ public class MessageObject {
 
     public MessageSuggestionParams obtainSuggestionOfferFromReply() {
         return replyMessageObject != null ?
-                replyMessageObject.obtainSuggestionOffer() : null;
+            replyMessageObject.obtainSuggestionOffer() : null;
     }
 
     public boolean isEditedSuggestionOffer() {
@@ -12193,8 +12192,8 @@ public class MessageObject {
 
     public boolean needResendWhenEdit() {
         return ChatObject.isMonoForum(currentAccount, getDialogId())
-                && getFromChatId() != UserConfig.getInstance(currentAccount).getClientUserId()
-                && !isOutOwner();
+            && getFromChatId() != UserConfig.getInstance(currentAccount).getClientUserId()
+            && !isOutOwner();
     }
 
     public static int getCompletionsCount(TLRPC.TL_messageMediaToDo media) {
@@ -12213,5 +12212,4 @@ public class MessageObject {
         }
         return total;
     }
-
 }

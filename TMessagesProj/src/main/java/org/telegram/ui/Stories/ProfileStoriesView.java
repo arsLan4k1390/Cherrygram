@@ -54,6 +54,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+
 public class ProfileStoriesView extends View implements NotificationCenter.NotificationCenterDelegate {
 
     private static final int CIRCLES_MAX = 3;
@@ -189,6 +191,7 @@ public class ProfileStoriesView extends View implements NotificationCenter.Notif
     }
 
     private void updateStories(boolean animated, boolean asUpdate) {
+        if (CherrygramCoreConfig.INSTANCE.getHideStories()) return;
         if (isTopic) {
             return;
         }
