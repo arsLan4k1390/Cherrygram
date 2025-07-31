@@ -14728,8 +14728,21 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-avatarsDialogId);
                 TLRPC.Photo avatar = avatarsArr.get(switchingToIndex);
 
-                boolean hasVideoAvatar = userFull != null && userFull.profile_photo != null && (avatar != null && !avatar.video_sizes.isEmpty() || userFull != null && !userFull.profile_photo.video_sizes.isEmpty());
-                boolean hasPublicVideoAvatar = userFull != null && userFull.fallback_photo != null && !userFull.fallback_photo.video_sizes.isEmpty();
+                boolean hasVideoAvatar = false;
+                if (userFull != null) {
+                    if (userFull.profile_photo != null) {
+                        if (avatar != null && avatar.video_sizes != null && !avatar.video_sizes.isEmpty()) {
+                            hasVideoAvatar = true;
+                        } else if (userFull.profile_photo.video_sizes != null && !userFull.profile_photo.video_sizes.isEmpty()) {
+                            hasVideoAvatar = true;
+                        }
+                    }
+                }
+
+                boolean hasPublicVideoAvatar = userFull != null
+                        && userFull.fallback_photo != null
+                        && userFull.fallback_photo.video_sizes != null
+                        && !userFull.fallback_photo.video_sizes.isEmpty();
 
                 TLRPC.VideoSize emojiMarkup = getEmojiMarkup(hasVideoAvatar, hasPublicVideoAvatar, avatar, userFull);
 

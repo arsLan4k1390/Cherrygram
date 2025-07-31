@@ -88,7 +88,7 @@ class DonatePreferenceEntry : BasePreferencesEntry {
                 title = "HUMO (Uzbekistan)"
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    AndroidUtilities.addToClipboard("9860100124035617")
+                    AndroidUtilities.addToClipboard("9860100124370345")
                     Toast.makeText(bf.parentActivity, getString(R.string.CardNumberCopied), Toast.LENGTH_SHORT).show()
                 }
             }

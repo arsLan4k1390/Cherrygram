@@ -21,6 +21,7 @@ import androidx.core.content.FileProvider
 import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import org.json.JSONException
 import org.json.JSONObject
 import org.telegram.messenger.AndroidUtilities
@@ -35,6 +36,7 @@ import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.PermissionsUtils
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import java.io.File
+import java.io.InputStreamReader
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -109,7 +111,7 @@ object BackupHelper {
 
     private fun importSettingsConfirmed(file: File, context: Context) {
         try {
-            val json = toJsonObject(readUtf8String(file))
+            val json = readJsonObjectWithGson(file)
             restoreSharedPreferences(json, context)
 
             val dialog = AlertDialog(context, 0)
@@ -154,9 +156,13 @@ object BackupHelper {
         file.writeText(text)
     }
 
-    private fun readUtf8String(file: File): String = file.readText()
-
-    private fun toJsonObject(json: String): JsonObject = gson.fromJson(json, JsonObject::class.java)
+    private fun readJsonObjectWithGson(file: File): JsonObject {
+        file.inputStream().buffered().use { inputStream ->
+            InputStreamReader(inputStream, Charsets.UTF_8).use { reader ->
+                return JsonParser.parseReader(reader).asJsonObject
+            }
+        }
+    }
 
     private fun restoreSharedPreferences(json: JsonObject, context: Context) {
         for ((spName, data) in json.entrySet()) {

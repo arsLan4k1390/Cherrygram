@@ -122,7 +122,7 @@ public class UpdaterUtils {
             FileLog.e(e);
         }
 
-        String[] current = Constants.INSTANCE.getCG_VERSION().split("\\.");
+        String[] current = Constants.INSTANCE.getCherryVersion().split("\\.");
         String[] downloaded = version.split("\\.");
         boolean isNew = false;
 
@@ -478,7 +478,7 @@ public class UpdaterUtils {
 
         // todo: compare by version code, not version
         public boolean isNew() {
-            String[] current = Constants.INSTANCE.getCG_VERSION().split("\\.");
+            String[] current = Constants.INSTANCE.getCherryVersion().split("\\.");
             String[] latest = version.split("\\.");
 
             int length = Math.max(current.length, latest.length);

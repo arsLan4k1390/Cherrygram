@@ -14,7 +14,9 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 
 object Constants {
 
-    var CG_VERSION = BuildConfig.BUILD_VERSION_STRING_CHERRY
+    fun getCherryVersion() : String {
+        return BuildConfig.BUILD_VERSION_STRING_CHERRY
+    }
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     /** CG Chats Links start**/

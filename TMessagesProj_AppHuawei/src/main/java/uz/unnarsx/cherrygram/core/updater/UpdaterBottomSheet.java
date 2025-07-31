@@ -106,7 +106,7 @@ public class UpdaterBottomSheet extends BottomSheet {
         if (available) {
             version.setTextAndValueAndIcon(getString(R.string.UP_Version), update.version.replaceAll("v|-beta|-force", ""), R.drawable.msg_info, true);
         } else {
-            version.setTextAndValueAndIcon(getString(R.string.UP_CurrentVersion), Constants.INSTANCE.getCG_VERSION(), R.drawable.msg_info, false);
+            version.setTextAndValueAndIcon(getString(R.string.UP_CurrentVersion), Constants.INSTANCE.getCherryVersion(), R.drawable.msg_info, false);
         }
         version.setOnClickListener(v -> copyText(version.getTextView().getText() + ": " + version.getValueTextView().getText()));
         linearLayout.addView(version);

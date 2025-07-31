@@ -9,6 +9,7 @@
 
 package uz.unnarsx.cherrygram.preferences
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Environment
@@ -92,7 +93,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = bf.parentActivity != null && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
                 title = getString(R.string.SP_AskPinForArchive)
                 description = getString(R.string.SP_AskPinForArchive_Desc)
@@ -107,7 +108,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = bf.parentActivity != null && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
                 title = getString(R.string.SP_AskPinForChats)
                 description = getString(R.string.SP_AskPinForChats_Desc)
@@ -123,7 +124,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                isAvailable = CherrygramPrivacyConfig.askBiometricsToOpenChat && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = bf.parentActivity != null && CherrygramPrivacyConfig.askBiometricsToOpenChat && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
                 icon = R.drawable.msg_discussion
                 title = getString(R.string.SP_LockedChats)
@@ -177,7 +178,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }*/
             switch {
-                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = bf.parentActivity != null && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
                 title = getString(R.string.SP_AskPinBeforeDelete)
                 description = getString(R.string.SP_AskPinBeforeDelete_Desc)
@@ -251,14 +252,33 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                                 getString(R.string.SP_BiometricUnavailable_Test_Wrong_Desc),
                                 getString(R.string.Settings)
                             ) {
-                                val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                                    Intent(Settings.ACTION_FINGERPRINT_ENROLL)
-                                } else {
-                                    Intent(Settings.ACTION_SECURITY_SETTINGS)
-                                }
-                                bf.context.startActivity(intent)
+                                openFingerprintSettings(bf.context)
                             }.show()
                         }
+
+                        fun openFingerprintSettings(context: Context) {
+                            val fallbackIntent = Intent(Settings.ACTION_SECURITY_SETTINGS)
+
+                            try {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                    val fingerprintIntent = Intent(Settings.ACTION_FINGERPRINT_ENROLL).apply {
+                                        setPackage("com.android.settings")
+                                    }
+
+                                    if (fingerprintIntent.resolveActivity(context.packageManager) != null) {
+                                        context.startActivity(fingerprintIntent)
+                                        return
+                                    }
+                                }
+                                context.startActivity(fallbackIntent)
+                            } catch (e: SecurityException) {
+                                FileLog.e(e)
+                                context.startActivity(fallbackIntent)
+                            } catch (e: Exception) {
+                                FileLog.e(e)
+                            }
+                        }
+
                     })
 
                 }

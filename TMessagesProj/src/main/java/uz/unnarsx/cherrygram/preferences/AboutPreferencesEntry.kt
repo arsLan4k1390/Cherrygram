@@ -37,7 +37,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.CGP_Header_About)) {
         category(getString(R.string.Info)) {
             textDetail {
-                title = CGResourcesHelper.getAppName() + " " + Constants.CG_VERSION + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING
+                title = CGResourcesHelper.getAppName() + " " + Constants.getCherryVersion() + " | " + "Telegram v" + BuildVars.BUILD_VERSION_STRING
                 detail = getString(R.string.CGP_About_Desc)
 
                 listener = TGKitTextDetailRow.TGTDListener {

@@ -17516,6 +17516,15 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 } else if (currentNameStatus instanceof Drawable) {
                     currentNameStatusDrawable.set((Drawable) currentNameStatus, false);
                 }
+
+                if (currentUser != null && currentNameStatus instanceof Long) {
+                    boolean isPremium = false; // cgPremium
+                    boolean forceBra = currentUser.id == Constants.Cherrygram_Owner;
+                    boolean showParticles = isPremium || forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(currentUser.id);
+                    boolean isCherryEmojiApplied = (long) currentNameStatus == Constants.CHERRY_EMOJI_ID_VERIFIED || (long) currentNameStatus == Constants.CHERRY_EMOJI_ID_VERIFIED_BRA;
+
+                    if (isCherryEmojiApplied) currentNameStatusDrawable.setParticles(showParticles, showParticles);
+                }
             }
             if (currentNameEmojiStatusDrawable == null && currentNameBotVerificationId != 0) {
                 currentNameEmojiStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, true, dp(18));
@@ -18137,20 +18146,20 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         if (currentUser != null) {
             Long emojiStatusId = UserObject.getEmojiStatusDocumentId(currentUser);
 
+            boolean isPremium = false; // cgPremium
+            boolean isDonated = DonatesManager.INSTANCE.didUserDonate(currentUser.id);
             boolean forceBra = currentUser.id == Constants.Cherrygram_Owner;
-            boolean showParticles = forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(currentUser.id);
 
-            if (emojiStatusId == null && (DonatesManager.INSTANCE.didUserDonate(currentUser.id) || forceBra)) {
-                emojiStatusId = showParticles ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
+            if (emojiStatusId == null && isPremium && isDonated) {
+                emojiStatusId = Constants.CHERRY_EMOJI_ID_VERIFIED_BRA;
+            } else if (emojiStatusId == null && (isPremium || isDonated || forceBra)) {
+                emojiStatusId = isPremium || forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
             }
 
             if (emojiStatusId != null) {
                 if (currentUser.emoji_status instanceof TLRPC.TL_emojiStatusCollectible) {
                     nameStatusSlug = ((TLRPC.TL_emojiStatusCollectible) currentUser.emoji_status).slug;
                 }
-
-                boolean isCherryEmojiApplied = emojiStatusId == Constants.CHERRY_EMOJI_ID || emojiStatusId == Constants.CHERRY_EMOJI_ID_BRA;
-                if (currentNameStatusDrawable != null && isCherryEmojiApplied) currentNameStatusDrawable.setParticles(showParticles, showParticles);
 
                 return emojiStatusId;
             } else if (currentUser.premium) {

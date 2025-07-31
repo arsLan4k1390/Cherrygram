@@ -16,7 +16,7 @@
     <string name="CG_RegistrationDateFailed">Failed to get registration date.</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">QR Login</string>
-    <string name="CG_QRLoginMessage">Scan QRCode with another device to login.</string>
+    <string name="CG_QRLoginMessage">Scan the QR code with another device to log in.</string>
     <!--Sign in screen-->
 
     <!--Last seen status-->
@@ -45,7 +45,7 @@
     <string name="CG_FoldersTypeIconsTitles">Icons with Titles</string>
     <string name="CG_ChooseFolderIcon">Choose an Icon</string>
     <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
-    <string name="CP_NewTabs_NoCounter_Desc">This will hide unread messages counter</string>
+    <string name="CP_NewTabs_NoCounter_Desc">This will hide the unread messages counter</string>
     <string name="CG_SwipeToUnarchive">Swipe left to unarchive</string>
     <!--Telegram Folders Settings-->
 
@@ -56,11 +56,11 @@
     <string name="CG_DeleteAllFromSelfAlertBefore">Warning! This will **delete all messages from you before %s** in this chat for **all** participants.</string>
     <string name="CG_DeleteAllFromSelfBefore">Before...</string>
     <string name="CG_DeleteAllFromSelfAdmin">With admin rights</string>
-    <string name="CG_DeleteAllFromSelfDone">All your messages are deleted</string>
+    <string name="CG_DeleteAllFromSelfDone">All of your messages have been deleted</string>
 
     <string name="CG_ClearFromCache">Clear from cache</string>
     <string name="CG_ClearedFromCache">Cleared from cache</string>
-    <string name="CG_ViewUserHistory">Messages history</string>
+    <string name="CG_ViewUserHistory">Message history</string>
     <string name="CG_ToSaved">Save</string>
 
     <string name="CG_CreateMention">Create Mention</string>
@@ -76,7 +76,7 @@
     <string name="CG_CopyTitle">Copy Title</string>
     <string name="CG_CopyCallback">Copy Callback Data</string>
     <string name="CG_CopyInlineQuery">Copy Inline Query</string>
-    <string name="CG_CopyID">Copy user ID</string>
+    <string name="CG_CopyID">Copy User ID</string>
 
     <!--Location screen-->
     <string name="CG_LocationPermission">Cherrygram needs access to your location so you can share it with your friends. You will now be asked to allow your location to be used (while the app is open).</string>
@@ -110,7 +110,7 @@
     <string name="CG_ForceCleanInfo1">Do you really want to delete EVERYTHING from your Telegram cache?</string>
     <string name="CG_Kaboom">This feature can be accessed without the Cherrygram password, through the system settings. This feature completely erases all your local (Cherrygram\'s) data. It can be used in emergency situations.</string>
     <string name="CG_AppCrashed">Something went wrong</string>
-    <string name="CG_AppCrashedDesc">Cherrygram has stopped working. Please, send logs to the developers so that they can fix this bug as soon as possible.</string>
+    <string name="CG_AppCrashedDesc">Cherrygram has stopped working. Please send logs to the developers so they can fix this bug as soon as possible.</string>
     <string name="CG_CopyReportDetails">Copy Report Details</string>
     <string name="CG_ReportDetailsCopied">Report details copied to clipboard.</string>
     <string name="CG_TranslationLanguage">Translation Language</string>
@@ -123,7 +123,7 @@
     <string name="CG_CopySetId">Copy set ID</string>
     <string name="CG_ExportSettings">Export settings</string>
     <string name="CG_ImportSettings">Import settings</string>
-    <string name="CG_ImportSettingsAlert">Overwrite the settings\? Importing settings from unknown sources may result the app not working.</string>
+    <string name="CG_ImportSettingsAlert">Overwrite the settings\? Importing settings from unknown sources may result in the app not working.</string>
     <string name="CG_OpenStickerPack">Tap to get the sticker</string>
     <string name="CG_OpenEmojiPack">Tap to get the emoji</string>
 
@@ -180,7 +180,7 @@
     <string name="AP_SystemEmoji">Use system emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
     <string name="AP_CenterTitle">Center title in action bar</string>
-    <string name="AP_iosSearchPanel">IOS-styled search panel</string>
+    <string name="AP_iosSearchPanel">iOS-styled search panel</string>
     <string name="AP_OverrideHeader">Override headers color</string>
     <string name="AP_OverrideHeader_Desc">Headers will be the same color as the main background</string>
     <string name="AP_DisableDividers">Disable dividers</string>
@@ -222,7 +222,7 @@
 
     <string name="CP_Filters_Header">Folders</string>
     <string name="AP_FolderNameInHeader">Folder name instead of \"Cherrygram\"</string>
-    <string name="AP_FolderNameInHeader_Desc">This will change \"Cherrygram\" in action bar to your folder\'s name (useful if you have only icons instead of folders names)</string>
+    <string name="AP_FolderNameInHeader_Desc">This will change \"Cherrygram\" in action bar to your folder\'s name (useful if you have only icons instead of folder names)</string>
     <string name="CP_NewTabs_RemoveAllChats">Hide \"All chats\" tab</string>
     <string name="AP_Tab_Style">Tab style</string>
     <string name="AP_Tab_Style_Default">Default</string>
@@ -274,9 +274,9 @@
     <string name="CP_DisableSwipeToNext">Disable transition to the next channel</string>
     <string name="CP_DisableSwipeToNext_Desc">Disable switching to the next channel when scrolling through any channel</string>
     <string name="CP_HideMuteUnmuteButton">Hide bottom button in channels</string>
-    <string name="CP_HideKbdOnScroll">Scroll intensity to hide keyboard when scrolling</string>
+    <string name="CP_HideKbdOnScroll">Scroll intensity to hide keyboard</string>
     <string name="CP_HideSendAsChannel">Hide \"Send as channel\"</string>
-    <string name="CP_HideSendAsChannelDesc">You can access the menu by long click on Emoji/Stickers/GIFs button</string>
+    <string name="CP_HideSendAsChannelDesc">You can access the menu by long-pressing the Emoji/Stickers/GIFs button</string>
 
     <string name="CP_GeminiAI_Header" translatable="false">Gemini AI</string>
     <string name="CP_GeminiAI_API_Key">Gemini API key</string>
@@ -289,7 +289,7 @@
     <string name="CP_GeminiAI_Instruction">To use the Gemini,
         you need to fill in all the values on this screen.
         \n\nAfter that, open any chat, type a message and hold down the send message button.
-        \n\nMoreover, you can reply to a message using AI as well. To do this, click on any text message in the chat.
+        \n\nMoreover, you can reply to a message using AI as well. To do this, tap on any text message in the chat.
     </string>
     <string name="CP_GeminiAI_Temperature">Temperature</string>
     <string name="CP_GeminiAI_Temperature_Desc">Control the creativity of the text. Low values make the text more predictable and focused, high values - more random and original.</string>
@@ -304,10 +304,10 @@
     <string name="CP_SpoilersOnMedia_Desc">Spoiler effect on photos and videos will not be shown if the feature is disabled.</string>
     <string name="CP_VoiceEnhancements">Voice Enhancements</string>
     <string name="CP_VoiceEnhancements_Desc">Noise Suppression and Voice Normalization</string>
-    <string name="CP_PlayVideo">Play video on volume button click</string>
+    <string name="CP_PlayVideo">Play video with volume button press</string>
     <string name="CP_PlayVideo_Desc">When you press the volume button, any video on the screen in chat will be played</string>
     <string name="CP_AutoPauseVideo">Auto pause video</string>
-    <string name="CP_AutoPauseVideo_Desc">When lock screen or switch to background</string>
+    <string name="CP_AutoPauseVideo_Desc">When locking the screen or switching to the background</string>
     <string name="CP_DisableVibration">Disable vibration</string>
     <string name="CP_VideoSeekDuration">Double-tap to seek video (seconds)</string>
 
@@ -382,7 +382,7 @@
     <string name="SP_RemovedS">Removed successfully</string>
 
     <string name="SP_AskPinForChats">Require biometrics to open a chat</string>
-    <string name="SP_AskPinForChats_Desc">System password (fingerprint, face id, PIN or pattern) will be required to access specific chats. To enable, tap on 3 dots inside the chat.</string>
+    <string name="SP_AskPinForChats_Desc">System password (fingerprint, face id, PIN or pattern) will be required to access specific chats. To enable this, tap the three-dots menu inside a chat.</string>
     <string name="SP_LockedChats">Locked chats</string>
     <string name="SP_LockedChats_Lock_Destination">to update the locked list</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">will be locked</string>
@@ -397,7 +397,7 @@
     <string name="SP_AskPinBeforeDelete_Desc">If you want to delete a chat or clear history, biometric confirmation will be required. Passcode and biometric confirmation in system need to be enabled.</string>
 
     <string name="SP_AllowUseSystemPasscode">Allow use system PIN/Pattern</string>
-    <string name="SP_AllowUseSystemPasscode_Desc">\"Cancel\" button on the fingerprint confirmation dialog will be replaced by \"Pin/Pattern\" button and you will be able to use system pass to unlock Cherrygram.</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">\"Cancel\" button on the fingerprint confirmation dialog will be replaced by \"Pin/Pattern\" button and you will be able to use your system password to unlock Cherrygram.</string>
     <string name="SP_TestFingerprint">Test fingerprint</string>
     <string name="SP_TestFingerprint_Desc">If fingerprint authentication is already enabled and you do not see the features, try pressing the \"Test Fingerprint\" button to resolve the issue.</string>
     <string name="SP_BiometricUnavailable_Test_Fixed">Fingerprint has been detected successfully!</string>
@@ -447,7 +447,7 @@
     \nIf the logo **displays correctly and stays within your camera area**, please keep this option enabled.
     \nIt helps promote the app and support the project — I would really appreciate it! ❤️</string>
 
-    <string name="DP_Donate_Method">Choose method</string>
+    <string name="DP_Donate_Method">Choose a method</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 

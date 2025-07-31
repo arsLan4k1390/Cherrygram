@@ -26191,7 +26191,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         }
         if (messages.isEmpty()) {
             if (!endReached[0] && !loading) {
-                if (!chatAdapter.isFiltered) {
+                if (chatAdapter != null && !chatAdapter.isFiltered) {
                     showProgressView(false);
                 }
                 if (chatListView != null) {
@@ -26445,7 +26445,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                         int prevLoadingDownRow = chatAdapter.loadingDownRow;
                         int prevUserNameTimeRow = chatAdapter.userNameTimeRow;
                         int prevUserPhotoTimeRow = chatAdapter.userPhotoTimeRow;
-                        if (!chatAdapter.isFiltered) {
+                        if (chatAdapter != null && !chatAdapter.isFiltered) {
                             chatAdapter.notifyItemRemoved(chatAdapter.messagesStartRow + index);
                             if (messages.isEmpty()) {
                                 if (prevLoadingUpRow >= 0) {
@@ -26473,7 +26473,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                             int prevLoadingDownRow = chatAdapter.loadingDownRow;
                             int prevUserNameTimeRow = chatAdapter.userNameTimeRow;
                             int prevUserPhotoTimeRow = chatAdapter.userPhotoTimeRow;
-                            if (!chatAdapter.isFiltered) {
+                            if (chatAdapter != null && !chatAdapter.isFiltered) {
                                 chatAdapter.notifyItemRemoved(chatAdapter.messagesStartRow + index);
                                 if (messages.isEmpty()) {
                                     if (prevLoadingUpRow >= 0) {
@@ -36359,7 +36359,7 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
         if (chatMode == MODE_QUICK_REPLIES && (messages.isEmpty() || threadMessageId == 0)) {
             return false;
         }
-        return swipeBackEnabled && chatActivityEnterView.swipeToBackEnabled() && pullingDownOffset == 0
+        return swipeBackEnabled && chatActivityEnterView != null && chatActivityEnterView.swipeToBackEnabled() && pullingDownOffset == 0
             && (quickShareSelectorOverlay == null || !quickShareSelectorOverlay.isActive());
     }
 
@@ -38877,7 +38877,11 @@ public class ChatActivity extends BaseFragment implements NotificationCenter.Not
                 return;
             }
             if (document.id == Constants.CHERRY_EMOJI_ID_VERIFIED || document.id == Constants.CHERRY_EMOJI_ID_VERIFIED_BRA) {
-                SpannableStringBuilder stringBuilder = new SpannableStringBuilder(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.DP_Donate_Bulletin, UserObject.getUserName(user))));
+                SpannableStringBuilder stringBuilder = new SpannableStringBuilder(
+                        AndroidUtilities.replaceTags(
+                                LocaleController.formatString(R.string.DP_Donate_Bulletin, UserObject.getUserName(user))
+                        )
+                );
 
                 BulletinFactory.of(ChatActivity.this).createDonatesBulletin(
                         document,

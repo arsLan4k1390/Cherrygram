@@ -11814,7 +11814,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     try {
                         String abi = CGResourcesHelper.INSTANCE.getAbiCode();
                         String appName = CGResourcesHelper.INSTANCE.getAppName();
-                        cell.setText(appName + " v" + Constants.INSTANCE.getCG_VERSION() + " " + abi + "\n Based on Telegram v" + BuildVars.BUILD_VERSION_STRING + " " + "\n" + Constants.INSTANCE.getCG_AUTHOR());
+                        cell.setText(appName + " v" + Constants.INSTANCE.getCherryVersion() + " " + abi + "\n Based on Telegram v" + BuildVars.BUILD_VERSION_STRING + " " + "\n" + Constants.INSTANCE.getCG_AUTHOR());
                     } catch (Exception e) {
                         FileLog.e(e);
                     }
@@ -15063,7 +15063,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         if (user == null) return;
 
         long emojiDocumentId;
-        boolean isPremium = false; // cg premium
+        boolean isPremium = false; // cgPremium
         boolean isDonated = DonatesManager.INSTANCE.didUserDonate(user.id);
         boolean forceBra = user.id == Constants.Cherrygram_Owner;
         boolean showParticles = isPremium || forceBra || DonatesManager.INSTANCE.didUserDonateForMarketplace(user.id);
@@ -15071,7 +15071,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         if (isPremium && isDonated) {
             emojiDocumentId = Constants.CHERRY_EMOJI_ID_VERIFIED_BRA;
         } else if (isPremium || isDonated || forceBra) {
-            emojiDocumentId = (isPremium || forceBra) ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
+            emojiDocumentId = isPremium || forceBra ? Constants.CHERRY_EMOJI_ID_VERIFIED_BRA : Constants.CHERRY_EMOJI_ID_VERIFIED;
         } else {
             emojiDocumentId = 0;
             nameTextView[a].setRightDrawable2(null);

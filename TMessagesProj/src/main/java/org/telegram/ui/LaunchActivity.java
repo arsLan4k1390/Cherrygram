@@ -1880,7 +1880,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     }
 
     public boolean allowShowFingerprintDialog(PasscodeView passcodeView) {
-        return SharedConfig.appLocked && overlayPasscodeViews.isEmpty() && this.passcodeDialog != null ? passcodeView == this.passcodeDialog.passcodeView : overlayPasscodeViews.get(overlayPasscodeViews.size() - 1) == passcodeView;
+        return overlayPasscodeViews.isEmpty() && this.passcodeDialog != null ? passcodeView == this.passcodeDialog.passcodeView : overlayPasscodeViews.get(overlayPasscodeViews.size() - 1) == passcodeView;
     }
 
     private boolean handleIntent(Intent intent, boolean isNew, boolean restore, boolean fromPassword) {
