@@ -93,7 +93,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                isAvailable = bf.parentActivity != null && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
                 title = getString(R.string.SP_AskPinForArchive)
                 description = getString(R.string.SP_AskPinForArchive_Desc)
@@ -108,7 +108,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                isAvailable = bf.parentActivity != null && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
                 title = getString(R.string.SP_AskPinForChats)
                 description = getString(R.string.SP_AskPinForChats_Desc)
@@ -124,7 +124,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                isAvailable = bf.parentActivity != null && CherrygramPrivacyConfig.askBiometricsToOpenChat && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = CherrygramPrivacyConfig.askBiometricsToOpenChat && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
                 icon = R.drawable.msg_discussion
                 title = getString(R.string.SP_LockedChats)
@@ -178,7 +178,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }*/
             switch {
-                isAvailable = bf.parentActivity != null && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
 
                 title = getString(R.string.SP_AskPinBeforeDelete)
                 description = getString(R.string.SP_AskPinBeforeDelete_Desc)
