@@ -64,6 +64,7 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
 
     private OutlineEditText geminiApiKeyField;
     private OutlineEditText geminiModelNameField;
+    private OutlineEditText geminiSystemPromptField;
 
     private TextDetailSettingsCell geminiModelsList;
 
@@ -121,11 +122,13 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         if (!TextUtils.isEmpty(CherrygramChatsConfig.INSTANCE.getGeminiApiKey())) {
             geminiApiKeyField.getEditText().setText(CherrygramChatsConfig.INSTANCE.getGeminiApiKey());
         }
-        linearLayout.addView(geminiApiKeyField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 80, 0, 16, 15, 16, 3));
+        geminiApiKeyField.setMinimumHeight(200);
+        geminiApiKeyField.getEditText().setPadding(dp(16), dp(12), dp(16), dp(12));
+        linearLayout.addView(geminiApiKeyField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 16, 10, 16, 2));
 
         TextInfoPrivacyCell geminiApiKeyAdviceCell = new TextInfoPrivacyCell(context, dp(1), resourcesProvider);
         geminiApiKeyAdviceCell.setText(CGResourcesHelper.INSTANCE.getGeminiApiKeyAdvice());
-        linearLayout.addView(geminiApiKeyAdviceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, 0, 16, 0));
+        linearLayout.addView(geminiApiKeyAdviceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, -5, 16, -5));
 
         View geminiApiKeyAdviceCellDivider = new View(context) {
             @Override
@@ -138,9 +141,9 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
 
         geminiModelNameField = new OutlineEditText(context, resourcesProvider);
         geminiModelNameField.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-        geminiModelNameField.getEditText().setImeOptions(EditorInfo.IME_ACTION_DONE);
-        geminiApiKeyField.getEditText().setOnEditorActionListener((v, actionId, event) -> {
-            if (actionId == EditorInfo.IME_ACTION_DONE){
+        geminiModelNameField.getEditText().setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        geminiModelNameField.getEditText().setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_NEXT){
                 doOnDone(false);
             }
             return false;
@@ -150,7 +153,9 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         geminiModelNameField.getEditText().setFilters(getInputFilter());
         geminiModelNameField.getEditText().setHint(getString(R.string.CP_GeminiAI_Sample) + " gemini-1.5-flash");
         geminiModelNameField.getEditText().setText(CherrygramChatsConfig.INSTANCE.getGeminiModelName());
-        linearLayout.addView(geminiModelNameField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 58, 0, 16, 15, 16, 3));
+        geminiModelNameField.setMinimumHeight(200);
+        geminiModelNameField.getEditText().setPadding(dp(16), dp(12), dp(16), dp(12));
+        linearLayout.addView(geminiModelNameField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 16, 10, 16, 2));
 
         geminiModelsList = new TextDetailSettingsCell(context);
         geminiModelsList.setMultilineDetail(true);
@@ -183,7 +188,7 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
 
         TextInfoPrivacyCell geminiModelAdviceCell = new TextInfoPrivacyCell(context, dp(1), resourcesProvider);
         geminiModelAdviceCell.setText(CGResourcesHelper.INSTANCE.getGeminiModelNameAdvice());
-        linearLayout.addView(geminiModelAdviceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, -10, 16, 0));
+        linearLayout.addView(geminiModelAdviceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, -15, 16, 0));
 
         View geminiModelAdviceCellDivider = new View(context) {
             @Override
@@ -193,6 +198,35 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
             }
         };
         linearLayout.addView(geminiModelAdviceCellDivider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1), 0, 16, 0, 16, 0));
+
+        geminiSystemPromptField = new OutlineEditText(context, resourcesProvider);
+        geminiSystemPromptField.getEditText().setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+        geminiSystemPromptField.getEditText().setImeOptions(EditorInfo.IME_ACTION_DONE);
+        geminiSystemPromptField.getEditText().setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE){
+                doOnDone(false);
+            }
+            return false;
+        });
+        geminiSystemPromptField.setHint(getString(R.string.CP_GeminiAI_System_Prompt));
+        geminiSystemPromptField.getEditText().setSingleLine(false);
+        geminiSystemPromptField.getEditText().setText(CherrygramChatsConfig.INSTANCE.getGeminiSystemPrompt());
+        geminiSystemPromptField.setMinimumHeight(200);
+        geminiSystemPromptField.getEditText().setPadding(dp(16), dp(12), dp(16), dp(12));
+        linearLayout.addView(geminiSystemPromptField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 16, 10, 16, 2));
+
+        TextInfoPrivacyCell geminiSystemPromptFieldAdviceCell = new TextInfoPrivacyCell(context, dp(1), resourcesProvider);
+        geminiSystemPromptFieldAdviceCell.setText(getString(R.string.CP_GeminiAI_System_Prompt_Desc));
+        linearLayout.addView(geminiSystemPromptFieldAdviceCell, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, -5, 16, -5));
+
+        View geminiSystemPromptFieldAdviceCellDivider = new View(context) {
+            @Override
+            protected void onDraw(@NonNull Canvas canvas) {
+                super.onDraw(canvas);
+                canvas.drawLine(0, AndroidUtilities.dp(1), getMeasuredWidth(), AndroidUtilities.dp(1), Theme.dividerPaint);
+            }
+        };
+        linearLayout.addView(geminiSystemPromptFieldAdviceCellDivider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1), 0, 16, 0, 16, 0));
 
         HeaderCell headerCell = new HeaderCell(getContext(), getResourcesProvider());
         headerCell.setText(getString(R.string.CP_GeminiAI_Temperature));
@@ -329,6 +363,10 @@ public class GeminiPreferencesBottomSheet extends BottomSheet {
         }*/
         CherrygramChatsConfig.INSTANCE.setGeminiModelName(
                 geminiModelNameField.getEditText().getText().toString()
+        );
+
+        CherrygramChatsConfig.INSTANCE.setGeminiSystemPrompt(
+                geminiSystemPromptField.getEditText().getText().toString()
         );
 
         if (dismiss) dismiss();

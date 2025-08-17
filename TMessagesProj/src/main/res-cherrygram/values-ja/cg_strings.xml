@@ -327,15 +327,9 @@
     <string name="SP_Header_Privacy">プライバシー</string>
     <string name="SP_NoProxyPromo">プロキシスポンサーを表示しない</string>
     <string name="SP_GoogleAnalytics_Desc">これを有効化することですべてのアプリのクラッシュや統計情報が、｢console.firebase.google.com｣に送信されます。開発者が問題の修正などを効率良く行えるようになります。</string>
-    <string name="SP_CleanOld">/sdcard/Telegram のキャッシュを削除</string>
-    <string name="SP_RemovedS">削除に成功しました</string>
-    <string name="SP_AskPinForChats">チャットを開始時に生体認証を要求</string>
-    <string name="SP_AskPinForChats_Desc">特定のチャットにアクセスするときにシステムパスワード(指紋認証、顔認証、PIN、またはパターン)が必要になります。有効化するには、チャット内の 3つのドットをタップします。</string>
     <string name="SP_LockedChats">ロックされたチャット</string>
     <string name="SP_LockedChats_Lock_Destination">ロックされた一覧を更新する</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">ロックされます</string>
-    <string name="SP_AskPinForArchive">アーカイブの展開時に生体認証を要求</string>
-    <string name="SP_AskPinForArchive_Desc">アーカイブされたチャットにアクセスするときにシステムパスワード(指紋認証、顔認証、PIN、またはパターン)が必要です。</string>
     <string name="SP_HideArchive">チャット一覧からアーカイブを非表示</string>
     <string name="SP_HideArchive_Desc">アーカイブはCherrygramチャンネルとしてマスクされます。\nドロワーからまたは検索ボタンを長押しでアーカイブを開くことができます。</string>
     <string name="SP_AskPin">パスワードを要求</string>

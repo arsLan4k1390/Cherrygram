@@ -42,6 +42,7 @@ object DonatesManager {
         if (currentTime - lastUpdateTime > REFRESH_INTERVAL) {
             updateDonateList(context)
             updateDonateListMarketplace(context)
+            updateBlockedList(context)
             if (CherrygramCoreConfig.isDevBuild() || CherrygramDebugConfig.showRPCErrors) {
                 AndroidUtilities.runOnUIThread {
                     Toast.makeText(ApplicationLoader.applicationContext, "Loaded remote donate list", Toast.LENGTH_SHORT).show()
@@ -50,6 +51,7 @@ object DonatesManager {
         } else {
             loadLocalDonateList(context)
             loadLocalDonateListMarketplace(context)
+            loadLocalBlockedList(context)
             if (CherrygramCoreConfig.isDevBuild() || CherrygramDebugConfig.showRPCErrors) {
                 AndroidUtilities.runOnUIThread {
                     Toast.makeText(ApplicationLoader.applicationContext, "Loaded local donate list", Toast.LENGTH_SHORT).show()
@@ -129,7 +131,6 @@ object DonatesManager {
             }
         }
     }
-
 
     /** Stars start */
     private const val FILE_NAME_MARKETPLACE = "donated_users_list_marketplace.txt"
@@ -233,5 +234,85 @@ object DonatesManager {
             }
         }
     }
+    /** Stars finish */
+
+    /** Blocked start*/
+    private const val FILE_NAME_BLOCKED = "vip_users_list.txt"
+    private const val GITLAB_RAW_URL_BLOCKED = "https://gitlab.com/arsLan4k1390/Cherrygram-IDS/-/raw/main/vip_users.txt?inline=false"
+
+    private val blockedUserIds = mutableSetOf<Long>()
+
+    fun isUsesBlocked(userId: Long): Boolean {
+        synchronized(blockedUserIds) {
+            return blockedUserIds.contains(userId)
+        }
+    }
+
+    private suspend fun updateBlockedList(context: Context) {
+        withContext(Dispatchers.IO) {
+            try {
+                val url = URL(GITLAB_RAW_URL_BLOCKED)
+                val connection = (url.openConnection() as HttpURLConnection).apply {
+                    connectTimeout = 5000
+                    readTimeout = 5000
+                }
+
+                val reader = InputStreamReader(connection.inputStream)
+                val tempUserIds = mutableSetOf<Long>()
+                val file = File(context.filesDir, FILE_NAME_BLOCKED)
+                val writer = OutputStreamWriter(file.outputStream())
+
+                reader.buffered().useLines { lines ->
+                    lines.forEach { line ->
+                        line.trim().toLongOrNull()?.let { id ->
+                            tempUserIds.add(id)
+                            writer.write("$id\n")
+                        }
+                    }
+                }
+
+                writer.close()
+
+                synchronized(blockedUserIds) {
+                    blockedUserIds.clear()
+                    blockedUserIds.addAll(tempUserIds)
+                }
+
+                CherrygramCoreConfig.lastDonatesCheckTime = System.currentTimeMillis()
+
+            } catch (e: Exception) {
+                FileLog.e(e)
+            }
+        }
+    }
+
+    private suspend fun loadLocalBlockedList(context: Context) {
+        withContext(Dispatchers.IO) {
+            try {
+                val file = File(context.filesDir, FILE_NAME_BLOCKED)
+                if (!file.exists()) return@withContext
+
+                val reader = InputStreamReader(context.openFileInput(FILE_NAME_BLOCKED))
+                val tempUserIds = mutableSetOf<Long>()
+
+                reader.buffered().useLines { lines ->
+                    lines.forEach { line ->
+                        line.trim().toLongOrNull()?.let { id ->
+                            tempUserIds.add(id)
+                        }
+                    }
+                }
+
+                synchronized(blockedUserIds) {
+                    blockedUserIds.clear()
+                    blockedUserIds.addAll(tempUserIds)
+                }
+
+            } catch (e: Exception) {
+                FileLog.e(e)
+            }
+        }
+    }
+    /** Blocked finish */
 
 }

@@ -263,18 +263,15 @@ public interface INavigationLayout {
 
     default boolean presentFragment(BaseFragment fragment) {
         AtomicBoolean fragment1 = new AtomicBoolean(false);
-        if (fragment instanceof ChatActivity && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
+        if (fragment instanceof ChatActivity && (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())) {
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity");
 
             long userID = fragment.arguments.getLong("user_id");
             long chatID = fragment.arguments.getLong("chat_id");
+            int encID = fragment.arguments.getInt("enc_id");
+//            boolean encrypted = fragment.arguments.containsKey("enc_id");
 
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
-                    && (
-                            userID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(userID)
-                            || chatID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(chatID)
-                    )
-            ) {
+            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometrics(userID, chatID, encID)) {
                 CGBiometricPrompt.prompt(getParentActivity(),
                         () -> fragment1.set(presentFragment(new NavigationParams(fragment)))
                 );
@@ -282,10 +279,10 @@ public interface INavigationLayout {
                 fragment1.set(presentFragment(new NavigationParams(fragment)));
             }
             return fragment1.get();
-        } else if (fragment instanceof DialogsActivity && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
+        } else if (fragment instanceof DialogsActivity && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive()) {
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is dialogs activity");
 
-            if (getParentActivity() != null && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive()
+            if (getParentActivity() != null
                     && fragment.arguments.getInt("folderId") != 0
                     && fragment.arguments.getInt("folderId") == 1
             ) {
@@ -307,18 +304,15 @@ public interface INavigationLayout {
 
     default boolean presentFragmentAsPreview(BaseFragment fragment) {
         AtomicBoolean fragment1 = new AtomicBoolean(false);
-        if (fragment instanceof ChatActivity && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
+        if (fragment instanceof ChatActivity && (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())) {
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity2");
 
             long userID = fragment.arguments.getLong("user_id");
             long chatID = fragment.arguments.getLong("chat_id");
+            int encID = fragment.arguments.getInt("enc_id");
+//            boolean encrypted = fragment.arguments.containsKey("enc_id");
 
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
-                    && (
-                            userID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(userID)
-                            || chatID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(chatID)
-                    )
-            ) {
+            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometrics(userID, chatID, encID)) {
                 CGBiometricPrompt.prompt(getParentActivity(),
                         () -> fragment1.set(presentFragment(new NavigationParams(fragment).setPreview(true)))
                 );
@@ -333,18 +327,15 @@ public interface INavigationLayout {
 
     default boolean presentFragmentAsPreviewWithMenu(BaseFragment fragment, ActionBarPopupWindow.ActionBarPopupWindowLayout menuView) {
         AtomicBoolean fragment1 = new AtomicBoolean(false);
-        if (fragment instanceof ChatActivity && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
+        if (fragment instanceof ChatActivity && (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())) {
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity3");
 
             long userID = fragment.arguments.getLong("user_id");
             long chatID = fragment.arguments.getLong("chat_id");
+            int encID = fragment.arguments.getInt("enc_id");
+//            boolean encrypted = fragment.arguments.containsKey("enc_id");
 
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
-                    && (
-                            userID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(userID)
-                            || chatID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(chatID)
-                    )
-            ) {
+            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometrics(userID, chatID, encID)) {
                 CGBiometricPrompt.prompt(getParentActivity(),
                         () -> fragment1.set(presentFragment(new NavigationParams(fragment).setPreview(true).setMenuView(menuView)))
                 );
@@ -363,18 +354,15 @@ public interface INavigationLayout {
     @Deprecated
     default boolean presentFragment(BaseFragment fragment, boolean removeLast, boolean forceWithoutAnimation, boolean check, boolean preview) {
         AtomicBoolean fragment1 = new AtomicBoolean(false);
-        if (fragment instanceof ChatActivity && !check && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
+        if (fragment instanceof ChatActivity && !check && (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())) {
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity4");
 
             long userID = fragment.arguments.getLong("user_id");
             long chatID = fragment.arguments.getLong("chat_id");
+            int encID = fragment.arguments.getInt("enc_id");
+//            boolean encrypted = fragment.arguments.containsKey("enc_id");
 
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
-                    && (
-                            userID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(userID)
-                            || chatID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(chatID)
-                    )
-            ) {
+            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometrics(userID, chatID, encID)) {
                 CGBiometricPrompt.prompt(getParentActivity(),
                         () -> fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview)))
                 );
@@ -393,18 +381,15 @@ public interface INavigationLayout {
     @Deprecated
     default boolean presentFragment(BaseFragment fragment, boolean removeLast, boolean forceWithoutAnimation, boolean check, boolean preview, ActionBarPopupWindow.ActionBarPopupWindowLayout menuView) {
         AtomicBoolean fragment1 = new AtomicBoolean(false);
-        if (fragment instanceof ChatActivity && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat()) {
+        if (fragment instanceof ChatActivity && (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())) {
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity5");
 
             long userID = fragment.arguments.getLong("user_id");
             long chatID = fragment.arguments.getLong("chat_id");
+            int encID = fragment.arguments.getInt("enc_id");
+//            boolean encrypted = fragment.arguments.containsKey("enc_id");
 
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
-                    && (
-                            userID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(userID)
-                            || chatID != 0 && ChatsPasswordHelper.INSTANCE.isChatLocked(chatID)
-                    )
-            ) {
+            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometrics(userID, chatID, encID)) {
                 CGBiometricPrompt.prompt(getParentActivity(),
                         () -> fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview).setMenuView(menuView)))
                 );

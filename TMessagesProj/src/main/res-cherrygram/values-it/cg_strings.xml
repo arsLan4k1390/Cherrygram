@@ -222,8 +222,6 @@
     <string name="SP_Header_Privacy">Privacy</string>
     <string name="SP_NoProxyPromo">Non mostrare sponsor proxy</string>
     <string name="SP_GoogleAnalytics_Desc">Abilitando questo, tutti i crash dell\'applicazione e le statistiche verranno segnalati a \"console.firebase.google.com\" per futuri controlli dello sviluppatore.</string>
-    <string name="SP_CleanOld">Rimuovi la vecchia cache (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">Rimosso con successo</string>
     <string name="SP_Category_Account">Account</string>
     <string name="SP_DeleteAccount">Elimina l\'account Telegram</string>
     <!--Security Preferences-->

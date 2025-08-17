@@ -329,15 +329,9 @@
     <string name="SP_Header_Privacy">Приватність</string>
     <string name="SP_NoProxyPromo">Не показувати спонсора проксі</string>
     <string name="SP_GoogleAnalytics_Desc">Якщо ввімкнути це, усі збої програми та статистичні дані надсилатимуться на \"console.firebase.google.com\" для подальшого перегляду розробником.</string>
-    <string name="SP_CleanOld">Видалити старий кеш (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">Видалено успішно</string>
-    <string name="SP_AskPinForChats">Запит біометричного підтвердження для відкриття чату</string>
-    <string name="SP_AskPinForChats_Desc">Системний пароль (відбиток пальця, face iD, PIN-код або шаблон) буде необхідний для відкриття певного чату. Щоб увімкнути, натисніть на 3 крапки всередині чату.</string>
     <string name="SP_LockedChats">Заблоковані чати</string>
     <string name="SP_LockedChats_Lock_Destination">для оновлення списку заблокованих</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">буде заблоковано</string>
-    <string name="SP_AskPinForArchive">Запит біометричного підтвердження для відкриття архіву</string>
-    <string name="SP_AskPinForArchive_Desc">Системний пароль (відбиток пальця, номер обличчя, PIN або шаблон) буде необхідний для доступу до архівних чатів.</string>
     <string name="SP_HideArchive">Приховати архів зі списку чатів</string>
     <string name="SP_HideArchive_Desc">Архів буде замасковано під канал Cherrygram. \nВи зможете відкрити архів з бічного меню або довгим натисканням на кнопку пошуку.</string>
     <string name="SP_AskPin">Запит пароля</string>

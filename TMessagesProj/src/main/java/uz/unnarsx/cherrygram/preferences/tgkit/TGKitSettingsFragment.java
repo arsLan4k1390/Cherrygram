@@ -29,9 +29,7 @@ import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BackDrawable;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.HeaderCell;
-import org.telegram.ui.Cells.NotificationsCheckCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
@@ -40,8 +38,6 @@ import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
-
-import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.TGKitCategory;
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.TGKitPreference;
@@ -62,10 +58,9 @@ public class TGKitSettingsFragment extends BaseFragment {
     private final TGKitSettings settings;
     private final SparseArray<TGKitPreference> positions = new SparseArray<>();
 
+    private int rowCount;
     private ListAdapter listAdapter;
     private RecyclerListView listView;
-
-    private int rowCount;
 
     public TGKitSettingsFragment(BasePreferencesEntry entry) {
         super();
@@ -82,18 +77,17 @@ public class TGKitSettingsFragment extends BaseFragment {
         return true;
     }
 
-    private void initSettings() {
-        for (TGKitCategory category : settings.categories) {
-            if (!category.isAvailable) continue;
-
-            if (category.name != null) positions.put(rowCount++, new TGKitHeaderRow(category.name));
-
-            for (TGKitPreference preference : category.preferences) {
-                if (preference.isAvailable) positions.put(rowCount++, preference);
-            }
-
-            positions.put(rowCount++, new TGKitSectionRow());
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (listAdapter != null) {
+            listAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void onFragmentDestroy() {
+        super.onFragmentDestroy();
     }
 
     protected boolean hasWhiteActionBar() {
@@ -158,8 +152,9 @@ public class TGKitSettingsFragment extends BaseFragment {
                 if (preference.listener != null) preference.listener.onClick(this);
             } else if (pref instanceof TGKitListPreference preference) {
                 preference.callActionHueta(this, getParentActivity(), () -> {
-                    if (view instanceof TextSettingsCell)
+                    if (view instanceof TextSettingsCell) {
                         ((TextSettingsCell) view).setTextAndValue(preference.title, preference.getContract().getValue(), true, preference.getDivider());
+                    }
                 });
             }
         });
@@ -167,72 +162,25 @@ public class TGKitSettingsFragment extends BaseFragment {
         return fragmentView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (listAdapter != null) {
-            listAdapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public ArrayList<ThemeDescription> getThemeDescriptions() {
-        ArrayList<ThemeDescription> themeDescriptions = new ArrayList<>();
-
-        themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{TextSettingsCell.class, TextCheckCell.class, HeaderCell.class, NotificationsCheckCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
-        themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
-
-        if (hasWhiteActionBar()) {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
-        } else {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-        }
-
-        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-        themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));
-        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{NotificationsCheckCell.class}, new String[]{"textView"}, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{NotificationsCheckCell.class}, new String[]{"valueTextView"}, null, null, null, Theme.key_windowBackgroundWhiteGrayText2));
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{NotificationsCheckCell.class}, new String[]{"checkBox"}, null, null, null, Theme.key_switchTrack));
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{NotificationsCheckCell.class}, new String[]{"checkBox"}, null, null, null, Theme.key_switchTrackChecked));
-
-        themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_SELECTOR, null, null, null, null, Theme.key_listSelector));
-
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{View.class}, Theme.dividerPaint, null, null, Theme.key_divider));
-
-        themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_BACKGROUNDFILTER, new Class[]{ShadowSectionCell.class}, null, null, null, Theme.key_windowBackgroundGrayShadow));
-
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{TextSettingsCell.class}, new String[]{"textView"}, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{TextSettingsCell.class}, new String[]{"valueTextView"}, null, null, null, Theme.key_windowBackgroundWhiteValueText));
-
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{HeaderCell.class}, new String[]{"textView"}, null, null, null, Theme.key_windowBackgroundWhiteBlueHeader));
-
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{TextCheckCell.class}, new String[]{"textView"}, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{TextCheckCell.class}, new String[]{"valueTextView"}, null, null, null, Theme.key_windowBackgroundWhiteGrayText2));
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{TextCheckCell.class}, new String[]{"checkBox"}, null, null, null, Theme.key_switchTrack));
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{TextCheckCell.class}, new String[]{"checkBox"}, null, null, null, Theme.key_switchTrackChecked));
-
-        themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_BACKGROUNDFILTER, new Class[]{TextInfoPrivacyCell.class}, null, null, null, Theme.key_windowBackgroundGrayShadow));
-        themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{TextInfoPrivacyCell.class}, new String[]{"textView"}, null, null, null, Theme.key_windowBackgroundWhiteGrayText4));
-
-        return themeDescriptions;
-    }
-
     private class ListAdapter extends RecyclerListView.SelectionAdapter {
 
         private final Context mContext;
 
+        private final int VIEW_TYPE_SHADOW = 0;
+        private final int VIEW_TYPE_HEADER = 1;
+        private final int VIEW_TYPE_TEXT_CELL = 2;
+        private final int VIEW_TYPE_TEXT_CHECK = 3;
+        private final int VIEW_TYPE_TEXT_SETTINGS = 4;
+        private final int VIEW_TYPE_TEXT_INFO_PRIVACY = 5;
+        private final int VIEW_TYPE_TEXT_DETAIL_SETTINGS = 6;
+        private final int VIEW_TYPE_SLIDER = 7;
+
         ListAdapter(Context context) {
             mContext = context;
+        }
+
+        private boolean isDonates() {
+            return settings != null && settings.name.contains(getString(R.string.DP_SupportOptions));
         }
 
         @Override
@@ -243,77 +191,77 @@ public class TGKitSettingsFragment extends BaseFragment {
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             switch (holder.getItemViewType()) {
-                case 0: {
+                case VIEW_TYPE_SHADOW: {
                     holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                     break;
                 }
-                case 1: {
-                    TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
-                    textCell.setCanDisable(false);
+                case VIEW_TYPE_HEADER: {
+                    HeaderCell headerCell = (HeaderCell) holder.itemView;
+                    headerCell.setText(positions.get(position).title);
 
-                    TGKitSettingsCellRow pref = (TGKitSettingsCellRow) positions.get(position);
-                    textCell.setTextColor(pref.textColor);
-                    textCell.setText(pref.title, pref.divider);
-
-                    break;
-                }
-                case 2: {
-                    HeaderCell cell = (HeaderCell) holder.itemView;
-                    cell.setText(positions.get(position).title);
-
-                    boolean donates = settings != null && settings.name.contains(getString(R.string.DP_SupportOptions));
-                    if (donates) {
-                        cell.setTopMargin(10);
-                        cell.setHeight(35);
+                    if (isDonates()) {
+                        headerCell.setTopMargin(10);
+                        headerCell.setHeight(35);
                     }
                     break;
                 }
-                case 3: {
-                    TextCheckCell checkCell = (TextCheckCell) holder.itemView;
+                case VIEW_TYPE_TEXT_CELL: {
+                    TextCell textCell = (TextCell) holder.itemView;
+                    ((TGKitTextIconRow) positions.get(position)).bindCell(textCell);
+
+                    if (isDonates()) {
+                        textCell.getTextView().setPadding(AndroidUtilities.dp(8), 0, 0, 0);
+                        textCell.getImageView().clearColorFilter();
+                    }
+                    if (positions.get(position).title.toString().contains(getString(R.string.SP_DeleteAccount))) {
+                        textCell.getImageView().setColorFilter(Theme.getColor(Theme.key_text_RedBold));
+                        textCell.getTextView().setTextColor(Theme.getColor(Theme.key_text_RedBold));
+                    }
+                    break;
+                }
+                case VIEW_TYPE_TEXT_CHECK: {
+                    TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
                     TGKitSwitchPreference pref = (TGKitSwitchPreference) positions.get(position);
                     if (pref.description != null) {
-                        checkCell.setTextAndValueAndCheck(pref.title.toString(), pref.description, pref.contract.getPreferenceValue(), true, pref.divider);
+                        textCheckCell.setTextAndValueAndCheck(pref.title.toString(), pref.description, pref.contract.getPreferenceValue(), true, pref.divider);
                     } else {
-                        checkCell.setTextAndCheck(pref.title, pref.contract.getPreferenceValue(), pref.divider);
+                        textCheckCell.setTextAndCheck(pref.title, pref.contract.getPreferenceValue(), pref.divider);
                     }
                     break;
                 }
-                case 4: {
-                    TextDetailSettingsCell textDetailCell = (TextDetailSettingsCell) holder.itemView;
-                    textDetailCell.setMultilineDetail(true);
-                    ((TGKitTextDetailRow) positions.get(position)).bindCell(textDetailCell);
-                    break;
-                }
-                case 5: {
-                    TextCell cell = (TextCell) holder.itemView;
-                    ((TGKitTextIconRow) positions.get(position)).bindCell(cell);
-                    boolean donates = settings != null && settings.name.contains(getString(R.string.DP_SupportOptions));
-                    if (donates) {
-                        cell.getTextView().setPadding(AndroidUtilities.dp(8), 0, 0, 0);
-                        cell.getImageView().clearColorFilter();
+                case VIEW_TYPE_TEXT_SETTINGS: {
+                    TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
+                    Object pref = positions.get(position);
+
+                    if (pref instanceof TGKitSettingsCellRow rowPref) {
+                        textSettingsCell.setCanDisable(false);
+                        textSettingsCell.setTextColor(rowPref.textColor);
+                        textSettingsCell.setText(rowPref.title, rowPref.divider);
+                    } else if (pref instanceof TGKitListPreference listPref) {
+                        textSettingsCell.setTextAndValue(listPref.title, listPref.getContract().getValue(), true, listPref.getDivider());
                     }
                     break;
                 }
-                case 6: {
+                case VIEW_TYPE_TEXT_INFO_PRIVACY: {
+                    TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
+
+                    if (isDonates()) {
+                        textInfoPrivacyCell.setTopPadding(5);
+                        textInfoPrivacyCell.setBottomPadding(8);
+                        textInfoPrivacyCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    }
+                    textInfoPrivacyCell.setText(positions.get(position).title);
+                    break;
+                }
+                case VIEW_TYPE_TEXT_DETAIL_SETTINGS: {
+                    TextDetailSettingsCell textDetailSettingsCell = (TextDetailSettingsCell) holder.itemView;
+                    textDetailSettingsCell.setMultilineDetail(true);
+                    ((TGKitTextDetailRow) positions.get(position)).bindCell(textDetailSettingsCell);
+                    break;
+                }
+                case VIEW_TYPE_SLIDER: {
                     ((StickerSliderCell) holder.itemView).setContract(((TGKitSliderPreference) positions.get(position)).contract);
                     break;
-                }
-                case 7: {
-                    TextSettingsCell settingsCell = (TextSettingsCell) holder.itemView;
-                    TGKitListPreference pref = (TGKitListPreference) positions.get(position);
-                    settingsCell.setTextAndValue(pref.title, pref.getContract().getValue(), true, pref.getDivider());
-                    break;
-                }
-                case 8: {
-                    TextInfoPrivacyCell cell = (TextInfoPrivacyCell) holder.itemView;
-
-                    boolean donates = settings != null && settings.name.contains(getString(R.string.DP_SupportOptions));
-                    if (donates) {
-                        cell.setTopPadding(5);
-                        cell.setBottomPadding(8);
-                        cell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    }
-                    cell.setText(positions.get(position).title);
                 }
             }
         }
@@ -321,11 +269,11 @@ public class TGKitSettingsFragment extends BaseFragment {
         @Override
         public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
             int viewType = holder.getItemViewType();
-            if (viewType == 3) {
+            if (viewType == VIEW_TYPE_TEXT_CHECK) {
                 int position = holder.getAdapterPosition();
                 TextCheckCell checkCell = (TextCheckCell) holder.itemView;
                 checkCell.setChecked(((TGKitSwitchPreference) positions.get(position)).contract.getPreferenceValue());
-            } else if (viewType == 7) {
+            } else if (viewType == VIEW_TYPE_TEXT_SETTINGS) {
                 int position = holder.getAdapterPosition();
                 TextSettingsCell checkCell = (TextSettingsCell) holder.itemView;
                 TGKitListPreference pref = ((TGKitListPreference) positions.get(position));
@@ -347,37 +295,38 @@ public class TGKitSettingsFragment extends BaseFragment {
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view;
             switch (viewType) {
-                case 1:
-                case 7:
-                    view = new TextSettingsCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                case VIEW_TYPE_SHADOW:
+                    view = new ShadowSectionCell(mContext);
                     break;
-                case 2:
+                case VIEW_TYPE_HEADER:
                     view = new HeaderCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
-                case 3:
-                    view = new TextCheckCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case 4:
-                    view = new TextDetailSettingsCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case 5:
+                case VIEW_TYPE_TEXT_CELL:
                     view = new TextCell(mContext, 21, false);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
-                case 6:
+                case VIEW_TYPE_TEXT_CHECK:
+                    view = new TextCheckCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case VIEW_TYPE_TEXT_SETTINGS:
+                    view = new TextSettingsCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case VIEW_TYPE_TEXT_INFO_PRIVACY:
+                    view = new TextInfoPrivacyCell(mContext);
+                    break;
+                case VIEW_TYPE_TEXT_DETAIL_SETTINGS:
+                    view = new TextDetailSettingsCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case VIEW_TYPE_SLIDER:
                     view = new StickerSliderCell(mContext, resourceProvider);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
-                case 8:
-                    view = new TextInfoPrivacyCell(mContext);
-                    break;
                 default:
-                    view = new ShadowSectionCell(mContext);
-                    break;
+                    throw new IllegalStateException("Unexpected value: " + viewType);
             }
             view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
             return new RecyclerListView.Holder(view);
@@ -388,4 +337,19 @@ public class TGKitSettingsFragment extends BaseFragment {
             return positions.get(position).getType().adapterType;
         }
     }
+
+    private void initSettings() {
+        for (TGKitCategory category : settings.categories) {
+            if (!category.isAvailable) continue;
+
+            if (category.name != null) positions.put(rowCount++, new TGKitHeaderRow(category.name));
+
+            for (TGKitPreference preference : category.preferences) {
+                if (preference.isAvailable) positions.put(rowCount++, preference);
+            }
+
+            positions.put(rowCount++, new TGKitSectionRow());
+        }
+    }
+
 }

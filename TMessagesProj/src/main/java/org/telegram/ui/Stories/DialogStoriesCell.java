@@ -1866,7 +1866,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         return super.onTouchEvent(event);
     }
 
-    /** Cherrygram start*/
+    /** Cherrygram start */
     private float getOffsetX(AnimatedTextView titleView, ArrayList<Item> miniItems) {
         float offsetX;
         if (CherrygramAppearanceConfig.INSTANCE.getCenterTitle()) {
@@ -1879,5 +1879,5 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         }
         return offsetX;
     }
-    /** Cherrygram finish*/
+    /** Cherrygram finish */
 }

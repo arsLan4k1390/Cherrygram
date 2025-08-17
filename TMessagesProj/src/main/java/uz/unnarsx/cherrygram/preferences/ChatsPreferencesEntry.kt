@@ -149,6 +149,14 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 }
                 divider = true
             }
+            textIcon {
+                title = getString(R.string.CP_Message_Filtering)
+                icon = R.drawable.msg_notspam
+                listener = TGKitTextIconRow.TGTIListener {
+                    it.presentFragment(FiltersPreferencesEntry())
+                }
+                divider = true
+            }
             switch {
                 title = getString(R.string.CP_TimeOnStick)
 

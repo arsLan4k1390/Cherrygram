@@ -107,7 +107,7 @@ public class DrawerActionCell extends FrameLayout {
             Theme.dialogs_errorDrawable.draw(canvas);
         }
 
-        if (currentId == 1001 && !CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList()) {
+        if (currentId == 1001 && !CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList() && !CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive()) {
             int counter = MessagesStorage.getInstance(UserConfig.selectedAccount).getArchiveUnreadCount();
             if (counter <= 0) {
                 return;

@@ -11,7 +11,6 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -28,7 +27,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.MessagesController;
-import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
@@ -58,7 +56,7 @@ import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
-public class ExperimentalPreferencesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
+public class ExperimentalPreferencesEntry extends BaseFragment {
 
     private int rowCount;
     private ListAdapter listAdapter;
@@ -83,15 +81,21 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
         updateRowsId(true);
         return true;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (listAdapter != null) {
+            listAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
     }
 
     protected boolean hasWhiteActionBar() {
@@ -230,63 +234,20 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         return fragmentView;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private void updateRowsId(boolean notify) {
-        rowCount = 0;
-        int prevCustomChatPreviewRow = customChatPreviewRow;
-        int prevActionbarCrossfadeRow = actionbarCrossfadeRow;
-
-        experimentalHeaderRow = rowCount++;
-        springAnimationRow = rowCount++;
-        actionbarCrossfadeRow = -1;
-        if (CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING) actionbarCrossfadeRow = rowCount++;
-        if (listAdapter != null) {
-            if (prevActionbarCrossfadeRow == -1 && actionbarCrossfadeRow != -1) {
-                listAdapter.notifyItemInserted(actionbarCrossfadeRow);
-            } else if (prevActionbarCrossfadeRow != -1 && actionbarCrossfadeRow == -1) {
-                listAdapter.notifyItemRemoved(prevActionbarCrossfadeRow);
-            }
-        }
-
-        residentNotificationRow = rowCount++;
-
-        customChatRow = rowCount++;
-        customChatPreviewRow = -1;
-        if (CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages()) customChatPreviewRow = rowCount++;
-        if (listAdapter != null) {
-            if (prevCustomChatPreviewRow == -1 && customChatPreviewRow != -1) {
-                listAdapter.notifyItemInserted(customChatPreviewRow);
-            } else if (prevCustomChatPreviewRow != -1 && customChatPreviewRow == -1) {
-                listAdapter.notifyItemRemoved(prevCustomChatPreviewRow);
-            }
-        }
-
-        experimentalSettingsDivisor = rowCount++;
-
-        networkHeaderRow = rowCount++;
-        downloadSpeedBoostRow = rowCount++;
-        uploadSpeedBoostRow = rowCount++;
-        slowNetworkMode = rowCount++;
-        networkDivisorRow = rowCount++;
-
-        if (listAdapter != null && notify) {
-            listAdapter.notifyDataSetChanged();
-        }
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (listAdapter != null) {
-            listAdapter.notifyDataSetChanged();
-        }
-    }
-
     public class ListAdapter extends RecyclerListView.SelectionAdapter {
+
         private final Context mContext;
 
-        public ListAdapter(Context context) {
+        private final int VIEW_TYPE_SHADOW = 0;
+        private final int VIEW_TYPE_HEADER = 1;
+//        private final int VIEW_TYPE_TEXT_CELL = 2;
+        private final int VIEW_TYPE_TEXT_CHECK = 3;
+        private final int VIEW_TYPE_TEXT_SETTINGS = 4;
+//        private final int VIEW_TYPE_TEXT_INFO_PRIVACY = 5;
+//        private final int VIEW_TYPE_TEXT_DETAIL_SETTINGS = 6;
+        private final int VIEW_TYPE_USER = 7;
+
+        ListAdapter(Context context) {
             mContext = context;
         }
 
@@ -298,10 +259,10 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             switch (holder.getItemViewType()) {
-                case 1:
+                case VIEW_TYPE_SHADOW:
                     holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                     break;
-                case 2:
+                case VIEW_TYPE_HEADER:
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
                     if (position == experimentalHeaderRow) {
                         headerCell.setText(getString(R.string.General));
@@ -309,7 +270,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                         headerCell.setText(getString(R.string.EP_Network));
                     }
                     break;
-                case 3:
+                case VIEW_TYPE_TEXT_CHECK:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
                     textCheckCell.setEnabled(true, null);
                     if (position == actionbarCrossfadeRow) {
@@ -324,9 +285,9 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                         textCheckCell.setTextAndCheck(getString(R.string.EP_SlowNetworkMode), CherrygramExperimentalConfig.INSTANCE.getSlowNetworkMode(), true);
                     }
                     break;
-                case 4:
-                    TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
-                    textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+                case VIEW_TYPE_TEXT_SETTINGS:
+                    TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
+                    textSettingsCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                     if (position == springAnimationRow) {
                         String value;
                         switch (CherrygramExperimentalConfig.INSTANCE.getSpringAnimation()) {
@@ -338,12 +299,12 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
                                 value = getString(R.string.EP_NavigationAnimationSpring);
                                 break;
                         }
-                        textCell.setTextAndValue(getString(R.string.EP_NavigationAnimation), value, true);
+                        textSettingsCell.setTextAndValue(getString(R.string.EP_NavigationAnimation), value, true);
                     } else if (position == downloadSpeedBoostRow) {
-                        textCell.setTextAndValue(getString(R.string.EP_DownloadSpeedBoost), CGResourcesHelper.INSTANCE.getDownloadSpeedBoostText(), true);
+                        textSettingsCell.setTextAndValue(getString(R.string.EP_DownloadSpeedBoost), CGResourcesHelper.INSTANCE.getDownloadSpeedBoostText(), true);
                     }
                     break;
-                case 5:
+                case VIEW_TYPE_USER:
                     UserCell userCell = (UserCell) holder.itemView;
                     userCell.addButton.setText(getString(R.string.Edit));
                     userCell.addButton.setOnClickListener(view1 -> {
@@ -403,7 +364,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         @Override
         public boolean isEnabled(RecyclerView.ViewHolder holder) {
             int type = holder.getItemViewType();
-            return type == 3 || type == 4 /*|| type == 5*/;
+            return type == VIEW_TYPE_TEXT_CHECK || type == VIEW_TYPE_TEXT_SETTINGS /*|| type == VIEW_TYPE_USER*/;
         }
 
         @NonNull
@@ -411,25 +372,27 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view;
             switch (viewType) {
-                case 2:
+                case VIEW_TYPE_SHADOW:
+                    view = new ShadowSectionCell(mContext);
+                    break;
+                case VIEW_TYPE_HEADER:
                     view = new HeaderCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
-                case 3:
+                case VIEW_TYPE_TEXT_CHECK:
                     view = new TextCheckCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
-                case 4:
+                case VIEW_TYPE_TEXT_SETTINGS:
                     view = new TextSettingsCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
-                case 5:
+                case VIEW_TYPE_USER:
                     view = new UserCell(getContext(), 14, 0, false, true, getResourceProvider(), false, false);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 default:
-                    view = new ShadowSectionCell(mContext);
-                    break;
+                    throw new IllegalStateException("Unexpected value: " + viewType);
             }
             view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
             return new RecyclerListView.Holder(view);
@@ -438,26 +401,61 @@ public class ExperimentalPreferencesEntry extends BaseFragment implements Notifi
         @Override
         public int getItemViewType(int position) {
             if (position == experimentalSettingsDivisor || position == networkDivisorRow) {
-                return 1;
+                return VIEW_TYPE_SHADOW;
             } else if (position == experimentalHeaderRow || position == networkHeaderRow) {
-                return 2;
+                return VIEW_TYPE_HEADER;
             } else if (position == actionbarCrossfadeRow || position == residentNotificationRow || position == customChatRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
-                return 3;
+                return VIEW_TYPE_TEXT_CHECK;
             } else if (position == springAnimationRow || position == downloadSpeedBoostRow) {
-                return 4;
+                return VIEW_TYPE_TEXT_SETTINGS;
             } else if (position == customChatPreviewRow) {
-                return 5;
+                return VIEW_TYPE_USER;
             }
-            return 1;
+            return VIEW_TYPE_SHADOW;
         }
     }
 
-    @Override
-    public void didReceivedNotification(int id, int account, final Object... args) {
-        if (id == NotificationCenter.emojiLoaded) {
-            if (listView != null) {
-                listView.invalidateViews();
+    private void updateRowsId(boolean notify) {
+        rowCount = 0;
+        int prevCustomChatPreviewRow = customChatPreviewRow;
+        int prevActionbarCrossfadeRow = actionbarCrossfadeRow;
+
+        experimentalHeaderRow = rowCount++;
+        springAnimationRow = rowCount++;
+        actionbarCrossfadeRow = -1;
+        if (CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING) actionbarCrossfadeRow = rowCount++;
+        if (listAdapter != null) {
+            if (prevActionbarCrossfadeRow == -1 && actionbarCrossfadeRow != -1) {
+                listAdapter.notifyItemInserted(actionbarCrossfadeRow);
+            } else if (prevActionbarCrossfadeRow != -1 && actionbarCrossfadeRow == -1) {
+                listAdapter.notifyItemRemoved(prevActionbarCrossfadeRow);
             }
         }
+
+        residentNotificationRow = rowCount++;
+
+        customChatRow = rowCount++;
+        customChatPreviewRow = -1;
+        if (CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages()) customChatPreviewRow = rowCount++;
+        if (listAdapter != null) {
+            if (prevCustomChatPreviewRow == -1 && customChatPreviewRow != -1) {
+                listAdapter.notifyItemInserted(customChatPreviewRow);
+            } else if (prevCustomChatPreviewRow != -1 && customChatPreviewRow == -1) {
+                listAdapter.notifyItemRemoved(prevCustomChatPreviewRow);
+            }
+        }
+
+        experimentalSettingsDivisor = rowCount++;
+
+        networkHeaderRow = rowCount++;
+        downloadSpeedBoostRow = rowCount++;
+        uploadSpeedBoostRow = rowCount++;
+        slowNetworkMode = rowCount++;
+        networkDivisorRow = rowCount++;
+
+        if (listAdapter != null && notify) {
+            listAdapter.notifyDataSetChanged();
+        }
     }
+
 }

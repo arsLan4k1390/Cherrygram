@@ -1348,6 +1348,6 @@ public abstract class BaseFragment {
     public ChatActivityHelper getChatActivityHelper() {
         return ChatActivityHelper.getInstance(currentAccount);
     }
-    /** Cherrygram finish*/
+    /** Cherrygram finish */
 
 }

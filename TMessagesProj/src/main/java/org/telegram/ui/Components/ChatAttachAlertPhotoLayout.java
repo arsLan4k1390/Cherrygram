@@ -5120,5 +5120,5 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     private float clamp(float x, float min, float max) {
         return Math.max(min, Math.min(max, x));
     }
-    /** Cherygram finish */
+    /** Cherrygram finish */
 }

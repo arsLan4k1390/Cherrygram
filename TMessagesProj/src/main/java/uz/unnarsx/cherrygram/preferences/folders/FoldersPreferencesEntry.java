@@ -11,7 +11,6 @@ package uz.unnarsx.cherrygram.preferences.folders;
 
 import static org.telegram.messenger.LocaleController.getString;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +43,7 @@ import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.folders.cells.FoldersPreviewCell;
 
-public class FoldersPreferencesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
+public class FoldersPreferencesEntry extends BaseFragment {
 
     private int rowCount;
     private ListAdapter listAdapter;
@@ -66,24 +65,24 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
     protected Theme.ResourcesProvider resourcesProvider;
     protected FoldersPreviewCell foldersPreviewCell;
 
-    private static final int VIEW_TYPE_HEADER = 0;
-    private static final int VIEW_TYPE_SWITCH = 1;
-    private static final int VIEW_TYPE_TEXT_SETTING = 2;
-    private static final int VIEW_TYPE_PREVIEW = 3;
-    private static final int VIEW_TYPE_SHADOW = 4;
-
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
         updateRowsId(true);
         return true;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (listAdapter != null) {
+            listAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
     }
 
     protected boolean hasWhiteActionBar() {
@@ -224,7 +223,136 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
         return fragmentView;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    private class ListAdapter extends RecyclerListView.SelectionAdapter {
+
+        private final Context mContext;
+
+        private final int VIEW_TYPE_SHADOW = 0;
+        private final int VIEW_TYPE_HEADER = 1;
+//        private final int VIEW_TYPE_TEXT_CELL = 2;
+        private final int VIEW_TYPE_TEXT_CHECK = 3;
+        private final int VIEW_TYPE_TEXT_SETTINGS = 4;
+//        private final int VIEW_TYPE_TEXT_INFO_PRIVACY = 5;
+//        private final int VIEW_TYPE_TEXT_DETAIL_SETTINGS = 6;
+        private final int VIEW_TYPE_PREVIEW = 7;
+
+        ListAdapter(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        public int getItemCount() {
+            return rowCount;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            switch (holder.getItemViewType()) {
+                case VIEW_TYPE_SHADOW:
+                    holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                    break;
+                case VIEW_TYPE_HEADER:
+                    HeaderCell headerCell = (HeaderCell) holder.itemView;
+                    if (position == foldersHeaderRow) {
+                        headerCell.setText(getString(R.string.ProfileBotPreviewTab));
+                    }
+                    break;
+                case VIEW_TYPE_TEXT_CHECK:
+                    TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
+                    textCheckCell.setEnabled(true, null);
+                    if (position == folderNameAppHeaderRow) {
+                        textCheckCell.setTextAndValueAndCheck(getString(R.string.AP_FolderNameInHeader), getString(R.string.AP_FolderNameInHeader_Desc), CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader(), true, true);
+                    } else if (position == hideAllChatsTabRow) {
+                        textCheckCell.setTextAndCheck(getString(R.string.CP_NewTabs_RemoveAllChats), CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats(), true);
+                    } else if (position == hideCounterRow) {
+                        textCheckCell.setTextAndCheck(getString(R.string.CP_NewTabs_NoCounter), CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread(), true);
+                    } else if (position == addStrokeRow) {
+                        textCheckCell.setTextAndCheck(getString(R.string.AP_Tab_Style_Stroke), CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke(), true);
+                    }
+                    break;
+                case VIEW_TYPE_TEXT_SETTINGS:
+                    TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
+                    textSettingsCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+                    if (position == tabIconTypeRow) {
+                        String value = switch (CherrygramAppearanceConfig.INSTANCE.getTabMode()) {
+                            case CherrygramAppearanceConfig.TAB_TYPE_MIX ->
+                                    getString(R.string.CG_FoldersTypeIconsTitles);
+                            case CherrygramAppearanceConfig.TAB_TYPE_ICON ->
+                                    getString(R.string.CG_FoldersTypeIcons);
+                            default -> getString(R.string.CG_FoldersTypeTitles);
+                        };
+                        textSettingsCell.setTextAndValue(getString(R.string.CG_FoldersType_Header), value, true);
+                    } else if (position == tabStyleRow) {
+                        String value = switch (CherrygramAppearanceConfig.INSTANCE.getTabStyle()) {
+                            case CherrygramAppearanceConfig.TAB_STYLE_DEFAULT ->
+                                    getString(R.string.AP_Tab_Style_Default);
+                            case CherrygramAppearanceConfig.TAB_STYLE_TEXT ->
+                                    getString(R.string.AP_Tab_Style_Text);
+                            case CherrygramAppearanceConfig.TAB_STYLE_VKUI -> "VKUI";
+                            case CherrygramAppearanceConfig.TAB_STYLE_PILLS ->
+                                    getString(R.string.AP_Tab_Style_Pills);
+                            default -> getString(R.string.AP_Tab_Style_Rounded);
+                        };
+                        textSettingsCell.setTextAndValue(getString(R.string.AP_Tab_Style), value, true);
+                    }
+                    break;
+            }
+        }
+
+        @Override
+        public boolean isEnabled(RecyclerView.ViewHolder holder) {
+            int type = holder.getItemViewType();
+            return type == VIEW_TYPE_TEXT_CHECK || type == VIEW_TYPE_TEXT_SETTINGS;
+        }
+
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view;
+            switch (viewType) {
+                case VIEW_TYPE_SHADOW:
+                    view = new ShadowSectionCell(mContext);
+                    break;
+                case VIEW_TYPE_HEADER:
+                    view = new HeaderCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case VIEW_TYPE_TEXT_CHECK:
+                    view = new TextCheckCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case VIEW_TYPE_TEXT_SETTINGS:
+                    view = new TextSettingsCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case VIEW_TYPE_PREVIEW:
+                    foldersPreviewCell = new FoldersPreviewCell(mContext);
+                    foldersPreviewCell.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+                    return new RecyclerListView.Holder(foldersPreviewCell);
+                default:
+                    throw new IllegalStateException("Unexpected value: " + viewType);
+            }
+            view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+            return new RecyclerListView.Holder(view);
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (position == divisorRow) {
+                return VIEW_TYPE_SHADOW;
+            } else if (position == foldersHeaderRow) {
+                return VIEW_TYPE_HEADER;
+            } else if (position == folderNameAppHeaderRow || position == hideAllChatsTabRow || position == hideCounterRow || position == addStrokeRow) {
+                return VIEW_TYPE_TEXT_CHECK;
+            } else if (position == tabIconTypeRow || position == tabStyleRow) {
+                return VIEW_TYPE_TEXT_SETTINGS;
+            } else if (position == foldersPreviewRow) {
+                return VIEW_TYPE_PREVIEW;
+            }
+            return VIEW_TYPE_SHADOW;
+        }
+    }
+
     private void updateRowsId(boolean notify) {
         rowCount = 0;
 
@@ -257,150 +385,4 @@ public class FoldersPreferencesEntry extends BaseFragment implements Notificatio
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (listAdapter != null) {
-            listAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private class ListAdapter extends RecyclerListView.SelectionAdapter {
-        private final Context mContext;
-
-        public ListAdapter(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public int getItemCount() {
-            return rowCount;
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            switch (holder.getItemViewType()) {
-                case VIEW_TYPE_HEADER:
-                    HeaderCell headerCell = (HeaderCell) holder.itemView;
-                    if (position == foldersHeaderRow) {
-                        headerCell.setText(getString(R.string.ProfileBotPreviewTab));
-                    }
-                    break;
-                case VIEW_TYPE_SWITCH:
-                    TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
-                    textCheckCell.setEnabled(true, null);
-                    if (position == folderNameAppHeaderRow) {
-                        textCheckCell.setTextAndValueAndCheck(getString(R.string.AP_FolderNameInHeader), getString(R.string.AP_FolderNameInHeader_Desc), CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader(), true, true);
-                    } else if (position == hideAllChatsTabRow) {
-                        textCheckCell.setTextAndCheck(getString(R.string.CP_NewTabs_RemoveAllChats), CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats(), true);
-                    } else if (position == hideCounterRow) {
-                        textCheckCell.setTextAndCheck(getString(R.string.CP_NewTabs_NoCounter), CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread(), true);
-                    } else if (position == addStrokeRow) {
-                        textCheckCell.setTextAndCheck(getString(R.string.AP_Tab_Style_Stroke), CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke(), true);
-                    }
-                    break;
-                case VIEW_TYPE_TEXT_SETTING:
-                    TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
-                    textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                    if (position == tabIconTypeRow) {
-                        String value;
-                        switch (CherrygramAppearanceConfig.INSTANCE.getTabMode()) {
-                            case CherrygramAppearanceConfig.TAB_TYPE_MIX:
-                                value = getString(R.string.CG_FoldersTypeIconsTitles);
-                                break;
-                            case CherrygramAppearanceConfig.TAB_TYPE_ICON:
-                                value = getString(R.string.CG_FoldersTypeIcons);
-                                break;
-                            default:
-                            case CherrygramAppearanceConfig.TAB_TYPE_TEXT:
-                                value = getString(R.string.CG_FoldersTypeTitles);
-                                break;
-                        }
-                        textCell.setTextAndValue(getString(R.string.CG_FoldersType_Header), value, true);
-                    } else if (position == tabStyleRow) {
-                        String value;
-                        switch (CherrygramAppearanceConfig.INSTANCE.getTabStyle()) {
-                            case CherrygramAppearanceConfig.TAB_STYLE_DEFAULT:
-                                value = getString(R.string.AP_Tab_Style_Default);
-                                break;
-                            case CherrygramAppearanceConfig.TAB_STYLE_TEXT:
-                                value = getString(R.string.AP_Tab_Style_Text);
-                                break;
-                            case CherrygramAppearanceConfig.TAB_STYLE_VKUI:
-                                value = "VKUI";
-                                break;
-                            case CherrygramAppearanceConfig.TAB_STYLE_PILLS:
-                                value = getString(R.string.AP_Tab_Style_Pills);
-                                break;
-                            default:
-                            case CherrygramAppearanceConfig.TAB_STYLE_ROUNDED:
-                                value = getString(R.string.AP_Tab_Style_Rounded);
-                                break;
-                        }
-                        textCell.setTextAndValue(getString(R.string.AP_Tab_Style), value, true);
-                    }
-                    break;
-            }
-        }
-
-        @Override
-        public boolean isEnabled(RecyclerView.ViewHolder holder) {
-            int type = holder.getItemViewType();
-            return type == VIEW_TYPE_SWITCH || type == VIEW_TYPE_TEXT_SETTING;
-        }
-
-        @NonNull
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view;
-            switch (viewType) {
-                case VIEW_TYPE_HEADER:
-                    view = new HeaderCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case VIEW_TYPE_SWITCH:
-                    view = new TextCheckCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case VIEW_TYPE_TEXT_SETTING:
-                    view = new TextSettingsCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case VIEW_TYPE_PREVIEW:
-                    foldersPreviewCell = new FoldersPreviewCell(mContext);
-                    foldersPreviewCell.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-                    return new RecyclerListView.Holder(foldersPreviewCell);
-                case VIEW_TYPE_SHADOW:
-                default:
-                    view = new ShadowSectionCell(mContext);
-                    break;
-            }
-            view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-            return new RecyclerListView.Holder(view);
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == foldersHeaderRow) {
-                return VIEW_TYPE_HEADER;
-            } else if (position == folderNameAppHeaderRow || position == hideAllChatsTabRow || position == hideCounterRow || position == addStrokeRow) {
-                return VIEW_TYPE_SWITCH;
-            } else if (position == tabIconTypeRow || position == tabStyleRow) {
-                return VIEW_TYPE_TEXT_SETTING;
-            } else if (position == foldersPreviewRow) {
-                return VIEW_TYPE_PREVIEW;
-            }
-            return VIEW_TYPE_SHADOW;
-        }
-    }
-
-    @Override
-    public void didReceivedNotification(int id, int account, final Object... args) {
-        if (id == NotificationCenter.emojiLoaded) {
-            if (listView != null) {
-                listView.invalidateViews();
-            }
-        }
-    }
 }

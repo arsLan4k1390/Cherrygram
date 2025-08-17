@@ -111,6 +111,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -3462,7 +3463,7 @@ public class AndroidUtilities {
                 view.setTranslationX(0);
             }
         });
-        va.setDuration(300);
+        va.setDuration(500);
         va.start();
         view.setTag(R.id.shake_animation, va);
     }

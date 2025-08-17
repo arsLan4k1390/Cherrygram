@@ -286,8 +286,6 @@
     <string name="SP_Header_Privacy">Прыватнасць</string>
     <string name="SP_NoProxyPromo">Не паказваць спонсара проксі</string>
     <string name="SP_GoogleAnalytics_Desc">Уключыўшы гэта, усе збоі дадаткаў (вылеты) і статыстыка будуць адпраўлены ў \"console.firebase.google.com\" для далейшага вывучэння распрацоўнікам.</string>
-    <string name="SP_CleanOld">Ачысціць стары кэш (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">Паспяхова выдалена</string>
     <string name="SP_AskPinBeforeDelete">Пацвярждаць выдаленне біяметрыкай.</string>
     <string name="SP_AskPinBeforeDelete_Desc">Калі вы захаціце выдаліць чат ці гісторыю, будзе патрабавацца пацверджане біяметрыяй. Код і біяметрыка ў сістэме павінны быць уключаны.</string>
     <string name="SP_AllowUseSystemPasscode">Выкарыстоўваць сістэмны Код/Узор</string>

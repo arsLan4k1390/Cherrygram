@@ -293,12 +293,6 @@
     <string name="SP_Header_Privacy">Приватност</string>
     <string name="SP_NoProxyPromo">Не приказуј спонзора проксија</string>
     <string name="SP_GoogleAnalytics_Desc">Ако ово омогућите, сва отказивања апликације и статистике биће пријављени на „console.firebase.google.com” ради даљег прегледа од стране програмера.</string>
-    <string name="SP_CleanOld">Уклони стару кеш меморију (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">Успешно уклоњено</string>
-    <string name="SP_AskPinForChats">Захтевај биометријску потврду за отварање ћаскања</string>
-    <string name="SP_AskPinForChats_Desc">Системска лозинка (отисак прста, откључавање лицем, PIN или шаблон) ће бити потребна за приступање одређеним ћаскањима. Да бисте омогућили, додирните 3 тачке унутар ћаскања.</string>
-    <string name="SP_AskPinForArchive">Захтевај биометријску потврду за отварање архиве</string>
-    <string name="SP_AskPinForArchive_Desc">Системска лозинка (отисак прста, идентификација лица, PIN или шаблон) ће бити потребна за приступ архивираним ћаскањима.</string>
     <string name="SP_AskPin">Захтевај лозинку</string>
     <string name="SP_DoNotAskPin">Не захтевај лозинку</string>
     <string name="SP_AskPinBeforeDelete">Захтевај биометријску потврду за брисање ћаскања</string>

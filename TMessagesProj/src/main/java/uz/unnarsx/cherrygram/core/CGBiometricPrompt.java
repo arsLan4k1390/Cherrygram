@@ -12,7 +12,6 @@ package uz.unnarsx.cherrygram.core;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.app.Activity;
-import android.content.Context;
 import android.hardware.biometrics.BiometricManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
@@ -22,13 +21,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.FingerprintController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.support.fingerprint.FingerprintManagerCompat;
-import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
 
@@ -79,7 +78,7 @@ public class CGBiometricPrompt {
 
     public static void callBiometricPrompt(Activity activity, CGBiometricListener listener) {
         BiometricPrompt prompt = new BiometricPrompt(
-                LaunchActivity.instance,
+                (FragmentActivity) activity,
                 ContextCompat.getMainExecutor(activity),
                 createCallback(
                         listener::onSuccess,
@@ -157,7 +156,7 @@ public class CGBiometricPrompt {
     private static final ArrayList<BiometricPrompt> pendingAuths = new ArrayList<>();
     private static final String TAG = "FingerprintUtils";
 
-    public static void fixFingerprint(Context context, CGBiometricListener callback) {
+    public static void fixFingerprint(Activity activity, CGBiometricListener callback) {
         if (Build.VERSION.SDK_INT < 23) {
             callback.onFailed();
             return;
@@ -170,8 +169,8 @@ public class CGBiometricPrompt {
         cancelPendingAuthentications();
 
         BiometricPrompt prompt = new BiometricPrompt(
-                LaunchActivity.instance,
-                ContextCompat.getMainExecutor(context),
+                (FragmentActivity) activity,
+                ContextCompat.getMainExecutor(activity),
                 createCallback(
                         result -> {
                             Log.d(TAG, "PasscodeView onAuthenticationSucceeded");

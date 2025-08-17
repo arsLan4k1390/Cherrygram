@@ -32,7 +32,7 @@ import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
 
 object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
-    context = SupervisorJob() + Dispatchers.Main.immediate
+    context = SupervisorJob() + Dispatchers.Default
 ) {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
@@ -120,7 +120,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var lastDonatesCheckTime by sharedPreferences.long("CG_LastDonatesCheckTime", 0)
     /** Misc finish*/
 
-    init {
+    fun init() {
         launch {
             if (ApplicationLoader.checkPlayServices()) {
                 FirebaseApp.initializeApp(ApplicationLoader.applicationContext)

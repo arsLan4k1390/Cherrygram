@@ -21,6 +21,7 @@ import org.telegram.ui.LaunchActivity;
 
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.preferences.FiltersPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.GeminiPreferencesBottomSheet;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.misc.Constants;
@@ -46,7 +47,6 @@ public class DeeplinkHelper {
         if (segments.size() == 1) {
             var segment = segments.get(0).toLowerCase(Locale.US);
             switch (segment) {
-                case "cg_settings", "cg_main" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createMainMenu();
                 case "cg_about" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createAbout();
                 case "cg_appearance" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createAppearance();
                 case "cg_camera", "cg_cam" -> fragment = new CameraPreferencesEntry();
@@ -55,7 +55,12 @@ public class DeeplinkHelper {
                 case "cg_donate", "cg_donates", "cg_support", "cg_badge" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createDonate();
                 case "cg_drawer" -> fragment = new DrawerPreferencesEntry();
                 case "cg_experimental" -> fragment = new ExperimentalPreferencesEntry();
+                case "cg_filter", "cg_filters" -> fragment = new FiltersPreferencesEntry();
                 case "cg_folders", "cg_tabs" -> fragment = new FoldersPreferencesEntry();
+                case "cg_gemini" -> {
+                    GeminiPreferencesBottomSheet.showAlert(fragment);
+                    return;
+                }
                 case "cg_general" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createGeneral();
                 case "cg_premium" -> {
                     // Fuckoff :)
@@ -67,6 +72,7 @@ public class DeeplinkHelper {
                     AppRestartHelper.triggerRebirth(fragment.getContext(), new Intent(fragment.getContext(), LaunchActivity.class));
                     return;
                 }
+                case "cg_settings", "cg_main" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createMainMenu();
                 case "cg_update", "cg_upgrade", "update", "upgrade" -> {
                     if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
                         Browser.openUrl(fragment.getContext(), Constants.UPDATE_APP_URL);
@@ -94,10 +100,6 @@ public class DeeplinkHelper {
                 }
                 case "cg_username_limits" -> {
                     fragment.showDialog(new LimitReachedBottomSheet(fragment, fragment.getContext(), LimitReachedBottomSheet.TYPE_PUBLIC_LINKS, fragment.getCurrentAccount(), fragment.getResourceProvider()));
-                    return;
-                }
-                case "cg_gemini" -> {
-                    GeminiPreferencesBottomSheet.showAlert(fragment);
                     return;
                 }
                 default -> {

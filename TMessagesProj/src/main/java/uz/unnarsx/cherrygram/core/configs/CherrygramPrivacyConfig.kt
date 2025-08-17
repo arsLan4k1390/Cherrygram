@@ -22,7 +22,7 @@ import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.long
 
 object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
-    context = SupervisorJob() + Dispatchers.Main.immediate
+    context = SupervisorJob() + Dispatchers.Default
 ) {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
@@ -35,6 +35,7 @@ object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
     /** Passcode lock start **/
     var hideArchiveFromChatsList by sharedPreferences.boolean("SP_HideArchiveFromChatsList", false)
     var askBiometricsToOpenArchive by sharedPreferences.boolean("SP_AskBiometricsToOpenArchive", false)
+    var askBiometricsToOpenEncrypted by sharedPreferences.boolean("SP_AskBiometricsToOpenEncrypted", false)
     var askBiometricsToOpenChat by sharedPreferences.boolean("SP_AskBiometricsToOpenChat", false)
     var askPasscodeBeforeDelete by sharedPreferences.boolean("SP_AskPinBeforeDelete", false)
     var allowSystemPasscode by sharedPreferences.boolean("SP_AllowSystemPasscode", false)
@@ -44,7 +45,7 @@ object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
     var reTgCheck by sharedPreferences.boolean("SP_ReTgCheck", true)
     /** Misc **/
 
-    init {
+    fun init() {
         launch {
             if (googleAnalytics && ApplicationLoader.checkPlayServices()) {
                 FirebaseAnalyticsHelper.start(ApplicationLoader.applicationContext)

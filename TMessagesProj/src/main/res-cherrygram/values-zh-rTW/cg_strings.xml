@@ -326,15 +326,10 @@
     <string name="SP_Header_Privacy">隱私權</string>
     <string name="SP_NoProxyPromo">移除代理伺服器廣告</string>
     <string name="SP_GoogleAnalytics_Desc">啟用此功能後，所有的當機日誌和統計資料都會上傳至「console.firebase.google.com」，以供開發人員分析和改善應用程式。</string>
-    <string name="SP_CleanOld">刪除舊快取 (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">刪除成功</string>
-    <string name="SP_AskPinForChats">需要生物辨識才能開啟對話</string>
-    <string name="SP_AskPinForChats_Desc">開啟某些特定對話可能需要輸入密碼/進行生物辨識確認 (如指紋、Face ID、PIN 碼或圖案解鎖)。如要啟用對話鎖定功能，可以按一下在對話的右上角三個點。</string>
     <string name="SP_LockedChats">鎖定的對話</string>
     <string name="SP_LockedChats_Lock_Destination">更新鎖定清單</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">將被鎖定</string>
     <string name="SP_AskPinForArchive">需要生物辨識才能開啟已封存對話</string>
-    <string name="SP_AskPinForArchive_Desc">開啟已封存對話可能需要輸入密碼/進行生物辨識確認 (如指紋、Face ID、PIN 碼或圖案解鎖)。</string>
     <string name="SP_HideArchive">從對話清單中隱藏已封存記錄</string>
     <string name="SP_HideArchive_Desc">已封存記錄將偽裝為 Cherrygram 頻道。 \n您可以從側邊欄或長按搜尋按鈕以開啟已封存記錄。</string>
     <string name="SP_AskPin">需要密碼</string>

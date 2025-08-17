@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
@@ -276,7 +277,7 @@ public abstract class BaseCell extends ViewGroup implements SizeNotifierFrameLay
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        applyRippleIfNeeded();
+        if (AndroidUtilities.isTablet()) applyRippleIfNeeded();
     }
     /** Cherrygram finish */
 

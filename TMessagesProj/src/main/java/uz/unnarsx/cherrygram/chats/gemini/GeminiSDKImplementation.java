@@ -203,7 +203,14 @@ public class GeminiSDKImplementation {
                     "Do not include any introductions, labels, or closing remarks. " +
                     "Return only the summary as plain text. The text to summarize:" : " ";
 
-            String textPrompt = summarizeString + inputText.toString();
+            String textPrompt;
+            if (summarize) {
+                textPrompt = summarizeString + inputText.toString();
+            } else {
+                String systemPrompt = CherrygramChatsConfig.INSTANCE.getGeminiSystemPrompt();
+                textPrompt = systemPrompt + " " + inputText;
+            }
+
             content.addText(textPrompt);
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + textPrompt);
         }

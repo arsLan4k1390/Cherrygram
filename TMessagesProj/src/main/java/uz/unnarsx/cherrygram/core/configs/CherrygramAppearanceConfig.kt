@@ -11,9 +11,6 @@ package uz.unnarsx.cherrygram.core.configs
 
 import android.app.Activity
 import android.content.SharedPreferences
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.SharedConfig
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
@@ -23,9 +20,7 @@ import uz.unnarsx.cherrygram.core.icons.icon_replaces.VkIconReplace
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
 
-object CherrygramAppearanceConfig: CoroutineScope by CoroutineScope(
-    context = SupervisorJob() + Dispatchers.Main.immediate
-) {
+object CherrygramAppearanceConfig {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 

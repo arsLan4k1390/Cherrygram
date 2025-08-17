@@ -783,5 +783,5 @@ public class AvatarDrawable extends Drawable {
     public void setIgnorePaintAlpha(boolean ignorePaintAlpha) {
         this.ignorePaintAlpha = ignorePaintAlpha;
     }
-    /** Cherrygram finish*/
+    /** Cherrygram finish */
 }

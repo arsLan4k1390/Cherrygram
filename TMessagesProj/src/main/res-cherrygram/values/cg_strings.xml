@@ -291,6 +291,8 @@
         \n\nAfter that, open any chat, type a message and hold down the send message button.
         \n\nMoreover, you can reply to a message using AI as well. To do this, tap on any text message in the chat.
     </string>
+    <string name="CP_GeminiAI_System_Prompt">System prompt</string>
+    <string name="CP_GeminiAI_System_Prompt_Desc">The system prompt defines Gemini\'s style and behavior. You can edit the text to control the format of responses.</string>
     <string name="CP_GeminiAI_Temperature">Temperature</string>
     <string name="CP_GeminiAI_Temperature_Desc">Control the creativity of the text. Low values make the text more predictable and focused, high values - more random and original.</string>
     <string name="CP_GeminiAI_ExtractText">Extract Text (OCR)</string>
@@ -298,6 +300,27 @@
 
     <string name="CP_Header_Record">Media</string>
     <string name="CP_Messages_Size">Messages bubble size</string>
+
+    <string name="CP_Message_Filtering">Message filtering</string>
+    <string name="CP_Message_Filtering_Filter">Enable filter</string>
+    <string name="CP_Message_Filtering_Filter_Desc">When the filter is enabled, selected words in incoming messages will automatically be hidden under a spoiler effect, making them unreadable until revealed.</string>
+    <string name="CP_Message_Filtering_Field">Enter words to filter</string>
+    <string name="CP_Message_Filtering_Field_Desc">Separate words with a comma, space, or line break. Case insensitive.</string>
+    <string name="CP_Message_Filtering_Translit">Translit detection</string>
+    <string name="CP_Message_Filtering_Translit_Desc">When enabled, the filter will also detect words written in transliteration (for example, \"test\" will be recognized as \"тест\").
+        This helps to catch and hide messages under a spoiler even if Cyrillic letters are replaced with Latin ones. May slightly increase device CPU load.
+    </string>
+    <string name="CP_Message_Filtering_Exact_Words">Exact word match</string>
+    <string name="CP_Message_Filtering_Exact_Words_Desc">When enabled, only words that fully match those in the filter list will be hidden.
+        If a word appears in a different form (with prefixes, endings, or inside other words), it will not be hidden.
+    </string>
+    <string name="CP_Message_Filtering_HideBlocked">Hide messages from blocked users</string>
+    <string name="CP_Message_Filtering_HideBlockedDesc">When enabled, all messages and forwarded messages from blocked users will automatically be hidden under a spoiler.</string>
+    <string name="CP_Message_Filtering_HideAll">Entire message spoiler</string>
+    <string name="CP_Message_Filtering_HideAllDesc">Hides the entire message text and media under a spoiler if it contains a filtered word.</string>
+    <string name="CP_Message_Filtering_Collapse">Collapse messages</string>
+    <string name="CP_Message_Filtering_Collapse_Desc">When enabled, messages will automatically be collapsed. You can expand them by tapping on the message.</string>
+
     <string name="CP_Slider_MediaAmplifier">Photos and videos</string>
     <string name="CP_Slider_MediaAmplifier_Hint">Does not work with albums (grouped media)</string>
     <string name="CP_SpoilersOnMedia">Spoiler effect</string>
@@ -378,18 +401,15 @@
     <string name="SP_GoogleAnalytics" translatable="false">Google Analytics</string>
     <string name="SP_GoogleAnalytics_Desc">By enabling this, all application crashes and statistics will be reported to \"console.firebase.google.com\" for further review by the developer.</string>
 
-    <string name="SP_CleanOld">Remove old cache (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">Removed successfully</string>
+    <string name="SP_AskBioToOpenChats">Ask for biometrics to open chats</string>
+    <string name="SP_AskBioToOpenChats_Desc">System password (fingerprint, face id, PIN or pattern) will be required to access selected type of chats.</string>
 
-    <string name="SP_AskPinForChats">Require biometrics to open a chat</string>
-    <string name="SP_AskPinForChats_Desc">System password (fingerprint, face id, PIN or pattern) will be required to access specific chats. To enable this, tap the three-dots menu inside a chat.</string>
     <string name="SP_LockedChats">Locked chats</string>
     <string name="SP_LockedChats_Lock_Destination">to update the locked list</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">will be locked</string>
-    <string name="SP_AskPinForArchive">Require biometrics to open an archive</string>
-    <string name="SP_AskPinForArchive_Desc">System password (fingerprint, face id, PIN or pattern) will be required to access archived chats.</string>
     <string name="SP_HideArchive">Hide archive from chats list</string>
     <string name="SP_HideArchive_Desc">The archive will be masked as Cherrygram channel. \nYou will be able to open archive from drawer or by long tap on search button.</string>
+
     <string name="SP_AskPin">Require password</string>
     <string name="SP_DoNotAskPin">Don\'t require password</string>
 
@@ -435,8 +455,8 @@
     <string name="DP_DonateBadge">Donate and unlock bonuses</string>
     <string name="DP_Donate_Desc">When you donate $2 or more, you\'ll receive an epic badge next to your name.
     Send a payment confirmation to <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> or in the <![CDATA[<a href="https://t.me/CherrygramSupport">Cherrygram Support chat</a>]]> to get it.
-    If your donation is $5 or more, you\'ll also get a bonus gift — a quick access button to the \"Gift Market\" in the side menu.</string>
-    <string name="DP_Donate_Bulletin">**%s** contributed to **Cherrygram\'s** success!</string>
+    If your donation is $5 or more, you\'ll also get a bonus gift — a quick access button to the \"Gift Market\" in the side menu and unlock \"<![CDATA[<a href="tg://cg_filters">Message filter</a>]]>\" feature.</string>
+    <string name="DP_Donate_Bulletin">**%s** supported **Cherrygram\'s** development!</string>
 
     <string name="DP_Support">Like Cherrygram? Support it!</string>
     <string name="DP_SupportOptions">Support options</string>
@@ -448,6 +468,9 @@
     \nIt helps promote the app and support the project — I would really appreciate it! ❤️</string>
 
     <string name="DP_Donate_Method">Choose a method</string>
+
+    <string name="DP_Donate_Exclusive">Exclusive for supporters</string>
+    <string name="DP_Donate_ExclusiveDesc">Support the project and unlock all features.</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 

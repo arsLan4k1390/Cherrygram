@@ -89,6 +89,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-mlkit-subject-segmentation:16.0.0-beta1'
     implementation 'com.google.android.gms:play-services-mlkit-image-labeling:16.0.8'
 
+//    implementation 'com.google.mlkit:translate:17.0.3'
+
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0") {
             because("kotlin-stdlib-jdk7 is now a part of kotlin-stdlib")
@@ -159,6 +161,10 @@ android {
                 arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
             }
         }
+
+        def cherryVersion = project.getProperty("APP_VERSION_NAME_CHERRY")
+        buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"${cherryVersion}\""
+        buildConfigField "String", "GIT_COMMIT_HASH", "\"${getGitHash()}\""
     }
 
     buildTypes {
@@ -169,13 +175,13 @@ android {
 //            multiDexEnabled true
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro', '../TMessagesProj/proguard-rules-beta.pro'
 //            ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"" + APP_VERSION_NAME_CHERRY + "\""
             buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
 //            buildConfigField "String", "APP_CENTER_HASH", "\"\""
 //            buildConfigField "String", "BETA_URL", "\"" + getProps("BETA_PRIVATE_URL") + "\""
             buildConfigField "boolean", "DEBUG_VERSION", "true"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
+            buildConfigField "int", "VERSION_NUM", "0"
         }
 
         standalone {
@@ -184,13 +190,13 @@ android {
 //            multiDexEnabled true
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
 //            ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"" + APP_VERSION_NAME_CHERRY + "\""
             buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
 //            buildConfigField "String", "APP_CENTER_HASH", "\"\""
 //            buildConfigField "String", "BETA_URL", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "false"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
+            buildConfigField "int", "VERSION_NUM", "6"
         }
 
         release {
@@ -200,21 +206,16 @@ android {
 //            multiDexEnabled true
 //            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
 //            ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING_CHERRY", "\"" + APP_VERSION_NAME_CHERRY + "\""
             buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
 //            buildConfigField "String", "APP_CENTER_HASH", "\"\""
 //            buildConfigField "String", "BETA_URL", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "false"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
             buildConfigField "boolean", "BUILD_HOST_IS_WINDOWS", isWindows
+            buildConfigField "int", "VERSION_NUM", "7"
         }
     }
     namespace 'org.telegram.messenger'
-
-
-    defaultConfig {
-        buildConfigField "String", "GIT_COMMIT_HASH", "\"${getGitHash()}\""
-    }
 }
 
 

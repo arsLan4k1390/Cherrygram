@@ -152,6 +152,10 @@ public class ApplicationLoader extends Application {
         return applicationLoaderInstance.isBeta();
     }
 
+    public static boolean isAndroidTestEnvironment() {
+        return applicationLoaderInstance.isAndroidTestEnv();
+    }
+
     protected boolean isHuaweiBuild() {
         return false;
     }
@@ -161,6 +165,10 @@ public class ApplicationLoader extends Application {
     }
 
     protected boolean isBeta() {
+        return false;
+    }
+
+    protected boolean isAndroidTestEnv() {
         return false;
     }
 
@@ -241,7 +249,7 @@ public class ApplicationLoader extends Application {
         SharedConfig.loadConfig();
         hasPlayServices = checkPlayServices();
         CameraXUtils.loadCameraXSizes();
-        if (!CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
+        /*if (!CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
             Continuation<Object> suspendResult = new Continuation<>() {
                 @NonNull
                 @Override
@@ -255,7 +263,7 @@ public class ApplicationLoader extends Application {
                 }
             };
             KotlinFragmentsManager.INSTANCE.checkConnection(suspendResult);
-        }
+        }*/
         SharedPrefsHelper.init(applicationContext);
         for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) { //TODO improve account
             UserConfig.getInstance(a).loadConfig();

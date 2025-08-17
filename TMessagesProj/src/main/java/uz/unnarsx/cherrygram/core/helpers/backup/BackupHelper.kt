@@ -19,7 +19,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.content.edit
-import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import org.json.JSONException
@@ -125,8 +124,6 @@ object BackupHelper {
             handleError(context, e)
         }
     }
-
-    private val gson = Gson()
 
     private fun shareFile(context: Context, fileToShare: File, caption: String = "") {
         val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -243,7 +240,9 @@ object BackupHelper {
             "CP_ShowCopyPhoto", "CP_ShowCopyPhotoAsSticker", "CP_ShowClearFromCache", "CP_ShowForward",
             "CP_ShowForward_WO_Authorship", "CP_ShowViewHistory", "CP_ShowSaveMessage", "CP_ShowReport",
             "CP_ShowJSON", "CP_JacksonJSON_Provider", "CP_Slider_MediaAmplifier", "CP_Slider_StickerAmplifier",
-            "CP_Slider_GifsAmplifier", "CP_TimeOnStick", "CP_DeleteForAll", "CP_ForwardMsgDate", "AP_PencilIcon",
+            "CP_Slider_GifsAmplifier", "CP_EnableMsgFilter", "CP_MsgFiltersElements",
+            "CP_MsgFiltersMatchExactWord", "CP_MsgFiltersHideFromBlocked1", "CP_MsgFiltersHideAll", "CP_MsgFiltersCollapseAutomatically",
+            "CP_TimeOnStick", "CP_DeleteForAll", "CP_ForwardMsgDate", "AP_PencilIcon",
             "CP_LeftBottomButtonAction", "CP_DoubleTapAction", "CP_MessageSlideAction", "CP_LargePhotos",
             "CP_SpoilersOnMedia", "CP_VoicesAGC", "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration",
             "CP_VideoSeekDuration", "CP_Notification_Sound", "CP_VibrationInChats", "CP_SilenceNonContacts",

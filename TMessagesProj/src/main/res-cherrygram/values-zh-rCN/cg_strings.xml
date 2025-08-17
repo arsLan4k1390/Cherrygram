@@ -310,12 +310,6 @@
     <string name="SP_Header_Privacy">隐私</string>
     <string name="SP_NoProxyPromo">移除代理赞助商</string>
     <string name="SP_GoogleAnalytics_Desc">开启此功能后，所有的崩溃日志和统计数据都会上传至 “console.firebase.google.com”，供给开发者分析和优化本应用</string>
-    <string name="SP_CleanOld">删除旧缓存 (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">删除成功</string>
-    <string name="SP_AskPinForChats">需要生物识别才能打开聊天</string>
-    <string name="SP_AskPinForChats_Desc">需要系统密码（指纹、面部识别码、PIN 码或图案）才能访问特定聊天。要启用，请点击聊天中的 3 个点。</string>
-    <string name="SP_AskPinForArchive">需要生物识别才能打开归案</string>
-    <string name="SP_AskPinForArchive_Desc">需要系统密码（指纹、面部识别码、PIN 码或图案）才能访问归档的聊天记录。</string>
     <string name="SP_HideArchive">从聊天列表中隐藏归档</string>
     <string name="SP_HideArchive_Desc">该归档将被屏蔽为 Cherrygram 频道。 \n您将能够从抽屉或长按搜索按钮打开归档。</string>
     <string name="SP_AskPin">需要密码</string>

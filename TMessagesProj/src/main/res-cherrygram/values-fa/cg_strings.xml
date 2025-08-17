@@ -326,15 +326,9 @@
     <string name="SP_Header_Privacy">حریم خصوصی</string>
     <string name="SP_NoProxyPromo">عدم نمایش حامی پروکسی</string>
     <string name="SP_GoogleAnalytics_Desc">با فعال کردن این گزینه، تمامی خطاها و آمارهای برنامه به \"console.firebase.google.com\" گزارش داده خواهند شد تا توسط توسعه‌دهنده بررسی بیشتری صورت گیرد.</string>
-    <string name="SP_CleanOld">حذف حافظه پنهان قدیمی (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">با موفقیت حذف شد</string>
-    <string name="SP_AskPinForChats">نیاز به زیست‌سنجی برای بازکردن یک گفتگو</string>
-    <string name="SP_AskPinForChats_Desc">گذرواژه سیستم (اثر انگشت، شناسه چهره، گذرواژه عددی یا الگو) برای دسترسی به گفتگوهای خاص مورد لازم است. برای فعال کردن، روی 3 نقطه داخل گفتگو ضربه بزنید.</string>
     <string name="SP_LockedChats">گفتگوهای قفل شده</string>
     <string name="SP_LockedChats_Lock_Destination">برای به‌روزرسانی فهرست قفل شده</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">قفل خواهد شد</string>
-    <string name="SP_AskPinForArchive">نیاز به زیست‌سنجی برای باز کردن بایگانی</string>
-    <string name="SP_AskPinForArchive_Desc">گذرواژه سیستم (اثر انگشت، شناسه چهره، رمز عددی یا الگو) برای دسترسی به گفتگوهای بایگانی شده مورد نیاز است.</string>
     <string name="SP_HideArchive">پنهان کردن بایگانی از فهرست گفتگوها</string>
     <string name="SP_HideArchive_Desc">بایگانی در قالب کانال Cherrygram پوشانده می شود. \nشما می توانید بایگانی را از کشو یا با ضربه طولانی روی دکمه جستجو باز کنید.</string>
     <string name="SP_AskPin">گذرواژه لازم باشد</string>

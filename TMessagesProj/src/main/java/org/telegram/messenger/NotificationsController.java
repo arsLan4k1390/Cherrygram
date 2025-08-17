@@ -97,6 +97,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.function.Consumer;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
+import uz.unnarsx.cherrygram.chats.helpers.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.VibrateUtil;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
@@ -2427,7 +2428,12 @@ public class NotificationsController extends BaseController {
         if (messageObject != null && messageObject.didSpoilLoginCode()) {
             return stringBuilder.toString();
         }
-        var entities = ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(messageObject);
+        var entities = messageObject.messageOwner.entities;
+        if (ChatsPasswordHelper.INSTANCE.isChatLocked(messageObject) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(messageObject)) {
+            entities = ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(messageObject);
+        } else {
+            entities = MessagesFilterHelper.INSTANCE.addSpoilerEntities(messageObject);
+        }
         for (int i = 0; i < entities.size(); i++) {
             if (entities.get(i) instanceof TLRPC.TL_messageEntitySpoiler) {
                 TLRPC.TL_messageEntitySpoiler spoiler = (TLRPC.TL_messageEntitySpoiler) entities.get(i);
@@ -5364,8 +5370,10 @@ public class NotificationsController extends BaseController {
 
                                     if (!TextUtils.isEmpty(messageObject.caption)) {
                                         String finalText = messageObject.caption.toString();
-                                        if (ChatsPasswordHelper.INSTANCE.isChatLocked(lastMessageObject)) {
+                                        if (ChatsPasswordHelper.INSTANCE.isChatLocked(lastMessageObject) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(lastMessageObject)) {
                                             finalText = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(messageObject.caption.toString(), true);
+                                        } else if (lastMessageObject.shouldBlockMessage()) {
+                                            finalText = MessagesFilterHelper.INSTANCE.addSpoilerEntities(messageObject.caption.toString());
                                         }
                                         messagingStyle.addMessage(finalText, ((long) messageObject.messageOwner.date) * 1000, person);
                                     }

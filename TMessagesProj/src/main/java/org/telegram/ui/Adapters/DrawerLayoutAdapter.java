@@ -480,7 +480,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
             if (text == null) {
                 return;
             }
-            KotlinFragmentsManager.INSTANCE.vnwpoih23nkjhqj(text);
+            /*KotlinFragmentsManager.INSTANCE.vnwpoih23nkjhqj(text);*/
         }
 
         @Keep

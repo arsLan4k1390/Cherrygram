@@ -79,19 +79,18 @@ object CGChatMenuInjector {
     fun injectCherrygramShortcuts(
         headerItem: ActionBarMenuItem,
         currentChat: TLRPC.Chat?,
-        currentUser: TLRPC.User?
+        currentUser: TLRPC.User?,
+        secretChat: Boolean
     ) {
-        val isAnyButtonEnabled = CherrygramPrivacyConfig.askBiometricsToOpenChat || CherrygramChatsConfig.shortcut_JumpToBegin
+        val requireBiometrics = CherrygramPrivacyConfig.askBiometricsToOpenChat && !secretChat
+        val isAnyButtonEnabled = requireBiometrics || CherrygramChatsConfig.shortcut_JumpToBegin
                     || CherrygramChatsConfig.shortcut_DeleteAll || CherrygramChatsConfig.shortcut_SavedMessages
                     || CherrygramChatsConfig.shortcut_Blur || CherrygramChatsConfig.shortcut_Browser
 
         if (isAnyButtonEnabled) headerItem.lazilyAddColoredGap()
 
-        if (ChatsPasswordHelper.shouldRequireBiometricsToOpenChats()) {
-            if (
-                currentUser != null && currentUser.id != 0L && ChatsPasswordHelper.isChatLocked(currentUser.id)
-                || currentChat != null && currentChat.id != 0L && ChatsPasswordHelper.isChatLocked(currentChat.id)
-            ) {
+        if (requireBiometrics) {
+            if (ChatsPasswordHelper.shouldRequireBiometrics(currentUser?.id ?: 0, currentChat?.id ?: 0, 0)) {
                 headerItem.lazilyAddSubItem(
                     ChatActivityHelper.OPTION_DO_NOT_ASK_PASSCODE,
                     R.drawable.msg_secret,

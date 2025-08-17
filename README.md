@@ -121,6 +121,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Direct Share button (Select where to show the button),
 - Configure message menu,
 - Configure messages bubble size (Photos/Videos, Stickers and GIFs),
+- Message filter (hide messages under a spoiler by keywords),
 - Hide time on stickers,
 - Use "Delete for all" by default,
 - Show forwarded message date,
@@ -158,10 +159,8 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
 *Cherrygram Security Preferences:*
 - Enable/Disable Google Analytics,
-- Delete old cache folder (/sdcard/Telegram),
 - Delete your Telegram account,
 - Hide archive from chats list,
-- Require biometrics to open archive,
 - Require biometrics to open specific chats,
 - Require biometrics to delete chats.
 

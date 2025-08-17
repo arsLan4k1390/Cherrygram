@@ -11,14 +11,14 @@ package uz.unnarsx.cherrygram.preferences.tgkit.preference.types;
 
 public enum TGPType {
     SECTION(0, false),
-    SETTINGS_CELL(2, true),
-    HEADER(2, false),
+    HEADER(1, false),
+    TEXT_ICON(2, true),
     SWITCH(3, true),
-    TEXT_DETAIL(4, true),
-    TEXT_ICON(5, true),
-    SLIDER(6, true),
-    LIST(7, true),
-    HINT(8, true);
+    SETTINGS_CELL(4, true),
+    LIST(4, true),
+    HINT(5, true),
+    TEXT_DETAIL(6, true),
+    SLIDER(7, true);
 
     public final int adapterType;
     public final boolean enabled;

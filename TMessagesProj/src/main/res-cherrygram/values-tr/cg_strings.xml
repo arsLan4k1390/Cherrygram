@@ -326,15 +326,9 @@
     <string name="SP_Header_Privacy">Gizlilik</string>
     <string name="SP_NoProxyPromo">Proxy sponsorunu gösterme</string>
     <string name="SP_GoogleAnalytics_Desc">Bunu etkinleştirerek, tüm uygulama çökmeleri ve istatistikleri geliştirici tarafından daha fazla inceleme için \"console.firebase.google.com\"a bildirilir.</string>
-    <string name="SP_CleanOld">Eski önbelleği kaldır (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">Başarıyla kaldırıldı</string>
-    <string name="SP_AskPinForChats">Sohbeti açmak için biyometrik doğrulama iste</string>
-    <string name="SP_AskPinForChats_Desc">Belirli sohbetlere erişmek için sistem şifresi (parmak izi, yüz tanıma, PIN veya desen) gereklidir. Etkinleştirmek için sohbetteki 3 noktaya dokunun.</string>
     <string name="SP_LockedChats">Kilitli sohbetler</string>
     <string name="SP_LockedChats_Lock_Destination">kilitli listeyi güncellemek için</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">kilitlenecek</string>
-    <string name="SP_AskPinForArchive">Arşivi açmak için biyometrik doğrulama iste</string>
-    <string name="SP_AskPinForArchive_Desc">Arşivlenmiş sohbetlere erişmek için sistem şifresi (parmak izi, yüz tanıma, PIN veya desen) gereklidir.</string>
     <string name="SP_HideArchive">Arşivi sohbet listesinden gizle</string>
     <string name="SP_HideArchive_Desc">Arşiv, Cherrygram kanalı olarak maskelenir. \nÇekmeceden veya arama düğmesine uzun basarak arşivi açabilirsiniz.</string>
     <string name="SP_AskPin">Şifre iste</string>

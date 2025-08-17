@@ -36,7 +36,6 @@ import android.text.TextUtils;
 import android.text.style.CharacterStyle;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.util.Pair;
 import android.util.SparseArray;
 
@@ -106,6 +105,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
+import uz.unnarsx.cherrygram.chats.helpers.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 
@@ -5437,6 +5437,15 @@ public class MediaDataController extends BaseController {
         }
     }
 
+    public boolean containsTopPeer(long uid) {
+        for (int a = 0; a < hints.size(); a++) {
+            if (DialogObject.getPeerDialogId(hints.get(a).peer) == uid) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void removePeer(long uid) {
         for (int a = 0; a < hints.size(); a++) {
             if (hints.get(a).peer.user_id == uid) {
@@ -6888,7 +6897,11 @@ public class MediaDataController extends BaseController {
     }
 
     public static void addTextStyleRuns(MessageObject msg, Spannable text) {
-        addTextStyleRuns(msg.messageOwner.entities, msg.messageText, text, -1);
+        if (ChatsPasswordHelper.INSTANCE.isChatLocked(msg) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(msg)) {
+            addTextStyleRuns(ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(msg), msg.messageText, text, -1);
+        } else {
+            addTextStyleRuns(MessagesFilterHelper.INSTANCE.addSpoilerEntities(msg), msg.messageText, text, -1);
+        }
     }
 
     public static void addTextStyleRuns(TLRPC.DraftMessage msg, Spannable text, int allowedFlags) {
@@ -6896,11 +6909,11 @@ public class MediaDataController extends BaseController {
     }
 
     public static void addTextStyleRuns(MessageObject msg, Spannable text, int allowedFlags) {
-        addTextStyleRuns(msg.messageOwner.entities, msg.messageText, text, allowedFlags);
-    }
-
-    public static void addTextStyleRunsWithSpoiler(MessageObject msg, Spannable text, int allowedFlags) {
-        addTextStyleRuns(ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(msg), msg.messageText, text, allowedFlags);
+        if (ChatsPasswordHelper.INSTANCE.isChatLocked(msg) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(msg)) {
+            addTextStyleRuns(ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(msg), msg.messageText, text, allowedFlags);
+        } else {
+            addTextStyleRuns(MessagesFilterHelper.INSTANCE.addSpoilerEntities(msg), msg.messageText, text, allowedFlags);
+        }
     }
 
     public static void addTextStyleRuns(ArrayList<TLRPC.MessageEntity> entities, CharSequence messageText, Spannable text) {
@@ -9778,18 +9791,6 @@ public class MediaDataController extends BaseController {
                 return null;
             }
         }
-    }
-
-    private static final int ADAPTIVE_SIZE = AndroidUtilities.dp(108);
-    private static final int ADAPTIVE_SIDE_SIZE = AndroidUtilities.dp(18);
-
-    public static Bitmap convertBitmapToAdaptive(Bitmap bitmap) {
-        Drawable bitmapDrawable = new BitmapDrawable(ApplicationLoader.applicationContext.getResources(), bitmap);
-        Bitmap result = Bitmap.createBitmap(ADAPTIVE_SIZE, ADAPTIVE_SIZE, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(result);
-        bitmapDrawable.setBounds(ADAPTIVE_SIDE_SIZE, ADAPTIVE_SIDE_SIZE, ADAPTIVE_SIZE - ADAPTIVE_SIDE_SIZE, ADAPTIVE_SIZE - ADAPTIVE_SIDE_SIZE);
-        bitmapDrawable.draw(canvas);
-        return result;
     }
 
     public static class SearchStickersKey {

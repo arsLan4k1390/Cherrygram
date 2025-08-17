@@ -281,8 +281,6 @@
     <string name="SP_Header_Privacy">Privatsphäre</string>
     <string name="SP_NoProxyPromo">Proxy-Sponsor nicht anzeigen</string>
     <string name="SP_GoogleAnalytics_Desc">Wenn Sie dies aktivieren, werden alle Anwendungsabstürze und -statistiken an \"console.firebase.google.com\" gemeldet, um eine weitere Überprüfung durch den Entwickler zu erhalten.</string>
-    <string name="SP_CleanOld">Alten Cache löschen (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">Erfolgreich gelöscht</string>
     <string name="SP_AskPinBeforeDelete">Fragen nach biometrischer Bestätigung, bevor Sie einen Chat löschen.</string>
     <string name="SP_AskPinBeforeDelete_Desc">Um einen Chat oder den Verlauf zu löschen wird eine biometrische Bestätigung benötigt. Zugangscode und biometrische Bestätigung im System müssen aktiviert sein.</string>
     <string name="SP_AllowUseSystemPasscode">Benutze System-PIN/Muster</string>

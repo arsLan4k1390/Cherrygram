@@ -276,8 +276,6 @@
     <string name="SP_Header_Privacy">الخصوصية</string>
     <string name="SP_NoProxyPromo">لا تظهر راعي الوكيل (البروكسي)</string>
     <string name="SP_GoogleAnalytics_Desc">من خلال تمكين هذا الخيار، سيتم الإبلاغ عن جميع أعطال التطبيق والإحصائيات إلى \"console.firebase.google.com\" للمزيد من المراجعات بواسطة المطور.</string>
-    <string name="SP_CleanOld">إزالة ذاكرة التخزين المؤقت القديمة (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">تمت إزالته بنجاح</string>
     <string name="SP_AskPinBeforeDelete">أطلب التأكيد البيومتري قبل حذف الدردشة.</string>
     <string name="SP_AskPinBeforeDelete_Desc">إذا كنت تريد حذف محادثة أو مسح السجل، فستكون هناك حاجة إلى تأكيد البيومترية. يلزم تمكين رمز المرور والتأكيد البيومتري في النظام.</string>
     <string name="SP_AllowUseSystemPasscode">السماح باستخدام رمز المرور/نمط النظام</string>

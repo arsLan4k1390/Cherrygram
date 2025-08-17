@@ -327,15 +327,9 @@
     <string name="SP_Header_Privacy">Privacidad</string>
     <string name="SP_NoProxyPromo">No mostrar patrocinador del proxy</string>
     <string name="SP_GoogleAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"console.firebase.google.com\" para que el desarrollador las revise.</string>
-    <string name="SP_CleanOld">Eliminar caché antigua (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">Eliminado con éxito</string>
-    <string name="SP_AskPinForChats">Requiere biometría para abrir un chat</string>
-    <string name="SP_AskPinForChats_Desc">Se requerirá contraseña del sistema (huella digital, id cara, PIN o patrón) para acceder a chats específicos. Para habilitar, toque en 3 puntos dentro del chat.</string>
     <string name="SP_LockedChats">Chats bloqueados</string>
     <string name="SP_LockedChats_Lock_Destination">actualizar la lista bloqueada</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">se bloqueará</string>
-    <string name="SP_AskPinForArchive">Requiere biometría para abrir el archivo</string>
-    <string name="SP_AskPinForArchive_Desc">Se requerirá la contraseña del sistema (huella digital, id cara, PIN o patrón) para acceder a chats archivados.</string>
     <string name="SP_HideArchive">Ocultar archivo de la lista de chats</string>
     <string name="SP_HideArchive_Desc">El archivo se enmascarará como un canal de Cherrygram. \nUsted será capaz de abrir el archivo desde el cajón o pulsando largo en el botón de búsqueda.</string>
     <string name="SP_AskPin">Requiere contraseña</string>

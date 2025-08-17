@@ -263,7 +263,14 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                     }
                 }
                 if (r > l) {
-                    pinnedBackgroundPaint.setColor(Theme.getColor(Theme.key_chats_pinnedOverlay, resourcesProvider));
+                    int overlay = Theme.getColor(Theme.key_chats_pinnedOverlay, resourcesProvider);
+                    int offset = tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? dp(2.66f) : 0;
+                    if (Theme.isCurrentThemeDark()) {
+                        pinnedBackgroundPaint.setColor(tabStyle < CherrygramAppearanceConfig.TAB_STYLE_VKUI ? overlay : 0);
+                    } else {
+                        pinnedBackgroundPaint.setColor(tabStyle < CherrygramAppearanceConfig.TAB_STYLE_VKUI ? Theme.blendOver(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider), overlay) : 0);
+                    }
+
                     AndroidUtilities.rectTmp.set(l, (getHeight() - dp(38)) / 2f, r, (getHeight() + dp(38)) / 2f);
                     canvas.drawRoundRect(AndroidUtilities.rectTmp, dp(6), dp(6), pinnedBackgroundPaint);
 
@@ -274,7 +281,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                     if (pinIconColor != pinColor) {
                         pinIcon.setColorFilter(new PorterDuffColorFilter(pinIconColor = pinColor, PorterDuff.Mode.SRC_IN));
                     }
-                    pinIcon.setBounds((int) (l + dp(4)), (int) (AndroidUtilities.rectTmp.top + dp(2.66f)), (int) (l + dp(4 + 9.66f)), (int) (AndroidUtilities.rectTmp.top + dp(2.66f + 9.66f)));
+                    pinIcon.setBounds((int) (l + dp(4)), (int) (AndroidUtilities.rectTmp.top + dp(2.66f) + offset), (int) (l + dp(4 + 9.66f)), (int) (AndroidUtilities.rectTmp.top + dp(2.66f + 9.66f) + offset));
                     pinIcon.draw(canvas);
                 }
             }
@@ -1883,5 +1890,5 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
 
     /** Cherrygram start*/
     int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
-    /** Cherrygram finish*/
+    /** Cherrygram finish */
 }

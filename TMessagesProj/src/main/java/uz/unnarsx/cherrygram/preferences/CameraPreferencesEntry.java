@@ -11,7 +11,6 @@ package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.LocaleController.getString;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Size;
 import android.view.View;
@@ -26,7 +25,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -54,11 +52,12 @@ import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
-public class CameraPreferencesEntry extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
+public class CameraPreferencesEntry extends BaseFragment {
 
     private int rowCount;
     private ListAdapter listAdapter;
     private RecyclerListView listView;
+
     private int cameraTypeHeaderRow;
     private int cameraTypeSelectorRow;
     private int cameraAdviseRow;
@@ -77,21 +76,28 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
     private int exposureSliderRow;
     private int cameraControlButtonsRow;
     private int rearCamRow;
+    private int rearCamRowDivisorRow;
 
     public LinearLayoutManager layoutManager;
 
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
-        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.emojiLoaded);
         updateRowsId(true);
         return true;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (listAdapter != null) {
+            listAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
-        NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.emojiLoaded);
     }
 
     protected boolean hasWhiteActionBar() {
@@ -276,7 +282,176 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
         return fragmentView;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    private class ListAdapter extends RecyclerListView.SelectionAdapter {
+
+        private final Context mContext;
+
+        private final int VIEW_TYPE_SHADOW = 0;
+        private final int VIEW_TYPE_HEADER = 1;
+        //        private final int VIEW_TYPE_TEXT_CELL = 2;
+        private final int VIEW_TYPE_TEXT_CHECK = 3;
+        private final int VIEW_TYPE_TEXT_SETTINGS = 4;
+        private final int VIEW_TYPE_TEXT_INFO_PRIVACY = 5;
+        //        private final int VIEW_TYPE_TEXT_DETAIL_SETTINGS = 6;
+        private final int VIEW_TYPE_CAMERA_SELECTOR = 7;
+
+        ListAdapter(Context context) {
+            mContext = context;
+        }
+
+        @Override
+        public int getItemCount() {
+            return rowCount;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            switch (holder.getItemViewType()) {
+                case VIEW_TYPE_SHADOW:
+                    holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                    break;
+                case VIEW_TYPE_HEADER:
+                    HeaderCell headerCell = (HeaderCell) holder.itemView;
+                    if (position == cameraTypeHeaderRow) {
+                        headerCell.setText(getString(R.string.CP_CameraType));
+                    } else if (position == audioVideoHeaderRow) {
+                        headerCell.setText(getString(R.string.CP_Category_Camera));
+                    } else if (position == videoMessagesHeaderRow) {
+                        headerCell.setText(getString(R.string.CP_Header_Videomessages));
+                    }
+                    break;
+                case VIEW_TYPE_TEXT_CHECK:
+                    TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
+                    textCheckCell.setEnabled(true, null);
+                    if (position == disableAttachCameraRow) {
+                        textCheckCell.setTextAndValueAndCheck(getString(R.string.CP_DisableCam), getString(R.string.CP_DisableCam_Desc), CherrygramCameraConfig.INSTANCE.getDisableAttachCamera(), true, true);
+                    } else if (position == cameraUseDualCameraRow) {
+                        textCheckCell.setTextAndValueAndCheck(getString(R.string.CP_CameraDualCamera), getString(R.string.CP_CameraDualCamera_Desc), CherrygramCameraConfig.INSTANCE.getUseDualCamera(), true, true);
+                    } else if (position == startFromUltraWideRow) {
+                        textCheckCell.setTextAndValueAndCheck(getString(R.string.CP_CameraUW), getString(R.string.CP_CameraUW_Desc), CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam(), true, true);
+                    } else if (position == cameraStabilisationRow) {
+                        textCheckCell.setTextAndCheck(getString(R.string.CP_CameraStabilisation), CherrygramCameraConfig.INSTANCE.getCameraStabilisation(), true);
+                    } else if (position == cameraControlButtonsRow) {
+                        textCheckCell.setTextAndValueAndCheck(getString(R.string.CP_CenterCameraControlButtons), getString(R.string.CP_CenterCameraControlButtons_Desc), CherrygramCameraConfig.INSTANCE.getCenterCameraControlButtons(), true, true);
+                    } else if (position == rearCamRow) {
+                        textCheckCell.setTextAndValueAndCheck(getString(R.string.CP_RearCam), getString(R.string.CP_RearCam_Desc), CherrygramCameraConfig.INSTANCE.getRearCam(), true, true);
+                    }
+                    break;
+                case VIEW_TYPE_TEXT_SETTINGS:
+                    TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
+                    textSettingsCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+
+                    if (position == cameraAspectRatioRow) {
+                        textSettingsCell.setTextAndValue(getString(R.string.CP_CameraAspectRatio), CGResourcesHelper.INSTANCE.getCameraAspectRatio(), true);
+                    } else if (position == cameraXQualityRow) {
+                        textSettingsCell.setTextAndValue(getString(R.string.CP_CameraQuality), CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p", true);
+                    } else if (position == cameraXFpsRangeRow) {
+                        textSettingsCell.setTextAndValue("FPS", CGResourcesHelper.INSTANCE.getCameraXFpsRange(), true);
+                    } else if (position == exposureSliderRow) {
+                        textSettingsCell.setTextAndValue(getString(R.string.CP_ExposureSliderPosition), CGResourcesHelper.INSTANCE.getExposureSliderPosition(), true);
+                    }
+                    break;
+                case VIEW_TYPE_TEXT_INFO_PRIVACY:
+                    TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
+                    textInfoPrivacyCell.setBottomPadding(16);
+                    if (position == cameraAdviseRow) {
+                        textInfoPrivacyCell.setText(CGResourcesHelper.INSTANCE.getCameraAdvise());
+                    }
+                    break;
+                case VIEW_TYPE_CAMERA_SELECTOR:
+                    /*CameraTypeSelector cameraTypeSelector = (CameraTypeSelector) holder.itemView;
+                    if (position == cameraAdviseRow) {
+
+                    }*/
+                    break;
+            }
+        }
+
+        @Override
+        public boolean isEnabled(RecyclerView.ViewHolder holder) {
+            int type = holder.getItemViewType();
+            return type == VIEW_TYPE_TEXT_CHECK || type == VIEW_TYPE_TEXT_SETTINGS;
+        }
+
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view;
+            switch (viewType) {
+                case VIEW_TYPE_SHADOW:
+                    view = new ShadowSectionCell(mContext);
+                    break;
+                case VIEW_TYPE_HEADER:
+                    view = new HeaderCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case VIEW_TYPE_TEXT_CHECK:
+                    view = new TextCheckCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case VIEW_TYPE_TEXT_SETTINGS:
+                    view = new TextSettingsCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                case VIEW_TYPE_TEXT_INFO_PRIVACY:
+                    view = new TextInfoPrivacyCell(mContext);
+                    break;
+                case VIEW_TYPE_CAMERA_SELECTOR:
+                    view = new CameraTypeSelector(mContext) {
+                        @Override
+                        protected void onSelectedCamera(int cameraSelected) {
+                            super.onSelectedCamera(cameraSelected);
+
+                            CherrygramCameraConfig.INSTANCE.setCameraType(cameraSelected);
+
+                            updateRowsId(false);
+
+                            listAdapter.notifyItemChanged(cameraAdviseRow);
+
+                            listAdapter.notifyItemChanged(disableAttachCameraRow);
+                            listAdapter.notifyItemChanged(cameraAspectRatioRow);
+                            listAdapter.notifyItemChanged(audioVideoDivisorRow);
+
+                            listAdapter.notifyItemChanged(cameraXQualityRow);
+                            listAdapter.notifyItemChanged(cameraUseDualCameraRow);
+                            listAdapter.notifyItemChanged(startFromUltraWideRow);
+                            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) listAdapter.notifyItemChanged(cameraXFpsRangeRow);
+                            listAdapter.notifyItemChanged(cameraStabilisationRow);
+                            listAdapter.notifyItemChanged(exposureSliderRow);
+                            listAdapter.notifyItemChanged(cameraControlButtonsRow);
+
+                            listAdapter.notifyItemChanged(rearCamRow);
+                            listAdapter.notifyItemChanged(rearCamRowDivisorRow);
+                        }
+                    };
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + viewType);
+            }
+            view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+            return new RecyclerListView.Holder(view);
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (position == audioVideoDivisorRow || position == rearCamRowDivisorRow) {
+                return VIEW_TYPE_SHADOW;
+            } else if (position == cameraTypeHeaderRow || position == audioVideoHeaderRow || position == videoMessagesHeaderRow) {
+                return VIEW_TYPE_HEADER;
+            } else if (position == disableAttachCameraRow || position == cameraUseDualCameraRow || position == startFromUltraWideRow || position == cameraStabilisationRow || position == cameraControlButtonsRow || position == rearCamRow) {
+                return VIEW_TYPE_TEXT_CHECK;
+            } else if (position == cameraAspectRatioRow || position == cameraXQualityRow || position == cameraXFpsRangeRow || position == exposureSliderRow) {
+                return VIEW_TYPE_TEXT_SETTINGS;
+            } else if (position == cameraAdviseRow) {
+                return VIEW_TYPE_TEXT_INFO_PRIVACY;
+            } else if (position == cameraTypeSelectorRow) {
+                return VIEW_TYPE_CAMERA_SELECTOR;
+            }
+            return VIEW_TYPE_SHADOW;
+        }
+    }
+
     private void updateRowsId(boolean notify) {
         rowCount = 0;
 
@@ -332,180 +507,11 @@ public class CameraPreferencesEntry extends BaseFragment implements Notification
         } else {
             rearCamRow = rowCount++;
         }
+        rearCamRowDivisorRow = rowCount++;
 
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (listAdapter != null) {
-            listAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private class ListAdapter extends RecyclerListView.SelectionAdapter {
-        private final Context mContext;
-
-        public ListAdapter(Context context) {
-            mContext = context;
-        }
-
-        @Override
-        public int getItemCount() {
-            return rowCount;
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            switch (holder.getItemViewType()) {
-                case 1:
-                    holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
-                    break;
-                case 2:
-                    HeaderCell headerCell = (HeaderCell) holder.itemView;
-                    if (position == cameraTypeHeaderRow) {
-                        headerCell.setText(getString(R.string.CP_CameraType));
-                    } else if (position == audioVideoHeaderRow) {
-                        headerCell.setText(getString(R.string.CP_Category_Camera));
-                    } else if (position == videoMessagesHeaderRow) {
-                        headerCell.setText(getString(R.string.CP_Header_Videomessages));
-                    }
-                    break;
-                case 3:
-                    TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
-                    textCheckCell.setEnabled(true, null);
-                    if (position == disableAttachCameraRow) {
-                        textCheckCell.setTextAndValueAndCheck(getString(R.string.CP_DisableCam), getString(R.string.CP_DisableCam_Desc), CherrygramCameraConfig.INSTANCE.getDisableAttachCamera(), true, true);
-                    } else if (position == cameraUseDualCameraRow) {
-                        textCheckCell.setTextAndValueAndCheck(getString(R.string.CP_CameraDualCamera), getString(R.string.CP_CameraDualCamera_Desc), CherrygramCameraConfig.INSTANCE.getUseDualCamera(), true, true);
-                    } else if (position == startFromUltraWideRow) {
-                        textCheckCell.setTextAndValueAndCheck(getString(R.string.CP_CameraUW), getString(R.string.CP_CameraUW_Desc), CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam(), true, true);
-                    } else if (position == cameraStabilisationRow) {
-                        textCheckCell.setTextAndCheck(getString(R.string.CP_CameraStabilisation), CherrygramCameraConfig.INSTANCE.getCameraStabilisation(), true);
-                    } else if (position == cameraControlButtonsRow) {
-                        textCheckCell.setTextAndValueAndCheck(getString(R.string.CP_CenterCameraControlButtons), getString(R.string.CP_CenterCameraControlButtons_Desc), CherrygramCameraConfig.INSTANCE.getCenterCameraControlButtons(), true, true);
-                    } else if (position == rearCamRow) {
-                        textCheckCell.setTextAndValueAndCheck(getString(R.string.CP_RearCam), getString(R.string.CP_RearCam_Desc), CherrygramCameraConfig.INSTANCE.getRearCam(), true, true);
-                    }
-                    break;
-                case 6:
-                    TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
-                    if (position == cameraAdviseRow) {
-                        textInfoPrivacyCell.setText(CGResourcesHelper.INSTANCE.getCameraAdvise());
-                    }
-                    break;
-                case 7:
-                    TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
-                    textSettingsCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                    TextSettingsCell textCell = (TextSettingsCell) holder.itemView;
-                    textCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                    if (position == cameraAspectRatioRow) {
-                        textCell.setTextAndValue(getString(R.string.CP_CameraAspectRatio), CGResourcesHelper.INSTANCE.getCameraAspectRatio(), true);
-                    } else if (position == cameraXQualityRow) {
-                        textSettingsCell.setTextAndValue(getString(R.string.CP_CameraQuality), CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p", true);
-                    } else if (position == cameraXFpsRangeRow) {
-                        textCell.setTextAndValue("FPS", CGResourcesHelper.INSTANCE.getCameraXFpsRange(), true);
-                    } else if (position == exposureSliderRow) {
-                        textCell.setTextAndValue(getString(R.string.CP_ExposureSliderPosition), CGResourcesHelper.INSTANCE.getExposureSliderPosition(), true);
-                    }
-                    break;
-            }
-        }
-
-        @Override
-        public boolean isEnabled(RecyclerView.ViewHolder holder) {
-            int type = holder.getItemViewType();
-            return type == 3 || type == 7;
-        }
-
-        @NonNull
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view;
-            switch (viewType) {
-                case 2:
-                    view = new HeaderCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case 3:
-                    view = new TextCheckCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case 5:
-                    view = new CameraTypeSelector(mContext) {
-                        @Override
-                        protected void onSelectedCamera(int cameraSelected) {
-                            super.onSelectedCamera(cameraSelected);
-
-                            CherrygramCameraConfig.INSTANCE.setCameraType(cameraSelected);
-
-                            updateRowsId(false);
-
-                            listAdapter.notifyItemChanged(cameraAdviseRow);
-
-                            listAdapter.notifyItemChanged(disableAttachCameraRow);
-                            listAdapter.notifyItemChanged(cameraAspectRatioRow);
-                            listAdapter.notifyItemChanged(audioVideoDivisorRow);
-
-                            listAdapter.notifyItemChanged(cameraXQualityRow);
-                            listAdapter.notifyItemChanged(cameraUseDualCameraRow);
-                            listAdapter.notifyItemChanged(startFromUltraWideRow);
-                            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) listAdapter.notifyItemChanged(cameraXFpsRangeRow);
-                            listAdapter.notifyItemChanged(cameraStabilisationRow);
-                            listAdapter.notifyItemChanged(exposureSliderRow);
-                            listAdapter.notifyItemChanged(cameraControlButtonsRow);
-
-                            listAdapter.notifyItemChanged(rearCamRow);
-                        }
-                    };
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                case 6:
-                    TextInfoPrivacyCell textInfoPrivacyCell = new TextInfoPrivacyCell(mContext);
-                    textInfoPrivacyCell.setBottomPadding(16);
-                    view = textInfoPrivacyCell;
-                    break;
-                case 7:
-                    view = new TextSettingsCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    break;
-                default:
-                    view = new ShadowSectionCell(mContext);
-                    break;
-            }
-            view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-            return new RecyclerListView.Holder(view);
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == audioVideoDivisorRow) {
-                return 1;
-            } else if (position == cameraTypeHeaderRow || position == audioVideoHeaderRow || position == videoMessagesHeaderRow) {
-                return 2;
-            } else if (position == disableAttachCameraRow || position == cameraUseDualCameraRow || position == startFromUltraWideRow || position == cameraStabilisationRow || position == cameraControlButtonsRow || position == rearCamRow) {
-                return 3;
-            } else if (position == cameraTypeSelectorRow) {
-                return 5;
-            } else if (position == cameraAdviseRow) {
-                return 6;
-            } else if (position == cameraAspectRatioRow || position == cameraXQualityRow || position == cameraXFpsRangeRow || position == exposureSliderRow) {
-                return 7;
-            }
-            return 1;
-        }
-    }
-
-    @Override
-    public void didReceivedNotification(int id, int account, final Object... args) {
-        if (id == NotificationCenter.emojiLoaded) {
-            if (listView != null) {
-                listView.invalidateViews();
-            }
-        }
-    }
 }

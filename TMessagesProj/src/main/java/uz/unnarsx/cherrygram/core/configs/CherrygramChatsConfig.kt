@@ -27,7 +27,7 @@ import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
 
 object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
-    context = SupervisorJob() + Dispatchers.Main.immediate
+    context = SupervisorJob() + Dispatchers.Default
 ) {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
@@ -62,6 +62,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Gemini AI start **/
     var geminiApiKey by sharedPreferences.string("CP_GeminiApiKey", " ")
     var geminiModelName by sharedPreferences.string("CP_GeminiModelName", " ")
+    var geminiSystemPrompt by sharedPreferences.string("CP_GeminiSystemPrompt", " ")
     var geminiTemperatureValue by sharedPreferences.int("CP_GeminiTemperature", 5)
     /** Gemini AI finish **/
 
@@ -101,6 +102,16 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
     var slider_gifsAmplifier by sharedPreferences.int("CP_Slider_GifsAmplifier", 100)
     /** Messages size finish **/
+
+    /** Messages filter start **/
+    var enableMsgFilters by sharedPreferences.boolean("CP_EnableMsgFilter", false)
+    var msgFiltersElements by sharedPreferences.string("CP_MsgFiltersElements", "")
+    var msgFiltersDetectTranslit by sharedPreferences.boolean("CP_MsgFiltersDetectTranslit", false)
+    var msgFiltersMatchExactWord by sharedPreferences.boolean("CP_MsgFiltersMatchExactWord", false)
+    var msgFiltersHideFromBlocked by sharedPreferences.boolean("CP_MsgFiltersHideFromBlocked1", false)
+    var msgFiltersHideAll by sharedPreferences.boolean("CP_MsgFiltersHideAll", false)
+    var msgFiltersCollapseAutomatically by sharedPreferences.boolean("CP_MsgFiltersCollapseAutomatically", false)
+    /** Messages filter finish **/
 
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
     var deleteForAll by sharedPreferences.boolean("CP_DeleteForAll", false)
@@ -190,7 +201,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var lastStickersCheckTime by sharedPreferences.long("CG_LastStickersCheckTime", 0)
     /** Misc finish **/
 
-    init {
+    fun init() {
         launch {
             StickersManager.startAutoRefresh(ApplicationLoader.applicationContext)
             StickersManager.copyStickerFromAssets()

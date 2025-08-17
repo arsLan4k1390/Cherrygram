@@ -280,6 +280,8 @@
         \n\nПосле этого перейдите в любой чат, введите сообщение и зажмите кнопку отправки сообщений.
         \n\nТакже, вы можете ответить на сообщение с помощью AI. Для этого нажмите на любое текстовое сообщение в чате.
     </string>
+    <string name="CP_GeminiAI_System_Prompt">Системный промпт</string>
+    <string name="CP_GeminiAI_System_Prompt_Desc">Системный промпт задаёт стиль и поведение модели Gemini. Вы можете изменить текст и управлять форматом ответов.</string>
     <string name="CP_GeminiAI_Temperature">Температура</string>
     <string name="CP_GeminiAI_Temperature_Desc">Управляйте креативностью текста. Низкие значения делают текст более предсказуемым и сфокусированным, высокие - более случайным и оригинальным.</string>
     <string name="CP_GeminiAI_ExtractText">Извлечь текст (OCR)</string>
@@ -287,6 +289,27 @@
 
     <string name="CP_Header_Record">Медиа</string>
     <string name="CP_Messages_Size">Размер пузыря сообщений</string>
+
+    <string name="CP_Message_Filtering">Фильтрация сообщений</string>
+    <string name="CP_Message_Filtering_Filter">Включить фильтр</string>
+    <string name="CP_Message_Filtering_Filter_Desc">При включённом фильтре выбранные слова во входящих сообщениях будут автоматически скрываться под спойлером, делая их нечитаемыми до раскрытия.</string>
+    <string name="CP_Message_Filtering_Field">Введите слова для фильтрации</string>
+    <string name="CP_Message_Filtering_Field_Desc">Разделяйте слова запятой или пробелом. Регистр не имеет значения.</string>
+    <string name="CP_Message_Filtering_Translit">Обнаружение транслита</string>
+    <string name="CP_Message_Filtering_Translit_Desc">Когда включено, фильтр будет учитывать слова, написанные транслитом (например, \"test\" будет распознано как \"тест\").
+        Это позволяет находить и скрывать сообщения под спойлер даже при замене кириллических букв на латинские. Может слегка увеличить нагрузку на процессор устройства.
+    </string>
+    <string name="CP_Message_Filtering_Exact_Words">Точное совпадение слов</string>
+    <string name="CP_Message_Filtering_Exact_Words_Desc">При включении этой опции будут скрываться только те слова, которые полностью совпадают с указанными в списке фильтрации.
+        Если слово встречается в другом виде (с приставками, окончаниями или внутри других слов), оно не будет скрыто.
+    </string>
+    <string name="CP_Message_Filtering_HideBlocked">Скрывать сообщения от заблокированных пользователей</string>
+    <string name="CP_Message_Filtering_HideBlockedDesc">Если включено, все сообщения и пересланные сообщения от заблокированных пользователей будут автоматически скрываться под спойлер.</string>
+    <string name="CP_Message_Filtering_HideAll">Спойлер на все сообщение</string>
+    <string name="CP_Message_Filtering_HideAllDesc">Скрывает весь текст и медиа сообщения под спойлером, если в нем есть слово из фильтра.</string>
+    <string name="CP_Message_Filtering_Collapse">Сворачивать сообщения</string>
+    <string name="CP_Message_Filtering_Collapse_Desc">Сообщения будут сворачиваться автоматически. Развернуть сообщение можно, нажав на него.</string>
+
     <string name="CP_Slider_MediaAmplifier">Фото и видео</string>
     <string name="CP_Slider_MediaAmplifier_Hint">Не работает с альбомами</string>
     <string name="CP_SpoilersOnMedia">Эффект спойлера</string>
@@ -365,18 +388,15 @@
     <string name="SP_NoProxyPromo">Не показывать спонсора прокси</string>
     <string name="SP_GoogleAnalytics_Desc">Включив это, все сбои приложений (вылеты) и статистика будут отправлены в \"console.firebase.google.com\" для дальнейшего изучения разработчиком.</string>
 
-    <string name="SP_CleanOld">Очистить старый кэш (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">Успешно удалено</string>
+    <string name="SP_AskBioToOpenChats">Запрос биометрии для открытия чатов</string>
+    <string name="SP_AskBioToOpenChats_Desc">Для доступа к выбранным типам чатов потребуется системный пароль (отпечаток, скан лица, PIN или граф. ключ).</string>
 
-    <string name="SP_AskPinForChats">Запрос биометрии для открытия чатов</string>
-    <string name="SP_AskPinForChats_Desc">Для доступа к определенным чатам потребуется системный пароль (отпечаток, скан лица, PIN или граф. ключ). Чтобы включить, нажмите на 3 точки внутри нужного чата.</string>
     <string name="SP_LockedChats">Заблокированные чаты</string>
     <string name="SP_LockedChats_Lock_Destination">для добавления в список заблокированных</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">будет заблокирован(о)</string>
-    <string name="SP_AskPinForArchive">Запрос биометрии для открытия архива</string>
-    <string name="SP_AskPinForArchive_Desc">Для доступа к архивированным чатам потребуется системный пароль (отпечаток, скан лица, PIN или граф. ключ).</string>
     <string name="SP_HideArchive">Скрыть архив из списка чатов</string>
     <string name="SP_HideArchive_Desc">Архив будет замаскирован под канал Cherrygram. \nВы сможете открыть архив из бокового меню или долгим нажатием на кнопку поиска.</string>
+
     <string name="SP_AskPin">Запрашивать пароль</string>
     <string name="SP_DoNotAskPin">Не запрашивать пароль</string>
 
@@ -422,8 +442,8 @@
     <string name="DP_DonateBadge">Поддержите проект и получите бонусы</string>
     <string name="DP_Donate_Desc">При поддержке от 2$ вы получите эпический значок Cherrygram рядом с вашим ником.
     Отправьте подтверждение платежа <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> или в <![CDATA[<a href="https://t.me/CherrygramSupport">чат поддержки Cherrygram</a>]]>, чтобы его получить.
-    Если сумма поддержки составляет 5$ или больше, вы также получите приятный подарок — кнопку быстрого доступа к маркету подарков в боковом меню.</string>
-    <string name="DP_Donate_Bulletin">**%s** внес(ла) вклад в успех **Cherrygram**!</string>
+    Если сумма поддержки составляет 5$ или больше, вы также получите приятный подарок — кнопку быстрого доступа к маркету подарков в боковом меню и разблокируете функцию \"<![CDATA[<a href="tg://cg_filters">Фильтр сообщений</a>]]>\".</string>
+    <string name="DP_Donate_Bulletin">**%s** поддержал(ла) разработку **Cherrygram**!</string>
 
     <string name="DP_Support">Нравится Cherrygram? Поддержите!</string>
     <string name="DP_SupportOptions">Варианты поддержки</string>
@@ -435,6 +455,9 @@
     \Это поможет продвигать приложение и поддержать проект — мне будет очень приятно! ❤️</string>
 
     <string name="DP_Donate_Method">Выберите метод</string>
+
+    <string name="DP_Donate_Exclusive">Эксклюзив для поддержавших</string>
+    <string name="DP_Donate_ExclusiveDesc">Поддержите проект и откройте доступ ко всем возможностям.</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 

@@ -328,15 +328,9 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="SP_Header_Privacy">Privacidade</string>
     <string name="SP_NoProxyPromo">Não mostrar patrocinador proxy</string>
     <string name="SP_GoogleAnalytics_Desc">Ao ativar esta opção, todas as falhas e estatísticas da aplicação serão comunicadas a \"console.firebase.google.com\" para análise posterior pelo programador.</string>
-    <string name="SP_CleanOld">Remover cache antiga (/sdcard/Telegram)</string>
-    <string name="SP_RemovedS">Removido com sucesso</string>
-    <string name="SP_AskPinForChats">Exigir a biometria para abrir um chat</string>
-    <string name="SP_AskPinForChats_Desc">A senha do sistema (impressão digital, reconhecimento facial, PIN ou padrão) será necessária para acessar as conversas específicas. Para ativar, toque nos 3 pontos dentro do chat.</string>
     <string name="SP_LockedChats">Chats bloqueados</string>
     <string name="SP_LockedChats_Lock_Destination">para atualizar a lista de bloqueados</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">será bloqueado</string>
-    <string name="SP_AskPinForArchive">Exigir biometria para abrir um arquivo</string>
-    <string name="SP_AskPinForArchive_Desc">A senha do sistema (impressão digital, reconhecimento facial, PIN ou padrão) será necessária para acessar os chats arquivados.</string>
     <string name="SP_HideArchive">Ocultar arquivos da lista de chats</string>
     <string name="SP_HideArchive_Desc">O arquivo será mascarado como canal Cherrygram. \nVocê poderá abrir o arquivo da gaveta ou tocar longamente no botão de pesquisa.</string>
     <string name="SP_AskPin">Exigir senha</string>

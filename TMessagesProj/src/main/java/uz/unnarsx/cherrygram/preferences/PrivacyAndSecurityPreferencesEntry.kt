@@ -12,9 +12,7 @@ package uz.unnarsx.cherrygram.preferences
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.Environment
 import android.provider.Settings
-import android.widget.Toast
 import androidx.biometric.BiometricPrompt
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.DialogObject
@@ -35,6 +33,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.hint
@@ -42,7 +41,6 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
-import java.io.File
 
 class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.SP_Category_PrivacyAndSecurity)) {
@@ -68,14 +66,18 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
-
             textIcon {
-                title = getString(R.string.SP_CleanOld)
+                title = getString(R.string.SP_DeleteAccount)
+                icon = R.drawable.msg_delete
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    val file = File(Environment.getExternalStorageDirectory(), "Telegram")
-                    file.deleteRecursively()
-                    Toast.makeText(bf.parentActivity, getString(R.string.SP_RemovedS), Toast.LENGTH_SHORT).show()
+                    if (ChatsPasswordHelper.checkFingerprint()) {
+                        CGBiometricPrompt.prompt(bf.parentActivity) {
+                            DeleteAccountDialog.showDeleteAccountDialog(bf)
+                        }
+                    } else {
+                        DeleteAccountDialog.showDeleteAccountDialog(bf)
+                    }
                 }
             }
         }
@@ -92,39 +94,21 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     if (!CherrygramAppearanceConfig.archivedChatsDrawerButton) CherrygramAppearanceConfig.archivedChatsDrawerButton = true
                 }
             }
-            switch {
-                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
-
-                title = getString(R.string.SP_AskPinForArchive)
-                description = getString(R.string.SP_AskPinForArchive_Desc)
-
-                contract({
-                    return@contract CherrygramPrivacyConfig.askBiometricsToOpenArchive
-                }) {
-                    CGBiometricPrompt.prompt(bf.parentActivity) {
-                        CherrygramPrivacyConfig.askBiometricsToOpenArchive = it
-                        bf.parentLayout.rebuildAllFragmentViews(true, true)
-                    }
-                }
-            }
-            switch {
-                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
-
-                title = getString(R.string.SP_AskPinForChats)
-                description = getString(R.string.SP_AskPinForChats_Desc)
-                divider = false
-
-                contract({
-                    return@contract CherrygramPrivacyConfig.askBiometricsToOpenChat
-                }) {
-                    CGBiometricPrompt.prompt(bf.parentActivity) {
-                        CherrygramPrivacyConfig.askBiometricsToOpenChat = it
-                        bf.parentLayout.rebuildAllFragmentViews(true, true)
-                    }
-                }
-            }
             textIcon {
-                isAvailable = CherrygramPrivacyConfig.askBiometricsToOpenChat && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = ChatsPasswordHelper.checkFingerprint()
+
+                title = getString(R.string.SP_AskBioToOpenChats)
+                divider = true
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    CGBiometricPrompt.prompt(bf.parentActivity) {
+                        showPasscodeItemsSelector(bf)
+                    }
+                }
+            }
+            if (ChatsPasswordHelper.checkFingerprint()) hint(getString(R.string.SP_AskBioToOpenChats_Desc))
+            textIcon {
+                isAvailable = CherrygramPrivacyConfig.askBiometricsToOpenChat && ChatsPasswordHelper.checkFingerprint()
 
                 icon = R.drawable.msg_discussion
                 title = getString(R.string.SP_LockedChats)
@@ -211,7 +195,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 icon = R.drawable.fingerprint
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    CGBiometricPrompt.fixFingerprint(bf.context, object : CGBiometricPrompt.CGBiometricListener {
+                    CGBiometricPrompt.fixFingerprint(bf.parentActivity, object : CGBiometricPrompt.CGBiometricListener {
 
                         override fun onSuccess(result: BiometricPrompt.AuthenticationResult) {
                             handle()
@@ -286,16 +270,6 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
             if (Build.VERSION.SDK_INT >= 23) hint(getString(R.string.SP_TestFingerprint_Desc))
         }
 
-        category(getString(R.string.SP_Category_Account)) {
-            textIcon {
-                title = getString(R.string.SP_DeleteAccount)
-                icon = R.drawable.msg_delete
-                listener = TGKitTextIconRow.TGTIListener {
-                    DeleteAccountDialog.showDeleteAccountDialog(bf)
-                }
-            }
-        }
-
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("privacy_preferences_screen")
     }
 
@@ -318,5 +292,66 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
         activity.asLockedChats()
         return activity
     }
+
+    private fun showPasscodeItemsSelector(fragment: BaseFragment) {
+        val menuItems = listOf(
+            MenuItemConfig(
+                getString(R.string.FilterChats),
+                0,
+                { CherrygramPrivacyConfig.askBiometricsToOpenChat },
+                { CherrygramPrivacyConfig.askBiometricsToOpenChat = !CherrygramPrivacyConfig.askBiometricsToOpenChat },
+                true
+            ),
+            MenuItemConfig(
+                getString(R.string.SecretChat),
+                0,
+                { CherrygramPrivacyConfig.askBiometricsToOpenEncrypted },
+                { CherrygramPrivacyConfig.askBiometricsToOpenEncrypted = !CherrygramPrivacyConfig.askBiometricsToOpenEncrypted },
+                true
+            ),
+            MenuItemConfig(
+                getString(R.string.ArchivedChats), //ArchiveSearchFilter
+                0,
+                { CherrygramPrivacyConfig.askBiometricsToOpenArchive },
+                { CherrygramPrivacyConfig.askBiometricsToOpenArchive = !CherrygramPrivacyConfig.askBiometricsToOpenArchive },
+                false
+            ),
+        )
+
+        val prefTitle = ArrayList<String>()
+        val prefIcon = ArrayList<Int>()
+        val prefCheck = ArrayList<Boolean>()
+        val prefDivider = ArrayList<Boolean>()
+        val clickListener = ArrayList<Runnable>()
+
+        for (item in menuItems) {
+            prefTitle.add(item.titleRes)
+            prefIcon.add(item.iconRes)
+            prefCheck.add(item.isChecked())
+            prefDivider.add(item.divider)
+            clickListener.add(Runnable { item.toggle() })
+        }
+
+        PopupHelper.showSwitchAlert(
+            getString(R.string.SelectChats),
+            fragment,
+            prefTitle,
+            prefIcon,
+            prefCheck,
+            null,
+            null,
+            prefDivider,
+            clickListener,
+            null
+        )
+    }
+
+    data class MenuItemConfig(
+        val titleRes: String,
+        val iconRes: Int,
+        val isChecked: () -> Boolean,
+        val toggle: () -> Unit,
+        val divider: Boolean = false
+    )
 
 }

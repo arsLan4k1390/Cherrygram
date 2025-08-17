@@ -544,9 +544,8 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                             args.putLong("user_id", user.id);
                             if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
                                 if (getParentActivity() != null
-                                        && user.id != 0
-                                        && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
                                         && ChatsPasswordHelper.INSTANCE.isChatLocked(user.id)
+                                        && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
                                 ) {
                                     CGBiometricPrompt.prompt(getParentActivity(), () -> {
                                         presentFragment(new ChatActivity(args), needFinishFragment);
@@ -672,9 +671,8 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 args.putLong("user_id", user.id);
                                 if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
                                     if (getParentActivity() != null
-                                            && user.id != 0
-                                            && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
                                             && ChatsPasswordHelper.INSTANCE.isChatLocked(user.id)
+                                            && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
                                     ) {
                                         CGBiometricPrompt.prompt(getParentActivity(), () -> {
                                             presentFragment(new ChatActivity(args), needFinishFragment);

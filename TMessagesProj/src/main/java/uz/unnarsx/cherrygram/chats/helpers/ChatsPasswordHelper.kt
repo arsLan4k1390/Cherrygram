@@ -10,8 +10,10 @@
 package uz.unnarsx.cherrygram.chats.helpers
 
 import android.os.Build
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.telegram.messenger.DialogObject
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.FingerprintController
 import org.telegram.messenger.MessageObject
@@ -21,8 +23,8 @@ import org.telegram.tgnet.TLRPC.MessageEntity
 import org.telegram.tgnet.TLRPC.TL_messageEntitySpoiler
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
-import androidx.core.content.edit
 
 object ChatsPasswordHelper {
 
@@ -46,20 +48,46 @@ object ChatsPasswordHelper {
     fun isChatLocked(chatId: Long): Boolean {
         val lockedChats = getArrayList(PASSCODE_ARRAY)
 
-        return chatId != 0L && (lockedChats.contains(chatId.toString()) || lockedChats.contains("-$chatId"))
+        return CherrygramPrivacyConfig.askBiometricsToOpenChat && chatId != 0L && (lockedChats.contains(chatId.toString()) || lockedChats.contains("-$chatId"))
     }
 
     fun isChatLocked(messageObject: MessageObject): Boolean {
-        return CherrygramPrivacyConfig.askBiometricsToOpenChat
-                && messageObject.messageOwner.message != null
+        return CherrygramPrivacyConfig.askBiometricsToOpenChat && messageObject.messageOwner.message != null
                 && !messageObject.isStoryReactionPush && !messageObject.isStoryPush
                 && !messageObject.isStoryMentionPush && !messageObject.isStoryPushHidden
                 && isChatLocked(messageObject.chatId)
     }
 
-    fun checkLockedChatsEntities(messageObject: MessageObject, original: java.util.ArrayList<MessageEntity>?): java.util.ArrayList<MessageEntity>? {
-        return if (isChatLocked(messageObject)) {
-            val entities = original?.let { java.util.ArrayList(it) }
+    fun isEncryptedChat(chatId: Long): Boolean {
+        if (CherrygramPrivacyConfig.askBiometricsToOpenEncrypted) {
+            val encID = DialogObject.getEncryptedChatId(chatId)
+            val encryptedChat = MessagesController.getInstance(currentAccount).getEncryptedChat(encID)
+            return encryptedChat != null
+        } else {
+            return false
+        }
+    }
+
+    fun isEncryptedChat(messageObject: MessageObject): Boolean {
+        if (CherrygramPrivacyConfig.askBiometricsToOpenEncrypted) {
+            val encID = DialogObject.getEncryptedChatId(messageObject.dialogId)
+            val encryptedChat = MessagesController.getInstance(currentAccount).getEncryptedChat(encID)
+            return messageObject.messageOwner.message != null
+                    && !messageObject.isStoryReactionPush && !messageObject.isStoryPush
+                    && !messageObject.isStoryMentionPush && !messageObject.isStoryPushHidden
+                    && encryptedChat != null
+        } else {
+            return false
+        }
+    }
+
+    fun checkLockedChatsEntities(messageObject: MessageObject): ArrayList<MessageEntity>? {
+        return checkLockedChatsEntities(messageObject, messageObject.messageOwner.entities)
+    }
+
+    fun checkLockedChatsEntities(messageObject: MessageObject, original: ArrayList<MessageEntity>?): ArrayList<MessageEntity>? {
+        return if (isChatLocked(messageObject) || isEncryptedChat(messageObject)) {
+            val entities = original?.let { ArrayList(it) }
             val spoiler = TL_messageEntitySpoiler()
             spoiler.offset = 0
             spoiler.length = messageObject.messageOwner.message.length
@@ -70,11 +98,7 @@ object ChatsPasswordHelper {
         }
     }
 
-    fun checkLockedChatsEntities(messageObject: MessageObject): java.util.ArrayList<MessageEntity>? {
-        return checkLockedChatsEntities(messageObject, messageObject.messageOwner.entities)
-    }
-
-    private var spoilerChars: CharArray = charArrayOf(
+    var spoilerChars: CharArray = charArrayOf(
         '⠌', '⡢', '⢑', '⠨', '⠥', '⠮', '⡑'
     )
 
@@ -97,20 +121,32 @@ object ChatsPasswordHelper {
         return getArrayList(PASSCODE_ARRAY).size
     }
 
+    fun shouldRequireBiometrics(userID: Long, chatID: Long, encID: Long): Boolean {
+        val lockedChat = (userID != 0L && isChatLocked(userID)) || (chatID != 0L && isChatLocked(chatID))
+
+        val encryptedChat = encID != 0L && isEncryptedChat(encID)
+
+        return (lockedChat && shouldRequireBiometricsToOpenChats()) || (encryptedChat && shouldRequireBiometricsToOpenEncryptedChats())
+    }
+
     fun shouldRequireBiometricsToOpenChats(): Boolean {
         if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил shouldRequireBiometricsToOpenChats")
-        return CherrygramPrivacyConfig.askBiometricsToOpenChat &&
+        return CherrygramPrivacyConfig.askBiometricsToOpenChat && checkFingerprint()
                 /*&& getArrayList(Passcode_Array).isNotEmpty()*/
-                Build.VERSION.SDK_INT >= 23 &&
-                CGBiometricPrompt.hasBiometricEnrolled() &&
-                FingerprintController.isKeyReady() &&
-                !FingerprintController.checkDeviceFingerprintsChanged()
+    }
+
+    fun shouldRequireBiometricsToOpenEncryptedChats(): Boolean {
+        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил shouldRequireBiometricsToOpenEncryptedChats")
+        return CherrygramPrivacyConfig.askBiometricsToOpenEncrypted && checkFingerprint()
     }
 
     fun askPasscodeBeforeDelete(): Boolean {
         if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил askPasscodeBeforeDelete")
-        return CherrygramPrivacyConfig.askPasscodeBeforeDelete &&
-                Build.VERSION.SDK_INT >= 23 &&
+        return CherrygramPrivacyConfig.askPasscodeBeforeDelete && checkFingerprint()
+    }
+
+    fun checkFingerprint(): Boolean {
+        return Build.VERSION.SDK_INT >= 23 &&
                 CGBiometricPrompt.hasBiometricEnrolled()
                 && FingerprintController.isKeyReady()
                 && !FingerprintController.checkDeviceFingerprintsChanged()

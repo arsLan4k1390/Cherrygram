@@ -394,11 +394,11 @@ public class Switch extends View {
         int x;
         float y;
         int tx;
-        int width = AndroidUtilities.dp(31);
+        int width = AndroidUtilities.dp(30.5F);
         int thumb;
 
         if (CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle()) {
-            thumb = AndroidUtilities.dp(17.5F); // толщина свитча
+            thumb = AndroidUtilities.dp(17.5F);
             x = (getMeasuredWidth() - width) / 2;
             y = getMeasuredHeight() / 2 - thumb / 2;
 
@@ -457,11 +457,11 @@ public class Switch extends View {
                 colorProgress = progress;
             }
 
-            color1 = processColor(Theme.getColor(trackColorKey, resourcesProvider)); // WTF???
-            color2 = processColor(Theme.getColor(trackCheckedColorKey, resourcesProvider)); // Enabled switch color
-            color3 = processColor(Theme.getColor(Theme.key_alwaysWhite, resourcesProvider)); // Always white inner circle color in all themes
-            color4 = processColor(Theme.getColor(Theme.key_alwaysGray, resourcesProvider)); // Gray color of disabled switch
-            color5 = processColor(Theme.getColor(Theme.key_alwaysGrayDarkTheme, resourcesProvider)); // Dark gray thumb color of disabled switch
+            color1 = processColor(Theme.getColor(trackColorKey, resourcesProvider));
+            color2 = processColor(Theme.getColor(trackCheckedColorKey, resourcesProvider));
+            color3 = processColor(Theme.getColor(Theme.key_alwaysWhite, resourcesProvider));
+            color4 = processColor(Theme.getColor(Theme.key_alwaysGray, resourcesProvider));
+            color5 = processColor(Theme.getColor(Theme.key_alwaysGrayDarkTheme, resourcesProvider));
 
             if (a == 0 && iconDrawable != null && lastIconColor != (isChecked ? color2 : color1)) {
                 iconDrawable.setColorFilter(new PorterDuffColorFilter(lastIconColor = (isChecked ? color2 : color1), PorterDuff.Mode.MULTIPLY));
@@ -489,11 +489,11 @@ public class Switch extends View {
 
             if (CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle()) {
                 rectF.set(x, y, getMeasuredWidth(), getMeasuredHeight() / 2 + thumb / 2);
-                if (!isChecked) { //User gray color when switch is unchecked (disabled)
-                    canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), paint4); // Switch (thumb) color
-                    canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(11), paint4); // Outer (external) circle size and color
+                if (!isChecked) {
+                    canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), paint4);
+                    canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(11), paint4);
 
-                    if (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) { // Use different gray colors in dark and light themes
+                    if (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight()) {
                         canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), paint5);
                         canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(11), paint5);
                     }
@@ -501,7 +501,7 @@ public class Switch extends View {
                 }
                 canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(11), AndroidUtilities.dpf2(11), paint);
                 canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(11), paint);
-            } else { //Telegram style
+            } else {
                 rectF.set(x, y, x + width, y + AndroidUtilities.dpf2(14));
                 canvasToDraw.drawRoundRect(rectF, AndroidUtilities.dpf2(7), AndroidUtilities.dpf2(7), paint);
                 canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dpf2(10), paint);
@@ -553,7 +553,7 @@ public class Switch extends View {
             paint.setColor(((alpha & 0xff) << 24) | ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff));
 
             if (CherrygramAppearanceConfig.INSTANCE.getOneUI_SwitchStyle()) {
-                canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dp(9.5F), paint3); // Inner circle size and color
+                canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dp(9.5F), paint3);
             } else {
                 canvasToDraw.drawCircle(tx, ty, AndroidUtilities.dp(8), paint);
             }
