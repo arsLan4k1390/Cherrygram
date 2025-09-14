@@ -5,6 +5,9 @@ afat/
 build/
 obj/
 /TMessagesProj/jni/security/
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/MessageMenuHelper.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/WindowBlurHelper.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/helpers/MessagesFilterHelper.kt
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/helpers/UserHelper.java
