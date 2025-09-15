@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
 import uz.unnarsx.cherrygram.preferences.ChatsPreferencesEntry;
-import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator;
+import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
 public class PopupHelper {
 
@@ -131,10 +132,10 @@ public class PopupHelper {
 
             linearLayout.addView(textCell);
             int finalA = a;
-            textCell.setOnClickListener(v -> {
+            textCell.setOnClickListener(view -> {
                 if (requireDonate) {
-                    AndroidUtilities.shakeView(v);
-
+                    AndroidUtilities.shakeViewSpring(view);
+                    BotWebViewVibrationEffect.APP_ERROR.vibrate();
                     Bulletin.BulletinWindow.BulletinWindowLayout window = Bulletin.BulletinWindow.make(fragment.getParentActivity());
                     window.setTouchable(true);
 
@@ -145,7 +146,7 @@ public class PopupHelper {
                             getString(R.string.MoreInfo),
                             () -> {
                                 fragment.dismissCurrentDialog();
-                                fragment.presentFragment(CherrygramPreferencesNavigator.INSTANCE.createDonate());
+                                CherrygramPreferencesNavigator.INSTANCE.createDonate(fragment);
                             }
                     ).show();
                 } else {

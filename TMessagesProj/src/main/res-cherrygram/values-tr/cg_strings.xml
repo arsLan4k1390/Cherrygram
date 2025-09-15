@@ -257,8 +257,6 @@
     <string name="CP_Messages_Size">Mesaj baloncuğu boyutu</string>
     <string name="CP_Slider_MediaAmplifier">Fotoğraflar ve videolar</string>
     <string name="CP_Slider_MediaAmplifier_Hint">Albümlerle (gruplandırılmış medya) çalışmaz</string>
-    <string name="CP_SpoilersOnMedia">Spoiler efekti</string>
-    <string name="CP_SpoilersOnMedia_Desc">Özellik devre dışı bırakılırsa, fotoğraflarda ve videolarda spoiler efekti gösterilmez.</string>
     <string name="CP_VoiceEnhancements">Ses İyileştirmeleri</string>
     <string name="CP_VoiceEnhancements_Desc">Gürültü Azaltma ve Ses Normalleştirme</string>
     <string name="CP_PlayVideo">Ses düğmesine basıldığında videoyu oynat</string>
@@ -307,7 +305,6 @@
     <string name="EP_NavigationAnimation">Gezinme animasyonu</string>
     <string name="EP_NavigationAnimationBezier">Klasik</string>
     <string name="EP_NavigationAnimationCrossfading">Çapraz solma efekti</string>
-    <string name="CG_ResidentNotification">Kalıcı bildirim göster</string>
     <string name="EP_PhotosSize">Büyük fotoğraflar gönder (2560px)</string>
     <string name="EP_CustomAppTitle">Uygulama Başlığı</string>
     <string name="EP_CustomChat">Kaydedilen Mesajlar için özel sohbet</string>

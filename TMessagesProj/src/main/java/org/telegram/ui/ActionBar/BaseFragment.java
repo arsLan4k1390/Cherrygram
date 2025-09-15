@@ -61,6 +61,7 @@ import org.telegram.ui.bots.BotWebViewAttachedSheet;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.chats.MessageMenuHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
 import uz.unnarsx.cherrygram.chats.helpers.MessageHelper;
@@ -1347,6 +1348,10 @@ public abstract class BaseFragment {
 
     public ChatActivityHelper getChatActivityHelper() {
         return ChatActivityHelper.getInstance(currentAccount);
+    }
+
+    public MessageMenuHelper getMessageMenuHelper() {
+        return MessageMenuHelper.getInstance(currentAccount);
     }
     /** Cherrygram finish */
 

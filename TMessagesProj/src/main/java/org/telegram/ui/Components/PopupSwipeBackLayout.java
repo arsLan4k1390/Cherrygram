@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.view.GestureDetectorCompat;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -30,6 +31,8 @@ import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.Theme;
 
 import java.util.ArrayList;
+
+import uz.unnarsx.cherrygram.chats.MessageMenuHelper;
 
 public class PopupSwipeBackLayout extends FrameLayout {
     private final static int DURATION = 300;
@@ -108,7 +111,12 @@ public class PopupSwipeBackLayout extends FrameLayout {
                 return false;
             }
         });
-        overlayPaint.setColor(Color.BLACK);
+        if (MessageMenuHelper.getInstance(UserConfig.selectedAccount).allowNewMessageMenu()) {
+            int color = ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_actionBarDefaultSubmenuBackground, resourcesProvider), 0);
+            overlayPaint.setColor(color);
+        } else {
+            overlayPaint.setColor(Color.BLACK);
+        }
     }
 
     /**
@@ -428,7 +436,7 @@ public class PopupSwipeBackLayout extends FrameLayout {
 
         int s = canvas.save();
         mPath.rewind();
-        int rad = AndroidUtilities.dp(6);
+        int rad = AndroidUtilities.dp(MessageMenuHelper.getInstance(UserConfig.selectedAccount).allowNewMessageMenu() ? 18 : 6);
         if (stickToRight) {
             mRect.set(getWidth() - w, y, getWidth(), y + h);
         } else {

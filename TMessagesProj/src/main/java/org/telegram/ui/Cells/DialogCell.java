@@ -480,11 +480,15 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     private boolean hasCall;
     private boolean showTtl;
 
-    private int nameLeft;
-    private int nameWidth;
-    private StaticLayout nameLayout;
+    public boolean isForChannelSubscriberCell;
+    public int namePaddingEnd;
+    public int nameLeft;
+    public int nameWidth;
+    public int nameAdditionalsForChannelSubscriber;
+    public boolean channelShouldUseLineWidth;
+    public StaticLayout nameLayout;
     private boolean nameLayoutFits;
-    private float nameLayoutTranslateX;
+    public float nameLayoutTranslateX;
     private boolean nameLayoutEllipsizeLeft;
     private boolean nameLayoutEllipsizeByGradient;
     private Paint fadePaint;
@@ -749,7 +753,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     private void checkChatTheme() {
         if (message != null && message.messageOwner != null && message.messageOwner.action instanceof TLRPC.TL_messageActionSetChatTheme && lastUnreadState) {
             TLRPC.TL_messageActionSetChatTheme setThemeAction = (TLRPC.TL_messageActionSetChatTheme) message.messageOwner.action;
-            ChatThemeController.getInstance(currentAccount).setDialogTheme(currentDialogId, setThemeAction.emoticon,false);
+            ChatThemeController.getInstance(currentAccount).setDialogTheme(currentDialogId, setThemeAction.theme, false);
         }
     }
 
@@ -1458,7 +1462,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         } else {
                             mess = "";
                         }
-                        Spannable messSpan = new SpannableStringBuilder(mess);
+                        Spannable messSpan = new SpannableString(mess);
                         if (draftMessage != null) {
                             MediaDataController.addTextStyleRuns(draftMessage, messSpan, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
                             if (draftMessage != null && draftMessage.entities != null) {
@@ -1713,7 +1717,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                                         }
                                         messageString = new SpannableStringBuilder(emoji).append(text);
                                     } else {
-                                        SpannableStringBuilder msgBuilder = new SpannableStringBuilder(message.caption);
+                                        SpannableString msgBuilder = new SpannableString(message.caption);
                                         if (message != null && message.messageOwner != null) {
                                             if (message != null) {
                                                 message.spoilLoginCode();
@@ -1758,7 +1762,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                                     } else if (message.messageOwner.media instanceof TLRPC.TL_messageMediaPoll) {
                                         TLRPC.TL_messageMediaPoll mediaPoll = (TLRPC.TL_messageMediaPoll) message.messageOwner.media;
                                         if (mediaPoll.poll.question != null && mediaPoll.poll.question.entities != null) {
-                                            SpannableStringBuilder questionText = new SpannableStringBuilder(mediaPoll.poll.question.text);
+                                            SpannableString questionText = new SpannableString(mediaPoll.poll.question.text);
                                             MediaDataController.addTextStyleRuns(mediaPoll.poll.question.entities, mediaPoll.poll.question.text, questionText);
                                             MediaDataController.addAnimatedEmojiSpans(mediaPoll.poll.question.entities, questionText, Theme.dialogs_messagePaint[paintIndex].getFontMetricsInt());
                                             messageString = new SpannableStringBuilder("\uD83D\uDCCA ").append(questionText);
@@ -1808,11 +1812,11 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                                                 messageString = AndroidUtilities.ellipsizeCenterEnd(messageString, message.highlightedWords.get(0), w, currentMessagePaint, 130);
                                             }
                                         } else {
-                                            SpannableStringBuilder stringBuilder = new SpannableStringBuilder(msgText);
+                                            SpannableString stringBuilder = new SpannableString(msgText);
                                             if (message != null) {
                                                 message.spoilLoginCode();
                                             }
-                                            MediaDataController.addTextStyleRuns(message, stringBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
+                                            MediaDataController.addTextStyleRunsCG(message, stringBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
                                             if (message != null && message.messageOwner != null) {
                                                 MediaDataController.addAnimatedEmojiSpans(message.messageOwner.entities, stringBuilder, currentMessagePaint == null ? null : currentMessagePaint.getFontMetricsInt());
                                             }
@@ -2139,39 +2143,51 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             }
         }
 
+        nameAdditionalsForChannelSubscriber = 0;
         if (drawPremium && emojiStatus.getDrawable() != null) {
             int w = dp(6 + 24 + 6);
             nameWidth -= w;
+            nameAdditionalsForChannelSubscriber += w;
             if (LocaleController.isRTL) {
                 nameLeft += w;
             }
         } else if ((dialogMuted || drawUnmute) && !drawVerified && drawScam == 0) {
             int w = dp(6) + Theme.dialogs_muteDrawable.getIntrinsicWidth();
             nameWidth -= w;
+            nameAdditionalsForChannelSubscriber += w;
             if (LocaleController.isRTL) {
                 nameLeft += w;
             }
         } else if (drawVerified) {
             int w = dp(6) + Theme.dialogs_verifiedDrawable.getIntrinsicWidth();
             nameWidth -= w;
+            nameAdditionalsForChannelSubscriber += w;
             if (LocaleController.isRTL) {
                 nameLeft += w;
             }
         } else if (drawPremium) {
             int w = dp(6 + 24 + 6);
             nameWidth -= w;
+            nameAdditionalsForChannelSubscriber += w;
             if (LocaleController.isRTL) {
                 nameLeft += w;
             }
         } else if (drawScam != 0) {
             int w = dp(6) + (drawScam == 1 ? Theme.dialogs_scamDrawable : Theme.dialogs_fakeDrawable).getIntrinsicWidth();
             nameWidth -= w;
+            nameAdditionalsForChannelSubscriber += w;
             if (LocaleController.isRTL) {
                 nameLeft += w;
             }
         }
         if (drawBotVerified) {
             nameWidth -= dp(21);
+        }
+        if (namePaddingEnd > 0) {
+            nameWidth -= namePaddingEnd;
+            if (LocaleController.isRTL) {
+                nameLeft += namePaddingEnd;
+            }
         }
         try {
             int ellipsizeWidth = nameWidth - dp(12);
@@ -2185,6 +2201,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             if (nameLayoutEllipsizeByGradient) {
                 nameLayoutFits = nameStringFinal.length() == TextUtils.ellipsize(nameStringFinal, Theme.dialogs_namePaint[paintIndex], ellipsizeWidth, TextUtils.TruncateAt.END).length();
                 ellipsizeWidth += dp(48);
+                channelShouldUseLineWidth = nameLayoutFits;
+            } else if (isForChannelSubscriberCell) {
+                channelShouldUseLineWidth = nameStringFinal.length() == TextUtils.ellipsize(nameStringFinal, Theme.dialogs_namePaint[paintIndex], ellipsizeWidth, TextUtils.TruncateAt.END).length();
             }
             nameIsEllipsized = Theme.dialogs_namePaint[paintIndex].measureText(nameStringFinal.toString()) > ellipsizeWidth;
             if (!twoLinesForName) {
@@ -5500,7 +5519,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 if (mess.length() > 150) {
                     mess = mess.subSequence(0, 150);
                 }
-                SpannableStringBuilder msgBuilder = new SpannableStringBuilder(mess);
+                SpannableString msgBuilder = new SpannableString(mess);
                 if (message != null) {
                     message.spoilLoginCode();
                 }
@@ -5526,7 +5545,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 TLRPC.TL_messageMediaPoll mediaPoll = (TLRPC.TL_messageMediaPoll) message.messageOwner.media;
                 if (Build.VERSION.SDK_INT >= 18) {
                     if (mediaPoll.poll.question != null && mediaPoll.poll.question.entities != null) {
-                        SpannableStringBuilder questionText = new SpannableStringBuilder(mediaPoll.poll.question.text.replace('\n', ' '));
+                        SpannableString questionText = new SpannableString(mediaPoll.poll.question.text.replace('\n', ' '));
                         MediaDataController.addTextStyleRuns(mediaPoll.poll.question.entities, mediaPoll.poll.question.text, questionText);
                         MediaDataController.addAnimatedEmojiSpans(mediaPoll.poll.question.entities, questionText, Theme.dialogs_messagePaint[paintIndex].getFontMetricsInt());
                         innerMessage = new SpannableStringBuilder("\uD83D\uDCCA \u2068").append(questionText).append("\u2069");
@@ -5535,7 +5554,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     }
                 } else {
                     if (mediaPoll.poll.question != null && mediaPoll.poll.question.entities != null) {
-                        SpannableStringBuilder questionText = new SpannableStringBuilder(mediaPoll.poll.question.text.replace('\n', ' '));
+                        SpannableString questionText = new SpannableString(mediaPoll.poll.question.text.replace('\n', ' '));
                         MediaDataController.addTextStyleRuns(mediaPoll.poll.question.entities, mediaPoll.poll.question.text, questionText);
                         MediaDataController.addAnimatedEmojiSpans(mediaPoll.poll.question.entities, questionText, Theme.dialogs_messagePaint[paintIndex].getFontMetricsInt());
                         innerMessage = new SpannableStringBuilder("\uD83D\uDCCA ").append(questionText);
@@ -5636,11 +5655,11 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 }
                 mess = AndroidUtilities.replaceNewLines(mess);
             }
-            mess = new SpannableStringBuilder(mess);
+            mess = new SpannableString(mess);
             if (message != null) {
                 message.spoilLoginCode();
             }
-            MediaDataController.addTextStyleRuns(message, (Spannable) mess, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
+            MediaDataController.addTextStyleRunsCG(message, (Spannable) mess, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
             if (message != null && message.messageOwner != null) {
                 MediaDataController.addAnimatedEmojiSpans(message.messageOwner.entities, mess, currentMessagePaint == null ? null : currentMessagePaint.getFontMetricsInt());
             }

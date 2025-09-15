@@ -6897,11 +6897,7 @@ public class MediaDataController extends BaseController {
     }
 
     public static void addTextStyleRuns(MessageObject msg, Spannable text) {
-        if (ChatsPasswordHelper.INSTANCE.isChatLocked(msg) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(msg)) {
-            addTextStyleRuns(ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(msg), msg.messageText, text, -1);
-        } else {
-            addTextStyleRuns(MessagesFilterHelper.INSTANCE.addSpoilerEntities(msg), msg.messageText, text, -1);
-        }
+        addTextStyleRuns(MessagesFilterHelper.INSTANCE.addSpoilerEntities(msg), msg.messageText, text, -1);
     }
 
     public static void addTextStyleRuns(TLRPC.DraftMessage msg, Spannable text, int allowedFlags) {
@@ -6909,6 +6905,10 @@ public class MediaDataController extends BaseController {
     }
 
     public static void addTextStyleRuns(MessageObject msg, Spannable text, int allowedFlags) {
+        addTextStyleRuns(msg.messageOwner.entities, msg.messageText, text, allowedFlags);
+    }
+
+    public static void addTextStyleRunsCG(MessageObject msg, Spannable text, int allowedFlags) {
         if (ChatsPasswordHelper.INSTANCE.isChatLocked(msg) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(msg)) {
             addTextStyleRuns(ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(msg), msg.messageText, text, allowedFlags);
         } else {

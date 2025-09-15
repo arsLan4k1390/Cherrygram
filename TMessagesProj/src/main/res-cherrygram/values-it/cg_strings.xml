@@ -204,7 +204,6 @@
     <string name="EP_NavigationAnimation">Animazione navigazione</string>
     <string name="EP_NavigationAnimationBezier">Classico</string>
     <string name="EP_NavigationAnimationCrossfading">Effetto crossfading</string>
-    <string name="CG_ResidentNotification">Mostra notifica permanente</string>
     <string name="EP_PhotosSize">Invia foto grandi (2560px)</string>
     <string name="EP_CustomAppTitle">Titolo app</string>
     <string name="EP_CustomChat">Chat personalizzata per i Messaggi Salvati</string>

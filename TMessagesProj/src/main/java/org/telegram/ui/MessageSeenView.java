@@ -54,7 +54,7 @@ import java.util.HashMap;
 public class MessageSeenView extends FrameLayout {
 
     ArrayList<Long> peerIds = new ArrayList<>();
-    ArrayList<Integer> dates = new ArrayList<>();
+    public ArrayList<Integer> dates = new ArrayList<>();
     public ArrayList<TLObject> users = new ArrayList<>();
     AvatarsImageView avatarsImageView;
     SimpleTextView titleView;

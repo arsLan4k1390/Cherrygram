@@ -220,8 +220,6 @@
     <string name="CP_HideSendAsChannel">Схаваць \"Адправіць як канал\"</string>
     <string name="CP_HideSendAsChannelDesc">Вы можаце трапіць у гэта меню праз доўгі націск кнопкі Эмодзі/Стыкераў/Анімацый</string>
     <string name="CP_Header_Record">Медыя</string>
-    <string name="CP_SpoilersOnMedia">Эфект спойлера</string>
-    <string name="CP_SpoilersOnMedia_Desc">Эфект спойлера на выявах і відэа не будзе паказвацца, калі гэты пункт адключаны.</string>
     <string name="CP_VoiceEnhancements">Паляпшэнне гуку</string>
     <string name="CP_VoiceEnhancements_Desc">Падаўленне шуму і нармалізацыя голасу</string>
     <string name="CP_PlayVideo">Прайграванне відэа пры націску кнопкі гучнасці</string>
@@ -268,7 +266,6 @@
     <string name="EP_NavigationAnimation">Навігацыйная анімацыя</string>
     <string name="EP_NavigationAnimationBezier">Класічны</string>
     <string name="EP_NavigationAnimationCrossfading">Эфект плаўнага згасання</string>
-    <string name="CG_ResidentNotification">Уключыць сталае паведамленне</string>
     <string name="EP_PhotosSize">Адпраўляць вялікія фота (2560px)</string>
     <string name="EP_CustomAppTitle">Назва дадатку</string>
     <string name="EP_CustomChat">Карыстацкі чат для Захаванага</string>

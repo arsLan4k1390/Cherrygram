@@ -66,6 +66,7 @@ public class UpdaterBottomSheet extends BottomSheet {
     public UpdaterBottomSheet(Context context, Theme.ResourcesProvider resourcesProvider, boolean available, UpdaterUtils.Update update) {
         super(context, false, resourcesProvider);
         setOpenNoDelay(true);
+
         fixNavigationBar();
 
         LinearLayout linearLayout = new LinearLayout(context);
@@ -75,6 +76,9 @@ public class UpdaterBottomSheet extends BottomSheet {
         linearLayout.addView(header, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 21, 10, 0, 10));
 
         if (available) {
+            setCanDismissWithSwipe(false);
+            setCanDismissWithTouchOutside(false);
+
             StickerImageView imageView = new StickerImageView(context, currentAccount);
             imageView.setStickerPackName("HotCherry");
             imageView.setStickerNum(33);
@@ -168,8 +172,6 @@ public class UpdaterBottomSheet extends BottomSheet {
             buttonsView.addView(doneButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
             if (update.isForce()) {
-                setCanDismissWithSwipe(false);
-                setCanDismissWithTouchOutside(false);
                 setCancelable(false);
                 isForce = true;
                 CherrygramCoreConfig.INSTANCE.setAutoOTA(true);

@@ -354,16 +354,16 @@ public class FilterTabsView extends FrameLayout {
             }
             if (animateToKey < 0) {
                 if ((animatingIndicator || manualScrollingToId != -1) && (currentTab.id == id1 || currentTab.id == id2)) {
-                    textPaint.setColor(ColorUtils.blendARGB(Theme.getColor(otherKey), Theme.getColor(key), animatingIndicatorProgress));
+                    textPaint.setColor(ColorUtils.blendARGB(Theme.getColor(otherKey, resourcesProvider), Theme.getColor(key, resourcesProvider), animatingIndicatorProgress));
                 } else {
-                    textPaint.setColor(Theme.getColor(key));
+                    textPaint.setColor(Theme.getColor(key, resourcesProvider));
                 }
             } else {
-                int color1 = Theme.getColor(key);
-                int color2 = Theme.getColor(animateToKey);
+                int color1 = Theme.getColor(key, resourcesProvider);
+                int color2 = Theme.getColor(animateToKey, resourcesProvider);
                 if ((animatingIndicator || manualScrollingToPosition != -1) && (currentTab.id == id1 || currentTab.id == id2)) {
-                    int color3 = Theme.getColor(otherKey);
-                    int color4 = Theme.getColor(animateToOtherKey);
+                    int color3 = Theme.getColor(otherKey, resourcesProvider);
+                    int color4 = Theme.getColor(animateToOtherKey, resourcesProvider);
                     textPaint.setColor(ColorUtils.blendARGB(ColorUtils.blendARGB(color3, color4, animationValue), ColorUtils.blendARGB(color1, color2, animationValue), animatingIndicatorProgress));
                 } else {
                     textPaint.setColor(ColorUtils.blendARGB(color1, color2, animationValue));
@@ -508,9 +508,9 @@ public class FilterTabsView extends FrameLayout {
                     textCounterPaint.setColor(ColorUtils.blendARGB(color1, color2, animationValue));
                 }
                 if (Theme.hasThemeKey(unreadKey) && Theme.hasThemeKey(unreadOtherKey)) {
-                    int color1 = Theme.getColor(unreadKey);
+                    int color1 = Theme.getColor(unreadKey, resourcesProvider);
                     if ((animatingIndicator || manualScrollingToPosition != -1) && (currentTab.id == id1 || currentTab.id == id2)) {
-                        int color3 = Theme.getColor(unreadOtherKey);
+                        int color3 = Theme.getColor(unreadOtherKey, resourcesProvider);
                         counterPaint.setColor(ColorUtils.blendARGB(color3, color1, animatingIndicatorProgress));
                     } else {
                         counterPaint.setColor(color1);
@@ -633,9 +633,9 @@ public class FilterTabsView extends FrameLayout {
                     progressToLocked -= 16 / 150f;
                 }
                 progressToLocked = Utilities.clamp(progressToLocked, 1f, 0);
-                int unactiveColor = Theme.getColor(unactiveTextColorKey);
+                int unactiveColor = Theme.getColor(unactiveTextColorKey, resourcesProvider);
                 if (aUnactiveTextColorKey >= 0) {
-                    unactiveColor = ColorUtils.blendARGB(unactiveColor, Theme.getColor(aUnactiveTextColorKey), animationValue);
+                    unactiveColor = ColorUtils.blendARGB(unactiveColor, Theme.getColor(aUnactiveTextColorKey, resourcesProvider), animationValue);
                 }
                 if (lockDrawableColor != unactiveColor) {
                     lockDrawableColor = unactiveColor;
@@ -993,8 +993,13 @@ public class FilterTabsView extends FrameLayout {
     };
 
     public FilterTabsView(Context context, Theme.ResourcesProvider resourcesProvider) {
+        this(context, resourcesProvider, false);
+    }
+
+    public FilterTabsView(Context context, Theme.ResourcesProvider resourcesProvider, boolean isShareAlert) {
         super(context);
         this.resourcesProvider = resourcesProvider;
+        this.isShareAlert = isShareAlert;
         textCounterPaint.setTextSize(AndroidUtilities.dp(13));
         textCounterPaint.setTypeface(AndroidUtilities.bold());
         textPaint.setTextSize(AndroidUtilities.dp(15));
@@ -1138,7 +1143,7 @@ public class FilterTabsView extends FrameLayout {
         listView.setItemAnimator(itemAnimator);
         listView.setSelectorType(tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 100 : 8);
         listView.setSelectorRadius(6);
-        listView.setSelectorDrawableColor(Theme.getColor(selectorColorKey));
+        listView.setSelectorDrawableColor(Theme.getColor(selectorColorKey, resourcesProvider));
         listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) {
 
             @Override
@@ -1224,7 +1229,7 @@ public class FilterTabsView extends FrameLayout {
         globalSearchView = new GlobalSearchView(context, new SizeNotifierFrameLayout(context));
         addView(globalSearchView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-        addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER, 0, getTabsHeight(), 0, 0));
+        addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER, 0, isShareAlert ? 0 : getTabsHeight(), 0, 0));
     }
 
     public void setDelegate(FilterTabsViewDelegate filterTabsViewDelegate) {
@@ -1414,7 +1419,7 @@ public class FilterTabsView extends FrameLayout {
         aUnactiveTextColorKey = unactive;
         aBackgroundColorKey = background;
         selectorColorKey = selector;
-        listView.setSelectorDrawableColor(Theme.getColor(selectorColorKey));
+        listView.setSelectorDrawableColor(Theme.getColor(selectorColorKey, resourcesProvider));
 
         colorChangeAnimator = new AnimatorSet();
         colorChangeAnimator.playTogether(ObjectAnimator.ofFloat(this, COLORS, 0.0f, 1.0f));
@@ -1509,7 +1514,7 @@ public class FilterTabsView extends FrameLayout {
                 canvas.scale(listView.getScaleX(), 1f, listView.getPivotX() + listView.getX(), listView.getPivotY());
                 updateSelector();
 
-                int offsetY = tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(getTabsHeight()) : 0;
+                int offsetY = tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(isShareAlert ? 0 : getTabsHeight()) : 0;
                 selectorDrawable.setBounds(
                         (int) indicatorX - (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
                         (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(15) : height - AndroidUtilities.dpr(4)) + offsetY,
@@ -1519,7 +1524,7 @@ public class FilterTabsView extends FrameLayout {
 
                 if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI && CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
 //                    selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), 0));
-                    selectorDrawable.setStroke(AndroidUtilities.dp(1), Theme.getColor(activeTextColorKey));
+                    selectorDrawable.setStroke(AndroidUtilities.dp(1), Theme.getColor(activeTextColorKey, resourcesProvider));
                 }
                 selectorDrawable.draw(canvas);
                 canvas.restore();
@@ -2081,6 +2086,8 @@ public class FilterTabsView extends FrameLayout {
     /** Cherrygram start */
     private GlobalSearchView globalSearchView;
 
+    private final boolean isShareAlert;
+
     private int getTabsHeight() {
         return CherrygramAppearanceConfig.INSTANCE.getIosSearchPanel() ? 22 : 0;
     }
@@ -2097,7 +2104,7 @@ public class FilterTabsView extends FrameLayout {
     }
 
     public void updateSelector() {
-        selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
+        selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey, resourcesProvider), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
         float rad = AndroidUtilities.dpf2(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 10 : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 30 : 3);
         if (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_ROUNDED || tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
             selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});

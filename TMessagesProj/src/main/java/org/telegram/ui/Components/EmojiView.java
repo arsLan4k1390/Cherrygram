@@ -144,6 +144,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class EmojiView extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
@@ -2559,7 +2560,7 @@ public class EmojiView extends FrameLayout implements NotificationCenter.Notific
             typeTabs.setViewPager(pager);
             typeTabs.setShouldExpand(false);
             typeTabs.setIndicatorHeight(AndroidUtilities.dp(3));
-            typeTabs.setIndicatorColor(ColorUtils.setAlphaComponent(getThemedColor(Theme.key_chat_emojiPanelIconSelected), 20));
+            typeTabs.setIndicatorColor(ColorUtils.setAlphaComponent(getThemedColor(Theme.key_chat_emojiPanelIconSelected), CherrygramAppearanceConfig.INSTANCE.getTabStyle() >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
             typeTabs.setUnderlineHeight(0);
             typeTabs.setTabPaddingLeftRight(AndroidUtilities.dp(13));
             bottomTabContainer.addView(typeTabs, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 40, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM));

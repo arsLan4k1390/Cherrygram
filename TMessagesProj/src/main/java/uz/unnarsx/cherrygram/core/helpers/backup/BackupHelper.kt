@@ -209,7 +209,7 @@ object BackupHelper {
         val json = JSONObject()
         val keys = setOf(
             // General
-            "CP_NoRounding", "AP_SystemEmoji", "AP_SystemFonts", "AP_Old_Notification_Icon", "AP_Tablet_Mode",
+            "CP_NoRounding", "AP_SystemEmoji", "AP_SystemFonts", "AP_Tablet_Mode", "AP_Old_Notification_Icon", "CG_ResidentNotification",
             "CP_HideStories", "CP_ArchiveStoriesFromUsers", "CP_ArchiveStoriesFromChannels", "CP_CustomWallpapers",
             "CP_DisableAnimAvatars", "CP_DisableReactionsOverlay", "CP_DisableReactionAnim", "CP_DisablePremStickAnim",
             "CP_DisablePremStickAutoPlay", "CP_HideSendAsChannel",
@@ -231,8 +231,8 @@ object BackupHelper {
             // Chats
             "CP_Shortcut_JumpToBegin", "CP_Shortcut_DeleteAll", "CP_Shortcut_SavedMessages", "CP_Shortcut_Blur",
             "CP_Shortcut_Browser", "CP_Admins_Reactions", "CP_Admins_Permissions", "CP_Admins_Administrators",
-            "CP_Admins_Members", "CP_Admins_Statistics", "CP_Admins_RecentActions", "AP_CenterChatTitle",
-            "CP_UnreadBadgeOnBackButton", "CP_Slider_RecentEmojisAmplifier", "CP_Slider_RecentStickersAmplifier",
+            "CP_Admins_Members", "CP_Admins_Statistics", "CP_Admins_RecentActions", "CP_UnreadBadgeOnBackButton",
+            "AP_CenterChatTitle", "CP_BlurMessageMenuBackground", "CP_Slider_RecentEmojisAmplifier", "CP_Slider_RecentStickersAmplifier",
             "CP_DisableSwipeToNext", "CP_HideMuteUnmuteButton", "CP_HideKeyboardOnScrollIntensity",
             "CP_GeminiApiKey", "CP_GeminiModelName", "CP_ShareDrawStoryButton", "CP_UsersDrawShareButton",
             "CP_SupergroupsDrawShareButton", "CP_ChannelsDrawShareButton", "CP_BotsDrawShareButton",
@@ -244,7 +244,7 @@ object BackupHelper {
             "CP_MsgFiltersMatchExactWord", "CP_MsgFiltersHideFromBlocked1", "CP_MsgFiltersHideAll", "CP_MsgFiltersCollapseAutomatically",
             "CP_TimeOnStick", "CP_DeleteForAll", "CP_ForwardMsgDate", "AP_PencilIcon",
             "CP_LeftBottomButtonAction", "CP_DoubleTapAction", "CP_MessageSlideAction", "CP_LargePhotos",
-            "CP_SpoilersOnMedia", "CP_VoicesAGC", "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration",
+            "CP_VoicesAGC", "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration",
             "CP_VideoSeekDuration", "CP_Notification_Sound", "CP_VibrationInChats", "CP_SilenceNonContacts",
             "CG_UnarchiveOnSwipe",
 
@@ -258,9 +258,8 @@ object BackupHelper {
             // "SP_AskBiometricsToOpenArchive", "SP_AskBiometricsToOpenChat", "SP_AskPinBeforeDelete", "SP_AllowSystemPasscode",
 
             // Experimental
-            "EP_SpringAnimation", "EP_ActionbarCrossfade", "CG_ResidentNotification",
-            "CP_CustomChatForSavedMessages", "CP_CustomChatIDSM", "EP_DownloadSpeedBoost",
-            "EP_UploadSpeedBoost", "EP_SlowNetworkMode"
+            "EP_SpringAnimation", "EP_ActionbarCrossfade", "CP_CustomChatForSavedMessages",
+            "CP_CustomChatIDSM", "EP_DownloadSpeedBoost", "EP_UploadSpeedBoost", "EP_SlowNetworkMode"
         )
 
         spToJSON("mainconfig", json, keys, context)

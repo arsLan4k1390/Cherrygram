@@ -70,6 +70,7 @@
     <string name="CG_FwdMenu_Notify">Уведомить</string>
 
     <string name="CG_Without_Authorship">без авторства</string>
+    <string name="CG_Without_Caption">без подписи</string>
 
     <string name="CG_CopyTitle">Скопировать название</string>
     <string name="CG_CopyCallback">Скопировать callback</string>
@@ -252,6 +253,7 @@
     <string name="AP_CenterChatsTitle">Центрирование заголовка в чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включить счетчик непрочитанных чатов на кнопке «Назад» в открытом чате</string>
+    <string name="CP_BlurMessageMenu">Размывать фон меню сообщения</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Количество недавних эмодзи и стикеров</string>
     <string name="CP_NoRounding">Отключить округление чисел</string>
     <string name="CP_DeleteForAll">Использовать \"Удалить для всех\" по умолчанию</string>
@@ -303,6 +305,11 @@
     <string name="CP_Message_Filtering_Exact_Words_Desc">При включении этой опции будут скрываться только те слова, которые полностью совпадают с указанными в списке фильтрации.
         Если слово встречается в другом виде (с приставками, окончаниями или внутри других слов), оно не будет скрыто.
     </string>
+    <string name="CP_Message_Filtering_Entities">Фильтр по ссылкам</string>
+    <string name="CP_Message_Filtering_EntitiesDesc">При включении эта опция расширяет фильтрацию и на ссылки (entities) внутри сообщений. Система проверяет адреса URL на наличие заданных ключевых слов.
+        Если совпадение найдено в ссылке, под спойлер будет скрыто всё сообщение, даже если само слово отсутствует в тексте.
+        \n\nЭто позволяет защититься от замаскированной рекламы, скрытых спам-ссылок и фишинговых доменов, которые могли бы обойти обычный фильтр по тексту.
+    </string>
     <string name="CP_Message_Filtering_HideBlocked">Скрывать сообщения от заблокированных пользователей</string>
     <string name="CP_Message_Filtering_HideBlockedDesc">Если включено, все сообщения и пересланные сообщения от заблокированных пользователей будут автоматически скрываться под спойлер.</string>
     <string name="CP_Message_Filtering_HideAll">Спойлер на все сообщение</string>
@@ -312,8 +319,6 @@
 
     <string name="CP_Slider_MediaAmplifier">Фото и видео</string>
     <string name="CP_Slider_MediaAmplifier_Hint">Не работает с альбомами</string>
-    <string name="CP_SpoilersOnMedia">Эффект спойлера</string>
-    <string name="CP_SpoilersOnMedia_Desc">Эффект спойлера на фото и видео не будет отображен если функция отключена.</string>
     <string name="CP_VoiceEnhancements">Улучшения звука</string>
     <string name="CP_VoiceEnhancements_Desc">Включает шумоподавление и нормализацию голоса</string>
     <string name="CP_PlayVideo">Воспроизводить видео по нажатию на кнопку громкости</string>
@@ -351,8 +356,8 @@
     <string name="CP_CenterCameraControlButtons_Desc">Центрирование кнопок смены камеры и фонарика.</string>
     <string name="CP_RearCam">Использовать заднюю камеру</string>
     <string name="CP_RearCam_Desc">Вместо фронтальной камеры при записи видеосообщений</string>
-    <string name="CP_DisableCam">Отключить камеру в меню выбора фото</string>
-    <string name="CP_DisableCam_Desc">Кнопка камеры будет доступна рядом с кнопкой галереи. \nНажатие на кнопку откроет камеру Telegram, а зажатие запустит системную камеру.</string>
+    <string name="CP_DisableCam">Кнопка камеры внизу</string>
+    <string name="CP_DisableCam_Desc">Кнопка камеры будет отображаться рядом с кнопкой галереи. \nНажатие откроет камеру Telegram, удержание — системную камеру.</string>
 
     <string name="CP_Header_Videomessages">Видеосообщения</string>
     <string name="CP_ExposureSliderPosition">Расположение экспозиции (слайдер)</string>
@@ -367,7 +372,6 @@
     <string name="EP_NavigationAnimation">Анимация навигации</string>
     <string name="EP_NavigationAnimationBezier">Обычная</string>
     <string name="EP_NavigationAnimationCrossfading">Эффект плавного затухания</string>
-    <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
     <string name="EP_PhotosSize">Отправлять большие фото (2560px)</string>
     <string name="EP_CustomAppTitle">Название приложения</string>
     <string name="EP_CustomChat">Пользовательский чат для Избранного</string>
@@ -440,9 +444,15 @@
     <string name="DP_RateUs">Оцените Cherrygram</string>
 
     <string name="DP_DonateBadge">Поддержите проект и получите бонусы</string>
-    <string name="DP_Donate_Desc">При поддержке от 2$ вы получите эпический значок Cherrygram рядом с вашим ником.
-    Отправьте подтверждение платежа <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> или в <![CDATA[<a href="https://t.me/CherrygramSupport">чат поддержки Cherrygram</a>]]>, чтобы его получить.
-    Если сумма поддержки составляет 5$ или больше, вы также получите приятный подарок — кнопку быстрого доступа к маркету подарков в боковом меню и разблокируете функцию \"<![CDATA[<a href="tg://cg_filters">Фильтр сообщений</a>]]>\".</string>
+    <string name="DP_Donate_Desc">При поддержке от 2$ вы также получите небольшие бонусы:</string>
+
+    <string name="DP_Donate_Badge_desc">**Значок Cherrygram** рядом с вашим ником.</string>
+    <string name="DP_Donate_EpicBadge_desc">1. **Эпический значок Cherrygram** рядом с вашим ником.</string>
+    <string name="DP_Donate_GiftMarket_Desc">2. Кнопку \"**Маркетплейс подарков**\" в боковом меню.</string>
+    <string name="DP_Donate_MessageFilter_Desc">3. Функцию \"**Фильтр сообщений**\"</string>
+    <string name="DP_Donate_MessageMenu_Desc">4. Меню сообщения \"**в стиле Telegram IOS**\".</string>
+    <string name="DP_Donate_Cheque">Отправьте подтверждение платежа **@arsLan** для получения бонусов.</string>
+
     <string name="DP_Donate_Bulletin">**%s** поддержал(ла) разработку **Cherrygram**!</string>
 
     <string name="DP_Support">Нравится Cherrygram? Поддержите!</string>

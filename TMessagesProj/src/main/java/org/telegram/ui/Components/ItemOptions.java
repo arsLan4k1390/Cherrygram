@@ -14,10 +14,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.Layout;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -34,6 +37,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -54,6 +58,7 @@ import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.SharedPhotoVideoCell2;
 import org.telegram.ui.Cells.UserCell;
@@ -63,6 +68,7 @@ import org.telegram.ui.Stories.StoriesController;
 import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.util.HashSet;
+import java.util.Objects;
 
 public class ItemOptions {
 
@@ -288,20 +294,12 @@ public class ItemOptions {
         return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, null, onClickListener);
     }
 
-    public ItemOptions add(int iconResId, CharSequence text, boolean isRed, Runnable onLongClickListener, Runnable onClickListener) {
-        return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, onLongClickListener, onClickListener);
-    }
-
     public ItemOptions add(int iconResId, CharSequence text, int color, Runnable onClickListener) {
         return add(iconResId, text, color, color, onClickListener);
     }
 
     public ItemOptions add(int iconResId, CharSequence text, int iconColorKey, int textColorKey, Runnable onClickListener) {
         return add(iconResId, null, text, iconColorKey, textColorKey, null, onClickListener);
-    }
-
-    public ItemOptions add(int iconResId, CharSequence text, int iconColorKey, int textColorKey, Runnable onLongClickListener, Runnable onClickListener) {
-        return add(iconResId, null, text, iconColorKey, textColorKey, onLongClickListener, onClickListener);
     }
 
     public ItemOptions add(int iconResId, Drawable iconDrawable, CharSequence text, int iconColorKey, int textColorKey, Runnable onLongClickListener, Runnable onClickListener) {
@@ -683,6 +681,7 @@ public class ItemOptions {
         final TextView titleText = new TextView(context);
         titleText.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
         titleText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+        titleText.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
         titleText.setEllipsize(TextUtils.TruncateAt.END);
         titleText.setSingleLine(true);
         if (obj instanceof TLRPC.User) {
@@ -1476,9 +1475,7 @@ public class ItemOptions {
                             scrimView.getHeight() + viewAdditionalOffsets.bottom
                         );
                     }
-                    if (!(scrimView.getParent() instanceof UserCell)) {
-                        scrimViewBackground.draw(canvas);
-                    }
+                    scrimViewBackground.draw(canvas);
                 }
                 if (scrimViewPadding > 0 || scrimViewRoundRadius > 0) {
                     clipPath.rewind();
@@ -1531,10 +1528,8 @@ public class ItemOptions {
                             scrimView.getHeight() + viewAdditionalOffsets.bottom
                         );
                     }
-                    if (!(scrimView.getParent() instanceof UserCell)) {
-                        scrimViewBackground.setAlpha((int) (0xFF * dimProgress));
-                        scrimViewBackground.draw(canvas);
-                    }
+                    scrimViewBackground.setAlpha((int) (0xFF * dimProgress));
+                    scrimViewBackground.draw(canvas);
                 }
                 if (scrimViewPadding > 0 || scrimViewRoundRadius > 0) {
                     clipPath.rewind();
@@ -1665,4 +1660,137 @@ public class ItemOptions {
             collectionsLayout.addView(subitem, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         }
     }
+
+    /** Cherrygram start */
+    public ItemOptions add(int iconResId, CharSequence text, boolean isRed, Runnable onLongClickListener, Runnable onClickListener) {
+        return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, onLongClickListener, onClickListener);
+    }
+
+    public ItemOptions add(int iconResId, CharSequence text, int iconColorKey, int textColorKey, Runnable onLongClickListener, Runnable onClickListener) {
+        return add(iconResId, null, text, iconColorKey, textColorKey, onLongClickListener, onClickListener);
+    }
+
+    public ItemOptions addTextIf(boolean condition, CharSequence text, int textSizeDp) {
+        if (!condition) {
+            return this;
+        }
+        return addText(text, textSizeDp, -1);
+    }
+
+    public ItemOptions addEmojiStatus(TLRPC.User user, long documentID, boolean particles) {
+
+        ActionBarMenuSubItem subItem = new ActionBarMenuSubItem(context, false, false, resourcesProvider);
+
+        String name = UserObject.getUserName(user);
+        int maxChars = 20;
+        if (name.length() > maxChars) {
+            name = name.substring(0, maxChars) + "…";
+        }
+        subItem.setText(name);
+        subItem.getTextView().setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
+        subItem.setClipToPadding(false);
+
+        BackupImageView imageView = new BackupImageView(context);
+        AvatarDrawable avatarDrawable = new AvatarDrawable();
+        avatarDrawable.setInfo(user);
+        imageView.setRoundRadius(dp(34));
+        imageView.setForUserOrChat(user, avatarDrawable);
+        subItem.addView(imageView, LayoutHelper.createFrame(34, 34, Gravity.CENTER_VERTICAL | Gravity.LEFT, -5, 0, -5, 0));
+
+        subItem.setColors(
+                textColor != null ? textColor : Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, resourcesProvider),
+                iconColor != null ? iconColor : Theme.getColor(Theme.key_actionBarDefaultSubmenuItemIcon, resourcesProvider)
+        );
+
+        LinearLayout textAndStatuses = new LinearLayout(context);
+        textAndStatuses.setOrientation(LinearLayout.HORIZONTAL);
+        textAndStatuses.setGravity(Gravity.CENTER_VERTICAL);
+
+        ViewGroup parent = (ViewGroup) subItem.getTextView().getParent();
+        if (parent != null) {
+            parent.removeView(subItem.getTextView());
+        }
+        textAndStatuses.addView(subItem.getTextView(), LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+
+        final BackupImageView emojiDrawableImageView = new BackupImageView(context);
+        final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable emojiDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(emojiDrawableImageView, dp(16), AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS);
+        emojiDrawableImageView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(@NonNull View v) {
+                emojiDrawable.attach();
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(@NonNull View v) {
+                emojiDrawable.detach();
+            }
+        });
+
+        final BackupImageView cgEmojiDrawableImageView = new BackupImageView(context);
+        final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cgStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(cgEmojiDrawableImageView, dp(16), AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS);
+        cgEmojiDrawableImageView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(@NonNull View v) {
+                cgStatusDrawable.attach();
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(@NonNull View v) {
+                cgStatusDrawable.detach();
+            }
+        });
+
+        boolean isPremium = user != null && user.premium;
+
+        final Utilities.Callback<Object[]> updateStatus = args -> {
+            final int color = Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider);
+
+            if (isPremium) {
+                Long emojiStatusId = UserObject.getEmojiStatusDocumentId(user.emoji_status);
+
+                emojiDrawable.set(Objects.requireNonNullElse(emojiStatusId, 6028338546736107668L), true);
+                emojiDrawable.setParticles(false, false);
+                emojiDrawable.setColor(color);
+
+                emojiDrawableImageView.setImageDrawable(emojiDrawable);
+            }
+
+            if (documentID != 0) {
+                cgStatusDrawable.set(documentID, true);
+                cgStatusDrawable.setParticles(particles, particles);
+                cgStatusDrawable.setColor(color);
+
+                cgEmojiDrawableImageView.setImageDrawable(cgStatusDrawable);
+            }
+        };
+        updateStatus.run(null);
+
+        if (isPremium) {
+            textAndStatuses.addView(
+                    emojiDrawableImageView,
+                    LayoutHelper.createLinear(dp(6), dp(6), Gravity.CENTER_VERTICAL, dp(1), 0, 0, 0)
+            );
+        }
+        if (documentID != 0) {
+            textAndStatuses.addView(
+                    cgEmojiDrawableImageView,
+                    LayoutHelper.createLinear(dp(6), dp(6), Gravity.CENTER_VERTICAL, dp(1), 0, 0, 0)
+            );
+        }
+
+        subItem.addView(
+                textAndStatuses,
+                LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, dp(11), 0, 0, 0)
+        );
+
+        if (minWidthDp > 0) {
+            subItem.setMinimumWidth(dp(minWidthDp));
+            addView(subItem, LayoutHelper.createLinear(minWidthDp, LayoutHelper.WRAP_CONTENT));
+        } else {
+            addView(subItem, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+        }
+
+        return this;
+    }
+    /** Cherrygram finish */
 }

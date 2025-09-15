@@ -17,6 +17,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -62,8 +63,10 @@ import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.Stories.StoriesListPlaceProvider;
 import org.telegram.ui.Stories.StoriesUtilities;
 
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
 import uz.unnarsx.cherrygram.misc.Constants;
 
@@ -847,38 +850,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         }
     }
 
-    private void showContactItems(BaseFragment fragment, View view, TLRPC.User user) {
-        ItemOptions filterOptions = ItemOptions.makeOptions(fragment, view)
-                .setViewAdditionalOffsets(0, AndroidUtilities.dp(8), 0, 0)
-                .setScrimViewBackground(Theme.createRoundRectDrawable(0, 0, Theme.getColor(Theme.key_windowBackgroundWhite)))
-
-                /*.add(R.drawable.msg_openprofile, LocaleController.getString(R.string.OpenProfile),
-                        () -> fragment.presentFragment(ProfileActivity.of(dialogId))
-                )*/
-                .add(R.drawable.msg_discussion, LocaleController.getString(R.string.SendMessage),
-                        () -> fragment.presentFragment(ChatActivity.of(dialogId))
-                )
-                .addIf(user.username != null, R.drawable.msg_mention, LocaleController.getString(R.string.ProfileCopyUsername), () -> {
-                    AndroidUtilities.addToClipboard("@" + user.username);
-                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.UsernameCopied)).show();
-                })
-                .addIf(user.phone != null, R.drawable.msg_calls, LocaleController.getString(R.string.FragmentPhoneCopy), () -> {
-                    AndroidUtilities.addToClipboard("+" + user.phone);
-                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.PhoneCopied)).show();
-                })
-                .addIf(fragment instanceof ProfileActivity && user.id != 0, R.drawable.msg_copy, LocaleController.getString(R.string.CG_CopyID), () -> {
-                    AndroidUtilities.addToClipboard("" + user.id);
-                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.TextCopied)).show();
-                })
-                .addGap()
-                .addProfile(user, getString(R.string.ViewProfile), () -> {
-                    fragment.presentFragment(ProfileActivity.of(user.id));
-                });
-
-        filterOptions.setGravity(Gravity.RIGHT)
-                .show();
-    }
-
     /** Cherrygram start */
     private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cherrygramStatusDrawable;
 
@@ -908,6 +879,50 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             nameTextView.setRightDrawable2(cherrygramStatusDrawable);
             nameTextView.setRightDrawableInside(true);
         }
+    }
+
+    private int joinDate;
+
+    public void setJoinDate(int joinDate) {
+        this.joinDate = joinDate;
+    }
+
+    private void showContactItems(BaseFragment fragment, View view, TLRPC.User user) {
+        ItemOptions.makeOptions(fragment, view)
+                .setViewAdditionalOffsets(0, AndroidUtilities.dp(8), 0, 0)
+
+                /*.add(R.drawable.msg_openprofile, LocaleController.getString(R.string.OpenProfile),
+                        () -> fragment.presentFragment(ProfileActivity.of(dialogId))
+                )*/
+                .add(R.drawable.msg_discussion, LocaleController.getString(R.string.SendMessage),
+                        () -> fragment.presentFragment(ChatActivity.of(dialogId))
+                )
+                .addIf(!TextUtils.isEmpty(ChatsHelper2.INSTANCE.getActiveUsername(user.id)), R.drawable.msg_mention, LocaleController.getString(R.string.ProfileCopyUsername), () -> {
+                    AndroidUtilities.addToClipboard("@" + ChatsHelper2.INSTANCE.getActiveUsername(user.id));
+                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.UsernameCopied)).show();
+                })
+                .addIf(user.phone != null, R.drawable.msg_calls, LocaleController.getString(R.string.FragmentPhoneCopy), () -> {
+                    AndroidUtilities.addToClipboard("+" + user.phone);
+                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.PhoneCopied)).show();
+                })
+                .addIf(fragment instanceof ProfileActivity && user.id != 0, R.drawable.msg_copy, LocaleController.getString(R.string.CG_CopyID), () -> {
+                    AndroidUtilities.addToClipboard("" + user.id);
+                    BulletinFactory.of(fragment).createCopyBulletin(getString(R.string.TextCopied)).show();
+                })
+                .addGapIf(joinDate != 0)
+                .addTextIf(
+                        joinDate != 0,
+                        CGResourcesHelper.INSTANCE.capitalize(LocaleController.formatJoined(joinDate)),
+                        13
+                )
+                .addGap()
+                .addProfile(user, getString(R.string.ViewProfile), () -> {
+                    fragment.presentFragment(ProfileActivity.of(user.id));
+                })
+                .setGravity(Gravity.RIGHT)
+                .setDrawScrim(false)
+                .setBlur(true)
+                .show();
     }
     /** Cherrygram finish */
 

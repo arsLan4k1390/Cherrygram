@@ -4383,7 +4383,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     sendPopupLayout.addView(sendWithoutSoundButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
                 }
 
-                if (messageEditText.getText().length() > 0) {
+                if (!messageEditText.getText().isEmpty()) {
                     ActionBarMenuSubItem preSentTranslateButton = new ActionBarMenuSubItem(getContext(), false, false, resourcesProvider);
                     String languageText = Translator.getCurrentTranslator().getCurrentTargetKeyboardLanguage().toUpperCase();
                     preSentTranslateButton.setTextAndIcon(LocaleController.getString(R.string.TranslateMessage) + " (" + languageText + ")", R.drawable.msg_translate);
@@ -4411,7 +4411,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     sendPopupLayout.addView(preSentTranslateButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
                 }
 
-                if (messageEditText.getText().length() > 0) {
+                if (!messageEditText.getText().isEmpty()) {
                     ActionBarMenuSubItem geminiButton = new ActionBarMenuSubItem(getContext(), false, false, resourcesProvider);
                     geminiButton.setTextAndIcon(getString(R.string.CP_GeminiAI_Header), R.drawable.magic_stick_solar);
                     geminiButton.setMinimumWidth(AndroidUtilities.dp(196));
@@ -4686,7 +4686,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 }
             });
         }
-        if (messageEditText.getText().length() > 0) {
+        if (!messageEditText.getText().isEmpty()) {
             String languageText = Translator.getCurrentTranslator().getCurrentTargetKeyboardLanguage().toUpperCase();
             StringBuilder sb = new StringBuilder();
             sb.append(getString(R.string.TranslateMessage));
@@ -9845,7 +9845,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
             !MessagesController.getInstance(currentAccount).premiumPurchaseBlocked() &&
             getParentFragment() != null && user != null &&
             !BuildVars.IS_BILLING_UNAVAILABLE &&
-            !UserObject.isUserSelf(user) &&
+            (!UserObject.isUserSelf(user) || myUserInfo != null && myUserInfo.display_gifts_button) &&
             !UserObject.isBot(user) &&
             !MessagesController.isSupportUser(user) &&
             userInfo != null &&

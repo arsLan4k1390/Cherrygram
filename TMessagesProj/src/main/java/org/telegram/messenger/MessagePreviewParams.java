@@ -180,7 +180,7 @@ public class MessagePreviewParams {
     public boolean multipleUsers;
 
     public boolean hideForwardSendersName = CherrygramChatsConfig.INSTANCE.getNoAuthorship();
-    public boolean hideCaption;
+    public boolean hideCaption = CherrygramChatsConfig.INSTANCE.getNoCaptions();
     public boolean willSeeSenders;
 
     public boolean singleLink;

@@ -12,6 +12,8 @@ package uz.unnarsx.cherrygram.chats
 import android.text.TextUtils
 import android.view.View
 import android.widget.LinearLayout
+import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.drawable.toDrawable
 import org.telegram.messenger.AndroidUtilities.dp
 import org.telegram.messenger.ChatObject
 import org.telegram.messenger.LocaleController
@@ -21,17 +23,20 @@ import org.telegram.messenger.R
 import org.telegram.messenger.UserObject
 import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.ActionBarMenuSubItem
-import org.telegram.ui.ActionBar.ActionBarPopupWindow.ActionBarPopupWindowLayout
-import org.telegram.ui.ActionBar.ActionBarPopupWindow.GapView
+import org.telegram.ui.ActionBar.ActionBarPopupWindow
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.ActionBar.Theme
+import org.telegram.ui.Cells.ShadowSectionCell
 import org.telegram.ui.ChatActivity
+import org.telegram.ui.Components.CombinedDrawable
 import org.telegram.ui.Components.LayoutHelper
 import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
-import uz.unnarsx.cherrygram.preferences.GeminiPreferencesBottomSheet
+import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
+import androidx.core.graphics.drawable.toDrawable
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
 // Because manual editing of drklo's sources harms your mental health.
@@ -39,7 +44,7 @@ object CGMessageMenuInjector {
 
     fun showGeminiItems(
         chatActivity: ChatActivity,
-        popupLayout: ActionBarPopupWindowLayout,
+        popupLayout: ActionBarPopupWindow.ActionBarPopupWindowLayout,
         selectedObject: MessageObject,
     ) {
         val linearLayout = LinearLayout(chatActivity.parentActivity)
@@ -48,11 +53,12 @@ object CGMessageMenuInjector {
         val isVoiceOrVideoMessage = selectedObject.type == MessageObject.TYPE_VOICE || selectedObject.type == MessageObject.TYPE_ROUND_VIDEO
         val isVoiceMessage = selectedObject.type == MessageObject.TYPE_VOICE
         val isPhoto = selectedObject.type == MessageObject.TYPE_PHOTO
+        val showDivider = !Theme.isCurrentThemeDay() && !Theme.getActiveTheme().isMonet && !Theme.getActiveTheme().isAmoled
 
         val backCell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
         backCell.setItemHeight(44)
         backCell.setTextAndIcon(getString(R.string.Back), R.drawable.msg_arrow_back)
-        backCell.getTextView().setPadding(
+        backCell.textView.setPadding(
             if (LocaleController.isRTL) 0 else dp(40f),
             0,
             if (LocaleController.isRTL) dp(40f) else 0,
@@ -64,15 +70,37 @@ object CGMessageMenuInjector {
         linearLayout.addView(
             backCell,
             LayoutHelper.createLinear(
-                if (isVoiceOrVideoMessage) dp(100f) else LayoutHelper.MATCH_PARENT,
+                if (isVoiceOrVideoMessage && !chatActivity.messageMenuHelper.allowNewMessageMenu()) dp(100f) else LayoutHelper.MATCH_PARENT,
                 LayoutHelper.WRAP_CONTENT
             )
         )
 
-        linearLayout.addView(
-            GapView(chatActivity.contentView.context, chatActivity.resourceProvider),
-            LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
-        )
+        if (chatActivity.messageMenuHelper.showCustomDivider()) {
+            linearLayout.addView(
+                ShadowSectionCell(chatActivity.context, 8, chatActivity.resourceProvider).apply {
+                    background = CombinedDrawable(
+                        ColorUtils.setAlphaComponent(
+                            chatActivity.getThemedColor(Theme.key_windowBackgroundGray), chatActivity.messageMenuHelper.getMessageMenuAlpha(true)
+                        ).toDrawable(),
+                        Theme.getThemedDrawableByKey(
+                            chatActivity.context,
+                            R.drawable.greydivider,
+                            Theme.key_windowBackgroundGrayShadow
+                        )
+                    ).apply {
+                        setFullsize(false)
+                    }
+                },
+                LayoutHelper.createLinear(200, dp(8f))
+            )
+        } else {
+            if (showDivider) {
+                linearLayout.addView(
+                    ActionBarPopupWindow.GapView(chatActivity.contentView.context, chatActivity.resourceProvider),
+                    LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
+                )
+            }
+        }
 
         val sections = ArrayList<View>()
 
@@ -166,18 +194,41 @@ object CGMessageMenuInjector {
             sections.add(cell)
         }
 
-        val gapView = GapView(chatActivity.contentView.context, chatActivity.resourceProvider)
-        gapView.addView(
-            GapView(chatActivity.contentView.context, chatActivity.resourceProvider),
-            LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
-        )
-        sections.add(gapView)
+        if (chatActivity.messageMenuHelper.showCustomDivider()) {
+            sections.add(
+                ShadowSectionCell(chatActivity.context, 8, chatActivity.resourceProvider).apply {
+                    background = CombinedDrawable(
+                        ColorUtils.setAlphaComponent(
+                            chatActivity.getThemedColor(Theme.key_windowBackgroundGray), chatActivity.messageMenuHelper.getMessageMenuAlpha(true)
+                        ).toDrawable(),
+                        Theme.getThemedDrawableByKey(
+                            chatActivity.context,
+                            R.drawable.greydivider,
+                            Theme.key_windowBackgroundGrayShadow
+                        )
+                    ).apply {
+                        setFullsize(false)
+                    }
+                }.also {
+                    it.layoutParams = LayoutHelper.createLinear(200, dp(8f))
+                }
+            )
+        } else {
+            if (showDivider) {
+                val gapView = ActionBarPopupWindow.GapView(chatActivity.contentView.context, chatActivity.resourceProvider)
+                gapView.addView(
+                    ActionBarPopupWindow.GapView(chatActivity.contentView.context, chatActivity.resourceProvider),
+                    LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
+                )
+                sections.add(gapView)
+            }
+        }
 
         val settingsCell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
         settingsCell.setTextAndIcon(getString(R.string.Settings), R.drawable.msg_settings)
         settingsCell.setOnClickListener {
             chatActivity.closeMenu()
-            GeminiPreferencesBottomSheet.showAlert(chatActivity)
+            CherrygramPreferencesNavigator.createGemini(chatActivity)
         }
         sections.add(settingsCell)
 
@@ -198,10 +249,32 @@ object CGMessageMenuInjector {
             popupLayout.swipeBack?.openForeground(foregroundIndex)
         }
 
-        popupLayout.addView(
-            GapView(chatActivity.contentView.context, chatActivity.resourceProvider),
-            LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
-        )
+        if (chatActivity.messageMenuHelper.showCustomDivider()) {
+            popupLayout.addView(
+                ShadowSectionCell(chatActivity.context, 8, chatActivity.resourceProvider).apply {
+                    background = CombinedDrawable(
+                        ColorUtils.setAlphaComponent(
+                            chatActivity.getThemedColor(Theme.key_windowBackgroundGray), chatActivity.messageMenuHelper.getMessageMenuAlpha(true)
+                        ).toDrawable(),
+                        Theme.getThemedDrawableByKey(
+                            chatActivity.context,
+                            R.drawable.greydivider,
+                            Theme.key_windowBackgroundGrayShadow
+                        )
+                    ).apply {
+                        setFullsize(false)
+                    }
+                },
+                LayoutHelper.createLinear(200, dp(8f))
+            )
+        } else {
+            if (showDivider) {
+                popupLayout.addView(
+                    ActionBarPopupWindow.GapView(chatActivity.contentView.context, chatActivity.resourceProvider),
+                    LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
+                )
+            }
+        }
     }
 
     fun injectCopyPhoto(

@@ -53,8 +53,9 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var admins_RecentActions by sharedPreferences.boolean("CP_Admins_RecentActions", false)
     /** Admin shortcuts finish **/
 
-    var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle", true)
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
+    var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle", true)
+    var blurMessageMenuBackground by sharedPreferences.boolean("CP_BlurMessageMenuBackground", false)
     var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
     var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
     var hideKeyboardOnScrollIntensity by sharedPreferences.int("CP_HideKeyboardOnScrollIntensity", 5)
@@ -108,6 +109,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var msgFiltersElements by sharedPreferences.string("CP_MsgFiltersElements", "")
     var msgFiltersDetectTranslit by sharedPreferences.boolean("CP_MsgFiltersDetectTranslit", false)
     var msgFiltersMatchExactWord by sharedPreferences.boolean("CP_MsgFiltersMatchExactWord", false)
+    var msgFiltersDetectEntities by sharedPreferences.boolean("CP_MsgFiltersDetectEntities", false)
     var msgFiltersHideFromBlocked by sharedPreferences.boolean("CP_MsgFiltersHideFromBlocked1", false)
     var msgFiltersHideAll by sharedPreferences.boolean("CP_MsgFiltersHideAll", false)
     var msgFiltersCollapseAutomatically by sharedPreferences.boolean("CP_MsgFiltersCollapseAutomatically", false)
@@ -122,6 +124,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     const val LEFT_BUTTON_REPLY = 1
     const val LEFT_BUTTON_SAVE_MESSAGE= 2
     const val LEFT_BUTTON_DIRECT_SHARE = 3
+    const val LEFT_BUTTON_FORWARD_WO_CAPTION = 4
     var leftBottomButton by sharedPreferences.int("CP_LeftBottomButtonAction", LEFT_BUTTON_FORWARD_WO_AUTHORSHIP)
 
     const val DOUBLE_TAP_ACTION_NONE = 0
@@ -143,7 +146,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     /** Media start **/
     var largePhotos by sharedPreferences.boolean("CP_LargePhotos", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
-    var spoilersOnMedia by sharedPreferences.boolean("CP_SpoilersOnMedia", true)
     var voicesAgc by sharedPreferences.boolean("CP_VoicesAGC", false)
     var playVideoOnVolume by sharedPreferences.boolean("CP_PlayVideo", false)
     var autoPauseVideo by sharedPreferences.boolean("CP_AutoPauseVideo", false)
@@ -168,11 +170,17 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Notifications finish **/
 
     /** Misc start **/
+    /** Direct share start */
     var forwardAuthorship by sharedPreferences.boolean("CG_ForwardAuthorship", true)
     var forwardCaptions by sharedPreferences.boolean("CG_ForwardCaptions", true)
     var forwardNotify by sharedPreferences.boolean("CG_ForwardNotify", true)
+    /** Direct share finish */
 
+    /** Bottom buttons forward start */
     var noAuthorship by sharedPreferences.boolean("CG_NoAuthorship", false)
+    var noCaptions by sharedPreferences.boolean("CG_NoCaptions", false)
+    /** Bottom buttons forward finish */
+
     var gifSpoilers by sharedPreferences.boolean("CG_GifSpoiler", false)
     var photoAsSticker by sharedPreferences.boolean("CG_PhotoAsSticker", false)
 

@@ -1878,7 +1878,7 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
                 } else {
                     isMusic = true;
                     if (playbackSpeedButton != null) {
-                        if (messageObject.getDuration() >= 10 * 60) {
+                        if (messageObject.getDuration() >= 10 * 60 || isMusic) {
                             playbackSpeedButton.setAlpha(1.0f);
                             playbackSpeedButton.setEnabled(true);
                             titleTextView.setPadding(0, 0, dp(44) + joinButtonWidth, 0);

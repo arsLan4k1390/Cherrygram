@@ -65,8 +65,9 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Enable/Disable members rounding,
 - Enable/Disable system emoji,
 - Enable/Disable system fonts,
-- Default notification icon (Telegram),
 - Tablet mode,
+- Default notification icon (Telegram),
+- Show a resident notification,
 - Enable/Disable Telegram Stories in app header,
 - Automatically archive stories from contacts and channels,
 - Enable/Disable animated avatars,
@@ -111,8 +112,9 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
 *Cherrygram Chats Preferences:*
 - Configure admin shortcuts in chats,
-- Center chat title like on IOS,
 - Showing unread chats counter on "Back" button like on IOS,
+- Center chat title like on IOS,
+- Blur message menu background,
 - Recent emojis and stickers counter (amplifier),
 - Ask before a call,
 - Hide keyboard while scrolling a chat,
@@ -130,7 +132,6 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Double tap action (Disable, Reaction, Reply, Save/Edit/Translate a message),
 - Message swipe action (Reply, Save, Translate or Direct Share),
 - Large photos (2560px),
-- Spoiler effect,
 - Voice enhancements,
 - Enable/Disable playing video on volume button click,
 - Auto pause video while switching to the background,
@@ -150,7 +151,6 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
 *Cherrygram Experimental Preferences:*
 - Enable/Disable spring animations for app navigation,
-- Show a resident notification,
 - Toast all RPC errors,
 - Custom chat for Saved Messages,
 - Download speed boost,

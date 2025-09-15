@@ -22,8 +22,6 @@ import uz.unnarsx.cherrygram.chats.GlobalSearchView
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
-import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
-import uz.unnarsx.cherrygram.preferences.folders.FoldersPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
@@ -33,6 +31,7 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 import androidx.core.content.edit
+import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.AP_Header_Appearance)) {
@@ -166,7 +165,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(MessagesAndProfilesPreferencesEntry())
+                    CherrygramPreferencesNavigator.createMessagesAndProfiles(bf)
                 }
             }
 
@@ -176,7 +175,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(FoldersPreferencesEntry())
+                    CherrygramPreferencesNavigator.createFoldersPrefs(bf)
                 }
             }
 
@@ -184,7 +183,7 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 title = getString(R.string.AP_DrawerCategory)
                 icon = R.drawable.msg_list
                 listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(DrawerPreferencesEntry())
+                    CherrygramPreferencesNavigator.createDrawerPrefs(bf)
                 }
             }
         }

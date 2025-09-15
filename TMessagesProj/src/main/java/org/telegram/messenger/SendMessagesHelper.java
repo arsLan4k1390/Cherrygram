@@ -9119,7 +9119,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     }
 
     public static boolean shouldSendWebPAsSticker(String path, Uri uri) {
-        /*BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
         bmOptions.inJustDecodeBounds = true;
         try {
             if (path != null) {
@@ -9138,8 +9138,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
         } catch (Exception e) {
             FileLog.e(e);
         }
-        return bmOptions.outWidth < 800 && bmOptions.outHeight < 800;*/
-        return CherrygramChatsConfig.INSTANCE.getPhotoAsSticker();
+        return CherrygramChatsConfig.INSTANCE.getPhotoAsSticker() || bmOptions.outWidth < 800 && bmOptions.outHeight < 800;
     }
 
     @UiThread
@@ -9164,6 +9163,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                 workers = new HashMap<>();
                 for (int a = 0; a < count; a++) {
                     final SendingMediaInfo info = media.get(a);
+                    info.highQuality = CherrygramChatsConfig.INSTANCE.getLargePhotos() && !CherrygramChatsConfig.INSTANCE.getPhotoAsSticker();
                     if (info.searchImage == null && !info.isVideo && info.videoEditedInfo == null) {
                         if (info.originalPhotoEntry != null && info.highQuality) {
                             info.originalPhotoEntry.rebuildPhoto(true);
@@ -10170,27 +10170,14 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             if (selectedCompression != compressionsCount || Math.max(videoEditedInfo.originalWidth, videoEditedInfo.originalHeight) > (CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality() ? 3840 : 1280)) {
                 needCompress = true;
                 if (CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality()) {
-                    switch (selectedCompression) {
-                        case 1:
-                            maxSize = 480.0f;
-                            break;
-                        case 2:
-                            maxSize = 854.0f;
-                            break;
-                        default:
-                        case 3:
-                            maxSize = 1280.0f;
-                            break;
-                        case 4:
-                            maxSize = 1920.0f;
-                            break;
-                        case 5:
-                            maxSize = 2560.0f;
-                            break;
-                        case 6:
-                            maxSize = 3840.0f;
-                            break;
-                    }
+                    maxSize = switch (selectedCompression) {
+                        case 1 -> 480.0f;
+                        case 2 -> 854.0f;
+                        case 4 -> 1920.0f;
+                        case 5 -> 2560.0f;
+                        case 6 -> 3840.0f;
+                        default -> 1280.0f;
+                    };
                 } else {
                     switch (selectedCompression) {
                         case 1:
@@ -10621,6 +10608,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             } else {
                 reqSend.reply_to = new TLRPC.TL_inputReplyToMonoForum();
                 reqSend.reply_to.monoforum_peer_id = monoforumPeer;
+                reqSend.flags |= 1;
             }
         }
     }
@@ -10668,7 +10656,6 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             } else {
                 reqSend.reply_to = new TLRPC.TL_inputReplyToMonoForum();
                 reqSend.reply_to.monoforum_peer_id = monoforumPeer;
-                reqSend.flags |= 1;
             }
         }
     }

@@ -21,15 +21,9 @@ import org.telegram.ui.LaunchActivity;
 
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.preferences.FiltersPreferencesEntry;
-import uz.unnarsx.cherrygram.preferences.GeminiPreferencesBottomSheet;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.misc.Constants;
-import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
-import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry;
-import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry;
-import uz.unnarsx.cherrygram.preferences.folders.FoldersPreferencesEntry;
-import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator;
+import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
 public class DeeplinkHelper {
 
@@ -49,16 +43,38 @@ public class DeeplinkHelper {
             switch (segment) {
                 case "cg_about" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createAbout();
                 case "cg_appearance" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createAppearance();
-                case "cg_camera", "cg_cam" -> fragment = new CameraPreferencesEntry();
+                case "cg_camera", "cg_cam" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createCamera(fragment);
+                    return;
+                }
                 case "cg_chats" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createChats();
                 case "cg_debug" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createDebug();
-                case "cg_donate", "cg_donates", "cg_support", "cg_badge" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createDonate();
-                case "cg_drawer" -> fragment = new DrawerPreferencesEntry();
-                case "cg_experimental" -> fragment = new ExperimentalPreferencesEntry();
-                case "cg_filter", "cg_filters" -> fragment = new FiltersPreferencesEntry();
-                case "cg_folders", "cg_tabs" -> fragment = new FoldersPreferencesEntry();
+                case "cg_donate", "cg_donates", "cg_support", "cg_badge" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createDonate(fragment);
+                    return;
+                }
+                case "cg_drawer" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createDrawerPrefs(fragment);
+                    return;
+                }
+                case "cg_drawer_items" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createDrawerItems(fragment);
+                    return;
+                }
+                case "cg_experimental" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createExperimental(fragment);
+                    return;
+                }
+                case "cg_filter", "cg_filters" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createMessageFilter(fragment);
+                    return;
+                }
+                case "cg_folders", "cg_tabs" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createFoldersPrefs(fragment);
+                    return;
+                }
                 case "cg_gemini" -> {
-                    GeminiPreferencesBottomSheet.showAlert(fragment);
+                    CherrygramPreferencesNavigator.INSTANCE.createGemini(fragment);
                     return;
                 }
                 case "cg_general" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createGeneral();

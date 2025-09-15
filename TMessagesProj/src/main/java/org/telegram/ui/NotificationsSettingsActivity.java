@@ -196,8 +196,8 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
         otherSection2Row = rowCount++;
 
         otherSectionRow = rowCount++;
-        notificationsServiceRow = rowCount++;
-        notificationsServiceConnectionRow = rowCount++;
+//        notificationsServiceRow = rowCount++;
+//        notificationsServiceConnectionRow = rowCount++;
         androidAutoAlertRow = -1;
         repeatRow = rowCount++;
         resetSection2Row = rowCount++;

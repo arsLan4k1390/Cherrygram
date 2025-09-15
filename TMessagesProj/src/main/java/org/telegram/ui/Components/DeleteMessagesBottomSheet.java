@@ -8,6 +8,7 @@ import static org.telegram.ui.Components.UniversalAdapter.VIEW_TYPE_EXPANDABLE_S
 import static org.telegram.ui.Components.UniversalAdapter.VIEW_TYPE_ROUND_CHECKBOX;
 import static org.telegram.ui.Components.UniversalAdapter.VIEW_TYPE_SHADOW_COLLAPSE_BUTTON;
 import static org.telegram.ui.Components.UniversalAdapter.VIEW_TYPE_SWITCH;
+import static org.telegram.ui.Components.UniversalAdapter.VIEW_TYPE_TEXT;
 import static org.telegram.ui.Components.UniversalAdapter.VIEW_TYPE_USER_GROUP_CHECKBOX;
 import static org.telegram.ui.Components.UniversalAdapter.VIEW_TYPE_USER_CHECKBOX;
 
@@ -37,8 +38,10 @@ import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.CollapseTextCell;
+import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Components.Premium.boosts.cells.selector.SelectorBtnCell;
 
 import java.util.ArrayList;
@@ -772,6 +775,18 @@ public class DeleteMessagesBottomSheet extends BottomSheetWithRecyclerListView {
                             .setChecked(!bannedRights.manage_topics && !defaultBannedRights.manage_topics)
                             .setLocked(defaultBannedRights.manage_topics));
                 }
+
+            }
+
+            if (banOrRestrict.checks[0] || restrict) {
+                String value;
+                if (bannedRights.until_date == 0 || Math.abs(bannedRights.until_date - System.currentTimeMillis() / 1000) > 10 * 365 * 24 * 60 * 60) {
+                    value = getString(R.string.UserRestrictionsUntilForever);
+                } else {
+                    value = LocaleController.formatDateForBan(bannedRights.until_date);
+                }
+
+                items.add(UItem.asButton(RESTRICT_DURATION, LocaleController.getString(R.string.UserRestrictionsDuration), value));
             }
 
             if (canRestrict) {
@@ -937,6 +952,8 @@ public class DeleteMessagesBottomSheet extends BottomSheetWithRecyclerListView {
             banOrRestrict.setFilter(restrict ? restrictFilter : banFilter);
             adapter.update(true);
             onRestrictionsChanged();
+        } else if (item.viewType == VIEW_TYPE_TEXT && item.id == RESTRICT_DURATION) {
+            selectDate();
         }
     }
 
@@ -1056,4 +1073,74 @@ public class DeleteMessagesBottomSheet extends BottomSheetWithRecyclerListView {
 
         performDelete();
     }
+
+    /** Cherrygram start */
+    private static final int RESTRICT_DURATION = 1390;
+
+    private void selectDate() { // Thanks to Octogram
+        BottomSheet.Builder builder = new BottomSheet.Builder(getContext());
+        builder.setApplyTopPadding(false);
+
+        LinearLayout linearLayout = new LinearLayout(getContext());
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        HeaderCell headerCell = new HeaderCell(getContext(), Theme.key_dialogTextBlue2, 23, 15, false);
+        headerCell.setHeight(47);
+        headerCell.setText(getString(R.string.UserRestrictionsDuration));
+        linearLayout.addView(headerCell);
+
+        LinearLayout linearLayoutInviteContainer = new LinearLayout(getContext());
+        linearLayoutInviteContainer.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(linearLayoutInviteContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+
+        BottomSheet.BottomSheetCell[] buttons = new BottomSheet.BottomSheetCell[5];
+
+        for (int a = 0; a < buttons.length; a++) {
+            buttons[a] = new BottomSheet.BottomSheetCell(getContext(), 0);
+            buttons[a].setPadding(AndroidUtilities.dp(7), 0, AndroidUtilities.dp(7), 0);
+            buttons[a].setTag(a);
+            buttons[a].setBackgroundDrawable(Theme.getSelectorDrawable(false));
+            String text = switch (a) {
+                case 0 -> getString(R.string.UserRestrictionsUntilForever);
+                case 1 -> formatPluralString("Days", 1);
+                case 2 -> formatPluralString("Weeks", 1);
+                case 3 -> formatPluralString("Months", 1);
+                default -> getString(R.string.UserRestrictionsCustom);
+            };
+            buttons[a].setTextAndIcon(text, 0);
+            linearLayoutInviteContainer.addView(buttons[a], LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+            buttons[a].setOnClickListener(v2 -> {
+                Integer tag = (Integer) v2.getTag();
+                switch (tag) {
+                    case 0:
+                        bannedRights.until_date = 0;
+                        adapter.update(true);
+                        break;
+                    case 1:
+                        bannedRights.until_date = ConnectionsManager.getInstance(currentAccount).getCurrentTime() + 60 * 60 * 24;
+                        adapter.update(true);
+                        break;
+                    case 2:
+                        bannedRights.until_date = ConnectionsManager.getInstance(currentAccount).getCurrentTime() + 60 * 60 * 24 * 7;
+                        adapter.update(true);
+                        break;
+                    case 3:
+                        bannedRights.until_date = ConnectionsManager.getInstance(currentAccount).getCurrentTime() + 60 * 60 * 24 * 30;
+                        adapter.update(true);
+                        break;
+                    case 4: {
+                        AlertsCreator.createDatePickerDialog(getContext(), getString(R.string.UserRestrictionsDuration), getString(R.string.Set), ConnectionsManager.getInstance(currentAccount).getCurrentTime(), (notify, scheduleDate) -> {
+                            bannedRights.until_date = scheduleDate;
+                            adapter.update(true);
+                        });
+                        break;
+                    }
+                }
+                builder.getDismissRunnable().run();
+            });
+        }
+        builder.setCustomView(linearLayout);
+        builder.show();
+    }
+    /** Cherrygram finish */
 }

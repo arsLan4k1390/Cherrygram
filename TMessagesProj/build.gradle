@@ -63,7 +63,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-wallet:19.4.0'
     implementation 'com.googlecode.mp4parser:isoparser:1.0.6'
     implementation 'com.stripe:stripe-android:2.0.2'
-    implementation 'com.google.mlkit:language-id:16.1.1'
+    implementation 'com.google.mlkit:language-id:17.0.6'
     implementation 'com.android.billingclient:billing:7.1.1' // 8.x breaks QueryProductDetailsResult
     implementation 'com.google.code.gson:gson:2.13.1'
 
@@ -75,7 +75,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:22.5.0'
     implementation 'com.google.firebase:firebase-crashlytics:19.4.4'
     implementation 'com.google.ai.client.generativeai:generativeai:0.9.0'
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.14'
 
     // CameraX Implementation
     def camerax_version = '1.5.0-beta02'
@@ -112,7 +112,7 @@ android {
 
     compileSdk 36
     buildToolsVersion = '36.0.0'
-    ndkVersion "21.4.7075529"
+    ndkVersion "21.4.7075529" // 26.3.11579264
 
     sourceSets.main.jniLibs.srcDirs = ['./jni/']
 
@@ -149,7 +149,7 @@ android {
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
 
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
 
@@ -158,7 +158,7 @@ android {
         externalNativeBuild {
             cmake {
                 version '3.10.2'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
+                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21' //, '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
             }
         }
 
@@ -215,6 +215,7 @@ android {
             buildConfigField "int", "VERSION_NUM", "7"
         }
     }
+
     namespace 'org.telegram.messenger'
 }
 

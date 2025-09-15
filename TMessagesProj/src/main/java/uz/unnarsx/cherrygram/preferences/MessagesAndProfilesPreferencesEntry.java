@@ -9,18 +9,18 @@
 
 package uz.unnarsx.cherrygram.preferences;
 
+import static org.telegram.messenger.AndroidUtilities.distance;
 import static org.telegram.messenger.AndroidUtilities.dp;
-import static org.telegram.messenger.AndroidUtilities.dpf2;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.RadialGradient;
 import android.graphics.RectF;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
@@ -48,7 +48,6 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
-import org.telegram.messenger.Utilities;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
@@ -75,6 +74,7 @@ import org.telegram.ui.Components.Premium.PremiumGradient;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.SimpleThemeDescription;
 import org.telegram.ui.Components.ViewPagerFixed;
+import org.telegram.ui.Stars.StarGiftPatterns;
 import org.telegram.ui.Stories.StoriesUtilities;
 import org.telegram.ui.UserInfoActivity;
 
@@ -350,11 +350,11 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                 TLRPC.UserFull meFull = MessagesController.getInstance(currentAccount).getUserFull(me.id);
                                 if (meFull != null && meFull.birthday != null) {
                                     String date = UserInfoActivity.birthdayString(meFull.birthday);
-                                    detailCell.setTextAndValue(date + "", getString(R.string.ProfileBirthday), false);
+                                    detailCell.setTextAndValue(date, getString(R.string.ProfileBirthday), false);
                                 } else {
                                     final int age = Period.between(LocalDate.of(2022, 1, 15), LocalDate.now()).getYears();
                                     String date = LocaleController.formatPluralString("ProfileBirthdayValueYear", age, birthdayString());
-                                    detailCell.setTextAndValue(date + "", getString(R.string.ProfileBirthday), false);
+                                    detailCell.setTextAndValue(date, getString(R.string.ProfileBirthday), false);
                                 }
                                 detailCell.textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, getResourceProvider()));
 
@@ -639,7 +639,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 actionBarHeight = ActionBar.getCurrentActionBarHeight() + AndroidUtilities.statusBarHeight;
                 ((MarginLayoutParams) listView.getLayoutParams()).topMargin = actionBarHeight;
             } else {
-                actionBarHeight = dp(144) + AndroidUtilities.statusBarHeight;
+                actionBarHeight = dp(230) + AndroidUtilities.statusBarHeight;
                 ((MarginLayoutParams) listView.getLayoutParams()).topMargin = actionBarHeight;
                 ((MarginLayoutParams) profilePreview.getLayoutParams()).height = actionBarHeight;
             }
@@ -788,32 +788,29 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         private void updateMessages() {
             if (messagesCellPreview != null) {
                 ChatMessageCell[] cells = messagesCellPreview.getCells();
-                for (int i = 0; i < cells.length; ++i) {
-                    if (cells[i] != null) {
-                        MessageObject msg = cells[i].getMessageObject();
+                for (ChatMessageCell cell : cells) {
+                    if (cell != null) {
+                        MessageObject msg = cell.getMessageObject();
                         if (msg != null) {
                             msg.overrideLinkColor = selectedColor;
                             msg.overrideLinkEmoji = selectedEmoji;
-                            cells[i].setAvatar(msg);
+                            cell.setAvatar(msg);
 
-                            if (cells[i].currentNameStatusDrawable == null) {
-                                cells[i].currentNameStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, dp(26));
-                            }
-                            if (cells[i].currentNameStatusDrawable == null) {
-                                return;
+                            if (cell.currentNameStatusDrawable == null) {
+                                cell.currentNameStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, dp(26));
                             }
                             if (!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
                                 Long emojiStatusId = UserObject.getEmojiStatusDocumentId(getUserConfig().getCurrentUser().emoji_status);
                                 if (emojiStatusId != null) {
-                                    cells[i].currentNameStatusDrawable.set(emojiStatusId, false);
-                                    cells[i].currentNameStatusDrawable.play();
+                                    cell.currentNameStatusDrawable.set(emojiStatusId, false);
+                                    cell.currentNameStatusDrawable.play();
                                 } else {
-                                    cells[i].currentNameStatusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, false);
+                                    cell.currentNameStatusDrawable.set(PremiumGradient.getInstance().premiumStarDrawableMini, false);
                                 }
                             } else {
-                                cells[i].currentNameStatusDrawable.set((Drawable) null, false);
+                                cell.currentNameStatusDrawable.set((Drawable) null, false);
                             }
-                            cells[i].invalidate();
+                            cell.invalidate();
                         }
                     }
                 }
@@ -1086,7 +1083,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         setNavigationBarColor(getNavigationBarColor());
     }
 
-    private class ColoredActionBar extends View {
+    private static class ColoredActionBar extends View {
 
         private int defaultColor;
         private final Theme.ResourcesProvider resourcesProvider;
@@ -1099,21 +1096,23 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         }
 
         public void setColor(int currentAccount, int colorId, boolean animated) {
+            MessagesController.PeerColor peerColor = null;
+            if (colorId >= 0 && currentAccount >= 0) {
+                MessagesController.PeerColors peerColors = MessagesController.getInstance(currentAccount).profilePeerColors;
+                peerColor = peerColors == null ? null : peerColors.getColor(colorId);
+            }
+            setColor(peerColor, animated);
+        }
+
+        public void setColor(MessagesController.PeerColor peerColor, boolean animated) {
             isDefault = false;
-            if (colorId < 0 || currentAccount < 0) {
+            if (peerColor == null) {
                 isDefault = true;
                 color1 = color2 = Theme.getColor(Theme.key_actionBarDefault, resourcesProvider);
             } else {
-                MessagesController.PeerColors peerColors = MessagesController.getInstance(currentAccount).profilePeerColors;
-                MessagesController.PeerColor peerColor = peerColors == null ? null : peerColors.getColor(colorId);
-                if (peerColor != null) {
-                    final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
-                    color1 = peerColor.getBgColor1(isDark);
-                    color2 = peerColor.getBgColor2(isDark);
-                } else {
-                    isDefault = true;
-                    color1 = color2 = Theme.getColor(Theme.key_actionBarDefault, resourcesProvider);
-                }
+                final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
+                color1 = peerColor.getBgColor1(isDark);
+                color2 = peerColor.getBgColor2(isDark);
             }
             if (!animated) {
                 color1Animated.set(color1, true);
@@ -1136,8 +1135,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         private final AnimatedColor color1Animated = new AnimatedColor(this, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
         private final AnimatedColor color2Animated = new AnimatedColor(this, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
 
-        private int backgroundGradientColor1, backgroundGradientColor2, backgroundGradientHeight;
-        private LinearGradient backgroundGradient;
+        private int backgroundGradientColor1, backgroundGradientColor2, backgroundGradientWidth, backgroundGradientHeight;
+        private RadialGradient backgroundGradient;
         private final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
         protected void onUpdateColor() {
@@ -1145,11 +1144,19 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         }
 
         @Override
-        protected void dispatchDraw(Canvas canvas) {
+        protected void dispatchDraw(@NonNull Canvas canvas) {
             final int color1 = color1Animated.set(this.color1);
             final int color2 = color2Animated.set(this.color2);
-            if (backgroundGradient == null || backgroundGradientColor1 != color1 || backgroundGradientColor2 != color2 || backgroundGradientHeight != getHeight()) {
-                backgroundGradient = new LinearGradient(0, 0, 0, backgroundGradientHeight = getHeight(), new int[] { backgroundGradientColor2 = color2, backgroundGradientColor1 = color1 }, new float[] { 0, 1 }, Shader.TileMode.CLAMP);
+            if (backgroundGradient == null || backgroundGradientColor1 != color1 || backgroundGradientColor2 != color2 || backgroundGradientWidth != getWidth() || backgroundGradientHeight != getHeight()) {
+                backgroundGradientWidth = getWidth();
+                backgroundGradientHeight = getHeight();
+                backgroundGradient = new RadialGradient(
+                    backgroundGradientWidth / 2f, backgroundGradientHeight * 0.40f,
+                    distance(0, 0, backgroundGradientWidth, backgroundGradientHeight) * 0.75f,
+                    new int[] { backgroundGradientColor2 = color2, backgroundGradientColor1 = color1 },
+                    new float[] { 0, 1 },
+                    Shader.TileMode.CLAMP
+                );
                 backgroundPaint.setShader(backgroundGradient);
                 onUpdateColor();
             }
@@ -1166,7 +1173,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            super.onMeasure(widthMeasureSpec, ignoreMeasure ? heightMeasureSpec : MeasureSpec.makeMeasureSpec(AndroidUtilities.statusBarHeight + dp(144), MeasureSpec.EXACTLY));
+            super.onMeasure(widthMeasureSpec, ignoreMeasure ? heightMeasureSpec : MeasureSpec.makeMeasureSpec(AndroidUtilities.statusBarHeight + dp(230), MeasureSpec.EXACTLY));
         }
 
         public void updateColors() {
@@ -1203,14 +1210,12 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         private final Theme.ResourcesProvider resourcesProvider;
         private final int currentAccount;
 
-        private final ImageReceiver imageReceiver = new ImageReceiver(this);
-        private final AvatarDrawable avatarDrawable = new AvatarDrawable();
-        private final SimpleTextView titleView, subtitleView;
+        protected final ImageReceiver imageReceiver = new ImageReceiver(this);
+        protected final AvatarDrawable avatarDrawable = new AvatarDrawable();
+        protected final SimpleTextView titleView, subtitleView;
 
         private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable statusEmoji;
-
         private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable emoji = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, false, dp(20), AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW_STATIC);
-
         private final StoriesUtilities.StoryGradientTools storyGradient = new StoriesUtilities.StoryGradientTools(this, false);
 
         public ProfilePreview(Context context, int currentAccount, Theme.ResourcesProvider resourcesProvider) {
@@ -1232,34 +1237,24 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     statusEmoji.detach();
                 }
             };
-            statusEmoji = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(titleView, true, dp(24));
-
-            Long emojiStatusId = UserObject.getEmojiStatusDocumentId(getUserConfig().getCurrentUser());
-            if (emojiStatusId != null) {
-                titleView.setDrawablePadding(AndroidUtilities.dp(4));
-                statusEmoji.set(emojiStatusId, true);
-                titleView.setRightDrawableOutside(true);
-            } else {
-                titleView.setDrawablePadding(AndroidUtilities.dp(6));
-                statusEmoji.set(PremiumGradient.getInstance().premiumStarDrawableMini, true);
-                titleView.setRightDrawableOutside(true);
-            }
-
+            statusEmoji = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(titleView, dp(24));
+            titleView.setLeftDrawableOutside(true);
+            titleView.setRightDrawableOutside(true);
             if (!CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) titleView.setRightDrawable(statusEmoji);
             titleView.setRightDrawableOnClick(v -> statusEmoji.play());
             titleView.setTextColor(0xFFFFFFFF);
             titleView.setTextSize(20);
             titleView.setTypeface(AndroidUtilities.bold());
-            titleView.setScrollNonFitText(true);
-            addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 97, 0, 16, 50.33f));
+            titleView.setWidthWrapContent(true);
+            addView(titleView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 16, 0, 16, 40.33f));
 
             subtitleView = new SimpleTextView(context);
             subtitleView.setTextSize(14);
             subtitleView.setTextColor(0x80FFFFFF);
-            subtitleView.setScrollNonFitText(true);
-            addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 97, 0, 16, 30.66f));
+            subtitleView.setGravity(Gravity.CENTER_HORIZONTAL);
+            addView(subtitleView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 16, 0, 16, 20.66f));
 
-            imageReceiver.setRoundRadius(dp(54));
+            imageReceiver.setRoundRadius(dp(96));
             CharSequence title;
             TLRPC.User user = UserConfig.getInstance(currentAccount).getCurrentUser();
             title = UserObject.getUserName(user);
@@ -1268,7 +1263,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             imageReceiver.setForUserOrChat(user, avatarDrawable);
             try {
                 title = Emoji.replaceEmoji(title, null, false);
-            } catch (Exception ignore) {}
+            } catch (Exception ignore) {
+            }
 
             titleView.setText(title);
             String tgPremium = CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses() ? " | TG Premium" : "";
@@ -1317,14 +1313,23 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             return Theme.getColor(key, resourcesProvider);
         }
 
-        private int lastColorId = -1;
+        private MessagesController.PeerColor peerColor;
         public void setColor(int colorId, boolean animated) {
             MessagesController.PeerColors peerColors = MessagesController.getInstance(currentAccount).profilePeerColors;
-            MessagesController.PeerColor peerColor = peerColors == null ? null : peerColors.getColor(lastColorId = colorId);
+            MessagesController.PeerColor peerColor = peerColors == null ? null : peerColors.getColor(colorId);
+            setColor(peerColor, animated);
+        }
+
+        public void setColor(MessagesController.PeerColor peerColor, boolean animated) {
+            this.peerColor = peerColor;
             final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
             if (peerColor != null) {
-                emoji.setColor(adaptProfileEmojiColor(peerColor.getBgColor1(isDark)));
-                statusEmoji.setColor(ColorUtils.blendARGB(peerColor.getColor(1, resourcesProvider), peerColor.hasColor6(isDark) ? peerColor.getColor(4, resourcesProvider) : peerColor.getColor(2, resourcesProvider), .5f));
+                if (peerColor.patternColor != 0) {
+                    emoji.setColor(peerColor.patternColor);
+                } else {
+                    emoji.setColor(adaptProfileEmojiColor(peerColor.getBgColor1(isDark)));
+                }
+                statusEmoji.setColor(ColorUtils.blendARGB(peerColor.getStoryColor1(Theme.isCurrentThemeDark()), 0xFFFFFFFF, 0.25f));
                 final int accentColor = ColorUtils.blendARGB(peerColor.getStoryColor1(isDark), peerColor.getStoryColor2(isDark), .5f);
                 if (!Theme.hasHue(getThemedColor(Theme.key_actionBarDefault))) {
                     subtitleView.setTextColor(accentColor);
@@ -1345,7 +1350,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 titleView.setTextColor(getThemedColor(Theme.key_actionBarDefaultTitle));
             }
 
-            storyGradient.setColorId(colorId, animated);
+            storyGradient.setColor(peerColor, animated);
             invalidate();
         }
 
@@ -1355,11 +1360,13 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             } else {
                 emoji.set(docId, animated);
             }
-            MessagesController.PeerColors peerColors = MessagesController.getInstance(currentAccount).profilePeerColors;
-            MessagesController.PeerColor peerColor = peerColors == null ? null : peerColors.getColor(lastColorId);
             final boolean isDark = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
             if (peerColor != null) {
-                emoji.setColor(adaptProfileEmojiColor(peerColor.getBgColor1(isDark)));
+                if (peerColor.patternColor != 0) {
+                    emoji.setColor(peerColor.patternColor);
+                } else {
+                    emoji.setColor(adaptProfileEmojiColor(peerColor.getBgColor1(isDark)));
+                }
             } else if (AndroidUtilities.computePerceivedBrightness(getThemedColor(Theme.key_actionBarDefault)) > .8f) {
                 emoji.setColor(getThemedColor(Theme.key_windowBackgroundWhiteBlueText));
             } else if (AndroidUtilities.computePerceivedBrightness(getThemedColor(Theme.key_actionBarDefault)) < .2f) {
@@ -1372,56 +1379,50 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             } else {
                 statusEmoji.setColor(Theme.getColor(Theme.key_profile_verifiedBackground, resourcesProvider));
             }
+            invalidate();
         }
 
         private final RectF rectF = new RectF();
         @Override
-        protected void dispatchDraw(Canvas canvas) {
-            rectF.set(dp(20.33f), getHeight() - dp(25.33f + 53.33f), dp(20.33f) + dp(53.33f), getHeight() - dp(25.33f));
+        protected void dispatchDraw(@NonNull Canvas canvas) {
+            rectF.set(
+                (getWidth() - dp(86)) / 2f,
+                getHeight() - dp(82 + 86),
+                (getWidth() + dp(86)) / 2f,
+                getHeight() - dp(82)
+            );
+            imageReceiver.setRoundRadius(dp(54));
             imageReceiver.setImageCoords(rectF);
             imageReceiver.draw(canvas);
 
-            canvas.drawCircle(rectF.centerX(), rectF.centerY(), rectF.width() / 2f + dp(4), storyGradient.getPaint(rectF));
+            final float r = rectF.width() / 2f + dp(4);
+            final float rr = dp(58);
+            canvas.drawRoundRect(
+                rectF.centerX() - r,
+                rectF.centerY() - r,
+                rectF.centerX() + r,
+                rectF.centerY() + r,
+                rr, rr,
+                storyGradient.getPaint(rectF)
+            );
 
-            drawProfileIconPattern(getWidth() - dp(46), getHeight(), 1f, (x, y, sz, alpha) -> {
-                emoji.setAlpha((int) (0xFF * alpha));
-                emoji.setBounds((int) (x - sz * .45f), (int) (y - sz * .45f), (int) (x + sz * .45f), (int) (y + sz * .45f));
-                emoji.draw(canvas);
-            });
+            StarGiftPatterns.drawProfileAnimatedPattern(
+                canvas,
+                emoji,
+                getWidth(),
+                getHeight(),
+                1.0f,
+                rectF,
+                1.0f
+            );
 
             super.dispatchDraw(canvas);
         }
     }
 
-    private int adaptProfileEmojiColor(int color) {
+    public int adaptProfileEmojiColor(int color) {
         final boolean isDark = AndroidUtilities.computePerceivedBrightness(color) < .2f;
         return Theme.adaptHSV(color, +.5f, isDark ? +.28f : -.28f);
-    }
-
-    private final float[] particles = {
-        -18, -24.66f, 24, .4f,
-        5.33f, -53, 28, .38f,
-        -4, -86, 19, .18f,
-        31, -30, 21, .35f,
-        12, -3, 24, .18f,
-        30, -73, 19, .3f,
-        43, -101, 16, .1f,
-        -50, 1.33f, 20, .22f,
-        -58, -33, 24, .22f,
-        -35, -62, 25, .22f,
-        -59, -88, 19, .18f,
-        -86, -61, 19, .1f,
-        -90, -14.33f, 19.66f, .18f
-    };
-    private void drawProfileIconPattern(float cx, float cy, float scale, Utilities.Callback4<Float, Float, Float, Float> draw) {
-        for (int i = 0; i < particles.length; i += 4) {
-            draw.run(
-                cx + dp(particles[i]) * scale,
-                cy + dp(particles[i + 1]) * scale,
-                dpf2(particles[i + 2]),
-                particles[i + 3]
-            );
-        }
     }
 
     private String birthdayString() {

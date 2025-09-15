@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
@@ -46,9 +47,8 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
-import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator;
 
-public class FiltersPreferencesEntry extends BaseFragment {
+public class MessageFiltersPreferencesEntry extends BaseFragment {
 
     private int rowCount;
     private ListAdapter listAdapter;
@@ -63,6 +63,7 @@ public class FiltersPreferencesEntry extends BaseFragment {
     private int filtersEndDivisor;
 
     private int miscellaneousHeaderRow;
+    private int detectEntitiesRow;
     private int hideFromBlockedRow;
     private int hideAllRow;
     private int collapseAutomaticallyRow;
@@ -158,13 +159,14 @@ public class FiltersPreferencesEntry extends BaseFragment {
                 return;
             }
             if (requireDonate) {
-                AndroidUtilities.shakeView(view);
+                AndroidUtilities.shakeViewSpring(view);
+                BotWebViewVibrationEffect.APP_ERROR.vibrate();
                 BulletinFactory.of(this).createSimpleBulletin(
                         R.raw.cg_star_reaction, // stars_topup // star_premium_2
                         getString(R.string.DP_Donate_Exclusive),
                         getString(R.string.DP_Donate_ExclusiveDesc),
                         getString(R.string.MoreInfo),
-                        () -> presentFragment(CherrygramPreferencesNavigator.INSTANCE.createDonate())
+                        () -> CherrygramPreferencesNavigator.INSTANCE.createDonate(this)
                 ).show();
                 return;
             }
@@ -182,7 +184,8 @@ public class FiltersPreferencesEntry extends BaseFragment {
                 listAdapter.notifyItemChanged(detectTranslitRow, false);
                 listAdapter.notifyItemChanged(exactWordMatchRow, false);
                 listAdapter.notifyItemChanged(miscellaneousHeaderRow, false);
-                listAdapter.notifyItemChanged(hideFromBlockedRow, false);
+                listAdapter.notifyItemChanged(detectEntitiesRow, false);
+                if (CherrygramCoreConfig.INSTANCE.isDevBuild() || CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) listAdapter.notifyItemChanged(hideFromBlockedRow, false);
                 listAdapter.notifyItemChanged(hideAllRow, false);
                 listAdapter.notifyItemChanged(collapseAutomaticallyRow, false);
             } else if (position == detectTranslitRow) {
@@ -201,6 +204,16 @@ public class FiltersPreferencesEntry extends BaseFragment {
                     ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgFiltersMatchExactWord());
 
                     if (CherrygramChatsConfig.INSTANCE.getMsgFiltersMatchExactWord() && !CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
+                        CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(true);
+                        listAdapter.notifyItemChanged(enableFilterRow, false);
+                    }
+                }
+            } else if (position == detectEntitiesRow) {
+                CherrygramChatsConfig.INSTANCE.setMsgFiltersDetectEntities(!CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectEntities());
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectEntities());
+
+                    if (CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectEntities() && !CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
                         CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(true);
                         listAdapter.notifyItemChanged(enableFilterRow, false);
                     }
@@ -320,6 +333,15 @@ public class FiltersPreferencesEntry extends BaseFragment {
                                 true,
                                 true
                         );
+                    } else if (position == detectEntitiesRow) {
+                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
+                        textCheckCell.setTextAndValueAndCheck(
+                                getString(R.string.CP_Message_Filtering_Entities),
+                                getString(R.string.CP_Message_Filtering_EntitiesDesc),
+                                CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectEntities(),
+                                true,
+                                true
+                        );
                     } else if (position == hideFromBlockedRow) {
                         textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
                         textCheckCell.setTextAndValueAndCheck(
@@ -429,7 +451,7 @@ public class FiltersPreferencesEntry extends BaseFragment {
                 return VIEW_TYPE_SHADOW;
             } else if (position == filtersHeaderRow || position == miscellaneousHeaderRow) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == enableFilterRow || position == detectTranslitRow || position == exactWordMatchRow || position == hideFromBlockedRow || position == hideAllRow  || position == collapseAutomaticallyRow) {
+            } else if (position == enableFilterRow || position == detectTranslitRow || position == exactWordMatchRow || position == detectEntitiesRow || position == hideFromBlockedRow || position == hideAllRow  || position == collapseAutomaticallyRow) {
                 return VIEW_TYPE_TEXT_CHECK;
             } else if (position == filteredWordsAdviceRow) {
                 return VIEW_TYPE_TEXT_INFO_PRIVACY;
@@ -452,6 +474,7 @@ public class FiltersPreferencesEntry extends BaseFragment {
         filtersEndDivisor = rowCount++;
 
         miscellaneousHeaderRow = rowCount++;
+        detectEntitiesRow = rowCount++;
         if (CherrygramCoreConfig.INSTANCE.isDevBuild() || CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) hideFromBlockedRow = rowCount++;
         hideAllRow = rowCount++;
         collapseAutomaticallyRow = rowCount++;

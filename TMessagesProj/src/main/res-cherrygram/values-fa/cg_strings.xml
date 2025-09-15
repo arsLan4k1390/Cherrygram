@@ -257,8 +257,6 @@
     <string name="CP_Messages_Size">اندازه حباب پیام</string>
     <string name="CP_Slider_MediaAmplifier">تصاویر و ویدیوها</string>
     <string name="CP_Slider_MediaAmplifier_Hint">با آلبوم ها کار نمی کند (رسانه گروه بندی شده)</string>
-    <string name="CP_SpoilersOnMedia">افکت اسپویلر</string>
-    <string name="CP_SpoilersOnMedia_Desc">در صورت غیرفعال بودن این گزینه، تأثیر مخفی‌کننده بر روی عکس‌ها و ویدیوها نمایش داده نخواهد شد.</string>
     <string name="CP_VoiceEnhancements">بهبود صدا</string>
     <string name="CP_VoiceEnhancements_Desc">سرکوب نویز و نرمال‌سازی صدا</string>
     <string name="CP_PlayVideo">پخش ویدئو هنگام زدن دکمه‌ی ولوم</string>
@@ -307,7 +305,6 @@
     <string name="EP_NavigationAnimation">انیمیشن جابجا شدن</string>
     <string name="EP_NavigationAnimationBezier">کلاسیک</string>
     <string name="EP_NavigationAnimationCrossfading">افکت نرم</string>
-    <string name="CG_ResidentNotification">نمایش اعلان‌های همیشگی</string>
     <string name="EP_PhotosSize">ارسال تصاویر بزرگ (۲۵۶۰ پیکسلی)</string>
     <string name="EP_CustomAppTitle">عنوان برنامه</string>
     <string name="EP_CustomChat">چت سفارشی برای پیام‌های ذخیره‌شده</string>

@@ -324,7 +324,6 @@ import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.PhotoViewerHelper;
 
 @SuppressLint("WrongConstant")
@@ -14732,69 +14731,36 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                 menuItem.hideSubItem(gallery_menu_set_as_main);
                 menuItem.hideSubItem(gallery_menu_delete);
             }
-            //Show upload date and time of avatars.
+            /** Cherrygram start */
             if (avatarsDialogId != 0) {
-                TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(avatarsDialogId);
-                TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-avatarsDialogId);
-                TLRPC.Photo avatar = avatarsArr.get(switchingToIndex);
-
-                boolean hasVideoAvatar = false;
-                if (userFull != null) {
-                    if (userFull.profile_photo != null) {
-                        if (avatar != null && avatar.video_sizes != null && !avatar.video_sizes.isEmpty()) {
-                            hasVideoAvatar = true;
-                        } else if (userFull.profile_photo.video_sizes != null && !userFull.profile_photo.video_sizes.isEmpty()) {
-                            hasVideoAvatar = true;
-                        }
-                    }
-                }
-
-                boolean hasPublicVideoAvatar = userFull != null
-                        && userFull.fallback_photo != null
-                        && userFull.fallback_photo.video_sizes != null
-                        && !userFull.fallback_photo.video_sizes.isEmpty();
-
-                TLRPC.VideoSize emojiMarkup = getEmojiMarkup(hasVideoAvatar, hasPublicVideoAvatar, avatar, userFull);
+                title = DialogObject.getName(avatarsDialogId);
+                menuItem.showSubItem(gallery_menu_report);
 
                 photoViewerHelper = new PhotoViewerHelper(
-                        actionBarContainer,
                         avatarsArr,
                         switchingToIndex,
-                        userFull,
-                        emojiMarkup,
-                        parentFragment
+                        avatarsDialogId,
+                        parentFragment,
+                        actionBarContainer
                 );
 
-                CharSequence subtitle = "";
-
-                title = DialogObject.getName(avatarsDialogId);
-
-                if (avatarsDialogId >= 0 && userFull != null && userFull.user != null && userFull.user.id == UserConfig.getInstance(currentAccount).getClientUserId()) {
+                CharSequence cgSubtitle = photoViewerHelper.getSubtitle();
+                if (TextUtils.isEmpty(cgSubtitle) || avatarsDialogId == parentFragment.getUserConfig().clientUserId) {
                     ImageLocation imageLocation = imagesArrLocations.get(index);
-                    if (imageLocation != null && imageLocation.photo != null && imageLocation.photo.date != 0) {
+                    if (imageLocation != null && imageLocation.photo != null) {
                         actionBarContainer.setSubtitle(LocaleController.formatDateTime(imageLocation.photo.date, true), animated);
                     } else {
                         actionBarContainer.setSubtitle("", animated);
                     }
-                } else if (avatarsDialogId >= 0) {
-                    subtitle = photoViewerHelper.getUserAvatarDate();
-                    actionBarContainer.setSubtitle(subtitle, animated);
-
-                    if (!AndroidUtilities.isTablet() && avatarsDialogId != 0 && emojiMarkup != null) {
-                        photoViewerHelper.fetchSetId();
+                } else {
+                    if (!AndroidUtilities.isTablet() && photoViewerHelper.getEmojiMarkup() != null && avatarsDialogId != parentFragment.getUserConfig().clientUserId) {
+                        photoViewerHelper.fetchSetId(animated);
+                    } else {
+                        actionBarContainer.setSubtitle(cgSubtitle, animated);
                     }
-                } else if (chat != null) {
-                    TLRPC.ChatFull chatFull = MessagesController.getInstance(currentAccount).getChatFull(-avatarsDialogId);
-                    if (avatar != null && avatar.date != 0) {
-                        subtitle = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(avatar.date));
-                    } else if (chatFull != null && chatFull.chat_photo != null && chatFull.chat_photo.date != 0) {
-                        subtitle = String.format("%s", CGResourcesHelper.INSTANCE.createDateAndTime(chatFull.chat_photo.date));
-                    }
-                    actionBarContainer.setSubtitle(subtitle, animated);
                 }
-                menuItem.showSubItem(gallery_menu_report);
             }
-            //Show upload date and time of avatars.
+            /** Cherrygram finish */
 
             if (dialogPhotos != null) {
                 dialogPhotos.loadAfter(index, forward);
@@ -14904,7 +14870,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                             compressItem.setVisibility(View.GONE);
                         } else {
                             showVideoTimeline(true, animated);
-                            if (sendPhotoType != SELECT_TYPE_AVATAR) {
+                            if (sendPhotoType != SELECT_TYPE_AVATAR && sendPhotoType != SELECT_TYPE_STICKER) {
                                 videoAvatarTooltip.setVisibility(View.GONE);
                                 cropItem.setVisibility(View.VISIBLE);
                                 cropItem.setTag(1);
@@ -14949,7 +14915,7 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                     isCurrentVideo = false;
                     if (object instanceof MediaController.PhotoEntry && !((MediaController.PhotoEntry) object).isVideo) {
                         final MediaController.PhotoEntry entry = (MediaController.PhotoEntry) object;
-                        if (!entry.isVideo && (currentIndex == index ? getCurrentVideoEditedInfo() : entry.editedInfo) == null) {
+                        if (!entry.isVideo && sendPhotoType != SELECT_TYPE_STICKER && (currentIndex == index ? getCurrentVideoEditedInfo() : entry.editedInfo) == null) {
                             compressItem.setVisibility(View.GONE); // View.VISIBLE
                             compressItem.setPhotoState(highQuality);
                         } else {
@@ -18417,6 +18383,10 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             Instance = null;
         }
         onHideView();
+        if (photoViewerHelper != null) {
+            photoViewerHelper.release();
+            photoViewerHelper = null;
+        }
     }
 
     private void onPhotoClosed(PlaceProviderObject object) {
@@ -23169,18 +23139,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
             copyPhotoButtonGap.setVisibility(View.GONE);
             copyPhotoButton.setVisibility(View.GONE);
         }
-    }
-
-    private TLRPC.VideoSize getEmojiMarkup(boolean hasVideoAvatar, boolean hasPublicVideoAvatar, TLRPC.Photo avatar, TLRPC.UserFull userFull) {
-        TLRPC.VideoSize emojiMarkup;
-        if (hasVideoAvatar) {
-            emojiMarkup = FileLoader.getEmojiMarkup(avatar.video_sizes);
-        } else if (hasPublicVideoAvatar) {
-            emojiMarkup = FileLoader.getEmojiMarkup(userFull.fallback_photo.video_sizes);
-        } else {
-            emojiMarkup = null;
-        }
-        return emojiMarkup;
     }
 
     private int getDoubleTapDuration() {

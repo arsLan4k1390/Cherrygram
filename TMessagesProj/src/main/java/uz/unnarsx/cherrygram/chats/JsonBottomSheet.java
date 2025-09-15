@@ -79,7 +79,6 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
 
     private boolean sheetTopNotAnimate;
     private RecyclerListView listView;
-    private LinearLayoutManager layoutManager;
     private PaddedAdapter adapter;
 
     private View buttonShadowView;
@@ -143,7 +142,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
         listView.setPadding(0, AndroidUtilities.statusBarHeight + dp(56), 0, dp(80));
         listView.setClipToPadding(true);
-        listView.setLayoutManager(layoutManager = new LinearLayoutManager(context));
+        listView.setLayoutManager(new LinearLayoutManager(context));
         listView.setAdapter(adapter = new PaddedAdapter(context, loadingTextView));
         listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

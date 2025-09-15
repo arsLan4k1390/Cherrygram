@@ -22,6 +22,7 @@ import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers
+import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.hint
@@ -45,15 +46,6 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 divider = true
             }
             switch {
-                title = getString(R.string.AP_CenterChatsTitle)
-                contract({
-                    return@contract CherrygramChatsConfig.centerChatTitle
-                }) {
-                    CherrygramChatsConfig.centerChatTitle = it
-                    bf.parentLayout.rebuildAllFragmentViews(false, false)
-                }
-            }
-            switch {
                 title = getString(R.string.CP_UnreadBadgeOnBackButton)
                 description = getString(R.string.CP_UnreadBadgeOnBackButton_Desc)
 
@@ -63,6 +55,23 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     CherrygramChatsConfig.unreadBadgeOnBackButton = it
                 }
             }
+            switch {
+                title = getString(R.string.AP_CenterChatsTitle)
+                contract({
+                    return@contract CherrygramChatsConfig.centerChatTitle
+                }) {
+                    CherrygramChatsConfig.centerChatTitle = it
+                    bf.parentLayout.rebuildAllFragmentViews(false, false)
+                }
+            }
+            /*switch {
+                title = getString(R.string.CP_BlurMessageMenu)
+                contract({
+                    return@contract CherrygramChatsConfig.blurMessageMenuBackground
+                }) {
+                    CherrygramChatsConfig.blurMessageMenuBackground = it
+                }
+            }*/
             textIcon {
                 title = getString(R.string.CP_Slider_RecentEmojisAndStickers)
 
@@ -119,7 +128,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 title = getString(R.string.CP_GeminiAI_Header)
                 icon = R.drawable.magic_stick_solar
                 listener = TGKitTextIconRow.TGTIListener {
-                    GeminiPreferencesBottomSheet.showAlert(bf)
+                    CherrygramPreferencesNavigator.createGemini(bf)
                 }
             }
         }
@@ -153,7 +162,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 title = getString(R.string.CP_Message_Filtering)
                 icon = R.drawable.msg_notspam
                 listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(FiltersPreferencesEntry())
+                    CherrygramPreferencesNavigator.createMessageFilter(bf)
                 }
                 divider = true
             }
@@ -199,6 +208,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 contract({
                     return@contract listOf(
                         Pair(CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP, getString(R.string.Forward) + " " + getString(R.string.CG_Without_Authorship)),
+                        Pair(CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_CAPTION, getString(R.string.Forward) + " " + getString(R.string.CG_Without_Caption)),
                         Pair(CherrygramChatsConfig.LEFT_BUTTON_REPLY, getString(R.string.Reply)),
                         Pair(CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE, getString(R.string.CG_ToSaved)),
                         Pair(CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE, getString(R.string.DirectShare))
@@ -208,7 +218,8 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                         CherrygramChatsConfig.LEFT_BUTTON_REPLY -> getString(R.string.Reply)
                         CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE -> getString(R.string.CG_ToSaved)
                         CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE -> getString(R.string.DirectShare)
-                        else -> getString(R.string.Forward) + " " + getString(R.string.CG_Without_Authorship)
+                        CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP -> getString(R.string.Forward) + " " + getString(R.string.CG_Without_Authorship)
+                        else -> getString(R.string.Forward) + " " + getString(R.string.CG_Without_Caption)
                     }
                 }) {
                     CherrygramChatsConfig.leftBottomButton = it
@@ -275,16 +286,6 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 }) {
                     CherrygramChatsConfig.largePhotos = it
                     AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            switch {
-                title = getString(R.string.CP_SpoilersOnMedia)
-                description = getString(R.string.CP_SpoilersOnMedia_Desc)
-
-                contract({
-                    return@contract CherrygramChatsConfig.spoilersOnMedia
-                }) {
-                    CherrygramChatsConfig.spoilersOnMedia = it
                 }
             }
             switch {

@@ -25,7 +25,6 @@ object CherrygramExperimentalConfig {
     var springAnimation by sharedPreferences.int("EP_SpringAnimation", ANIMATION_SPRING)
 
     var actionbarCrossfade by sharedPreferences.boolean("EP_ActionbarCrossfade", true)
-    var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", !ApplicationLoader.checkPlayServices())
     var customChatForSavedMessages by sharedPreferences.boolean("CP_CustomChatForSavedMessages", false)
     /** General finish **/
 

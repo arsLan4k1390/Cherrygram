@@ -259,8 +259,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="CP_Messages_Size">Tamanho da bolha de mensagens</string>
     <string name="CP_Slider_MediaAmplifier">Fotos e vídeos</string>
     <string name="CP_Slider_MediaAmplifier_Hint">Não funciona com álbuns (mídias agrupadas)</string>
-    <string name="CP_SpoilersOnMedia">Efeito de spoiler</string>
-    <string name="CP_SpoilersOnMedia_Desc">O efeito de spoiler em fotos e vídeos não será exibido se o recurso estiver desativado.</string>
     <string name="CP_VoiceEnhancements">Melhorias de Voz</string>
     <string name="CP_VoiceEnhancements_Desc">Supressão de ruído e Normalização de Voz</string>
     <string name="CP_PlayVideo">Reproduzir vídeo ao clicar no botão de volume</string>
@@ -309,7 +307,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="EP_NavigationAnimation">Animação de navegação</string>
     <string name="EP_NavigationAnimationBezier">Clássico</string>
     <string name="EP_NavigationAnimationCrossfading">Efeito crossfading</string>
-    <string name="CG_ResidentNotification">Mostrar uma notificação persistente</string>
     <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
     <string name="EP_CustomAppTitle">Título do aplicativo</string>
     <string name="EP_CustomChat">Conversa personalizada para mensagens guardadas</string>

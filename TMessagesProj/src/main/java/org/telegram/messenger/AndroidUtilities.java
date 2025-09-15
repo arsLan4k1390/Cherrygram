@@ -2306,70 +2306,17 @@ public class AndroidUtilities {
     }
 
     public static Typeface getTypeface(String assetPath) {
-        synchronized (typefaceCache) {
-            if (!typefaceCache.containsKey(assetPath)) {
-                Typeface t;
-                try {
-                    if (CherrygramCoreConfig.INSTANCE.getSystemFonts()) {
-                        switch (assetPath) {
-                            case TYPEFACE_ROBOTO_MONO:
-                                t = Typeface.MONOSPACE;
-                                break;
-                            case TYPEFACE_ROBOTO_CONDENSED_BOLD:
-                                t = Typeface.create("sans-serif-condensed", Typeface.BOLD);
-                                break;
-                            case TYPEFACE_ROBOTO_MEDIUM_ITALIC:
-                                if (FontHelper.isMediumWeightSupported()) {
-                                    t = Typeface.create("sans-serif-medium", Typeface.ITALIC);
-                                } else {
-                                    t = Typeface.create("sans-serif", Typeface.BOLD_ITALIC);
-                                }
-                                break;
-                            case TYPEFACE_ROBOTO_MEDIUM:
-                                if (FontHelper.isMediumWeightSupported()) {
-                                    t = Typeface.create("sans-serif-medium", Typeface.NORMAL);
-                                } else {
-                                    t = Typeface.create("sans-serif", Typeface.BOLD);
-                                }
-                                break;
-                            case TYPEFACE_ROBOTO_ITALIC:
-                                t = Build.VERSION.SDK_INT >= 28 ? Typeface.create(Typeface.SANS_SERIF, 400, true) : Typeface.create("sans-serif", Typeface.ITALIC);
-                                break;
-                            default:
-                                t = Build.VERSION.SDK_INT >= 28 ? Typeface.create(Typeface.SANS_SERIF, 400, false) : Typeface.create("sans-serif", Typeface.NORMAL);
-                                break;
-                        }
-                    } else {
-                        if (Build.VERSION.SDK_INT >= 26) {
-                            Typeface.Builder builder = new Typeface.Builder(ApplicationLoader.applicationContext.getAssets(), assetPath);
-                            if (assetPath.contains("medium")) {
-                                builder.setWeight(700);
-                            }
-                            if (assetPath.contains("italic")) {
-                                builder.setItalic(true);
-                            }
-                            t = builder.build();
-                        } else {
-                            t = Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), assetPath);
-                        }
-                    }
-                } catch (Exception e) {
-                    if (BuildVars.LOGS_ENABLED) {
-                        FileLog.e("Could not get typeface '" + assetPath + "' because " + e.getMessage());
-                    }
-                    return null;
+        return typefaceCache.computeIfAbsent(assetPath, path -> {
+            try {
+                if (CherrygramCoreConfig.INSTANCE.getSystemFonts()) {
+                    return FontHelper.createTypeface(path);
                 }
-                typefaceCache.put(assetPath, t);
-                return t;
+                return FontHelper.createTypefaceFromAsset(path);
+            } catch (Exception e) {
+                FileLog.e("Could not get typeface '" + assetPath + "' because " + e.getMessage());
+                return null;
             }
-            return typefaceCache.get(assetPath);
-        }
-    }
-
-    public static void clearTypefaceCache() {
-        synchronized (typefaceCache) {
-            typefaceCache.clear();
-        }
+        });
     }
 
     public static boolean isWaitingForSms() {
@@ -3143,7 +3090,8 @@ public class AndroidUtilities {
     }
 
     public static int charSequenceIndexOf(CharSequence cs, CharSequence needle, int fromIndex) {
-        for (int i = fromIndex; i < cs.length() - needle.length(); i++) {
+        if (needle == null || needle.length() <= 0) return -1;
+        for (int i = fromIndex; i <= cs.length() - needle.length(); i++) {
             boolean eq = true;
             for (int j = 0; j < needle.length(); j++) {
                 if (needle.charAt(j) != cs.charAt(i + j)) {
@@ -6705,5 +6653,11 @@ public class AndroidUtilities {
 
         FileLog.d("[FLAG_SECURE]");
         printStackTrace("FLAG_SECURE");
+    }
+
+    @Nullable
+    public static <T> T randomOf(ArrayList<T> array) {
+        if (array.isEmpty()) return null;
+        return array.get(Math.abs(Utilities.fastRandom.nextInt() % array.size()));
     }
 }

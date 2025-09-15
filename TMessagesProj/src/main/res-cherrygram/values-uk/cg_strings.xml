@@ -13,7 +13,7 @@
     <string name="CG_RegistrationDateFailed">Помилка отримання дати реєстрації.</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Увійти за QR</string>
-    <string name="CG_QRLoginMessage">Відскануйте QR-код іншим пристроєм для входу.</string>
+    <string name="CG_QRLoginMessage">Відскануйте QR-код іншим пристроєм, аби увійти.</string>
     <!--Sign in screen-->
     <!--Last seen status-->
     <string name="CG_LastSeenNow">активність — щойно</string>
@@ -37,7 +37,7 @@
     <string name="CG_FoldersTypeIconsTitles">Іконки з назвами</string>
     <string name="CG_ChooseFolderIcon">Виберіть іконку</string>
     <string name="CP_NewTabs_NoCounter">Приховати лічильник на вкладках</string>
-    <string name="CP_NewTabs_NoCounter_Desc">Приховує лічильник кількості непрочитаних повідомлень</string>
+    <string name="CP_NewTabs_NoCounter_Desc">Приховати лічильник непрочитаних повідомлень</string>
     <string name="CG_SwipeToUnarchive">Проведіть вліво для розархівування</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
@@ -47,7 +47,7 @@
     <string name="CG_DeleteAllFromSelfAlertBefore">Увага! Це **видалить усі ваші повідомлення до %s** у цьому чаті для **всіх** учасників.</string>
     <string name="CG_DeleteAllFromSelfBefore">Перед...</string>
     <string name="CG_DeleteAllFromSelfAdmin">З правами адміністратора</string>
-    <string name="CG_DeleteAllFromSelfDone">Видалити свої повідомлення</string>
+    <string name="CG_DeleteAllFromSelfDone">Усі ваші повідомлення видалено</string>
     <string name="CG_ClearFromCache">Видалити з кешу</string>
     <string name="CG_ClearedFromCache">Видалено з кешу</string>
     <string name="CG_ViewUserHistory">Історія повідомлень</string>
@@ -59,6 +59,7 @@
     <string name="CG_FwdMenu_Captions">Опис</string>
     <string name="CG_FwdMenu_Notify">Сповіщення</string>
     <string name="CG_Without_Authorship">без авторства</string>
+    <string name="CG_Without_Caption">без підпису</string>
     <string name="CG_CopyTitle">Копіювати заголовок</string>
     <string name="CG_CopyCallback">Копіювати Callback-дані</string>
     <string name="CG_CopyInlineQuery">Копіювати Inline-запит</string>
@@ -93,7 +94,7 @@
     <string name="CG_ForceCleanInfo1">Ви дійсно хочете видалити ВСЕ з вашого кешу Telegram?</string>
     <string name="CG_Kaboom">Доступ до цієї функції, можна отримати без паролю Cherrygram, через системні налаштування. Функція повністю видаляє всі дані додатку. Її можна використати в аварійних ситуаціях.</string>
     <string name="CG_AppCrashed">Щось пішло не так</string>
-    <string name="CG_AppCrashedDesc">Cherrygram перестав працювати. Будь ласка, відправте логи розробникам, щоб вони могли виправити цю помилку якомога швидше.</string>
+    <string name="CG_AppCrashedDesc">Cherrygram перестав працювати. Будь ласка, відправте логи розробникам, щоб вони могли виправити цю помилку якомога швидше</string>
     <string name="CG_CopyReportDetails">Копіювати подробиці репорту</string>
     <string name="CG_ReportDetailsCopied">Деталі репорту скопійовано до буфера обміну.</string>
     <string name="CG_TranslationLanguage">Мова перекладу</string>
@@ -106,7 +107,7 @@
     <string name="CG_CopySetId">Скопіювати установлений ID</string>
     <string name="CG_ExportSettings">Експортувати налаштування</string>
     <string name="CG_ImportSettings">Імпортувати налаштування</string>
-    <string name="CG_ImportSettingsAlert">Перезаписати налаштування\? Імпортування налаштувань із невідомих джерел може призвести до того, що програма не працюватиме.</string>
+    <string name="CG_ImportSettingsAlert">Перезаписати налаштування? Імпортування налаштувань з невідомих джерел може призвести до того, що програма не працюватиме.</string>
     <string name="CG_OpenStickerPack">Натисніть, щоб відкрити наліпку</string>
     <string name="CG_OpenEmojiPack">Натисніть, щоб отримати емодзі</string>
     <string name="CG_ReplyContainsEmojiPack">Ця відповідь містить **%s** емодзі</string>
@@ -193,7 +194,7 @@
     <string name="CP_DisablePremStickAutoPlay_Desc">Преміум наліпки не відтворюються автоматично (функція не працюватиме, якщо ви вимкнули дотик на преміум наліпках)</string>
     <string name="CP_Filters_Header">Папки</string>
     <string name="AP_FolderNameInHeader">Назва папки замість \"Cherrygram\"</string>
-    <string name="AP_FolderNameInHeader_Desc">Змінює надпис \"Cherrygram\" в заголовку зверху на назву вашої папки (зручно при відображенні іконок замість названих папок)</string>
+    <string name="AP_FolderNameInHeader_Desc">Ця опція змінить назву \"Cherrygram\" на назву вашої папки в панелі дій (корисно, якщо замість назв папок у вас лише іконки)</string>
     <string name="CP_NewTabs_RemoveAllChats">Приховати вкладку \"Всі чати\"</string>
     <string name="AP_Tab_Style">Стилі папок</string>
     <string name="AP_Tab_Style_Default">По замовчуванню</string>
@@ -225,6 +226,7 @@
     <string name="AP_CenterChatsTitle">Центрувати заголовок у чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Показувати лічильник непрочитаних</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включити лічильник непрочитаних чатів на кнопці «Назад» в відкритому чаті</string>
+    <string name="CP_BlurMessageMenu">Розмиття фону меню повідомлення</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Кількість останніх емоджі та наліпок</string>
     <string name="CP_NoRounding">Вимкнути округлення чисел</string>
     <string name="CP_DeleteForAll">Використовувати \"Видалити для всіх\" за замовчуванням</string>
@@ -237,9 +239,9 @@
     <string name="CP_DisableSwipeToNext">Вимкнути перехід на наступний канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Вимкнути перехід на наступний канал при прокрутці будь якого каналу</string>
     <string name="CP_HideMuteUnmuteButton">Приховати нижню кнопку в каналах</string>
-    <string name="CP_HideKbdOnScroll">Інтенсивність прокручування щоб приховати клавіатуру</string>
+    <string name="CP_HideKbdOnScroll">Інтенсивність прокручування, щоб приховати клавіатуру</string>
     <string name="CP_HideSendAsChannel">Приховати \"Відправити як канал\"</string>
-    <string name="CP_HideSendAsChannelDesc">Ви можете отримати доступ до меню довгим натисканням на кнопку Емоджі/Наліпки/GIF</string>
+    <string name="CP_HideSendAsChannelDesc">Ви можете отримати доступ до меню, довго натиснувши на кнопку з Емодзі/Наліпками/GIF</string>
     <string name="CP_GeminiAI_API_Key">API ключ Gemini</string>
     <string name="CP_GeminiAI_API_Key_Desc">Відвідайте <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]>, щоб отримати API ключ.</string>
     <string name="CP_GeminiAI_Model">Код моделі Gemini</string>
@@ -247,27 +249,46 @@
     <string name="CP_GeminiAI_Model_Selector">Список моделей Gemini</string>
     <string name="CP_GeminiAI_Model_Selector_Desc">Якщо у вас є дійсний ключ API, натисніть тут щоб обрати модель і заповнити поле автоматично.</string>
     <string name="CP_GeminiAI_Sample">Наприклад:</string>
-    <string name="CP_GeminiAI_Instruction">Щоб скористатися Gemini,
-        вам потрібно заповнити всі значення на цьому екрані.
-        \n\nПісля цього відкрийте будь-який чат, введіть повідомлення та утримуйте кнопку надсилання повідомлення.
-        \n\nБільше того, ви можете відповісти на повідомлення за допомогою AI. Для цього натисніть будь-яке текстове повідомлення в чаті.
-    </string>
+    <string name="CP_GeminiAI_Instruction">Щоб використати Gemini, вам потрібно заповнити всі значення на цьому екрані.
+\n\nПісля цього відкрийте будь-який чат, наберіть повідомлення і натисніть та утримуйте кнопку відправки.
+\n\nКрім того, ви можете відповісти на повідомлення за допомогою ШІ. Для цього натисніть на будь-яке текстове повідомлення в чаті    </string>
+    <string name="CP_GeminiAI_System_Prompt">Системна підказка</string>
+    <string name="CP_GeminiAI_System_Prompt_Desc">Системна підказка (або \"Системне повідомлення\") визначає стиль та поведінку Gemini. Ви можете редагувати цей текст, щоб контролювати формат відповідей..</string>
     <string name="CP_GeminiAI_Temperature">Температура</string>
     <string name="CP_GeminiAI_Temperature_Desc">Керування креативністю тексту. Низькі значення роблять текст більш передбачуваним та сфокусованим, високими значеннями - більш випадковими та оригінальними.</string>
     <string name="CP_GeminiAI_ExtractText">Витягнути текст (OCR)</string>
     <string name="CP_GeminiAI_Summarize">Підсумувати</string>
     <string name="CP_Header_Record">Медіа</string>
     <string name="CP_Messages_Size">Розмір бульбашок повідомлень</string>
+    <string name="CP_Message_Filtering">Фільтр повідомлень</string>
+    <string name="CP_Message_Filtering_Filter">Увімкнути фільтр</string>
+    <string name="CP_Message_Filtering_Filter_Desc">Коли фільтр увімкнено, вибрані слова у вхідних повідомленнях будуть автоматично приховані під ефектом спойлера, і їх не можна буде прочитати, доки ви їх не відкриєте.</string>
+    <string name="CP_Message_Filtering_Field">Введіть слова для фільтру</string>
+    <string name="CP_Message_Filtering_Field_Desc">Розділяйте слова комою, пробілом або новим рядком. Регістр не враховується.</string>
+    <string name="CP_Message_Filtering_Translit">Виявлення трансліту</string>
+    <string name="CP_Message_Filtering_Translit_Desc">Коли фільтр увімкнено, він також виявлятиме слова, написані транслітом (наприклад, \"test\" буде розпізнано як \"тест\").
+Це допомагає знаходити та приховувати повідомлення під спойлером, навіть якщо кириличні літери замінено латинськими. Може трохи збільшити навантаження на процесор пристрою    </string>
+    <string name="CP_Message_Filtering_Exact_Words">Точна відповідність слова</string>
+    <string name="CP_Message_Filtering_Exact_Words_Desc">Коли цю опцію увімкнено, будуть приховані лише ті слова, які повністю збігаються зі словами у списку фільтра.
+Якщо слово зустрічається в іншій формі (з префіксами, закінченнями або в складі інших слів), воно не буде приховано    </string>
+    <string name="CP_Message_Filtering_Entities">Фільтр сутності посилань</string>
+    <string name="CP_Message_Filtering_EntitiesDesc">Коли увімкнено, ця опція поширює фільтрацію на посилання (сутності), що містяться в повідомленнях. Система скануватиме URL-адреси на наявність будь-яких ключових слів з вашого фільтра.
+Якщо збіг знайдено всередині посилання, все повідомлення буде автоматично приховано під спойлером, незалежно від того, чи з’являється ключове слово у видимому тексті.
+\n\nЦе допомагає захиститися від замаскованого спаму, прихованої реклами або фішингових доменів, які інакше могли б обійти звичайну фільтрацію на основі тексту    </string>
+    <string name="CP_Message_Filtering_HideBlocked">Приховати повідомлення від заблокованих користувачів</string>
+    <string name="CP_Message_Filtering_HideBlockedDesc">Коли цю опцію увімкнено, всі повідомлення та переслані повідомлення від заблокованих користувачів будуть автоматично приховані під спойлером.</string>
+    <string name="CP_Message_Filtering_HideAll">Спойлер усього повідомлення</string>
+    <string name="CP_Message_Filtering_HideAllDesc">Приховує весь текст повідомлення та медіа під спойлером, якщо воно містить слово з фільтра.</string>
+    <string name="CP_Message_Filtering_Collapse">Згорнути повідомлення</string>
+    <string name="CP_Message_Filtering_Collapse_Desc">Коли опцію увімкнено, повідомлення будуть автоматично згортатися. Ви можете розгорнути їх, натиснувши на повідомлення.</string>
     <string name="CP_Slider_MediaAmplifier">Фото та відео</string>
     <string name="CP_Slider_MediaAmplifier_Hint">Не працює з альбомами (згруповані)</string>
-    <string name="CP_SpoilersOnMedia">Спойлер-ефект</string>
-    <string name="CP_SpoilersOnMedia_Desc">Спойлер ефект на фотографії та відео не буде показано, якщо ця функція вимкнена.</string>
     <string name="CP_VoiceEnhancements">Покращення звуку</string>
     <string name="CP_VoiceEnhancements_Desc">Шумогасіння і нормалізація голосу</string>
     <string name="CP_PlayVideo">Відтворювати відео після натискання на кнопку гучності</string>
     <string name="CP_PlayVideo_Desc">При натисканні на кнопку гучності буде ввімкнено відео на екранi в діалозі</string>
     <string name="CP_AutoPauseVideo">Зупиняти вiдео</string>
-    <string name="CP_AutoPauseVideo_Desc">Під час блокування екрану або згортанні додатку</string>
+    <string name="CP_AutoPauseVideo_Desc">При блокуванні екрана або перемиканні в фоновий режим</string>
     <string name="CP_DisableVibration">Вимкнути вібрацію</string>
     <string name="CP_VideoSeekDuration">Подвійний тап для перемотування відео (секунди)</string>
     <string name="CP_Header_Notification">Сповіщення</string>
@@ -275,7 +296,7 @@
     <string name="CP_VibrateInChats">Вібрація в чаті</string>
     <string name="CP_VibrateInChats_Desc">Зробити коротку вібрацію, коли отримаєте повідомлення в чатах</string>
     <string name="CP_SilenceNonContacts">Заглушити не-контакти</string>
-    <string name="CP_SilenceNonContacts_Desc">Якщо увімкнено, то сповіщення зі звуком приходитимуть тільки від контактів. Ви можете добавить людину в контакти без номера його телефона (в профілі людини)</string>
+    <string name="CP_SilenceNonContacts_Desc">Якщо увімкнено, то сповіщення зі звуком приходитимуть тільки від контактів. Ви можете додати людину в контакти, без номера його телефона (в профілі людини)</string>
     <!--Chats Preferences-->
     <!--Camera Preferences-->
     <string name="CP_Category_Camera">Камера</string>
@@ -296,8 +317,8 @@
     <string name="CP_CenterCameraControlButtons_Desc">Центрувати перемикач камери та кнопку спалаху.</string>
     <string name="CP_RearCam">Використовувати задню камеру</string>
     <string name="CP_RearCam_Desc">Замість фронтальної камери під час запису відеоповідомлень</string>
-    <string name="CP_DisableCam">Вимкнути камеру в меню вибору фото</string>
-    <string name="CP_DisableCam_Desc">Кнопка камери буде доступна поруч із кнопкою галереї. \nНатискання кнопки відкриє Telegram камеру, та утримання її запустить системну камеру.</string>
+    <string name="CP_DisableCam">Кнопка камери внизу</string>
+    <string name="CP_DisableCam_Desc">Кнопка камери з\'явиться поруч із кнопкою галереї. \nНатисніть для відкриття Telegram камери, щоб запустити системну камеру.</string>
     <string name="CP_Header_Videomessages">Відеоповідомлення</string>
     <string name="CP_ExposureSliderPosition">Положення повзунка експозиції</string>
     <string name="CP_ZoomSliderPosition_Bottom">Знизу</string>
@@ -310,7 +331,6 @@
     <string name="EP_NavigationAnimation">Анімація навігації</string>
     <string name="EP_NavigationAnimationBezier">Класична</string>
     <string name="EP_NavigationAnimationCrossfading">Ефект перехресного затухання</string>
-    <string name="CG_ResidentNotification">Увімкнути постійне сповіщення</string>
     <string name="EP_PhotosSize">Відправляти великі фотографії (2560px)</string>
     <string name="EP_CustomAppTitle">Назва додатка</string>
     <string name="EP_CustomChat">Власний чат для збереження повідомлень</string>
@@ -329,6 +349,8 @@
     <string name="SP_Header_Privacy">Приватність</string>
     <string name="SP_NoProxyPromo">Не показувати спонсора проксі</string>
     <string name="SP_GoogleAnalytics_Desc">Якщо ввімкнути це, усі збої програми та статистичні дані надсилатимуться на \"console.firebase.google.com\" для подальшого перегляду розробником.</string>
+    <string name="SP_AskBioToOpenChats">Запитувати біометричні дані для відкриття чатів</string>
+    <string name="SP_AskBioToOpenChats_Desc">Щоб отримати доступ до вибраних типів чатів, буде потрібен системний пароль (відбиток пальця, Face ID, PIN-код або графічний ключ).</string>
     <string name="SP_LockedChats">Заблоковані чати</string>
     <string name="SP_LockedChats_Lock_Destination">для оновлення списку заблокованих</string>
     <string name="SP_LockedChats_Lock_Destination_Sure">буде заблоковано</string>
@@ -339,7 +361,7 @@
     <string name="SP_AskPinBeforeDelete">Запит біометричного підтвердження для видалення чатів</string>
     <string name="SP_AskPinBeforeDelete_Desc">Якщо Ви хочете видалити чат або очистити історію, потрібне буде підтвердження біометрики. В системі повинно бути активне підтвердження паролю та біометрики.</string>
     <string name="SP_AllowUseSystemPasscode">Дозволити використовувати системний PIN/Графічний ключ</string>
-    <string name="SP_AllowUseSystemPasscode_Desc">\"Скасувати\" на діалоговому вікні підтвердження відбитку пальця, буде замінено кнопкою \"Pin/Графічний ключ\", і ви зможете використати системний шлях для розблокування Cherrygram.</string>
+    <string name="SP_AllowUseSystemPasscode_Desc">Кнопку \"Скасувати\" на діалоговому вікні підтвердження відбитком пальця буде замінено на кнопку \"Pin/Графічний ключ\", і ви зможете використовувати свій системний пароль для розблокування Cherrygram.</string>
     <string name="SP_TestFingerprint">Тест відбитку пальця</string>
     <string name="SP_TestFingerprint_Desc">Якщо автентифікація відбитком пальця вже ввімкнена і ви не бачите функції, спробуйте натиснути кнопку \"Перевірити відбиток\" для вирішення проблеми.</string>
     <string name="SP_BiometricUnavailable_Test_Fixed">Відбиток пальця успішно виявлено!</string>
@@ -371,10 +393,14 @@
     <!--Donations-->
     <string name="DP_RateUs">Оцініть Cherrygram</string>
     <string name="DP_DonateBadge">Пожертвуйте і розблоковуйте бонуси</string>
-    <string name="DP_Donate_Desc">Коли ви пожертвуєте $2 або більше, ви отримаєте епічний значок біля вашого імені.
-Надішліть підтвердження платежу на <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> або в <![CDATA[<a href="https://t.me/CherrygramSupport">Cherrygram Support chat</a>]]>, щоб отримати його.
-Якщо ваша пожертва становить $5 або більше, ви також отримаєте бонусний подарунок — кнопку швидкого доступу до \"Магазину Подарунків\" у бічному меню.</string>
-    <string name="DP_Donate_Bulletin">**%s** підтримав(ла) **Cherrygram\'** успішно!</string>
+    <string name="DP_Donate_Desc">При пожертвуванні від $2 ви також отримаєте бонусні подарунки:</string>
+    <string name="DP_Donate_Badge_desc">**Cherrygram значок** поруч з вашим ім\'ям.</string>
+    <string name="DP_Donate_EpicBadge_desc">1. **Епічний значок Cherrygram** поруч з вашим ім\'ям.</string>
+    <string name="DP_Donate_GiftMarket_Desc">2. Кнопка \"**Магазин подарунків**\" у боковому меню.</string>
+    <string name="DP_Donate_MessageFilter_Desc">3. Функція \"**Фільтр повідомлень**\".</string>
+    <string name="DP_Donate_MessageMenu_Desc">4. \"**IOS - стиль**\" меню повідомлень.</string>
+    <string name="DP_Donate_Cheque">Надішліть підтвердження оплати на **@arsLan**, щоб отримати бонуси.</string>
+    <string name="DP_Donate_Bulletin">%s підтримав(ла) розробку Cherrygram!</string>
     <string name="DP_Support">Подобається Cherrygram? Підтримай його!</string>
     <string name="DP_SupportOptions">Варіанти підтримки</string>
     <string name="DP_CameraCutoutHeader">Брендовані скриншоти</string>
@@ -383,6 +409,8 @@
     \nЯкщо логотип **відображається правильно і залишається в зоні камери **, будь ласка, збережіть цю опцію.
     \nЦе допомагає додатку і підтримує проект - я буду дуже вдячний: ❤️</string>
     <string name="DP_Donate_Method">Оберіть метод</string>
+    <string name="DP_Donate_Exclusive">Ексклюзивно для тих, хто підтримує</string>
+    <string name="DP_Donate_ExclusiveDesc">Підтримайте проект і розблокуйте всі функції.</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 </resources>

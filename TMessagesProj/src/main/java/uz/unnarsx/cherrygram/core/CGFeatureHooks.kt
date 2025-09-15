@@ -20,4 +20,9 @@ object CGFeatureHooks {
         CherrygramChatsConfig.noAuthorship = b
     }
 
+    fun switchNoCaptions(b: Boolean) {
+        // ...
+        CherrygramChatsConfig.noCaptions = b
+    }
+
 }

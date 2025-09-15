@@ -190,6 +190,19 @@ public class ApplicationLoader extends Application {
         return new File("/data/data/uz.unnarsx.cherrygram/files");
     }
 
+    public static File getFilesDirFixed(String child) {
+        try {
+            File path = getFilesDirFixed();
+            File dir = new File(path, child);
+            dir.mkdirs();
+
+            return dir;
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        return null;
+    }
+
     public static void postInitApplication() {
         if (applicationInited || applicationContext == null) {
             return;
@@ -367,20 +380,20 @@ public class ApplicationLoader extends Application {
     }
 
     public static void startPushService() {
-        SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
+        /*SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
         boolean enabled;
         if (preferences.contains("pushService")) {
             enabled = preferences.getBoolean("pushService", true);
         } else {
-            enabled = preferences.getBoolean("keepAliveService", false);
-        }
-        if (enabled) {
+            enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", false);
+        }*/
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && CherrygramCoreConfig.INSTANCE.getResidentNotification()) {
             try {
-                if (BuildVars.LOGS_ENABLED) {
+                if (CherrygramCoreConfig.INSTANCE.isDevBuild()) {
                     Log.d("TFOSS", "Trying to start push service every 10 minutes");
                     Log.d("TFOSS", "Starting push service...");
                 }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && CherrygramExperimentalConfig.INSTANCE.getResidentNotification()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     applicationContext.startForegroundService(new Intent(applicationContext, NotificationsService.class));
                 } else {
                     applicationContext.startService(new Intent(applicationContext, NotificationsService.class));

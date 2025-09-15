@@ -225,8 +225,6 @@
     <string name="CP_HideSendAsChannel">Сакриј „Пошаљи као канал”</string>
     <string name="CP_HideSendAsChannelDesc">Менију можете приступити дугим додиром на дугме Емоџи/Налепнице/GIF-ови</string>
     <string name="CP_Header_Record">Медији</string>
-    <string name="CP_SpoilersOnMedia">Ефекат спојлера</string>
-    <string name="CP_SpoilersOnMedia_Desc">Ефекат спојлера на сликама и видеима неће бити приказан ако је опција онемогућена.</string>
     <string name="CP_VoiceEnhancements">Побољшања гласа</string>
     <string name="CP_VoiceEnhancements_Desc">Сузбијање шума и нормализација гласа</string>
     <string name="CP_PlayVideo">Пусти видео при додиру на дугме за јачину звука</string>
@@ -275,7 +273,6 @@
     <string name="EP_NavigationAnimation">Анимација навигације</string>
     <string name="EP_NavigationAnimationBezier">Класична</string>
     <string name="EP_NavigationAnimationCrossfading">Ефекат унакрсног затамњења</string>
-    <string name="CG_ResidentNotification">Прикажи стално обавештење</string>
     <string name="EP_PhotosSize">Шаљи велике слике (2560px)</string>
     <string name="EP_CustomAppTitle">Наслов апликације</string>
     <string name="EP_CustomChat">Прилагођено ћаскање за сачуване поруке</string>

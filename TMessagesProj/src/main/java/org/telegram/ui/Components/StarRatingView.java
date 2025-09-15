@@ -16,6 +16,8 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.tgnet.tl.TL_stars;
 import org.telegram.ui.ActionBar.Theme;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+
 public class StarRatingView extends View {
     private final BadgeLevelDrawable drawable;
     private final Colors colors = new Colors();
@@ -174,11 +176,15 @@ public class StarRatingView extends View {
     }
 
     public static int getTabsViewBackgroundColor(Theme.ResourcesProvider resourcesProvider, int color1, int color2, float parentExpanded) {
-        return (ColorUtils.blendARGB(0xB0000000,
-            AndroidUtilities.computePerceivedBrightness(ColorUtils.blendARGB(color1, color2, .75f)) > .721f ?
-                Theme.getColor(Theme.key_windowBackgroundWhiteBlueIcon, resourcesProvider) :
-                Theme.adaptHSV(ColorUtils.blendARGB(color1, color2, .75f), +.08f, -.08f),
-            1f - parentExpanded
-        ));
+        if (CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
+            return (ColorUtils.blendARGB(0xB0000000,
+                    AndroidUtilities.computePerceivedBrightness(ColorUtils.blendARGB(color1, color2, .75f)) > .721f ?
+                            Theme.getColor(Theme.key_windowBackgroundWhiteBlueIcon, resourcesProvider) :
+                            Theme.adaptHSV(ColorUtils.blendARGB(color1, color2, .75f), +.08f, -.08f),
+                    1f - parentExpanded
+            ));
+        } else {
+            return Theme.getColor(Theme.key_actionBarDefault, resourcesProvider);
+        }
     }
 }

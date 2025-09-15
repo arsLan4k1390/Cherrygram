@@ -2269,11 +2269,11 @@ public class NotificationsController extends BaseController {
                             }
                         }
                     } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetChatTheme) {
-                        String emoticon = ((TLRPC.TL_messageActionSetChatTheme) messageObject.messageOwner.action).emoticon;
+                        String emoticon = TlUtils.getThemeEmoticonOrGiftTitle(((TLRPC.TL_messageActionSetChatTheme) messageObject.messageOwner.action).theme);
                         if (TextUtils.isEmpty(emoticon)) {
                             msg = dialogId == selfUsedId
                                     ? LocaleController.formatString(R.string.ChatThemeDisabledYou)
-                                    : LocaleController.formatString("ChatThemeDisabled", R.string.ChatThemeDisabled, name, emoticon);
+                                    : LocaleController.formatString(R.string.ChatThemeDisabled, name, emoticon);
                         } else {
                             msg = dialogId == selfUsedId
                                     ? LocaleController.formatString(R.string.ChatThemeChangedYou, emoticon)
@@ -2585,7 +2585,7 @@ public class NotificationsController extends BaseController {
                                 msg = LocaleController.getString(R.string.CallMessageIncomingConferenceMissed);
                             }
                         } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetChatTheme) {
-                            String emoticon = ((TLRPC.TL_messageActionSetChatTheme) messageObject.messageOwner.action).emoticon;
+                            String emoticon = TlUtils.getThemeEmoticonOrGiftTitle(((TLRPC.TL_messageActionSetChatTheme) messageObject.messageOwner.action).theme);
                             if (TextUtils.isEmpty(emoticon)) {
                                 msg = dialogId == selfUsedId
                                         ? LocaleController.formatString(R.string.ChatThemeDisabledYou)
@@ -2992,7 +2992,7 @@ public class NotificationsController extends BaseController {
                         } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionGameScore) {
                             msg = messageObject.messageText.toString();
                         } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetChatTheme) {
-                            String emoticon = ((TLRPC.TL_messageActionSetChatTheme) messageObject.messageOwner.action).emoticon;
+                            String emoticon = TlUtils.getThemeEmoticonOrGiftTitle(((TLRPC.TL_messageActionSetChatTheme) messageObject.messageOwner.action).theme);
                             if (TextUtils.isEmpty(emoticon)) {
                                 msg = dialogId == selfUsedId
                                         ? LocaleController.formatString(R.string.ChatThemeDisabledYou)
@@ -5293,7 +5293,7 @@ public class NotificationsController extends BaseController {
                             if (!waitingForPasscode && !messageObject.isSecretMedia() && (messageObject.type == MessageObject.TYPE_PHOTO || messageObject.isSticker())) {
                                 File attach = getFileLoader().getPathToMessage(messageObject.messageOwner);
                                 File blurredAttach;
-                                if (attach.exists() && messageObject.hasMediaSpoilers()) {
+                                if (attach.exists() && (messageObject.hasMediaSpoilers() || messageObject.hasMediaSpoilersCG(true))) {
                                     blurredAttach = new File(attach.getParentFile(), attach.getName() + ".blur.jpg");
                                     if (!blurredAttach.exists()) {
                                         try {

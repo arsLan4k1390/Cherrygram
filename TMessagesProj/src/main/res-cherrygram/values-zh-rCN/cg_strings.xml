@@ -242,8 +242,6 @@
     <string name="CP_Messages_Size">消息气泡大小</string>
     <string name="CP_Slider_MediaAmplifier">照片和视频</string>
     <string name="CP_Slider_MediaAmplifier_Hint">不适用于相册（分组媒体）</string>
-    <string name="CP_SpoilersOnMedia">干扰效果</string>
-    <string name="CP_SpoilersOnMedia_Desc">禁用此功能后将不再显示对照片和视频的干扰效果</string>
     <string name="CP_VoiceEnhancements">语音增强</string>
     <string name="CP_VoiceEnhancements_Desc">降噪与人声增强</string>
     <string name="CP_PlayVideo">按下音量键播放视频</string>
@@ -292,7 +290,6 @@
     <string name="EP_NavigationAnimation">应用动画</string>
     <string name="EP_NavigationAnimationBezier">经典</string>
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
-    <string name="CG_ResidentNotification">显示常驻通知</string>
     <string name="EP_PhotosSize">发送大号照片（2560 像素）</string>
     <string name="EP_CustomAppTitle">应用标题</string>
     <string name="EP_CustomChat">自定义已保存消息的聊天</string>

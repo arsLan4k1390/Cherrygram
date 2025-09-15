@@ -257,8 +257,6 @@
     <string name="CP_Messages_Size">訊息對話框大小</string>
     <string name="CP_Slider_MediaAmplifier">圖片與影片</string>
     <string name="CP_Slider_MediaAmplifier_Hint">放大功能對於相簿（分組媒體）無效</string>
-    <string name="CP_SpoilersOnMedia">防劇透特效</string>
-    <string name="CP_SpoilersOnMedia_Desc">停用此功能後將不再顯示對照片和影片的防劇透特效。</string>
     <string name="CP_VoiceEnhancements">語音增強</string>
     <string name="CP_VoiceEnhancements_Desc">噪聲抑制和音量一致化</string>
     <string name="CP_PlayVideo">按下音量鍵播放影片</string>
@@ -307,7 +305,6 @@
     <string name="EP_NavigationAnimation">程式動畫</string>
     <string name="EP_NavigationAnimationBezier">經典</string>
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
-    <string name="CG_ResidentNotification">顯示永久通知</string>
     <string name="EP_PhotosSize">傳送大型圖片(2560 像素)</string>
     <string name="EP_CustomAppTitle">應用程式標題</string>
     <string name="EP_CustomChat">自訂已儲存訊息的對話</string>

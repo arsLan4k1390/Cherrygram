@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.FrameLayout
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ChatObject
+import org.telegram.messenger.LocaleController.formatJoined
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessageObject
 import org.telegram.messenger.MessagesController
@@ -111,15 +112,23 @@ object ChatsHelper2 {
 
     fun injectChatActivityAvatarOnClickNew(
         chatActivity: ChatActivity, chatMessageCellDelegate: ChatActivity.ChatMessageCellDelegate, cell: ChatMessageCell, user: TLRPC.User,
-        enableMention: Boolean, enableSearchMessages: Boolean, isChatParticipant: Boolean,
-        participantsIDs: ArrayList<Long>
+        enableMention: Boolean, enableSearchMessages: Boolean
     ) {
         if (chatActivity.context == null) return
+
+        val participants = arrayListOf<TLRPC.ChatParticipant>().apply {
+            val chatInfo = chatActivity.currentChatInfo
+            val chatParticipants = chatInfo?.participants?.participants
+            if (chatParticipants != null) {
+                addAll(chatParticipants)
+            }
+        }
+
+        val participant = participants.find { it.user_id == user.id }
+        val isChatParticipant = participant != null
+
 //        val options: ItemOptions = ItemOptions.makeOptions(chatActivity, cell)
         ItemOptions.makeOptions(chatActivity, cell)
-            /*.add(R.drawable.msg_openprofile, getString(R.string.OpenProfile)) {
-                chatMessageCellDelegate.openProfile(user)
-            }*/
             .add(R.drawable.msg_discussion, getString(R.string.SendMessage)) {
                 chatMessageCellDelegate.openDialog(cell, user)
             }
@@ -194,6 +203,12 @@ object ChatsHelper2 {
                 )
                 chatActivity.presentFragment(frag)
             }
+            .addGapIf(participant?.date != null && participant.date != 0)
+            .addTextIf(
+                participant?.date != null && participant.date != 0,
+                CGResourcesHelper.capitalize(formatJoined(participant?.date?.toLong() ?: 0)),
+                13
+            )
             .addGap()
             .addProfile(user, getString(R.string.ViewProfile)) {
                 chatMessageCellDelegate.openProfile(user)
@@ -202,12 +217,12 @@ object ChatsHelper2 {
 //                chatMessageCellDelegate.openProfile(user) // No description
 //            }
 
-            .setDrawScrim(false)
             .setGravity(Gravity.LEFT)
             .forceBottom(true)
             .translate(0f, -AndroidUtilities.dp(48f).toFloat())
+            .setDrawScrim(false)
+            .setBlur(true)
             .show()
-        participantsIDs.clear()
     }
 
     fun getActiveUsername(userId: Long): String {

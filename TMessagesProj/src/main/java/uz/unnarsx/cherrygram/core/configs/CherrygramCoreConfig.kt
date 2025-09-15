@@ -11,6 +11,7 @@ package uz.unnarsx.cherrygram.core.configs
 
 import android.app.Activity
 import android.content.SharedPreferences
+import android.os.Build
 import com.google.firebase.FirebaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,12 +56,14 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var noRounding by sharedPreferences.boolean("CP_NoRounding", false)
     var systemEmoji by sharedPreferences.boolean("AP_SystemEmoji", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
-    var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
 
     const val TABLET_MODE_ENABLE = 0
     const val TABLET_MODE_DISABLE = 1
     const val TABLET_MODE_AUTO = 2
     var tabletMode by sharedPreferences.int("AP_Tablet_Mode", TABLET_MODE_AUTO)
+
+    var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
+    var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && !ApplicationLoader.checkPlayServices())
     /** General finish **/
 
     /** Animations and Premium Features start **/

@@ -450,6 +450,12 @@ public class ChatsHelper extends BaseController {
                 break;
             case CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP:
                 CGFeatureHooks.INSTANCE.switchNoAuthor(true);
+                CGFeatureHooks.INSTANCE.switchNoCaptions(false);
+                chatActivity.openForward(false);
+                break;
+            case CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_CAPTION:
+                CGFeatureHooks.INSTANCE.switchNoAuthor(true);
+                CGFeatureHooks.INSTANCE.switchNoCaptions(true);
                 chatActivity.openForward(false);
                 break;
         }
@@ -461,6 +467,9 @@ public class ChatsHelper extends BaseController {
 
         configStringKeys.add(getString(R.string.Forward) + " " + getString(R.string.CG_Without_Authorship));
         configValues.add(CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP);
+
+        configStringKeys.add(getString(R.string.Forward) + " " + getString(R.string.CG_Without_Caption));
+        configValues.add(CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_CAPTION);
 
         configStringKeys.add(getString(R.string.Reply));
         configValues.add(CherrygramChatsConfig.LEFT_BUTTON_REPLY);
@@ -600,7 +609,7 @@ public class ChatsHelper extends BaseController {
         chatActivity.updatePinnedMessageView(true);
         chatActivity.updateVisibleRows();
 
-        chatActivity.showDialog(new ShareAlert(chatActivity.getContext(), chatActivity, fmessages, null, null, ChatObject.isChannel(chatActivity.getCurrentChat()), null, null, false, false, false, null, themeDelegate) {
+        chatActivity.showDialog(new ShareAlert(chatActivity.getContext(), chatActivity, fmessages, null, null, ChatObject.isChannel(chatActivity.getCurrentChat()), null, null, false, false, false, null, chatActivity.getResourceProvider()) {
             @Override
             public void dismissInternal() {
                 super.dismissInternal();

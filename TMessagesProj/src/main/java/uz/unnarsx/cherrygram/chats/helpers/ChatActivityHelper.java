@@ -69,7 +69,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
 import uz.unnarsx.cherrygram.helpers.network.StickersManager;
-import uz.unnarsx.cherrygram.preferences.BlurPreferencesBottomSheet;
+import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
 public class ChatActivityHelper extends BaseController {
 
@@ -111,22 +111,23 @@ public class ChatActivityHelper extends BaseController {
     public final static int OPTION_VIEW_HISTORY = 2015;
     public final static int OPTION_DOWNLOAD_STICKER = 2016;
     public final static int OPTION_FORWARD_WO_AUTHOR = 2017;
-    public final static int OPTION_GET_CUSTOM_REACTIONS = 2018;
-    public final static int OPTION_IMPORT_SETTINGS = 2019;
-    public final static int OPTION_DETAILS = 2020;
-    public final static int OPTION_TRANSLATE_DOUBLE_TAP = 2021;
-    public final static int OPTION_TEXT_CODE = 2022;
-    public final static int OPTION_GO_TO_SAVED = 2023;
-    public final static int OPTION_BLUR_SETTINGS = 2024;
-    public final static int OPTION_ASK_PASSCODE = 2025;
-    public final static int OPTION_DO_NOT_ASK_PASSCODE = 2026;
-    public final static int OPTION_OPEN_TELEGRAM_BROWSER = 2027;
-    public final static int OPTION_REPLY_GEMINI = 2028;
-    public final static int OPTION_TRANSLATE_GEMINI = 2029;
-    public final static int OPTION_TRANSCRIBE_GEMINI = 2030;
-    public final static int OPTION_EXPLANATION_GEMINI = 2031;
-    public final static int OPTION_SUMMARIZE_GEMINI = 2032;
-    public final static int OPTION_ADVANCED_SEARCH = 2033;
+    public final static int OPTION_FORWARD_WO_CAPTION = 2018;
+    public final static int OPTION_GET_CUSTOM_REACTIONS = 2019;
+    public final static int OPTION_IMPORT_SETTINGS = 2020;
+    public final static int OPTION_DETAILS = 2021;
+    public final static int OPTION_TRANSLATE_DOUBLE_TAP = 2022;
+    public final static int OPTION_TEXT_CODE = 2023;
+    public final static int OPTION_GO_TO_SAVED = 2024;
+    public final static int OPTION_BLUR_SETTINGS = 2025;
+    public final static int OPTION_ASK_PASSCODE = 2026;
+    public final static int OPTION_DO_NOT_ASK_PASSCODE = 2027;
+    public final static int OPTION_OPEN_TELEGRAM_BROWSER = 2028;
+    public final static int OPTION_REPLY_GEMINI = 2029;
+    public final static int OPTION_TRANSLATE_GEMINI = 2030;
+    public final static int OPTION_TRANSCRIBE_GEMINI = 2031;
+    public final static int OPTION_EXPLANATION_GEMINI = 2032;
+    public final static int OPTION_SUMMARIZE_GEMINI = 2033;
+    public final static int OPTION_ADVANCED_SEARCH = 2034;
 
     public final static int OPTION_VIEW_EDITED_MESSAGE_HISTORY = 2100;
     public final static int OPTION_MARK_TTL_AS_READ = 2101;
@@ -229,7 +230,7 @@ public class ChatActivityHelper extends BaseController {
         } else if (id == OPTION_GO_TO_SAVED) {
             chatActivity.presentFragment(ChatActivity.of(ChatsHelper2.INSTANCE.getCustomChatID()));
         } else if (id == OPTION_BLUR_SETTINGS) {
-            BlurPreferencesBottomSheet.show(chatActivity);
+            CherrygramPreferencesNavigator.INSTANCE.createBlur(chatActivity);
         } else if (id == OPTION_ASK_PASSCODE) {
             CGBiometricPrompt.prompt(chatActivity.getParentActivity(), () -> {
                 List<String> arr = ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.PASSCODE_ARRAY);
@@ -288,6 +289,31 @@ public class ChatActivityHelper extends BaseController {
                     return;
                 }
                 CGFeatureHooks.INSTANCE.switchNoAuthor(true);
+                CGFeatureHooks.INSTANCE.switchNoCaptions(false);
+                chatActivity.forwardingMessage = selectedObject;
+                chatActivity.forwardingMessageGroup = selectedObjectGroup;
+                Bundle args = new Bundle();
+                args.putBoolean("onlySelect", true);
+                args.putInt("dialogsType", DialogsActivity.DIALOGS_TYPE_FORWARD);
+                args.putInt("messagesCount", 1);
+                args.putInt("hasPoll", chatActivity.forwardingMessage.isPoll() ? (chatActivity.forwardingMessage.isPublicPoll() ? 2 : 1) : 0);
+                args.putBoolean("hasInvoice", chatActivity.forwardingMessage.isInvoice());
+                args.putBoolean("canSelectTopics", true);
+                DialogsActivity fragment = new DialogsActivity(args);
+                fragment.setDelegate(chatActivity);
+                chatActivity.presentFragment(fragment);
+                break;
+            }
+            case OPTION_FORWARD_WO_CAPTION: {
+                if (getMessagesController().isFrozen()) {
+                    AccountFrozenAlert.show(currentAccount);
+                    /*selectedObject = null;
+                    selectedObjectToEditCaption = null;
+                    selectedObjectGroup = null;*/
+                    return;
+                }
+                CGFeatureHooks.INSTANCE.switchNoAuthor(true);
+                CGFeatureHooks.INSTANCE.switchNoCaptions(true);
                 chatActivity.forwardingMessage = selectedObject;
                 chatActivity.forwardingMessageGroup = selectedObjectGroup;
                 Bundle args = new Bundle();

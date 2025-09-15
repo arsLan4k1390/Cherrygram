@@ -28,12 +28,7 @@ import java.net.URL
 
 object DonatesManager {
 
-    private const val FILE_NAME = "donated_users_list.txt"
-    private const val GITLAB_RAW_URL = "https://gitlab.com/arsLan4k1390/Cherrygram-IDS/-/raw/main/donates.txt?inline=false"
-//    private const val GITHUB_RAW_URL = "https://raw.githubusercontent.com/arsLan4k1390/Cherrygram/main/donates.txt"
     private val REFRESH_INTERVAL = if (CherrygramCoreConfig.isDevBuild()) 60 * 60 * 1000L else 6 * 60 * 60 * 1000L // 6 hours
-
-    private val verifiedUserIds = mutableSetOf<Long>()
 
     suspend fun startAutoRefresh(context: Context) {
         val lastUpdateTime = CherrygramCoreConfig.lastDonatesCheckTime
@@ -60,16 +55,16 @@ object DonatesManager {
         }
     }
 
-    fun didUserDonate(userId: Long): Boolean {
-        synchronized(verifiedUserIds) {
-            return verifiedUserIds.contains(userId) || didUserDonateForMarketplace(userId)
-        }
-    }
-
-    private suspend fun updateDonateList(context: Context) {
+    private suspend fun updateList(
+        context: Context,
+        urlString: String,
+        fileName: String,
+        targetSet: MutableSet<Long>,
+        fallback: suspend (Context) -> Unit
+    ) {
         withContext(Dispatchers.IO) {
             try {
-                val url = URL(GITLAB_RAW_URL)
+                val url = URL(urlString)
                 val connection = (url.openConnection() as HttpURLConnection).apply {
                     connectTimeout = 5000
                     readTimeout = 5000
@@ -77,60 +72,87 @@ object DonatesManager {
 
                 val reader = InputStreamReader(connection.inputStream)
                 val tempUserIds = mutableSetOf<Long>()
-                val file = File(context.filesDir, FILE_NAME)
-                val writer = OutputStreamWriter(file.outputStream())
 
                 reader.buffered().useLines { lines ->
                     lines.forEach { line ->
                         line.trim().toLongOrNull()?.let { id ->
                             tempUserIds.add(id)
-                            writer.write("$id\n")
                         }
                     }
                 }
 
-                writer.close()
+                if (tempUserIds.isNotEmpty()) {
+                    val file = File(context.filesDir, fileName)
+                    OutputStreamWriter(file.outputStream()).use { writer ->
+                        tempUserIds.forEach { id -> writer.write("$id\n") }
+                    }
 
-                synchronized(verifiedUserIds) {
-                    verifiedUserIds.clear()
-                    verifiedUserIds.addAll(tempUserIds)
+                    synchronized(targetSet) {
+                        targetSet.clear()
+                        targetSet.addAll(tempUserIds)
+                    }
+
+                    CherrygramCoreConfig.lastDonatesCheckTime = System.currentTimeMillis()
+                } else {
+                    fallback(context)
                 }
-
-                CherrygramCoreConfig.lastDonatesCheckTime = System.currentTimeMillis()
-
             } catch (e: Exception) {
                 FileLog.e(e)
+                fallback(context)
             }
         }
     }
 
-    private suspend fun loadLocalDonateList(context: Context) {
+    private suspend fun loadLocalList(
+        context: Context,
+        fileName: String,
+        targetSet: MutableSet<Long>
+    ) {
         withContext(Dispatchers.IO) {
             try {
-                val file = File(context.filesDir, FILE_NAME)
+                val file = File(context.filesDir, fileName)
                 if (!file.exists()) return@withContext
 
-                val reader = InputStreamReader(context.openFileInput(FILE_NAME))
                 val tempUserIds = mutableSetOf<Long>()
-
-                reader.buffered().useLines { lines ->
-                    lines.forEach { line ->
-                        line.trim().toLongOrNull()?.let { id ->
-                            tempUserIds.add(id)
+                InputStreamReader(context.openFileInput(fileName)).use { reader ->
+                    reader.buffered().useLines { lines ->
+                        lines.forEach { line ->
+                            line.trim().toLongOrNull()?.let { id ->
+                                tempUserIds.add(id)
+                            }
                         }
                     }
                 }
 
-                synchronized(verifiedUserIds) {
-                    verifiedUserIds.clear()
-                    verifiedUserIds.addAll(tempUserIds)
+                synchronized(targetSet) {
+                    targetSet.clear()
+                    targetSet.addAll(tempUserIds)
                 }
-
             } catch (e: Exception) {
                 FileLog.e(e)
             }
         }
     }
+
+    /** Donates start */
+    private const val FILE_NAME = "donated_users_list.txt"
+    private const val GITLAB_RAW_URL = "https://gitlab.com/arsLan4k1390/Cherrygram-IDS/-/raw/main/donates.txt?inline=false"
+//    private const val GITHUB_RAW_URL = "https://raw.githubusercontent.com/arsLan4k1390/Cherrygram/main/donates.txt"
+
+    private val verifiedUserIds = mutableSetOf<Long>()
+
+    private suspend fun updateDonateList(context: Context) =
+        updateList(context, GITLAB_RAW_URL, FILE_NAME, verifiedUserIds, ::loadLocalDonateList)
+
+    private suspend fun loadLocalDonateList(context: Context) =
+        loadLocalList(context, FILE_NAME, verifiedUserIds)
+
+    fun didUserDonate(userId: Long): Boolean {
+        synchronized(verifiedUserIds) {
+            return verifiedUserIds.contains(userId) || didUserDonateForMarketplace(userId)
+        }
+    }
+    /** Donates finish */
 
     /** Stars start */
     private const val FILE_NAME_MARKETPLACE = "donated_users_list_marketplace.txt"
@@ -138,26 +160,23 @@ object DonatesManager {
 
     private val verifiedUserIdsMarketplace = mutableSetOf<Long>()
 
-    fun checkAllDonatedAccountsForMarketplace(): Boolean {
-        val availableIDs = ArrayList<Long>()
+    private suspend fun updateDonateListMarketplace(context: Context) =
+        updateList(context, GITLAB_RAW_URL_MARKETPLACE, FILE_NAME_MARKETPLACE, verifiedUserIdsMarketplace, ::loadLocalDonateListMarketplace)
 
+    private suspend fun loadLocalDonateListMarketplace(context: Context) =
+        loadLocalList(context, FILE_NAME_MARKETPLACE, verifiedUserIdsMarketplace)
+
+    fun checkAllDonatedAccountsForMarketplace(): Boolean {
         for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
             val userConfig = AccountInstance.getInstance(i).userConfig
-            if (userConfig != null
-                && userConfig.currentUser != null
-                && userConfig.isClientActivated
-                && userConfig.currentUser.id != 0L
-            ) {
-                availableIDs.add(userConfig.currentUser.id)
-            }
-        }
-
-        for (id in availableIDs) {
-            if (didUserDonateForMarketplace(id)) {
-                if (CherrygramCoreConfig.isDevBuild()) println("Account's ID is in the list: $id")
-                return true
-            } else {
-                if (CherrygramCoreConfig.isDevBuild()) println("Account's ID is not in the list: $id")
+            val userId = userConfig?.currentUser?.id ?: 0L
+            if (userConfig != null && userConfig.isClientActivated && userId != 0L) {
+                if (didUserDonateForMarketplace(userId)) {
+                    if (CherrygramCoreConfig.isDevBuild()) println("Account's ID is in the list: $userId")
+                    return true
+                } else {
+                    if (CherrygramCoreConfig.isDevBuild()) println("Account's ID is not in the list: $userId")
+                }
             }
         }
         return false
@@ -168,72 +187,6 @@ object DonatesManager {
             return verifiedUserIdsMarketplace.contains(userId)
         }
     }
-
-    private suspend fun updateDonateListMarketplace(context: Context) {
-        withContext(Dispatchers.IO) {
-            try {
-                val url = URL(GITLAB_RAW_URL_MARKETPLACE)
-                val connection = (url.openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 5000
-                    readTimeout = 5000
-                }
-
-                val reader = InputStreamReader(connection.inputStream)
-                val tempUserIds = mutableSetOf<Long>()
-                val file = File(context.filesDir, FILE_NAME_MARKETPLACE)
-                val writer = OutputStreamWriter(file.outputStream())
-
-                reader.buffered().useLines { lines ->
-                    lines.forEach { line ->
-                        line.trim().toLongOrNull()?.let { id ->
-                            tempUserIds.add(id)
-                            writer.write("$id\n")
-                        }
-                    }
-                }
-
-                writer.close()
-
-                synchronized(verifiedUserIdsMarketplace) {
-                    verifiedUserIdsMarketplace.clear()
-                    verifiedUserIdsMarketplace.addAll(tempUserIds)
-                }
-
-                CherrygramCoreConfig.lastDonatesCheckTime = System.currentTimeMillis()
-
-            } catch (e: Exception) {
-                FileLog.e(e)
-            }
-        }
-    }
-
-    private suspend fun loadLocalDonateListMarketplace(context: Context) {
-        withContext(Dispatchers.IO) {
-            try {
-                val file = File(context.filesDir, FILE_NAME_MARKETPLACE)
-                if (!file.exists()) return@withContext
-
-                val reader = InputStreamReader(context.openFileInput(FILE_NAME_MARKETPLACE))
-                val tempUserIds = mutableSetOf<Long>()
-
-                reader.buffered().useLines { lines ->
-                    lines.forEach { line ->
-                        line.trim().toLongOrNull()?.let { id ->
-                            tempUserIds.add(id)
-                        }
-                    }
-                }
-
-                synchronized(verifiedUserIdsMarketplace) {
-                    verifiedUserIdsMarketplace.clear()
-                    verifiedUserIdsMarketplace.addAll(tempUserIds)
-                }
-
-            } catch (e: Exception) {
-                FileLog.e(e)
-            }
-        }
-    }
     /** Stars finish */
 
     /** Blocked start*/
@@ -242,75 +195,15 @@ object DonatesManager {
 
     private val blockedUserIds = mutableSetOf<Long>()
 
+    private suspend fun updateBlockedList(context: Context) =
+        updateList(context, GITLAB_RAW_URL_BLOCKED, FILE_NAME_BLOCKED, blockedUserIds, ::loadLocalBlockedList)
+
+    private suspend fun loadLocalBlockedList(context: Context) =
+        loadLocalList(context, FILE_NAME_BLOCKED, blockedUserIds)
+
     fun isUsesBlocked(userId: Long): Boolean {
         synchronized(blockedUserIds) {
             return blockedUserIds.contains(userId)
-        }
-    }
-
-    private suspend fun updateBlockedList(context: Context) {
-        withContext(Dispatchers.IO) {
-            try {
-                val url = URL(GITLAB_RAW_URL_BLOCKED)
-                val connection = (url.openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 5000
-                    readTimeout = 5000
-                }
-
-                val reader = InputStreamReader(connection.inputStream)
-                val tempUserIds = mutableSetOf<Long>()
-                val file = File(context.filesDir, FILE_NAME_BLOCKED)
-                val writer = OutputStreamWriter(file.outputStream())
-
-                reader.buffered().useLines { lines ->
-                    lines.forEach { line ->
-                        line.trim().toLongOrNull()?.let { id ->
-                            tempUserIds.add(id)
-                            writer.write("$id\n")
-                        }
-                    }
-                }
-
-                writer.close()
-
-                synchronized(blockedUserIds) {
-                    blockedUserIds.clear()
-                    blockedUserIds.addAll(tempUserIds)
-                }
-
-                CherrygramCoreConfig.lastDonatesCheckTime = System.currentTimeMillis()
-
-            } catch (e: Exception) {
-                FileLog.e(e)
-            }
-        }
-    }
-
-    private suspend fun loadLocalBlockedList(context: Context) {
-        withContext(Dispatchers.IO) {
-            try {
-                val file = File(context.filesDir, FILE_NAME_BLOCKED)
-                if (!file.exists()) return@withContext
-
-                val reader = InputStreamReader(context.openFileInput(FILE_NAME_BLOCKED))
-                val tempUserIds = mutableSetOf<Long>()
-
-                reader.buffered().useLines { lines ->
-                    lines.forEach { line ->
-                        line.trim().toLongOrNull()?.let { id ->
-                            tempUserIds.add(id)
-                        }
-                    }
-                }
-
-                synchronized(blockedUserIds) {
-                    blockedUserIds.clear()
-                    blockedUserIds.addAll(tempUserIds)
-                }
-
-            } catch (e: Exception) {
-                FileLog.e(e)
-            }
         }
     }
     /** Blocked finish */

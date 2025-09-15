@@ -48,7 +48,7 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
-public class PrivacyUsersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ContactsActivity.ContactsActivityDelegate {
+public class PrivacyUsersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private RecyclerListView listView;
     private LinearLayoutManager layoutManager;
@@ -405,14 +405,6 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
         if (listViewAdapter != null) {
             listViewAdapter.notifyDataSetChanged();
         }
-    }
-
-    @Override
-    public void didSelectContact(final TLRPC.User user, String param, ContactsActivity activity) {
-        if (user == null) {
-            return;
-        }
-        getMessagesController().blockPeer(user.id);
     }
 
     private class ListAdapter extends RecyclerListView.SelectionAdapter {

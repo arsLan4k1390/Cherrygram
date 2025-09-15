@@ -18,7 +18,7 @@ import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.misc.CherrygramExtras
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper
-import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator
+import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
@@ -52,14 +52,14 @@ class MainPreferencesEntry : BasePreferencesEntry {
                 title = getString(R.string.CP_Category_Camera)
                 icon = R.drawable.camera_solar
                 listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(CameraPreferencesEntry())
+                    CherrygramPreferencesNavigator.createCamera(bf)
                 }
             }
             textIcon {
                 title = getString(R.string.EP_Category_Experimental)
                 icon = R.drawable.msg_fave_solar
                 listener = TGKitTextIconRow.TGTIListener {
-                    it.presentFragment(ExperimentalPreferencesEntry())
+                    CherrygramPreferencesNavigator.createExperimental(bf)
                 }
             }
             textIcon {
@@ -74,14 +74,14 @@ class MainPreferencesEntry : BasePreferencesEntry {
 
         category(getString(R.string.LocalOther)) {
             textIcon {
-                isAvailable = ApplicationLoader.isStandaloneBuild()
+                val donatesAvailable = ApplicationLoader.isStandaloneBuild()
 
                 icon = R.drawable.heart_angle_solar
-                title = getString(if (isAvailable) R.string.DP_Support else R.string.DP_RateUs)
+                title = getString(if (donatesAvailable) R.string.DP_Support else R.string.DP_RateUs)
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    if (isAvailable) {
-                        it.presentFragment(CherrygramPreferencesNavigator.createDonate())
+                    if (donatesAvailable) {
+                        it.presentFragment(DonatesPreferencesEntry())
                     } else {
                         CherrygramExtras.requestReviewFlow(bf, bf.context, bf.parentActivity)
                     }

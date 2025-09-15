@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
 
 public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
@@ -361,7 +360,7 @@ public class DrawerLayoutAdapter extends RecyclerListView.SelectionAdapter {
 
         boolean available = DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
         if (CherrygramAppearanceConfig.INSTANCE.getMarketPlaceDrawerButton() && available) {
-            items.add(new Item(1003, CGResourcesHelper.INSTANCE.capitalize(LocaleController.getString(R.string.Gift2Myself)), giftIcon));
+            items.add(new Item(1003, LocaleController.getString(R.string.Gift2TitleSelf1), giftIcon));
         }
         if (showDivider) {
             items.add(null); // divider

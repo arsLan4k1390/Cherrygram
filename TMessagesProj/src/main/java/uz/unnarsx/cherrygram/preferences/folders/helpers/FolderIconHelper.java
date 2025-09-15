@@ -128,11 +128,11 @@ public class FolderIconHelper {
     }
 
     public static int getPaddingTab() {
-        if (CherrygramAppearanceConfig.INSTANCE.getTabMode() != CherrygramAppearanceConfig.TAB_TYPE_ICON ||
-                CherrygramAppearanceConfig.INSTANCE.getTabStyle() >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
-            return AndroidUtilities.dp(32);
+        if (CherrygramAppearanceConfig.INSTANCE.getTabStyle() >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
+            return AndroidUtilities.dp(26);
+        } else {
+            return AndroidUtilities.dp(24);
         }
-        return AndroidUtilities.dp(16);
     }
 
     public static int getTabIcon(String emoji) {

@@ -25,7 +25,7 @@ import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
-import uz.unnarsx.cherrygram.preferences.tgkit.CherrygramPreferencesNavigator
+import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textDetail
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
@@ -87,7 +87,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
             textIcon {
                 icon = R.drawable.msg_channel_solar
                 title = getString(R.string.CGP_ToChannel)
-                value = "@${Constants.CG_CHANNEL_USERNAME}"
+//                value = "@${Constants.CG_CHANNEL_USERNAME}"
 
                 listener = TGKitTextIconRow.TGTIListener {
                     bf.messagesController.openByUserName(Constants.CG_CHANNEL_USERNAME, bf, 1)
@@ -96,7 +96,7 @@ class AboutPreferencesEntry : BasePreferencesEntry {
             textIcon {
                 icon = R.drawable.msg_discuss_solar
                 title = getString(R.string.CGP_ToChat)
-                value = "@${Constants.CG_CHAT_USERNAME}"
+//                value = "@${Constants.CG_CHAT_USERNAME}"
 
                 listener = TGKitTextIconRow.TGTIListener {
                     bf.messagesController.openByUserName(Constants.CG_CHAT_USERNAME, bf, 1)

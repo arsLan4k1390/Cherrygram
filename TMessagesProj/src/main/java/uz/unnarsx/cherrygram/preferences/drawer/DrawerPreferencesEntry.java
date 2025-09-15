@@ -41,7 +41,6 @@ import org.telegram.ui.Components.SnowflakesEffect;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.drawer.cells.BlurIntensityCell;
@@ -218,7 +217,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                 updateRowsId(false);
                 getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
             } else if (position == menuItemsRow) {
-                showDrawerItemsSelector();
+                showDrawerItemsSelector(this);
             }
         });
 
@@ -440,7 +439,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
         }
     }
 
-    private void showDrawerItemsSelector() {
+    public static void showDrawerItemsSelector(BaseFragment fragment) {
         int eventType = Theme.getEventType();
         if (CherrygramAppearanceConfig.INSTANCE.getEventType() > 0) {
             eventType = CherrygramAppearanceConfig.INSTANCE.getEventType() - 1;
@@ -495,14 +494,14 @@ public class DrawerPreferencesEntry extends BaseFragment {
         ArrayList<Boolean> prefDivider = new ArrayList<>();
         ArrayList<Runnable> clickListener = new ArrayList<>();
 
-        prefTitle.add(getUserConfig().getEmojiStatus() != null ? getString(R.string.ChangeEmojiStatus) : getString(R.string.SetEmojiStatus));
-        prefIcon.add(getUserConfig().getEmojiStatus() != null ? R.drawable.msg_status_edit : R.drawable.msg_status_set);
+        prefTitle.add(fragment.getUserConfig().getEmojiStatus() != null ? getString(R.string.ChangeEmojiStatus) : getString(R.string.SetEmojiStatus));
+        prefIcon.add(fragment.getUserConfig().getEmojiStatus() != null ? R.drawable.msg_status_edit : R.drawable.msg_status_set);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getChangeStatusDrawerButton());
         prefDonate.add(false);
         prefDivider.add(false);
         clickListener.add(() -> CherrygramAppearanceConfig.INSTANCE.setChangeStatusDrawerButton(!CherrygramAppearanceConfig.INSTANCE.getChangeStatusDrawerButton()));
 
-        prefTitle.add(CGResourcesHelper.INSTANCE.capitalize(getString(R.string.Gift2Myself)));
+        prefTitle.add(getString(R.string.Gift2TitleSelf1));
         prefIcon.add(R.drawable.menu_gift);
         prefCheck.add(CherrygramAppearanceConfig.INSTANCE.getMarketPlaceDrawerButton());
         prefDonate.add(true);
@@ -574,7 +573,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
 
         PopupHelper.showSwitchAlert(
                 getString(R.string.AP_DrawerButtonsCategory),
-                this,
+                fragment,
                 prefTitle,
                 prefIcon,
                 prefCheck,
@@ -582,7 +581,7 @@ public class DrawerPreferencesEntry extends BaseFragment {
                 prefDonate,
                 prefDivider,
                 clickListener,
-                () -> getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged)
+                () -> fragment.getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged)
         );
     }
 

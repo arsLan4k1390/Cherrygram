@@ -362,10 +362,17 @@ public class TableView extends TableLayout {
         return addRowUnpadded(title, textView);
     }
 
+    /** Cherrygram start */
     public TableRow addRow(CharSequence title, CharSequence text) {
+        return addRow(title, text, false);
+    }
+    /** Cherrygram finish */
+
+    public TableRow addRow(CharSequence title, CharSequence text, boolean boldValue) {
         ButtonSpan.TextViewButtons textView = new ButtonSpan.TextViewButtons(getContext());
         textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+        if (boldValue) textView.setTypeface(AndroidUtilities.bold());
         textView.setText(Emoji.replaceEmoji(text, textView.getPaint().getFontMetricsInt(), false));
         NotificationCenter.listenEmojiLoading(textView);
 
@@ -624,5 +631,4 @@ public class TableView extends TableLayout {
             }
         }
     }
-
 }

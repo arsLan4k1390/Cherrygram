@@ -216,8 +216,6 @@
     <string name="CP_HideSendAsChannel">إخفاء \"إرسال كقناة\"</string>
     <string name="CP_HideSendAsChannelDesc">يمكنك الوصول إلى القائمة بالنقر مطولا على زر Emoji/Stickers/GIFs</string>
     <string name="CP_Header_Record">الوسائط</string>
-    <string name="CP_SpoilersOnMedia">تأثير التشويش </string>
-    <string name="CP_SpoilersOnMedia_Desc">لن يتم عرض تأثير التشويش على الصور ومقاطع الفيديو إذا تم تعطيل الميزة.</string>
     <string name="CP_VoiceEnhancements">تحسين الصوت</string>
     <string name="CP_VoiceEnhancements_Desc">التقليل من الضوضاء و جعل الصوت طبيعي</string>
     <string name="CP_PlayVideo">تشغيل الفيديو عند النقر على زر التحكم في الصوت</string>
@@ -258,7 +256,6 @@
     <string name="EP_NavigationAnimation">الرسوم المتحركة للتنقل</string>
     <string name="EP_NavigationAnimationBezier">كلاسيكي</string>
     <string name="EP_NavigationAnimationCrossfading">التأثير المتلاشي</string>
-    <string name="CG_ResidentNotification">إظهار إشعار دائم</string>
     <string name="EP_PhotosSize">إرسال صور كبيرة (2560 بكسل)</string>
     <string name="EP_CustomAppTitle">عنوان التطبيق</string>
     <string name="EP_CustomChat">دردشة مخصصة للرسائل المحفوظة</string>

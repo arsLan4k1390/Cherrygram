@@ -72,6 +72,7 @@
     <string name="CG_FwdMenu_Notify">Notify</string>
 
     <string name="CG_Without_Authorship">without authorship</string>
+    <string name="CG_Without_Caption">without caption</string>
 
     <string name="CG_CopyTitle">Copy Title</string>
     <string name="CG_CopyCallback">Copy Callback Data</string>
@@ -258,6 +259,7 @@
     <string name="AP_CenterChatsTitle">Center title in chats</string>
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
+    <string name="CP_BlurMessageMenu">Blur message menu background</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Recent emojis and stickers counter</string>
     <string name="CP_NoRounding">Disable number rounding</string>
     <string name="CP_NoRoundingSummary" translatable="false">1.2K -> 1,234</string>
@@ -314,6 +316,11 @@
     <string name="CP_Message_Filtering_Exact_Words_Desc">When enabled, only words that fully match those in the filter list will be hidden.
         If a word appears in a different form (with prefixes, endings, or inside other words), it will not be hidden.
     </string>
+    <string name="CP_Message_Filtering_Entities">Link Entity Filter</string>
+    <string name="CP_Message_Filtering_EntitiesDesc">When enabled, this option extends filtering to links (entities) contained in messages. The system will scan the URLs for any of your configured filter keywords.
+        If a match is found inside the link, the entire message will be automatically hidden under a spoiler, regardless of whether the keyword appears in the visible text or not.
+        \n\nThis helps protect against disguised spam, hidden advertising, or phishing domains that could otherwise bypass regular text-based filtering.
+    </string>
     <string name="CP_Message_Filtering_HideBlocked">Hide messages from blocked users</string>
     <string name="CP_Message_Filtering_HideBlockedDesc">When enabled, all messages and forwarded messages from blocked users will automatically be hidden under a spoiler.</string>
     <string name="CP_Message_Filtering_HideAll">Entire message spoiler</string>
@@ -323,8 +330,6 @@
 
     <string name="CP_Slider_MediaAmplifier">Photos and videos</string>
     <string name="CP_Slider_MediaAmplifier_Hint">Does not work with albums (grouped media)</string>
-    <string name="CP_SpoilersOnMedia">Spoiler effect</string>
-    <string name="CP_SpoilersOnMedia_Desc">Spoiler effect on photos and videos will not be shown if the feature is disabled.</string>
     <string name="CP_VoiceEnhancements">Voice Enhancements</string>
     <string name="CP_VoiceEnhancements_Desc">Noise Suppression and Voice Normalization</string>
     <string name="CP_PlayVideo">Play video with volume button press</string>
@@ -362,8 +367,8 @@
     <string name="CP_CenterCameraControlButtons_Desc">Center switch camera and flashlight buttons.</string>
     <string name="CP_RearCam">Use rear camera</string>
     <string name="CP_RearCam_Desc">Instead of front camera for video messages</string>
-    <string name="CP_DisableCam">Disable cam in media attach menu</string>
-    <string name="CP_DisableCam_Desc">The camera button will be available next to the gallery button. \nPressing the button will open the Telegram camera, and holding it will launch the system camera.</string>
+    <string name="CP_DisableCam">Camera button at bottom</string>
+    <string name="CP_DisableCam_Desc">The camera button will appear next to the gallery button. \nTap to open Telegram Camera, hold to launch the system camera.</string>
 
     <string name="CP_Header_Videomessages">Video messages</string>
     <string name="CP_ExposureSliderPosition">Exposure slider position</string>
@@ -379,7 +384,6 @@
     <string name="EP_NavigationAnimationSpring" translatable="false">Spring</string>
     <string name="EP_NavigationAnimationBezier">Classic</string>
     <string name="EP_NavigationAnimationCrossfading">Crossfading effect</string>
-    <string name="CG_ResidentNotification">Show a resident notification</string>
     <string name="EP_PhotosSize">Send large photos (2560px)</string>
     <string name="EP_CustomAppTitle">App Title</string>
     <string name="EP_CustomChat">Custom chat for Saved Messages</string>
@@ -453,9 +457,15 @@
     <string name="DP_RateUs">Rate Cherrygram</string>
 
     <string name="DP_DonateBadge">Donate and unlock bonuses</string>
-    <string name="DP_Donate_Desc">When you donate $2 or more, you\'ll receive an epic badge next to your name.
-    Send a payment confirmation to <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> or in the <![CDATA[<a href="https://t.me/CherrygramSupport">Cherrygram Support chat</a>]]> to get it.
-    If your donation is $5 or more, you\'ll also get a bonus gift — a quick access button to the \"Gift Market\" in the side menu and unlock \"<![CDATA[<a href="tg://cg_filters">Message filter</a>]]>\" feature.</string>
+    <string name="DP_Donate_Desc">When you donate $2 or more, you\'ll also get some bonus gifts:</string>
+
+    <string name="DP_Donate_Badge_desc">**Cherrygram badge** next to your name.</string>
+    <string name="DP_Donate_EpicBadge_desc">1. An **epic Cherrygram badge** next to your name.</string>
+    <string name="DP_Donate_GiftMarket_Desc">2. \"**Gift Market**\" button in the side menu.</string>
+    <string name="DP_Donate_MessageFilter_Desc">3. \"**Message filter**\" feature.</string>
+    <string name="DP_Donate_MessageMenu_Desc">4. \"**IOS-styled**\" message menu.</string>
+    <string name="DP_Donate_Cheque">Send a payment confirmation to **@arsLan** to get bonuses.</string>
+
     <string name="DP_Donate_Bulletin">**%s** supported **Cherrygram\'s** development!</string>
 
     <string name="DP_Support">Like Cherrygram? Support it!</string>

@@ -88,7 +88,6 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
 
     private boolean sheetTopNotAnimate;
     private RecyclerListView listView;
-    private LinearLayoutManager layoutManager;
     private PaddedAdapter adapter;
 
     private View buttonShadowView;
@@ -159,7 +158,7 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         listView.setOverScrollMode(View.OVER_SCROLL_IF_CONTENT_SCROLLS);
         listView.setPadding(0, AndroidUtilities.statusBarHeight + dp(56), 0, dp(80));
         listView.setClipToPadding(true);
-        listView.setLayoutManager(layoutManager = new LinearLayoutManager(fragment.getContext()));
+        listView.setLayoutManager(new LinearLayoutManager(fragment.getContext()));
         listView.setAdapter(adapter = new PaddedAdapter(fragment.getContext(), loadingTextView));
         listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

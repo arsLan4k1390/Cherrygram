@@ -151,7 +151,8 @@ object CGResourcesHelper {
             CherrygramChatsConfig.LEFT_BUTTON_REPLY -> getString(R.string.Reply)
             CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE -> getString(R.string.CG_ToSaved)
             CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE -> getString(R.string.DirectShare)
-            else -> capitalize(getString(R.string.CG_Without_Authorship))
+            CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP -> capitalize(getString(R.string.CG_Without_Authorship))
+            else -> capitalize(getString(R.string.CG_Without_Caption))
         }
     }
 

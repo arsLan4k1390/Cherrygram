@@ -258,8 +258,6 @@
     <string name="CP_Messages_Size">Tamaño de la burbuja de mensajes</string>
     <string name="CP_Slider_MediaAmplifier">Fotos y videos</string>
     <string name="CP_Slider_MediaAmplifier_Hint">No funciona con álbumes (medios agrupados)</string>
-    <string name="CP_SpoilersOnMedia">Efecto spoiler</string>
-    <string name="CP_SpoilersOnMedia_Desc">El efecto de spoiler en fotos y vídeos no se mostrará si la función está desactivada.</string>
     <string name="CP_VoiceEnhancements">Mejora de la voz</string>
     <string name="CP_VoiceEnhancements_Desc">Supresión de ruido y normalización de voz</string>
     <string name="CP_PlayVideo">Reproducir video al pulsar el botón de volumen</string>
@@ -308,7 +306,6 @@
     <string name="EP_NavigationAnimation">Animación de navegación</string>
     <string name="EP_NavigationAnimationBezier">Clásico</string>
     <string name="EP_NavigationAnimationCrossfading">Efecto de desplazamiento</string>
-    <string name="CG_ResidentNotification">Mostrar una notificación permanente</string>
     <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
     <string name="EP_CustomAppTitle">Título de la app</string>
     <string name="EP_CustomChat">Chat personalizado para mensajes guardados</string>

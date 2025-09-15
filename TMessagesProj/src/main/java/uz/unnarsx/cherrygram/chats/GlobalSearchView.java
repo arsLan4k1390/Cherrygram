@@ -121,7 +121,7 @@ public class GlobalSearchView extends BlurredFrameLayout {
         }
     }
 
-    private boolean isWhiteOrNearWhite(@ColorInt int color) {
+    public static boolean isWhiteOrNearWhite(@ColorInt int color) {
         int r = Color.red(color);
         int g = Color.green(color);
         int b = Color.blue(color);

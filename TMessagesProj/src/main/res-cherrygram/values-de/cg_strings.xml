@@ -216,8 +216,6 @@
     <string name="CP_HideSendAsChannel">\"Als Kanal senden\" ausblenden</string>
     <string name="CP_HideSendAsChannelDesc">Du kannst das Menü durch langes Klicken auf Emoji/Sticker/GIFs öffnen</string>
     <string name="CP_Header_Record">Medien</string>
-    <string name="CP_SpoilersOnMedia">Spoiler-Effekt</string>
-    <string name="CP_SpoilersOnMedia_Desc">Spoiler-Effekt auf Fotos und Videos wird nicht angezeigt, wenn die Funktion deaktiviert ist.</string>
     <string name="CP_VoiceEnhancements">Sprachverbesserungen</string>
     <string name="CP_VoiceEnhancements_Desc">Rauschunterdrückung und Sprachnormalisierung</string>
     <string name="CP_PlayVideo">Video über Lautstärketaste abspielen</string>
@@ -263,7 +261,6 @@
     <string name="EP_NavigationAnimation">Navigations-Animation</string>
     <string name="EP_NavigationAnimationBezier">Klassisch</string>
     <string name="EP_NavigationAnimationCrossfading">Crossfading Effekt</string>
-    <string name="CG_ResidentNotification">Zeige eine ständig bleibende Benachrichtigung</string>
     <string name="EP_PhotosSize">Sende große Fotos (2560px)</string>
     <string name="EP_CustomAppTitle">App-Titel</string>
     <string name="EP_CustomChat">Benutzerdefinierter Chat für gespeicherte Nachrichten</string>

@@ -9,6 +9,7 @@
 
 package uz.unnarsx.cherrygram.preferences
 
+import android.os.Build
 import androidx.core.util.Pair
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController.getString
@@ -57,16 +58,6 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramCoreConfig.systemFonts
                 }) {
                     CherrygramCoreConfig.systemFonts = it
-                    AndroidUtilities.clearTypefaceCache()
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            switch {
-                title = getString(R.string.AP_Old_Notification_Icon)
-                contract({
-                    return@contract CherrygramCoreConfig.oldNotificationIcon
-                }) {
-                    CherrygramCoreConfig.oldNotificationIcon = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
@@ -91,6 +82,27 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     if (bf.parentActivity is LaunchActivity) {
                         (bf.parentActivity as LaunchActivity).invalidateTabletMode()
                     }
+                }
+            }
+            switch {
+                title = getString(R.string.AP_Old_Notification_Icon)
+                contract({
+                    return@contract CherrygramCoreConfig.oldNotificationIcon
+                }) {
+                    CherrygramCoreConfig.oldNotificationIcon = it
+                    AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
+            switch {
+                isAvailable = Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+                title = getString(R.string.NotificationsServiceConnection)
+                description = getString(R.string.NotificationsServiceInfo)
+
+                contract({
+                    return@contract CherrygramCoreConfig.residentNotification
+                }) {
+                    CherrygramCoreConfig.residentNotification = it
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
         }
