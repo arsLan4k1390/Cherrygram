@@ -169,7 +169,9 @@ object DonatesManager {
     fun checkAllDonatedAccountsForMarketplace(): Boolean {
         for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
             val userConfig = AccountInstance.getInstance(i).userConfig
-            val userId = userConfig?.currentUser?.id ?: 0L
+            val currentUser = userConfig?.currentUser
+            val userId = currentUser?.id ?: 0L
+
             if (userConfig != null && userConfig.isClientActivated && userId != 0L) {
                 if (didUserDonateForMarketplace(userId)) {
                     if (CherrygramCoreConfig.isDevBuild()) println("Account's ID is in the list: $userId")

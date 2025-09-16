@@ -1506,7 +1506,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
         hasMedia = new int[]{mediaCount[0], mediaCount[1], mediaCount[2], mediaCount[3], mediaCount[4], mediaCount[5], topicId == 0 ? commonGroupsCount : 0};
         final TLRPC.ProfileTab main_tab;
         if (userInfo != null) {
-            main_tab = TLRPC.ProfileTab.profileTabMedia;
+            main_tab = userInfo.main_tab;
         } else if (chatInfo != null) {
             main_tab = chatInfo.main_tab;
         } else {
@@ -1517,11 +1517,11 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
         } else if (user != null && user.bot && user.bot_has_main_app && user.bot_can_edit) {
             this.initialTab = TAB_BOT_PREVIEWS;
         } else if (userInfo != null && userInfo.bot_info != null && userInfo.bot_info.has_preview_medias) {
-            this.initialTab = TAB_STORIES;
-        } /*else if (main_tab == TLRPC.ProfileTab.profileTabPosts && (userInfo != null && userInfo.stories_pinned_available || chatInfo != null && chatInfo.stories_pinned_available || isStoriesView())) {
-            this.initialTab = TAB_STORIES;
+            if (isSelf()) this.initialTab = TAB_STORIES;
+        } else if (main_tab == TLRPC.ProfileTab.profileTabPosts && (userInfo != null && userInfo.stories_pinned_available || chatInfo != null && chatInfo.stories_pinned_available || isStoriesView())) {
+            if (isSelf()) this.initialTab = TAB_STORIES;
         } else if (main_tab == TLRPC.ProfileTab.profileTabGifts && (userInfo != null && userInfo.stargifts_count > 0 || chatInfo != null && chatInfo.stargifts_count > 0)) {
-            this.initialTab = TAB_GIFTS;
+            if (isSelf()) this.initialTab = TAB_GIFTS;
         } else if (main_tab == TLRPC.ProfileTab.profileTabFiles && (hasMedia[1] == -1 || hasMedia[1] > 0)) {
             this.initialTab = TAB_FILES;
         } else if (main_tab == TLRPC.ProfileTab.profileTabGifs && (hasMedia[5] == -1 || hasMedia[5] > 0)) {
@@ -1532,7 +1532,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
             this.initialTab = TAB_AUDIO;
         } else if (main_tab == TLRPC.ProfileTab.profileTabVoice && (hasMedia[2] == -1 || hasMedia[2] > 0)) {
             this.initialTab = TAB_VOICE;
-        }*/ else if (false && showStoriesCG() && (userInfo != null && userInfo.stories_pinned_available || chatInfo != null && chatInfo.stories_pinned_available || isStoriesView())) {
+        } else if (false && showStoriesCG() && (userInfo != null && userInfo.stories_pinned_available || chatInfo != null && chatInfo.stories_pinned_available || isStoriesView())) {
             this.initialTab = getInitialTab();
         } else if (userInfo != null && userInfo.stargifts_count > 0 || chatInfo != null && chatInfo.stargifts_count > 0) {
             if (isSelf()) this.initialTab = TAB_GIFTS;
@@ -6725,7 +6725,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                     }
                 }
             }
-            if (main_tab != null && false) {
+            if (main_tab != null && isSelf()) {
                 final int main_tab_id = getTabId(main_tab);
                 int index = -1;
                 for (int i = 0; i < tabs.size(); ++i) {

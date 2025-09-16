@@ -4383,7 +4383,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     sendPopupLayout.addView(sendWithoutSoundButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
                 }
 
-                if (!messageEditText.getText().isEmpty()) {
+                if (messageEditText.getText().length() > 0) {
                     ActionBarMenuSubItem preSentTranslateButton = new ActionBarMenuSubItem(getContext(), false, false, resourcesProvider);
                     String languageText = Translator.getCurrentTranslator().getCurrentTargetKeyboardLanguage().toUpperCase();
                     preSentTranslateButton.setTextAndIcon(LocaleController.getString(R.string.TranslateMessage) + " (" + languageText + ")", R.drawable.msg_translate);
@@ -4411,7 +4411,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     sendPopupLayout.addView(preSentTranslateButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
                 }
 
-                if (!messageEditText.getText().isEmpty()) {
+                if (messageEditText.getText().length() > 0) {
                     ActionBarMenuSubItem geminiButton = new ActionBarMenuSubItem(getContext(), false, false, resourcesProvider);
                     geminiButton.setTextAndIcon(getString(R.string.CP_GeminiAI_Header), R.drawable.magic_stick_solar);
                     geminiButton.setMinimumWidth(AndroidUtilities.dp(196));
@@ -4686,7 +4686,7 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                 }
             });
         }
-        if (!messageEditText.getText().isEmpty()) {
+        if (messageEditText.getText().length() > 0) {
             String languageText = Translator.getCurrentTranslator().getCurrentTargetKeyboardLanguage().toUpperCase();
             StringBuilder sb = new StringBuilder();
             sb.append(getString(R.string.TranslateMessage));
