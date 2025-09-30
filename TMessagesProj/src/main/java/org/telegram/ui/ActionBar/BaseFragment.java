@@ -64,6 +64,7 @@ import java.util.ArrayList;
 import uz.unnarsx.cherrygram.chats.MessageMenuHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
+import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.chats.helpers.MessageHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
@@ -1352,6 +1353,10 @@ public abstract class BaseFragment {
 
     public MessageMenuHelper getMessageMenuHelper() {
         return MessageMenuHelper.getInstance(currentAccount);
+    }
+
+    public ChatsPasswordHelper getChatsPasswordHelper() {
+        return ChatsPasswordHelper.getInstance(currentAccount);
     }
     /** Cherrygram finish */
 

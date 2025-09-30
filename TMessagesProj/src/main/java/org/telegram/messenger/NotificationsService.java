@@ -29,24 +29,26 @@ public class NotificationsService extends Service {
         super.onCreate();
         ApplicationLoader.postInitApplication();
 
-        NotificationChannelCompat channel = new NotificationChannelCompat.Builder("cherrygramPush", NotificationManagerCompat.IMPORTANCE_DEFAULT)
-                .setName(LocaleController.getString(R.string.CG_PushService))
-                .setLightsEnabled(false)
-                .setVibrationEnabled(false)
-                .setSound(null, null)
-                .build();
-        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) Log.d("cherryPush1", "Starting resident notification...");
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.createNotificationChannel(channel);
-        startForeground(7777,
-                new NotificationCompat.Builder(this, "cherrygramPush")
-                        .setSmallIcon(CGResourcesHelper.INSTANCE.getResidentNotificationIcon())
-                        .setShowWhen(false)
-                        .setOngoing(true)
-                        .setContentText(LocaleController.getString(R.string.CG_PushService))
-                        .setCategory(NotificationCompat.CATEGORY_STATUS)
-                        .build());
-        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) Log.d("cherryPush2", "Started foreground");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && CherrygramCoreConfig.INSTANCE.getResidentNotification()) {
+            NotificationChannelCompat channel = new NotificationChannelCompat.Builder("cgPush", NotificationManagerCompat.IMPORTANCE_DEFAULT)
+                    .setName(LocaleController.getString(R.string.CG_PushService))
+                    .setLightsEnabled(false)
+                    .setVibrationEnabled(false)
+                    .setSound(null, null)
+                    .build();
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) Log.d("cgPush", "Starting resident notification...");
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            notificationManager.createNotificationChannel(channel);
+            startForeground(1390,
+                    new NotificationCompat.Builder(this, "cgPush")
+                            .setSmallIcon(CGResourcesHelper.INSTANCE.getResidentNotificationIcon())
+                            .setShowWhen(false)
+                            .setOngoing(true)
+                            .setContentText(LocaleController.getString(R.string.CG_PushService))
+                            .setCategory(NotificationCompat.CATEGORY_STATUS)
+                            .build());
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) Log.d("cgPush", "Started foreground");
+        }
     }
 
     @Override
@@ -61,8 +63,8 @@ public class NotificationsService extends Service {
 
     public void onDestroy() {
         super.onDestroy();
-//        SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && CherrygramCoreConfig.INSTANCE.getResidentNotification()) {
+        SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
+        if (preferences.getBoolean("pushService", true)) {
             Intent intent = new Intent("org.telegram.start");
             intent.setPackage(getPackageName());
             sendBroadcast(intent);

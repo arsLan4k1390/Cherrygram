@@ -30,6 +30,7 @@ object CherrygramDebugConfig {
     /** Blur finish **/
 
     /** Chats start **/
+    var replacePunctuationMarks by sharedPreferences.boolean("replacePunctuationMarks", true)
     var editTextSuggestionsFix by sharedPreferences.boolean("editTextSuggestionsFix", false)
     /** Microphone Audio Source start **/
     const val AUDIO_SOURCE_DEFAULT = 0

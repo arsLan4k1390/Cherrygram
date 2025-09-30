@@ -1321,23 +1321,21 @@ public class MessagesController extends BaseController implements NotificationCe
         } else if (pinnedNum1 != Integer.MIN_VALUE && pinnedNum2 == Integer.MIN_VALUE) {
             return -1;
         } else if (pinnedNum1 != Integer.MIN_VALUE) {
-            if (pinnedNum1 > pinnedNum2) {
-                return 1;
-            } else if (pinnedNum1 < pinnedNum2) {
-                return -1;
-            } else {
-                return 0;
+            return Integer.compare(pinnedNum1, pinnedNum2);
+        }
+
+        if (CherrygramChatsConfig.INSTANCE.getSortByUnread()) {
+            boolean unread1 = dialog1.unread_count > 0;
+            boolean unread2 = dialog2.unread_count > 0;
+            if (unread1 != unread2) {
+                return unread1 ? -1 : 1; // unread first
             }
         }
+
         MediaDataController mediaDataController = getMediaDataController();
         long date1 = DialogObject.getLastMessageOrDraftDate(dialog1, mediaDataController.getDraft(dialog1.id, 0));
         long date2 = DialogObject.getLastMessageOrDraftDate(dialog2, mediaDataController.getDraft(dialog2.id, 0));
-        if (date1 < date2) {
-            return 1;
-        } else if (date1 > date2) {
-            return -1;
-        }
-        return 0;
+        return Long.compare(date2, date1);
     };
 
     public void sortDialogsList(ArrayList<TLRPC.Dialog> dialogs) {
@@ -1357,23 +1355,21 @@ public class MessagesController extends BaseController implements NotificationCe
         } else if (dialog1.pinned && !dialog2.pinned) {
             return -1;
         } else if (dialog1.pinned) {
-            if (dialog1.pinnedNum < dialog2.pinnedNum) {
-                return 1;
-            } else if (dialog1.pinnedNum > dialog2.pinnedNum) {
-                return -1;
-            } else {
-                return 0;
+            return Integer.compare(dialog1.pinnedNum, dialog2.pinnedNum) * -1;
+        }
+
+        if (CherrygramChatsConfig.INSTANCE.getSortByUnread()) {
+            boolean unread1 = dialog1.unread_count > 0;
+            boolean unread2 = dialog2.unread_count > 0;
+            if (unread1 != unread2) {
+                return unread1 ? -1 : 1; // unread first
             }
         }
+
         MediaDataController mediaDataController = getMediaDataController();
         long date1 = DialogObject.getLastMessageOrDraftDate(dialog1, mediaDataController.getDraft(dialog1.id, 0));
         long date2 = DialogObject.getLastMessageOrDraftDate(dialog2, mediaDataController.getDraft(dialog2.id, 0));
-        if (date1 < date2) {
-            return 1;
-        } else if (date1 > date2) {
-            return -1;
-        }
-        return 0;
+        return Long.compare(date2, date1);
     };
 
     private Comparator<TLRPC.Update> updatesComparator = (lhs, rhs) -> {
@@ -20720,7 +20716,12 @@ public class MessagesController extends BaseController implements NotificationCe
                 try {
                     Collections.sort(allDialogs, dialogDateComparator);
                 } catch (Exception e) {
-                    FileLog.e(e);
+                    CherrygramChatsConfig.INSTANCE.setSortByUnread(false);
+                    try {
+                        Collections.sort(allDialogs, dialogDateComparator);
+                    } catch (Exception ex) {
+                        FileLog.e(ex);
+                    }
                 }
                 for (int a = 0, N = allDialogs.size(); a < N; a++) {
                     TLRPC.Dialog d = allDialogs.get(a);
@@ -20745,7 +20746,14 @@ public class MessagesController extends BaseController implements NotificationCe
 
         try {
             Collections.sort(allDialogs, dialogComparator);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            CherrygramChatsConfig.INSTANCE.setSortByUnread(false);
+            try {
+                Collections.sort(allDialogs, dialogComparator);
+            } catch (Exception ex) {
+                FileLog.e(ex);
+            }
+        }
         isLeftPromoChannel = true;
         if (promoDialog != null && promoDialog.id < 0) {
             TLRPC.Chat chat = getChat(-promoDialog.id);

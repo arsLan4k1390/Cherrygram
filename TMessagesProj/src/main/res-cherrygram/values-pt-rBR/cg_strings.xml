@@ -366,7 +366,6 @@ as configurações do sistema. Esta característica apaga completamente todas as
     <string name="DP_Donate_Desc">Apoie o desenvolvimento do Cherrygram e ganhe um emblema épico!
     \nEnvie um comprovante de pagamento (&gt;=2$) to <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> or <![CDATA[<a href="https://t.me/CherrygramSupport">Cherrygram Chat de suporte</a>]]> para obter o emblema.</string>
     <string name="DP_Donate_Bulletin">**%s** contribuiu para o **Cherrygram** com sucesso!</string>
-    <string name="DP_Donate_Method">Escolher o método</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 </resources>

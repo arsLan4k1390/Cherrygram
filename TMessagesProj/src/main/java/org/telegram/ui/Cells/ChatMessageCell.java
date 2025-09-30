@@ -224,7 +224,6 @@ import java.util.Locale;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
 
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.chats.helpers.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
@@ -3727,7 +3726,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         return roundSeekbarTouched != 0;
     }
 
-    private boolean checkPhotoImageMotionEvent(MotionEvent event) {
+    protected boolean checkPhotoImageMotionEvent(MotionEvent event) {
         if (!drawPhotoImage && documentAttachType != DOCUMENT_ATTACH_TYPE_DOCUMENT || currentMessageObject.isSending() && buttonState != 1) {
             return false;
         }
@@ -26800,6 +26799,7 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
         );
     }
 
+    /** Cherrygram start */
     public void setCurrentMessagesGroup(MessageObject.GroupedMessages group) {
         this.currentMessagesGroup = group;
     }
@@ -26807,4 +26807,25 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
     public void setCurrentPosition(MessageObject.GroupedMessagePosition position) {
         this.currentPosition = position;
     }
+
+    private final Runnable progressUpdater = new Runnable() {
+        @Override
+        public void run() {
+            if (ChatMessageCell.this.getMessageObject() != null && MediaController.getInstance().isPlayingMessage(ChatMessageCell.this.getMessageObject())) {
+                updatePlayingMessageProgress();
+                AndroidUtilities.runOnUIThread(progressUpdater, 16);
+            }
+        }
+    };
+
+    public void startProgressUpdater() {
+        AndroidUtilities.cancelRunOnUIThread(progressUpdater);
+        AndroidUtilities.runOnUIThread(progressUpdater, 0);
+    }
+
+    public void stopProgressUpdater() {
+        AndroidUtilities.cancelRunOnUIThread(progressUpdater);
+    }
+    /** Cherrygram finish */
+
 }

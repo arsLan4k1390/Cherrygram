@@ -3217,17 +3217,24 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
     }
 
     /** Cherrygram start */
+    private SpringAnimation currentSpringAnimation;
+
     private final boolean USE_SPRING_ANIMATION = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING;
     private final float SPRING_STIFFNESS = 700f;
     private final float SPRING_STIFFNESS_PREVIEW = 650f;
     private final float SPRING_STIFFNESS_PREVIEW_OUT = 800f;
     private final float SPRING_STIFFNESS_PREVIEW_EXPAND = 750f;
     private final float SPRING_MULTIPLIER = 1000f;
-    private SpringAnimation currentSpringAnimation;
     private final boolean USE_ACTIONBAR_CROSSFADE = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING && CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade();
 
     private float swipeProgress;
     private MenuDrawable menuDrawable;
+
+    @Override
+    public boolean isActionBarInCrossfade() {
+        boolean crossfadeNoFragments = SharedConfig.animationsEnabled() && USE_ACTIONBAR_CROSSFADE && !isInPreviewMode() && (isSwipeInProgress() || isTransitionAnimationInProgress()) && currentAnimation == null;
+        return crossfadeNoFragments && getLastFragment() != null && getLastFragment().isActionBarCrossfadeEnabled() && getBackgroundFragment() != null && getBackgroundFragment().isActionBarCrossfadeEnabled();
+    }
 
     private void invalidateActionBars() {
         if (getLastFragment() != null && getLastFragment().getActionBar() != null) {
@@ -3248,12 +3255,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         v.setScaleY(1);
         v.setTranslationX(0);
         v.setTranslationY(0);
-    }
-
-    @Override
-    public boolean isActionBarInCrossfade() {
-        boolean crossfadeNoFragments = SharedConfig.animationsEnabled() && USE_ACTIONBAR_CROSSFADE && !isInPreviewMode() && (isSwipeInProgress() || isTransitionAnimationInProgress()) && currentAnimation == null;
-        return crossfadeNoFragments && getLastFragment() != null && getLastFragment().isActionBarCrossfadeEnabled() && getBackgroundFragment() != null && getBackgroundFragment().isActionBarCrossfadeEnabled();
     }
 
     @Override

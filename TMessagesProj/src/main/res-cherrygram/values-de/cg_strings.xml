@@ -308,7 +308,6 @@
     <string name="UP_Download">Download</string>
     <!--Updates Preferences-->
     <!--Donations-->
-    <string name="DP_Donate_Method">Methode auswählen</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 </resources>

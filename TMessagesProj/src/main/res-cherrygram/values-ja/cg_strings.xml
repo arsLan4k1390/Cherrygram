@@ -409,7 +409,6 @@
     <string name="DP_CameraCutoutDesc">カメラの下にCherrygramのロゴを表示できます — スクリーンショットに表示されます。
      \nロゴが**正しく表示とカメラ領域内に収まっている**場合は、このオプションを有効のままにしてください。
      \nアプリの宣伝やプロジェクトのサポートに役立ちます — ありがとうごさいます! ❤️</string>
-    <string name="DP_Donate_Method">方法を選択</string>
     <string name="DP_Donate_Exclusive">サポーター限定</string>
     <string name="DP_Donate_ExclusiveDesc">プロジェクトをサポートしてすべての機能をアンロックしましょう。</string>
     <!--Donations-->

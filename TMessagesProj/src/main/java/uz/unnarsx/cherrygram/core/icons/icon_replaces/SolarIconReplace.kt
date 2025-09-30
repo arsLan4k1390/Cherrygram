@@ -121,6 +121,7 @@ class SolarIconReplace : BaseIconReplace() {
         R.drawable.msg_addphoto to R.drawable.msg_addphoto_solar,
         R.drawable.msg_admin_add to R.drawable.msg_admin_add_solar,
         R.drawable.msg_admins to R.drawable.msg_admins_solar,
+        R.drawable.menu_feature_paid to R.drawable.menu_feature_paid_solar,
         R.drawable.msg_allowspeak to R.drawable.msg_allowspeak_solar,
         R.drawable.msg_archive to R.drawable.msg_archive_solar,
         R.drawable.msg_autodelete to R.drawable.msg_autodelete_solar,
@@ -425,6 +426,8 @@ class SolarIconReplace : BaseIconReplace() {
         R.drawable.msg_brightness_low to R.drawable.msg_brightness_low_solar,
         R.drawable.msg_header_share to R.drawable.msg_share_filled_solar,
         R.drawable.msg_header_draw to R.drawable.msg_header_draw_solar,
+
+        R.drawable.menu_video_chromecast to R.drawable.menu_video_chromecast_solar
     )
 
 }

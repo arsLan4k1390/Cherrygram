@@ -12362,7 +12362,7 @@ public class MessageObject {
 
         if (isProperActivity && (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())) {
             chatID = messageOwner.dialog_id;
-            require = ChatsPasswordHelper.INSTANCE.isChatLocked(chatID) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(chatID);
+            require = ChatsPasswordHelper.getInstance(currentAccount).isChatLocked(chatID) || ChatsPasswordHelper.getInstance(currentAccount).isEncryptedChat(chatID);
             addSpoiler = require;
         }
 

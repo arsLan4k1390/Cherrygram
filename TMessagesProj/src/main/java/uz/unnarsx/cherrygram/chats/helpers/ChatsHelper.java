@@ -34,6 +34,7 @@ import android.widget.Toast;
 import androidx.collection.LongSparseArray;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -342,9 +343,19 @@ public class ChatsHelper extends BaseController {
         );
 
         if (buttonAvailable && getCustomReactionsCount(selectedObject) > 0) {
-            View gap = new FrameLayout(chatActivity.contentView.getContext());
-            gap.setBackgroundColor(chatActivity.getThemedColor(Theme.key_actionBarDefaultSubmenuSeparator));
-            popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
+            if (chatActivity.getMessageMenuHelper().allowNewMessageMenu()) {
+                if (chatActivity.getMessageMenuHelper().showCustomDivider()) {
+                    popupLayout.addView(new ActionBarPopupWindow.GapView(
+                            chatActivity.getContext(),
+                            ColorUtils.setAlphaComponent(chatActivity.getThemedColor(Theme.key_windowBackgroundGray), chatActivity.getMessageMenuHelper().getMessageMenuAlpha(true)),
+                            Theme.getColor(Theme.key_windowBackgroundGrayShadow, themeDelegate)
+                    ), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
+                }
+            } else {
+                View gap = new FrameLayout(chatActivity.getContext());
+                gap.setBackgroundColor(chatActivity.getThemedColor(Theme.key_actionBarDefaultSubmenuSeparator));
+                popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
+            }
 
             FrameLayout button = new FrameLayout(chatActivity.getParentActivity());
 
@@ -436,7 +447,7 @@ public class ChatsHelper extends BaseController {
     }
 
     public void makeReplyButtonClick(ChatActivity chatActivity, boolean noForwards) {
-        if (noForwards) createReplyAction(chatActivity);
+        if (noForwards || chatActivity.isInScheduleMode()) createReplyAction(chatActivity);
 
         switch (CherrygramChatsConfig.INSTANCE.getLeftBottomButton()) {
             case CherrygramChatsConfig.LEFT_BUTTON_REPLY:
@@ -714,7 +725,7 @@ public class ChatsHelper extends BaseController {
         return messageTextToTranslate;
     }
 
-    private CharSequence getMessageCaption(MessageObject messageObject, MessageObject.GroupedMessages group) {
+    public CharSequence getMessageCaption(MessageObject messageObject, MessageObject.GroupedMessages group) {
         String restrictionReason = getMessagesController().getRestrictionReason(messageObject.messageOwner.restriction_reason);
         if (!TextUtils.isEmpty(restrictionReason)) {
             return restrictionReason;

@@ -100,6 +100,9 @@
     <!--Chats screen-->
 
     <!--Misc-->
+    <string name="CG_SortByDate">Сортировка по дате сообщения</string>
+    <string name="CG_SortByUnread">Сортировка по непрочитанным</string>
+
     <string name="CG_UnknownCherrySettingsOption">Такого параметра Cherry нет.</string>
     <string name="CG_Restart">Перезапустить приложение</string>
     <string name="CG_RestartToApply">Перезапустите приложение</string>
@@ -131,6 +134,11 @@
     <string name="CG_ProfileBackground">Применить фон профиля</string>
     <string name="CG_MessageContainsCustomReactions_one">Реакции содержат кастомный эмодзи \nиз %1$d набора.</string>
     <string name="CG_MessageContainsCustomReactions_other">Реакции содержат кастомные эмодзи \nиз %1$d наборов.</string>
+
+    <string name="CG_Sleep">Таймер сна</string>
+    <string name="CG_Sleep_Timer">Таймер сна установлен на **%s**</string>
+    <string name="CG_Sleep_Disabled">Таймер сна отключен</string>
+    <string name="CG_Sleep_Permission">Разрешите Cherrygram устанавливать точные будильники, чтобы таймер сна работал корректно.</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -151,6 +159,7 @@
 
     <!--General Preferences-->
     <string name="AP_Header_General">Основные</string>
+    <string name="CG_ResidentNotification">Включить постоянное уведомление</string>
     <!--General Preferences-->
 
     <!--Appearance Preferences-->
@@ -288,6 +297,7 @@
     <string name="CP_GeminiAI_Temperature_Desc">Управляйте креативностью текста. Низкие значения делают текст более предсказуемым и сфокусированным, высокие - более случайным и оригинальным.</string>
     <string name="CP_GeminiAI_ExtractText">Извлечь текст (OCR)</string>
     <string name="CP_GeminiAI_Summarize">Сводка (кратко)</string>
+    <string name="CP_GeminiAI_VoiceTranscriptionProvider">Поставщик транскрипции</string>
 
     <string name="CP_Header_Record">Медиа</string>
     <string name="CP_Messages_Size">Размер пузыря сообщений</string>
@@ -464,7 +474,10 @@
     \nЕсли логотип **отображается корректно и остается в пределах области камеры**, пожалуйста, оставьте эту функцию включённой.
     \Это поможет продвигать приложение и поддержать проект — мне будет очень приятно! ❤️</string>
 
-    <string name="DP_Donate_Method">Выберите метод</string>
+    <string name="DP_Donate_Method_Int">Международные платежные системы</string>
+    <string name="DP_Donate_Method_Rus">Для резидентов РФ</string>
+    <string name="DP_Donate_Method_Uzb">Для резидентов Узбекистана</string>
+    <string name="DP_Donate_Method_Surname">Пожалуйста,свяжитесь с **@arsLan**, если платежная система требует персональные данные получателя.</string>
 
     <string name="DP_Donate_Exclusive">Эксклюзив для поддержавших</string>
     <string name="DP_Donate_ExclusiveDesc">Поддержите проект и откройте доступ ко всем возможностям.</string>

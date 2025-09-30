@@ -1875,7 +1875,7 @@ public class NotificationsController extends BaseController {
         } else {
             boolean isChannel = ChatObject.isChannel(chat) && !chat.megagroup;
             if (dialogPreviewEnabled && (chat_id == 0 && fromId != 0 && preferences.getBoolean("EnablePreviewAll", true) || chat_id != 0 && (!isChannel && preferences.getBoolean("EnablePreviewGroup", true) || isChannel && preferences.getBoolean("EnablePreviewChannel", true)))) {
-//                if (ChatsPasswordHelper.INSTANCE.isChatLocked(messageObject)) { // TODO: Investigate
+//                if (ChatsPasswordHelper.getInstance(currentAccount).isChatLocked(messageObject)) { // TODO: Investigate
 //                    return replaceSpoilers(messageObject);
 //                }
                 if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
@@ -2429,8 +2429,8 @@ public class NotificationsController extends BaseController {
             return stringBuilder.toString();
         }
         var entities = messageObject.messageOwner.entities;
-        if (ChatsPasswordHelper.INSTANCE.isChatLocked(messageObject) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(messageObject)) {
-            entities = ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(messageObject);
+        if (ChatsPasswordHelper.getInstance(currentAccount).isChatLocked(messageObject) || ChatsPasswordHelper.getInstance(currentAccount).isEncryptedChat(messageObject)) {
+            entities = ChatsPasswordHelper.getInstance(currentAccount).checkLockedChatsEntities(messageObject);
         } else {
             entities = MessagesFilterHelper.INSTANCE.addSpoilerEntities(messageObject);
         }
@@ -2702,7 +2702,7 @@ public class NotificationsController extends BaseController {
             } else if (chatId != 0) {
                 boolean isChannel = ChatObject.isChannel(chat) && !chat.megagroup;
                 if (dialogPreviewEnabled && (!isChannel && preferences.getBoolean("EnablePreviewGroup", true) || isChannel && preferences.getBoolean("EnablePreviewChannel", true))) {
-//                    if (ChatsPasswordHelper.INSTANCE.isChatLocked(messageObject)) { // TODO: Investigate
+//                    if (ChatsPasswordHelper.getInstance(currentAccount).isChatLocked(messageObject)) { // TODO: Investigate
 //                        return replaceSpoilers(messageObject);
 //                    }
                     if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
@@ -5370,8 +5370,8 @@ public class NotificationsController extends BaseController {
 
                                     if (!TextUtils.isEmpty(messageObject.caption)) {
                                         String finalText = messageObject.caption.toString();
-                                        if (ChatsPasswordHelper.INSTANCE.isChatLocked(lastMessageObject) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(lastMessageObject)) {
-                                            finalText = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(messageObject.caption.toString(), true);
+                                        if (ChatsPasswordHelper.getInstance(currentAccount).isChatLocked(lastMessageObject) || ChatsPasswordHelper.getInstance(currentAccount).isEncryptedChat(lastMessageObject)) {
+                                            finalText = ChatsPasswordHelper.getInstance(currentAccount).replaceStringToSpoilers(messageObject.caption.toString(), true);
                                         } else if (lastMessageObject.shouldBlockMessage()) {
                                             finalText = MessagesFilterHelper.INSTANCE.addSpoilerEntities(messageObject.caption.toString());
                                         }

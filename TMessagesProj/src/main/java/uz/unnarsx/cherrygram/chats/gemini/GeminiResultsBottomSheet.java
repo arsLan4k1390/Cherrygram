@@ -21,6 +21,7 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -63,12 +64,14 @@ import org.telegram.ui.Components.AnimatedFloat;
 import org.telegram.ui.Components.AnimatedTextView;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
+import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.LinkPath;
 import org.telegram.ui.Components.LinkSpanDrawable;
 import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -92,8 +95,8 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
 
     private View buttonShadowView;
     private FrameLayout buttonView;
-    private TextView summarizeButton;
-    private ImageView copyButton;
+    private ButtonWithCounterView summarizeButton;
+    private ButtonWithCounterView copyButton;
 
     private static MessageObject selectedObject; // TODO set to null when closing bottom sheet
     private static TLRPC.Chat currentChat; // TODO set to null when closing bottom sheet
@@ -205,17 +208,9 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         buttonShadowView.setAlpha(0);
         buttonView.addView(buttonShadowView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.getShadowHeight() / dpf2(1), Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
-        summarizeButton = new TextView(fragment.getContext());
-        summarizeButton.setLines(1);
-        summarizeButton.setSingleLine(true);
-        summarizeButton.setGravity(Gravity.CENTER_HORIZONTAL);
-        summarizeButton.setEllipsize(TextUtils.TruncateAt.END);
-        summarizeButton.setGravity(Gravity.CENTER);
-        summarizeButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, getResourcesProvider()));
-        summarizeButton.setTypeface(AndroidUtilities.bold());
-        summarizeButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        summarizeButton.setText(subtitle == 5 ? getString(R.string.Close) : getString(R.string.CP_GeminiAI_Summarize));
-        summarizeButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, getResourcesProvider()), 6));
+        summarizeButton = new ButtonWithCounterView(fragment.getContext(), fragment.getResourceProvider());
+        summarizeButton.setFilled(true);
+        summarizeButton.setText(subtitle == 5 ? getString(R.string.Close) : getString(R.string.CP_GeminiAI_Summarize), false);
         summarizeButton.setOnClickListener(e -> {
             if (subtitle == 5) {
                 dismiss();
@@ -232,11 +227,11 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         });
         buttonView.addView(summarizeButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
-        copyButton = new ImageView(fragment.getContext());
-        copyButton.setScaleType(ImageView.ScaleType.CENTER);
-        copyButton.setImageResource(R.drawable.msg_copy);
-        copyButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_buttonText, getResourcesProvider()), PorterDuff.Mode.MULTIPLY));
-        copyButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, getResourcesProvider()), 6));
+        copyButton = new ButtonWithCounterView(fragment.getContext(), fragment.getResourceProvider());
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append("+");
+        sb.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(fragment.getContext(), R.drawable.msg_copy_filled_solar)), 0, 1, 0);
+        copyButton.setText(sb, false);
         copyButton.setOnClickListener(v -> {
             if (noforwardsOrPaidMedia) {
                 if (ChatObject.isChannel(currentChat) && !currentChat.megagroup) {

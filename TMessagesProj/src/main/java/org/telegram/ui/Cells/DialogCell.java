@@ -135,7 +135,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.chats.helpers.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
@@ -1006,12 +1005,12 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             }
             String title;
             if (currentChat != null) {
-                title = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(currentChat.title.replace('\n', ' '), false);
+                title = parentFragment.getChatsPasswordHelper().replaceStringToSpoilers(currentChat.title.replace('\n', ' '), false);
             } else if (currentUser != null) {
                 if (UserObject.isDeleted(currentUser)) {
-                    title = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(getString(R.string.HiddenName), false);
+                    title = parentFragment.getChatsPasswordHelper().replaceStringToSpoilers(getString(R.string.HiddenName), false);
                 } else {
-                    title = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(
+                    title = parentFragment.getChatsPasswordHelper().replaceStringToSpoilers(
                             AndroidUtilities.escape(ContactsController.formatName(currentUser.first_name, currentUser.last_name).replace('\n', ' ')),
                             false
                     );
@@ -1722,8 +1721,8 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                                             if (message != null) {
                                                 message.spoilLoginCode();
                                             }
-                                            if (ChatsPasswordHelper.INSTANCE.isChatLocked(message) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(message)) {
-                                                MediaDataController.addTextStyleRuns(ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(message), message.caption, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
+                                            if (parentFragment != null && (parentFragment.getChatsPasswordHelper().isChatLocked(message) || parentFragment.getChatsPasswordHelper().isEncryptedChat(message))) {
+                                                MediaDataController.addTextStyleRuns(parentFragment.getChatsPasswordHelper().checkLockedChatsEntities(message), message.caption, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
                                             } else {
                                                 MediaDataController.addTextStyleRuns(MessagesFilterHelper.INSTANCE.addSpoilerEntities(message), message.caption, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
                                             }
@@ -5523,8 +5522,8 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 if (message != null) {
                     message.spoilLoginCode();
                 }
-                if (ChatsPasswordHelper.INSTANCE.isChatLocked(message) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(message)) {
-                    MediaDataController.addTextStyleRuns(ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(message), mess, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
+                if (parentFragment != null && (parentFragment.getChatsPasswordHelper().isChatLocked(message) || parentFragment.getChatsPasswordHelper().isEncryptedChat(message))) {
+                    MediaDataController.addTextStyleRuns(parentFragment.getChatsPasswordHelper().checkLockedChatsEntities(message), mess, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
                 } else {
                     MediaDataController.addTextStyleRuns(MessagesFilterHelper.INSTANCE.addSpoilerEntities(message), mess, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
                 }

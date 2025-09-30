@@ -26,7 +26,6 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.BulletinFactory
 import org.telegram.ui.LaunchActivity
 import org.telegram.ui.UsersSelectActivity
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
@@ -71,7 +70,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 icon = R.drawable.msg_delete
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    if (ChatsPasswordHelper.checkFingerprint()) {
+                    if (bf.chatsPasswordHelper.checkFingerprint()) {
                         CGBiometricPrompt.prompt(bf.parentActivity) {
                             DeleteAccountDialog.showDeleteAccountDialog(bf)
                         }
@@ -95,7 +94,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                isAvailable = ChatsPasswordHelper.checkFingerprint()
+                isAvailable = bf.chatsPasswordHelper.checkFingerprint()
 
                 title = getString(R.string.SP_AskBioToOpenChats)
                 divider = true
@@ -106,22 +105,22 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     }
                 }
             }
-            if (ChatsPasswordHelper.checkFingerprint()) hint(getString(R.string.SP_AskBioToOpenChats_Desc))
+            if (bf.chatsPasswordHelper.checkFingerprint()) hint(getString(R.string.SP_AskBioToOpenChats_Desc))
             textIcon {
-                isAvailable = CherrygramPrivacyConfig.askBiometricsToOpenChat && ChatsPasswordHelper.checkFingerprint()
+                isAvailable = CherrygramPrivacyConfig.askBiometricsToOpenChat && bf.chatsPasswordHelper.checkFingerprint()
 
                 icon = R.drawable.msg_discussion
                 title = getString(R.string.SP_LockedChats)
-                value = ChatsPasswordHelper.getLockedChatsCount().toString()
+                value = bf.chatsPasswordHelper.getLockedChatsCount().toString()
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
                     CGBiometricPrompt.prompt(bf.parentActivity) {
                         AndroidUtilities.runOnUIThread({
-                            val activity: UsersSelectActivity = getUsersSelectActivity()
+                            val activity: UsersSelectActivity = getUsersSelectActivity(bf)
                             activity.setDelegate { ids: ArrayList<Long>, _: Int ->
                                 val chatIds = ids.toSet()
-                                val lockedChats = ChatsPasswordHelper.getArrayList(ChatsPasswordHelper.PASSCODE_ARRAY).toMutableSet()
+                                val lockedChats = bf.chatsPasswordHelper.getArrayList(bf.chatsPasswordHelper.getPasscodeArray()).toMutableSet()
 
                                 if (CherrygramCoreConfig.isDevBuild()) FileLog.d("old locked chats array: $lockedChats")
                                 lockedChats.clear()
@@ -134,10 +133,10 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                                     }
                                 }
 
-                                ChatsPasswordHelper.saveArrayList(ArrayList(lockedChats), ChatsPasswordHelper.PASSCODE_ARRAY)
+                                bf.chatsPasswordHelper.saveArrayList(ArrayList(lockedChats), bf.chatsPasswordHelper.getPasscodeArray())
                                 if (CherrygramCoreConfig.isDevBuild()) FileLog.d("new locked chats array: $lockedChats")
 
-                                value = ChatsPasswordHelper.getLockedChatsCount().toString()
+                                value = bf.chatsPasswordHelper.getLockedChatsCount().toString()
                             }
                             bf.presentFragment(activity)
                         }, 300)
@@ -149,15 +148,15 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
 
                 icon = R.drawable.msg_clear
                 title = getString(R.string.SP_LockedChats)
-                value = ChatsPasswordHelper.getLockedChatsCount().toString()
+                value = bf.chatsPasswordHelper.getLockedChatsCount().toString()
                 divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    val arr = ChatsPasswordHelper.getArrayList(ChatsPasswordHelper.Passcode_Array)!!
+                    val arr = bf.chatsPasswordHelper.getArrayList(bf.chatsPasswordHelper.getPasscodeArray())!!
                     arr.clear()
-                    ChatsPasswordHelper.saveArrayList(arr, ChatsPasswordHelper.Passcode_Array)
+                    bf.chatsPasswordHelper.saveArrayList(arr, bf.chatsPasswordHelper.getPasscodeArray())
 
-                    value = ChatsPasswordHelper.getLockedChatsCount().toString()
+                    value = bf.chatsPasswordHelper.getLockedChatsCount().toString()
                     bf.parentLayout.rebuildAllFragmentViews(true, true)
                 }
             }*/
@@ -273,9 +272,9 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("privacy_preferences_screen")
     }
 
-    private fun getUsersSelectActivity(): UsersSelectActivity {
+    private fun getUsersSelectActivity(bf: BaseFragment): UsersSelectActivity {
         val chatsList = ArrayList<Long>()
-        for (chatId in ChatsPasswordHelper.getArrayList(ChatsPasswordHelper.PASSCODE_ARRAY)) {
+        for (chatId in bf.chatsPasswordHelper.getArrayList(bf.chatsPasswordHelper.getPasscodeArray())) {
 
             val user = MessagesController.getInstance(UserConfig.selectedAccount).getUser(chatId.toLong())
             val chat = MessagesController.getInstance(UserConfig.selectedAccount).getChat(-chatId.toLong())

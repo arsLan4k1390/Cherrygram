@@ -102,6 +102,9 @@
     <!--Chats screen-->
 
     <!--Misc-->
+    <string name="CG_SortByDate">Sort by message date</string>
+    <string name="CG_SortByUnread">Sort by unread first</string>
+
     <string name="CG_UnknownCherrySettingsOption">There is no such Cherry Settings option.</string>
     <string name="CG_Restart">Restart app</string>
     <string name="CG_RestartToApply">Restart app to apply changes</string>
@@ -133,6 +136,11 @@
     <string name="CG_ProfileBackground">Apply profile background</string>
     <string name="CG_MessageContainsCustomReactions_one">Reactions contain custom emoji \nfrom %1$d pack.</string>
     <string name="CG_MessageContainsCustomReactions_other">Reactions contain custom emojis \nfrom %1$d packs.</string>
+
+    <string name="CG_Sleep">Sleep timer</string>
+    <string name="CG_Sleep_Timer">Sleep timer is set to **%s**</string>
+    <string name="CG_Sleep_Disabled">Sleep timer is disabled</string>
+    <string name="CG_Sleep_Permission">Please allow Cherrygram to schedule exact alarms so that the sleep timer can work properly.</string>
     <!--Misc-->
     <!--Telegram screens-->
 
@@ -153,6 +161,7 @@
 
     <!--General Preferences-->
     <string name="AP_Header_General">General</string>
+    <string name="CG_ResidentNotification">Show a resident notification</string>
     <!--General Preferences-->
 
     <!--Appearance Preferences-->
@@ -299,6 +308,7 @@
     <string name="CP_GeminiAI_Temperature_Desc">Control the creativity of the text. Low values make the text more predictable and focused, high values - more random and original.</string>
     <string name="CP_GeminiAI_ExtractText">Extract Text (OCR)</string>
     <string name="CP_GeminiAI_Summarize">Summarize</string>
+    <string name="CP_GeminiAI_VoiceTranscriptionProvider">Voice transcription provider</string>
 
     <string name="CP_Header_Record">Media</string>
     <string name="CP_Messages_Size">Messages bubble size</string>
@@ -477,7 +487,10 @@
     \nIf the logo **displays correctly and stays within your camera area**, please keep this option enabled.
     \nIt helps promote the app and support the project — I would really appreciate it! ❤️</string>
 
-    <string name="DP_Donate_Method">Choose a method</string>
+    <string name="DP_Donate_Method_Int">International payment systems</string>
+    <string name="DP_Donate_Method_Rus">For residents of the Russian Federation</string>
+    <string name="DP_Donate_Method_Uzb">For residents of Uzbekistan</string>
+    <string name="DP_Donate_Method_Surname">Please contact **@arsLan** if the payment system requires the recipient\'s personal information.</string>
 
     <string name="DP_Donate_Exclusive">Exclusive for supporters</string>
     <string name="DP_Donate_ExclusiveDesc">Support the project and unlock all features.</string>

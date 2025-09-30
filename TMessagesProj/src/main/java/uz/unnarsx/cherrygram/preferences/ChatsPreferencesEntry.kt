@@ -22,7 +22,6 @@ import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers
-import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.hint
@@ -129,6 +128,23 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 icon = R.drawable.magic_stick_solar
                 listener = TGKitTextIconRow.TGTIListener {
                     CherrygramPreferencesNavigator.createGemini(bf)
+                }
+            }
+            list {
+                title = getString(R.string.CP_GeminiAI_VoiceTranscriptionProvider)
+
+                contract({
+                    return@contract listOf(
+                        Pair(CherrygramChatsConfig.TRANSCRIPTION_PROVIDER_GEMINI, getString(R.string.CP_GeminiAI_Header)),
+                        Pair(CherrygramChatsConfig.TRANSCRIPTION_PROVIDER_TELEGRAM, getString(R.string.AppName))
+                    )
+                }, {
+                    return@contract when (CherrygramChatsConfig.voiceTranscriptionProvider) {
+                        CherrygramChatsConfig.TRANSCRIPTION_PROVIDER_GEMINI -> getString(R.string.CP_GeminiAI_Header)
+                        else -> getString(R.string.AppName)
+                    }
+                }) {
+                    CherrygramChatsConfig.voiceTranscriptionProvider = it
                 }
             }
         }

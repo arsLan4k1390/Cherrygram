@@ -23,7 +23,7 @@ import android.graphics.Rect;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.text.SpannableString;
-import android.text.TextUtils;
+import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -36,6 +36,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.math.MathUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -61,11 +62,13 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedFloat;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
+import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.LinkPath;
 import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
@@ -83,8 +86,8 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
 
     private View buttonShadowView;
     private FrameLayout buttonView;
-    private TextView buttonTextView;
-    private ImageView copyButton;
+    private ButtonWithCounterView buttonTextView;
+    private ButtonWithCounterView copyButton;
 
     public Theme.ResourcesProvider resourcesProvider;
     public BaseFragment fragment;
@@ -189,25 +192,17 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         buttonShadowView.setAlpha(0);
         buttonView.addView(buttonShadowView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.getShadowHeight() / dpf2(1), Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
-        buttonTextView = new TextView(context);
-        buttonTextView.setLines(1);
-        buttonTextView.setSingleLine(true);
-        buttonTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-        buttonTextView.setEllipsize(TextUtils.TruncateAt.END);
-        buttonTextView.setGravity(Gravity.CENTER);
-        buttonTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
-        buttonTextView.setTypeface(AndroidUtilities.bold());
-        buttonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        buttonTextView.setText(getString(R.string.Close));
-        buttonTextView.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
+        buttonTextView = new ButtonWithCounterView(context, getResourcesProvider());
+        buttonTextView.setFilled(true);
+        buttonTextView.setText(getString(R.string.Close), false);
         buttonTextView.setOnClickListener(e -> dismiss());
         buttonView.addView(buttonTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
-        copyButton = new ImageView(context);
-        copyButton.setScaleType(ImageView.ScaleType.CENTER);
-        copyButton.setImageResource(R.drawable.msg_copy);
-        copyButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider), PorterDuff.Mode.MULTIPLY));
-        copyButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
+        copyButton = new ButtonWithCounterView(context, getResourcesProvider());
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append("+");
+        sb.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.msg_copy_filled_solar)), 0, 1, 0);
+        copyButton.setText(sb, false);
         copyButton.setOnClickListener(v -> {
             if (isNoForwards) {
                 if (ChatObject.isChannel(currentChat) && !currentChat.megagroup) {

@@ -18,6 +18,8 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -38,7 +40,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.text.Spannable;
+import android.provider.Settings;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -56,6 +58,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.ColorUtils;
 import androidx.dynamicanimation.animation.FloatValueHolder;
@@ -121,6 +124,10 @@ import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import uz.unnarsx.cherrygram.core.helpers.SleepHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.NotificationCenterDelegate, DownloadController.FileDownloadProgressListener {
 
@@ -1106,6 +1113,12 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
             optionsButton.setBackgroundDrawable(Theme.createSelectorDrawable(getThemedColor(Theme.key_listSelector), 1, dp(18)));
         }
         bottomView.addView(optionsButton, LayoutHelper.createFrame(48, 48, Gravity.LEFT | Gravity.TOP));
+
+        optionsButton.addSubItem(1390, R.drawable.alarm_sleep_solar, getString(R.string.CG_Sleep));
+        optionsButton.setSubItemShown(1390, false);
+        optionsButton.addColoredGap(1391);
+        optionsButton.setSubItemShown(1391, false);
+
         optionsButton.addSubItem(1, R.drawable.msg_forward, LocaleController.getString(R.string.Forward));
         optionsButton.addSubItem(2, R.drawable.msg_shareout, LocaleController.getString(R.string.ShareFile));
         optionsButton.addSubItem(5, R.drawable.msg_download, LocaleController.getString(R.string.SaveToMusic));
@@ -1308,7 +1321,15 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
                 .createSimpleBulletin(R.raw.saved_messages, getString(R.string.AudioSaveToMyProfileSaved))
                 .show();
         });
-        playerLayout.addView(saveToProfileButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 42, Gravity.FILL_HORIZONTAL | Gravity.BOTTOM, 12, 12, 12, 12));
+        playerLayout.addView(saveToProfileButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 44, Gravity.FILL_HORIZONTAL | Gravity.BOTTOM, 16, 22, 72, 16));
+
+        sleepTimerButton = new ButtonWithCounterView(context, resourcesProvider);
+        SpannableStringBuilder sb1 = new SpannableStringBuilder();
+        sb1.append("+");
+        sb1.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.alarm_sleep_filled_solar)), 0, 1, 0);
+        sleepTimerButton.setText(sb1, false);
+        sleepTimerButton.setOnClickListener(v -> setSleepTimer());
+        playerLayout.addView(sleepTimerButton, LayoutHelper.createFrame(48, 44, Gravity.BOTTOM | Gravity.RIGHT, 0, 22, 16, 16));
 
         savedMusicList = MediaController.getInstance().currentSavedMusicList;
         playlist = MediaController.getInstance().getPlaylist();
@@ -1352,6 +1373,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
         }
 
         if (isMyList()) {
+            sleepTimerButton.setVisibility(View.GONE);
             saveToProfileButton.setVisibility(View.GONE);
             unsaveFromProfileTextView.setVisibility(View.GONE);
 
@@ -1691,6 +1713,8 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
                     }
                 }
             }, false);
+        } else if (id == 1390) {
+            setSleepTimer();
         }
     }
 
@@ -2146,13 +2170,15 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
                 optionsButton.hideSubItem(2);
                 optionsButton.hideSubItem(5);
                 optionsButton.hideSubItem(6);
-                optionsButton.setAdditionalYOffset(-dp(16));
+                optionsButton.setAdditionalYOffset(-dp(16 + 65)); // 65: sleep timer + gap
             } else {
                 optionsButton.showSubItem(1);
                 optionsButton.showSubItem(2);
                 optionsButton.showSubItem(5);
-                optionsButton.setAdditionalYOffset(-dp(157 + 40));
+                optionsButton.setAdditionalYOffset(-dp(157 + 40 + 70)); // 70: sleep timer + gap
             }
+            optionsButton.setSubItemShown(1390, isMyList() || noforwards);
+            optionsButton.setSubItemShown(1391, isMyList() || noforwards);
             optionsButton.setSubItemShown(4, messageObject.getId() > 0);
             optionsButton.setSubItemShown(7, isMyList());
 
@@ -2811,10 +2837,12 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
 
     private void setVisibleInProfile(boolean visible) {
         if (isMyList() || noforwards) {
+            sleepTimerButton.setVisibility(View.GONE);
             saveToProfileButton.setVisibility(View.GONE);
             unsaveFromProfileTextView.setVisibility(View.GONE);
             return;
         }
+        sleepTimerButton.setVisibility(View.VISIBLE);
         saveToProfileButton.setVisibility(View.VISIBLE);
         unsaveFromProfileTextView.setVisibility(View.VISIBLE);
         saveToProfileButton.animate()
@@ -3382,4 +3410,136 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
         });
         rightPaddingAnimator.start();
     }
+
+    /** Cherrygram start */
+    private ButtonWithCounterView sleepTimerButton;
+
+    private void setSleepTimer() {
+        ArrayList<CharSequence> presets = new ArrayList<>();
+        ArrayList<Integer> presetValues = new ArrayList<>();
+
+        presets.add(LocaleController.formatPluralString("Minutes", 1));
+        presetValues.add(1);
+
+        presets.add(LocaleController.formatPluralString("Minutes", 5));
+        presetValues.add(5);
+
+        presets.add(LocaleController.formatPluralString("Minutes", 10));
+        presetValues.add(10);
+
+        presets.add(LocaleController.formatPluralString("Minutes", 20));
+        presetValues.add(20);
+
+        presets.add(LocaleController.formatPluralString("Minutes", 40));
+        presetValues.add(40);
+
+        presets.add(LocaleController.formatPluralString("Hours", 1));
+        presetValues.add(60);
+
+        presets.add(getString(R.string.AutoDownloadCustom));
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), getResourcesProvider());
+        builder.setTitle(getString(R.string.CG_Sleep));
+
+        builder.setItems(presets.toArray(new CharSequence[0]), (d, which) -> {
+            if (which < presetValues.size()) {
+                int minutes = presetValues.get(which);
+                setSleepIntent(minutes * 60);
+            } else {
+                AlertsCreator.createTimePickerDialog(
+                        getContext(),
+                        getString(R.string.CG_Sleep),
+                        0,
+                        0,
+                        12 * 60,
+                        pickedMinutes -> {
+                            int seconds = pickedMinutes * 60;
+                            setSleepIntent(seconds);
+                        }
+                );
+            }
+        });
+
+        builder.setNegativeButton(getString(R.string.Cancel), null);
+        builder.show();
+    }
+
+    private void setSleepIntent(int seconds) {
+        AlarmManager alarmManager = (AlarmManager) ApplicationLoader.applicationContext.getSystemService(Context.ALARM_SERVICE);
+        Intent myIntent = new Intent(ApplicationLoader.applicationContext, SleepHelper.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                ApplicationLoader.applicationContext, 1, myIntent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
+        alarmManager.cancel(pendingIntent);
+
+        if (seconds > 0) {
+            long triggerAtMillis = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(seconds);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    if (!alarmManager.canScheduleExactAlarms()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), getResourcesProvider());
+                        builder.setTopAnimation(R.raw.permission_request_apk, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, Theme.getColor(Theme.key_dialogTopBackground));
+                        builder.setMessage(getString(R.string.CG_Sleep_Permission));
+                        builder.setPositiveButton(getString(R.string.PermissionOpenSettings), (dialog, which) -> {
+                            Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                            intent.setData(Uri.parse("package:" + ApplicationLoader.applicationContext.getPackageName()));
+                            try {
+                                getContext().startActivity(intent);
+                            } catch (Exception x) {
+                                FileLog.e(x);
+                            }
+                        });
+                        builder.setNegativeButton(getString(R.string.Cancel), null);
+                        builder.show();
+                        return;
+                    } else {
+                        alarmManager.setExactAndAllowWhileIdle(
+                                AlarmManager.RTC_WAKEUP,
+                                triggerAtMillis,
+                                pendingIntent
+                        );
+                    }
+                } else {
+                    alarmManager.setExactAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            triggerAtMillis,
+                            pendingIntent
+                    );
+                }
+            } else {
+                alarmManager.set(
+                        AlarmManager.RTC_WAKEUP,
+                        triggerAtMillis,
+                        pendingIntent
+                );
+            }
+
+            CherrygramCoreConfig.INSTANCE.setSleepTimer(true);
+
+            String formattedTime;
+            if (seconds < 3600) {
+                int minutes = seconds / 60;
+                formattedTime = LocaleController.formatPluralString("Minutes", minutes);
+            } else {
+                int hours = seconds / 3600;
+                formattedTime = LocaleController.formatPluralString("Hours", hours);
+            }
+
+            BulletinFactory.of((FrameLayout) containerView, resourcesProvider)
+                    .createSimpleBulletin(R.raw.done, AndroidUtilities.replaceTags(LocaleController.formatString(R.string.CG_Sleep_Timer, formattedTime)))
+                    .show();
+        } else {
+            if (CherrygramCoreConfig.INSTANCE.getSleepTimer()) {
+                BulletinFactory.of((FrameLayout) containerView, resourcesProvider)
+                        .createSimpleBulletin(R.raw.done, getString(R.string.CG_Sleep_Disabled))
+                        .show();
+            }
+            CherrygramCoreConfig.INSTANCE.setSleepTimer(false);
+        }
+    }
+    /** Cherrygram finish */
+
 }

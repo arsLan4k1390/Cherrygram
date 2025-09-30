@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 
@@ -271,7 +270,7 @@ public interface INavigationLayout {
             int encID = fragment.arguments.getInt("enc_id");
 //            boolean encrypted = fragment.arguments.containsKey("enc_id");
 
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometrics(userID, chatID, encID)) {
+            if (getParentActivity() != null && fragment.getChatsPasswordHelper().shouldRequireBiometrics(userID, chatID, encID)) {
                 CGBiometricPrompt.prompt(getParentActivity(),
                         () -> fragment1.set(presentFragment(new NavigationParams(fragment)))
                 );
@@ -312,7 +311,7 @@ public interface INavigationLayout {
             int encID = fragment.arguments.getInt("enc_id");
 //            boolean encrypted = fragment.arguments.containsKey("enc_id");
 
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometrics(userID, chatID, encID)) {
+            if (getParentActivity() != null && fragment.getChatsPasswordHelper().shouldRequireBiometrics(userID, chatID, encID)) {
                 CGBiometricPrompt.prompt(getParentActivity(),
                         () -> fragment1.set(presentFragment(new NavigationParams(fragment).setPreview(true)))
                 );
@@ -335,7 +334,7 @@ public interface INavigationLayout {
             int encID = fragment.arguments.getInt("enc_id");
 //            boolean encrypted = fragment.arguments.containsKey("enc_id");
 
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometrics(userID, chatID, encID)) {
+            if (getParentActivity() != null && fragment.getChatsPasswordHelper().shouldRequireBiometrics(userID, chatID, encID)) {
                 CGBiometricPrompt.prompt(getParentActivity(),
                         () -> fragment1.set(presentFragment(new NavigationParams(fragment).setPreview(true).setMenuView(menuView)))
                 );
@@ -362,7 +361,7 @@ public interface INavigationLayout {
             int encID = fragment.arguments.getInt("enc_id");
 //            boolean encrypted = fragment.arguments.containsKey("enc_id");
 
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometrics(userID, chatID, encID)) {
+            if (getParentActivity() != null && fragment.getChatsPasswordHelper().shouldRequireBiometrics(userID, chatID, encID)) {
                 CGBiometricPrompt.prompt(getParentActivity(),
                         () -> fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview)))
                 );
@@ -389,7 +388,7 @@ public interface INavigationLayout {
             int encID = fragment.arguments.getInt("enc_id");
 //            boolean encrypted = fragment.arguments.containsKey("enc_id");
 
-            if (getParentActivity() != null && ChatsPasswordHelper.INSTANCE.shouldRequireBiometrics(userID, chatID, encID)) {
+            if (getParentActivity() != null && fragment.getChatsPasswordHelper().shouldRequireBiometrics(userID, chatID, encID)) {
                 CGBiometricPrompt.prompt(getParentActivity(),
                         () -> fragment1.set(presentFragment(new NavigationParams(fragment).setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(check).setPreview(preview).setMenuView(menuView)))
                 );

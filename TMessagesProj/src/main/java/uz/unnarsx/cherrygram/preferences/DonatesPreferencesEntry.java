@@ -67,15 +67,27 @@ public class DonatesPreferencesEntry extends BaseFragment {
     private int bonusesPriceRow;
     private int bonusesDivisorRow;
 
-    private int methodHeaderRow;
-    private int visaRow;
+    private int intHeaderRow;
     private int masterCardRow;
-    private int tirikchilikRow;
+    private int visaRow;
+    private int intCredsRow;
+    private int intDivisorRow;
+
+    private int rusHeaderRow;
+    private int alfaRow;
+    private int vtbRow;
+    private int sberRow;
+    private int tinkoffRow;
+    private int yooMoneyRow;
+    private int rusCredsRow;
+    private int rusDivisorRow;
+
+    private int uzbHeaderRow;
     private int humoRow;
     private int uzCardRow;
     private int uzCardMirRow;
-    private int yooMoneyRow;
-    private int methodDivisorRow;
+    private int tirikchilikRow;
+    private int uzbDivisorRow;
 
     private int binanceHeaderRow;
     private int binanceIDRow;
@@ -85,9 +97,9 @@ public class DonatesPreferencesEntry extends BaseFragment {
     private int binanceDivisorRow;
 
     private int walletHeaderRow;
+    private int walletBitcoinRow;
     private int walletTonRow;
     private int walletUSDTRow;
-    private int walletBitcoinRow;
     private int tonKeeperTonRow;
     private int walletDivisorRow;
 
@@ -174,22 +186,30 @@ public class DonatesPreferencesEntry extends BaseFragment {
                     ((TextCheckCell) view).setChecked(CherrygramCoreConfig.INSTANCE.getCgBrandedScreenshots());
                 }
                 AppRestartHelper.createRestartBulletin(this);
-            } else if (position == visaRow) {
-                copyNumberAndMakeToast("4278310028377794", true);
             } else if (position == masterCardRow) {
                 copyNumberAndMakeToast("5181000156329583", true);
-            } else if (position == tirikchilikRow) {
-                Intent openURL = new Intent(Intent.ACTION_VIEW);
-                openURL.setData(Uri.parse("https://tirikchilik.uz/arslan4k1390"));
-                getParentActivity().startActivity(openURL);
+            } else if (position == visaRow) {
+                copyNumberAndMakeToast("4278310028377794", true);
+            } else if (position == alfaRow) {
+                copyNumberAndMakeToast("4278310028377794", true);
+            } else if (position == vtbRow) {
+                copyNumberAndMakeToast("9860100124370345", true);
+            } else if (position == sberRow) {
+                copyNumberAndMakeToast("5614683516520707", true);
+            } else if (position == tinkoffRow) {
+                copyNumberAndMakeToast("5614683588301333", true);
+            } else if (position == yooMoneyRow) {
+                copyNumberAndMakeToast("4100116983696293", false);
             } else if (position == humoRow) {
                 copyNumberAndMakeToast("9860100124370345", true);
             } else if (position == uzCardRow) {
                 copyNumberAndMakeToast("5614683588301333", true);
             } else if (position == uzCardMirRow) {
                 copyNumberAndMakeToast("5614683516520707", true);
-            } else if (position == yooMoneyRow) {
-                copyNumberAndMakeToast("4100116983696293", false);
+            } else if (position == tirikchilikRow) {
+                Intent openURL = new Intent(Intent.ACTION_VIEW);
+                openURL.setData(Uri.parse("https://tirikchilik.uz/arslan4k1390"));
+                getParentActivity().startActivity(openURL);
             } else if (position == binanceIDRow) {
                 copyNumberAndMakeToast("220943480", false);
             } else if (position == binanceBitcoinRow) {
@@ -198,12 +218,12 @@ public class DonatesPreferencesEntry extends BaseFragment {
                 copyNumberAndMakeToast("0xa8392346f426443ef7e3d98047bace6dbcc0e7d8", false);
             } else if (position == binanceUSDTRow) {
                 copyNumberAndMakeToast("TKnPT5rojMf851ejov2Xu4pxKcMfSh4Ws9", false);
+            } else if (position == walletBitcoinRow) {
+                copyNumberAndMakeToast("158BXPmSGEcKXpYhVeKU11ETEgsSn4eMt7", false);
             } else if (position == walletTonRow) {
                 copyNumberAndMakeToast("UQCK2zt2pHa9ag-lUFTCuvsxW4lqPmkX6eSYFhS5xCKBwKAN", false);
             } else if (position == walletUSDTRow) {
                 copyNumberAndMakeToast("UQCK2zt2pHa9ag-lUFTCuvsxW4lqPmkX6eSYFhS5xCKBwKAN", false);
-            } else if (position == walletBitcoinRow) {
-                copyNumberAndMakeToast("158BXPmSGEcKXpYhVeKU11ETEgsSn4eMt7", false);
             } else if (position == tonKeeperTonRow) {
                 copyNumberAndMakeToast("UQCVVayzZkpm4LoHi9yuJQFjxRqi2qM4o0dqMLvZnXOFFBJy", false);
             }
@@ -250,12 +270,16 @@ public class DonatesPreferencesEntry extends BaseFragment {
                         headerCell.setText(getString(R.string.DP_CameraCutoutHeader));
                     } else if (position == bonusesHeaderRow) {
                         headerCell.setText(getString(R.string.DP_DonateBadge));
-                    } else if (position == methodHeaderRow) {
-                        headerCell.setText(getString(R.string.DP_Donate_Method));
+                    } else if (position == intHeaderRow) {
+                        headerCell.setText(getString(R.string.DP_Donate_Method_Int));
+                    } else if (position == rusHeaderRow) {
+                        headerCell.setText(getString(R.string.DP_Donate_Method_Rus));
+                    } else if (position == uzbHeaderRow) {
+                        headerCell.setText(getString(R.string.DP_Donate_Method_Uzb));
                     } else if (position == binanceHeaderRow) {
-                        headerCell.setText("Binance");
+                        headerCell.setText("Binance // Crypto");
                     } else if (position == walletHeaderRow) {
-                        headerCell.setText("Telegram Wallet");
+                        headerCell.setText("Telegram Wallet // Crypto");
                     }
                     break;
                 case VIEW_TYPE_TEXT_CELL: {
@@ -268,27 +292,39 @@ public class DonatesPreferencesEntry extends BaseFragment {
                     boolean divider = false;
                     boolean isDarkMode = !Theme.isCurrentThemeDay();
 
-                    if (position == visaRow) {
-                        title = "VISA USD (Visa Direct)";
-                        icon = isDarkMode ? R.drawable.card_visa_dark : R.drawable.card_visa_light;
-                    } else if (position == masterCardRow) {
+                    if (position == masterCardRow) {
                         title = "MasterCard (MoneySend)";
                         icon = isDarkMode ? R.drawable.card_master_dark : R.drawable.card_master_light;
-                    } else if (position == tirikchilikRow) {
-                        title = "Tirikchilik (Uzbekistan)";
-                        icon = isDarkMode ? R.drawable.card_tirikchilik_dark : R.drawable.card_tirikchilik_light;
+                    } else if (position == visaRow) {
+                        title = "VISA USD (Visa Direct)";
+                        icon = isDarkMode ? R.drawable.card_visa_dark : R.drawable.card_visa_light;
+                    } else if (position == alfaRow) {
+                        title = "Альфа-Банк";
+                        icon = isDarkMode ? R.drawable.card_alfa_dark : R.drawable.card_alfa_light;
+                    } else if (position == vtbRow) {
+                        title = "ВТБ";
+                        icon = isDarkMode ? R.drawable.card_vtb_dark : R.drawable.card_vtb_light;
+                    } else if (position == sberRow) {
+                        title = "СберБанк";
+                        icon = isDarkMode ? R.drawable.card_sber_dark : R.drawable.card_sber_light;
+                    } else if (position == tinkoffRow) {
+                        title = "Т-Банк";
+                        icon = isDarkMode ? R.drawable.card_tinkoff_dark : R.drawable.card_tinkoff_light;
+                    } else if (position == yooMoneyRow) {
+                        title = "YooMoney";
+                        icon = isDarkMode ? R.drawable.card_ym_dark : R.drawable.card_ym_light;
                     } else if (position == humoRow) {
-                        title = "HUMO (Uzbekistan)";
+                        title = "HUMO";
                         icon = isDarkMode ? R.drawable.card_humo_dark : R.drawable.card_humo_light;
                     } else if (position == uzCardRow) {
-                        title = "UzCard (Uzbekistan)";
+                        title = "UzCard";
                         icon = isDarkMode ? R.drawable.card_uzcard_dark : R.drawable.card_uzcard_light;
                     } else if (position == uzCardMirRow) {
-                        title = "UzCard-MIR Co-Badge (Uzbekistan)";
+                        title = "UzCard-MIR Co-Badge";
                         icon = isDarkMode ? R.drawable.card_uzcard_mir_dark : R.drawable.card_uzcard_mir_light;
-                    } else if (position == yooMoneyRow) {
-                        title = "YooMoney (RUB)";
-                        icon = isDarkMode ? R.drawable.card_ym_dark : R.drawable.card_ym_light;
+                    } else if (position == tirikchilikRow) {
+                        title = "Tirikchilik";
+                        icon = isDarkMode ? R.drawable.card_tirikchilik_dark : R.drawable.card_tirikchilik_light;
                     } else if (position == binanceIDRow) {
                         title = "Binance ID";
                         icon = isDarkMode ? R.drawable.card_binance_dark : R.drawable.card_binance_light;
@@ -301,17 +337,17 @@ public class DonatesPreferencesEntry extends BaseFragment {
                     } else if (position == binanceUSDTRow) {
                         title = "TetherUS - USDT (TRC20)";
                         icon = isDarkMode ? R.drawable.card_usdt_dark : R.drawable.card_usdt_light;
+                    } else if (position == walletBitcoinRow) {
+                        title = "Bitcoin (BTC) // @wallet";
+                        icon = isDarkMode ? R.drawable.card_btc_dark : R.drawable.card_btc_light;
                     } else if (position == walletTonRow) {
                         title = "TON Coin // @wallet";
                         icon = isDarkMode ? R.drawable.card_ton_dark : R.drawable.card_ton_light;
                     } else if (position == walletUSDTRow) {
                         title = "USDT (TON) // @wallet";
                         icon = isDarkMode ? R.drawable.card_usdt_dark : R.drawable.card_usdt_light;
-                    } else if (position == walletBitcoinRow) {
-                        title = "Bitcoin (BTC) // @wallet";
-                        icon = isDarkMode ? R.drawable.card_btc_dark : R.drawable.card_btc_light;
                     } else if (position == tonKeeperTonRow) {
-                        title = "TON Coin (v3R2) // Tonkeeper)";
+                        title = "TON Coin (v3R2) // Tonkeeper";
                         icon = isDarkMode ? R.drawable.card_ton_dark : R.drawable.card_ton_light;
                         divider = true;
                     }
@@ -358,7 +394,7 @@ public class DonatesPreferencesEntry extends BaseFragment {
                                             .show();
                                 }
                         );
-                        tableView.addRow("$2 / €2 / 200₽ / 1.5 TON", badgeTitle);
+                        tableView.addRow("$2 / €2 / 200₽ \n\n1.5 TON", badgeTitle);
 
                         CharSequence epicBadgeTitle = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_EpicBadge_desc),
                                 Theme.key_windowBackgroundWhiteLinkText,
@@ -399,7 +435,7 @@ public class DonatesPreferencesEntry extends BaseFragment {
                         sb.append(filterText);
                         sb.append("\n");
                         sb.append(messageMenuText);
-                        tableView.addRow("$5 / €5 / 500₽ / 3 TON", sb);
+                        tableView.addRow("$5 / €5 / 500₽ \n\n3 TON", sb);
 
                         CharSequence chequeText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Cheque),
                                 Theme.key_windowBackgroundWhiteLinkText,
@@ -407,6 +443,13 @@ public class DonatesPreferencesEntry extends BaseFragment {
                                 () -> Browser.openUrl(getContext(), "https://t.me/arsLan")
                         );
                         tableView.addFullRow(chequeText);
+                    } else if (position == intCredsRow || position == rusCredsRow) {
+                        CharSequence personalDataText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Method_Surname),
+                                Theme.key_windowBackgroundWhiteLinkText,
+                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                                () -> Browser.openUrl(getContext(), "https://t.me/arsLan")
+                        );
+                        tableView.addFullRow(personalDataText);
                     }
                     break;
             }
@@ -456,20 +499,22 @@ public class DonatesPreferencesEntry extends BaseFragment {
 
         @Override
         public int getItemViewType(int position) {
-            if (position == brandedScreenshotsDivisorRow || position == bonusesDivisorRow || position == methodDivisorRow || position == binanceDivisorRow || position == walletDivisorRow) {
+            if (position == brandedScreenshotsDivisorRow || position == bonusesDivisorRow || position == intDivisorRow || position == rusDivisorRow || position == uzbDivisorRow || position == binanceDivisorRow || position == walletDivisorRow) {
                 return VIEW_TYPE_SHADOW;
-            } else if (position == brandedScreenshotsHeaderRow || position == bonusesHeaderRow || position == methodHeaderRow || position == binanceHeaderRow || position == walletHeaderRow) {
+            } else if (position == brandedScreenshotsHeaderRow || position == bonusesHeaderRow || position == intHeaderRow || position == rusHeaderRow || position == uzbHeaderRow || position == binanceHeaderRow || position == walletHeaderRow) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == visaRow || position == masterCardRow || position == tirikchilikRow || position == humoRow || position == uzCardRow || position == uzCardMirRow || position == yooMoneyRow
+            } else if (position == masterCardRow || position == visaRow
+                    || position == alfaRow || position == vtbRow || position == sberRow || position == tinkoffRow || position == yooMoneyRow
+                    || position == humoRow || position == uzCardRow || position == uzCardMirRow || position == tirikchilikRow
                     || position == binanceIDRow || position ==  binanceBitcoinRow || position == binanceEthereumRow || position == binanceUSDTRow
-                    || position == walletTonRow || position == walletUSDTRow || position == walletBitcoinRow || position == tonKeeperTonRow
+                    || position == walletBitcoinRow || position == walletTonRow || position == walletUSDTRow || position == tonKeeperTonRow
             ) {
                 return VIEW_TYPE_TEXT_CELL;
             } else if (position == brandedScreenshotsSwitchRow) {
                 return VIEW_TYPE_TEXT_CHECK;
             } else if (position == brandedScreenshotsInfoRow || position == bonusesInfoRow) {
                 return VIEW_TYPE_TEXT_INFO_PRIVACY;
-            } else if (position == bonusesPriceRow) {
+            } else if (position == bonusesPriceRow || position == intCredsRow || position == rusCredsRow) {
                 return VIEW_TYPE_TABLE;
             }
             return VIEW_TYPE_SHADOW;
@@ -496,19 +541,31 @@ public class DonatesPreferencesEntry extends BaseFragment {
         bonusesPriceRow = rowCount++;
         bonusesDivisorRow = rowCount++;
 
-        methodHeaderRow = rowCount++;
-        visaRow = rowCount++;
+        intHeaderRow = rowCount++;
         masterCardRow = rowCount++;
-        tirikchilikRow = rowCount++;
-        humoRow = rowCount++;
-        uzCardRow = rowCount++;
-        uzCardMirRow = rowCount++;
+        visaRow = rowCount++;
+        intCredsRow = rowCount++;
+        intDivisorRow = rowCount++;
+
+        rusHeaderRow = rowCount++;
+        alfaRow = rowCount++;
+        vtbRow = rowCount++;
+        sberRow = rowCount++;
+        tinkoffRow = rowCount++;
         if (CherrygramCoreConfig.INSTANCE.isDevBuild()) {
             yooMoneyRow = rowCount++;
         } else {
             yooMoneyRow = -1;
-        };
-        methodDivisorRow = rowCount++;
+        }
+        rusCredsRow = rowCount++;
+        rusDivisorRow = rowCount++;
+
+        uzbHeaderRow = rowCount++;
+        humoRow = rowCount++;
+        uzCardRow = rowCount++;
+        uzCardMirRow = rowCount++;
+        tirikchilikRow = rowCount++;
+        uzbDivisorRow = rowCount++;
 
         binanceHeaderRow = rowCount++;
         binanceIDRow = rowCount++;
@@ -522,9 +579,9 @@ public class DonatesPreferencesEntry extends BaseFragment {
         binanceDivisorRow = rowCount++;
 
         walletHeaderRow = rowCount++;
+        walletBitcoinRow = rowCount++;
         walletTonRow = rowCount++;
         walletUSDTRow = rowCount++;
-        walletBitcoinRow = rowCount++;
         tonKeeperTonRow = rowCount++;
         walletDivisorRow = rowCount++;
 

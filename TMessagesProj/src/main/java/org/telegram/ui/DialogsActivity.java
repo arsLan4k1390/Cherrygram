@@ -253,7 +253,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
@@ -3686,6 +3685,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             .addIf(!defaultTab, R.drawable.msg_delete, LocaleController.getString(R.string.FilterDeleteItem), true, () -> {
                                 showDeleteAlert(dialogFilter);
                             })
+                            .addGap()
+                            .add(CherrygramChatsConfig.INSTANCE.getSortByUnread() ? R.drawable.dialogs_sort_by_time_solar : R.drawable.dialogs_sort_by_unread_solar, CherrygramChatsConfig.INSTANCE.getSortByUnread() ? getString(R.string.CG_SortByDate) : getString(R.string.CG_SortByUnread), () -> {
+                                CherrygramChatsConfig.INSTANCE.setSortByUnread(!CherrygramChatsConfig.INSTANCE.getSortByUnread());
+                                dialogsLoaded[currentAccount] = false;
+                                loadDialogs(getAccountInstance());
+                                getMessagesController().loadPinnedDialogs(folderId, 0, null);
+                            })
                             .setGravity(Gravity.LEFT)
                             .translate(dp(-8), dp(-10))
                             .show();
@@ -6737,8 +6743,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         actionModeViews.add(deleteItem);
         actionModeViews.add(otherItem);
 
-        if (isSearchPanelVisible()) filterTabsView.getGlobalSearchView().setEnabled(false);
-
         updateCounters(false);
     }
 
@@ -7124,6 +7128,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (getParentActivity() == null) {
                 return;
             }
+            if (MessagesController.getGlobalNotificationsSettings().getBoolean("askedAboutFSILockscreen", false)) {
+                return;
+            }
             showDialog(new AlertDialog.Builder(getParentActivity())
                 .setTopAnimation(R.raw.permission_request_apk, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, Theme.getColor(Theme.key_dialogTopBackground))
                 .setMessage(getString(R.string.PermissionFSILockscreen))
@@ -7138,7 +7145,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                         }
                     }
                 })
-                .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), null)
+                .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), (dialog, which) -> MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askedAboutFSILockscreen", true).commit())
                 .create());
         }
         showFiltersHint();
@@ -9220,7 +9227,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             }
         }
 
-        if (isSearchPanelVisible()) filterTabsView.getGlobalSearchView().setEnabled(true);
+        if (filterTabsView != null && filterTabsView.getGlobalSearchView() != null && isSearchPanelVisible()) {
+            filterTabsView.getGlobalSearchView().setEnabled(true);
+        }
+        if (dialogStoriesCellVisible && CherrygramAppearanceConfig.INSTANCE.getCenterTitle() && !CherrygramCoreConfig.INSTANCE.getHideStories()) {
+            if (dialogStoriesCell != null) dialogStoriesCell.setVisibility(View.VISIBLE);
+        }
 
         updateVisibleRows(MessagesController.UPDATE_MASK_REORDER | MessagesController.UPDATE_MASK_CHECK | (animateCheck ? MessagesController.UPDATE_MASK_CHAT : 0));
     }
@@ -9534,7 +9546,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             hideActionMode(false);
                         });
                         builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
-                        if (ChatsPasswordHelper.INSTANCE.askPasscodeBeforeDelete()) {
+                        if (getChatsPasswordHelper().askPasscodeBeforeDelete()) {
                             CGBiometricPrompt.prompt(getParentActivity(),
                                 () -> showDialog(builder.create())
                             );
@@ -9542,7 +9554,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                             showDialog(builder.create());
                         }
                     } else {
-                        if (ChatsPasswordHelper.INSTANCE.askPasscodeBeforeDelete()) {
+                        if (getChatsPasswordHelper().askPasscodeBeforeDelete()) {
                             TLRPC.User user1 = user;
                             CGBiometricPrompt.prompt(getParentActivity(),
                                 () -> AlertsCreator.createClearOrDeleteDialogAlert(DialogsActivity.this, action == clear, chat, user1, DialogObject.isEncryptedDialog(dialog.id), action == delete, (param) -> {
@@ -10274,6 +10286,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
         updateCounters(false);
         selectedDialogsCountTextView.setNumber(selectedDialogs.size(), updateAnimated);
+
+        if (filterTabsView != null && filterTabsView.getGlobalSearchView() != null && isSearchPanelVisible()) {
+            filterTabsView.getGlobalSearchView().setEnabled(false);
+        }
+        if (dialogStoriesCellVisible && CherrygramAppearanceConfig.INSTANCE.getCenterTitle() && !CherrygramCoreConfig.INSTANCE.getHideStories()) {
+            if (dialogStoriesCell != null) dialogStoriesCell.setVisibility(View.GONE);
+        }
     }
 
     private void closeSearch() {

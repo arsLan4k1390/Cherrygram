@@ -31,6 +31,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Material You (Monet) themes and app icon,
 - No content restrictions,
 - Support of up to 10 accounts,
+- Sleep timer while playing music,
 - Profile pictures (both normal and public) upload date,
 - IOS/TDesktop style of latest activity status,
 - Fetching emoji and stickers from profile pictures (both normal and public),

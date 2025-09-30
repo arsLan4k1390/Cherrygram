@@ -10,8 +10,10 @@
 package uz.unnarsx.cherrygram.preferences
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
+import android.provider.Settings
 import androidx.core.util.Pair
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.ChatThemeController
@@ -38,6 +40,9 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 import androidx.core.content.edit
+import org.telegram.ui.ActionBar.Theme
+import org.telegram.ui.Components.AlertsCreator
+import androidx.core.net.toUri
 
 class DebugPreferencesEntry : BasePreferencesEntry {
     override fun getPreferences(bf: BaseFragment) = tgKitScreen("Debug // WIP") {
@@ -100,6 +105,34 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
+                isAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                title = "Fix calls notification"
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    bf.showDialog(
+                        AlertDialog.Builder(bf.parentActivity)
+                            .setTopAnimation(
+                                R.raw.permission_request_apk,
+                                AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE,
+                                false,
+                                Theme.getColor(Theme.key_dialogTopBackground)
+                            )
+                            .setMessage(getString(R.string.PermissionFSILockscreen))
+                            .setPositiveButton(getString(R.string.PermissionOpenSettings)) { _, _ ->
+                                val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
+                                    data = ("package:" + bf.context.packageName).toUri()
+                                }
+                                try {
+                                    bf.parentActivity.startActivity(intent)
+                                } catch (ignored: Exception) { }
+                            }
+                            .setNegativeButton(getString(R.string.ContactsPermissionAlertNotNow), null)
+                            .create()
+                    )
+
+                }
+            }
+            textIcon {
                 title = "Force load donates"
 
                 listener = TGKitTextIconRow.TGTIListener {
@@ -137,6 +170,17 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                     return@contract SharedConfig.forceForumTabs
                 }) {
                     SharedConfig.toggleForceForumTabs()
+                }
+            }
+            switch {
+                title = "Replace punctuation marks"
+                description = "Replace quotation marks and dashes like on TDesktop"
+
+                contract({
+                    return@contract CherrygramDebugConfig.replacePunctuationMarks
+                }) {
+                    CherrygramDebugConfig.replacePunctuationMarks = it
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             switch {

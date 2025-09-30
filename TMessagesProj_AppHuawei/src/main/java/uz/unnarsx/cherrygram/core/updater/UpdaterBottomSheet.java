@@ -13,18 +13,13 @@ import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -46,6 +41,7 @@ import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.StickerImageView;
+import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.util.Objects;
 
@@ -57,7 +53,7 @@ public class UpdaterBottomSheet extends BottomSheet {
 
     private BaseFragment fragment;
     private Theme.ResourcesProvider resourcesProvider;
-    private AnimatedTextView checkUpdatesButton;
+    private ButtonWithCounterView checkUpdatesButton;
     private FrameLayout buttonsView;
 
     private boolean isForce = false;
@@ -151,25 +147,18 @@ public class UpdaterBottomSheet extends BottomSheet {
 
             linearLayout.addView(divider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1)));
 
-            TextView doneButton = new TextView(context);
-            doneButton.setLines(1);
-            doneButton.setSingleLine(true);
-            doneButton.setEllipsize(TextUtils.TruncateAt.END);
-            doneButton.setGravity(Gravity.CENTER);
-            doneButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
-            doneButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
-            doneButton.setTypeface(AndroidUtilities.bold());
-            doneButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            doneButton.setText(getUpdateSizeString(update));
-            doneButton.setOnClickListener(v -> {
+            ButtonWithCounterView downloadButton = new ButtonWithCounterView(context, resourcesProvider);
+            downloadButton.setFilled(true);
+            downloadButton.setText(getUpdateSizeString(update), false);
+            downloadButton.setOnClickListener(v -> {
                 if (!downloadButtonClicked) {
                     downloadButtonClicked = true;
-                    doneButton.setClickable(false);
-                    UpdaterUtils.downloadApk(getContext(), update.downloadURL, "Cherrygram " + update.version, doneButton);
+                    downloadButton.setClickable(false);
+                    UpdaterUtils.downloadApk(getContext(), update.downloadURL, "Cherrygram " + update.version, downloadButton);
                     dismiss();
                 }
             });
-            buttonsView.addView(doneButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
+            buttonsView.addView(downloadButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
             if (update.isForce()) {
                 setCancelable(false);
@@ -222,35 +211,28 @@ public class UpdaterBottomSheet extends BottomSheet {
 
             linearLayout.addView(divider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1)));
 
-            checkUpdatesButton = new AnimatedTextView(context, true, true, false);
-            checkUpdatesButton.setAnimationProperties(.7f, 0, 500, CubicBezierInterpolator.EASE_OUT_QUINT);
-            checkUpdatesButton.setGravity(Gravity.CENTER_HORIZONTAL);
-            checkUpdatesButton.setGravity(Gravity.CENTER);
-            checkUpdatesButton.setText(getString(R.string.UP_CheckForUpdates));
-            checkUpdatesButton.setTypeface(AndroidUtilities.bold());
-            checkUpdatesButton.setTextSize(AndroidUtilities.dp(14));
-            checkUpdatesButton.setIgnoreRTL(!LocaleController.isRTL);
-            checkUpdatesButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
-            checkUpdatesButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
+            checkUpdatesButton = new ButtonWithCounterView(context, resourcesProvider);
+            checkUpdatesButton.text.setAnimationProperties(.7f, 0, 500, CubicBezierInterpolator.EASE_OUT_QUINT);
+            checkUpdatesButton.setText(getString(R.string.UP_CheckForUpdates), true);
             checkUpdatesButton.setOnClickListener(v -> {
-                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
-                spannableStringBuilder.append(".  ");
-                spannableStringBuilder.setSpan(new ColoredImageSpan(Objects.requireNonNull(ContextCompat.getDrawable(getContext(), R.drawable.sync_outline_28))), 0, 1, 0);
-                checkUpdatesButton.setText(spannableStringBuilder);
+                SpannableStringBuilder sb = new SpannableStringBuilder();
+                sb.append("+ ");
+                sb.setSpan(new ColoredImageSpan(Objects.requireNonNull(ContextCompat.getDrawable(getContext(), R.drawable.sync_outline_28))), 0, 1, 0);
+                checkUpdatesButton.setText(sb, true);
 
                 UpdaterUtils.checkUpdates(fragment, true, () -> {
-                    checkUpdatesButton.setText(getString(R.string.UP_CheckForUpdates));
+                    checkUpdatesButton.setText(getString(R.string.UP_CheckForUpdates), true);
                     BulletinFactory.of(getContainer(), resourcesProvider).createErrorBulletin(getString(R.string.UP_Not_Found)).show();
                 }, this::dismiss, null);
             });
             buttonsView.addView(checkUpdatesButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
         }
 
-        ImageView apkButton = new ImageView(context);
-        apkButton.setScaleType(ImageView.ScaleType.CENTER);
-        apkButton.setImageResource(isForce ? R.drawable.github_logo_white : R.drawable.msg_channel);
-        apkButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider), PorterDuff.Mode.MULTIPLY));
-        apkButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
+        ButtonWithCounterView apkButton = new ButtonWithCounterView(context, resourcesProvider);
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append("+");
+        sb.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), isForce ? R.drawable.github_logo_white : R.drawable.msg_folders_channels_solar)), 0, 1, 0);
+        apkButton.setText(sb, false);
         apkButton.setOnClickListener(v -> {
             if (isForce) {
                 openGithubReleases();
@@ -262,16 +244,9 @@ public class UpdaterBottomSheet extends BottomSheet {
         linearLayout.addView(buttonsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
 
         if (available && !isForce) {
-            TextView scheduleButton = new TextView(context);
-            scheduleButton.setLines(1);
-            scheduleButton.setSingleLine(true);
-            scheduleButton.setEllipsize(TextUtils.TruncateAt.END);
-            scheduleButton.setGravity(Gravity.CENTER);
-            scheduleButton.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider));
-            scheduleButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
-            scheduleButton.setTypeface(AndroidUtilities.bold());
-            scheduleButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            scheduleButton.setText(getString(R.string.AppUpdateRemindMeLater));
+            ButtonWithCounterView scheduleButton = new ButtonWithCounterView(context, resourcesProvider);
+            scheduleButton.setFilled(true);
+            scheduleButton.setText(getString(R.string.AppUpdateRemindMeLater), false);
             scheduleButton.setOnClickListener(v -> {
                 CherrygramCoreConfig.INSTANCE.setUpdateScheduleTimestamp(System.currentTimeMillis());
                 dismiss();

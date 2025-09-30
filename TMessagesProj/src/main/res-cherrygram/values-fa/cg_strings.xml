@@ -364,7 +364,6 @@
     <string name="DP_Donate_Desc">از توسعه Cherrygram پشتیبانی کنید و یک نشان حماسی دریافت کنید!
     \n برای گرفتن نشان، یک مدرک از پرداخت (&gt;=2$) به <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> یا <![CDATA[<a href="https://t.me/CherrygramSupport">گروه پشتیبانی Cherrygram</a>]]> بفرستید.</string>
     <string name="DP_Donate_Bulletin">**%s** با موفقیت به **Cherrygram** کمک کرد!</string>
-    <string name="DP_Donate_Method">انتخاب نوع پرداخت</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 </resources>

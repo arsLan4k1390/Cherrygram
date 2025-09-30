@@ -1536,7 +1536,7 @@ public final class BulletinFactory {
         public Runnable onAction;
     }
 
-    //Cherrygram
+    /** Cherrygram start */
     public Bulletin createEmojiBulletin2(TLRPC.Document document, CharSequence text, CharSequence button, MessageObject selectedObject, Runnable onButtonClick) {
         final Bulletin.LottieLayout layout = new Bulletin.LottieLayout(getContext(), resourcesProvider);
         if (MessageObject.isTextColorEmoji(document)) {
@@ -1587,7 +1587,7 @@ public final class BulletinFactory {
             final String loadingPlaceholder = "<{LOADING}>";
 
             SpannableStringBuilder stringBuilder;
-            stringBuilder = new SpannableStringBuilder(AndroidUtilities.replaceTags(LocaleController.formatString("CG_ReplyContainsEmojiPack", R.string.CG_ReplyContainsEmojiPack, loadingPlaceholder)));
+            stringBuilder = new SpannableStringBuilder(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.CG_ReplyContainsEmojiPack, loadingPlaceholder)));
 
             LoadingSpan loadingSpan = null;
             int index;
@@ -1600,16 +1600,16 @@ public final class BulletinFactory {
             }
             final long startTime = System.currentTimeMillis();
             final long minDuration = 750;
-            Bulletin bulletin = createEmojiLoadingBulletin2(document, stringBuilder, LocaleController.getString("ApplyTheme", R.string.ApplyTheme), selectedObject, () -> ChatsHelper.getInstance(UserConfig.selectedAccount).applyReplyBackground(selectedObject, fragment));
+            Bulletin bulletin = createEmojiLoadingBulletin2(document, stringBuilder, LocaleController.getString(R.string.ApplyTheme), selectedObject, () -> ChatsHelper.getInstance(UserConfig.selectedAccount).applyReplyBackground(selectedObject, fragment));
             if (loadingSpan != null && bulletin.getLayout() instanceof Bulletin.LoadingLottieLayout) {
                 loadingSpan.setView(((Bulletin.LoadingLottieLayout) bulletin.getLayout()).textLoadingView);
             }
             MediaDataController.getInstance(UserConfig.selectedAccount).getStickerSet(inputStickerSet, null, false, set -> {
                 CharSequence message;
                 if (set != null && set.set != null) {
-                    message = AndroidUtilities.replaceTags(LocaleController.formatString("CG_ReplyContainsEmojiPack", R.string.CG_ReplyContainsEmojiPack, set.set.title));
+                    message = AndroidUtilities.replaceTags(LocaleController.formatString(R.string.CG_ReplyContainsEmojiPack, set.set.title));
                 } else {
-                    message = LocaleController.getString("AddEmojiNotFound", R.string.AddEmojiNotFound);
+                    message = LocaleController.getString(R.string.AddEmojiNotFound);
                 }
                 AndroidUtilities.runOnUIThread(() -> {
                     bulletin.onLoaded(message);
@@ -1618,8 +1618,8 @@ public final class BulletinFactory {
             return bulletin;
         } else {
             CharSequence message;
-            message = AndroidUtilities.replaceTags(LocaleController.formatString("CG_ReplyContainsEmojiPack", R.string.CG_ReplyContainsEmojiPack, cachedSet.set.title));
-            return createEmojiBulletin2(document, message, LocaleController.getString("ApplyTheme", R.string.ApplyTheme), selectedObject, () -> ChatsHelper.getInstance(UserConfig.selectedAccount).applyReplyBackground(selectedObject, fragment));
+            message = AndroidUtilities.replaceTags(LocaleController.formatString(R.string.CG_ReplyContainsEmojiPack, cachedSet.set.title));
+            return createEmojiBulletin2(document, message, LocaleController.getString(R.string.ApplyTheme), selectedObject, () -> ChatsHelper.getInstance(UserConfig.selectedAccount).applyReplyBackground(selectedObject, fragment));
         }
     }
 
@@ -1638,5 +1638,6 @@ public final class BulletinFactory {
         );
         return create(layout, duration);
     }
-    //Cherrygram
+    /** Cherrygram finish */
+
 }

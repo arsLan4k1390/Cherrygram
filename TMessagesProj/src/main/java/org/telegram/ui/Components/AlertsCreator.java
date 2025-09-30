@@ -161,7 +161,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
@@ -2566,7 +2565,7 @@ public class AlertsCreator {
             }
         });
         builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-        if (ChatsPasswordHelper.INSTANCE.askPasscodeBeforeDelete()) {
+        if (fragment.getChatsPasswordHelper().askPasscodeBeforeDelete()) {
             CGBiometricPrompt.prompt(fragment.getParentActivity(),
                     () -> {
                         AlertDialog alertDialog = builder.create();
@@ -3241,7 +3240,7 @@ public class AlertsCreator {
             int finalA = a;
             cell[a].setOnClickListener(v -> {
                 CheckBoxCell cell1 = (CheckBoxCell) v;
-                if (ChatsPasswordHelper.INSTANCE.askPasscodeBeforeDelete() && finalA != 0 && !cell[finalA].isChecked()) {
+                if (fragment.getChatsPasswordHelper().askPasscodeBeforeDelete() && finalA != 0 && !cell[finalA].isChecked()) {
                     CGBiometricPrompt.prompt(fragment.getParentActivity(),
                             () -> {
                                 checks[finalA] = !checks[finalA];

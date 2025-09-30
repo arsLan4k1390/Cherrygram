@@ -63,7 +63,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var tabletMode by sharedPreferences.int("AP_Tablet_Mode", TABLET_MODE_AUTO)
 
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
-    var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && !ApplicationLoader.checkPlayServices())
+    var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && !ApplicationLoader.checkPlayServices())
     /** General finish **/
 
     /** Animations and Premium Features start **/
@@ -95,6 +95,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     /** Misc start **/
     var cgBrandedScreenshots by sharedPreferences.boolean("DP_BrandedScreenshots", false)
+    var sleepTimer by sharedPreferences.boolean("CG_Sleep_Timer", false)
     /** Misc finish **/
 
     /** Cherrygram build types start **/

@@ -29,7 +29,6 @@ import android.os.PowerManager;
 import android.os.SystemClock;
 import android.telephony.TelephonyManager;
 import android.util.Pair;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -380,20 +379,16 @@ public class ApplicationLoader extends Application {
     }
 
     public static void startPushService() {
-        /*SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
+        SharedPreferences preferences = MessagesController.getGlobalNotificationsSettings();
         boolean enabled;
         if (preferences.contains("pushService")) {
             enabled = preferences.getBoolean("pushService", true);
         } else {
             enabled = MessagesController.getMainSettings(UserConfig.selectedAccount).getBoolean("keepAliveService", false);
-        }*/
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && CherrygramCoreConfig.INSTANCE.getResidentNotification()) {
+        }
+        if (enabled) {
             try {
-                if (CherrygramCoreConfig.INSTANCE.isDevBuild()) {
-                    Log.d("TFOSS", "Trying to start push service every 10 minutes");
-                    Log.d("TFOSS", "Starting push service...");
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && CherrygramCoreConfig.INSTANCE.getResidentNotification()) {
                     applicationContext.startForegroundService(new Intent(applicationContext, NotificationsService.class));
                 } else {
                     applicationContext.startService(new Intent(applicationContext, NotificationsService.class));

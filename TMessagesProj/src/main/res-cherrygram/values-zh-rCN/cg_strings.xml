@@ -342,7 +342,6 @@
     <!--Updates Preferences-->
     <!--Donations-->
     <string name="DP_RateUs">给 Cherrygram 评分</string>
-    <string name="DP_Donate_Method">选择付款方法</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 </resources>

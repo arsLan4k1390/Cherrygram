@@ -24,7 +24,6 @@ import org.telegram.ui.Components.ChatActivityEnterView
 import org.telegram.ui.Components.ChatAttachAlert
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2.getCustomChatID
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
 import uz.unnarsx.cherrygram.misc.Constants
@@ -77,6 +76,7 @@ object CGChatMenuInjector {
     }
 
     fun injectCherrygramShortcuts(
+        chatActivity: ChatActivity,
         headerItem: ActionBarMenuItem,
         currentChat: TLRPC.Chat?,
         currentUser: TLRPC.User?,
@@ -90,7 +90,7 @@ object CGChatMenuInjector {
         if (isAnyButtonEnabled) headerItem.lazilyAddColoredGap()
 
         if (requireBiometrics) {
-            if (ChatsPasswordHelper.shouldRequireBiometrics(currentUser?.id ?: 0, currentChat?.id ?: 0, 0)) {
+            if (chatActivity.chatsPasswordHelper.shouldRequireBiometrics(currentUser?.id ?: 0, currentChat?.id ?: 0, 0)) {
                 headerItem.lazilyAddSubItem(
                     ChatActivityHelper.OPTION_DO_NOT_ASK_PASSCODE,
                     R.drawable.msg_secret,

@@ -233,7 +233,7 @@ public class ChatActivityHelper extends BaseController {
             CherrygramPreferencesNavigator.INSTANCE.createBlur(chatActivity);
         } else if (id == OPTION_ASK_PASSCODE) {
             CGBiometricPrompt.prompt(chatActivity.getParentActivity(), () -> {
-                List<String> arr = ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.PASSCODE_ARRAY);
+                List<String> arr = chatActivity.getChatsPasswordHelper().getArrayList(chatActivity.getChatsPasswordHelper().getPasscodeArray());
                 String dialogIdStr = String.valueOf(chatActivity.getDialogId());
 
                 if (
@@ -247,12 +247,12 @@ public class ChatActivityHelper extends BaseController {
                         FileLog.d("new locked chats array: " + arr);
                     }
 
-                    ChatsPasswordHelper.INSTANCE.saveArrayList(new ArrayList<>(arr), ChatsPasswordHelper.PASSCODE_ARRAY);
+                    chatActivity.getChatsPasswordHelper().saveArrayList(new ArrayList<>(arr), chatActivity.getChatsPasswordHelper().getPasscodeArray());
                 }
             });
         } else if (id == OPTION_DO_NOT_ASK_PASSCODE) {
             CGBiometricPrompt.prompt(chatActivity.getParentActivity(), () -> {
-                List<String> arr = ChatsPasswordHelper.INSTANCE.getArrayList(ChatsPasswordHelper.PASSCODE_ARRAY);
+                List<String> arr = chatActivity.getChatsPasswordHelper().getArrayList(chatActivity.getChatsPasswordHelper().getPasscodeArray());
                 if (DialogObject.isUserDialog(chatActivity.getDialogId()) || DialogObject.isChatDialog(chatActivity.getDialogId())) {
                     if (arr.remove(String.valueOf(chatActivity.getDialogId()))) { // Удаляем и проверяем, изменился ли список
                         headerItem.hideSubItem(OPTION_DO_NOT_ASK_PASSCODE);
@@ -261,7 +261,7 @@ public class ChatActivityHelper extends BaseController {
                             FileLog.d("new locked chats array: " + arr);
                         }
 
-                        ChatsPasswordHelper.INSTANCE.saveArrayList(new ArrayList<>(arr), ChatsPasswordHelper.PASSCODE_ARRAY);
+                        chatActivity.getChatsPasswordHelper().saveArrayList(new ArrayList<>(arr), chatActivity.getChatsPasswordHelper().getPasscodeArray());
                     }
                 }
             });

@@ -6909,8 +6909,8 @@ public class MediaDataController extends BaseController {
     }
 
     public static void addTextStyleRunsCG(MessageObject msg, Spannable text, int allowedFlags) {
-        if (ChatsPasswordHelper.INSTANCE.isChatLocked(msg) || ChatsPasswordHelper.INSTANCE.isEncryptedChat(msg)) {
-            addTextStyleRuns(ChatsPasswordHelper.INSTANCE.checkLockedChatsEntities(msg), msg.messageText, text, allowedFlags);
+        if (ChatsPasswordHelper.getInstance(UserConfig.selectedAccount).isChatLocked(msg) || ChatsPasswordHelper.getInstance(UserConfig.selectedAccount).isEncryptedChat(msg)) {
+            addTextStyleRuns(ChatsPasswordHelper.getInstance(UserConfig.selectedAccount).checkLockedChatsEntities(msg), msg.messageText, text, allowedFlags);
         } else {
             addTextStyleRuns(MessagesFilterHelper.INSTANCE.addSpoilerEntities(msg), msg.messageText, text, allowedFlags);
         }

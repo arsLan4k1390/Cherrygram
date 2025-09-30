@@ -43,6 +43,7 @@ import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.RadialProgress2;
 import org.telegram.ui.Components.TypefaceSpan;
+import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -234,7 +235,7 @@ public class UpdaterUtils {
         }, 200);
     }
 
-    public static void downloadApk(Context context, String link, String title, TextView progressTextView) {
+    public static void downloadApk(Context context, String link, String title, ButtonWithCounterView progressTextView) {
         if (context != null && !updateDownloaded) {
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(link));
 
@@ -400,7 +401,7 @@ public class UpdaterUtils {
         }
     }
 
-    public static void trackDownloadProgress(Context context, TextView progressTextView, SimpleTextView progressTextViewInDrawer, RadialProgress2 updateLayoutIcon) {
+    public static void trackDownloadProgress(Context context, ButtonWithCounterView progressTextView, SimpleTextView progressTextViewInDrawer, RadialProgress2 updateLayoutIcon) {
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 
         progressRunnable = new Runnable() {
@@ -422,7 +423,8 @@ public class UpdaterUtils {
                             int progress = (int) ((bytesDownloaded * 100L) / bytesTotal);
                             if (progressTextView != null) {
                                 progressTextView.setText(
-                                        LocaleController.formatString(org.telegram.messenger.R.string.AppUpdateDownloading, progress)
+                                        LocaleController.formatString(org.telegram.messenger.R.string.AppUpdateDownloading, progress),
+                                        true
                                 );
                             }
                             if (progressTextViewInDrawer != null && updateLayoutIcon != null) {

@@ -249,7 +249,6 @@ import java.util.zip.ZipInputStream;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
@@ -3340,8 +3339,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         ChatActivity fragment = new ChatActivity(args);
                         BaseFragment bf = mainFragmentsStack.get(mainFragmentsStack.size() - 1);
                         if (bf != null && bf.getParentActivity() != null
-                                && ChatsPasswordHelper.INSTANCE.isChatLocked(push_user_id)
-                                && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
+                                && bf.getChatsPasswordHelper().isChatLocked(push_user_id)
+                                && bf.getChatsPasswordHelper().shouldRequireBiometricsToOpenChats()
                         ) {
                             CGBiometricPrompt.prompt(bf.getParentActivity(), () -> {
                                 if (bf.presentFragment(new INavigationLayout.NavigationParams(fragment).setNoAnimation(true))) {
@@ -3402,8 +3401,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     BaseFragment bf = mainFragmentsStack.get(mainFragmentsStack.size() - 1);
                     if (bf != null && bf.getParentActivity() != null
                             && push_enc_id != 0
-                            && ChatsPasswordHelper.INSTANCE.isEncryptedChat(push_enc_id)
-                            && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenEncryptedChats()
+                            && bf.getChatsPasswordHelper().isEncryptedChat(push_enc_id)
+                            && bf.getChatsPasswordHelper().shouldRequireBiometricsToOpenEncryptedChats()
                     ) {
                         CGBiometricPrompt.prompt(bf.getParentActivity(), () -> {
                             if (bf.presentFragment(new INavigationLayout.NavigationParams(fragment).setNoAnimation(true))) {

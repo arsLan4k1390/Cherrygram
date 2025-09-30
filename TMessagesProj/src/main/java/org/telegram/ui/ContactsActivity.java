@@ -108,7 +108,6 @@ import org.telegram.ui.Stories.StoriesListPlaceProvider;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
@@ -544,8 +543,8 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                             args.putLong("user_id", user.id);
                             if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
                                 if (getParentActivity() != null
-                                        && ChatsPasswordHelper.INSTANCE.isChatLocked(user.id)
-                                        && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
+                                        && getChatsPasswordHelper().isChatLocked(user.id)
+                                        && getChatsPasswordHelper().shouldRequireBiometricsToOpenChats()
                                 ) {
                                     CGBiometricPrompt.prompt(getParentActivity(), () -> {
                                         presentFragment(new ChatActivity(args), needFinishFragment);
@@ -671,8 +670,8 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 args.putLong("user_id", user.id);
                                 if (getMessagesController().checkCanOpenChat(args, ContactsActivity.this)) {
                                     if (getParentActivity() != null
-                                            && ChatsPasswordHelper.INSTANCE.isChatLocked(user.id)
-                                            && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
+                                            && getChatsPasswordHelper().isChatLocked(user.id)
+                                            && getChatsPasswordHelper().shouldRequireBiometricsToOpenChats()
                                     ) {
                                         CGBiometricPrompt.prompt(getParentActivity(), () -> {
                                             presentFragment(new ChatActivity(args), needFinishFragment);

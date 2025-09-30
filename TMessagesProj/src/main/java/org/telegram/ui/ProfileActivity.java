@@ -332,7 +332,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
-import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.Extra;
@@ -7004,8 +7003,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 ChatActivity chatActivity = new ChatActivity(args);
                 if (getParentActivity() != null
-                        && ChatsPasswordHelper.INSTANCE.isChatLocked(user.id)
-                        && ChatsPasswordHelper.INSTANCE.shouldRequireBiometricsToOpenChats()
+                        && getChatsPasswordHelper().isChatLocked(user.id)
+                        && getChatsPasswordHelper().shouldRequireBiometricsToOpenChats()
                 ) {
                     CGBiometricPrompt.prompt(getParentActivity(), () -> {
                         chatActivity.setPreloadedSticker(getMediaDataController().getGreetingsSticker(), false);
@@ -13523,7 +13522,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             text = PhoneFormat.getInstance().format("+" + vcardPhone);
                             phoneNumber = vcardPhone;
                         } else if (user != null && !TextUtils.isEmpty(user.phone)) {
-                            text = ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(
+                            text = getChatsPasswordHelper().replaceStringToSpoilers(
                                     PhoneFormat.getInstance().format("+ " + user.phone),
                                     true
                             );
@@ -13634,7 +13633,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         AtomicReference<String> value = new AtomicReference<>();
 
                         if (user != null && user.phone != null && user.phone.length() != 0) {
-                            value.set(ChatsPasswordHelper.INSTANCE.replaceStringToSpoilers(
+                            value.set(getChatsPasswordHelper().replaceStringToSpoilers(
                                     PhoneFormat.getInstance().format("+ " + user.phone),
                                     true
                             ));

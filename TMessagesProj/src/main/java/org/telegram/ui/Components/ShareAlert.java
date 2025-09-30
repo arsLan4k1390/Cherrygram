@@ -2765,11 +2765,11 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
     public void didReceivedNotification(int id, int account, Object... args) {
         if (id == NotificationCenter.dialogsNeedReload) {
             if (listAdapter != null) {
-                if (searchView.filterTabsView != null) {
+                if (searchView != null && searchView.filterTabsView != null) {
                     if (searchView.filterTabsView.currentTabIsDefault()) {
                         listAdapter.fetchDialogs();
                     } else {
-                        searchView.applyFilter(searchView.filterTabsView.getFirstTabId());
+                        if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats()) searchView.applyFilter(searchView.filterTabsView.getFirstTabId());
                     }
                 } else {
                     listAdapter.fetchDialogs();
@@ -3033,7 +3033,7 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
 
         public ShareDialogsAdapter(Context context) {
             this.context = context;
-            if (searchView.filterTabsView != null && hasFolders()) {
+            if (searchView != null && searchView.filterTabsView != null && hasFolders()) {
                 if (searchView.filterTabsView.currentTabIsDefault()) {
                     fetchDialogs();
                 } else {
@@ -3110,6 +3110,11 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
         public void setDialogs(List<TLRPC.Dialog> newDialogs) {
             dialogs.clear();
             dialogsMap.clear();
+            if (CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats() && searchView.filterTabsView != null && hasFolders() && includeStory) {
+                MyStoryDialog d = new MyStoryDialog();
+                dialogs.add(d);
+                dialogsMap.put(d.id, d);
+            }
             if (newDialogs != null) {
                 for (TLRPC.Dialog d : newDialogs) {
                     if (d instanceof TLRPC.TL_dialog) {

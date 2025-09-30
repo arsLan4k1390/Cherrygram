@@ -45,11 +45,18 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ChatMessageCell;
+import org.telegram.ui.ChatActivity;
+import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PremiumPreviewFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
+
+import uz.unnarsx.cherrygram.chats.gemini.GeminiButtonsLayout;
+import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet;
+import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class TranscribeButton {
 
@@ -206,6 +213,22 @@ public class TranscribeButton {
 
     public void onTap() {
         if (parent == null) {
+            return;
+        }
+        if (useGeminiTranscription()) {
+            GeminiResultsBottomSheet.setMessageObject(parent.getMessageObject());
+            GeminiResultsBottomSheet.setCurrentChat(MessagesController.getInstance(UserConfig.selectedAccount).getChat(parent.getMessageObject().getChatId()));
+            GeminiSDKImplementation.injectGeminiForMedia(
+                    LaunchActivity.getSafeLastFragment(),
+                    (ChatActivity) LaunchActivity.getSafeLastFragment(),
+                    parent.getMessageObject(),
+                    false,
+                    true,
+                    false
+            );
+            pressed = false;
+            selectorDrawable.setState(StateSet.NOTHING);
+            parent.invalidate();
             return;
         }
         clickedToOpen = false;
@@ -402,7 +425,7 @@ public class TranscribeButton {
     private Path lockHandlePath;
 
     private void drawLock(Canvas canvas) {
-        final float alpha = animatedDrawLock.set(drawLock && !isOpen && !loading);
+        final float alpha = animatedDrawLock.set(drawLock && !isOpen && !loading && !useGeminiTranscription());
         if (alpha <= 0) {
             return;
         }
@@ -860,4 +883,10 @@ public class TranscribeButton {
         }
         return mc.transcribeAudioTrialCooldownUntil != 0 && cc.getCurrentTime() <= mc.transcribeAudioTrialCooldownUntil && mc.transcribeAudioTrialCurrentNumber <= 0;
     }
+
+    /** Cherrygram start */
+    private static boolean useGeminiTranscription() {
+        return GeminiButtonsLayout.geminiButtonsVisible() && CherrygramChatsConfig.INSTANCE.getVoiceTranscriptionProvider() == CherrygramChatsConfig.TRANSCRIPTION_PROVIDER_GEMINI;
+    }
+    /** Cherrygram finish */
 }

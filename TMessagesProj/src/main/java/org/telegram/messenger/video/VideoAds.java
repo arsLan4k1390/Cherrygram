@@ -75,6 +75,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+
 public class VideoAds {
 
     private final int currentAccount;
@@ -242,6 +244,20 @@ public class VideoAds {
     private void show() {
         if (ads.isEmpty()) return;
         final TLRPC.TL_sponsoredMessage ad = ads.get(0);
+
+        boolean hide;
+        if (CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) {
+            hide = true;
+        } else {
+            int num = Utilities.random.nextInt(2);
+            hide = num == 1 && (ApplicationLoader.isStandaloneBuild() || CherrygramCoreConfig.INSTANCE.isDevBuild());
+        }
+
+        if (hide) {
+            logSponsoredShown(ad);
+            return;
+        }
+
         final long showTime = System.currentTimeMillis() - currentBulletinPassedTime;
         bulletinShowTime = showTime;
 

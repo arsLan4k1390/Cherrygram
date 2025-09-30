@@ -85,6 +85,8 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_SortByDate">Сортувати повідомлення за датою</string>
+    <string name="CG_SortByUnread">Сортувати перше непрочитані</string>
     <string name="CG_UnknownCherrySettingsOption">Немає такого параметра Cherry.</string>
     <string name="CG_Restart">Перезапустити додаток</string>
     <string name="CG_RestartToApply">Перезавантажте додаток для застосування змін</string>
@@ -115,6 +117,10 @@
     <string name="CG_ProfileBackground">Застосувати задній план профілю</string>
     <string name="CG_MessageContainsCustomReactions_one">Реакції містять емодзі пак.</string>
     <string name="CG_MessageContainsCustomReactions_other">Реакції містять користувацькі емодзі \nз %1$d.</string>
+    <string name="CG_Sleep">Таймер сну</string>
+    <string name="CG_Sleep_Timer">Таймер сну встановлено на **%s**</string>
+    <string name="CG_Sleep_Disabled">Таймер сну вимкнено</string>
+    <string name="CG_Sleep_Permission">Будь ласка, дозвольте Cherrygram встановлювати точні будильники, щоб таймер сну працював належним чином.</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -132,6 +138,7 @@
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">Основне</string>
+    <string name="CG_ResidentNotification">Увімкнути постійне сповіщення</string>
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Зовнішній вигляд</string>
@@ -258,6 +265,7 @@
     <string name="CP_GeminiAI_Temperature_Desc">Керування креативністю тексту. Низькі значення роблять текст більш передбачуваним та сфокусованим, високими значеннями - більш випадковими та оригінальними.</string>
     <string name="CP_GeminiAI_ExtractText">Витягнути текст (OCR)</string>
     <string name="CP_GeminiAI_Summarize">Підсумувати</string>
+    <string name="CP_GeminiAI_VoiceTranscriptionProvider">Провайдер розшифровки голосових</string>
     <string name="CP_Header_Record">Медіа</string>
     <string name="CP_Messages_Size">Розмір бульбашок повідомлень</string>
     <string name="CP_Message_Filtering">Фільтр повідомлень</string>
@@ -334,7 +342,7 @@
     <string name="EP_PhotosSize">Відправляти великі фотографії (2560px)</string>
     <string name="EP_CustomAppTitle">Назва додатка</string>
     <string name="EP_CustomChat">Власний чат для збереження повідомлень</string>
-    <string name="EP_CustomChat_Desc">Встановіть ID з іншого чату/групи/каналу на передові повідомлення там (кнопка в панелі дій, меню повідомлень або подвійного натискання)</string>
+    <string name="EP_CustomChat_Desc">Ви можете обрати будь-який інший чат/групу/канал, щоб переслати туди повідомлення (кнопка на панелі дій, меню повідомлень, подвійне натискання або свайп по повідомленню)</string>
     <string name="EP_CustomChat_Selected_Title">замість</string>
     <string name="EP_Network">Мережа</string>
     <string name="EP_DownloadSpeedBoost">Збільшення швидкості завантаження</string>
@@ -408,7 +416,10 @@
     <string name="DP_CameraCutoutDesc">Ви можете показати логотип Cherrygram під Вашою камерою - він з\'явиться на скриншотах.
     \nЯкщо логотип **відображається правильно і залишається в зоні камери **, будь ласка, збережіть цю опцію.
     \nЦе допомагає додатку і підтримує проект - я буду дуже вдячний: ❤️</string>
-    <string name="DP_Donate_Method">Оберіть метод</string>
+    <string name="DP_Donate_Method_Int">Міжнародні платіжні системи</string>
+    <string name="DP_Donate_Method_Rus">Для жителів Російської Федерації</string>
+    <string name="DP_Donate_Method_Uzb">Для жителів Узбекистану</string>
+    <string name="DP_Donate_Method_Surname">Будь ласка, зв\'яжіться з **@arsLan**, якщо платіжна система вимагає особисту інформацію одержувача.</string>
     <string name="DP_Donate_Exclusive">Ексклюзивно для тих, хто підтримує</string>
     <string name="DP_Donate_ExclusiveDesc">Підтримайте проект і розблокуйте всі функції.</string>
     <!--Donations-->

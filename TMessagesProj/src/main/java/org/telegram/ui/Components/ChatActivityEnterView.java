@@ -5474,20 +5474,21 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                     return;
                 }
 
-                if (isReplacing) return;
+                if (CherrygramDebugConfig.INSTANCE.getReplacePunctuationMarks()) {
+                    if (isReplacing) return;
 
-                long now = System.currentTimeMillis();
-                long elapsed = now - lastInputTime;
-                lastInputTime = now;
+                    long now = System.currentTimeMillis();
+                    long elapsed = now - lastInputTime;
+                    lastInputTime = now;
 
-                if (elapsed > TIMEOUT_MS) return;
+                    if (elapsed > TIMEOUT_MS) return;
 
-                isReplacing = true;
+                    isReplacing = true;
 
-                String text = editable.toString();
-                int length = text.length();
+                    String text = editable.toString();
+                    int length = text.length();
 
-                if (length >= 2) {
+                    if (length >= 2) {
                     String lastTwo = text.substring(length - 2);
                     String replacement = switch (lastTwo) {
                         case "--" -> "—";
@@ -5496,11 +5497,12 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
                         default -> null;
                     };
 
-                    if (replacement != null) {
-                        editable.replace(length - 2, length, replacement);
+                        if (replacement != null) {
+                            editable.replace(length - 2, length, replacement);
+                        }
                     }
+                    isReplacing = false;
                 }
-                isReplacing = false;
 
                 if (prevText != null) {
                     ignorePrevTextChange = true;

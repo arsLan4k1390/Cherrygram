@@ -365,7 +365,6 @@
     <string name="DP_Donate_Desc">¡Ayuda al desarrollo de Cherrygram y consigue una insignia épica!
     \nEnvía un comprobante de pago (&gt;=2$) a <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> o <![CDATA[<a href="https://t.me/CherrygramSupport">Cherrygram Support chat</a>]]> para obtener la insignia.</string>
     <string name="DP_Donate_Bulletin">**%s** contribuyó al éxito de **Cherrygram**!</string>
-    <string name="DP_Donate_Method">Elegir método</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 </resources>

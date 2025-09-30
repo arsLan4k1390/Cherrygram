@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +25,7 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ReactedUserHolderView;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
@@ -33,6 +35,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+
+import uz.unnarsx.cherrygram.chats.MessageMenuHelper;
 
 public class ReactedUsersListView extends FrameLayout {
 
@@ -116,9 +120,20 @@ public class ReactedUsersListView extends FrameLayout {
                         }
 
                         FrameLayout frameLayout = new FrameLayout(context);
-                        View gap = new View(context);
-                        gap.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuSeparator, resourcesProvider));
-                        frameLayout.addView(gap, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 8));
+                        var getMessageMenuHelper = MessageMenuHelper.getInstance(currentAccount);
+                        if (getMessageMenuHelper.allowNewMessageMenu()) {
+                            if (getMessageMenuHelper.showCustomDivider()) {
+                                frameLayout.addView(new ActionBarPopupWindow.GapView(
+                                        context,
+                                        ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider), getMessageMenuHelper.getMessageMenuAlpha(true)),
+                                        Theme.getColor(Theme.key_windowBackgroundGrayShadow, resourcesProvider)
+                                ), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
+                            }
+                        } else {
+                            View gap = new View(context);
+                            gap.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuSeparator, resourcesProvider));
+                            frameLayout.addView(gap, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 8));
+                        }
                         frameLayout.addView(messageContainsEmojiButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, 0, 0, 8, 0, 0));
 
                         view = frameLayout;

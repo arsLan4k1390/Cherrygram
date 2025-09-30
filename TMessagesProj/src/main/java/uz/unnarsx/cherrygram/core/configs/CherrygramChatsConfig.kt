@@ -65,6 +65,10 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var geminiModelName by sharedPreferences.string("CP_GeminiModelName", " ")
     var geminiSystemPrompt by sharedPreferences.string("CP_GeminiSystemPrompt", " ")
     var geminiTemperatureValue by sharedPreferences.int("CP_GeminiTemperature", 5)
+
+    const val TRANSCRIPTION_PROVIDER_TELEGRAM = 0
+    const val TRANSCRIPTION_PROVIDER_GEMINI = 1
+    var voiceTranscriptionProvider by sharedPreferences.int("CP_VoiceTranscriptionProvider", TRANSCRIPTION_PROVIDER_TELEGRAM)
     /** Gemini AI finish **/
 
     var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
@@ -207,6 +211,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     var unarchiveOnSwipe by sharedPreferences.boolean("CG_UnarchiveOnSwipe", false)
     var lastStickersCheckTime by sharedPreferences.long("CG_LastStickersCheckTime", 0)
+    var sortByUnread by sharedPreferences.boolean("CG_SortByUnread", false)
     /** Misc finish **/
 
     fun init() {

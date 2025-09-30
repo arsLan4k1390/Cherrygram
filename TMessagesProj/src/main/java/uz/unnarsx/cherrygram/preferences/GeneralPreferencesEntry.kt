@@ -9,11 +9,14 @@
 
 package uz.unnarsx.cherrygram.preferences
 
+import android.content.Intent
 import android.os.Build
 import androidx.core.util.Pair
 import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.NotificationCenter
+import org.telegram.messenger.NotificationsService
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LaunchActivity
@@ -94,14 +97,21 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                isAvailable = Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
-                title = getString(R.string.NotificationsServiceConnection)
-                description = getString(R.string.NotificationsServiceInfo)
+                isAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+                title = getString(R.string.CG_ResidentNotification)
+                description = getString(R.string.NotificationsService)
 
                 contract({
                     return@contract CherrygramCoreConfig.residentNotification
                 }) {
                     CherrygramCoreConfig.residentNotification = it
+                    ApplicationLoader.applicationContext.stopService(
+                        Intent(
+                            ApplicationLoader.applicationContext,
+                            NotificationsService::class.java
+                        )
+                    )
+                    ApplicationLoader.startPushService()
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }
