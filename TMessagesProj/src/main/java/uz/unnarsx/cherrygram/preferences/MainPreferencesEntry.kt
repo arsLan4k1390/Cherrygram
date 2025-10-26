@@ -15,10 +15,8 @@ import org.telegram.messenger.LocaleController.getString
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.misc.CherrygramExtras
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper
-import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
@@ -74,17 +72,11 @@ class MainPreferencesEntry : BasePreferencesEntry {
 
         category(getString(R.string.LocalOther)) {
             textIcon {
-                val donatesAvailable = ApplicationLoader.isStandaloneBuild()
-
                 icon = R.drawable.heart_angle_solar
-                title = getString(if (donatesAvailable) R.string.DP_Support else R.string.DP_RateUs)
+                title = getString(R.string.DP_Support)
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    if (donatesAvailable) {
-                        it.presentFragment(DonatesPreferencesEntry())
-                    } else {
-                        CherrygramExtras.requestReviewFlow(bf, bf.context, bf.parentActivity)
-                    }
+                    it.presentFragment(DonatesPreferencesEntry())
                 }
             }
             textIcon {

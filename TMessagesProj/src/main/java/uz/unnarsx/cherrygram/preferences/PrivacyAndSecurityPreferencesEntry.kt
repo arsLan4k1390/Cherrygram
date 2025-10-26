@@ -70,7 +70,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 icon = R.drawable.msg_delete
 
                 listener = TGKitTextIconRow.TGTIListener {
-                    if (bf.chatsPasswordHelper.checkFingerprint()) {
+                    if (bf.chatsPasswordHelper.checkBiometricAvailable()) {
                         CGBiometricPrompt.prompt(bf.parentActivity) {
                             DeleteAccountDialog.showDeleteAccountDialog(bf)
                         }
@@ -94,7 +94,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                isAvailable = bf.chatsPasswordHelper.checkFingerprint()
+                isAvailable = bf.chatsPasswordHelper.checkBiometricAvailable()
 
                 title = getString(R.string.SP_AskBioToOpenChats)
                 divider = true
@@ -105,9 +105,9 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     }
                 }
             }
-            if (bf.chatsPasswordHelper.checkFingerprint()) hint(getString(R.string.SP_AskBioToOpenChats_Desc))
+            if (bf.chatsPasswordHelper.checkBiometricAvailable()) hint(getString(R.string.SP_AskBioToOpenChats_Desc))
             textIcon {
-                isAvailable = CherrygramPrivacyConfig.askBiometricsToOpenChat && bf.chatsPasswordHelper.checkFingerprint()
+                isAvailable = CherrygramPrivacyConfig.askBiometricsToOpenChat && bf.chatsPasswordHelper.checkBiometricAvailable()
 
                 icon = R.drawable.msg_discussion
                 title = getString(R.string.SP_LockedChats)
@@ -161,7 +161,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }*/
             switch {
-                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = bf.chatsPasswordHelper.checkBiometricAvailable()
 
                 title = getString(R.string.SP_AskPinBeforeDelete)
                 description = getString(R.string.SP_AskPinBeforeDelete_Desc)
@@ -176,7 +176,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                isAvailable = Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+                isAvailable = bf.chatsPasswordHelper.checkBiometricAvailable()
 
                 title = getString(R.string.SP_AllowUseSystemPasscode)
                 description = getString(R.string.SP_AllowUseSystemPasscode_Desc)
@@ -188,7 +188,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                isAvailable = Build.VERSION.SDK_INT >= 23
+                isAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
 
                 title = getString(R.string.SP_TestFingerprint)
                 icon = R.drawable.fingerprint
@@ -266,7 +266,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
 
                 }
             }
-            if (Build.VERSION.SDK_INT >= 23) hint(getString(R.string.SP_TestFingerprint_Desc))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) hint(getString(R.string.SP_TestFingerprint_Desc))
         }
 
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("privacy_preferences_screen")

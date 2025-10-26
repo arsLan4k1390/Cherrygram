@@ -15,7 +15,6 @@ import androidx.core.util.Pair
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
-import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.VibrateUtil
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
@@ -162,7 +161,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 title = getString(R.string.CP_MessageMenu)
                 icon = R.drawable.msg_list
                 listener = TGKitTextIconRow.TGTIListener {
-                    CGMessageMenuInjector.showMessageMenuItemsConfigurator(bf)
+                    CherrygramPreferencesNavigator.createMessageMenu(bf)
                 }
                 divider = true
             }
@@ -189,16 +188,6 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramChatsConfig.hideStickerTime
                 }) {
                     CherrygramChatsConfig.hideStickerTime = it
-                }
-            }
-            switch {
-                title = getString(R.string.CP_DeleteForAll)
-                description = getString(R.string.CP_DeleteForAll_Desc)
-
-                contract({
-                    return@contract CherrygramChatsConfig.deleteForAll
-                }) {
-                    CherrygramChatsConfig.deleteForAll = it
                 }
             }
             switch {
@@ -289,6 +278,16 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     }
                 }) {
                     CherrygramChatsConfig.messageSlideAction = it
+                }
+            }
+            switch {
+                title = getString(R.string.CP_DeleteForAll)
+                description = getString(R.string.CP_DeleteForAll_Desc)
+
+                contract({
+                    return@contract CherrygramChatsConfig.deleteForAll
+                }) {
+                    CherrygramChatsConfig.deleteForAll = it
                 }
             }
         }

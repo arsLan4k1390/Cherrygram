@@ -67,6 +67,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
     private int hideFromBlockedRow;
     private int hideAllRow;
     private int collapseAutomaticallyRow;
+    private int makeTransparentRow;
     private int miscellaneousEndDivisor;
 
     protected Theme.ResourcesProvider resourcesProvider;
@@ -188,6 +189,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                 if (CherrygramCoreConfig.INSTANCE.isDevBuild() || CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) listAdapter.notifyItemChanged(hideFromBlockedRow, false);
                 listAdapter.notifyItemChanged(hideAllRow, false);
                 listAdapter.notifyItemChanged(collapseAutomaticallyRow, false);
+                listAdapter.notifyItemChanged(makeTransparentRow, false);
             } else if (position == detectTranslitRow) {
                 CherrygramChatsConfig.INSTANCE.setMsgFiltersDetectTranslit(!CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectTranslit());
                 if (view instanceof TextCheckCell) {
@@ -246,6 +248,16 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                     ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgFiltersCollapseAutomatically());
 
                     if (CherrygramChatsConfig.INSTANCE.getMsgFiltersCollapseAutomatically() && !CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
+                        CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(true);
+                        listAdapter.notifyItemChanged(enableFilterRow, false);
+                    }
+                }
+            } else if (position == makeTransparentRow) {
+                CherrygramChatsConfig.INSTANCE.setMsgFilterTransparentMsg(!CherrygramChatsConfig.INSTANCE.getMsgFilterTransparentMsg());
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgFilterTransparentMsg());
+
+                    if (CherrygramChatsConfig.INSTANCE.getMsgFilterTransparentMsg() && !CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
                         CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(true);
                         listAdapter.notifyItemChanged(enableFilterRow, false);
                     }
@@ -372,6 +384,15 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                                 true,
                                 false
                         );
+                    } else if (position == makeTransparentRow) {
+                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
+                        textCheckCell.setTextAndValueAndCheck(
+                                getString(R.string.CP_Message_Filtering_Transparent),
+                                getString(R.string.CP_Message_Filtering_Transparent_Desc),
+                                CherrygramChatsConfig.INSTANCE.getMsgFilterTransparentMsg(),
+                                true,
+                                true
+                        );
                     }
                     break;
                 case VIEW_TYPE_TEXT_INFO_PRIVACY:
@@ -451,7 +472,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                 return VIEW_TYPE_SHADOW;
             } else if (position == filtersHeaderRow || position == miscellaneousHeaderRow) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == enableFilterRow || position == detectTranslitRow || position == exactWordMatchRow || position == detectEntitiesRow || position == hideFromBlockedRow || position == hideAllRow  || position == collapseAutomaticallyRow) {
+            } else if (position == enableFilterRow || position == detectTranslitRow || position == exactWordMatchRow || position == detectEntitiesRow || position == hideFromBlockedRow || position == hideAllRow  || position == collapseAutomaticallyRow || position == makeTransparentRow) {
                 return VIEW_TYPE_TEXT_CHECK;
             } else if (position == filteredWordsAdviceRow) {
                 return VIEW_TYPE_TEXT_INFO_PRIVACY;
@@ -478,6 +499,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
         if (CherrygramCoreConfig.INSTANCE.isDevBuild() || CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) hideFromBlockedRow = rowCount++;
         hideAllRow = rowCount++;
         collapseAutomaticallyRow = rowCount++;
+        makeTransparentRow = rowCount++;
         miscellaneousEndDivisor = rowCount++;
 
         if (listAdapter != null && notify) {

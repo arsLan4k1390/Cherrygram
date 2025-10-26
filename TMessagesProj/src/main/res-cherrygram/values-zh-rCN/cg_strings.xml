@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
-    <string name="CG_FollowChannelLink">订阅 @Cherry_Gram！</string>
     <string name="CG_FollowChannelTitle">订阅官方频道</string>
     <string name="CG_FollowChannelInfo">加入频道，随时了解Cherrygram的所有新闻和功能更新！</string>
     <string name="CG_DoNotRemindAgain">不再提醒</string>
     <!--Telegram screens-->
+    <string name="CG_JoinedDate">您加入了 **%1$s** **%2$s**</string>
+    <string name="CG_CreatedDate">**%1$s** 已创建 **%2$s**</string>
     <string name="CG_RegistrationDate">注册日期：</string>
     <string name="CG_RegistrationDateNewer">比 %s 更新</string>
     <string name="CG_RegistrationDateOlder">比 %s 更老</string>
@@ -26,6 +27,10 @@
     <string name="CG_LastSeenHours_many">%1$d 小时前曾上线</string>
     <string name="CG_LastSeenHours_other">%1$d 小时前曾上线</string>
     <!--Last seen status-->
+    <!--Typing status-->
+    <string name="CG_AndMoreTypingGroup_one">%1$s及另外%2$d个</string>
+    <string name="CG_AndMoreTypingGroup_other">%1$s及另外%2$d个</string>
+    <!--Typing status-->
     <!--Telegram Folders Settings-->
     <string name="CG_FoldersType_Header">Tab 图标类型</string>
     <string name="CG_FoldersTypeTitles">仅显示文本</string>
@@ -51,7 +56,11 @@
     <string name="CG_CreateMention">创建提及</string>
     <string name="CG_CreateCode">创建代码</string>
     <string name="CG_CreateCodeLanguage">语言</string>
+    <string name="CG_FwdMenu_Authorship">发送者名称</string>
+    <string name="CG_FwdMenu_Captions">标题</string>
+    <string name="CG_FwdMenu_Notify">提醒</string>
     <string name="CG_Without_Authorship">无来源转发</string>
+    <string name="CG_Without_Caption">没有标题</string>
     <string name="CG_CopyTitle">复制标题</string>
     <string name="CG_CopyCallback">复制回调数据</string>
     <string name="CG_CopyInlineQuery">复制内嵌查询</string>
@@ -77,6 +86,8 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_SortByDate">按日期排序</string>
+    <string name="CG_SortByUnread">按未读排序</string>
     <string name="CG_UnknownCherrySettingsOption">没有这样的 Cherry 设置选项</string>
     <string name="CG_Restart">重启应用</string>
     <string name="CG_RestartToApply">重启应用生效</string>
@@ -92,6 +103,7 @@
     <string name="CG_TranslationLanguage">目标语言</string>
     <string name="CG_CopyPhoto">复制图片</string>
     <string name="CG_CopyPhotoAsSticker">将图片复制为贴纸</string>
+    <string name="CG_SendPhotoAsSticker">作为贴纸发送</string>
     <string name="CG_PhotoCopied">已复制图片到剪贴板</string>
     <string name="CG_SaveSticker">保存贴纸</string>
     <string name="CG_StickerSavedHint">贴纸已保存到下载文件夹</string>
@@ -106,6 +118,10 @@
     <string name="CG_ProfileBackground">应用个人资料背景</string>
     <string name="CG_MessageContainsCustomReactions_one">表态包含 %1$d 里的自定义 emoji \n</string>
     <string name="CG_MessageContainsCustomReactions_other">表态包含 %1$d 里的自定义 emoji \n</string>
+    <string name="CG_Sleep">睡眠计时器</string>
+    <string name="CG_Sleep_Timer">睡眠计时器已设置为 **%s**</string>
+    <string name="CG_Sleep_Disabled">睡眠计时器已禁用</string>
+    <string name="CG_Sleep_Permission">请允许 Cherrygram 使用 “︁设定精确的闹钟”︁ 的权限，以便睡眠计时器能够正常运行。</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -123,6 +139,7 @@
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">通用</string>
+    <string name="CG_ResidentNotification">显示常驻通知</string>
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">主题</string>
@@ -146,6 +163,7 @@
     <string name="AP_SystemEmoji">使用系统 Emoji</string>
     <string name="AP_ShowPencilIcon">将消息底部的“已编辑”替换为铅笔图标</string>
     <string name="AP_CenterTitle">标题居中</string>
+    <string name="AP_iosSearchPanel">iOS 风格的搜索面板</string>
     <string name="AP_OverrideHeader">覆盖顶栏颜色</string>
     <string name="AP_OverrideHeader_Desc">顶栏颜色将和背景色保持一致</string>
     <string name="AP_DisableDividers">禁用分隔线</string>
@@ -167,6 +185,8 @@
     <string name="CP_ReplyBackgroundEmoji">回复和链接预览中的表情</string>
     <string name="CP_HideStories">隐藏故事（本地）</string>
     <string name="CP_HideStories_Desc">故事将从您的聊天列表和个人资料中消失。</string>
+    <string name="CP_ArchiveStories">归档动态</string>
+    <string name="CP_ArchiveStories_Desc">动态将自动归档并移动到您的归档动态。</string>
     <string name="CP_CustomWallpapers">自定义聊天背景</string>
     <string name="CP_CustomWallpapers_Desc">配置高级用户/增强频道设置的聊天/群组/频道中的自定义壁纸</string>
     <string name="CP_DisableAnimAvatars">禁用动态头像</string>
@@ -211,9 +231,19 @@
     <string name="CP_ChatMenuShortcuts">聊天菜单快捷方式</string>
     <string name="CP_AdminActions">管理员快捷方式</string>
     <string name="CP_MessageMenu">消息菜单自定义</string>
+    <string name="CP_MessageMenuItems">消息菜单项</string>
+    <string name="CP_BlurMessageMenu">iOS 风格的消息菜单</string>
+    <string name="CP_BlurMessageMenu_Desc">为消息菜单添加模糊背景，并将表态面板显示在消息上方，类似于 iOS 版 Telegram 的样式。</string>
+    <string name="CP_MessageMenuAutoscroll">消息自动滚动</string>
+    <string name="CP_MessageMenuAutoscroll_Desc">开启时，自动将消息菜单内容滚动至底部，类似于 iOS 版 Telegram 的操作方式。</string>
+    <string name="CP_MessageMenuFixedHeight">更大的消息菜单高度</string>
+    <string name="CP_MessageMenuFixedHeight_Desc">消息菜单将占据屏幕一半的区域，以便更容易使用。</string>
+    <string name="CP_BlurMessageMenuItems">模糊菜单项</string>
+    <string name="CP_BlurMessageMenuItems_Desc">模糊菜单项以呈现更真实的 iOS 外观。</string>
     <string name="AP_CenterChatsTitle">聊天中标题栏居中</string>
     <string name="CP_UnreadBadgeOnBackButton">显示未读聊天数量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已打开的聊天中显示未读消息数</string>
+    <string name="CP_Slider_RecentEmojisAndStickers">最近使用的 Emoji 表情和贴纸数量</string>
     <string name="CP_NoRounding">禁用数字舍入</string>
     <string name="CP_DeleteForAll">默认勾选\"全部删除\"</string>
     <string name="CP_DeleteForAll_Desc">删除消息时默认勾选全部删除</string>
@@ -232,16 +262,56 @@
     <string name="CP_GeminiAI_API_Key_Desc">请访问 <![CDATA[<a href="https://aistudio.google.com/apikey">https://aistudio.google.com</a>]]> 以获取 API 密钥。</string>
     <string name="CP_GeminiAI_Model">Gemini 模型 型号</string>
     <string name="CP_GeminiAI_Model_Desc">请访问 <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]> 以获取可用型号的列表。</string>
+    <string name="CP_GeminiAI_Model_Selector">Gemini 模型列表</string>
+    <string name="CP_GeminiAI_Model_Selector_Desc">如果您有一个有效的 API 密钥，请点击此处选择模型并自动填写字段。</string>
     <string name="CP_GeminiAI_Sample">示例：</string>
     <string name="CP_GeminiAI_Instruction">为了使用 Gemini，
         您需要填写此屏幕上的所有值。
         \n\n之后，打开任何聊天，输入消息并按住发送消息按钮。
         \n\n此外，您也可以使用 AI 回复消息。 要执行此操作，请单击聊天中的任何文本消息。
     </string>
+    <string name="CP_GeminiAI_System_Prompt">系统提示词</string>
+    <string name="CP_GeminiAI_System_Prompt_Desc">系统提示词定义了Gemini的风格和行为模式，您可以编辑文本以控制回复的格式。</string>
+    <string name="CP_GeminiAI_Temperature">温度</string>
+    <string name="CP_GeminiAI_Temperature_Desc">控制文本的创造性。较低的数值使文本更具可预测性且更聚焦，较高的数值则使文本更随机且更具原创性。</string>
+    <string name="CP_GeminiAI_ExtractText">提取文本 (OCR)</string>
+    <string name="CP_GeminiAI_Summarize">摘要</string>
+    <string name="CP_GeminiAI_VoiceTranscriptionProvider">语音转录提供商</string>
     <string name="CP_Header_Record">媒体</string>
     <string name="CP_Messages_Size">消息气泡大小</string>
+    <string name="CP_Message_Filtering">消息过滤</string>
+    <string name="CP_Message_Filtering_Filter">启用过滤</string>
+    <string name="CP_Message_Filtering_Filter_Desc">当过滤器功能启用时，收到的消息中所选的单词将自动以剧透效果隐藏，需手动点选单词后才能显示。</string>
+    <string name="CP_Message_Filtering_Field">输入要过滤的词语</string>
+    <string name="CP_Message_Filtering_Field_Desc">用逗号、空格或换行符分隔单词，使用括号将多个单词组合成短语，不区分大小写。
+        \n示例：word, another, (此处多个单词)。
+    </string>
+    <string name="CP_Message_Filtering_Translit">转写检测</string>
+    <string name="CP_Message_Filtering_Translit_Desc">启用后，此过滤器亦会检测音译书写的单词（例如 “test” 将被识别为 “тест” ）。
+        即使西里尔字母被拉丁字母替换，这也有助于捕捉并隐藏剧透下的消息。这可能会略微增加设备的 CPU 负载。
+    </string>
+    <string name="CP_Message_Filtering_Exact_Words">精确单词匹配</string>
+    <string name="CP_Message_Filtering_Exact_Words_Desc">启用后，只有完全匹配过滤器列表中单词的词汇会被隐藏。
+        若某个单词以不同形式出现（例如含前缀、后缀或包含在其他单词中），则不会被隐藏。
+
+    </string>
+    <string name="CP_Message_Filtering_Entities">链接实体过滤器</string>
+    <string name="CP_Message_Filtering_EntitiesDesc">启用此选项后，系统将把过滤范围扩展至消息中的链接（实体）。系统会扫描URL中是否包含您配置的过滤关键词。
+        如链接内容中存在匹配项，整个消息将自动隐藏在剧透标签下，无论该关键词是否出现在可见文本中。
+        \n\n此功能有助于防范伪装的垃圾信息、隐藏广告或钓鱼域名，这些内容通常能绕过常规文本过滤机制。
+    </string>
+    <string name="CP_Message_Filtering_HideBlocked">忽略被屏蔽用户在群组内的消息</string>
+    <string name="CP_Message_Filtering_HideBlockedDesc">启用后，来自被屏蔽用户的全部消息及转发消息将自动隐藏在剧透标签下。</string>
+    <string name="CP_Message_Filtering_HideAll">完整消息剧透隐藏</string>
+    <string name="CP_Message_Filtering_HideAllDesc">如消息内容包含过滤词，则将整条消息文本或媒体隐藏在剧透标签下。</string>
+    <string name="CP_Message_Filtering_Collapse">折叠消息</string>
+    <string name="CP_Message_Filtering_Collapse_Desc">启用后，消息将自动折叠。点击消息即可展开。</string>
+    <string name="CP_Message_Filtering_Transparent">消息透明度</string>
+    <string name="CP_Message_Filtering_Transparent_Desc">过滤后的消息会变透明，这样你就能轻松区分它们。</string>
     <string name="CP_Slider_MediaAmplifier">照片和视频</string>
     <string name="CP_Slider_MediaAmplifier_Hint">不适用于相册（分组媒体）</string>
+    <string name="CP_LargeVoiceMessages">自适应语音消息长度</string>
+    <string name="CP_LargeVoiceMessages_Desc">音频消息气泡的长度取决于录音时长，并将自动调整以适应屏幕宽度。</string>
     <string name="CP_VoiceEnhancements">语音增强</string>
     <string name="CP_VoiceEnhancements_Desc">降噪与人声增强</string>
     <string name="CP_PlayVideo">按下音量键播放视频</string>
@@ -294,6 +364,7 @@
     <string name="EP_CustomAppTitle">应用标题</string>
     <string name="EP_CustomChat">自定义已保存消息的聊天</string>
     <string name="EP_CustomChat_Desc">设置来自另一个聊天/群组/频道的 ID 转发消息(动作栏中的按钮，消息菜单或双击)</string>
+    <string name="EP_CustomChat_Selected_Title">代替</string>
     <string name="EP_Network">网络</string>
     <string name="EP_DownloadSpeedBoost">下载加速</string>
     <string name="EP_DownloadSpeedBoostNone">关闭</string>
@@ -307,6 +378,11 @@
     <string name="SP_Header_Privacy">隐私</string>
     <string name="SP_NoProxyPromo">移除代理赞助商</string>
     <string name="SP_GoogleAnalytics_Desc">开启此功能后，所有的崩溃日志和统计数据都会上传至 “console.firebase.google.com”，供给开发者分析和优化本应用</string>
+    <string name="SP_AskBioToOpenChats">要求提供生物识别来打开聊天</string>
+    <string name="SP_AskBioToOpenChats_Desc">需要系统密码（指纹、面容 ID、PIN 码或图案）才能访问归档的聊天记录。</string>
+    <string name="SP_LockedChats">锁定的聊天</string>
+    <string name="SP_LockedChats_Lock_Destination">更新锁定列表</string>
+    <string name="SP_LockedChats_Lock_Destination_Sure">将被锁定</string>
     <string name="SP_HideArchive">从聊天列表中隐藏归档</string>
     <string name="SP_HideArchive_Desc">该归档将被屏蔽为 Cherrygram 频道。 \n您将能够从抽屉或长按搜索按钮打开归档。</string>
     <string name="SP_AskPin">需要密码</string>
@@ -316,6 +392,9 @@
     <string name="SP_AllowUseSystemPasscode">允许使用系统 PIN码/手势图案</string>
     <string name="SP_AllowUseSystemPasscode_Desc">指纹确认对话框 中的 \"取消\" 按钮将取代为 \"Pin码/手势图案\" 按钮，您能够使用 系统密码管理器 来解锁 Cherrygram。</string>
     <string name="SP_TestFingerprint">测试指纹</string>
+    <string name="SP_TestFingerprint_Desc">如果已启用指纹认证功能但未显示相关功能，请尝试按下 “测试指纹” 按钮以解决问题。</string>
+    <string name="SP_BiometricUnavailable_Test_Fixed">指纹已成功检测！</string>
+    <string name="SP_BiometricUnavailable_Test_Wrong_Desc">请尝试重启您的设备或检查系统设置。</string>
     <string name="SP_Category_Account">帐号</string>
     <string name="SP_DeleteAccount">删除 Telegram 账号</string>
     <!--Security Preferences-->
@@ -341,7 +420,31 @@
     <string name="UP_Download">下载</string>
     <!--Updates Preferences-->
     <!--Donations-->
+    <string name="DP_EnjoyingUs">喜欢使用 Cherrygram 吗？</string>
     <string name="DP_RateUs">给 Cherrygram 评分</string>
+    <string name="DP_DonatesMoreInfo">想帮助 Cherrygram 发展吗？欢迎加入 **Cherrygram Support** 聊天室。</string>
+    <string name="DP_DonateBadge">捐赠并解锁额外功能</string>
+    <string name="DP_Donate_Desc">当您捐赠2美元或以上时，您还将获得额外赠品：</string>
+    <string name="DP_Donate_Badge_desc">**Cherrygram 徽章** 显示在您名字旁边。</string>
+    <string name="DP_Donate_EpicBadge_desc">1. **史诗级 Cherrygram 徽章** 显示在您名字旁边。</string>
+    <string name="DP_Donate_GiftMarket_Desc">2. 侧边菜单中的 “**礼品市场**” 按钮。</string>
+    <string name="DP_Donate_MessageFilter_Desc">3. “**消息过滤器**” 功能。</string>
+    <string name="DP_Donate_MessageMenu_Desc">4. “**iOS 风格**” 的消息菜单。</string>
+    <string name="DP_Donate_Cheque">将付款确认书发送到 **@arsLan** 以获取奖励。</string>
+    <string name="DP_Donate_Bulletin">**%s** 支持了 **Cherrygram** 的开发！</string>
+    <string name="DP_Support">喜欢 Cherrygram？请支持！</string>
+    <string name="DP_SupportOptions">支持选项</string>
+    <string name="DP_CameraCutoutHeader">留水印截图</string>
+    <string name="DP_CameraCutout">显示 Cherrygram 图标</string>
+    <string name="DP_CameraCutoutDesc">您可以在相机下方显示 Cherrygram 水印图标 — 将出现在屏幕截图中。
+    \n如果图标**显示正确，并保持在相机区域内**，请保持用状此选项。
+    \n这有助于推广本应用程序并支持本项目 — 不胜感激！❤️</string>
+    <string name="DP_Donate_Method_Int">国际支付系统</string>
+    <string name="DP_Donate_Method_Rus">适用于俄罗斯联邦居民</string>
+    <string name="DP_Donate_Method_Uzb">适用于乌兹别克斯坦居民</string>
+    <string name="DP_Donate_Method_Surname">如果支付系统需要填写收款人的个人信息，请联系 **@arsLan**。</string>
+    <string name="DP_Donate_Exclusive">支持者专属功能</string>
+    <string name="DP_Donate_ExclusiveDesc">支持本项目来解锁所有功能。</string>
     <!--Donations-->
     <!--Cherrygram screens-->
 </resources>

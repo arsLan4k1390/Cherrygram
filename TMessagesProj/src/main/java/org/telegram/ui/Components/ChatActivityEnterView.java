@@ -56,6 +56,7 @@ import android.os.SystemClock;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.Layout;
+import android.text.Selection;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
@@ -5485,20 +5486,20 @@ public class ChatActivityEnterView extends BlurredFrameLayout implements Notific
 
                     isReplacing = true;
 
-                    String text = editable.toString();
-                    int length = text.length();
-
-                    if (length >= 2) {
-                    String lastTwo = text.substring(length - 2);
-                    String replacement = switch (lastTwo) {
-                        case "--" -> "—";
-                        case "<<" -> "«";
-                        case ">>" -> "»";
-                        default -> null;
-                    };
+                    int cursor = Selection.getSelectionEnd(editable);
+                    if (cursor >= 2) {
+                        String lastTwo = editable.subSequence(cursor - 2, cursor).toString();
+                        String replacement = switch (lastTwo) {
+                            case "--" -> "—";
+                            case "<<" -> "«";
+                            case ">>" -> "»";
+                            default -> null;
+                        };
 
                         if (replacement != null) {
-                            editable.replace(length - 2, length, replacement);
+                            editable.replace(cursor - 2, cursor, replacement);
+                            int newCursor = cursor - 2 + replacement.length();
+                            Selection.setSelection(editable, newCursor);
                         }
                     }
                     isReplacing = false;

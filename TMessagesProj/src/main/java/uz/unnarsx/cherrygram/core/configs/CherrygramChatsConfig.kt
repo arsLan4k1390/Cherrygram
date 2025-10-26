@@ -55,7 +55,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
     var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle", true)
-    var blurMessageMenuBackground by sharedPreferences.boolean("CP_BlurMessageMenuBackground", false)
     var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
     var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
     var hideKeyboardOnScrollIntensity by sharedPreferences.int("CP_HideKeyboardOnScrollIntensity", 5)
@@ -85,7 +84,12 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var stickersDrawShareButton by sharedPreferences.boolean("CP_StickersDrawShareButton", false)
     /** Direct share finish **/
 
-    /** Message menu start **/
+    /** Message menu start */
+    var blurMessageMenuBackground by sharedPreferences.boolean("CP_BlurMessageMenuBackground", false)
+    var msgMenuAutoScroll by sharedPreferences.boolean("CP_MsgMenuAutoScroll", true)
+    var msgMenuFixedHeight by sharedPreferences.boolean("CP_MsgMenuFixedHeight", false)
+    var blurMessageMenuItems by sharedPreferences.boolean("CP_BlurMessageMenuItems", false)
+    /** Message menu items start **/
     var showSaveForNotifications by sharedPreferences.boolean("CP_ShowSaveForNotifications", false)
     var showGemini by sharedPreferences.boolean("CP_ShowGemini", GeminiButtonsLayout.geminiButtonsVisible())
     var showReply by sharedPreferences.boolean("CP_ShowReply", true)
@@ -100,9 +104,11 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     var showJSON by sharedPreferences.boolean("CP_ShowJSON", false)
     var jacksonJSON_Provider by sharedPreferences.boolean("CP_JacksonJSON_Provider", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-    /** Message menu finish **/
+    /** Message menu items finish **/
+    /** Message menu finish */
 
     /** Messages size start **/
+    var largerVoiceMessagesLayout by sharedPreferences.boolean("CP_LargerVoiceMessagesLayout", true)
     var slider_mediaAmplifier by sharedPreferences.int("CP_Slider_MediaAmplifier", 100)
     var slider_stickerAmplifier by sharedPreferences.int("CP_Slider_StickerAmplifier", 100)
     var slider_gifsAmplifier by sharedPreferences.int("CP_Slider_GifsAmplifier", 100)
@@ -117,10 +123,10 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var msgFiltersHideFromBlocked by sharedPreferences.boolean("CP_MsgFiltersHideFromBlocked1", false)
     var msgFiltersHideAll by sharedPreferences.boolean("CP_MsgFiltersHideAll", false)
     var msgFiltersCollapseAutomatically by sharedPreferences.boolean("CP_MsgFiltersCollapseAutomatically", false)
+    var msgFilterTransparentMsg by sharedPreferences.boolean("CP_MsgFilterTransparentMsg", false)
     /** Messages filter finish **/
 
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
-    var deleteForAll by sharedPreferences.boolean("CP_DeleteForAll", false)
     var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", true)
     var showPencilIcon by sharedPreferences.boolean("AP_PencilIcon", true)
 
@@ -146,6 +152,8 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     const val MESSAGE_SLIDE_ACTION_DIRECT_SHARE = 3
     const val MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI = 4
     var messageSlideAction by sharedPreferences.int("CP_MessageSlideAction", MESSAGE_SLIDE_ACTION_REPLY)
+
+    var deleteForAll by sharedPreferences.boolean("CP_DeleteForAll", false)
     /** Messages finish **/
 
     /** Media start **/

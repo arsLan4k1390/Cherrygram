@@ -252,6 +252,7 @@ public class VideoAds {
             int num = Utilities.random.nextInt(2);
             hide = num == 1 && (ApplicationLoader.isStandaloneBuild() || CherrygramCoreConfig.INSTANCE.isDevBuild());
         }
+        if (UserConfig.getInstance(currentAccount).isPremium()) hide = false;
 
         if (hide) {
             logSponsoredShown(ad);

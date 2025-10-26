@@ -121,14 +121,11 @@ public class ReactedUsersListView extends FrameLayout {
 
                         FrameLayout frameLayout = new FrameLayout(context);
                         var getMessageMenuHelper = MessageMenuHelper.getInstance(currentAccount);
-                        if (getMessageMenuHelper.allowNewMessageMenu()) {
-                            if (getMessageMenuHelper.showCustomDivider()) {
-                                frameLayout.addView(new ActionBarPopupWindow.GapView(
-                                        context,
-                                        ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider), getMessageMenuHelper.getMessageMenuAlpha(true)),
-                                        Theme.getColor(Theme.key_windowBackgroundGrayShadow, resourcesProvider)
-                                ), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
-                            }
+                        if (getMessageMenuHelper.allowNewMessageMenu() && getMessageMenuHelper.showCustomDivider()) {
+                            // Don't remove the divider here cause of broken layout
+                            View gap = new View(context);
+                            gap.setBackgroundColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider), getMessageMenuHelper.getMessageMenuAlpha(true)));
+                            frameLayout.addView(gap, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 8));
                         } else {
                             View gap = new View(context);
                             gap.setBackgroundColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuSeparator, resourcesProvider));

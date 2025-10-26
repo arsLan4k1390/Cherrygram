@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
-    <string name="CG_FollowChannelLink">Подписывайтесь на @Cherry_Gram!</string>
     <string name="CG_FollowChannelTitle">Подписаться на официальный канал</string>
     <string name="CG_FollowChannelInfo">Присоединяйтесь к каналу, чтобы быть в курсе всех новостей и возможностей Cherrygram!</string>
     <string name="CG_DoNotRemindAgain">Не напоминать</string>
 
     <!--Telegram screens-->
-    <string name="CG_RegistrationDate">Дата регистрации:</string>
-    <string name="CG_RegistrationDateNewer">Позже, чем %s</string>
-    <string name="CG_RegistrationDateOlder">Ранее, чем %s</string>
-    <string name="CG_RegistrationDateApproximately">Приблизительно %s</string>
+    <string name="CG_JoinedDate">Вы присоединились к **%1$s** **%2$s**</string>
+    <string name="CG_CreatedDate">**%1$s** был создан **%2$s**</string>
+    <string name="CG_RegistrationDate">**%1$s** присоединился(ась) к Telegram **%2$s**</string>
+    <string name="CG_RegistrationDateNewer">позже, чем %s</string>
+    <string name="CG_RegistrationDateOlder">ранее, чем %s</string>
+    <string name="CG_RegistrationDateApproximately">приблизительно %s</string>
     <string name="CG_RegistrationDateFailed">Не удалось получить дату регистрации.</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">Вход по QR</string>
@@ -258,11 +259,21 @@
 
     <string name="CP_ChatMenuShortcuts">Действия в меню чата</string>
     <string name="CP_AdminActions">Действия для админов</string>
+
     <string name="CP_MessageMenu">Меню сообщения</string>
+    <string name="CP_MessageMenuItems">Элементы меню сообщения</string>
+    <string name="CP_BlurMessageMenu">Меню сообщений в стиле iOS</string>
+    <string name="CP_BlurMessageMenu_Desc">Добавляет размытие фона в меню сообщений и размещает панель реакций над сообщением, как в Telegram на iOS.</string>
+    <string name="CP_MessageMenuAutoscroll">Автопрокрутка сообщения</string>
+    <string name="CP_MessageMenuAutoscroll_Desc">При открытии меню сообщений автоматически прокручивает содержимое вниз, как в Telegram на iOS.</string>
+    <string name="CP_MessageMenuFixedHeight">Комфортная высота меню сообщений</string>
+    <string name="CP_MessageMenuFixedHeight_Desc">Меню сообщений займет половину площади экрана для удобного взаимодействия.</string>
+    <string name="CP_BlurMessageMenuItems">Размывать элементы меню</string>
+    <string name="CP_BlurMessageMenuItems_Desc">Размывает элементы меню для более аутентичного вида в стиле iOS.</string>
+
     <string name="AP_CenterChatsTitle">Центрирование заголовка в чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включить счетчик непрочитанных чатов на кнопке «Назад» в открытом чате</string>
-    <string name="CP_BlurMessageMenu">Размывать фон меню сообщения</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Количество недавних эмодзи и стикеров</string>
     <string name="CP_NoRounding">Отключить округление чисел</string>
     <string name="CP_DeleteForAll">Использовать \"Удалить для всех\" по умолчанию</string>
@@ -306,7 +317,9 @@
     <string name="CP_Message_Filtering_Filter">Включить фильтр</string>
     <string name="CP_Message_Filtering_Filter_Desc">При включённом фильтре выбранные слова во входящих сообщениях будут автоматически скрываться под спойлером, делая их нечитаемыми до раскрытия.</string>
     <string name="CP_Message_Filtering_Field">Введите слова для фильтрации</string>
-    <string name="CP_Message_Filtering_Field_Desc">Разделяйте слова запятой или пробелом. Регистр не имеет значения.</string>
+    <string name="CP_Message_Filtering_Field_Desc">Разделяйте слова запятой, пробелом или новой строкой. Используйте скобки, чтобы объединять несколько слов в словосочетание. Регистр не имеет значения.
+        \nПример: слово, другое, (несколько слов вместе).
+    </string>
     <string name="CP_Message_Filtering_Translit">Обнаружение транслита</string>
     <string name="CP_Message_Filtering_Translit_Desc">Когда включено, фильтр будет учитывать слова, написанные транслитом (например, \"test\" будет распознано как \"тест\").
         Это позволяет находить и скрывать сообщения под спойлер даже при замене кириллических букв на латинские. Может слегка увеличить нагрузку на процессор устройства.
@@ -326,9 +339,14 @@
     <string name="CP_Message_Filtering_HideAllDesc">Скрывает весь текст и медиа сообщения под спойлером, если в нем есть слово из фильтра.</string>
     <string name="CP_Message_Filtering_Collapse">Сворачивать сообщения</string>
     <string name="CP_Message_Filtering_Collapse_Desc">Сообщения будут сворачиваться автоматически. Развернуть сообщение можно, нажав на него.</string>
+    <string name="CP_Message_Filtering_Transparent">Прозрачность сообщения</string>
+    <string name="CP_Message_Filtering_Transparent_Desc">Если сообщение попало под фильтр, оно станет прозрачным, чтобы было проще отличить его от обычного.</string>
 
     <string name="CP_Slider_MediaAmplifier">Фото и видео</string>
     <string name="CP_Slider_MediaAmplifier_Hint">Не работает с альбомами</string>
+    <string name="CP_LargeVoiceMessages">Адаптивная длина аудиосообщений</string>
+    <string name="CP_LargeVoiceMessages_Desc">Длина пузыря аудиосообщения будет зависеть от продолжительности записи и автоматически подстраиваться под ширину экрана.</string>
+
     <string name="CP_VoiceEnhancements">Улучшения звука</string>
     <string name="CP_VoiceEnhancements_Desc">Включает шумоподавление и нормализацию голоса</string>
     <string name="CP_PlayVideo">Воспроизводить видео по нажатию на кнопку громкости</string>
@@ -451,7 +469,11 @@
     <!--Updates Preferences-->
 
     <!--Donations-->
-    <string name="DP_RateUs">Оцените Cherrygram</string>
+    <string name="DP_EnjoyingUs">Нравится Cherrygram?</string>
+    <string name="DP_RateUs">Оставьте отзыв в Google Play!</string>
+
+    <string name="DP_DonatesMoreInfo">Хотите помочь развитию Cherrygram? Загляните в чат **Cherrygram Support**.</string>
+    <string name="DP_DonatesThanks">Спасибо за поддержку! Вишенка счастлива благодаря вам ❤️️</string>
 
     <string name="DP_DonateBadge">Поддержите проект и получите бонусы</string>
     <string name="DP_Donate_Desc">При поддержке от 2$ вы также получите небольшие бонусы:</string>
@@ -460,7 +482,7 @@
     <string name="DP_Donate_EpicBadge_desc">1. **Эпический значок Cherrygram** рядом с вашим ником.</string>
     <string name="DP_Donate_GiftMarket_Desc">2. Кнопку \"**Маркетплейс подарков**\" в боковом меню.</string>
     <string name="DP_Donate_MessageFilter_Desc">3. Функцию \"**Фильтр сообщений**\"</string>
-    <string name="DP_Donate_MessageMenu_Desc">4. Меню сообщения \"**в стиле Telegram IOS**\".</string>
+    <string name="DP_Donate_MessageMenu_Desc">4. Меню сообщения \"**в стиле Telegram iOS**\".</string>
     <string name="DP_Donate_Cheque">Отправьте подтверждение платежа **@arsLan** для получения бонусов.</string>
 
     <string name="DP_Donate_Bulletin">**%s** поддержал(ла) разработку **Cherrygram**!</string>
@@ -477,7 +499,7 @@
     <string name="DP_Donate_Method_Int">Международные платежные системы</string>
     <string name="DP_Donate_Method_Rus">Для резидентов РФ</string>
     <string name="DP_Donate_Method_Uzb">Для резидентов Узбекистана</string>
-    <string name="DP_Donate_Method_Surname">Пожалуйста,свяжитесь с **@arsLan**, если платежная система требует персональные данные получателя.</string>
+    <string name="DP_Donate_Method_Surname">Пожалуйста, свяжитесь с **@arsLan**, если платежная система требует персональные данные получателя.</string>
 
     <string name="DP_Donate_Exclusive">Эксклюзив для поддержавших</string>
     <string name="DP_Donate_ExclusiveDesc">Поддержите проект и откройте доступ ко всем возможностям.</string>

@@ -131,10 +131,9 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
                 FirebaseRemoteConfigHelper.initRemoteConfig()
             }
 
-            DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext)
+            DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, false)
 
             if (KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelInfo))
-                || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelLink))
                 || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelTitle))
                 || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_APKS_CHANNEL_URL)
                 || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(Constants.CG_APKS_CHANNEL_USERNAME)

@@ -132,14 +132,6 @@ class DebugPreferencesEntry : BasePreferencesEntry {
 
                 }
             }
-            textIcon {
-                title = "Force load donates"
-
-                listener = TGKitTextIconRow.TGTIListener {
-                    CherrygramCoreConfig.lastDonatesCheckTime = System.currentTimeMillis() - (6 * 60 * 60 * 1000L)
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
         }
         category("Blur") {
             switch {
@@ -164,7 +156,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
         }
         category("Chats") {
             switch {
-                title = "Force Forum Tabs *"
+                title = "Force Forum Tabs"
 
                 contract({
                     return@contract SharedConfig.forceForumTabs

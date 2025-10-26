@@ -22,6 +22,7 @@ import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.HeaderCell;
+import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Components.LayoutHelper;
 
@@ -41,6 +42,15 @@ public class AlertDialogSwitchers {
 
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        TextCheckCell largerVoiceMessagesLayout = new TextCheckCell(context, 23, false, fragment.getResourceProvider());
+        largerVoiceMessagesLayout.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, fragment.getResourceProvider()), 100, 0));
+        largerVoiceMessagesLayout.setTextAndValueAndCheck(getString(R.string.CP_LargeVoiceMessages), getString(R.string.CP_LargeVoiceMessages_Desc), CherrygramChatsConfig.INSTANCE.getLargerVoiceMessagesLayout(), true, true);
+        largerVoiceMessagesLayout.setOnClickListener(v -> {
+            CherrygramChatsConfig.INSTANCE.setLargerVoiceMessagesLayout(!CherrygramChatsConfig.INSTANCE.getLargerVoiceMessagesLayout());
+            largerVoiceMessagesLayout.setChecked(!largerVoiceMessagesLayout.isChecked());
+        });
+        linearLayout.addView(largerVoiceMessagesLayout);
 
         LinearLayout linearLayoutInviteContainer = new LinearLayout(context);
         linearLayoutInviteContainer.setOrientation(LinearLayout.VERTICAL);

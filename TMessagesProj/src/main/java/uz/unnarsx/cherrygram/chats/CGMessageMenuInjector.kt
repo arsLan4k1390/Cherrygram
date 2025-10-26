@@ -50,7 +50,7 @@ object CGMessageMenuInjector {
         val isVoiceOrVideoMessage = selectedObject.type == MessageObject.TYPE_VOICE || selectedObject.type == MessageObject.TYPE_ROUND_VIDEO
         val isVoiceMessage = selectedObject.type == MessageObject.TYPE_VOICE
         val isPhoto = selectedObject.type == MessageObject.TYPE_PHOTO
-        val showDivider = !Theme.isCurrentThemeDay() && !Theme.getActiveTheme().isMonet && !Theme.getActiveTheme().isAmoled
+        val showDivider = chatActivity.messageMenuHelper.showDivider()
 
         val backCell = ActionBarMenuSubItem(chatActivity.parentActivity, true, false, chatActivity.resourceProvider)
         backCell.setItemHeight(46)
@@ -72,8 +72,8 @@ object CGMessageMenuInjector {
             )
         )
 
-        if (chatActivity.messageMenuHelper.allowNewMessageMenu()) {
-            if (showDivider /* && getMessageMenuHelper().showCustomDivider() */) {
+        if (showDivider) {
+            if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider()) {
                 linearLayout.addView(
                     ActionBarPopupWindow.GapView(
                         chatActivity.context,
@@ -82,9 +82,7 @@ object CGMessageMenuInjector {
                     ),
                     LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
                 )
-            }
-        } else {
-            if (showDivider) {
+            } else {
                 linearLayout.addView(
                     ActionBarPopupWindow.GapView(chatActivity.context, chatActivity.resourceProvider),
                     LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
@@ -185,7 +183,7 @@ object CGMessageMenuInjector {
         }
 
         if (showDivider) {
-            val gap = if (chatActivity.messageMenuHelper.allowNewMessageMenu()) {
+            val gap = if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider()) {
                 ActionBarPopupWindow.GapView(
                     chatActivity.context,
                     ColorUtils.setAlphaComponent(chatActivity.getThemedColor(Theme.key_windowBackgroundGray), chatActivity.messageMenuHelper.getMessageMenuAlpha(true)),
@@ -226,8 +224,8 @@ object CGMessageMenuInjector {
             popupLayout.swipeBack?.openForeground(foregroundIndex)
         }
 
-        if (chatActivity.messageMenuHelper.allowNewMessageMenu()) {
-            if (showDivider /* && getMessageMenuHelper().showCustomDivider() */) {
+        if (showDivider) {
+            if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider()) {
                 popupLayout.addView(
                     ActionBarPopupWindow.GapView(
                         chatActivity.context,
@@ -236,9 +234,7 @@ object CGMessageMenuInjector {
                     ),
                     LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
                 )
-            }
-        } else {
-            if (showDivider) {
+            } else {
                 popupLayout.addView(
                     ActionBarPopupWindow.GapView(chatActivity.context, chatActivity.resourceProvider),
                     LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8)
@@ -302,9 +298,9 @@ object CGMessageMenuInjector {
         icons: ArrayList<Int?>
     ) {
         if (CherrygramChatsConfig.showViewHistory) {
-            items.add(getString(R.string.CG_ViewUserHistory))
+            items.add(getString(R.string.AvatarPreviewSearchMessages))
             options.add(ChatActivityHelper.OPTION_VIEW_HISTORY)
-            icons.add(R.drawable.msg_recent)
+            icons.add(R.drawable.msg_search)
         }
     }
 
@@ -432,8 +428,8 @@ object CGMessageMenuInjector {
                 { CherrygramChatsConfig.showForwardWoAuthorship = !CherrygramChatsConfig.showForwardWoAuthorship }
             ),
             MenuItemConfig(
-                getString(R.string.CG_ViewUserHistory),
-                R.drawable.msg_recent,
+                getString(R.string.AvatarPreviewSearchMessages),
+                R.drawable.msg_search,
                 { CherrygramChatsConfig.showViewHistory },
                 { CherrygramChatsConfig.showViewHistory = !CherrygramChatsConfig.showViewHistory }
             ),
@@ -472,7 +468,7 @@ object CGMessageMenuInjector {
         }
 
         PopupHelper.showSwitchAlert(
-            getString(R.string.CP_MessageMenu),
+            getString(R.string.CP_MessageMenuItems),
             fragment,
             prefTitle,
             prefIcon,

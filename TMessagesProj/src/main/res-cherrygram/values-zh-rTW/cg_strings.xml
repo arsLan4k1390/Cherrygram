@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
-    <string name="CG_FollowChannelLink">訂閱 @Cherry_Gram 頻道！</string>
     <string name="CG_FollowChannelTitle">訂閱官方頻道</string>
     <string name="CG_FollowChannelInfo">加入頻道，隨時掌握 Cherrygram 的最新資訊和功能！</string>
     <string name="CG_DoNotRemindAgain">下次不要顯示</string>
     <!--Telegram screens-->
+    <string name="CG_JoinedDate">您加入了 **%1$s** **%2$s**</string>
+    <string name="CG_CreatedDate">**%1$s** 已建立 **%2$s**</string>
     <string name="CG_RegistrationDate">註冊日期：</string>
     <string name="CG_RegistrationDateNewer">遲於%s</string>
     <string name="CG_RegistrationDateOlder">早於%s</string>
@@ -230,10 +231,18 @@
     <string name="CP_ChatMenuShortcuts">對話功能表捷徑</string>
     <string name="CP_AdminActions">管理員捷徑</string>
     <string name="CP_MessageMenu">訊息選單自訂</string>
+    <string name="CP_MessageMenuItems">訊息選單項目</string>
+    <string name="CP_BlurMessageMenu">模糊訊息選單背景</string>
+    <string name="CP_BlurMessageMenu_Desc">為訊息選單套用模糊背景，並將回應面板顯示於訊息上方，類似 iOS 版 Telegram 的設計。</string>
+    <string name="CP_MessageMenuAutoscroll">訊息自動捲動</string>
+    <string name="CP_MessageMenuAutoscroll_Desc">開啟時自動將訊息選單內容捲動至底部，類似 iOS 版 Telegram 的操作方式。</string>
+    <string name="CP_MessageMenuFixedHeight">更大的訊息選單高度</string>
+    <string name="CP_MessageMenuFixedHeight_Desc">訊息選單將佔據半個螢幕區域，以便更容易使用。</string>
+    <string name="CP_BlurMessageMenuItems">模糊選單項目</string>
+    <string name="CP_BlurMessageMenuItems_Desc">模糊選單項目，呈現更真實的 iOS 外觀。</string>
     <string name="AP_CenterChatsTitle">對話標題列置中</string>
     <string name="CP_UnreadBadgeOnBackButton">顯示未讀對話數量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已開啟的對話中顯示未讀訊息數量</string>
-    <string name="CP_BlurMessageMenu">模糊訊息選單背景</string>
     <string name="CP_Slider_RecentEmojisAndStickers">最近使用的表情符號和貼圖計數器</string>
     <string name="CP_NoRounding">停用數字四捨五入</string>
     <string name="CP_DeleteForAll">預設選擇「全部刪除」</string>
@@ -295,8 +304,12 @@
     <string name="CP_Message_Filtering_HideAllDesc">如訊息內容包含過濾字詞，則將整則訊息文字與媒體檔案隱藏於劇透標籤之下。</string>
     <string name="CP_Message_Filtering_Collapse">折疊訊息</string>
     <string name="CP_Message_Filtering_Collapse_Desc">啟用功能後，訊息將自動折疊。您可以在訊息上按一下以展開內容。</string>
+    <string name="CP_Message_Filtering_Transparent">訊息透明度</string>
+    <string name="CP_Message_Filtering_Transparent_Desc">篩選後的訊息會變成透明，讓您能輕鬆區分它們。</string>
     <string name="CP_Slider_MediaAmplifier">圖片與影片</string>
     <string name="CP_Slider_MediaAmplifier_Hint">放大功能對於相簿（分組媒體）無效</string>
+    <string name="CP_LargeVoiceMessages">自適應語音訊息長度</string>
+    <string name="CP_LargeVoiceMessages_Desc">語音訊息氣泡的長度將取決於錄音時長，並會自動調整以適應螢幕寬度。</string>
     <string name="CP_VoiceEnhancements">語音增強</string>
     <string name="CP_VoiceEnhancements_Desc">噪聲抑制和音量一致化</string>
     <string name="CP_PlayVideo">按下音量鍵播放影片</string>
@@ -405,7 +418,9 @@
     <string name="UP_Download">下載</string>
     <!--Updates Preferences-->
     <!--Donations-->
+    <string name="DP_EnjoyingUs">喜歡使用 Cherrygram 嗎？</string>
     <string name="DP_RateUs">評價 Cherrygram</string>
+    <string name="DP_DonatesMoreInfo">想協助 Cherrygram 發展嗎？歡迎加入 **Cherrygram Support** 聊天室。</string>
     <string name="DP_DonateBadge">捐款並解鎖額外功能</string>
     <string name="DP_Donate_Desc">當您捐款達2美元或以上時，您還將獲得額外贈品：</string>
     <string name="DP_Donate_Badge_desc">**Cherrygram 徽章** 顯示於您的姓名旁。</string>

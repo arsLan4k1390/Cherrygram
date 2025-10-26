@@ -692,7 +692,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         checkImage.setOnClickListener(v -> processDone(false));
 
         fingerprintImage = new ImageView(context);
-        fingerprintImage.setImageResource(R.drawable.fingerprint);
+        fingerprintImage.setImageResource(CGBiometricPrompt.getBiometricIconResId());
         fingerprintImage.setScaleType(ImageView.ScaleType.CENTER);
         fingerprintImage.setBackgroundResource(R.drawable.bar_selector_lock);
         passwordFrameLayout.addView(fingerprintImage, LayoutHelper.createFrame(BUTTON_SIZE, BUTTON_SIZE, Gravity.BOTTOM | Gravity.LEFT, 10, 0, 0, 4));
@@ -763,7 +763,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
                 fingerprintView = frameLayout;
                 frameLayout.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(30), 0, 0x26ffffff));
                 frameLayout.setContentDescription(LocaleController.getString(R.string.AccDescrFingerprint));
-                frameLayout.setImage(R.drawable.fingerprint);
+                frameLayout.setImage(CGBiometricPrompt.getBiometricIconResId());
                 setNextFocus(frameLayout, R.id.passcode_btn_1);
             } else {
                 frameLayout.setBackground(Theme.createSimpleSelectorRoundRectDrawable(dp(30), 0x26ffffff, 0x4cffffff));
@@ -1212,12 +1212,14 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
     }
 
     private void checkFingerprintButton() {
-        boolean hasFingerprint = false;
+        boolean hasBiometric = false;
         Activity parentActivity = AndroidUtilities.findActivity(getContext());
         if (Build.VERSION.SDK_INT >= 23 && parentActivity != null && SharedConfig.useFingerprintLock) {
             try {
-                if (CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()) {
-                    hasFingerprint = true;
+                boolean biometricEnrolled = CGBiometricPrompt.hasBiometricEnrolled(); // включает Face ID на Android 10+
+
+                if (biometricEnrolled) {
+                    hasBiometric = true;
                     fingerprintView.setVisibility(VISIBLE);
                 } else {
                     fingerprintView.setVisibility(GONE);
@@ -1232,7 +1234,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         if (SharedConfig.passcodeType == SharedConfig.PASSCODE_TYPE_PASSWORD) {
             fingerprintImage.setVisibility(fingerprintView.getVisibility());
         }
-        subtitleView.setText(LocaleController.getString(hasFingerprint ? R.string.EnterPINorFingerprint : R.string.EnterPIN));
+        subtitleView.setText(LocaleController.getString(hasBiometric ? R.string.EnterPINorFingerprint : R.string.EnterPIN));
     }
 
     public void onShow(boolean fingerprint, boolean animated, int x, int y, Runnable onShow, Runnable onStart) {
@@ -1723,7 +1725,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
 
             ImageView imageView = new ImageView(context);
             imageView.setScaleType(ImageView.ScaleType.CENTER);
-            imageView.setImageResource(R.drawable.fingerprint);
+            imageView.setImageResource(CGBiometricPrompt.getBiometricIconResId());
             container2.addView(imageView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
             addView(container1, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 0, 0, 16));
@@ -1886,7 +1888,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
 
             imageView = new ImageView(context);
             imageView.setScaleType(ImageView.ScaleType.CENTER);
-            imageView.setImageResource(R.drawable.fingerprint);
+            imageView.setImageResource(CGBiometricPrompt.getBiometricIconResId());
             addView(imageView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
 
             textView1 = new TextView(context);

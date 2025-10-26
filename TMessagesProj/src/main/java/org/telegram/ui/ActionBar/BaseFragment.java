@@ -67,6 +67,7 @@ import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.chats.helpers.MessageHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.helpers.ProfileActivityHelper;
 
 public abstract class BaseFragment {
 
@@ -1357,6 +1358,10 @@ public abstract class BaseFragment {
 
     public ChatsPasswordHelper getChatsPasswordHelper() {
         return ChatsPasswordHelper.getInstance(currentAccount);
+    }
+
+    public ProfileActivityHelper getProfileActivityHelper() {
+        return ProfileActivityHelper.getInstance(currentAccount);
     }
     /** Cherrygram finish */
 

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
-    <string name="CG_FollowChannelLink">عضو @Cherry_Gram شوید!</string>
     <string name="CG_FollowChannelTitle">عضو کانال رسمی شوید</string>
     <string name="CG_FollowChannelInfo">برای در جریان بودن از تمام اخبار و ویژگی‌های Cherrygram، به کانال ما بپیوندید!</string>
     <string name="CG_DoNotRemindAgain">دوباره یادآوری نکن</string>

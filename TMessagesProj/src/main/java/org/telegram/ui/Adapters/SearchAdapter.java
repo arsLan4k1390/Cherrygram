@@ -332,7 +332,7 @@ public class SearchAdapter extends RecyclerListView.SelectionAdapter {
         switch (viewType) {
             case 0:
                 if (useUserCell) {
-                    view = new UserCell(mContext, 1, 1, false);
+                    view = new UserCell(mContext, 1, 1, false, false, null, addMutualIcon, true);
                 } else {
                     view = new ProfileSearchCell(mContext);
                 }
@@ -490,4 +490,14 @@ public class SearchAdapter extends RecyclerListView.SelectionAdapter {
         String q2;
         ContactsController.Contact contact;
     }
+
+
+    /** Cherrygram start */
+    private boolean addMutualIcon;
+
+    public void setAddMutualIcon(boolean value) {
+        addMutualIcon = value;
+    }
+    /** Cherrygram finish */
+
 }

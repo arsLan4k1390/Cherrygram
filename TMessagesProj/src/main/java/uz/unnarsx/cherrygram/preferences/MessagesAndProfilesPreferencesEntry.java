@@ -46,7 +46,6 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
-import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.TLRPC;
@@ -216,7 +215,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                         case VIEW_TYPE_MESSAGE:
                             ThemePreviewMessagesCell messagesCell = messagesCellPreview = new ThemePreviewMessagesCell(
                                     getContext(), parentLayout, user.premium
-                                    && UserObject.getEmojiId(UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser()) != 0
+                                    && UserObject.getEmojiId(getUserConfig().getCurrentUser()) != 0
                                             ? ThemePreviewMessagesCell.TYPE_PEER_COLOR : ThemePreviewMessagesCell.TYPE_PEER_COLOR_CHERRY
                             );
                             messagesCell.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
@@ -239,7 +238,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             view = textSettingsCell;
                             break;
                         case VIEW_TYPE_TEXT_DETAIL:
-                            TextDetailCell textDetailCell = new TextDetailCell(getContext(), getResourceProvider(), true);
+                            TextDetailCell textDetailCell = new TextDetailCell(getContext(), getResourceProvider(), true, true);
                             textDetailCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                             textDetailCell.setContentDescriptionValueFirst(true);
                             view = textDetailCell;
@@ -321,7 +320,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                     final int buttonColor = processColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, getResourceProvider()));
                                     drawable.setColorFilter(new PorterDuffColorFilter(buttonColor, PorterDuff.Mode.MULTIPLY));
                                 }
-                                detailCell.setImageClickListener(v -> Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getParentActivity(), getUserConfig().getCurrentUser().id));
+                                detailCell.setImageClickListener(v -> Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getParentActivity(), getUserConfig().getClientUserId(), 0));
                             } else if (position == idDcPreviewRow) {
                                 StringBuilder sb = new StringBuilder();
                                 if (me.photo != null && me.photo.dc_id > 0) {
@@ -345,9 +344,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                     final int buttonColor = processColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, getResourceProvider()));
                                     drawable.setColorFilter(new PorterDuffColorFilter(buttonColor, PorterDuff.Mode.MULTIPLY));
                                 }
-                                detailCell.setImageClickListener(v -> Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getParentActivity(), getUserConfig().getCurrentUser().id));
+                                detailCell.setImageClickListener(v -> Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getParentActivity(), getUserConfig().getClientUserId(), 0));
                             } else if (position == birthdayPreviewRow) {
-                                TLRPC.UserFull meFull = MessagesController.getInstance(currentAccount).getUserFull(me.id);
+                                TLRPC.UserFull meFull = getMessagesController().getUserFull(me.id);
                                 if (meFull != null && meFull.birthday != null) {
                                     String date = UserInfoActivity.birthdayString(meFull.birthday);
                                     detailCell.setTextAndValue(date, getString(R.string.ProfileBirthday), false);
@@ -905,8 +904,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             }
         });
         getMediaDataController().loadReplyIcons();
-        if (MessagesController.getInstance(currentAccount).peerColors == null && BuildVars.DEBUG_PRIVATE_VERSION) {
-            MessagesController.getInstance(currentAccount).loadAppConfig(true);
+        if (getMessagesController().peerColors == null && BuildVars.DEBUG_PRIVATE_VERSION) {
+            getMessagesController().loadAppConfig(true);
         }
         return super.onFragmentCreate();
     }
@@ -1256,7 +1255,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
             imageReceiver.setRoundRadius(dp(96));
             CharSequence title;
-            TLRPC.User user = UserConfig.getInstance(currentAccount).getCurrentUser();
+            TLRPC.User user = getUserConfig().getCurrentUser();
             title = UserObject.getUserName(user);
 
             avatarDrawable.setInfo(currentAccount, user);
@@ -1276,8 +1275,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         public void overrideAvatarColor(int colorId) {
             final int color1, color2;
             if (colorId >= 14) {
-                MessagesController messagesController = MessagesController.getInstance(UserConfig.selectedAccount);
-                MessagesController.PeerColors peerColors = messagesController != null ? messagesController.peerColors : null;
+                MessagesController.PeerColors peerColors = getMessagesController().peerColors;
                 MessagesController.PeerColor peerColor = peerColors != null ? peerColors.getColor(colorId) : null;
                 if (peerColor != null) {
                     final int peerColorValue = peerColor.getColor1();
@@ -1315,7 +1313,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
         private MessagesController.PeerColor peerColor;
         public void setColor(int colorId, boolean animated) {
-            MessagesController.PeerColors peerColors = MessagesController.getInstance(currentAccount).profilePeerColors;
+            MessagesController.PeerColors peerColors = getMessagesController().profilePeerColors;
             MessagesController.PeerColor peerColor = peerColors == null ? null : peerColors.getColor(colorId);
             setColor(peerColor, animated);
         }

@@ -48,9 +48,17 @@ public class DeeplinkHelper {
                     return;
                 }
                 case "cg_chats" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createChats();
+                case "cg_message_menu", "cg_messages_menu", "cg_ios_menu" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createMessageMenu(fragment);
+                    return;
+                }
                 case "cg_debug" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createDebug();
                 case "cg_donate", "cg_donates", "cg_support", "cg_badge" -> {
                     CherrygramPreferencesNavigator.INSTANCE.createDonate(fragment);
+                    return;
+                }
+                case "cg_donate_force", "cg_donates_force", "cg_support_force", "cg_badge_force" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createDonateForce(fragment);
                     return;
                 }
                 case "cg_drawer" -> {

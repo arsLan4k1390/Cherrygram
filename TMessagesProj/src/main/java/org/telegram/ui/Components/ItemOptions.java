@@ -14,13 +14,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.text.Layout;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -37,7 +34,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -58,7 +54,6 @@ import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.SharedPhotoVideoCell2;
 import org.telegram.ui.Cells.UserCell;
@@ -69,6 +64,8 @@ import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.util.HashSet;
 import java.util.Objects;
+
+import uz.unnarsx.cherrygram.helpers.ui.badges.BadgeHelper;
 
 public class ItemOptions {
 
@@ -1483,7 +1480,7 @@ public class ItemOptions {
                     clipPath.addRoundRect(AndroidUtilities.rectTmp, scrimViewRoundRadius * dimProgress, scrimViewRoundRadius * dimProgress, Path.Direction.CW);
                     canvas.clipPath(clipPath);
                 }
-                cachedBitmapPaint.setAlpha((int) (0xFF * dimProgress));
+                cachedBitmapPaint.setAlpha(0xFF);
                 canvas.drawBitmap(cachedBitmap, -viewAdditionalOffsets.left, -viewAdditionalOffsets.top, cachedBitmapPaint);
                 canvas.restore();
             } else if (scrimView != null && scrimView.getParent() instanceof View) {
@@ -1568,7 +1565,11 @@ public class ItemOptions {
                         canvas.restore();
                     }
                 } else {
-                    canvas.saveLayerAlpha(0, 0, scrimView.getWidth(), scrimView.getHeight(), (int) (0xFF * dimProgress), Canvas.ALL_SAVE_FLAG);
+                    if (allowMoveScrim) {
+                        canvas.saveLayerAlpha(0, 0, scrimView.getWidth(), scrimView.getHeight(), (int) (0xFF * dimProgress), Canvas.ALL_SAVE_FLAG);
+                    } else {
+                        canvas.save();
+                    }
                     if (scrimView instanceof ScrimView) {
                         ((ScrimView) scrimView).drawScrim(canvas, dimProgress);
                     } else {
@@ -1713,7 +1714,7 @@ public class ItemOptions {
         textAndStatuses.addView(subItem.getTextView(), LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
 
         final BackupImageView emojiDrawableImageView = new BackupImageView(context);
-        final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable emojiDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(emojiDrawableImageView, dp(16), AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS);
+        final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable emojiDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(emojiDrawableImageView, dp(24), AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS);
         emojiDrawableImageView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(@NonNull View v) {
@@ -1727,7 +1728,7 @@ public class ItemOptions {
         });
 
         final BackupImageView cgEmojiDrawableImageView = new BackupImageView(context);
-        final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cgStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(cgEmojiDrawableImageView, dp(16), AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS);
+        final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cgStatusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(cgEmojiDrawableImageView, dp(24), AnimatedEmojiDrawable.CACHE_TYPE_EMOJI_STATUS);
         cgEmojiDrawableImageView.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
             public void onViewAttachedToWindow(@NonNull View v) {
@@ -1740,7 +1741,7 @@ public class ItemOptions {
             }
         });
 
-        boolean isPremium = user != null && user.premium;
+        boolean isPremium = user.premium;
 
         final Utilities.Callback<Object[]> updateStatus = args -> {
             final int color = Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider);
@@ -1758,7 +1759,7 @@ public class ItemOptions {
             if (documentID != 0) {
                 cgStatusDrawable.set(documentID, true);
                 cgStatusDrawable.setParticles(particles, particles);
-                cgStatusDrawable.setColor(color);
+                cgStatusDrawable.setColor(!particles ? color : BadgeHelper.Companion.getEmojiStatusColor(user.id, color, true));
 
                 cgEmojiDrawableImageView.setImageDrawable(cgStatusDrawable);
             }
@@ -1768,19 +1769,19 @@ public class ItemOptions {
         if (isPremium) {
             textAndStatuses.addView(
                     emojiDrawableImageView,
-                    LayoutHelper.createLinear(dp(6), dp(6), Gravity.CENTER_VERTICAL, dp(1), 0, 0, 0)
+                    LayoutHelper.createLinear(24, 24, Gravity.CENTER_VERTICAL, dp(1), 0, 0, 0)
             );
         }
         if (documentID != 0) {
             textAndStatuses.addView(
                     cgEmojiDrawableImageView,
-                    LayoutHelper.createLinear(dp(6), dp(6), Gravity.CENTER_VERTICAL, dp(1), 0, 0, 0)
+                    LayoutHelper.createLinear(24, 24, Gravity.CENTER_VERTICAL, dp(1), 0, 0, 0)
             );
         }
 
         subItem.addView(
                 textAndStatuses,
-                LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, dp(11), 0, 0, 0)
+                LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 35, 0, 0, 0)
         );
 
         if (minWidthDp > 0) {
@@ -1793,4 +1794,5 @@ public class ItemOptions {
         return this;
     }
     /** Cherrygram finish */
+
 }

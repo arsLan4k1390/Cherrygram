@@ -158,25 +158,16 @@ public class MessageHelper extends BaseController {
 
         builder.setNeutralButton(getString(R.string.CG_DeleteAllFromSelfBefore), (dialog, which) -> showBeforeDatePickerAlert(fragment, before1 -> createDeleteHistoryAlert(fragment, chat, forumTopic, mergeDialogId, before1, resourcesProvider)));
         builder.setPositiveButton(getString(R.string.DeleteAll), (dialogInterface, i) -> {
-            AndroidUtilities.runOnUIThread(() -> {
-                try {
-                    progressDialog.show();
-                } catch (Exception e) {
-                    FileLog.e(e);
-                }
-            });
             if (cell != null && cell.isChecked()) {
-                showDeleteHistoryBulletin(fragment, 0, false, () -> {
-                    getMessagesController().deleteUserChannelHistory(chat, getUserConfig().getCurrentUser(), null, 0);
-                    AndroidUtilities.runOnUIThread(() -> {
-                        try {
-                            if (progressDialog != null && progressDialog.isShowing()) progressDialog.dismiss();
-                        } catch (Exception e) {
-                            FileLog.e(e);
-                        }
-                    });
-                }, resourcesProvider);
+                showDeleteHistoryBulletin(fragment, 0, false, () -> getMessagesController().deleteUserChannelHistory(chat, getUserConfig().getCurrentUser(), null, 0), resourcesProvider);
             } else {
+                AndroidUtilities.runOnUIThread(() -> {
+                    try {
+                        progressDialog.show();
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                    }
+                });
                 deleteUserHistoryWithSearch(fragment, -chat.id, forumTopic != null ? forumTopic.id : 0, forumTopic != null ? forumTopic.id : 0, mergeDialogId, before == -1 ? getConnectionsManager().getCurrentTime() : before, (count, deleteAction) -> {
                     showDeleteHistoryBulletin(fragment, count, true, deleteAction, resourcesProvider);
                     AndroidUtilities.runOnUIThread(() -> {

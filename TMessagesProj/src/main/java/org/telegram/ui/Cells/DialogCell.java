@@ -756,7 +756,8 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         }
     }
 
-    public void setDialog(long dialog_id, MessageObject messageObject, int date, boolean useMe, boolean animated) {
+    public void setDialog(long dialog_id, MessageObject messageObject, int date, boolean useMe, boolean animated, boolean searchView) {
+        this.isSearchView = searchView;
         if (currentDialogId != dialog_id) {
             lastStatusDrawableParams = -1;
         }
@@ -777,6 +778,10 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             lastSendState = message.messageOwner.send_state;
         }
         update(0, animated);
+    }
+
+    public void setDialog(long dialog_id, MessageObject messageObject, int date, boolean useMe, boolean animated) {
+        setDialog(dialog_id, messageObject, date, useMe, animated, false);
     }
 
     public long getDialogId() {
@@ -1908,6 +1913,10 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 timeString = LocaleController.stringForMessageListDate(message.messageOwner.date);
             }
 
+            if (lastMessageDate != 0 && isSearchView) {
+                timeString = LocaleController.formatShortDateTime(lastMessageDate);
+            }
+
             if (message == null || isSavedDialog) {
                 drawCheck1 = false;
                 drawCheck2 = false;
@@ -2065,6 +2074,12 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                             }
                             nameString = getString(R.string.SavedMessages);
                         }
+                    } else if (isTopic) {
+                        if (topicIconInName == null) {
+                            topicIconInName = new Drawable[1];
+                        }
+                        topicIconInName[0] = null;
+                        nameString = showTopicIconInName ? ForumUtilities.getTopicSpannedName(forumTopic, Theme.dialogs_namePaint[paintIndex], topicIconInName, false) : AndroidUtilities.escape(forumTopic.title);
                     } else {
                         nameString = AndroidUtilities.escape(UserObject.getUserName(user));
                     }
@@ -2997,10 +3012,6 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
             if (customDialog.id == 1390) {
                 chat = MessagesController.getInstance(currentAccount).getChat(Constants.Cherrygram_Channel);
-                avatarImage.setForUserOrChat(chat, avatarDrawable);
-            }
-            if (customDialog.id == 1391) {
-                chat = MessagesController.getInstance(currentAccount).getChat(1571726392L);
                 avatarImage.setForUserOrChat(chat, avatarDrawable);
             }
             if (customDialog.id == 2003) {
@@ -6102,4 +6113,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     protected boolean allowCaching() {
         return rightFragmentOpenedProgress <= 0;
     }
+
+    /** Cherrygram start */
+    private boolean isSearchView = false;
+    /** Cherrygram finish */
+
 }

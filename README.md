@@ -18,7 +18,7 @@ This repo contains the official source code for [Telegram App for Android](https
 
 ## Discussion
 
-Join the [Cherrygram official channel](https://t.me/Cherry_gram)
+Join the [Cherrygram official channel](https://t.me/cherrygram)
 
 Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
@@ -123,15 +123,15 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Show/Hide bottom button in channels (Mute/Unmute),
 - Direct Share button (Select where to show the button),
 - Configure message menu,
-- Configure messages bubble size (Photos/Videos, Stickers and GIFs),
+- Configure messages bubble size (Voice messages, Photos/Videos, Stickers and GIFs),
 - Message filter (hide messages under a spoiler by keywords),
 - Hide time on stickers,
-- Use "Delete for all" by default,
 - Show forwarded message date,
 - Pencil icon for edited messages instead of "edited",
 - Left button action (Forward w/o authorship, Direct Share, Reply or Save),
 - Double tap action (Disable, Reaction, Reply, Save/Edit/Translate a message),
 - Message swipe action (Reply, Save, Translate or Direct Share),
+- Use "Delete for all" by default,
 - Large photos (2560px),
 - Voice enhancements,
 - Enable/Disable playing video on volume button click,

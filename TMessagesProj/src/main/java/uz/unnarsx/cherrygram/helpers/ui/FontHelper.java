@@ -13,7 +13,11 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.graphics.fonts.Font;
+import android.graphics.fonts.SystemFonts;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -24,6 +28,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.List;
+import java.util.Set;
 
 public class FontHelper {
 
@@ -127,6 +132,45 @@ public class FontHelper {
     }
 
     public static File getSystemEmojiFontPath() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            File fontFile = getSystemEmojiFontPathV29();
+            if (fontFile != null) {
+                FileLog.d("Emoji font found using SystemFonts API: " + fontFile.getAbsolutePath());
+                return fontFile;
+            }
+            FileLog.d("SystemFonts API failed to find emoji font, falling back to legacy method.");
+        }
+        return getSystemEmojiFontPathLegacy();
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private static File getSystemEmojiFontPathV29() {
+        Paint paint = new Paint();
+        Set<Font> fonts = SystemFonts.getAvailableFonts();
+        for (Font font : fonts) {
+            if (font == null) {
+                continue;
+            }
+            File fontFile = font.getFile();
+            if (fontFile == null || !fontFile.exists()) {
+                continue;
+            }
+            String fontName = fontFile.getName().toLowerCase();
+            if (fontName.contains("samsungcoloremoji")) {
+                return fontFile;
+            }
+            if (fontName.contains("emoji")) {
+                return fontFile;
+            }
+            paint.setTypeface(new Typeface.Builder(fontFile).build());
+            if (paint.hasGlyph("\uD83D\uDE00")) {
+                return fontFile;
+            }
+        }
+        return null;
+    }
+
+    public static File getSystemEmojiFontPathLegacy() {
         try (var br = new BufferedReader(new FileReader("/system/etc/fonts.xml"))) {
             String line;
             var ignored = false;

@@ -1140,6 +1140,7 @@ public class StoriesUtilities {
         public View child;
 
         public boolean checkOnTouchEvent(MotionEvent event, View view) {
+            if (CherrygramCoreConfig.INSTANCE.getHideStories()) return false;
             child = view;
             StoriesController storiesController = MessagesController.getInstance(UserConfig.selectedAccount).getStoriesController();
             if (event.getAction() == MotionEvent.ACTION_DOWN && originalAvatarRect.contains(event.getX(), event.getY())) {

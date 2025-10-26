@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
-    <string name="CG_FollowChannelLink">\@Cherry_Gram\'a abone olun!</string>
     <string name="CG_FollowChannelTitle">Resmi kanala abone olun</string>
     <string name="CG_FollowChannelInfo">Cherrygram\'in tüm haberleri ve özelliklerinden haberdar olmak için kanala katılın!</string>
     <string name="CG_DoNotRemindAgain">Tekrar hatırlatma</string>

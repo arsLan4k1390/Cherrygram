@@ -21,9 +21,9 @@ object Constants {
 
     /** CG Chats Links start**/
     @JvmField
-    var CG_CHANNEL_USERNAME = "Cherry_gram"
+    var CG_CHANNEL_USERNAME = "cherrygram"
     @JvmField
-    var CG_CHANNEL_URL = "https://t.me/cherry_gram"
+    var CG_CHANNEL_URL = "https://t.me/cherrygram"
 
     @JvmField
     var CG_APKS_CHANNEL_USERNAME = "CherrygramAPKs"
@@ -53,8 +53,8 @@ object Constants {
     /** Misc start**/
     const val CHERRY_EMOJI_ID = 5220045200780458122L // Cherrygram logo
     const val CHERRY_EMOJI_ID_BRA = 5222458839256825177L // Cherrygram logo (bra)
-    const val CHERRY_EMOJI_ID_VERIFIED = 5222226331202254876L // Cherrygram Verified adaptive logo
-    const val CHERRY_EMOJI_ID_VERIFIED_BRA = 5219719363086546908L // Cherrygram Verified Bra adaptive logo
+    const val CHERRY_EMOJI_ID_VERIFIED = 5449476181864779205L // Cherrygram Verified adaptive logo
+    const val CHERRY_EMOJI_ID_VERIFIED_BRA = 5451850156318181341L // Cherrygram Verified Bra adaptive logo
     const val CHERRY_EMOJI_ID_DONATE = 5411229175971322671L // Cherry emoji with eyeglasses
     const val CHERRY_EMOJI_ID_PREMIUM = 5393391313502609448L // Cherry emoji with stars
     const val CHERRY_EMOJI_ID_PREMIUM_MOON = 5370777017904011118L // Evil moon emoji

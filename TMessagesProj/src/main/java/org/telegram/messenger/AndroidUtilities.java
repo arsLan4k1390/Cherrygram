@@ -2669,6 +2669,7 @@ public class AndroidUtilities {
             if (configuration == null) {
                 configuration = context.getResources().getConfiguration();
             }
+            // usingHardwareInput = false; just for test
             usingHardwareInput = configuration.keyboard != Configuration.KEYBOARD_NOKEYS && configuration.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO;
             WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
             if (manager != null) {
@@ -2917,7 +2918,7 @@ public class AndroidUtilities {
     }
 
     public static int getPhotoSize(boolean highQuality) {
-        if (highQuality) {
+        if (CherrygramChatsConfig.INSTANCE.getLargePhotos() || highQuality) {
             if (highQualityPhotoSize == null) {
                 highQualityPhotoSize = 2560;
             }
@@ -5012,6 +5013,15 @@ public class AndroidUtilities {
 
     public static float lerp(float a, float b, float f) {
         return a + f * (b - a);
+    }
+
+    public static float lerp(float a, float b, float c, float f) {
+        return lerp(a, b, c, 0.5f, f);
+    }
+
+    public static float lerp(float a, float b, float c, float middle, float f) {
+        if (f < middle) return lerp(a, b, f / middle);
+        return lerp(b, c, (f - middle) / (1.0f - middle));
     }
 
     public static float lerp(boolean a, boolean b, float f) {

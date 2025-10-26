@@ -68,6 +68,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
+import uz.unnarsx.cherrygram.helpers.ui.badges.BadgeHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 
 public class UserCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
@@ -81,7 +82,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
     private ImageView checkBox3;
     private TextView adminTextView;
     public TextView addButton;
-    private ImageView mutualView;
     private Drawable premiumDrawable;
     private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable botVerification;
     private final AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable emojiStatus;
@@ -147,10 +147,6 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
 
     public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton) {
         this(context, padding, checkbox, admin, needAddButton, null, false, false);
-    }
-
-    public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton, boolean needMutualIcon, boolean allowLongPress) {
-        this(context, padding, checkbox, admin, needAddButton, null, needMutualIcon, allowLongPress);
     }
 
     public UserCell(Context context, int padding, int checkbox, boolean admin, boolean needAddButton, Theme.ResourcesProvider resourcesProvider, boolean needMutualIcon, boolean allowLongPress) {
@@ -272,7 +268,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
             mutualView.setScaleType(ImageView.ScaleType.CENTER);
             mutualView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteGrayIcon, resourcesProvider), PorterDuff.Mode.MULTIPLY));
             mutualView.setVisibility(GONE);
-            mutualView.setOnClickListener(v -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_ERROR, LocaleController.getString("AP_MutualContactsDescription", R.string.AP_MutualContacts_Description)));
+            mutualView.setOnClickListener(v -> NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_ERROR, getString(R.string.AP_MutualContacts_Description)));
             mutualView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
             addView(mutualView, LayoutHelper.createFrame(40, 40, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.CENTER_VERTICAL, LocaleController.isRTL ? 8 : 0, 0, LocaleController.isRTL ? 0 : 8, 0));
         }
@@ -718,7 +714,7 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
         if (mutualView != null) {
             mutualView.setVisibility(currentUser != null && currentUser.mutual_contact ? VISIBLE : GONE);
             if (currentUser != null && currentUser.mutual_contact) {
-                nameTextView.setContentDescription(nameTextView.getText() + " (" + LocaleController.getString("AP_MutualContacts_Description", R.string.AP_MutualContacts_Description) + ")");
+                nameTextView.setContentDescription(nameTextView.getText() + " (" + getString(R.string.AP_MutualContacts_Description) + ")");
             }
         }
     }
@@ -851,6 +847,8 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
     }
 
     /** Cherrygram start */
+    private ImageView mutualView;
+
     private AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable cherrygramStatusDrawable;
 
     private void checkCherrygramBadges(SimpleTextView nameTextView, TLRPC.User user) {
@@ -873,7 +871,9 @@ public class UserCell extends FrameLayout implements NotificationCenter.Notifica
 
         if (emojiDocumentId != 0) {
             cherrygramStatusDrawable.set(emojiDocumentId, false);
-            cherrygramStatusDrawable.setColor(Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider));
+
+            int color = Theme.getColor(Theme.key_chats_verifiedBackground, resourcesProvider);
+            cherrygramStatusDrawable.setColor(BadgeHelper.Companion.getEmojiStatusColor(user.id, color, false));
             cherrygramStatusDrawable.setParticles(showParticles, showParticles);
 
             nameTextView.setRightDrawable2(cherrygramStatusDrawable);

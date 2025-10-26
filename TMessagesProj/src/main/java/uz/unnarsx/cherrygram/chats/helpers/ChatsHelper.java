@@ -53,7 +53,6 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.browser.Browser;
-import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.ActionBarMenu;
@@ -63,6 +62,7 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
+import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.ColoredImageSpan;
 import org.telegram.ui.Components.EmojiPacksAlert;
@@ -303,25 +303,38 @@ public class ChatsHelper extends BaseController {
         int colorId = getEmojiBackgroundFromReply(selectedObject, MessagesController.getInstance(UserConfig.selectedAccount).getUser(selectedObject.replyMessageObject.messageOwner.from_id.user_id));
         TLRPC.User me = UserConfig.getInstance(UserConfig.selectedAccount).getCurrentUser();
 
-        TL_account.updateColor req = new TL_account.updateColor();
+        final TL_account.updateColor req = new TL_account.updateColor();
         if (me.color == null) {
-            me.color = new TLRPC.TL_peerColor();
+            me.color = new TLRPC.PeerColor();
             me.flags2 |= 256;
             me.color.flags |= 1;
         }
         req.flags |= 4;
-        req.color = me.color.color = colorId;
-        if (emojiDocumentId != 0) {
-            req.flags |= 1;
-            me.color.flags |= 2;
-            req.background_emoji_id = me.color.background_emoji_id = emojiDocumentId;
-        } else {
-            me.color.flags &=~ 2;
-            me.color.background_emoji_id = 0;
-        }
-        ConnectionsManager.getInstance(UserConfig.selectedAccount).sendRequest(req, null);
+        req.color = new TLRPC.TL_peerColor();
+        req.color.flags |= 1;
+        req.color.color = me.color.color = colorId;
 
-        fragment.presentFragment(new PeerColorActivity(0).setOnApplied(fragment));
+        if (emojiDocumentId != 0) {
+            me.color.flags |= 2;
+            req.color.flags |= 2;
+            req.color.background_emoji_id = me.color.background_emoji_id = emojiDocumentId;
+        } else {
+            me.color.flags &= ~2;
+            me.color.background_emoji_id = 0;
+            req.color.flags &= ~2;
+            req.color.background_emoji_id = 0;
+        }
+
+        getConnectionsManager().sendRequest(req, (res, err) -> {
+            if (res != null) {
+                AndroidUtilities.runOnUIThread(() -> {
+                    BulletinFactory.of(fragment).createSimpleBulletin(
+                            PeerColorActivity.PeerColorDrawable.from(currentAccount, colorId),
+                            getString(R.string.UserColorApplied)
+                    ).setDuration(Bulletin.DURATION_PROLONG).show();
+                });
+            }
+        });
     }
 
     public void openEmojiPack(MessageObject selectedObject, BaseFragment fragment) {
@@ -343,13 +356,12 @@ public class ChatsHelper extends BaseController {
         );
 
         if (buttonAvailable && getCustomReactionsCount(selectedObject) > 0) {
-            if (chatActivity.getMessageMenuHelper().allowNewMessageMenu()) {
+            if (chatActivity.getMessageMenuHelper().allowNewMessageMenu() && chatActivity.getMessageMenuHelper().showCustomDivider()) {
                 if (chatActivity.getMessageMenuHelper().showCustomDivider()) {
-                    popupLayout.addView(new ActionBarPopupWindow.GapView(
-                            chatActivity.getContext(),
-                            ColorUtils.setAlphaComponent(chatActivity.getThemedColor(Theme.key_windowBackgroundGray), chatActivity.getMessageMenuHelper().getMessageMenuAlpha(true)),
-                            Theme.getColor(Theme.key_windowBackgroundGrayShadow, themeDelegate)
-                    ), LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
+                    // Don't remove the divider here cause of broken layout
+                    View gap = new FrameLayout(chatActivity.contentView.getContext());
+                    gap.setBackgroundColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundGray, themeDelegate), chatActivity.getMessageMenuHelper().getMessageMenuAlpha(true)));
+                    popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
                 }
             } else {
                 View gap = new FrameLayout(chatActivity.getContext());

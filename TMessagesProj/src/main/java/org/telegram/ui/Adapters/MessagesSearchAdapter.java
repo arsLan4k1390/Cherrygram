@@ -255,7 +255,7 @@ public class MessagesSearchAdapter extends RecyclerListView.SelectionAdapter imp
                 }
                 useMe = true;
             }
-            cell.setDialog(did, messageObject, date, useMe, false);
+            cell.setDialog(did, messageObject, date, useMe, false, true);
             cell.setDialogCellDelegate(new DialogCell.DialogCellDelegate() {
                 @Override
                 public void onButtonClicked(DialogCell dialogCell) {

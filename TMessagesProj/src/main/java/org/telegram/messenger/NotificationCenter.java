@@ -365,6 +365,9 @@ public class NotificationCenter {
     public static final int nearEarEvent = totalEvents++;
     public static final int translationModelDownloading = totalEvents++;
     public static final int translationModelDownloaded = totalEvents++;
+    public static final int botForumTopicDidCreate = totalEvents++;
+    public static final int botForumDraftUpdate = totalEvents++;
+    public static final int botForumDraftDelete = totalEvents++;
 
     public static boolean alreadyLogged;
 
@@ -564,7 +567,7 @@ public class NotificationCenter {
     }
 
     public void postNotificationName(final int id, Object... args) {
-        boolean allowDuringAnimation = id == startAllHeavyOperations || id == stopAllHeavyOperations || id == didReplacedPhotoInMemCache || id == closeChats || id == invalidateMotionBackground || id == needCheckSystemBarColors;
+        boolean allowDuringAnimation = id == startAllHeavyOperations || id == stopAllHeavyOperations || id == didReplacedPhotoInMemCache || id == closeChats || id == invalidateMotionBackground || id == needCheckSystemBarColors || id == messageReceivedByServer2;
         ArrayList<Integer> expiredIndices = null;
         if (!allowDuringAnimation && allowedNotifications.size() > 0) {
             int size = allowedNotifications.size();
@@ -956,6 +959,7 @@ public class NotificationCenter {
 
     /** Cherrygram start */
     public static final int onUpdateLoginToken = totalEvents++;
+    public static final int cgDonatesLoaded = totalEvents++;
     /** Cherrygram finish */
 
 }

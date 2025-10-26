@@ -133,12 +133,11 @@ public class TableView extends TableLayout {
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 13);
         textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack, resourcesProvider));
         textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
-        textView.setMaxLines(4);
-//        textView.setMaxLines(1);
-//        textView.setSingleLine();
-//        textView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+//        textView.setMaxLines(4);
+        textView.setMaxLines(1);
+        textView.setSingleLine();
+        textView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
         SpannableStringBuilder sb = new SpannableStringBuilder(text);
-        sb.insert(sb.length() / 2, "\n");
         if (onCopy != null) {
             sb.setSpan(new ClickableSpan() {
                 @Override
@@ -611,7 +610,7 @@ public class TableView extends TableLayout {
         borderPaint.setStrokeWidth(w);
         borderPaint.setColor(Theme.getColor(Theme.key_table_border, resourcesProvider));
         backgroundPaint.setStyle(Paint.Style.FILL);
-        backgroundPaint.setColor(Theme.getColor(Theme.key_table_background, resourcesProvider));
+        backgroundPaint.setColor(Theme.getColor(isCherryRow ? Theme.key_windowBackgroundWhite : Theme.key_table_background, resourcesProvider));
 
         final int height = getChildCount();
         for (int y = 0; y < height; ++y) {
@@ -631,4 +630,34 @@ public class TableView extends TableLayout {
             }
         }
     }
+
+    /** Cherrygram start */
+    private boolean isCherryRow = false;
+    public TableRowFullContent addFullRow(CharSequence text, boolean bold, boolean center, int textSize, boolean filled) {
+        SpoilersTextView textView = new SpoilersTextView(getContext());
+        textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
+        textView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, textSize);
+        if (bold) textView.setTypeface(AndroidUtilities.bold());
+        if (center) textView.setGravity(Gravity.CENTER);
+        text = Emoji.replaceEmoji(text, textView.getPaint().getFontMetricsInt(), false);
+        textView.setText(text);
+        NotificationCenter.listenEmojiLoading(textView);
+        textView.setPadding(dp(12.66f), dp(9.33f), dp(12.66f), dp(9.33f));
+
+        final TableRow row = new TableRow(getContext());
+        TableRow.LayoutParams lp;
+        lp = new TableRow.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        lp.span = 2;
+        final TableRowFullContent cell = new TableRowFullContent(this, textView, true);
+        if (filled) {
+            isCherryRow = true;
+            cell.setFilled(true);
+        }
+        row.addView(cell, lp);
+        addView(row);
+        return cell;
+    }
+    /** Cherrygram finish */
+
 }

@@ -127,6 +127,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                 }) {
                     CherrygramCoreConfig.hideStories = it
                     bf.notificationCenter.postNotificationName(NotificationCenter.storiesEnabledUpdate)
+                    AppRestartHelper.createRestartBulletin(bf)
                 }
             }
             textIcon {

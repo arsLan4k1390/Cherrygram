@@ -402,6 +402,8 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
             }
 
         };
+        searchListViewAdapter.setUseUserCell(true);
+        searchListViewAdapter.setAddMutualIcon(true);
         int inviteViaLink;
         if (chatId != 0) {
             TLRPC.Chat chat = getMessagesController().getChat(chatId);
@@ -515,6 +517,14 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                         showOrUpdateActionMode(cell);
                     }
 
+                    return;
+                }
+
+                if (!selectedContacts.isEmpty() && view instanceof UserCell cell) {
+                    TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(cell.getDialogId());
+                    if (user != null && user.contact) {
+                        showOrUpdateActionMode(cell);
+                    }
                     return;
                 }
 

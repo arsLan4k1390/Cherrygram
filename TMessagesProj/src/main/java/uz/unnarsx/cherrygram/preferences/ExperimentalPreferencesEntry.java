@@ -26,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserObject;
@@ -41,7 +40,6 @@ import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Cells.UserCell;
 import org.telegram.ui.ChatActivity;
-import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
@@ -52,7 +50,6 @@ import org.telegram.ui.ProfileActivity;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
@@ -72,7 +69,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment {
     private int generalDivisorRow;
     
     private int chatsHeaderRow;
-    private int newMessageMenuRow;
     private int customChatRow;
     private int customChatPreviewRow;
     private int chatsDivisorRow;
@@ -183,24 +179,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment {
                     ((TextCheckCell) view).setChecked(CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade());
                 }
                 AppRestartHelper.createRestartBulletin(this);
-            } else if (position == newMessageMenuRow) {
-                boolean requireDonate = !DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
-                if (requireDonate) {
-                    AndroidUtilities.shakeViewSpring(view);
-                    BotWebViewVibrationEffect.APP_ERROR.vibrate();
-                    BulletinFactory.of(this).createSimpleBulletin(
-                            R.raw.cg_star_reaction, // stars_topup // star_premium_2
-                            getString(R.string.DP_Donate_Exclusive),
-                            getString(R.string.DP_Donate_ExclusiveDesc),
-                            getString(R.string.MoreInfo),
-                            () -> CherrygramPreferencesNavigator.INSTANCE.createDonate(this)
-                    ).show();
-                    return;
-                }
-                CherrygramChatsConfig.INSTANCE.setBlurMessageMenuBackground(!CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground());
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground());
-                }
             } else if (position == customChatRow) {
                 CherrygramExperimentalConfig.INSTANCE.setCustomChatForSavedMessages(!CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages());
                 if (view instanceof TextCheckCell) {
@@ -301,9 +279,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment {
                     textCheckCell.setEnabled(true, null);
                     if (position == actionbarCrossfadeRow) {
                         textCheckCell.setTextAndCheck(getString(R.string.EP_NavigationAnimationCrossfading), CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade(), true);
-                    } else if (position == newMessageMenuRow) {
-                        if (requireDonate) textCheckCell.setCheckBoxIcon(R.drawable.permission_locked);
-                        textCheckCell.setTextAndCheck(getString(R.string.CP_BlurMessageMenu), CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground(), true);
                     } else if (position == customChatRow) {
                         textCheckCell.setTextAndValueAndCheck(getString(R.string.EP_CustomChat), getString(R.string.EP_CustomChat_Desc), CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages(), true, true);
                     } else if (position == uploadSpeedBoostRow) {
@@ -431,7 +406,7 @@ public class ExperimentalPreferencesEntry extends BaseFragment {
                 return VIEW_TYPE_SHADOW;
             } else if (position == generalHeaderRow || position == chatsHeaderRow || position == networkHeaderRow) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == actionbarCrossfadeRow || position == newMessageMenuRow || position == customChatRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
+            } else if (position == actionbarCrossfadeRow || position == customChatRow || position == uploadSpeedBoostRow || position == slowNetworkMode) {
                 return VIEW_TYPE_TEXT_CHECK;
             } else if (position == springAnimationRow || position == downloadSpeedBoostRow) {
                 return VIEW_TYPE_TEXT_SETTINGS;
@@ -461,7 +436,6 @@ public class ExperimentalPreferencesEntry extends BaseFragment {
         generalDivisorRow = rowCount++;
 
         chatsHeaderRow = rowCount++;
-        if (Build.VERSION.SDK_INT >= 31) newMessageMenuRow = rowCount++;
         customChatRow = rowCount++;
         customChatPreviewRow = -1;
         if (CherrygramExperimentalConfig.INSTANCE.getCustomChatForSavedMessages()) customChatPreviewRow = rowCount++;

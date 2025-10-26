@@ -3,16 +3,17 @@
     <!-- by t.me/arsLan-->
     <string name="CG_AppName" translatable="false">Cherrygram</string>
     <string name="CG_AppNameBeta" translatable="false">Cherrygram</string>
-    <string name="CG_FollowChannelLink">Subscribe to @Cherry_Gram!</string>
     <string name="CG_FollowChannelTitle">Subscribe to the official channel</string>
     <string name="CG_FollowChannelInfo">Join the channel to stay up to date with all the news and features of Cherrygram!</string>
     <string name="CG_DoNotRemindAgain">Don\'t remind again</string>
 
     <!--Telegram screens-->
-    <string name="CG_RegistrationDate">Registration date:</string>
-    <string name="CG_RegistrationDateNewer">Newer than %s</string>
-    <string name="CG_RegistrationDateOlder">Older than %s</string>
-    <string name="CG_RegistrationDateApproximately">Approximately %s</string>
+    <string name="CG_JoinedDate">You joined **%1$s** **%2$s**</string>
+    <string name="CG_CreatedDate">**%1$s** was created **%2$s**</string>
+    <string name="CG_RegistrationDate">**%1$s** joined Telegram **%2$s**</string>
+    <string name="CG_RegistrationDateNewer">later than %s</string>
+    <string name="CG_RegistrationDateOlder">older than %s</string>
+    <string name="CG_RegistrationDateApproximately">approximately %s</string>
     <string name="CG_RegistrationDateFailed">Failed to get registration date.</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">QR Login</string>
@@ -264,11 +265,21 @@
 
     <string name="CP_ChatMenuShortcuts">Chat menu shortcuts</string>
     <string name="CP_AdminActions">Admin shortcuts</string>
+
     <string name="CP_MessageMenu">Message menu</string>
+    <string name="CP_MessageMenuItems">Message menu items</string>
+    <string name="CP_BlurMessageMenu">iOS-styled message menu</string>
+    <string name="CP_BlurMessageMenu_Desc">Applies a blurred background to the message menu and displays the reaction panel above the message, similar to Telegram on iOS.</string>
+    <string name="CP_MessageMenuAutoscroll">Message Autoscroll</string>
+    <string name="CP_MessageMenuAutoscroll_Desc">Automatically scrolls the message menu content to the bottom on opening, similar to Telegram on iOS.</string>
+    <string name="CP_MessageMenuFixedHeight">Comfortable message menu height</string>
+    <string name="CP_MessageMenuFixedHeight_Desc">The message menu will occupy half of the screen area for easier interaction.</string>
+    <string name="CP_BlurMessageMenuItems">Blur menu items</string>
+    <string name="CP_BlurMessageMenuItems_Desc">Blurs the menu items for a more authentic iOS look.</string>
+
     <string name="AP_CenterChatsTitle">Center title in chats</string>
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
-    <string name="CP_BlurMessageMenu">Blur message menu background</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Recent emojis and stickers counter</string>
     <string name="CP_NoRounding">Disable number rounding</string>
     <string name="CP_NoRoundingSummary" translatable="false">1.2K -> 1,234</string>
@@ -317,7 +328,9 @@
     <string name="CP_Message_Filtering_Filter">Enable filter</string>
     <string name="CP_Message_Filtering_Filter_Desc">When the filter is enabled, selected words in incoming messages will automatically be hidden under a spoiler effect, making them unreadable until revealed.</string>
     <string name="CP_Message_Filtering_Field">Enter words to filter</string>
-    <string name="CP_Message_Filtering_Field_Desc">Separate words with a comma, space, or line break. Case insensitive.</string>
+    <string name="CP_Message_Filtering_Field_Desc">Separate words with a comma, space, or line break. Use parentheses to group multiple words into a phrase. Case insensitive.
+        \nExample: word, another, (multiple words here).
+    </string>
     <string name="CP_Message_Filtering_Translit">Translit detection</string>
     <string name="CP_Message_Filtering_Translit_Desc">When enabled, the filter will also detect words written in transliteration (for example, \"test\" will be recognized as \"тест\").
         This helps to catch and hide messages under a spoiler even if Cyrillic letters are replaced with Latin ones. May slightly increase device CPU load.
@@ -337,9 +350,14 @@
     <string name="CP_Message_Filtering_HideAllDesc">Hides the entire message text and media under a spoiler if it contains a filtered word.</string>
     <string name="CP_Message_Filtering_Collapse">Collapse messages</string>
     <string name="CP_Message_Filtering_Collapse_Desc">When enabled, messages will automatically be collapsed. You can expand them by tapping on the message.</string>
+    <string name="CP_Message_Filtering_Transparent">Message Transparency</string>
+    <string name="CP_Message_Filtering_Transparent_Desc">Filtered messages become transparent so you can easily tell them apart.</string>
 
     <string name="CP_Slider_MediaAmplifier">Photos and videos</string>
     <string name="CP_Slider_MediaAmplifier_Hint">Does not work with albums (grouped media)</string>
+    <string name="CP_LargeVoiceMessages">Adaptive audio message length</string>
+    <string name="CP_LargeVoiceMessages_Desc">The audio message bubble length will depend on the recording duration and automatically adjust to the screen width.</string>
+
     <string name="CP_VoiceEnhancements">Voice Enhancements</string>
     <string name="CP_VoiceEnhancements_Desc">Noise Suppression and Voice Normalization</string>
     <string name="CP_PlayVideo">Play video with volume button press</string>
@@ -464,7 +482,11 @@
     <!--Updates Preferences-->
 
     <!--Donations-->
-    <string name="DP_RateUs">Rate Cherrygram</string>
+    <string name="DP_EnjoyingUs">Enjoying Cherrygram?</string>
+    <string name="DP_RateUs">Rate us on Google Play!</string>
+
+    <string name="DP_DonatesMoreInfo">Want to help Cherrygram grow? Check out **Cherrygram Support** chat.</string>
+    <string name="DP_DonatesThanks">Thanks for your support! You made Cherry happy ❤️</string>
 
     <string name="DP_DonateBadge">Donate and unlock bonuses</string>
     <string name="DP_Donate_Desc">When you donate $2 or more, you\'ll also get some bonus gifts:</string>
@@ -473,7 +495,7 @@
     <string name="DP_Donate_EpicBadge_desc">1. An **epic Cherrygram badge** next to your name.</string>
     <string name="DP_Donate_GiftMarket_Desc">2. \"**Gift Market**\" button in the side menu.</string>
     <string name="DP_Donate_MessageFilter_Desc">3. \"**Message filter**\" feature.</string>
-    <string name="DP_Donate_MessageMenu_Desc">4. \"**IOS-styled**\" message menu.</string>
+    <string name="DP_Donate_MessageMenu_Desc">4. \"**iOS-styled**\" message menu.</string>
     <string name="DP_Donate_Cheque">Send a payment confirmation to **@arsLan** to get bonuses.</string>
 
     <string name="DP_Donate_Bulletin">**%s** supported **Cherrygram\'s** development!</string>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
-    <string name="CG_FollowChannelLink">Inscreva-se para @Cherry_Gram!</string>
     <string name="CG_FollowChannelTitle">Subscrever o canal oficial</string>
     <string name="CG_FollowChannelInfo">Entre no canal para ficar por dentro de todas as novidades e recursos do Cherrygram!</string>
     <string name="CG_DoNotRemindAgain">Não voltar a lembrar</string>

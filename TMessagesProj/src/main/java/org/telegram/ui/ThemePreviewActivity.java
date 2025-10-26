@@ -4779,20 +4779,6 @@ public class ThemePreviewActivity extends BaseFragment implements DownloadContro
             dialogs.add(customDialog);
 
             customDialog = new DialogCell.CustomDialog();
-            customDialog.name = "exteraGram";
-            customDialog.message = LocaleController.getString(R.string.CG_FollowChannelLink);
-            customDialog.id = 1391;
-            customDialog.unread_count = 1;
-            customDialog.pinned = false;
-            customDialog.muted = false;
-            customDialog.type = 0;
-            customDialog.date = date - 60 * 60;
-            customDialog.verified = false;
-            customDialog.isMedia = false;
-            customDialog.sent = DialogCell.SENT_STATE_NOTHING;
-            dialogs.add(customDialog);
-
-            customDialog = new DialogCell.CustomDialog();
             customDialog.name = LocaleController.getString(R.string.ThemePreviewDialog3);
             customDialog.message = LocaleController.getString(R.string.ThemePreviewDialogMessage3);
             customDialog.id = 2;

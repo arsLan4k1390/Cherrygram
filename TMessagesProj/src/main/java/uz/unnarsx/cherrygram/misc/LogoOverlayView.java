@@ -10,28 +10,27 @@
 package uz.unnarsx.cherrygram.misc;
 
 import android.content.Context;
-import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.view.DisplayCutout;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.NotchInfoUtils;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.Theme;
-
-import java.util.List;
 
 @RequiresApi(api = Build.VERSION_CODES.P)
 public class LogoOverlayView extends FrameLayout {
 
     private ImageView logoView;
-    private Rect notchRect;
+
+    @Nullable
+    public NotchInfoUtils.NotchInfo notchInfo;
 
     public LogoOverlayView(Context context) {
         super(context);
@@ -54,27 +53,20 @@ public class LogoOverlayView extends FrameLayout {
 
     @Override
     public WindowInsets onApplyWindowInsets(WindowInsets insets) {
-        DisplayCutout cutout = insets.getDisplayCutout();
-        if (cutout != null) {
-            List<Rect> rects = cutout.getBoundingRects();
-            if (!rects.isEmpty()) {
-                notchRect = rects.get(0);
+        notchInfo = NotchInfoUtils.getInfo(getContext());
 
-                float cutoutWidth = notchRect.width();
-                float cutoutHeight = notchRect.height();
-                float size = Math.min(cutoutWidth, cutoutHeight) * 0.9f;
+        if (notchInfo != null) { // TODO hide if cutout is not in center
+            float width = 0.8f * notchInfo.bounds.width();
+            float height = 0.8f * notchInfo.bounds.height();
 
-                float centerX = notchRect.left + cutoutWidth / 2f;
-                float localX = centerX - size / 2f;
+            float localX = notchInfo.bounds.centerX() - width / 2f;
+            final float cy = notchInfo.bounds.bottom - notchInfo.bounds.height() / 2f;
 
-                float localY = notchRect.top + cutoutHeight / 2f - size / 2f + AndroidUtilities.dpf2(2);
-
-                LayoutParams lp = new LayoutParams((int) size, (int) size);
-                logoView.setLayoutParams(lp);
-                logoView.setX(localX);
-                logoView.setY(localY);
-                logoView.setVisibility(View.VISIBLE);
-            }
+            LayoutParams lp = new LayoutParams((int) width, (int) height);
+            logoView.setLayoutParams(lp);
+            logoView.setX(localX);
+            logoView.setY(cy - (width / 2));
+            logoView.setVisibility(View.VISIBLE);
         }
         return super.onApplyWindowInsets(insets);
     }

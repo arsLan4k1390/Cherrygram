@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- by t.me/arsLan-->
-    <string name="CG_FollowChannelLink">\@Cherry_Gram を購読する!</string>
     <string name="CG_FollowChannelTitle">公式チャンネルを購読する</string>
     <string name="CG_FollowChannelInfo">チャンネルに参加して、Cherrygramのニュースや機能の最新情報を入手!</string>
     <string name="CG_DoNotRemindAgain">今後は表示しない</string>

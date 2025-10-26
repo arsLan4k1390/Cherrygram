@@ -125,39 +125,75 @@ public class CGBiometricPrompt {
     }
 
     public static boolean hasBiometricEnrolled() {
-        if (Build.VERSION.SDK_INT >= 29) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             BiometricManager biometricManager = ApplicationLoader.applicationContext.getSystemService(BiometricManager.class);
             if (biometricManager == null) {
                 return false;
             }
-            if (Build.VERSION.SDK_INT >= 30) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // BIOMETRIC_WEAK включает отпечатки и лицо
                 return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK) == BiometricManager.BIOMETRIC_SUCCESS;
             } else {
                 return biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS;
             }
-        } else if (Build.VERSION.SDK_INT >= 23) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // На старых Android только отпечатки
+            return hasEnrolledFingerprints();
+        }
+        return false;
+    }
+
+    public static boolean hasEnrolledFingerprints() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             FingerprintManager fingerprintManager = ApplicationLoader.applicationContext.getSystemService(FingerprintManager.class);
-            if (fingerprintManager == null) {
+            if (fingerprintManager != null) {
                 try {
-                    FingerprintManagerCompat fingerprintManagerCompat = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
-                    return fingerprintManagerCompat.isHardwareDetected() && fingerprintManagerCompat.hasEnrolledFingerprints();
+                    return fingerprintManager.isHardwareDetected() && fingerprintManager.hasEnrolledFingerprints();
+                } catch (SecurityException e) {
+                    FileLog.e(e);
+                    return false;
+                }
+            } else {
+                // Fallback на FingerprintManagerCompat
+                try {
+                    FingerprintManagerCompat compat = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
+                    return compat.isHardwareDetected() && compat.hasEnrolledFingerprints();
                 } catch (Throwable e) {
                     FileLog.e(e);
                     return false;
                 }
             }
-            return fingerprintManager.isHardwareDetected() && fingerprintManager.hasEnrolledFingerprints();
         }
         return false;
+    }
+
+    public static int getBiometricIconResId() {
+        boolean hasFingerprint = hasEnrolledFingerprints();
+        boolean hasFace = false;
+
+        // Проверяем наличие лица на Android 10+ (Q+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            BiometricManager bm = ApplicationLoader.applicationContext.getSystemService(BiometricManager.class);
+            if (bm != null && bm.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS && !hasFingerprint) {
+                hasFace = true; // есть биометрия, но отпечатков нет → лицо
+            } else if (bm != null && bm.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS && hasFingerprint) {
+                hasFace = true; // есть и отпечаток, и лицо
+            }
+        }
+
+        if (hasFingerprint && hasFace) return R.drawable.fingerprint;
+        if (hasFingerprint) return R.drawable.fingerprint;
+        if (hasFace) return R.drawable.face_scan_square_filled_solar;
+        return R.drawable.fingerprint;
     }
 
     // Octogram fix
 
     private static final ArrayList<BiometricPrompt> pendingAuths = new ArrayList<>();
-    private static final String TAG = "FingerprintUtils";
+    private static final String TAG = "CGBiometricPrompt";
 
     public static void fixFingerprint(Activity activity, CGBiometricListener callback) {
-        if (Build.VERSION.SDK_INT < 23) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             callback.onFailed();
             return;
         }
@@ -215,7 +251,7 @@ public class CGBiometricPrompt {
     }
 
     private static boolean hasFingerprintInternal() {
-        if (Build.VERSION.SDK_INT >= 23) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             try {
                 Log.d(TAG, "Starting fingerprint check...");
 

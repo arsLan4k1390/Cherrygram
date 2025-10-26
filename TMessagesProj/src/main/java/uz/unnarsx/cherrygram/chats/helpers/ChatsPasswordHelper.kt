@@ -154,26 +154,35 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
 
     fun shouldRequireBiometricsToOpenChats(): Boolean {
         if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил shouldRequireBiometricsToOpenChats")
-        return CherrygramPrivacyConfig.askBiometricsToOpenChat && checkFingerprint()
+        return CherrygramPrivacyConfig.askBiometricsToOpenChat && checkBiometricAvailable()
                 /*&& getArrayList(Passcode_Array).isNotEmpty()*/
     }
 
     fun shouldRequireBiometricsToOpenEncryptedChats(): Boolean {
         if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил shouldRequireBiometricsToOpenEncryptedChats")
-        return CherrygramPrivacyConfig.askBiometricsToOpenEncrypted && checkFingerprint()
+        return CherrygramPrivacyConfig.askBiometricsToOpenEncrypted && checkBiometricAvailable()
     }
 
     fun askPasscodeBeforeDelete(): Boolean {
         if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил askPasscodeBeforeDelete")
-        return CherrygramPrivacyConfig.askPasscodeBeforeDelete && checkFingerprint()
+        return CherrygramPrivacyConfig.askPasscodeBeforeDelete && checkBiometricAvailable()
     }
 
-    fun checkFingerprint(): Boolean {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил checkFingerprint")
-        return Build.VERSION.SDK_INT >= 23 &&
-                CGBiometricPrompt.hasBiometricEnrolled()
-                && FingerprintController.isKeyReady()
-                && !FingerprintController.checkDeviceFingerprintsChanged()
+    fun checkBiometricAvailable(): Boolean {
+        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил checkBiometricAvailable")
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false
+
+        val hasBiometrics = CGBiometricPrompt.hasBiometricEnrolled()
+        if (!hasBiometrics) return false
+
+        val hasFingerprints = CGBiometricPrompt.hasEnrolledFingerprints()
+        return if (hasFingerprints) {
+            FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
+        } else {
+            // лицо — ключи не проверяем
+            true
+        }
     }
 
 }

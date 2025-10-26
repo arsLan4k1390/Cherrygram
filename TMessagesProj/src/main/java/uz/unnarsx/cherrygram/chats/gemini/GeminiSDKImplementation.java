@@ -67,7 +67,7 @@ public class GeminiSDKImplementation {
             boolean ocr, boolean transcribe
     ) {
 
-        if (baseFragment == null && baseFragment.getParentActivity() == null && baseFragment.getContext() == null) return;
+        if (baseFragment == null || baseFragment.getParentActivity() == null || baseFragment.getContext() == null) return;
 
         GenerationConfig.Builder configBuilder = new GenerationConfig.Builder();
         configBuilder.temperature = (float) CherrygramChatsConfig.INSTANCE.getGeminiTemperatureValue() / 10;
@@ -144,80 +144,10 @@ public class GeminiSDKImplementation {
             }
         });
 
-        Content.Builder content = new Content.Builder();
-
-        Bitmap inputBitmap = getBitmapFromFile(mediaFile);
-
-        if (inputBitmap != null || ocr) {
-            String imagePrompt;
-
-            if (ocr) { // OCR - Optical Character Recognition
-                imagePrompt = "You are an OCR assistant. Extract and return only the exact text written in the image. " +
-                        "Preserve the original language and formatting as much as possible. " +
-                        "Do not translate, interpret, or explain the text. Output only the plain extracted text, without any introductions or extra words.";
-                content.addText(imagePrompt);
-            } else { // Describing picture
-                String lang = LocaleController.getInstance().getCurrentLocale().getLanguage();
-                imagePrompt = "Describe the content of the image clearly and concisely in the " + lang + " language. " +
-                        "Focus on the main objects, people, or scene. Do not add any explanations or introductions. " +
-                        "Output only the description.";
-                content.addText(imagePrompt);
-            }
-            content.addImage(inputBitmap);
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + imagePrompt);
-        } else if (translateText) { // Message translation
-            String lang = capitalFirst(languageName(CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()));
-
-            String translationPrompt = "You are a professional translator. Translate all input text into " +
-                    lang + " accurately and naturally, preserving the original meaning, tone, and context. " +
-                    "Do not add explanations or comments. Just return the translated text without any introduction or closing phrases. " +
-                    "Here is the text to translate into " + lang + ": " + inputText;
-
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + translationPrompt);
-            content.addText(translationPrompt);
-        } else if (transcribe) { // Voice to text
-            byte[] audioBytes = readBytesCompat(mediaFile);
-            Part audioPart = new BlobPart("audio/ogg", audioBytes);
-
-            String voiceToTextPrompt;
-
-            if (summarize) {
-                voiceToTextPrompt = "You are an assistant that transcribes and then summarizes spoken content. " +
-                        "First, accurately and fully transcribe the voice message, keeping the original language. " +
-                        "Then, briefly summarize the transcribed text in the same language. " +
-                        "Output only the final summary. Do not include the full transcription, " +
-                        "and do not add any extra words like 'Summary' or 'Transcription'. " +
-                        "Do not explain or comment. The output must be plain and concise.";
-                content.addText(voiceToTextPrompt);
-            } else {
-                voiceToTextPrompt = "You are a speech-to-text transcriber. Accurately transcribe the spoken content from the provided audio without translating it. " +
-                        "Keep the original language of the speaker. Do not explain or comment on the content. " +
-                        "Return only the plain transcribed text, without any headers, summaries, or formatting.";
-                content.addText(voiceToTextPrompt);
-            }
-
-            content.addPart(audioPart);
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + voiceToTextPrompt);
-        } else { // Answer only to text
-            String summarizeString = summarize ? "Summarize the following text briefly and clearly in the same language it is written in. " +
-                    "Do not include any introductions, labels, or closing remarks. " +
-                    "Return only the summary as plain text. The text to summarize:" : " ";
-
-            String textPrompt;
-            if (summarize) {
-                textPrompt = summarizeString + inputText.toString();
-            } else {
-                String systemPrompt = CherrygramChatsConfig.INSTANCE.getGeminiSystemPrompt();
-                textPrompt = systemPrompt + " " + inputText;
-            }
-
-            content.addText(textPrompt);
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + textPrompt);
-        }
-        content.build();
+        Content content = buildContent(inputText, mediaFile, ocr, translateText, transcribe, summarize);
 
         GenerativeModelFutures model = GenerativeModelFutures.from(gm);
-        ListenableFuture<GenerateContentResponse> response = model.generateContent(content.build());
+        ListenableFuture<GenerateContentResponse> response = model.generateContent(content);
 
         Executor executor = ContextCompat.getMainExecutor(baseFragment.getContext());
 
@@ -237,6 +167,8 @@ public class GeminiSDKImplementation {
                             FileLog.e(e);
                         }
                     });
+
+                    Bitmap inputBitmap = getBitmapFromFile(mediaFile);
 
                     if (translateText || transcribe || summarize || inputBitmap != null || ocr) {
                         int subtitle = getBottomSheetSubtitle(translateText, transcribe, summarize, inputBitmap, ocr);
@@ -295,6 +227,89 @@ public class GeminiSDKImplementation {
 
     }
 
+    private static Content buildContent(
+            CharSequence inputText,
+            File mediaFile,
+            boolean ocr,
+            boolean translateText,
+            boolean transcribe,
+            boolean summarize) {
+
+        Content.Builder content = new Content.Builder();
+
+        Bitmap inputBitmap = getBitmapFromFile(mediaFile);
+
+        if (inputBitmap != null || ocr) {
+            String imagePrompt;
+
+            if (ocr) { // OCR - Optical Character Recognition
+                imagePrompt = "You are an OCR assistant. Extract and return only the exact text written in the image. " +
+                        "Preserve the original language and formatting as much as possible. " +
+                        "Do not translate, interpret, or explain the text. Output only the plain extracted text, without any introductions or extra words.";
+                content.addText(imagePrompt);
+            } else { // Describing picture
+                String lang = LocaleController.getInstance().getCurrentLocale().getLanguage();
+                imagePrompt = "Describe the content of the image clearly and concisely in the " + lang + " language. " +
+                        "Focus on the main objects, people, or scene. Do not add any explanations or introductions. " +
+                        "Output only the description.";
+                content.addText(imagePrompt);
+            }
+
+            content.addImage(inputBitmap);
+
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + imagePrompt);
+        } else if (translateText) { // Message translation
+            String lang = capitalFirst(languageName(CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()));
+            String translationPrompt = "You are a professional translator. Translate all input text into " +
+                    lang + " accurately and naturally, preserving the original meaning, tone, and context. " +
+                    "Do not add explanations or comments. Just return the translated text without any introduction or closing phrases. " +
+                    "Here is the text to translate into " + lang + ": " + inputText;
+            content.addText(translationPrompt);
+
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + translationPrompt);
+        } else if (transcribe) { // Voice to text
+            byte[] audioBytes = readBytesCompat(mediaFile);
+            Part audioPart = new BlobPart("audio/ogg", audioBytes);
+
+            String voiceToTextPrompt;
+
+            if (summarize) {
+                voiceToTextPrompt = "You are an assistant that transcribes and then summarizes spoken content. " +
+                        "First, accurately and fully transcribe the voice message, keeping the original language. " +
+                        "Then, briefly summarize the transcribed text in the same language. " +
+                        "Output only the final summary. Do not include the full transcription, " +
+                        "and do not add any extra words like 'Summary' or 'Transcription'. " +
+                        "Do not explain or comment. The output must be plain and concise.";
+            } else {
+                voiceToTextPrompt = "You are a speech-to-text transcriber. Accurately transcribe the spoken content from the provided audio without translating it. " +
+                        "Keep the original language of the speaker. Do not explain or comment on the content. " +
+                        "Return only the plain transcribed text, without any headers, summaries, or formatting.";
+            }
+
+            content.addText(voiceToTextPrompt);
+            content.addPart(audioPart);
+
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + voiceToTextPrompt);
+        } else { // Answer only to text
+            String textPrompt;
+            if (summarize) {
+                String summarizeString = "Summarize the following text briefly and clearly in the same language it is written in. " +
+                        "Do not include any introductions, labels, or closing remarks. " +
+                        "Return only the summary as plain text. The text to summarize:";
+                textPrompt = summarizeString + inputText.toString();
+            } else {
+                String systemPrompt = CherrygramChatsConfig.INSTANCE.getGeminiSystemPrompt();
+                textPrompt = systemPrompt + " " + inputText;
+            }
+
+            content.addText(textPrompt);
+
+            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + textPrompt);
+        }
+
+        return content.build();
+    }
+
     public static void injectGeminiForMedia(
             BaseFragment baseFragment,
             ChatActivity chatActivity,
@@ -335,20 +350,12 @@ public class GeminiSDKImplementation {
     }
 
     private static int getBottomSheetSubtitle(boolean translateText, boolean transcribe, boolean summarize, Bitmap inputBitmap, boolean ocr) {
-        int subtitle = 0;
-
-        if (summarize) {
-            subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_SUMMARIZE;
-        } else if (translateText) {
-            subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_TRANSLATE;
-        } else if (transcribe) {
-            subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_TRANSCRIBE;
-        }  else if (inputBitmap != null && !ocr) {
-            subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_EXPLANATION;
-        } else if (inputBitmap != null && ocr) {
-            subtitle = GeminiResultsBottomSheet.GEMINI_TYPE_OCR;
-        }
-        return subtitle;
+        if (summarize) return GeminiResultsBottomSheet.GEMINI_TYPE_SUMMARIZE;
+        if (translateText) return GeminiResultsBottomSheet.GEMINI_TYPE_TRANSLATE;
+        if (transcribe) return GeminiResultsBottomSheet.GEMINI_TYPE_TRANSCRIBE;
+        if (inputBitmap != null && !ocr) return GeminiResultsBottomSheet.GEMINI_TYPE_EXPLANATION;
+        if (inputBitmap != null && ocr) return GeminiResultsBottomSheet.GEMINI_TYPE_OCR;
+        return 0;
     }
 
     private static Bitmap getBitmapFromFile(File file) {
