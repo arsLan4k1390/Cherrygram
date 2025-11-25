@@ -62,14 +62,6 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
             }
-            /*switch {
-                title = getString(R.string.CP_BlurMessageMenu)
-                contract({
-                    return@contract CherrygramChatsConfig.blurMessageMenuBackground
-                }) {
-                    CherrygramChatsConfig.blurMessageMenuBackground = it
-                }
-            }*/
             textIcon {
                 title = getString(R.string.CP_Slider_RecentEmojisAndStickers)
 
@@ -180,6 +172,16 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     CherrygramPreferencesNavigator.createMessageFilter(bf)
                 }
                 divider = true
+            }
+            switch {
+                title = getString(R.string.CP_AutoQuoteReplies)
+                description = getString(R.string.CP_AutoQuoteReplies_Desc)
+
+                contract({
+                    return@contract CherrygramChatsConfig.autoQuoteReplies
+                }) {
+                    CherrygramChatsConfig.autoQuoteReplies = it
+                }
             }
             switch {
                 title = getString(R.string.CP_TimeOnStick)
@@ -375,24 +377,23 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract listOf(
                         Pair(CherrygramChatsConfig.NOTIF_SOUND_DISABLE, getString(R.string.Disable)),
                         Pair(CherrygramChatsConfig.NOTIF_SOUND_DEFAULT, getString(R.string.Default)),
-                        Pair(CherrygramChatsConfig.NOTIF_SOUND_IOS, "IOS")
+                        Pair(CherrygramChatsConfig.NOTIF_SOUND_IOS, "iOS")
                     )
                 }, {
                     return@contract when (CherrygramChatsConfig.notificationSound) {
                         CherrygramChatsConfig.NOTIF_SOUND_DEFAULT -> getString(R.string.Default)
-                        CherrygramChatsConfig.NOTIF_SOUND_IOS -> "IOS"
+                        CherrygramChatsConfig.NOTIF_SOUND_IOS -> "iOS"
                         else -> getString(R.string.Disable)
                     }
                 }) {
                     CherrygramChatsConfig.notificationSound = it
 
-                    var tone = 0
+                    val tone = if (CherrygramChatsConfig.notificationSound == CherrygramChatsConfig.NOTIF_SOUND_DEFAULT) {
+                        R.raw.sound_in
+                    } else {
+                        R.raw.sound_in_ios
+                    }
                     try {
-                        if (CherrygramChatsConfig.notificationSound == 1) {
-                            tone = R.raw.sound_in
-                        } else if (CherrygramChatsConfig.notificationSound == 2) {
-                            tone = R.raw.sound_in_ios
-                        }
                         val mp: MediaPlayer = MediaPlayer.create(bf.context, tone)
                         mp.start()
                     } catch (ignore: Exception) { }

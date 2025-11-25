@@ -32,9 +32,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
-    /** Stickers start **/
-    /** Stickers finish **/
-
     /** Chats start **/
     /** Chat shortcuts start **/
     var shortcut_JumpToBegin by sharedPreferences.boolean("CP_Shortcut_JumpToBegin", true)
@@ -89,12 +86,16 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var msgMenuAutoScroll by sharedPreferences.boolean("CP_MsgMenuAutoScroll", true)
     var msgMenuFixedHeight by sharedPreferences.boolean("CP_MsgMenuFixedHeight", false)
     var blurMessageMenuItems by sharedPreferences.boolean("CP_BlurMessageMenuItems", false)
+    var msgMenuNativeBlur by sharedPreferences.boolean("CP_MsgMenuNativeBlur", Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
     /** Message menu items start **/
     var showSaveForNotifications by sharedPreferences.boolean("CP_ShowSaveForNotifications", false)
     var showGemini by sharedPreferences.boolean("CP_ShowGemini", GeminiButtonsLayout.geminiButtonsVisible())
     var showReply by sharedPreferences.boolean("CP_ShowReply", true)
+    var showSaveToGallery by sharedPreferences.boolean("CP_ShowSaveToGallery", true)
     var showCopyPhoto by sharedPreferences.boolean("CP_ShowCopyPhoto", true)
     var showCopyPhotoAsSticker by sharedPreferences.boolean("CP_ShowCopyPhotoAsSticker", true)
+    var showSaveToDownloads by sharedPreferences.boolean("CP_ShowSaveToDownloads", true)
+    var showShare by sharedPreferences.boolean("CP_ShowShare", true)
     var showClearFromCache by sharedPreferences.boolean("CP_ShowClearFromCache", true)
     var showForward by sharedPreferences.boolean("CP_ShowForward", false)
     var showForwardWoAuthorship by sharedPreferences.boolean("CP_ShowForward_WO_Authorship", false)
@@ -126,6 +127,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var msgFilterTransparentMsg by sharedPreferences.boolean("CP_MsgFilterTransparentMsg", false)
     /** Messages filter finish **/
 
+    var autoQuoteReplies by sharedPreferences.boolean("CP_AutoQuoteReplies", false)
     var hideStickerTime by sharedPreferences.boolean("CP_TimeOnStick", false)
     var msgForwardDate by sharedPreferences.boolean("CP_ForwardMsgDate", true)
     var showPencilIcon by sharedPreferences.boolean("AP_PencilIcon", true)
@@ -169,7 +171,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     const val NOTIF_SOUND_DISABLE = 0
     const val NOTIF_SOUND_DEFAULT = 1
     const val NOTIF_SOUND_IOS = 2
-    var notificationSound by sharedPreferences.int("CP_Notification_Sound", NOTIF_SOUND_DEFAULT)
+    var notificationSound by sharedPreferences.int("CP_Notification_Sound", NOTIF_SOUND_IOS)
 
     const val VIBRATION_DISABLE = 0
     const val VIBRATION_CLICK = 1
@@ -223,7 +225,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     /** Misc finish **/
 
     fun init() {
-        launch {
+        launch(Dispatchers.IO) {
             StickersManager.startAutoRefresh(ApplicationLoader.applicationContext)
             StickersManager.copyStickerFromAssets()
         }

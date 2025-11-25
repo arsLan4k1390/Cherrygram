@@ -24,11 +24,6 @@ object CherrygramDebugConfig {
     var oldTimeStyle by sharedPreferences.boolean("CP_OldTimeStyle", false)
     /** Misc finish **/
 
-    /** Blur start **/
-    var forceChatBlurEffect by sharedPreferences.boolean("AP_ForceBlur", false)
-    var forceChatBlurEffectIntensity by sharedPreferences.int("AP_ForceBlur_Intensity", 155)
-    /** Blur finish **/
-
     /** Chats start **/
     var replacePunctuationMarks by sharedPreferences.boolean("replacePunctuationMarks", true)
     var editTextSuggestionsFix by sharedPreferences.boolean("editTextSuggestionsFix", false)
@@ -47,7 +42,7 @@ object CherrygramDebugConfig {
     var audioSource by sharedPreferences.int("audioSource", AUDIO_SOURCE_DEFAULT)
     /** Microphone Audio Source finish **/
 
-    var sendVideosAtMaxQuality by sharedPreferences.boolean("sendVideosMaxQuality", false)
+    var sendVideosAtMaxQuality by sharedPreferences.boolean("sendVideosMaxQuality", true)
     var playGIFsAsVideos by sharedPreferences.boolean("CP_PlayGIFsAsVideos", true)
     var hideVideoTimestamp by sharedPreferences.boolean("CP_HideVideoTimestamp", true)
     /** Chats finish **/

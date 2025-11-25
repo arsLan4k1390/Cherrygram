@@ -28,11 +28,9 @@ import android.os.Handler;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.telephony.TelephonyManager;
-import android.util.Pair;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.multidex.MultiDex;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -94,7 +92,6 @@ public class ApplicationLoader extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        MultiDex.install(this);
     }
 
     public static ILocationServiceProvider getLocationServiceProvider() {

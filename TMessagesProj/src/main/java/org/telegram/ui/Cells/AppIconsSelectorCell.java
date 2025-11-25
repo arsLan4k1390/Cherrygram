@@ -82,10 +82,6 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
                 LauncherIconController.LauncherIcon icon = availableIcons.get(position);
 
                 if ((
-                        icon == LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG ||
-                        icon == LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL) && (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32)) {
-                    return;
-                } else if ((
                         icon == LauncherIconController.LauncherIcon.DARK_CHERRY ||
                         icon == LauncherIconController.LauncherIcon.DARK_CHERRY_BRA ||
                         icon == LauncherIconController.LauncherIcon.WHITE_CHERRY ||
@@ -100,7 +96,8 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
                         icon == LauncherIconController.LauncherIcon.SUNRISE_CHERRY ||
                         icon == LauncherIconController.LauncherIcon.TURBO_CHERRY ||
                         icon == LauncherIconController.LauncherIcon.NOX_CHERRY ||
-                        icon == LauncherIconController.LauncherIcon.DARK_NY) && !(Build.VERSION.SDK_INT >= 26)) {
+                        icon == LauncherIconController.LauncherIcon.DARK_NY) && !(Build.VERSION.SDK_INT >= 26)
+                ) {
                     return;
                 }
                 holderView.bind(icon);
@@ -178,10 +175,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
     private void updateIconsVisibility() {
         availableIcons.clear();
         availableIcons.addAll(Arrays.asList(LauncherIconController.LauncherIcon.values()));
-        if (Build.VERSION.SDK_INT < 31 || Build.VERSION.SDK_INT > 32) {
-            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_SAMSUNG));
-            availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.MONET_CHERRY_PIXEL));
-        }
+
         if (Build.VERSION.SDK_INT < 27) {
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_CHERRY_BRA));
@@ -199,6 +193,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.NOX_CHERRY));
             availableIcons.removeIf(p -> p.equals(LauncherIconController.LauncherIcon.DARK_NY));
         }
+
         if (MessagesController.getInstance(currentAccount).premiumFeaturesBlocked()) {
             for (int i = 0; i < availableIcons.size(); i++) {
                 if (availableIcons.get(i).premium) {

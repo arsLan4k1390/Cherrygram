@@ -35,6 +35,7 @@ import org.telegram.ui.ProfileActivity
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.tgkit.TGKitSettingsFragment
+import androidx.core.content.edit
 
 object CherrygramExtras : CoroutineScope by MainScope() {
 
@@ -106,7 +107,7 @@ object CherrygramExtras : CoroutineScope by MainScope() {
 
         AndroidUtilities.runOnUIThread {
 
-            val messagesCollector = MessagesController.getInstance(currentAccount)
+            val messagesController = MessagesController.getInstance(currentAccount)
             val userConfig = UserConfig.getInstance(currentAccount)
 
             val builder = AlertDialog.Builder(activity)
@@ -115,14 +116,16 @@ object CherrygramExtras : CoroutineScope by MainScope() {
             builder.setMessage(getString(R.string.CG_FollowChannelInfo))
 
             builder.setPositiveButton(getString(R.string.ProfileJoinChannel)) { _, _ ->
-                messagesCollector.addUserToChat(channel.id, userConfig.currentUser, 0, null, null, null)
+                messagesController.addUserToChat(channel.id, userConfig.currentUser, 0, null, null, null)
                 Browser.openUrl(activity, "https://t.me/$channelUsername")
             }
 
 //            builder.setNegativeButton(getString(R.string.Cancel), null)
 
             builder.setNeutralButton(getString(R.string.CG_DoNotRemindAgain)) { _, _ ->
-                MessagesController.getMainSettings(currentAccount).edit().putBoolean("update_channel_follow_skip", true).apply()
+                messagesController.mainSettings.edit {
+                    putBoolean("update_channel_follow_skip", true)
+                }
             }
 
             try {
@@ -133,27 +136,28 @@ object CherrygramExtras : CoroutineScope by MainScope() {
 
     }
 
-    fun requestReviewFlow(fragment: BaseFragment, context: Context, activity: Activity) {
-        val reviewManager = ReviewManagerFactory.create(activity)
+    fun requestReviewFlow(fragment: BaseFragment) {
+        val reviewManager = ReviewManagerFactory.create(fragment.parentActivity)
 
         val requestReviewFlow = reviewManager.requestReviewFlow()
         requestReviewFlow.addOnCompleteListener { request ->
-            if (!MessagesController.getMainSettings(fragment.currentAccount).getBoolean("is_cherrygram_rated", false)) {
+            if (!fragment.messagesController.mainSettings.getBoolean("is_cherrygram_rated", false)) {
                 if (request.isSuccessful) {
                     val reviewInfo = request.result
 
-                    val flow = reviewManager.launchReviewFlow(activity, reviewInfo)
+                    val flow = reviewManager.launchReviewFlow(fragment.parentActivity, reviewInfo)
                     flow.addOnCompleteListener {
                         AppRestartHelper.createDebugSuccessBulletin(fragment)
-                        MessagesController.getMainSettings(fragment.currentAccount).edit().putBoolean("is_cherrygram_rated", true).apply()
+                        fragment.messagesController.mainSettings.edit {
+                            putBoolean("is_cherrygram_rated", true)
+                        }
                     }
                 } else {
-                    reviewInGooglePlay(context)
+                    reviewInGooglePlay(fragment.context)
                 }
             } else {
-                reviewInGooglePlay(context)
+                reviewInGooglePlay(fragment.context)
             }
-
         }
     }
 

@@ -10,6 +10,8 @@ package org.telegram.ui.Cells;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -45,6 +47,8 @@ import org.telegram.ui.Components.Switch;
 import org.telegram.ui.FilterCreateActivity;
 import org.telegram.ui.PeerColorActivity;
 import org.telegram.ui.Stories.recorder.HintView2;
+
+import java.util.ArrayList;
 
 public class TextCell extends FrameLayout {
 
@@ -999,7 +1003,28 @@ public class TextCell extends FrameLayout {
 
     /** Cherrygram start */
     public void setCheckBoxIcon(int icon) {
-        checkBox.setIcon(icon);
+        if (checkBox != null) checkBox.setIcon(icon);
+    }
+
+    public void setEnabled(boolean value, ArrayList<Animator> animators) {
+        super.setEnabled(value);
+        if (animators != null) {
+            if (textView != null) animators.add(ObjectAnimator.ofFloat(textView, View.ALPHA, value ? 1.0f : 0.5f));
+            if (subtitleView != null) animators.add(ObjectAnimator.ofFloat(subtitleView, View.ALPHA, value ? 1.0f : 0.5f));
+            if (valueTextView != null) animators.add(ObjectAnimator.ofFloat(valueTextView, View.ALPHA, value ? 1.0f : 0.5f));
+            if (valueSpoilersTextView != null) animators.add(ObjectAnimator.ofFloat(valueSpoilersTextView, View.ALPHA, value ? 1.0f : 0.5f));
+            if (imageView != null) animators.add(ObjectAnimator.ofFloat(imageView, View.ALPHA, value ? 1.0f : 0.5f));
+            if (checkBox != null) animators.add(ObjectAnimator.ofFloat(checkBox, View.ALPHA, value ? 1.0f : 0.5f));
+            if (valueImageView != null) animators.add(ObjectAnimator.ofFloat(valueImageView, View.ALPHA, value ? 1.0f : 0.5f));
+        } else {
+            if (textView != null) textView.setAlpha(value ? 1.0f : 0.5f);
+            if (subtitleView != null) subtitleView.setAlpha(value ? 1.0f : 0.5f);
+            if (valueTextView != null) valueTextView.setAlpha(value ? 1.0f : 0.5f);
+            if (valueSpoilersTextView != null) valueSpoilersTextView.setAlpha(value ? 1.0f : 0.5f);
+            if (imageView != null) imageView.setAlpha(value ? 1.0f : 0.5f);
+            if (checkBox != null) checkBox.setAlpha(value ? 1.0f : 0.5f);
+            if (valueImageView != null) valueImageView.setAlpha(value ? 1.0f : 0.5f);
+        }
     }
     /** Cherrygram finish */
 

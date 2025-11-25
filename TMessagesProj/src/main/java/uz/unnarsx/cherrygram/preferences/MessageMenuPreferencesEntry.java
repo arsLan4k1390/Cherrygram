@@ -12,6 +12,7 @@ package uz.unnarsx.cherrygram.preferences;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -40,7 +41,7 @@ import org.telegram.ui.Components.RecyclerListView;
 import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
 
 public class MessageMenuPreferencesEntry extends BaseFragment {
 
@@ -53,6 +54,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
     private int autoScrollMessagesRow;
     private int fixedMessageHeightRow;
     private int blurMessageMenuItemsRow;
+    private int useNativeBlurRow;
     private int redesignEndDivisorRow;
 
     private int miscellaneousHeaderRow;
@@ -147,7 +149,13 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                         getString(R.string.DP_Donate_Exclusive),
                         getString(R.string.DP_Donate_ExclusiveDesc),
                         getString(R.string.MoreInfo),
-                        () -> CherrygramPreferencesNavigator.INSTANCE.createDonate(this)
+                        () -> {
+                            if (getConnectionsManager().isTestBackend()) {
+                                CherrygramPreferencesNavigator.INSTANCE.createDonate(this);
+                            } else {
+                                CherrygramPreferencesNavigator.INSTANCE.createDonateForce(this);
+                            }
+                        }
                 ).show();
                 return;
             }
@@ -160,6 +168,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                 listAdapter.notifyItemChanged(autoScrollMessagesRow, false);
                 listAdapter.notifyItemChanged(fixedMessageHeightRow, false);
                 listAdapter.notifyItemChanged(blurMessageMenuItemsRow, false);
+                listAdapter.notifyItemChanged(useNativeBlurRow, false);
             } else if (position == autoScrollMessagesRow) {
                 CherrygramChatsConfig.INSTANCE.setMsgMenuAutoScroll(!CherrygramChatsConfig.INSTANCE.getMsgMenuAutoScroll());
                 if (view instanceof TextCheckCell) {
@@ -186,6 +195,16 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                     ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems());
 
                     if (CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems() && !CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground()) {
+                        CherrygramChatsConfig.INSTANCE.setBlurMessageMenuBackground(true);
+                        listAdapter.notifyItemChanged(enableNewMessageMenuRow, false);
+                    }
+                }
+            } else if (position == useNativeBlurRow) {
+                CherrygramChatsConfig.INSTANCE.setMsgMenuNativeBlur(!CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur());
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur());
+
+                    if (CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur() && !CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground()) {
                         CherrygramChatsConfig.INSTANCE.setBlurMessageMenuBackground(true);
                         listAdapter.notifyItemChanged(enableNewMessageMenuRow, false);
                     }
@@ -288,6 +307,15 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                                 getString(R.string.CP_BlurMessageMenuItems_Desc),
                                 CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems(),
                                 true,
+                                true
+                        );
+                    } else if (position == useNativeBlurRow) {
+                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground(), null);
+                        textCheckCell.setTextAndValueAndCheck(
+                                getString(R.string.CP_MessageMenuNativeBlur),
+                                getString(R.string.CP_MessageMenuNativeBlur_Desc),
+                                CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur(),
+                                true,
                                 false
                         );
                     }
@@ -334,7 +362,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                 return VIEW_TYPE_SHADOW;
             } else if (position == redesignHeaderRow || position == miscellaneousHeaderRow) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == enableNewMessageMenuRow || position == autoScrollMessagesRow || position == fixedMessageHeightRow || position == blurMessageMenuItemsRow) {
+            } else if (position == enableNewMessageMenuRow || position == autoScrollMessagesRow || position == fixedMessageHeightRow || position == blurMessageMenuItemsRow || position == useNativeBlurRow) {
                 return VIEW_TYPE_TEXT_CHECK;
             } else if (position == messageMenuItemsRow) {
                 return VIEW_TYPE_TEXT_CELL;
@@ -346,12 +374,27 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
     private void updateRowsId(boolean notify) {
         rowCount = 0;
 
-        redesignHeaderRow = rowCount++;
-        enableNewMessageMenuRow = rowCount++;
-        autoScrollMessagesRow = rowCount++;
-        fixedMessageHeightRow = rowCount++;
-        blurMessageMenuItemsRow = rowCount++;
-        redesignEndDivisorRow = rowCount++;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            redesignHeaderRow = rowCount++;
+            enableNewMessageMenuRow = rowCount++;
+            autoScrollMessagesRow = rowCount++;
+            fixedMessageHeightRow = rowCount++;
+            blurMessageMenuItemsRow = rowCount++;
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
+                useNativeBlurRow = -1;
+            } else {
+                useNativeBlurRow = rowCount++;
+            }
+            redesignEndDivisorRow = rowCount++;
+        } else {
+            redesignHeaderRow = -1;
+            enableNewMessageMenuRow = -1;
+            autoScrollMessagesRow = -1;
+            fixedMessageHeightRow = -1;
+            blurMessageMenuItemsRow = -1;
+            useNativeBlurRow = -1;
+            redesignEndDivisorRow = -1;
+        }
 
         miscellaneousHeaderRow = rowCount++;
         messageMenuItemsRow = rowCount++;

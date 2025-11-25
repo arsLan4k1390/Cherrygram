@@ -67,8 +67,8 @@ import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
-import uz.unnarsx.cherrygram.helpers.ui.badges.BadgeHelper;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
+import uz.unnarsx.cherrygram.donates.BadgeHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 
 public class UserCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {

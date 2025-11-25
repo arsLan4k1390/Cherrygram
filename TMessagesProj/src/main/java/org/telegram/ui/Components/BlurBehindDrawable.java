@@ -2,7 +2,6 @@ package org.telegram.ui.Components;
 
 import static android.graphics.Canvas.ALL_SAVE_FLAG;
 
-import android.animation.ValueAnimator;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -11,16 +10,12 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import androidx.core.graphics.ColorUtils;
-
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.DispatchQueue;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ChatActivity;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class BlurBehindDrawable {
 
@@ -72,27 +67,6 @@ public class BlurBehindDrawable {
         this.parentView = parentView;
         this.resourcesProvider = resourcesProvider;
         errorBlackoutPaint.setColor(Color.BLACK);
-    }
-
-    public BlurBehindDrawable(View behindView, View parentView, int type, Theme.ResourcesProvider resourcesProvider, InstantCameraView instantCameraView) {
-        this.type = type;
-        this.behindView = behindView;
-        this.parentView = parentView;
-        this.resourcesProvider = resourcesProvider;
-        this.instantCameraView = instantCameraView;
-        errorBlackoutPaint.setColor(Color.BLACK);
-    }
-
-    private InstantCameraView instantCameraView;
-    private float flashProgress = 0f;
-    public void showFlash(boolean show) {
-        float to = show ? 1f : 0f;
-        ValueAnimator animator = ValueAnimator.ofFloat(1f - to, to).setDuration(500);
-        animator.addUpdateListener(animation -> {
-            flashProgress = (Float) animation.getAnimatedValue();
-            invalidate();
-        });
-        animator.start();
     }
 
     public void draw(Canvas canvas) {
@@ -150,15 +124,7 @@ public class BlurBehindDrawable {
             canvas.restore();
             wasDraw = true;
 
-            if (instantCameraView != null && !instantCameraView.flipAnimationInProgress) {
-                if (CherrygramCameraConfig.INSTANCE.getWhiteBackground()) {
-                    canvas.drawColor(ColorUtils.blendARGB(0x1a000000, ColorUtils.setAlphaComponent(Color.WHITE, (int) (Color.alpha(Color.WHITE) * alpha / 2f)), flashProgress));
-                } else {
-                    canvas.drawColor(ColorUtils.blendARGB(ColorUtils.setAlphaComponent(Color.WHITE, (int) (Color.alpha(Color.WHITE) * alpha / 2f)), 0x1a000000, 1f - flashProgress));
-                }
-            } else {
-                canvas.drawColor(0x1a000000);
-            }
+            canvas.drawColor(0x1a000000);
         }
         canvas.restore();
 

@@ -28,6 +28,12 @@ import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 public class DeeplinkHelper {
 
     public static void processDeepLink(Uri uri, BaseFragment fragment, Callback callback, Runnable unknown, Browser.Progress progress) {
+        if (fragment == null) {
+            fragment = LaunchActivity.getSafeLastFragment();
+        }
+        if (fragment == null) {
+            return;
+        }
         if (uri == null) {
             unknown.run();
             return;
@@ -96,7 +102,7 @@ public class DeeplinkHelper {
                     AppRestartHelper.triggerRebirth(fragment.getContext(), new Intent(fragment.getContext(), LaunchActivity.class));
                     return;
                 }
-                case "cg_settings", "cg_main" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createMainMenu();
+                case "cg_settings", "cg_main" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createMainMenu(false);
                 case "cg_update", "cg_upgrade", "update", "upgrade" -> {
                     if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
                         Browser.openUrl(fragment.getContext(), Constants.UPDATE_APP_URL);

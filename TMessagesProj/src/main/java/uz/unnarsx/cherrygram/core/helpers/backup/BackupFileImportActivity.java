@@ -467,7 +467,7 @@ public class BackupFileImportActivity extends BaseFragment {
                         }
 
                         @Override
-                        public void actionButtonPressed(boolean canceled, boolean notify, int scheduleDate) {
+                        public void actionButtonPressed(boolean canceled, boolean notify, int scheduleDate, int scheduleRepeatPeriod) {
                             removeSelfFromStack();
                             if (!canceled) {
                                 sendSelectedPhotos(selectedPhotos, selectedPhotosOrder, notify, scheduleDate);
@@ -581,7 +581,7 @@ public class BackupFileImportActivity extends BaseFragment {
             if (chatActivity != null && chatActivity.isInScheduleMode()) {
                 AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), chatActivity.getDialogId(), this::sendSelectedFiles);
             } else {
-                sendSelectedFiles(true, 0);
+                sendSelectedFiles(true, 0, 0);
             }
         });
         writeButton.setOnLongClickListener(view -> {
@@ -867,7 +867,7 @@ public class BackupFileImportActivity extends BaseFragment {
         delegate.didSelectPhotos(media, notify, scheduleDate);
     }
 
-    private void sendSelectedFiles(boolean notify, int scheduleDate) {
+    private void sendSelectedFiles(boolean notify, int scheduleDate, int scheduleRepeatPeriod) {
         if (selectedFiles.size() == 0 || delegate == null || sendPressed) {
             return;
         }

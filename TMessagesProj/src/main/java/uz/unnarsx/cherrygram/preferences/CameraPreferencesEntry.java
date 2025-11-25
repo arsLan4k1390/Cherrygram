@@ -214,7 +214,7 @@ public class CameraPreferencesEntry extends BaseFragment {
                     ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
                 }
             } else if (position == cameraXFpsRangeRow) {
-                if (!CherrygramCoreConfig.INSTANCE.isDevBuild()) return;
+//                if (!CherrygramCoreConfig.INSTANCE.isDevBuild()) return;
                 ArrayList<String> configStringKeys = new ArrayList<>();
                 ArrayList<Integer> configValues = new ArrayList<>();
 
@@ -415,7 +415,7 @@ public class CameraPreferencesEntry extends BaseFragment {
                             listAdapter.notifyItemChanged(cameraXQualityRow);
                             listAdapter.notifyItemChanged(cameraUseDualCameraRow);
                             listAdapter.notifyItemChanged(startFromUltraWideRow);
-                            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) listAdapter.notifyItemChanged(cameraXFpsRangeRow);
+                            /*if (CherrygramCoreConfig.INSTANCE.isDevBuild())*/ listAdapter.notifyItemChanged(cameraXFpsRangeRow);
                             listAdapter.notifyItemChanged(cameraStabilisationRow);
                             listAdapter.notifyItemChanged(exposureSliderRow);
                             listAdapter.notifyItemChanged(cameraControlButtonsRow);
@@ -490,12 +490,12 @@ public class CameraPreferencesEntry extends BaseFragment {
 
         if (CameraXUtils.isCurrentCameraCameraX()) {
             startFromUltraWideRow = rowCount++;
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) cameraXFpsRangeRow = rowCount++;
+            /*if (CherrygramCoreConfig.INSTANCE.isDevBuild())*/ cameraXFpsRangeRow = rowCount++;
             cameraStabilisationRow = rowCount++;
             exposureSliderRow = rowCount++;
         } else {
             startFromUltraWideRow = -1;
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) cameraXFpsRangeRow = -1;
+            /*if (CherrygramCoreConfig.INSTANCE.isDevBuild())*/ cameraXFpsRangeRow = -1;
             cameraStabilisationRow = -1;
             exposureSliderRow = -1;
         }

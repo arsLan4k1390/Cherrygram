@@ -28,7 +28,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BotWebViewVibrationEffect;
+import org.telegram.messenger.DialogObject;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.R;
+import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.BackDrawable;
@@ -36,17 +39,24 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
+import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.OutlineEditText;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.UsersSelectActivity;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import uz.unnarsx.cherrygram.chats.helpers.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
 
 public class MessageFiltersPreferencesEntry extends BaseFragment {
 
@@ -60,6 +70,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
     private int filteredWordsAdviceRow;
     private int detectTranslitRow;
     private int exactWordMatchRow;
+    private int exclusionsRow;
     private int filtersEndDivisor;
 
     private int miscellaneousHeaderRow;
@@ -167,7 +178,13 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                         getString(R.string.DP_Donate_Exclusive),
                         getString(R.string.DP_Donate_ExclusiveDesc),
                         getString(R.string.MoreInfo),
-                        () -> CherrygramPreferencesNavigator.INSTANCE.createDonate(this)
+                        () -> {
+                            if (getConnectionsManager().isTestBackend()) {
+                                CherrygramPreferencesNavigator.INSTANCE.createDonate(this);
+                            } else {
+                                CherrygramPreferencesNavigator.INSTANCE.createDonateForce(this);
+                            }
+                        }
                 ).show();
                 return;
             }
@@ -184,6 +201,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                 listAdapter.notifyItemChanged(filterWordsRow, false);
                 listAdapter.notifyItemChanged(detectTranslitRow, false);
                 listAdapter.notifyItemChanged(exactWordMatchRow, false);
+                listAdapter.notifyItemChanged(exclusionsRow, false);
                 listAdapter.notifyItemChanged(miscellaneousHeaderRow, false);
                 listAdapter.notifyItemChanged(detectEntitiesRow, false);
                 if (CherrygramCoreConfig.INSTANCE.isDevBuild() || CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) listAdapter.notifyItemChanged(hideFromBlockedRow, false);
@@ -210,6 +228,33 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                         listAdapter.notifyItemChanged(enableFilterRow, false);
                     }
                 }
+            } else if (position == exclusionsRow) {
+                AndroidUtilities.runOnUIThread(() -> {
+                    UsersSelectActivity activity = getUsersSelectActivity();
+                    activity.setDelegate((ids, unused) -> {
+                        MessagesFilterHelper messagesFilterHelper = MessagesFilterHelper.INSTANCE;
+
+                        Set<Long> chatIds = new HashSet<>(ids);
+                        Set<String> excludedChats = new HashSet<>(messagesFilterHelper.getArrayList(messagesFilterHelper.getExcludedList()));
+
+                        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("old excluded chats array: " + excludedChats);
+                        excludedChats.clear();
+
+                        if (!chatIds.isEmpty()) {
+                            for (Long id : chatIds) {
+                                if (DialogObject.isUserDialog(id) || DialogObject.isChatDialog(id)) {
+                                    excludedChats.add(String.valueOf(id));
+                                }
+                            }
+                        }
+
+                        messagesFilterHelper.saveArrayList(new ArrayList<>(excludedChats), messagesFilterHelper.getExcludedList());
+                        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("new excluded chats array: " + excludedChats);
+
+                        listAdapter.notifyItemChanged(exclusionsRow, false);
+                    });
+                    presentFragment(activity);
+                }, 300);
             } else if (position == detectEntitiesRow) {
                 CherrygramChatsConfig.INSTANCE.setMsgFiltersDetectEntities(!CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectEntities());
                 if (view instanceof TextCheckCell) {
@@ -276,7 +321,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
 
         private final int VIEW_TYPE_SHADOW = 0;
         private final int VIEW_TYPE_HEADER = 1;
-//        private final int VIEW_TYPE_TEXT_CELL = 2;
+        private final int VIEW_TYPE_TEXT_CELL = 2;
         private final int VIEW_TYPE_TEXT_CHECK = 3;
 //        private final int VIEW_TYPE_TEXT_SETTINGS = 4;
         private final int VIEW_TYPE_TEXT_INFO_PRIVACY = 5;
@@ -310,6 +355,20 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                     } else if (position == miscellaneousHeaderRow) {
                         headerCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
                         headerCell.setText(getString(R.string.LocalMiscellaneousCache));
+                    }
+                    break;
+                case VIEW_TYPE_TEXT_CELL:
+                    TextCell textCell = (TextCell) holder.itemView;
+                    textCell.setEnabled(false);
+
+                    if (position == exclusionsRow) {
+                        textCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
+                        textCell.setTextAndValueAndIcon(
+                                getString(R.string.CP_Message_Filtering_Exclusions),
+                                String.valueOf(MessagesFilterHelper.INSTANCE.getExcludedChatsCount()),
+                                R.drawable._menu_stream_comments_off_24,
+                                false
+                        );
                     }
                     break;
                 case VIEW_TYPE_TEXT_CHECK:
@@ -448,6 +507,10 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                     view = new HeaderCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
+                case VIEW_TYPE_TEXT_CELL:
+                    view = new TextCell(mContext);
+                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+                    break;
                 case VIEW_TYPE_TEXT_CHECK:
                     view = new TextCheckCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
@@ -472,6 +535,8 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                 return VIEW_TYPE_SHADOW;
             } else if (position == filtersHeaderRow || position == miscellaneousHeaderRow) {
                 return VIEW_TYPE_HEADER;
+            } else if (position == exclusionsRow) {
+                return VIEW_TYPE_TEXT_CELL;
             } else if (position == enableFilterRow || position == detectTranslitRow || position == exactWordMatchRow || position == detectEntitiesRow || position == hideFromBlockedRow || position == hideAllRow  || position == collapseAutomaticallyRow || position == makeTransparentRow) {
                 return VIEW_TYPE_TEXT_CHECK;
             } else if (position == filteredWordsAdviceRow) {
@@ -492,6 +557,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
         filteredWordsAdviceRow = rowCount++;
         detectTranslitRow = rowCount++;
         exactWordMatchRow = rowCount++;
+        exclusionsRow = rowCount++;
         filtersEndDivisor = rowCount++;
 
         miscellaneousHeaderRow = rowCount++;
@@ -548,6 +614,30 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
         if (CherrygramChatsConfig.INSTANCE.getMsgFiltersHideFromBlocked()) {
             getMessagesController().getBlockedPeers(false);
         }
+    }
+
+    private UsersSelectActivity getUsersSelectActivity() {
+        MessagesFilterHelper messagesFilterHelper = MessagesFilterHelper.INSTANCE;
+
+        ArrayList<Long> chatsList = new ArrayList<>();
+        ArrayList<String> savedChats = messagesFilterHelper.getArrayList(messagesFilterHelper.getExcludedList());
+
+        for (String chatIdStr : savedChats) {
+            long chatId = Long.parseLong(chatIdStr);
+
+            TLRPC.User user = getMessagesController().getUser(chatId);
+            TLRPC.Chat chat = getMessagesController().getChat(-chatId);
+
+            if (user != null) {
+                chatsList.add(user.id);
+            } else if (chat != null) {
+                chatsList.add(-chat.id);
+            }
+        }
+
+        UsersSelectActivity activity = new UsersSelectActivity(true, chatsList, 0);
+        activity.asFilterExcludedChats();
+        return activity;
     }
 
 }

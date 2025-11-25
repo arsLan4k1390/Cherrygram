@@ -38,7 +38,6 @@
     <string name="CG_FoldersTypeIconsTitles">Іконки з назвами</string>
     <string name="CG_ChooseFolderIcon">Виберіть іконку</string>
     <string name="CP_NewTabs_NoCounter">Приховати лічильник на вкладках</string>
-    <string name="CP_NewTabs_NoCounter_Desc">Приховати лічильник непрочитаних повідомлень</string>
     <string name="CG_SwipeToUnarchive">Проведіть вліво для розархівування</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
@@ -51,7 +50,6 @@
     <string name="CG_DeleteAllFromSelfDone">Усі ваші повідомлення видалено</string>
     <string name="CG_ClearFromCache">Видалити з кешу</string>
     <string name="CG_ClearedFromCache">Видалено з кешу</string>
-    <string name="CG_ViewUserHistory">Історія повідомлень</string>
     <string name="CG_ToSaved">Зберегти</string>
     <string name="CG_CreateMention">Згадати</string>
     <string name="CG_CreateCode">Створити Код</string>
@@ -92,9 +90,6 @@
     <string name="CG_Restart">Перезапустити додаток</string>
     <string name="CG_RestartToApply">Перезавантажте додаток для застосування змін</string>
     <string name="CG_PushService">Сервіс повідомлень Cherrygram.</string>
-    <string name="CG_ForceClean">Примусове очищення кешу Telegram</string>
-    <string name="CG_ForceCleanInfo">Використайте це, якщо ви довго бачите \"Підрахунок…\" При спробі очистки кешу.\nЦе видалить ВСЕ із вашого кешу - будьте обережні!</string>
-    <string name="CG_ForceCleanInfo1">Ви дійсно хочете видалити ВСЕ з вашого кешу Telegram?</string>
     <string name="CG_Kaboom">Доступ до цієї функції, можна отримати без паролю Cherrygram, через системні налаштування. Функція повністю видаляє всі дані додатку. Її можна використати в аварійних ситуаціях.</string>
     <string name="CG_AppCrashed">Щось пішло не так</string>
     <string name="CG_AppCrashedDesc">Cherrygram перестав працювати. Будь ласка, відправте логи розробникам, щоб вони могли виправити цю помилку якомога швидше</string>
@@ -387,7 +382,6 @@
     <string name="SP_TestFingerprint_Desc">Якщо автентифікація відбитком пальця вже ввімкнена і ви не бачите функції, спробуйте натиснути кнопку \"Перевірити відбиток\" для вирішення проблеми.</string>
     <string name="SP_BiometricUnavailable_Test_Fixed">Відбиток пальця успішно виявлено!</string>
     <string name="SP_BiometricUnavailable_Test_Wrong_Desc">Спробуйте перезавантажити пристрій або перевірити системні налаштування.</string>
-    <string name="SP_Category_Account">Акаунт</string>
     <string name="SP_DeleteAccount">Видалення акаунта</string>
     <!--Security Preferences-->
     <!--Updates Preferences-->

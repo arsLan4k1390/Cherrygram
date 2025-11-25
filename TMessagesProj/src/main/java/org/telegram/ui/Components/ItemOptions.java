@@ -43,6 +43,7 @@ import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.LocaleController;
+import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
@@ -65,7 +66,7 @@ import org.telegram.ui.Stories.recorder.HintView2;
 import java.util.HashSet;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.helpers.ui.badges.BadgeHelper;
+import uz.unnarsx.cherrygram.donates.BadgeHelper;
 
 public class ItemOptions {
 
@@ -664,6 +665,13 @@ public class ItemOptions {
         return this;
     }
 
+    public ItemOptions addDialog(int currentAccount, long dialogId, Runnable onClickListener) {
+        final TLObject object = MessagesController.getInstance(currentAccount).getUserOrChat(dialogId);
+        final boolean isUser = object instanceof TLRPC.User;
+        final boolean isChannel = object instanceof TLRPC.Chat && ChatObject.isChannelAndNotMegaGroup((TLRPC.Chat) object);
+        return addProfile(object, getString(isUser ? R.string.ViewProfile : (isChannel ? R.string.ViewChannelProfile : R.string.ViewGroupProfile)), onClickListener);
+    }
+
     public ItemOptions addProfile(TLObject obj, CharSequence subtitle, Runnable onClickListener) {
         final FrameLayout userButton = new FrameLayout(context);
         userButton.setBackground(Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 0, 6));
@@ -696,6 +704,7 @@ public class ItemOptions {
         userButton.addView(subtitleText, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.FILL_HORIZONTAL | Gravity.TOP, 59, 27, 16, 0));
 
         userButton.setOnClickListener(v -> {
+            dismiss();
             if (onClickListener != null) {
                 onClickListener.run();
             }

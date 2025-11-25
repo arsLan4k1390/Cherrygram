@@ -355,6 +355,39 @@ object ChatsHelper2 {
                     .createCopyBulletin(getString(R.string.TextCopied))
                     .show()
             }
+            .addIf(messageObject.messageOwner != null,
+                R.drawable.msg_calendar2,
+                if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.document != null) {
+                    "Date: ➥ " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.document.date.toLong())
+                } else if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.photo != null) {
+                    "Date: ➥ " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.photo.date.toLong())
+                } else {
+                    "Message is not forwarded."
+                }
+            ) {
+                var textToCopy = ""
+                if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.document != null) {
+                    textToCopy = CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.document.date.toLong())
+                } else if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.photo != null) {
+                    textToCopy = CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.photo.date.toLong())
+                }
+                if (textToCopy != "") {
+                    AndroidUtilities.addToClipboard(textToCopy)
+                    BulletinFactory.of(sa.container, sa.resourcesProvider)
+                        .createCopyBulletin(getString(R.string.TextCopied))
+                        .show()
+                }
+            }
+            .addIf(messageObject.messageOwner != null,
+                R.drawable.msg_info,
+                if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.document != null) {
+                    "DC: " + messageObject.messageOwner.media.document.dc_id
+                } else if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.photo != null) {
+                    "DC: " + messageObject.messageOwner.media.photo.dc_id
+                } else {
+                    "DC: Available only for media."
+                }
+            ) {}
 
             .setDimAlpha(100)
             .translate(-AndroidUtilities.dp(15f).toFloat(), 0f)

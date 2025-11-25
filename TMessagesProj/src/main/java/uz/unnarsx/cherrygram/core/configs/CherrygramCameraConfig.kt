@@ -65,7 +65,6 @@ object CherrygramCameraConfig {
 
     var rearCam by sharedPreferences.boolean("CP_RearCam", false)
 
-    var whiteBackground by sharedPreferences.boolean("CG_WhiteBG", false)
     var videoMessagesResolution by sharedPreferences.int("CG_Round_Video_Resolution", 512)
     /** Videomessages finish **/
 

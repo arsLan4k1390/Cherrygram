@@ -62,9 +62,16 @@ public class TGKitSettingsFragment extends BaseFragment {
     private ListAdapter listAdapter;
     private RecyclerListView listView;
 
+    private boolean openDelay = false;
+
     public TGKitSettingsFragment(BasePreferencesEntry entry) {
         super();
         this.settings = entry.getProcessedPrefs(this);
+    }
+
+    public TGKitSettingsFragment withOpenDelay(boolean openDelay) {
+        this.openDelay = openDelay;
+        return this;
     }
 
     @Override
@@ -99,6 +106,11 @@ public class TGKitSettingsFragment extends BaseFragment {
         if (!hasWhiteActionBar()) return super.isLightStatusBar();
         int color = getThemedColor(Theme.key_windowBackgroundWhite);
         return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
+    @Override
+    public boolean needDelayOpenAnimation() {
+        return openDelay;
     }
 
     @Override

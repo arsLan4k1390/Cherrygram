@@ -54,7 +54,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class ExperimentalPreferencesEntry extends BaseFragment {

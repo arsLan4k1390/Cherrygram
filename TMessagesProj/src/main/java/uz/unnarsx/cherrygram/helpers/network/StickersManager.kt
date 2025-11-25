@@ -10,7 +10,6 @@
 package uz.unnarsx.cherrygram.helpers.network
 
 import android.content.Context
-import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -30,9 +29,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.io.InputStream
 import java.io.InputStreamReader
-import java.io.OutputStream
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
@@ -148,7 +145,8 @@ object StickersManager {
         6055278067666911223L, 5062008833983905790L, 1169953291908415506L, 6055278067666911216L, 4331929539736240157L,
         5091996690789957649L, 9087292238668496936L, 6417088260173987842L, 8728063708061761539L, 4238900539514945542L,
         4008340909736329215, 3560771065137332232, 5062008833983905791L, 3442978400170409980L, 4366402085420269571L,
-        7346771112912486399L, 1307729623638867964L, 8088313558921641982L, 3980386015587074063L
+        7346771112912486399L, 1307729623638867964L, 8088313558921641982L, 3980386015587074063L, 3471325442030436360L,
+        5390126781875355656L, 5390126781875355657L
     )
 
     private fun isLocalSetId(document: TLRPC.Document): Boolean = iDs.any { setID: Long ->
@@ -165,27 +163,20 @@ object StickersManager {
             val outFile = File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "stickers/cherrygram.webm")
             if (outFile.exists()) return
             outFile.parentFile?.mkdirs()
-            val am: AssetManager = ApplicationLoader.applicationContext.assets
-            val `in` = am.open("cherrygram.webm")
-            val out: OutputStream = FileOutputStream(outFile)
-            copyFile(`in`, out)
+
+            ApplicationLoader.applicationContext.assets.open("cherrygram.webm").use { input ->
+                FileOutputStream(outFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
         } catch (e: IOException) {
             e.printStackTrace()
         }
     }
 
-    @Throws(IOException::class)
-    private fun copyFile(`in`: InputStream, out: OutputStream) {
-        val buffer = ByteArray(1024)
-        var read: Int
-        while (`in`.read(buffer).also { read = it } != -1) {
-            out.write(buffer, 0, read)
-        }
-    }
-
     fun getStickerFileFromImage(originalPath: String): File {
         val dotIndex = originalPath.lastIndexOf('.')
-        val basePath = if (dotIndex != -1) originalPath.substring(0, dotIndex) else originalPath
+        val basePath = if (dotIndex != -1) originalPath.take(dotIndex) else originalPath
         val webpFile = File("$basePath.webp")
 
         try {
@@ -236,7 +227,7 @@ object StickersManager {
                 val image = BitmapFactory.decodeFile(path) ?: return@Thread
 
                 val dotIndex = path.lastIndexOf('.')
-                val basePath = if (dotIndex != -1) path.substring(0, dotIndex) else path
+                val basePath = if (dotIndex != -1) path.take(dotIndex) else path
                 val file = File("$basePath.webp")
 
                 FileOutputStream(file).use { stream ->

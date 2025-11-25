@@ -1773,6 +1773,7 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                 applyingName = true;
                 final TL_account.updateColor req = new TL_account.updateColor();
                 me.flags2 |= 256;
+                me.color.flags |= 1;
                 if (namePage.selectedPeerCollectible != null) {
                     req.flags |= 4;
                     req.color = new TLRPC.TL_inputPeerColorCollectible();
@@ -1782,18 +1783,17 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                     req.flags |= 4;
                     req.color = new TLRPC.TL_peerColor();
                     req.color.flags |= 1;
-                    req.color.color = me.color.color = namePage.selectedColor;
+                    req.color.color = namePage.selectedColor;
                     me.color.flags |= 1;
-
+                    me.color.color = namePage.selectedColor;
                     if (namePage.selectedEmoji != 0) {
+                        req.flags |= 1;
                         me.color.flags |= 2;
                         req.color.flags |= 2;
                         req.color.background_emoji_id = me.color.background_emoji_id = namePage.selectedEmoji;
                     } else {
                         me.color.flags &= ~2;
                         me.color.background_emoji_id = 0;
-                        req.color.flags &= ~2;
-                        req.color.background_emoji_id = 0;
                     }
                 }
                 getConnectionsManager().sendRequest(req, null);
@@ -1805,23 +1805,25 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
             ) {
                 applyingProfile = true;
                 if (me.profile_color == null) {
-                    me.profile_color = new TLRPC.PeerColor();
+                    me.profile_color = new TLRPC.TL_peerColor();
                 }
                 TL_account.updateColor req = new TL_account.updateColor();
                 req.for_profile = true;
                 me.flags2 |= 512;
-                if (profilePage.selectedColor >= 0) {
-                    me.profile_color.flags |= 1;
+                if (profilePage.selectedColor < 0) {
+                    me.profile_color.flags &=~ 1;
+                } else {
                     if (req.color == null) {
                         req.flags |= 4;
                         req.color = new TLRPC.TL_peerColor();
                     }
                     req.color.flags |= 1;
-                    req.color.color = me.profile_color.color = profilePage.selectedColor;
-                } else {
-                    me.profile_color.flags &= ~1;
+                    req.color.color = profilePage.selectedColor;
+                    me.profile_color.flags |= 1;
+                    me.profile_color.color = profilePage.selectedColor;
                 }
                 if (profilePage.selectedEmoji != 0) {
+                    req.flags |= 1;
                     me.profile_color.flags |= 2;
                     if (req.color == null) {
                         req.flags |= 4;
@@ -1830,12 +1832,8 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                     req.color.flags |= 2;
                     req.color.background_emoji_id = me.profile_color.background_emoji_id = profilePage.selectedEmoji;
                 } else {
-                    me.profile_color.flags &= ~2;
+                    me.profile_color.flags &=~ 2;
                     me.profile_color.background_emoji_id = 0;
-                    if (req.color != null) {
-                        req.color.flags &= ~2;
-                        req.color.background_emoji_id = 0;
-                    }
                 }
                 getConnectionsManager().sendRequest(req, null);
             }

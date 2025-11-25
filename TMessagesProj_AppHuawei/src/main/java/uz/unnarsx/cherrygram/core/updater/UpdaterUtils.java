@@ -19,12 +19,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.widget.TextView;
-
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 
 import com.google.android.exoplayer2.util.Util;
 
@@ -58,88 +56,67 @@ import java.util.Objects;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
+import uz.unnarsx.cherrygram.helpers.network.NetworkHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 
 public class UpdaterUtils {
 
     public static final DispatchQueue otaQueue = new DispatchQueue("otaQueue");
 
-    private static String uri = "https://api.github.com/repos/arsLan4k1390/Cherrygram/releases/latest";
-    private static String betauri = "https://api.github.com/repos/arsLan4k1390/CherrygramBeta-APKs/releases/latest";
+    private static final String RELEASE_URI = "https://api.github.com/repos/arsLan4k1390/Cherrygram/releases/latest";
+    private static final String BETA_URI = "https://api.github.com/repos/arsLan4k1390/CherrygramBeta-APKs/releases/latest";
     public static String downloadURL = null;
     public static String version, changelog, size, uploadDate;
     public static File otaPath, versionPath, apkFile;
 
     public static long id = 1L;
     private static final long updateCheckInterval = 3600000L; // 1 hour
+    private static volatile boolean updateDownloaded = false;
+    private static volatile boolean checkingForUpdates = false;
 
-    private static boolean updateDownloaded;
-    private static boolean checkingForUpdates;
-
-    private static Handler handler = new Handler();
+    private static final Handler handler = new Handler();
     private static Runnable progressRunnable;
 
-    public static final String[] deviceModels = {
-            "Galaxy S6", "Galaxy S7", "Galaxy S8", "Galaxy S9", "Galaxy S10", "Galaxy S21",
-            "Pixel 3", "Pixel 4", "Pixel 5",
-            "OnePlus 6", "OnePlus 7", "OnePlus 8", "OnePlus 9", "Xperia XZ", "Xperia XZ2", "Xperia XZ3", "Xperia 1", "Xperia 5", "Xperia 10", "Xperia L4"
-    };
-    private static final String[] chromeVersions = {
-            "111.0.5563.57", "94.0.4606.81", "80.0.3987.119", "69.0.3497.100", "92.0.4515.159", "71.0.3578.99"
-    };
-
-    public static String formatUserAgent() {
-        String androidVersion = String.valueOf(Utilities.random.nextInt(7) + 6);
-        String deviceModel = deviceModels[Utilities.random.nextInt(deviceModels.length)];
-        String chromeVersion = chromeVersions[Utilities.random.nextInt(chromeVersions.length)];
-        return String.format("Mozilla/5.0 (Linux; Android %s; %s) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s Mobile Safari/537.36", androidVersion, deviceModel, chromeVersion);
-    }
-
-    public static void checkDirs() {
-        otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
-        if (version != null) {
-            versionPath = new File(otaPath, version);
-            apkFile = new File(versionPath, "update.apk");
-            try {
-                if (!versionPath.exists())
-                    versionPath.mkdirs();
-            } catch (Exception e) {
-                FileLog.e(e);
+    /**
+     * Ensure OTA dirs exist. Returns true if otaPath/versionPath/apkFile are ready.
+     */
+    public static boolean checkDirs() {
+        try {
+            otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
+            if (!otaPath.exists()) {
+                if (!otaPath.mkdirs() && !otaPath.exists()) {
+                    return false;
+                }
             }
+            if (version == null) return false;
+            versionPath = new File(otaPath, version);
+            if (!versionPath.exists()) {
+                if (!versionPath.mkdirs() && !versionPath.exists()) {
+                    return false;
+                }
+            }
+            apkFile = new File(versionPath, "update.apk");
             updateDownloaded = apkFile.exists();
+            return true;
+        } catch (Exception e) {
+            FileLog.e(e);
+            return false;
         }
     }
 
     public static boolean updateFileExists() {
         String version = CherrygramCoreConfig.INSTANCE.getUpdateVersionName();
 
-        otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
-        versionPath = new File(otaPath, version);
-        apkFile = new File(versionPath, "update.apk");
-        try {
-            if (!versionPath.exists())
-                versionPath.mkdirs();
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
+        if (!checkDirs()) return false;
 
         String[] current = Constants.INSTANCE.getCherryVersion().split("\\.");
         String[] downloaded = version.split("\\.");
-        boolean isNew = false;
 
-        int length = Math.max(current.length, downloaded.length);
-        for (int i = 0; i < length; i++) {
-            int v1 = i < current.length ? Utilities.parseInt(current[i]) : 0;
-            int v2 = i < downloaded.length ? Utilities.parseInt(downloaded[i]) : 0;
-            if (v1 < v2) {
-                isNew = true;
-            } else if (v1 > v2) {
-                isNew = false;
-            }
-            CherrygramCoreConfig.INSTANCE.setUpdateAvailable(isNew);
-        }
+        int cmp = compareVersions(current, downloaded);
+        boolean isNew = cmp < 0;
+        CherrygramCoreConfig.INSTANCE.setUpdateAvailable(isNew);
 
-        return isNew && (apkFile != null || apkFile.getAbsolutePath() != null || apkFile.getPath() != null) && apkFile.exists();
+        return isNew && apkFile != null && apkFile.exists();
     }
 
     public interface OnUpdateNotFound {
@@ -169,12 +146,12 @@ public class UpdaterUtils {
             CherrygramCoreConfig.INSTANCE.getLastUpdateCheckTime();
             CherrygramCoreConfig.INSTANCE.setLastUpdateCheckTime(System.currentTimeMillis());
             try {
-                HttpURLConnection connection = (HttpURLConnection) new URI(uri).toURL().openConnection();
+                HttpURLConnection connection = (HttpURLConnection) new URI(RELEASE_URI).toURL().openConnection();
                 if (CherrygramCoreConfig.INSTANCE.getInstallBetas()) {
-                    connection = (HttpURLConnection) new URI(betauri).toURL().openConnection();
+                    connection = (HttpURLConnection) new URI(BETA_URI).toURL().openConnection();
                 }
                 connection.setRequestMethod("GET");
-                connection.setRequestProperty("User-Agent", formatUserAgent());
+                connection.setRequestProperty("User-Agent", NetworkHelper.formatUserAgent());
                 connection.setRequestProperty("Content-Type", "application/json");
 
                 StringBuilder textBuilder = new StringBuilder();
@@ -197,7 +174,7 @@ public class UpdaterUtils {
                     link = arr.getJSONObject(i).getString("browser_download_url")
                             .replace("Cherrygram-", "Cherrygram-Huawei-");
                     downloadURL = link;
-                    if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d ("DownloadLinkHuawei: " + downloadURL);
+                    if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("DownloadLinkHuawei: " + downloadURL);
 
                     size = AndroidUtilities.formatFileSize(arr.getJSONObject(i).getLong("size"));
                     for (String type : supportedTypes) {
@@ -250,8 +227,8 @@ public class UpdaterUtils {
 
             DownloadReceiver downloadBroadcastReceiver = new DownloadReceiver();
             IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction("android.intent.action.DOWNLOAD_COMPLETE");
-            intentFilter.addAction("android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED");
+            intentFilter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+            intentFilter.addAction(DownloadManager.ACTION_NOTIFICATION_CLICKED);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 ContextCompat.registerReceiver(context, downloadBroadcastReceiver, intentFilter, ContextCompat.RECEIVER_EXPORTED);
             } else  {
@@ -268,6 +245,7 @@ public class UpdaterUtils {
     }
 
     public static void installApk(Context context, String path) {
+        if (context == null || path == null) return;
         File file = new File(path);
         if (!file.exists())
             return;
@@ -292,16 +270,18 @@ public class UpdaterUtils {
     }
 
     public static String getOtaDirSize() {
-        checkDirs();
+        if (!checkDirs()) return "0 B";
         return AndroidUtilities.formatFileSize(Utilities.getDirSize(otaPath.getAbsolutePath(), 5, true), true, false);
     }
 
     public static void cleanOtaDir() {
-        checkDirs();
+        // remove only ota folder content if exists
+        if (!checkDirs()) return;
         cleanFolder(otaPath);
     }
 
     public static void cleanFolder(File folder) {
+        if (folder == null) return;
         if (folder.isDirectory()) {
             File[] files = folder.listFiles();
             if (files != null) {
@@ -310,7 +290,12 @@ public class UpdaterUtils {
                 }
             }
         }
-        folder.delete();
+        // ignore return value
+        try {
+            folder.delete();
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
     }
 
     public static long getMillisFromDate(String d, String format) {
@@ -333,20 +318,21 @@ public class UpdaterUtils {
             SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
             String symbol = "", font = AndroidUtilities.TYPEFACE_ROBOTO_REGULAR;
             for (int i = 0; i < 3; i++) {
-                switch (i) {
-                    case 0:
+                font = switch (i) {
+                    case 0 -> {
                         symbol = "**";
-                        font = AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM;
-                        break;
-                    case 1:
+                        yield AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM;
+                    }
+                    case 1 -> {
                         symbol = "_";
-                        font = AndroidUtilities.TYPEFACE_ROBOTO_ITALIC;
-                        break;
-                    case 2:
+                        yield AndroidUtilities.TYPEFACE_ROBOTO_ITALIC;
+                    }
+                    case 2 -> {
                         symbol = "`";
-                        font = AndroidUtilities.TYPEFACE_ROBOTO_MONO;
-                        break;
-                }
+                        yield AndroidUtilities.TYPEFACE_ROBOTO_MONO;
+                    }
+                    default -> font;
+                };
                 while ((start = stringBuilder.indexOf(symbol)) != -1) {
                     stringBuilder.replace(start, start + symbol.length(), "");
                     spannableStringBuilder.replace(start, start + symbol.length(), "");
@@ -367,29 +353,38 @@ public class UpdaterUtils {
 
     public static class DownloadReceiver extends BroadcastReceiver {
         @Override
-        public void onReceive(Context context, Intent intent){
-            String action = intent.getAction();
+        public void onReceive(Context context, Intent intent) {
+            String action = intent != null ? intent.getAction() : null;
             if (context != null && DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
                 long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 1L);
                 DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+                if (downloadManager == null) return;
                 DownloadManager.Query query = new DownloadManager.Query();
                 query.setFilterById(downloadId);
-                Cursor cursor = downloadManager.query(query);
-                if (cursor.moveToFirst()) {
-                    int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
-                    int status = cursor.getInt(columnIndex);
-                    if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                        handler.removeCallbacks(progressRunnable);
-                        installApk(context, apkFile.getAbsolutePath());
-                        id = 1L;
-                        updateDownloaded = false;
-
-                        NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
-                    } else {
-                        // ignore for now
+                try (Cursor cursor = downloadManager.query(query)) {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int columnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS);
+                        int status = cursor.getInt(columnIndex);
+                        if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                            if (progressRunnable != null) {
+                                handler.removeCallbacks(progressRunnable);
+                            }
+                            // refresh apkFile reference
+                            if (versionPath == null) checkDirs();
+                            if (apkFile != null) installApk(context, apkFile.getAbsolutePath());
+                            id = 1L;
+                            updateDownloaded = false;
+                            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
+                        } else {
+                            // failed or paused - stop polling
+                            if (progressRunnable != null) {
+                                handler.removeCallbacks(progressRunnable);
+                            }
+                        }
                     }
+                } catch (Exception e) {
+                    FileLog.e(e);
                 }
-                cursor.close();
             } else if (context != null && DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action)) {
                 try {
                     Intent viewDownloadIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
@@ -404,46 +399,46 @@ public class UpdaterUtils {
 
     public static void trackDownloadProgress(Context context, ButtonWithCounterView progressTextView, SimpleTextView progressTextViewInDrawer, RadialProgress2 updateLayoutIcon) {
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        if (downloadManager == null) return;
 
         progressRunnable = new Runnable() {
             @Override
             public void run() {
                 DownloadManager.Query query = new DownloadManager.Query();
                 query.setFilterById(id);
-                Cursor cursor = downloadManager.query(query);
+                try (Cursor cursor = downloadManager.query(query)) {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        int indexBytesDownloaded = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
+                        int indexBytesTotal = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES);
 
-                if (cursor != null && cursor.moveToFirst()) {
-                    int indexBytesDownloaded = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR);
-                    int indexBytesTotal = cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES);
+                        if (indexBytesDownloaded >= 0 && indexBytesTotal >= 0) {
+                            int bytesDownloaded = cursor.getInt(indexBytesDownloaded);
+                            int bytesTotal = cursor.getInt(indexBytesTotal);
 
-                    if (indexBytesDownloaded >= 0 && indexBytesTotal >= 0) {
-                        int bytesDownloaded = cursor.getInt(indexBytesDownloaded);
-                        int bytesTotal = cursor.getInt(indexBytesTotal);
-
-                        if (bytesTotal > 0) {
-                            int progress = (int) ((bytesDownloaded * 100L) / bytesTotal);
-                            if (progressTextView != null) {
-                                progressTextView.setText(
-                                        LocaleController.formatString(org.telegram.messenger.R.string.AppUpdateDownloading, progress),
-                                        true
-                                );
+                            if (bytesTotal > 0) {
+                                int progress = (int) ((bytesDownloaded * 100L) / bytesTotal);
+                                if (progressTextView != null) {
+                                    progressTextView.setText(
+                                            LocaleController.formatString(org.telegram.messenger.R.string.AppUpdateDownloading, progress),
+                                            true
+                                    );
+                                }
+                                if (progressTextViewInDrawer != null && updateLayoutIcon != null) {
+                                    progressTextViewInDrawer.setText(
+                                            LocaleController.formatString(org.telegram.messenger.R.string.AppUpdateDownloading, progress)
+                                    );
+                                    updateLayoutIcon.setProgress((float) progress / 100, true);
+                                }
+                                CherrygramCoreConfig.INSTANCE.setUpdateDownloadingProgress(progress);
+                                if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("Загрузка: " + progress + "%");
                             }
-                            if (progressTextViewInDrawer != null && updateLayoutIcon != null) {
-                                progressTextViewInDrawer.setText(
-                                        LocaleController.formatString(org.telegram.messenger.R.string.AppUpdateDownloading, progress)
-                                );
-                                updateLayoutIcon.setProgress((float) progress / 100, true);
-                            }
-                            CherrygramCoreConfig.INSTANCE.setUpdateDownloadingProgress(progress);
-                            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("Загрузка: " + progress + "%");
                         }
                     }
+                } catch (Exception e) {
+                    FileLog.e(e);
                 }
 
-                if (cursor != null) {
-                    cursor.close();
-                }
-
+                // schedule next poll only if download still active
                 handler.postDelayed(this, 50);
             }
         };
@@ -452,12 +447,16 @@ public class UpdaterUtils {
     }
 
     public static void cancelDownload(Context context, long downloadId) {
-        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-        if (downloadManager != null) {
-            downloadManager.remove(downloadId);
+        try {
+            DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+            if (downloadManager != null) {
+                downloadManager.remove(downloadId);
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
         }
 
-        if (handler != null && progressRunnable != null) {
+        if (progressRunnable != null) {
             handler.removeCallbacks(progressRunnable);
         }
 
@@ -465,7 +464,6 @@ public class UpdaterUtils {
         CherrygramCoreConfig.INSTANCE.setUpdateDownloadingProgress(0f);
         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.appUpdateAvailable);
     }
-
 
     public static class Update {
         public final String version, size, downloadURL, uploadDate, changelog;
@@ -482,26 +480,27 @@ public class UpdaterUtils {
         public boolean isNew() {
             String[] current = Constants.INSTANCE.getCherryVersion().split("\\.");
             String[] latest = version.split("\\.");
-
-            int length = Math.max(current.length, latest.length);
-            for (int i = 0; i < length; i++) {
-                int v1 = i < current.length ? Utilities.parseInt(current[i]) : 0;
-                int v2 = i < latest.length ? Utilities.parseInt(latest[i]) : 0;
-                if (v1 < v2) {
-                    CherrygramCoreConfig.INSTANCE.setUpdateAvailable(true);
-                    return true;
-                } else if (v1 > v2) {
-                    CherrygramCoreConfig.INSTANCE.setUpdateAvailable(false);
-                    return false;
-                }
-            }
-            return false;
+            int cmp = compareVersions(current, latest);
+            CherrygramCoreConfig.INSTANCE.setUpdateAvailable(cmp < 0);
+            return cmp < 0;
         }
 
-        // todo: force update
         public boolean isForce() {
             return version.toLowerCase().contains("force");
         }
+    }
+
+    /**
+     * Returns negative if a < b, 0 if equals, positive if a > b
+     */
+    private static int compareVersions(String[] a, String[] b) {
+        int length = Math.max(a.length, b.length);
+        for (int i = 0; i < length; i++) {
+            int v1 = i < a.length ? Utilities.parseInt(a[i]) : 0;
+            int v2 = i < b.length ? Utilities.parseInt(b[i]) : 0;
+            if (v1 != v2) return Integer.compare(v1, v2);
+        }
+        return 0;
     }
 
     /*public static String getLastCheckUpdateTime() {

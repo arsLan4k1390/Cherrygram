@@ -1,3 +1,12 @@
+/**
+ * This is the source code of Cherrygram for Android.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ * Please, be respectful and credit the original author if you use this code.
+ *
+ * Copyright github.com/arsLan4k1390, 2022-2025.
+ */
+
 package uz.unnarsx.cherrygram.helpers;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
@@ -36,7 +45,8 @@ import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
@@ -217,7 +227,11 @@ public class ProfileActivityHelper extends BaseController {
 
         donatorHintVisible = null;
         donatorHint = new HintView2(fragment.getContext(), HintView2.DIRECTION_BOTTOM);
-        donatorHintBackgroundColor = peerColor != null && peerColor.getBgColor1(Theme.isCurrentThemeDark()) != peerColor.getBgColor2(Theme.isCurrentThemeDark()) ? peerColor.getBgColor1(Theme.isCurrentThemeDark()) : fragment.getThemedColor(Theme.key_undo_background);
+        if (CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundColor()) {
+            donatorHintBackgroundColor = peerColor != null && peerColor.getBgColor1(Theme.isCurrentThemeDark()) != peerColor.getBgColor2(Theme.isCurrentThemeDark()) ? peerColor.getBgColor1(Theme.isCurrentThemeDark()) : fragment.getThemedColor(Theme.key_undo_background);
+        } else {
+            donatorHintBackgroundColor = fragment.getThemedColor(Theme.key_undo_background);
+        }
         donatorHint.setPadding(dp(4), 0, dp(4), dp(2));
         donatorHint.setFlicker(.66f, Theme.multAlpha(11922687 | 0xFF000000, 0.5f));
         avatarContainer2.addView(donatorHint, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 24));

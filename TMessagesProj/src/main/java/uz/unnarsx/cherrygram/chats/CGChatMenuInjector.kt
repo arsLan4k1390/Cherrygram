@@ -135,12 +135,6 @@ object CGChatMenuInjector {
             )
         }
 
-        if (CherrygramChatsConfig.shortcut_Blur) headerItem.lazilyAddSubItem(
-            ChatActivityHelper.OPTION_BLUR_SETTINGS,
-            R.drawable.msg_theme,
-            getString(R.string.BlurInChat)
-        )
-
         if (CherrygramChatsConfig.shortcut_Browser) headerItem.lazilyAddSubItem(
             ChatActivityHelper.OPTION_OPEN_TELEGRAM_BROWSER,
             R.drawable.msg_language,

@@ -16,12 +16,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.graphics.SurfaceTexture;
 import android.util.Range;
 import android.view.Surface;
 import android.view.View;
-import android.view.WindowManager;
 
 import androidx.camera.core.AspectRatio;
 import androidx.camera.core.MeteringPointFactory;
@@ -36,20 +34,27 @@ import org.telegram.messenger.R;
 import org.telegram.ui.Components.InstantCameraView;
 import org.telegram.ui.Components.RLottieDrawable;
 
+import uz.unnarsx.cherrygram.chats.WindowBlurHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class VideoMessagesHelper {
 
     public CameraXController cameraXController;
-    public CameraXController.CameraLifecycle camLifecycle = new CameraXController.CameraLifecycle();
+    private CameraXController.CameraLifecycle camLifecycle = new CameraXController.CameraLifecycle();
+
+    private WindowBlurHelper windowBlurHelper = new WindowBlurHelper();
 
     public void createCameraX(InstantCameraView instantCameraView, final SurfaceTexture surfaceTexture) {
         AndroidUtilities.runOnUIThread(() -> {
             if (instantCameraView.cameraThread == null) {
                 return;
             }
+
             if (instantCameraView.zoomControlView != null) instantCameraView.zoomControlView.setSliderValue(getZoomForSlider(instantCameraView), false);
             if (instantCameraView.evControlView != null) instantCameraView.evControlView.setValue(0.5f);
+            if (instantCameraView.flashViews != null) instantCameraView.flashViews.setForCameraX(true);
+            windowBlurHelper.hideStatusBar(instantCameraView.delegate.getParentActivity().getWindow(), true);
+
             if (BuildVars.LOGS_ENABLED) {
                 FileLog.d("InstantCamera create camera session");
             }
@@ -100,6 +105,7 @@ public class VideoMessagesHelper {
 
             cameraXController.stopVideoRecording(true);
             cameraXController.closeCamera();
+            windowBlurHelper.hideStatusBar(instantCameraView.delegate.getParentActivity().getWindow(), false);
         }  catch (Exception ignored) {}
     }
 
@@ -126,29 +132,12 @@ public class VideoMessagesHelper {
     }
 
     public void setMaxBrightness(InstantCameraView instantCameraView) {
-        WindowManager.LayoutParams attributes = ((Activity) instantCameraView.getContext()).getWindow().getAttributes();
-        attributes.screenBrightness = 1F; //maxBrightness
-        ((Activity) instantCameraView.getContext()).getWindow().setAttributes(attributes);
-
-        CherrygramCameraConfig.INSTANCE.setWhiteBackground(true);
-        instantCameraView.blurBehindDrawable.showFlash(true);
-        AndroidUtilities.setLightStatusBar(((Activity) instantCameraView.getContext()).getWindow(), true);
-        instantCameraView.flashButton.setInvert(1F);
-        instantCameraView.switchCameraButton.setInvert(1F);
+        instantCameraView.flashViews.flashIn(null);
         instantCameraView.zoomControlView.invertColors(1F);
     }
 
     public void setOldBrightness(InstantCameraView instantCameraView) {
-        WindowManager.LayoutParams attributes = ((Activity) instantCameraView.getContext()).getWindow().getAttributes();
-        attributes.screenBrightness = -1F; //previousBrightness
-        ((Activity) instantCameraView.getContext()).getWindow().setAttributes(attributes);
-
-        CherrygramCameraConfig.INSTANCE.setWhiteBackground(false);
-        instantCameraView.blurBehindDrawable.showFlash(false);
-        AndroidUtilities.setLightStatusBar(((Activity) instantCameraView.getContext()).getWindow(), false);
-        instantCameraView.invalidateBlur();
-        instantCameraView.flashButton.setInvert(0F);
-        instantCameraView.switchCameraButton.setInvert(0F);
+        instantCameraView.flashViews.flashOut();
         instantCameraView.zoomControlView.invertColors(0F);
     }
 
@@ -183,7 +172,7 @@ public class VideoMessagesHelper {
         if (
                 !instantCameraView.isFrontface
                 && !CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam()
-                && cameraXController != null && !cameraXController.isAvailableWideMode() /* Wide camera check to prevent wrong slider value on non-supported devices*/
+                && cameraXController != null && !cameraXController.isAvailableWideMode() /* Wide camera check to prevent wrong slider value on non-supported devices */
         ) {
             value = 0.5f;
         }
@@ -261,15 +250,6 @@ public class VideoMessagesHelper {
             case 1080 -> 23;
             case 720 -> 32;
             default -> 25;
-        };
-    }
-
-    public int getControlButtonsMargin() {
-        return switch (AndroidUtilities.displaySize.x) {
-            case 1440 -> 10;
-            case 1080 -> 13;
-            case 720 -> 20;
-            default -> 15;
         };
     }
 

@@ -135,15 +135,6 @@ class DebugPreferencesEntry : BasePreferencesEntry {
         }
         category("Blur") {
             switch {
-                title = "Force chat blur *"
-
-                contract({
-                    return@contract CherrygramDebugConfig.forceChatBlurEffect
-                }) {
-                    CherrygramDebugConfig.forceChatBlurEffect = it
-                }
-            }
-            switch {
                 isAvailable = Build.VERSION.SDK_INT >= 31
                 title = "New blur (GPU)"
 

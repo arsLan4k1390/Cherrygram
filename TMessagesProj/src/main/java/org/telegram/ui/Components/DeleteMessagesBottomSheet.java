@@ -1129,7 +1129,7 @@ public class DeleteMessagesBottomSheet extends BottomSheetWithRecyclerListView {
                         adapter.update(true);
                         break;
                     case 4: {
-                        AlertsCreator.createDatePickerDialog(getContext(), getString(R.string.UserRestrictionsDuration), getString(R.string.Set), ConnectionsManager.getInstance(currentAccount).getCurrentTime(), (notify, scheduleDate) -> {
+                        AlertsCreator.createDatePickerDialog(getContext(), getString(R.string.UserRestrictionsDuration), getString(R.string.Set), ConnectionsManager.getInstance(currentAccount).getCurrentTime(), (notify, scheduleDate, scheduleRepeatPeriod) -> {
                             bannedRights.until_date = scheduleDate;
                             adapter.update(true);
                         });

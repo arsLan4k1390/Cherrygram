@@ -35,8 +35,6 @@ public class LauncherIconController {
 
     public enum LauncherIcon {
         CHERRY("CG_Icon_Cherry", R.drawable.icon_background_default, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Default),
-        MONET_CHERRY_SAMSUNG("CG_Icon_Monet_Samsung", R.color.icon_background_cherry_samsung, R.drawable.icon_foreground_cherry_samsung, R.string.AP_ChangeIcon_Monet_Samsung),
-        MONET_CHERRY_PIXEL("CG_Icon_Monet_Pixel", R.color.icon_background_cherry_pixel, R.drawable.icon_foreground_cherry_pixel, R.string.AP_ChangeIcon_Monet_Pixel),
         DARK_CHERRY("CG_Icon_Dark", R.drawable.icon_background_dark, R.drawable.icon_foreground_cherry, R.string.AP_ChangeIcon_Dark),
         DARK_CHERRY_BRA("CG_Icon_Dark_Bra", R.drawable.icon_background_dark, R.drawable.icon_foreground_cherry_bra, R.string.AP_ChangeIcon_Bra),
         WHITE_CHERRY("CG_Icon_White_Cherry", R.drawable.icon_background_white, R.drawable.icon_foreground_cherry_white, R.string.AP_ChangeIcon_White),
@@ -82,17 +80,6 @@ public class LauncherIconController {
             this.foreground = foreground;
             this.title = title;
             this.premium = premium;
-        }
-    }
-
-    public static void updateMonetIcon() {
-        if (isEnabled(LauncherIcon.MONET_CHERRY_SAMSUNG)) {
-            setIcon(LauncherIcon.CHERRY);
-            setIcon(LauncherIcon.MONET_CHERRY_SAMSUNG);
-        }
-        if (isEnabled(LauncherIcon.MONET_CHERRY_PIXEL)) {
-            setIcon(LauncherIcon.CHERRY);
-            setIcon(LauncherIcon.MONET_CHERRY_PIXEL);
         }
     }
 }

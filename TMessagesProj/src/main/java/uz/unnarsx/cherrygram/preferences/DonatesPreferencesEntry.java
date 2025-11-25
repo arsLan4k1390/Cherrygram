@@ -35,7 +35,6 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.browser.Browser;
-import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
@@ -60,7 +59,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 import uz.unnarsx.cherrygram.misc.Constants;
 
@@ -128,7 +127,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
 
     private final static int update_donates_list = 1;
 
-    private final boolean isTestBackend = ConnectionsManager.getInstance(getCurrentAccount()).isTestBackend();
+    private final boolean isTestBackend = getConnectionsManager().isTestBackend();
     private boolean didDonate = DonatesManager.INSTANCE.checkAllDonatedAccounts() || DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
     private boolean showDonates = !isTestBackend && (ApplicationLoader.isStandaloneBuild() || didDonate);
     public DonatesPreferencesEntry forceShowDonates() {
@@ -202,7 +201,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
 
                         }
                     };
-                    DonatesManager.INSTANCE.startAutoRefresh(getContext(), true, suspendResult);
+                    DonatesManager.INSTANCE.startAutoRefresh(getContext(), true, false, suspendResult);
                 }
             }
         });
@@ -233,7 +232,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                 }
                 AppRestartHelper.createRestartBulletin(this);
             } else if (position == rateUsRow) {
-                CherrygramExtras.INSTANCE.requestReviewFlow(this, getContext(), getParentActivity());
+                CherrygramExtras.INSTANCE.requestReviewFlow(this);
             } else if (position == masterCardRow) {
                 copyNumberAndMakeToast("5181000156329583", true);
             } else if (position == visaRow) {
@@ -456,7 +455,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                                 false, true, 15, true
                         );
                     } else if (position == bonusesPriceRow) {
-                        tableView.addRow(getString(R.string.GiftValue2), getString(R.string.Gift2UniqueTitle2), true);
+                        tableView.addRow(getString(R.string.GiftValue2), getString(R.string.Gift2UniqueTitle2), null);
 
                         CharSequence badgeTitle = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Badge_desc),
                                 Theme.key_windowBackgroundWhiteLinkText,
@@ -512,7 +511,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                         sb.append(marketPlaceText);
                         sb.append("\n");
                         sb.append(filterText);
-                        if (Build.VERSION.SDK_INT >= 31) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             sb.append("\n");
                             sb.append(messageMenuText);
                         }

@@ -24,7 +24,7 @@ import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager
+import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.float
@@ -131,7 +131,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
                 FirebaseRemoteConfigHelper.initRemoteConfig()
             }
 
-            DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, false)
+            DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, force = false, fromIntegrityChecker = false)
 
             if (KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelInfo))
                 || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelTitle))
