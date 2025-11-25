@@ -13,6 +13,8 @@ import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -55,6 +57,7 @@ import java.util.Set;
 import uz.unnarsx.cherrygram.chats.helpers.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 
@@ -344,6 +347,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                 case VIEW_TYPE_SHADOW:
                     holder.itemView.setEnabled(false);
                     holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_HEADER:
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
@@ -356,6 +360,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                         headerCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
                         headerCell.setText(getString(R.string.LocalMiscellaneousCache));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_TEXT_CELL:
                     TextCell textCell = (TextCell) holder.itemView;
@@ -370,6 +375,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                                 false
                         );
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_TEXT_CHECK:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
@@ -453,6 +459,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                                 true
                         );
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_TEXT_INFO_PRIVACY:
                     TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
@@ -461,6 +468,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                         textInfoPrivacyCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                         textInfoPrivacyCell.getTextView().setPadding(0, -dp(4), 0, dp(8));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_EDIT_TEXT:
                     outlineEditText = (OutlineEditText) holder.itemView;
@@ -486,6 +494,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                         outlineEditText.setMinimumHeight(200);
                         outlineEditText.getEditText().setPadding(dp(16), dp(12), dp(16), dp(12));
                     }
+                    applyMD3Background(holder, position);
                     break;
             }
         }
@@ -530,6 +539,51 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
         }
 
         @Override
+        public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+            int position = holder.getAdapterPosition();
+
+            if (viewType == VIEW_TYPE_SHADOW /*|| viewType == VIEW_TYPE_TEXT_INFO_PRIVACY*/)
+                return;
+
+            int side = AndroidUtilities.dp(16);
+            int top = 0;
+            int bottom = 0;
+
+            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER;
+            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER;
+
+            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_SHADOW /*|| getItemViewType(position - 1) == VIEW_TYPE_TEXT_INFO_PRIVACY*/) {
+                top = AndroidUtilities.dp(2);
+            }
+
+            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
+                top = AndroidUtilities.dp(16);
+            }
+
+            if (prevIsHeader) {
+                top = 0;
+            }
+
+            if (position == getItemCount() - 1
+                    || nextIsHeader
+                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW
+                /*|| getItemViewType(position + 1) == VIEW_TYPE_TEXT_INFO_PRIVACY*/
+            ) {
+                bottom = AndroidUtilities.dp(2);
+            }
+
+            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
+            lp.leftMargin = side;
+            lp.rightMargin = side;
+            lp.topMargin = top;
+            lp.bottomMargin = bottom;
+            holder.itemView.setLayoutParams(lp);
+        }
+
+        @Override
         public int getItemViewType(int position) {
             if (position == filtersEndDivisor || position == miscellaneousEndDivisor) {
                 return VIEW_TYPE_SHADOW;
@@ -546,6 +600,54 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
             }
             return VIEW_TYPE_SHADOW;
         }
+
+        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+
+            if (viewType == VIEW_TYPE_SHADOW/* || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY*/) {
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                return;
+            }
+
+            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
+            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
+
+            boolean isHeader = viewType == VIEW_TYPE_HEADER;
+
+            boolean isGroupStart = position == 0
+                    || prevType == VIEW_TYPE_SHADOW
+                    /*|| prevType == VIEW_TYPE_TEXT_INFO_PRIVACY*/;
+
+            boolean isGroupEnd = position == getItemCount() - 1
+                    || nextType == VIEW_TYPE_SHADOW
+                    /*|| nextType == VIEW_TYPE_TEXT_INFO_PRIVACY*/;
+
+            int r = AndroidUtilities.dp(14);
+
+            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
+
+            if (isHeader) {
+                topLeft = topRight = r;
+            } else if (isGroupStart && isGroupEnd) {
+                topLeft = topRight = bottomLeft = bottomRight = r;
+            } else if (isGroupStart) {
+                topLeft = topRight = r;
+            } else if (isGroupEnd) {
+                bottomLeft = bottomRight = r;
+            }
+
+            Drawable bg = Theme.createRoundRectDrawable(
+                    topLeft, topRight, bottomRight, bottomLeft,
+                    Theme.getColor(Theme.key_windowBackgroundWhite)
+            );
+            holder.itemView.setBackground(bg);
+
+            final int side = position == filterWordsRow ? dp(20) : 0;
+            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
+        }
+
     }
 
     private void updateRowsId(boolean notify) {

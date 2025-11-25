@@ -17,6 +17,7 @@ import static org.telegram.ui.bots.AffiliateProgramFragment.percents;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Shader;
@@ -103,6 +104,7 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 
 public class PrivacyControlActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ImageUpdater.ImageUpdaterDelegate {
 
@@ -596,7 +598,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
         listView = new RecyclerListView(context) {
             @Override
             protected void dispatchDraw(Canvas canvas) {
-                drawSectionBackground(canvas, shareSectionRow, shareDetailRow - 1, getThemedColor(Theme.key_windowBackgroundWhite));
+                if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) drawSectionBackground(canvas, shareSectionRow, shareDetailRow - 1, getThemedColor(Theme.key_windowBackgroundWhite));
                 super.dispatchDraw(canvas);
             }
         };
@@ -1961,6 +1963,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                         textCell.setText(LocaleController.getString(getUserConfig().isPremium() ? R.string.PrivacyLastSeenPremiumForPremium : R.string.PrivacyLastSeenPremium), false);
                         textCell.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteBlueText));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case 1:
                     TextInfoPrivacyCell privacyCell = (TextInfoPrivacyCell) holder.itemView;
@@ -2153,6 +2156,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                         combinedDrawable.setFullsize(true);
                         privacyCell.setBackgroundDrawable(combinedDrawable);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case 2:
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
@@ -2199,6 +2203,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                     } else if (position == giftTypesHeaderRow) {
                         headerCell.setText(getString(R.string.PrivacyGiftsTypeHeader));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case 3:
                     RadioCell radioCell = (RadioCell) holder.itemView;
@@ -2246,6 +2251,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                     if (rulesType == PRIVACY_RULES_TYPE_GIFTS) {
                         radioCell.setEnabled(!areAllStarGiftsDisabled(), null);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case 8:
                     final TextCheckCell checkCell = (TextCheckCell) holder.itemView;
@@ -2270,6 +2276,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                         checkCell.setTextAndCheck(getString(R.string.PrivacyGiftsTypePremium), selectedGiftPremiumValue, false);
                         checkCell.setCheckBoxIcon(!getUserConfig().isPremium() && selectedGiftPremiumValue ? R.drawable.permission_locked : 0);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case 9:
                     SlideIntChooseView cell = (SlideIntChooseView) holder.itemView;
@@ -2301,6 +2308,7 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                             updateDoneButton();
                         });
                     }
+                    applyMD3Background(holder, position);
                     break;
 
             }
@@ -2333,6 +2341,105 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
             }
             return 0;
         }
+
+        /** Cherrygram start */
+        private int VIEW_TYPE_SHADOW = 5;
+        private int VIEW_TYPE_TEXT_INFO_PRIVACY = 1;
+        private int VIEW_TYPE_HEADER = 2;
+
+        @Override
+        public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+            int position = holder.getAdapterPosition();
+
+            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY)
+                return;
+
+            int side = AndroidUtilities.dp(16);
+            int top = 0;
+            int bottom = 0;
+
+            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER;
+            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER;
+
+            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_SHADOW || getItemViewType(position - 1) == VIEW_TYPE_TEXT_INFO_PRIVACY) {
+                top = AndroidUtilities.dp(2);
+            }
+
+            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
+                top = AndroidUtilities.dp(16);
+            }
+
+            if (prevIsHeader) {
+                top = 0;
+            }
+
+            if (position == getItemCount() - 1
+                    || nextIsHeader
+                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW
+                    || getItemViewType(position + 1) == VIEW_TYPE_TEXT_INFO_PRIVACY
+            ) {
+                bottom = AndroidUtilities.dp(2);
+            }
+
+            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
+            lp.leftMargin = side;
+            lp.rightMargin = side;
+            lp.topMargin = top;
+            lp.bottomMargin = bottom;
+            holder.itemView.setLayoutParams(lp);
+        }
+
+        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+
+            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY) {
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                return;
+            }
+
+            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
+            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
+
+            boolean isHeader = viewType == VIEW_TYPE_HEADER;
+
+            boolean isGroupStart = position == 0
+                    || prevType == VIEW_TYPE_SHADOW
+                    || prevType == VIEW_TYPE_TEXT_INFO_PRIVACY;
+
+            boolean isGroupEnd = position == getItemCount() - 1
+                    || nextType == VIEW_TYPE_SHADOW
+                    || nextType == VIEW_TYPE_TEXT_INFO_PRIVACY;
+
+            int r = AndroidUtilities.dp(14);
+
+            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
+
+            if (isHeader) {
+                topLeft = topRight = r;
+            } else if (isGroupStart && isGroupEnd) {
+                topLeft = topRight = bottomLeft = bottomRight = r;
+            } else if (isGroupStart) {
+                topLeft = topRight = r;
+            } else if (isGroupEnd) {
+                bottomLeft = bottomRight = r;
+            }
+
+            Drawable bg = Theme.createRoundRectDrawable(
+                    topLeft, topRight, bottomRight, bottomLeft,
+                    Theme.getColor(Theme.key_windowBackgroundWhite)
+            );
+            holder.itemView.setBackground(bg);
+
+            final int side = 0;
+            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
+        }
+        /** Cherrygram finish */
+
     }
 
     private class DiffCallback extends DiffUtil.Callback {

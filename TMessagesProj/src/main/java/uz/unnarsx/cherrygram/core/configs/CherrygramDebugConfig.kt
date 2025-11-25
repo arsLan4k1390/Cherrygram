@@ -24,6 +24,10 @@ object CherrygramDebugConfig {
     var oldTimeStyle by sharedPreferences.boolean("CP_OldTimeStyle", false)
     /** Misc finish **/
 
+    /** Redesign start **/
+    var mdContainers by sharedPreferences.boolean("EP_MaterialDes_Containers", false)
+    /** Redesign finish **/
+
     /** Chats start **/
     var replacePunctuationMarks by sharedPreferences.boolean("replacePunctuationMarks", true)
     var editTextSuggestionsFix by sharedPreferences.boolean("editTextSuggestionsFix", false)

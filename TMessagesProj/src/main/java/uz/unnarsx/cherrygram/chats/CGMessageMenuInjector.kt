@@ -382,46 +382,26 @@ object CGMessageMenuInjector {
         options: ArrayList<Int?>,
         icons: ArrayList<Int?>
     ) {
-        if (selectedObject != null) {
-            var i = 0
-            while (i < options.size) {
-                val option = options[i]
-                when (option) {
-                    ChatActivity.OPTION_REPLY -> {
-                        if (!CherrygramChatsConfig.showReply) {
-                            options.removeAt(i)
-                            items.removeAt(i)
-                            icons.removeAt(i)
-                            i--
-                        }
-                    }
-                    ChatActivity.OPTION_SAVE_TO_GALLERY, ChatActivity.OPTION_SAVE_TO_GALLERY2 -> {
-                        if (!CherrygramChatsConfig.showSaveToGallery) {
-                            options.removeAt(i)
-                            items.removeAt(i)
-                            icons.removeAt(i)
-                            i--
-                        }
-                    }
-                    ChatActivity.OPTION_SAVE_TO_DOWNLOADS_OR_MUSIC -> {
-                        if (!CherrygramChatsConfig.showSaveToDownloads) {
-                            options.removeAt(i)
-                            items.removeAt(i)
-                            icons.removeAt(i)
-                            i--
-                        }
-                    }
-                    ChatActivity.OPTION_SHARE -> {
-                        if (!CherrygramChatsConfig.showShare) {
-                            options.removeAt(i)
-                            items.removeAt(i)
-                            icons.removeAt(i)
-                            i--
-                        }
-                    }
-                }
-                i++
+        if (selectedObject == null) return
+
+        val toRemove = mutableListOf<Int>()
+
+        options.forEachIndexed { index, option ->
+            val remove = when (option) {
+                ChatActivity.OPTION_REPLY -> !CherrygramChatsConfig.showReply
+                ChatActivity.OPTION_SAVE_TO_GALLERY, ChatActivity.OPTION_SAVE_TO_GALLERY2 -> !CherrygramChatsConfig.showSaveToGallery
+                ChatActivity.OPTION_SAVE_TO_DOWNLOADS_OR_MUSIC -> !CherrygramChatsConfig.showSaveToDownloads
+                ChatActivity.OPTION_SHARE -> !CherrygramChatsConfig.showShare
+                else -> false
             }
+
+            if (remove) toRemove.add(index)
+        }
+
+        for (i in toRemove.asReversed()) {
+            options.removeAt(i)
+            items.removeAt(i)
+            icons.removeAt(i)
         }
     }
 
