@@ -288,7 +288,7 @@ public class FileLoadOperation {
     }
 
     private void updateParams() {
-        if ((CherrygramExperimentalConfig.INSTANCE.getDownloadSpeedBoost() == CherrygramExperimentalConfig.BOOST_AVERAGE || (preloadPrefixSize > 0 || MessagesController.getInstance(currentAccount).getfileExperimentalParams)) && !forceSmallChunk) {
+        if ((CherrygramExperimentalConfig.INSTANCE.getDownloadSpeedBoost() == CherrygramExperimentalConfig.BOOST_AVERAGE || preloadPrefixSize > 0 || MessagesController.getInstance(currentAccount).getfileExperimentalParams) && !forceSmallChunk) {
             downloadChunkSizeBig = 1024 * 512;
             maxDownloadRequests = 8;
             maxDownloadRequestsBig = 8;

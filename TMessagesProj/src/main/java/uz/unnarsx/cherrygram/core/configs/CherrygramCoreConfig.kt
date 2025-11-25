@@ -24,7 +24,7 @@ import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import uz.unnarsx.cherrygram.core.helpers.FirebaseRemoteConfigHelper
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager
+import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.misc.Constants
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.float
@@ -52,7 +52,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
         editor.apply()
     }
 
-    /** General start **/
+    /** General start */
     var noRounding by sharedPreferences.boolean("CP_NoRounding", false)
     var systemEmoji by sharedPreferences.boolean("AP_SystemEmoji", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
@@ -64,9 +64,9 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
     var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && !ApplicationLoader.checkPlayServices())
-    /** General finish **/
+    /** General finish */
 
-    /** Animations and Premium Features start **/
+    /** Animations and Premium Features start */
     var hideStories by sharedPreferences.boolean("CP_HideStories", false)
     var archiveStoriesFromUsers by sharedPreferences.boolean("CP_ArchiveStoriesFromUsers", false)
     var archiveStoriesFromChannels by sharedPreferences.boolean("CP_ArchiveStoriesFromChannels", false)
@@ -77,13 +77,14 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var disablePremStickAnim by sharedPreferences.boolean("CP_DisablePremStickAnim", false)
     var disablePremStickAutoPlay by sharedPreferences.boolean("CP_DisablePremStickAutoPlay", false)
     var hideSendAsChannel by sharedPreferences.boolean("CP_HideSendAsChannel", false)
-    /** Animations and Premium Features finish **/
+    /** Animations and Premium Features finish */
 
-    /** OTA start **/
+    /** OTA start */
     var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isStandaloneBetaBuild())
-    var autoOTA by sharedPreferences.boolean("CG_Auto_OTA", isStandaloneStableBuild() || isStandaloneBetaBuild() || isDevBuild())
+    var autoOTA by sharedPreferences.boolean("CG_Check_Auto_OTA", isStandaloneStableBuild() || isStandaloneBetaBuild() || isDevBuild())
     var lastUpdateCheckTime by sharedPreferences.long("CG_LastUpdateCheckTime", 0)
     var updateScheduleTimestamp by sharedPreferences.long("CG_UpdateScheduleTimestamp", 0)
+    var forceFound by sharedPreferences.boolean("CG_ForceFound", false)
 
     var updatesNewUI by sharedPreferences.boolean("CG_UpdatesNewUI", true)
     var updateVersionName by sharedPreferences.string("CG_UpdateVersionName", "idk")
@@ -91,14 +92,15 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var updateIsDownloading by sharedPreferences.boolean("CG_UpdateIsDownloading", false)
     var updateDownloadingProgress by sharedPreferences.float("CG_NewUpdateDownloadingProgress", 0f)
     var updateAvailable by sharedPreferences.boolean("CG_UpdateAvailable", false)
-    /** OTA finish **/
+    /** OTA finish */
 
-    /** Misc start **/
+    /** Misc start */
     var cgBrandedScreenshots by sharedPreferences.boolean("DP_BrandedScreenshots", false)
     var sleepTimer by sharedPreferences.boolean("CG_Sleep_Timer", false)
-    /** Misc finish **/
+    var showNotifications by sharedPreferences.boolean("CG_ShowNotifications", true)
+    /** Misc finish */
 
-    /** Cherrygram build types start **/
+    /** Cherrygram build types start */
     fun isStandaloneStableBuild(): Boolean {
         return ApplicationLoader.isStandaloneBuild() && !isDevBuild() && !isStandalonePremiumBuild() && !isStandaloneBetaBuild()
     }
@@ -118,7 +120,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     fun isPlayStoreBuild(): Boolean {
         return !ApplicationLoader.isStandaloneBuild()
     }
-    /** Cherrygram build types finish **/
+    /** Cherrygram build types finish */
 
     /** Misc start */
     var lastDonatesCheckTime by sharedPreferences.long("CG_LastDonatesCheckTime", 0)
@@ -131,7 +133,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
                 FirebaseRemoteConfigHelper.initRemoteConfig()
             }
 
-            DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, false)
+            DonatesManager.startAutoRefresh(ApplicationLoader.applicationContext, force = false, fromIntegrityChecker = false)
 
             if (KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelInfo))
                 || KotlinFragmentsManager.vreg42r2r2r1r3q1rq3(getString(R.string.CG_FollowChannelTitle))

@@ -12,6 +12,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -61,6 +63,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 
 public class DataSettingsActivity extends BaseFragment {
 
@@ -667,6 +670,7 @@ public class DataSettingsActivity extends BaseFragment {
                     } else {
                         holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case 6: {
@@ -705,6 +709,7 @@ public class DataSettingsActivity extends BaseFragment {
                         final String value = dir == null || dir.contains("/storage/emulated/") ? LocaleController.getString(R.string.InternalStorage) : LocaleController.getString(R.string.SdCard);
                         textCell.setTextAndValueAndColorfulIcon(LocaleController.getString(R.string.StoragePath), value, true, R.drawable.msg_filled_sdcard, getThemedColor(Theme.key_color_yellow), false);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case 1: {
@@ -746,6 +751,7 @@ public class DataSettingsActivity extends BaseFragment {
                         textCell.setIcon(0);
                         textCell.setText(LocaleController.getString(R.string.PrivacyDeleteCloudDrafts), false);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case 2: {
@@ -765,6 +771,7 @@ public class DataSettingsActivity extends BaseFragment {
                     } else if (position == saveToGallerySectionRow) {
                         headerCell.setText(LocaleController.getString(R.string.SaveToGallerySettings));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case 3: {
@@ -782,6 +789,7 @@ public class DataSettingsActivity extends BaseFragment {
                     } else if (position == autoplayVideoRow) {
                         checkCell.setTextAndCheck(LocaleController.getString(R.string.AutoplayVideo), SharedConfig.isAutoplayVideo(), false);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case 4: {
@@ -789,6 +797,7 @@ public class DataSettingsActivity extends BaseFragment {
                     if (position == enableAllStreamInfoRow) {
                         cell.setText(LocaleController.getString(R.string.EnableAllStreamingInfo));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case 5: {
@@ -874,6 +883,7 @@ public class DataSettingsActivity extends BaseFragment {
                     }
                     checkCell.setAnimationsEnabled(true);
                     checkCell.setTextAndValueAndCheck(text, description, checked, 0, true, divider);
+                    applyMD3Background(holder, position);
                     break;
                 }
             }
@@ -899,6 +909,47 @@ public class DataSettingsActivity extends BaseFragment {
                     checkCell.setChecked(SharedConfig.isAutoplayVideo());
                 }
             }
+
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int position = holder.getAdapterPosition();
+
+            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY)
+                return;
+
+            int side = AndroidUtilities.dp(16);
+            int top = 0;
+            int bottom = 0;
+
+            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER;
+            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER;
+
+            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_SHADOW || getItemViewType(position - 1) == VIEW_TYPE_TEXT_INFO_PRIVACY) {
+                top = AndroidUtilities.dp(2);
+            }
+
+            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
+                top = AndroidUtilities.dp(16);
+            }
+
+            if (prevIsHeader) {
+                top = 0;
+            }
+
+            if (position == getItemCount() - 1
+                    || nextIsHeader
+                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW
+                    || getItemViewType(position + 1) == VIEW_TYPE_TEXT_INFO_PRIVACY
+            ) {
+                bottom = AndroidUtilities.dp(2);
+            }
+
+            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
+            lp.leftMargin = side;
+            lp.rightMargin = side;
+            lp.topMargin = top;
+            lp.bottomMargin = bottom;
+            holder.itemView.setLayoutParams(lp);
         }
 
         public boolean isRowEnabled(int position) {
@@ -967,6 +1018,60 @@ public class DataSettingsActivity extends BaseFragment {
                 return 1;
             }
         }
+
+        /** Cherrygram start */
+        private int VIEW_TYPE_SHADOW = 0;
+        private int VIEW_TYPE_TEXT_INFO_PRIVACY = 4;
+        private int VIEW_TYPE_HEADER = 2;
+
+        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+
+            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY) {
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                return;
+            }
+
+            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
+            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
+
+            boolean isHeader = viewType == VIEW_TYPE_HEADER;
+
+            boolean isGroupStart = position == 0
+                    || prevType == VIEW_TYPE_SHADOW
+                    || prevType == VIEW_TYPE_TEXT_INFO_PRIVACY;
+
+            boolean isGroupEnd = position == getItemCount() - 1
+                    || nextType == VIEW_TYPE_SHADOW
+                    || nextType == VIEW_TYPE_TEXT_INFO_PRIVACY;
+
+            int r = AndroidUtilities.dp(14);
+
+            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
+
+            if (isHeader) {
+                topLeft = topRight = r;
+            } else if (isGroupStart && isGroupEnd) {
+                topLeft = topRight = bottomLeft = bottomRight = r;
+            } else if (isGroupStart) {
+                topLeft = topRight = r;
+            } else if (isGroupEnd) {
+                bottomLeft = bottomRight = r;
+            }
+
+            Drawable bg = Theme.createRoundRectDrawable(
+                    topLeft, topRight, bottomRight, bottomLeft,
+                    Theme.getColor(Theme.key_windowBackgroundWhite)
+            );
+            holder.itemView.setBackground(bg);
+
+            final int side = 0;
+            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
+        }
+        /** Cherrygram finish */
+
     }
 
     @Override

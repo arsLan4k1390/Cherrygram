@@ -361,17 +361,14 @@ public class TableView extends TableLayout {
         return addRowUnpadded(title, textView);
     }
 
-    /** Cherrygram start */
     public TableRow addRow(CharSequence title, CharSequence text) {
-        return addRow(title, text, false);
+        return addRow(title, text, null);
     }
-    /** Cherrygram finish */
 
-    public TableRow addRow(CharSequence title, CharSequence text, boolean boldValue) {
+    public TableRow addRow(CharSequence title, CharSequence text, ButtonSpan.TextViewButtons[] textViewRef) {
         ButtonSpan.TextViewButtons textView = new ButtonSpan.TextViewButtons(getContext());
         textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText, resourcesProvider));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        if (boldValue) textView.setTypeface(AndroidUtilities.bold());
         textView.setText(Emoji.replaceEmoji(text, textView.getPaint().getFontMetricsInt(), false));
         NotificationCenter.listenEmojiLoading(textView);
 
@@ -382,6 +379,10 @@ public class TableView extends TableLayout {
         lp = new TableRow.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f);
         row.addView(new TableRowContent(this, textView), lp);
         addView(row);
+
+        if (textViewRef != null) {
+            textViewRef[0] = textView;
+        }
 
         return row;
     }

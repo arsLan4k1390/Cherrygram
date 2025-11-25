@@ -1,21 +1,29 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
-        mavenCentral()
         google()
+        mavenCentral()
         maven { url 'https://developer.huawei.com/repo/' }
+        maven { url "https://europe-west3-maven.pkg.dev/talsec-artifact-repository/freerasp" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.11.1'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.2.0'
         classpath 'com.google.gms:google-services:4.4.3'
         classpath 'com.huawei.agconnect:agcp:1.9.1.301'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.3'
         classpath 'com.squareup.okhttp3:okhttp:5.1.0'
     }
 }
-repositories {
-    google()
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://developer.huawei.com/repo/' }
+        maven { url "https://jitpack.io" }
+        maven { url "https://europe-west3-maven.pkg.dev/talsec-artifact-repository/freerasp" }
+    }
 }
 
 subprojects {
@@ -23,11 +31,9 @@ subprojects {
         if (plugins.hasPlugin("com.android.library") ||
                 plugins.hasPlugin("com.android.application")) {
             android {
-
                 buildFeatures {
                     viewBinding true
                 }
-
             }
         }
     }

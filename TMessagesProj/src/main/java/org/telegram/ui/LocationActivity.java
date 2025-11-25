@@ -73,6 +73,7 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
+import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.IMapsProvider;
@@ -327,7 +328,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             lastPressedMarkerView.setAlpha(0.0f);
             lastPressedMarkerView.setOnClickListener(v -> {
                 if (parentFragment != null && parentFragment.isInScheduleMode()) {
-                    AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate) -> {
+                    AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate, scheduleRepeatPeriod) -> {
                         delegate.didSelectLocation(location.venue, locationType, notify, scheduleDate, 0);
                         finishFragment();
                     });
@@ -1175,7 +1176,6 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             }
             return false;
         });
-        TLRPC.Chat finalChat = chat;
         listView.setOnItemClickListener((view, position) -> {
             selectedMarkerId = -1;
             if (locationType == LOCATION_TYPE_GROUP) {
@@ -1227,7 +1227,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                         location.geo.lat = AndroidUtilities.fixLocationCoord(userLocation.getLatitude());
                         location.geo._long = AndroidUtilities.fixLocationCoord(userLocation.getLongitude());
                         if (parentFragment != null && parentFragment.isInScheduleMode()) {
-                            AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate) -> {
+                            AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate, scheduleRepeatPeriod) -> {
                                 delegate.didSelectLocation(location, locationType, notify, scheduleDate, 0);
                                 finishFragment();
                             });
@@ -1238,43 +1238,26 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                     }
                 }
             } else if (locationType == LOCATION_TYPE_LIVE && getLocationController().isSharingLocation(dialogId) && adapter.getItemViewType(position) == LocationActivityAdapter.VIEW_TYPE_DELETE_LIVE_LOCATION) {
-                getLocationController().removeSharingLocation(dialogId);
+                createStopSharingAlert();
+                /*getLocationController().removeSharingLocation(dialogId);
                 adapter.notifyDataSetChanged();
-                finishFragment();
+                finishFragment();*/
             } else if (locationType == LOCATION_TYPE_LIVE && getLocationController().isSharingLocation(dialogId) && adapter.getItemViewType(position) == LocationActivityAdapter.VIEW_TYPE_LIVE_LOCATION) {
                 openShareLiveLocation(getLocationController().getSharingLocationInfo(dialogId).period != 0x7FFFFFFF, 0);
             } else if (position == 2 && locationType == 1 || position == 1 && locationType == 2 || position == 3 && locationType == 3) {
-                TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle(LocaleController.getString("StopLiveLocationAlertToTitle", R.string.StopLiveLocationAlertToTitle));
-
-                if (finalChat != null) {
-                    builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("StopLiveLocationAlertToGroupText", R.string.StopLiveLocationAlertToGroupText, finalChat.title)));
-                } else if (user != null) {
-                    builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString("StopLiveLocationAlertToUserText", R.string.StopLiveLocationAlertToUserText, UserObject.getFirstName(user))));
-                } else {
-                    builder.setMessage(LocaleController.getString("AreYouSure", R.string.AreYouSure));
-                }
-
-                builder.setPositiveButton(LocaleController.getString("Stop", R.string.Stop), (dialogInterface, i) -> {
-                    getLocationController().removeSharingLocation(dialogId);
+                if (getLocationController().isSharingLocation(dialogId)) {
+                    createStopSharingAlert();
+                    /*getLocationController().removeSharingLocation(dialogId);
                     adapter.notifyDataSetChanged();
-                    finishFragment();
-                });
-                builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
-
-                AlertDialog alertDialog = builder.create();
-                builder.show();
-
-                TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                if (button != null) {
-                    button.setTextColor(getThemedColor(Theme.key_text_RedBold));
+                    finishFragment();*/
+                } else {
+                    openShareLiveLocation(false, 0);
                 }
             } else {
                 Object object = adapter.getItem(position);
                 if (object instanceof TLRPC.TL_messageMediaVenue) {
                     if (parentFragment != null && parentFragment.isInScheduleMode()) {
-                        AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate) -> {
+                        AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate, scheduleRepeatPeriod) -> {
                             delegate.didSelectLocation((TLRPC.TL_messageMediaVenue) object, locationType, notify, scheduleDate, 0);
                             finishFragment();
                         });
@@ -1450,7 +1433,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                     adapter.setCustomLocation(userLocation);
                 } else if (object != null && delegate != null) {
                     if (parentFragment != null && parentFragment.isInScheduleMode()) {
-                        AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate) -> {
+                        AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate, scheduleRepeatPeriod) -> {
                             delegate.didSelectLocation(object, locationType, notify, scheduleDate, 0);
                             finishFragment();
                         });
@@ -3265,5 +3248,38 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             }
         }
     }
+
+    /** Cherrygram start */
+    private void createStopSharingAlert() {
+        TLRPC.User user = getMessagesController().getUser(dialogId);
+        TLRPC.Chat chat2 = getMessagesController().getChat(-dialogId);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(LocaleController.getString(R.string.StopLiveLocationAlertToTitle));
+
+        if (user != null) {
+            builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.StopLiveLocationAlertToUserText, ContactsController.formatName(user))));
+        } else if (chat2 != null) {
+            builder.setMessage(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.StopLiveLocationAlertToGroupText, chat2.title)));
+        } else {
+            builder.setMessage(LocaleController.getString(R.string.AreYouSure));
+        }
+
+        builder.setPositiveButton(LocaleController.getString(R.string.Stop), (dialogInterface, i) -> {
+            getLocationController().removeSharingLocation(dialogId);
+            adapter.notifyDataSetChanged();
+            finishFragment();
+        });
+        builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
+
+        AlertDialog alertDialog = builder.create();
+        builder.show();
+
+        TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        if (button != null) {
+            button.setTextColor(getThemedColor(Theme.key_text_RedBold));
+        }
+    }
+    /** Cherrygram finish */
 
 }

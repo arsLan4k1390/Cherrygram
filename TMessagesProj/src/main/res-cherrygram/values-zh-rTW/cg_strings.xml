@@ -38,7 +38,6 @@
     <string name="CG_FoldersTypeIconsTitles">帶有文本的圖示</string>
     <string name="CG_ChooseFolderIcon">選擇圖示</string>
     <string name="CP_NewTabs_NoCounter">隱藏Tab列數字</string>
-    <string name="CP_NewTabs_NoCounter_Desc">隱藏未讀訊息數量</string>
     <string name="CG_SwipeToUnarchive">向左滑動以取消封存</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
@@ -51,7 +50,6 @@
     <string name="CG_DeleteAllFromSelfDone">您的所有訊息均已刪除</string>
     <string name="CG_ClearFromCache">清除快取</string>
     <string name="CG_ClearedFromCache">已清除快取</string>
-    <string name="CG_ViewUserHistory">訊息歷史紀錄</string>
     <string name="CG_ToSaved">儲存訊息</string>
     <string name="CG_CreateMention">建立提及</string>
     <string name="CG_CreateCode">建立代碼</string>
@@ -92,9 +90,6 @@
     <string name="CG_Restart">重新啟動應用程式</string>
     <string name="CG_RestartToApply">重啟應用程式以套用變更</string>
     <string name="CG_PushService">Cherrygram 推播服務</string>
-    <string name="CG_ForceClean">強制清除 Telegram 快取</string>
-    <string name="CG_ForceCleanInfo">當您嘗試清除快取時，長時間停留在「正在計算…」，則可以使用本功能。\n本功能會清除您所有的資料，請謹慎使用！</string>
-    <string name="CG_ForceCleanInfo1">是否刪除所有 Telegram 資料？</string>
     <string name="CG_Kaboom">無需 Cherrygram 密碼即可透過系統設定取用此功能。此功能會完全清除您所有的本地 (Cherrygram) 資料，您可以在緊急情況下使用此功能。</string>
     <string name="CG_AppCrashed">出現錯誤</string>
     <string name="CG_AppCrashedDesc">Cherrygram 已停止執行。請將日誌傳送至開發者，以便他們盡快修復這個問題。</string>
@@ -393,7 +388,6 @@
     <string name="SP_TestFingerprint_Desc">如果指紋驗證功能已經啟用，但沒有成功啟用的話，請按一下「測試指紋」按鈕以解決問題。</string>
     <string name="SP_BiometricUnavailable_Test_Fixed">指紋已成功偵測！</string>
     <string name="SP_BiometricUnavailable_Test_Wrong_Desc">請嘗試重新啟動裝置或檢查系統設定。</string>
-    <string name="SP_Category_Account">帳戶</string>
     <string name="SP_DeleteAccount">刪除 Telegram 帳戶</string>
     <!--Security Preferences-->
     <!--Updates Preferences-->

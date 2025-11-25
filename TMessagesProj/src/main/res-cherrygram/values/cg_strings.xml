@@ -2,7 +2,6 @@
 <resources>
     <!-- by t.me/arsLan-->
     <string name="CG_AppName" translatable="false">Cherrygram</string>
-    <string name="CG_AppNameBeta" translatable="false">Cherrygram</string>
     <string name="CG_FollowChannelTitle">Subscribe to the official channel</string>
     <string name="CG_FollowChannelInfo">Join the channel to stay up to date with all the news and features of Cherrygram!</string>
     <string name="CG_DoNotRemindAgain">Don\'t remind again</string>
@@ -46,7 +45,6 @@
     <string name="CG_FoldersTypeIconsTitles">Icons with Titles</string>
     <string name="CG_ChooseFolderIcon">Choose an Icon</string>
     <string name="CP_NewTabs_NoCounter">Hide counter in tabs</string>
-    <string name="CP_NewTabs_NoCounter_Desc">This will hide the unread messages counter</string>
     <string name="CG_SwipeToUnarchive">Swipe left to unarchive</string>
     <!--Telegram Folders Settings-->
 
@@ -61,7 +59,6 @@
 
     <string name="CG_ClearFromCache">Clear from cache</string>
     <string name="CG_ClearedFromCache">Cleared from cache</string>
-    <string name="CG_ViewUserHistory">Message history</string>
     <string name="CG_ToSaved">Save</string>
 
     <string name="CG_CreateMention">Create Mention</string>
@@ -110,9 +107,6 @@
     <string name="CG_Restart">Restart app</string>
     <string name="CG_RestartToApply">Restart app to apply changes</string>
     <string name="CG_PushService">Cherrygram Push Service.</string>
-    <string name="CG_ForceClean">Force Clear Telegram Cache</string>
-    <string name="CG_ForceCleanInfo">Use this if you face long \"Calculating…\" when trying to clean cache.\nThis will delete EVERYTHING from your cache - be careful!</string>
-    <string name="CG_ForceCleanInfo1">Do you really want to delete EVERYTHING from your Telegram cache?</string>
     <string name="CG_Kaboom">This feature can be accessed without the Cherrygram password, through the system settings. This feature completely erases all your local (Cherrygram\'s) data. It can be used in emergency situations.</string>
     <string name="CG_AppCrashed">Something went wrong</string>
     <string name="CG_AppCrashedDesc">Cherrygram has stopped working. Please send logs to the developers so they can fix this bug as soon as possible.</string>
@@ -173,8 +167,6 @@
     <string name="AP_Tablet_Mode">Tablet mode</string>
     <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
     <string name="AP_ChangeIcon_Default">Default</string>
-    <string name="AP_ChangeIcon_Monet_Samsung" translatable="false">Monet (OneUI &amp; MIUI)</string>
-    <string name="AP_ChangeIcon_Monet_Pixel" translatable="false">Monet (Pixel)</string>
     <string name="AP_ChangeIcon_Dark">Dark</string>
     <string name="AP_ChangeIcon_White">White</string>
     <string name="AP_ChangeIcon_Bra" translatable="false">Bra</string>
@@ -261,6 +253,8 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Chats</string>
     <string name="CP_Header_Messages">Messages</string>
+    <string name="CP_AutoQuoteReplies">Quote replies</string>
+    <string name="CP_AutoQuoteReplies_Desc">Send a quote with the text of the entire message instead of a normal reply. Does not work in topics.</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
 
     <string name="CP_ChatMenuShortcuts">Chat menu shortcuts</string>
@@ -276,6 +270,8 @@
     <string name="CP_MessageMenuFixedHeight_Desc">The message menu will occupy half of the screen area for easier interaction.</string>
     <string name="CP_BlurMessageMenuItems">Blur menu items</string>
     <string name="CP_BlurMessageMenuItems_Desc">Blurs the menu items for a more authentic iOS look.</string>
+    <string name="CP_MessageMenuNativeBlur">Native Blur</string>
+    <string name="CP_MessageMenuNativeBlur_Desc">Android\'s built-in blur system will be used for the message menu background: smooth, live, and with minimal impact on performance..</string>
 
     <string name="AP_CenterChatsTitle">Center title in chats</string>
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
@@ -295,7 +291,7 @@
     <string name="CG_MsgSlideAction">Action on message swipe</string>
     <string name="CP_DisableSwipeToNext">Disable transition to the next channel</string>
     <string name="CP_DisableSwipeToNext_Desc">Disable switching to the next channel when scrolling through any channel</string>
-    <string name="CP_HideMuteUnmuteButton">Hide bottom button in channels</string>
+    <string name="CP_HideMuteUnmuteButton">Hide bottom bar in channels</string>
     <string name="CP_HideKbdOnScroll">Scroll intensity to hide keyboard</string>
     <string name="CP_HideSendAsChannel">Hide \"Send as channel\"</string>
     <string name="CP_HideSendAsChannelDesc">You can access the menu by long-pressing the Emoji/Stickers/GIFs button</string>
@@ -339,6 +335,9 @@
     <string name="CP_Message_Filtering_Exact_Words_Desc">When enabled, only words that fully match those in the filter list will be hidden.
         If a word appears in a different form (with prefixes, endings, or inside other words), it will not be hidden.
     </string>
+    <string name="CP_Message_Filtering_Exclusions">Exclusions</string>
+    <string name="CP_Message_Filtering_Exclude_Destination">to update exclusions</string>
+    <string name="CP_Message_Filtering_Exclude_Sure">will be excluded</string>
     <string name="CP_Message_Filtering_Entities">Link Entity Filter</string>
     <string name="CP_Message_Filtering_EntitiesDesc">When enabled, this option extends filtering to links (entities) contained in messages. The system will scan the URLs for any of your configured filter keywords.
         If a match is found inside the link, the entire message will be automatically hidden under a spoiler, regardless of whether the keyword appears in the visible text or not.
@@ -455,7 +454,6 @@
     <string name="SP_BiometricUnavailable_Test_Fixed">Fingerprint has been detected successfully!</string>
     <string name="SP_BiometricUnavailable_Test_Wrong_Desc">Try to reboot your device or check system settings.</string>
 
-    <string name="SP_Category_Account">Account</string>
     <string name="SP_DeleteAccount">Delete Telegram account</string>
     <!--Security Preferences-->
 

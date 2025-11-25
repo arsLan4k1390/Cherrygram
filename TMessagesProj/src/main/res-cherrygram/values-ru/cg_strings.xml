@@ -44,7 +44,6 @@
     <string name="CG_FoldersTypeIconsTitles">Иконки с названиями</string>
     <string name="CG_ChooseFolderIcon">Выберите иконку</string>
     <string name="CP_NewTabs_NoCounter">Скрыть счетчик на вкладках</string>
-    <string name="CP_NewTabs_NoCounter_Desc">Это скроет счетчик количества непрочитанных сообщений</string>
     <string name="CG_SwipeToUnarchive">Свайп влево для разархивации</string>
     <!--Telegram Folders Settings-->
 
@@ -59,7 +58,6 @@
 
     <string name="CG_ClearFromCache">Удалить из кеша</string>
     <string name="CG_ClearedFromCache">Удалено из кеша</string>
-    <string name="CG_ViewUserHistory">История сообщений</string>
     <string name="CG_ToSaved">Сохранить</string>
 
     <string name="CG_CreateMention">Упомянуть</string>
@@ -108,9 +106,6 @@
     <string name="CG_Restart">Перезапустить приложение</string>
     <string name="CG_RestartToApply">Перезапустите приложение</string>
     <string name="CG_PushService">Сервис уведомлений Cherrygram.</string>
-    <string name="CG_ForceClean">Принудительно очистить кэш Telegram</string>
-    <string name="CG_ForceCleanInfo">Используйте это, если Вы долго видите \"Подсчёт…\" при попытке очистки кэша.\nЭто удалит ВСЁ из Вашего кэша - будьте осторожны!</string>
-    <string name="CG_ForceCleanInfo1">Вы действительно хотите удалить ВСЁ из Вашего кэша Telegram?</string>
     <string name="CG_Kaboom">Доступ к этой функции можно получить без пароля Cherrygram, через системные настройки. Эта функция полностью удаляет все данные приложения. Ее можно использовать в аварийных ситуациях.</string>
     <string name="CG_AppCrashed">Что-то пошло не так</string>
     <string name="CG_AppCrashedDesc">Cherrygram перестал работать. Пожалуйста, отправьте логи разработчикам, чтобы они как можно скорее исправили эту ошибку.</string>
@@ -255,6 +250,8 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Диалоги</string>
     <string name="CP_Header_Messages">Сообщения</string>
+    <string name="CP_AutoQuoteReplies">Цитировать ответы</string>
+    <string name="CP_AutoQuoteReplies_Desc">Отправлять цитату с текстом всего сообщения вместо обычного ответа. Не работает в топиках.</string>
     <string name="CP_TimeOnStick">Скрыть время отправки на стикерах</string>
 
     <string name="CP_ChatMenuShortcuts">Действия в меню чата</string>
@@ -270,6 +267,8 @@
     <string name="CP_MessageMenuFixedHeight_Desc">Меню сообщений займет половину площади экрана для удобного взаимодействия.</string>
     <string name="CP_BlurMessageMenuItems">Размывать элементы меню</string>
     <string name="CP_BlurMessageMenuItems_Desc">Размывает элементы меню для более аутентичного вида в стиле iOS.</string>
+    <string name="CP_MessageMenuNativeBlur">Системный блюр</string>
+    <string name="CP_MessageMenuNativeBlur_Desc">Для размытия фона меню сообщений будет использоваться встроенная в Android система размытия: плавная, живая и с минимальной нагрузкой на устройство.</string>
 
     <string name="AP_CenterChatsTitle">Центрирование заголовка в чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
@@ -285,7 +284,7 @@
     <string name="CG_MsgSlideAction">Действие при свайпе по сообщению</string>
     <string name="CP_DisableSwipeToNext">Отключить переход на следующий канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Отключить переключение на следующий канал при прокрутке любого канала</string>
-    <string name="CP_HideMuteUnmuteButton">Скрыть нижнюю кнопку в каналах</string>
+    <string name="CP_HideMuteUnmuteButton">Скрыть нижнюю панель в каналах</string>
     <string name="CP_HideKbdOnScroll">Интенсивность скролла для скрытия клавиатуры при прокрутке</string>
     <string name="CP_HideSendAsChannel">Скрыть \"Отправить как канал\"</string>
     <string name="CP_HideSendAsChannelDesc">Вы сможете попасть в это меню путем зажатия кнопки Эмодзи/Стикеры/GIFки</string>
@@ -328,6 +327,9 @@
     <string name="CP_Message_Filtering_Exact_Words_Desc">При включении этой опции будут скрываться только те слова, которые полностью совпадают с указанными в списке фильтрации.
         Если слово встречается в другом виде (с приставками, окончаниями или внутри других слов), оно не будет скрыто.
     </string>
+    <string name="CP_Message_Filtering_Exclusions">Исключения</string>
+    <string name="CP_Message_Filtering_Exclude_Destination">для добавления в список исключений</string>
+    <string name="CP_Message_Filtering_Exclude_Sure">будет исключен(о)</string>
     <string name="CP_Message_Filtering_Entities">Фильтр по ссылкам</string>
     <string name="CP_Message_Filtering_EntitiesDesc">При включении эта опция расширяет фильтрацию и на ссылки (entities) внутри сообщений. Система проверяет адреса URL на наличие заданных ключевых слов.
         Если совпадение найдено в ссылке, под спойлер будет скрыто всё сообщение, даже если само слово отсутствует в тексте.
@@ -442,7 +444,6 @@
     <string name="SP_BiometricUnavailable_Test_Fixed">Отпечаток обнаружен успешно!</string>
     <string name="SP_BiometricUnavailable_Test_Wrong_Desc">Попробуйте перезагрузить устройство или проверить системные настройки.</string>
 
-    <string name="SP_Category_Account">Аккаунт</string>
     <string name="SP_DeleteAccount">Удаление аккаунта</string>
     <!--Security Preferences-->
 
@@ -485,7 +486,7 @@
     <string name="DP_Donate_MessageMenu_Desc">4. Меню сообщения \"**в стиле Telegram iOS**\".</string>
     <string name="DP_Donate_Cheque">Отправьте подтверждение платежа **@arsLan** для получения бонусов.</string>
 
-    <string name="DP_Donate_Bulletin">**%s** поддержал(ла) разработку **Cherrygram**!</string>
+    <string name="DP_Donate_Bulletin">**%s** поддержал(а) разработку **Cherrygram**!</string>
 
     <string name="DP_Support">Нравится Cherrygram? Поддержите!</string>
     <string name="DP_SupportOptions">Варианты поддержки</string>

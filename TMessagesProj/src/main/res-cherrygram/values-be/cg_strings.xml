@@ -32,7 +32,6 @@
     <string name="CG_FoldersTypeIconsTitles">Значок з загалозагалоўкам</string>
     <string name="CG_ChooseFolderIcon">Выбраць значок</string>
     <string name="CP_NewTabs_NoCounter">Схаваць лічыльнік ва ўкладках</string>
-    <string name="CP_NewTabs_NoCounter_Desc">Гэта схавае лічыльнік непрачытаных паведамленняў</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">Да пачатку</string>
@@ -44,7 +43,6 @@
     <string name="CG_DeleteAllFromSelfDone">Усе вашы паведамленні выдалены</string>
     <string name="CG_ClearFromCache">Ачысціць з кэша</string>
     <string name="CG_ClearedFromCache">Ачышчана з кэша</string>
-    <string name="CG_ViewUserHistory">Гісторыя паведамленняў</string>
     <string name="CG_ToSaved">Захаваць паведамленне</string>
     <string name="CG_CreateMention">Стварыць згадку</string>
     <string name="CG_CreateCode">Стварыць код</string>
@@ -73,9 +71,6 @@
     <string name="CG_Restart">Перазапусціць прыкладанне</string>
     <string name="CG_RestartToApply">Перазапусціце дадатак, каб прымяніць змены</string>
     <string name="CG_PushService">Сэрвіс апавяшчэнняў Cherrygram.</string>
-    <string name="CG_ForceClean">Прымусова ачысціць кэш Telegram</string>
-    <string name="CG_ForceCleanInfo">Выкарыстоўвайце гэта, калі Вы доўга бачыце \"Падлік…\" пры спробе ачысткі кэшу.\nГэта выдаліць УСЕ з Вашага кэшу - будзьце асцярожныя!</string>
-    <string name="CG_ForceCleanInfo1">Вы сапраўды хочаце выдаліць УСЕ з Вашага кэшу Telegram?</string>
     <string name="CG_Kaboom">Доступ да гэтай функцыі можна атрымаць без пароля Cherrygram, праз сістэмныя наладкі. Гэтая функцыя цалкам выдаляе ўсе дадзеныя прыкладання. Яе можна выкарыстоўваць у аварыйных сітуацыях.</string>
     <string name="CG_AppCrashed">Нешта пайшло не так</string>
     <string name="CG_AppCrashedDesc">Cherrygram перастаў працаваць.  Калі ласка, адпраўце логі распрацоўкам, каб яны маглі як мага хутчэй выправіць гэтую памылку.</string>
@@ -287,7 +282,6 @@
     <string name="SP_AllowUseSystemPasscode">Выкарыстоўваць сістэмны Код/Узор</string>
     <string name="SP_AllowUseSystemPasscode_Desc">Кнопка \"Скасаваць\" пры праверцы адбітка, будзе заменена на \"Код/Узор\" і дасць магчымасць разблакіраваць Cherrygram.</string>
     <string name="SP_TestFingerprint">Тэст адбітка</string>
-    <string name="SP_Category_Account">Акаўнт</string>
     <string name="SP_DeleteAccount">Выдаліць Telegram акаўнт</string>
     <!--Security Preferences-->
     <!--Updates Preferences-->

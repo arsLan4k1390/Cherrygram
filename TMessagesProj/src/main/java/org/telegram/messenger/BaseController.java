@@ -53,7 +53,7 @@ public class BaseController {
         return parentAccountInstance.getNotificationCenter();
     }
 
-    protected final UserConfig getUserConfig() {
+    public final UserConfig getUserConfig() {
         return parentAccountInstance.getUserConfig();
     }
 

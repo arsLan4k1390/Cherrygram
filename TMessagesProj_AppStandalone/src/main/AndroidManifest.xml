@@ -5,7 +5,11 @@
 
     <uses-permission android:name="android.permission.UPDATE_PACKAGES_WITHOUT_USER_ACTION" />
 
-    <application android:name="org.telegram.messenger.ApplicationLoaderImpl" tools:replace="name">
+    <application
+        android:name="org.telegram.ui.ApplicationLoaderlmpl"
+        tools:replace="name"
+        android:extractNativeLibs="true"
+    >
         <service
             android:name="org.telegram.messenger.GoogleVoiceClientService"
             android:exported="true"

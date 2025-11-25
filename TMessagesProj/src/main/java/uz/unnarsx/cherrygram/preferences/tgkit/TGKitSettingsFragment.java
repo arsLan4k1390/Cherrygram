@@ -12,6 +12,8 @@ package uz.unnarsx.cherrygram.preferences.tgkit;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.View;
@@ -39,6 +41,7 @@ import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.TGKitCategory;
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.TGKitPreference;
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.TGKitSettings;
@@ -62,9 +65,16 @@ public class TGKitSettingsFragment extends BaseFragment {
     private ListAdapter listAdapter;
     private RecyclerListView listView;
 
+    private boolean openDelay = false;
+
     public TGKitSettingsFragment(BasePreferencesEntry entry) {
         super();
         this.settings = entry.getProcessedPrefs(this);
+    }
+
+    public TGKitSettingsFragment withOpenDelay(boolean openDelay) {
+        this.openDelay = openDelay;
+        return this;
     }
 
     @Override
@@ -99,6 +109,11 @@ public class TGKitSettingsFragment extends BaseFragment {
         if (!hasWhiteActionBar()) return super.isLightStatusBar();
         int color = getThemedColor(Theme.key_windowBackgroundWhite);
         return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+
+    @Override
+    public boolean needDelayOpenAnimation() {
+        return openDelay;
     }
 
     @Override
@@ -179,10 +194,6 @@ public class TGKitSettingsFragment extends BaseFragment {
             mContext = context;
         }
 
-        private boolean isDonates() {
-            return settings != null && settings.name.contains(getString(R.string.DP_SupportOptions));
-        }
-
         @Override
         public int getItemCount() {
             return rowCount;
@@ -193,30 +204,24 @@ public class TGKitSettingsFragment extends BaseFragment {
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_SHADOW: {
                     holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_HEADER: {
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
                     headerCell.setText(positions.get(position).title);
-
-                    if (isDonates()) {
-                        headerCell.setTopMargin(10);
-                        headerCell.setHeight(35);
-                    }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TEXT_CELL: {
                     TextCell textCell = (TextCell) holder.itemView;
                     ((TGKitTextIconRow) positions.get(position)).bindCell(textCell);
 
-                    if (isDonates()) {
-                        textCell.getTextView().setPadding(AndroidUtilities.dp(8), 0, 0, 0);
-                        textCell.getImageView().clearColorFilter();
-                    }
                     if (positions.get(position).title.toString().contains(getString(R.string.SP_DeleteAccount))) {
                         textCell.getImageView().setColorFilter(Theme.getColor(Theme.key_text_RedBold));
                         textCell.getTextView().setTextColor(Theme.getColor(Theme.key_text_RedBold));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TEXT_CHECK: {
@@ -227,6 +232,7 @@ public class TGKitSettingsFragment extends BaseFragment {
                     } else {
                         textCheckCell.setTextAndCheck(pref.title, pref.contract.getPreferenceValue(), pref.divider);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TEXT_SETTINGS: {
@@ -240,27 +246,25 @@ public class TGKitSettingsFragment extends BaseFragment {
                     } else if (pref instanceof TGKitListPreference listPref) {
                         textSettingsCell.setTextAndValue(listPref.title, listPref.getContract().getValue(), true, listPref.getDivider());
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TEXT_INFO_PRIVACY: {
                     TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
-
-                    if (isDonates()) {
-                        textInfoPrivacyCell.setTopPadding(5);
-                        textInfoPrivacyCell.setBottomPadding(8);
-                        textInfoPrivacyCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    }
                     textInfoPrivacyCell.setText(positions.get(position).title);
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TEXT_DETAIL_SETTINGS: {
                     TextDetailSettingsCell textDetailSettingsCell = (TextDetailSettingsCell) holder.itemView;
                     textDetailSettingsCell.setMultilineDetail(true);
                     ((TGKitTextDetailRow) positions.get(position)).bindCell(textDetailSettingsCell);
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_SLIDER: {
                     ((StickerSliderCell) holder.itemView).setContract(((TGKitSliderPreference) positions.get(position)).contract);
+                    applyMD3Background(holder, position);
                     break;
                 }
             }
@@ -269,16 +273,62 @@ public class TGKitSettingsFragment extends BaseFragment {
         @Override
         public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
             int viewType = holder.getItemViewType();
+            int position = holder.getAdapterPosition();
+
             if (viewType == VIEW_TYPE_TEXT_CHECK) {
-                int position = holder.getAdapterPosition();
                 TextCheckCell checkCell = (TextCheckCell) holder.itemView;
                 checkCell.setChecked(((TGKitSwitchPreference) positions.get(position)).contract.getPreferenceValue());
             } else if (viewType == VIEW_TYPE_TEXT_SETTINGS) {
-                int position = holder.getAdapterPosition();
                 TextSettingsCell checkCell = (TextSettingsCell) holder.itemView;
                 TGKitListPreference pref = ((TGKitListPreference) positions.get(position));
                 checkCell.setTextAndValue(pref.title, pref.getContract().getValue(), true, pref.getDivider());
             }
+
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            // Ignore roundings
+            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY)
+                return;
+
+            int side = AndroidUtilities.dp(16); // Outside margin - dp(16) in docs
+            int top = 0;
+            int bottom = 0;
+
+            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER;
+            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER;
+
+            // top margin
+            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_SHADOW
+                    || getItemViewType(position - 1) == VIEW_TYPE_TEXT_INFO_PRIVACY
+            ) {
+                top = AndroidUtilities.dp(2); // margin between groups. Use 2 because of shadow height
+            }
+
+            // Margin between the action bar and the first element inside the list
+            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
+                top = AndroidUtilities.dp(16);
+            }
+
+            // remove gap between header and the next element
+            if (prevIsHeader) {
+                top = 0;
+            }
+
+            // bottom margin
+            if (position == getItemCount() - 1
+                    || nextIsHeader
+                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW
+                    || getItemViewType(position + 1) == VIEW_TYPE_TEXT_INFO_PRIVACY
+            ) {
+                bottom = AndroidUtilities.dp(2); // margin between groups. Use 2 because of shadow height
+            }
+
+            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
+            lp.leftMargin = side;
+            lp.rightMargin = side;
+            lp.topMargin = top;
+            lp.bottomMargin = bottom;
+            holder.itemView.setLayoutParams(lp);
         }
 
         public boolean isRowEnabled(int position) {
@@ -336,6 +386,62 @@ public class TGKitSettingsFragment extends BaseFragment {
         public int getItemViewType(int position) {
             return positions.get(position).getType().adapterType;
         }
+
+        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+
+            // Ignore roundings
+            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY) {
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                return;
+            }
+
+            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
+            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
+
+            boolean isHeader = viewType == VIEW_TYPE_HEADER;
+
+            // group start = any first element or any element after SHADOW / INFO_PRIVACY
+            boolean isGroupStart = position == 0
+                    || prevType == VIEW_TYPE_SHADOW
+                    || prevType == VIEW_TYPE_TEXT_INFO_PRIVACY;
+
+            // group end = any last element or any element before SHADOW / INFO_PRIVACY
+            boolean isGroupEnd = position == getItemCount() - 1
+                    || nextType == VIEW_TYPE_SHADOW
+                    || nextType == VIEW_TYPE_TEXT_INFO_PRIVACY;
+
+            int r = AndroidUtilities.dp(14);
+
+            // default 0 for roundings
+            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
+
+            if (isHeader) {
+                // apply only top rounding for headers
+                topLeft = topRight = r;
+            } else if (isGroupStart && isGroupEnd) {
+                // buttons - apply 4-corner rounding
+                topLeft = topRight = bottomLeft = bottomRight = r;
+            } else if (isGroupStart) {
+                // do not round corner if the previous element was a header
+                topLeft = topRight = r;
+            } else if (isGroupEnd) {
+                bottomLeft = bottomRight = r;
+            }
+
+            Drawable bg = Theme.createRoundRectDrawable(
+                    topLeft, topRight, bottomRight, bottomLeft,
+                    Theme.getColor(Theme.key_windowBackgroundWhite)
+            );
+            holder.itemView.setBackground(bg);
+
+            // margins inside a view
+            final int side = 0; // already handled via LayoutParams (dp(16) in docs)
+            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
+        }
+
     }
 
     private void initSettings() {

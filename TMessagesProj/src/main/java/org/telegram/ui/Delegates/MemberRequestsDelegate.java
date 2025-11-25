@@ -68,6 +68,7 @@ import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.AvatarDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Bulletin;
+import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.FlickerLoadingView;
 import org.telegram.ui.Components.ItemOptions;
@@ -265,10 +266,16 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                     previewDialog.show();
                 }*/
 
-                TLRPC.User currentUser = MessagesController.getInstance(currentAccount).getUser(importer.user_id);
-                final TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(importer.user_id);
+                var getMessagesController = MessagesController.getInstance(currentAccount);
+
+                TLRPC.User currentUser = getMessagesController.getUser(importer.user_id);
+                final TLRPC.UserFull userFull = getMessagesController.getUserFull(importer.user_id);
                 if (userFull == null) {
-                    MessagesController.getInstance(currentAccount).loadUserInfo(currentUser, false, 0);
+                    getMessagesController.loadUserInfo(currentUser, false, 0);
+                }
+                TLRPC.Chat currentChat = getMessagesController.getChat(chatId);
+                if (currentChat == null) {
+                    getMessagesController.loadFullChat(chatId, 0, true);
                 }
                 TLRPC.User user = users.get(importer.user_id);
                 RecyclerListView parentListView = (RecyclerListView) cell.getParent();
@@ -285,7 +292,18 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                                 onDismissClicked(importer);
                             }
                         })
-                        .add(R.drawable.msg_discussion, getString(R.string.SendMessage), () -> {
+                        .addIf(ChatObject.canBlockUsers(currentChat), R.drawable.msg_remove, isChannel ? getString(R.string.ChannelRemoveUser) : getString(R.string.KickFromGroup), true, () -> {
+                            getMessagesController.deleteParticipantFromChat(chatId, user);
+                            if (importer != null) {
+                                fragment.dismissCurrentDialog();
+                                onDismissClicked(importer);
+                            }
+                            if (currentChat != null && user != null && BulletinFactory.canShowBulletin(fragment)) {
+                                BulletinFactory.createRemoveFromChatBulletin(fragment, user, currentChat.title).show();
+                            }
+                        })
+                        .addSpaceGap()
+                        /*.add(R.drawable.msg_discussion, getString(R.string.SendMessage), () -> {
                             fragment.dismissCurrentDialog();
 
                             Bundle args = new Bundle();
@@ -293,7 +311,7 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                             ChatActivity chatActivity = new ChatActivity(args);
                             fragment.presentFragment(chatActivity);
                         })
-                        .addGap()
+                        .addGap()*/
                         .addProfile(user, getString(R.string.ViewProfile), () -> {
                             fragment.dismissCurrentDialog();
                             fragment.presentFragment(ProfileActivity.of(user.id));

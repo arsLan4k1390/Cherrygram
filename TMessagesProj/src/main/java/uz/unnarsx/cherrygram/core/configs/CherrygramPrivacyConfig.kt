@@ -27,19 +27,19 @@ object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
-    /** Privacy start **/
+    /** Privacy start */
     var hideProxySponsor by sharedPreferences.boolean("SP_NoProxyPromo", true)
     var googleAnalytics by sharedPreferences.boolean("SP_GoogleAnalytics", ApplicationLoader.checkPlayServices())
-    /** Privacy finish **/
+    /** Privacy finish */
 
-    /** Passcode lock start **/
+    /** Passcode lock start */
     var hideArchiveFromChatsList by sharedPreferences.boolean("SP_HideArchiveFromChatsList", false)
     var askBiometricsToOpenArchive by sharedPreferences.boolean("SP_AskBiometricsToOpenArchive", false)
     var askBiometricsToOpenEncrypted by sharedPreferences.boolean("SP_AskBiometricsToOpenEncrypted", false)
     var askBiometricsToOpenChat by sharedPreferences.boolean("SP_AskBiometricsToOpenChat", false)
     var askPasscodeBeforeDelete by sharedPreferences.boolean("SP_AskPinBeforeDelete", false)
     var allowSystemPasscode by sharedPreferences.boolean("SP_AllowSystemPasscode", false)
-    /** Passcode lock finish **/
+    /** Passcode lock finish */
 
     /** Misc **/
     var reTgCheck by sharedPreferences.boolean("SP_ReTgCheck", true)

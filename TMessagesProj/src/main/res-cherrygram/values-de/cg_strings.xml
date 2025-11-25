@@ -32,7 +32,6 @@
     <string name="CG_FoldersTypeIconsTitles">Symbole mit Titeln</string>
     <string name="CG_ChooseFolderIcon">Wählen Sie ein Symbol</string>
     <string name="CP_NewTabs_NoCounter">Zähler in Tabs ausblenden</string>
-    <string name="CP_NewTabs_NoCounter_Desc">Dadurch wird der Zähler für ungelesene Nachrichten ausgeblendet</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">Zu Beginn</string>
@@ -44,7 +43,6 @@
     <string name="CG_DeleteAllFromSelfDone">Alle Ihre Nachrichten werden gelöscht</string>
     <string name="CG_ClearFromCache">Aus Cache löschen</string>
     <string name="CG_ClearedFromCache">Aus Cache gelöscht</string>
-    <string name="CG_ViewUserHistory">Nachrichtenverlauf</string>
     <string name="CG_ToSaved">Nachricht speichern</string>
     <string name="CG_CreateMention">Erwähnung erstellen</string>
     <string name="CG_CreateCode">Code erstellen</string>
@@ -69,9 +67,6 @@
     <string name="CG_Restart">App neu starten</string>
     <string name="CG_RestartToApply">Starten Sie die App neu, um die Änderungen zu übernehmen</string>
     <string name="CG_PushService">Cherrygram Push-Service.</string>
-    <string name="CG_ForceClean">Erzwingen Sie das Löschen des Telegramm-Cache</string>
-    <string name="CG_ForceCleanInfo">Verwenden Sie dies, wenn Sie beim Versuch, den Cache zu bereinigen, lange mit „Berechnen…“ konfrontiert werden.\n Dadurch wird ALLES aus Ihrem Cache gelöscht – seien Sie vorsichtig!</string>
-    <string name="CG_ForceCleanInfo1">Möchten Sie wirklich ALLES aus Ihrem Telegram-Cache löschen?</string>
     <string name="CG_Kaboom">Auf diese Funktion kann über die Systemeinstellungen ohne das Cherrygram-Passwort zugegriffen werden. Diese Funktion löscht alle Ihre lokalen (Cherrygram-)Daten vollständig. Es kann in Notsituationen eingesetzt werden.</string>
     <string name="CG_AppCrashed">Es ist ein Fehler aufgetreten</string>
     <string name="CG_AppCrashedDesc">Cherrygram ist abgestürzt. Bitte senden Sie Protokolle an die Entwickler, damit sie das Problem beheben können..</string>
@@ -282,7 +277,6 @@
     <string name="SP_AllowUseSystemPasscode">Benutze System-PIN/Muster</string>
     <string name="SP_AllowUseSystemPasscode_Desc">Der \"Abbrechen\"-Button im Fingerabdruckbestätigungsdialog wird durch den \"Pin/Muster\"-Button ersetzt.</string>
     <string name="SP_TestFingerprint">Fingerabdruck überprüfen</string>
-    <string name="SP_Category_Account">Account</string>
     <string name="SP_DeleteAccount">Telegram-Account löschen</string>
     <!--Security Preferences-->
     <!--Updates Preferences-->

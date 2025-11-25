@@ -8,6 +8,7 @@
 
 package org.telegram.messenger;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,6 +19,8 @@ import android.util.Log;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import org.telegram.ui.LaunchActivity;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
@@ -39,6 +42,17 @@ public class NotificationsService extends Service {
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) Log.d("cgPush", "Starting resident notification...");
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
             notificationManager.createNotificationChannel(channel);
+
+            Intent intent = new Intent(this, LaunchActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            PendingIntent pendingIntent = PendingIntent.getActivity(
+                    this,
+                    0,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+            );
+
             startForeground(1390,
                     new NotificationCompat.Builder(this, "cgPush")
                             .setSmallIcon(CGResourcesHelper.INSTANCE.getResidentNotificationIcon())
@@ -46,6 +60,7 @@ public class NotificationsService extends Service {
                             .setOngoing(true)
                             .setContentText(LocaleController.getString(R.string.CG_PushService))
                             .setCategory(NotificationCompat.CATEGORY_STATUS)
+                            .setContentIntent(pendingIntent)
                             .build());
             if (CherrygramCoreConfig.INSTANCE.isDevBuild()) Log.d("cgPush", "Started foreground");
         }

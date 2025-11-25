@@ -82,7 +82,7 @@ public class FlashViews {
             @Override
             protected void dispatchDraw(Canvas canvas) {
                 gradientMatrix.reset();
-                drawGradient(canvas, true);
+                drawGradient(canvas, true, forCameraX);
             }
         };
         foregroundView = new View(context) {
@@ -91,7 +91,7 @@ public class FlashViews {
                 gradientMatrix.reset();
                 gradientMatrix.postTranslate(-getX(), -getY() + AndroidUtilities.statusBarHeight);
                 gradientMatrix.postScale(1f / getScaleX(), 1f / getScaleY(), getPivotX(), getPivotY());
-                drawGradient(canvas, false);
+                drawGradient(canvas, false, forCameraX);
             }
         };
 
@@ -268,15 +268,30 @@ public class FlashViews {
         foregroundView.invalidate();
     }
 
-    public void drawGradient(Canvas canvas, boolean bg) {
-        if (gradient != null) {
-            invalidateGradient();
-            gradient.setLocalMatrix(gradientMatrix);
+    public void drawGradient(Canvas canvas, boolean bg, boolean forCameraX) {
+        if (forCameraX) {
             if (bg) {
-                canvas.drawRect(0, 0, lastWidth, lastHeight, paint);
+                float alpha = intensityValue() * invert;
+                int blended = ColorUtils.blendARGB(
+                        0x1a000000,
+                        ColorUtils.setAlphaComponent(Color.WHITE, (int) (255 * alpha / 2f)),
+                        1f
+                );
+                canvas.drawColor(blended);
             } else {
-                AndroidUtilities.rectTmp.set(0, 0, foregroundView.getMeasuredWidth(), foregroundView.getMeasuredHeight());
-                canvas.drawRoundRect(AndroidUtilities.rectTmp, dp(12) - 2, dp(12) - 2, paint);
+                paint.setAlpha((int) (255 * intensityValue() * invert / 3f));
+                canvas.drawRect(0, 0, foregroundView.getMeasuredWidth(), foregroundView.getMeasuredHeight(), paint);
+            }
+        } else {
+            if (gradient != null) {
+                invalidateGradient();
+                gradient.setLocalMatrix(gradientMatrix);
+                if (bg) {
+                    canvas.drawRect(0, 0, lastWidth, lastHeight, paint);
+                } else {
+                    AndroidUtilities.rectTmp.set(0, 0, foregroundView.getMeasuredWidth(), foregroundView.getMeasuredHeight());
+                    canvas.drawRoundRect(AndroidUtilities.rectTmp, dp(12) - 2, dp(12) - 2, paint);
+                }
             }
         }
     }
@@ -296,4 +311,15 @@ public class FlashViews {
             setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(Color.WHITE, Color.BLACK, invert), PorterDuff.Mode.MULTIPLY));
         }
     }
+
+    /** Cherrygram start */
+    private boolean forCameraX = false;
+
+    public void setForCameraX(boolean b) {
+        this.forCameraX = b;
+        backgroundView.invalidate();
+        foregroundView.invalidate();
+    }
+    /** Cherrygram finish */
+
 }

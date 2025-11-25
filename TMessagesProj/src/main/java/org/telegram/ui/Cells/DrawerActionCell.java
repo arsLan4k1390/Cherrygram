@@ -15,6 +15,7 @@ import android.graphics.Path;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -115,7 +116,7 @@ public class DrawerActionCell extends FrameLayout {
 
             String text = String.valueOf(counter);
             int countTop = AndroidUtilities.dp(12.5f);
-            int textWidth = (int) Math.ceil(Theme.dialogs_countTextPaint.measureText(text));
+            int textWidth = (int) Math.ceil(Theme.dialogs_countTextPaintCherry.measureText(text));
             int countWidth = Math.max(AndroidUtilities.dp(10), textWidth);
             int countLeft = getMeasuredWidth() - countWidth - AndroidUtilities.dp(25);
 
@@ -124,50 +125,38 @@ public class DrawerActionCell extends FrameLayout {
 
             @SuppressLint("DrawAllocation") RectF counterPathRect = new RectF();
             @SuppressLint("DrawAllocation") Path counterPath = new Path();
-            if (counterPath == null || counterPathRect == null || !counterPathRect.equals(rect)) {
-                if (counterPathRect == null) {
-                    counterPathRect = new RectF(rect);
-                } else {
-                    counterPathRect.set(rect);
-                }
-                if (counterPath == null) {
-                    counterPath = new Path();
-                }
+            if (!counterPathRect.equals(rect)) {
+                counterPathRect.set(rect);
                 BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, AndroidUtilities.dp(11.5f));
             }
             //canvas.drawRoundRect(rect, 11.5f * AndroidUtilities.density, 11.5f * AndroidUtilities.density, Theme.dialogs_countGrayPaint);
             canvas.drawPath(counterPath, Theme.dialogs_countGrayPaint);
-            canvas.drawText(text, rect.left + (rect.width() - textWidth) / 2, countTop + AndroidUtilities.dp(16), Theme.dialogs_countTextPaint);
+            canvas.drawText(text, rect.left + (rect.width() - textWidth) / 2, countTop + AndroidUtilities.dp(16), Theme.dialogs_countTextPaintCherry);
         }
 
         if (currentId == 1003) {
             long counter = StarsController.getInstance(UserConfig.selectedAccount).getBalance().amount;
-
-            String text = counter + " ⭐️";
+            int starSize = AndroidUtilities.dp(17);
+            String text = String.valueOf(counter);
 
             int countTop = AndroidUtilities.dp(12.5f);
-            int textWidth = (int) Math.ceil(Theme.dialogs_countTextPaint.measureText(text));
-            int countWidth = Math.max(AndroidUtilities.dp(10), textWidth);
+            int textWidth = (int) Math.ceil(Theme.dialogs_countTextPaintCherry.measureText(text));
+            int countWidth = Math.max(AndroidUtilities.dp(10), textWidth + starSize + AndroidUtilities.dp(4));
             int countLeft = getMeasuredWidth() - countWidth - AndroidUtilities.dp(25);
 
             int x = countLeft - AndroidUtilities.dp(5.5f);
             rect.set(x, countTop, x + countWidth + AndroidUtilities.dp(14), countTop + AndroidUtilities.dp(23));
 
-            @SuppressLint("DrawAllocation") RectF counterPathRect = new RectF();
-            @SuppressLint("DrawAllocation") Path counterPath = new Path();
-            if (counterPath == null || counterPathRect == null || !counterPathRect.equals(rect)) {
-                if (counterPathRect == null) {
-                    counterPathRect = new RectF(rect);
-                } else {
-                    counterPathRect.set(rect);
-                }
-                if (counterPath == null) {
-                    counterPath = new Path();
-                }
-                BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, AndroidUtilities.dp(11.5f));
-            }
+            float textX = rect.left + (rect.width() - textWidth - starSize - AndroidUtilities.dp(4)) / 2f;
             canvas.drawRoundRect(rect, 11.5f * AndroidUtilities.density, 11.5f * AndroidUtilities.density, Theme.dialogs_countGrayPaint);
-            canvas.drawText(text, rect.left + (rect.width() - textWidth) / 2, countTop + AndroidUtilities.dp(16), Theme.dialogs_countTextPaint);
+            canvas.drawText(text, textX, countTop + AndroidUtilities.dp(16), Theme.dialogs_countTextPaintCherry);
+
+            int starX = (int) (textX + textWidth + AndroidUtilities.dp(4));
+            int starY = (int) (countTop + (AndroidUtilities.dp(23) - starSize) / 2f);
+
+            Drawable starDrawable = getContext().getResources().getDrawable(R.drawable.star_small_inner).mutate();
+            starDrawable.setBounds(starX, starY, starX + starSize, starY + starSize);
+            starDrawable.draw(canvas);
         }
     }
 

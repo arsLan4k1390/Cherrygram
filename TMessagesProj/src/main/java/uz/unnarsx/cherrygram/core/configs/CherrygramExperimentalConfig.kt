@@ -19,16 +19,16 @@ object CherrygramExperimentalConfig {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
-    /** General start **/
+    /** General start */
     const val ANIMATION_SPRING = 0
     const val ANIMATION_CLASSIC = 1
     var springAnimation by sharedPreferences.int("EP_SpringAnimation", ANIMATION_SPRING)
 
     var actionbarCrossfade by sharedPreferences.boolean("EP_ActionbarCrossfade", true)
     var customChatForSavedMessages by sharedPreferences.boolean("CP_CustomChatForSavedMessages", false)
-    /** General finish **/
+    /** General finish */
 
-    /** Network start **/
+    /** Network start */
     const val BOOST_NONE = 0
     const val BOOST_AVERAGE = 1
     const val BOOST_EXTREME = 2
@@ -36,6 +36,6 @@ object CherrygramExperimentalConfig {
 
     var uploadSpeedBoost by sharedPreferences.boolean("EP_UploadSpeedBoost", false)
     var slowNetworkMode by sharedPreferences.boolean("EP_SlowNetworkMode", false)
-    /** Network finish **/
+    /** Network finish */
 
 }

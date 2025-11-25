@@ -16,7 +16,7 @@ import uz.unnarsx.cherrygram.preferences.tgkit.TGKitSettingsFragment
 
 object CherrygramPreferencesNavigator {
 
-    fun createMainMenu() = TGKitSettingsFragment(MainPreferencesEntry())
+    fun createMainMenu(setDelay: Boolean) = TGKitSettingsFragment(MainPreferencesEntry()).withOpenDelay(setDelay)
     fun createGeneral() = TGKitSettingsFragment(GeneralPreferencesEntry())
     fun createAppearance() = TGKitSettingsFragment(AppearancePreferencesEntry())
     fun createMessagesAndProfiles(fragment: BaseFragment) = fragment.presentFragment(MessagesAndProfilesPreferencesEntry())
@@ -34,6 +34,5 @@ object CherrygramPreferencesNavigator {
     fun createDonateForce(fragment: BaseFragment) = fragment.presentFragment(DonatesPreferencesEntry().forceShowDonates())
     fun createAbout() = TGKitSettingsFragment(AboutPreferencesEntry())
     fun createDebug() = TGKitSettingsFragment(DebugPreferencesEntry())
-    fun createBlur(fragment: BaseFragment) = BlurPreferencesBottomSheet.show(fragment)
 
 }

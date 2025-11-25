@@ -36,7 +36,6 @@
     <string name="CG_FoldersTypeIconsTitles">タイトルとアイコン</string>
     <string name="CG_ChooseFolderIcon">アイコンを選択してください</string>
     <string name="CP_NewTabs_NoCounter">タブのカウンターを非表示</string>
-    <string name="CP_NewTabs_NoCounter_Desc">これにより、未読メッセージカウンターが非表示になります</string>
     <string name="CG_SwipeToUnarchive">左にスワイプでアーカイブを解除</string>
     <!--Telegram Folders Settings-->
     <!--Chats screen-->
@@ -49,7 +48,6 @@
     <string name="CG_DeleteAllFromSelfDone">すべてのメッセージは削除されました</string>
     <string name="CG_ClearFromCache">キャッシュから消去</string>
     <string name="CG_ClearedFromCache">キャッシュから消去しました</string>
-    <string name="CG_ViewUserHistory">メッセージ履歴</string>
     <string name="CG_ToSaved">保存</string>
     <string name="CG_CreateMention">返信を作成</string>
     <string name="CG_CreateCode">コードを作成</string>
@@ -88,9 +86,6 @@
     <string name="CG_Restart">アプリを再起動</string>
     <string name="CG_RestartToApply">アプリを再起動後に適用されます</string>
     <string name="CG_PushService">Cherrygramプッシュサービス</string>
-    <string name="CG_ForceClean">Telegramのキャッシュを強制的に消去</string>
-    <string name="CG_ForceCleanInfo">キャッシュを削除しようとしているときに｢計算中…｣と長く表示されます。\nこれはキャッシュからすべての物を削除します - 注意してください!</string>
-    <string name="CG_ForceCleanInfo1">本当にTelegramのキャッシュをすべて削除してもよろしいですか?</string>
     <string name="CG_Kaboom">この機能はシステムの設定を通じて、Cherrygramのパスワードなしでアクセスすることができます。この機能はローカル(Cherrygram)のデータを完全に消去します。緊急時に使用できます。</string>
     <string name="CG_AppCrashed">問題が発生しました</string>
     <string name="CG_AppCrashedDesc">Cherrygramが動作しなくなりました。このバグをできるだけ早く修正できるよう、開発者にログを送信してください。</string>
@@ -370,7 +365,6 @@
     <string name="SP_TestFingerprint_Desc">指紋認証がすでに有効化されている状態で、機能が表示されない場合は「指紋のテスト」ボタンを押して問題を解決してみてください。</string>
     <string name="SP_BiometricUnavailable_Test_Fixed">指紋が正常に検出されました!</string>
     <string name="SP_BiometricUnavailable_Test_Wrong_Desc">デバイスを再起動するか、システム設定を確認してください。</string>
-    <string name="SP_Category_Account">アカウント</string>
     <string name="SP_DeleteAccount">Telegramアカウントを削除</string>
     <!--Security Preferences-->
     <!--Updates Preferences-->

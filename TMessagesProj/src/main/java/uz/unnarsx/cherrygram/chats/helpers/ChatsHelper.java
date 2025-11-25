@@ -17,11 +17,10 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -73,6 +72,7 @@ import org.telegram.ui.Components.ScrimOptions;
 import org.telegram.ui.Components.ShareAlert;
 import org.telegram.ui.Components.TranscribeButton;
 import org.telegram.ui.Components.UndoView;
+import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PeerColorActivity;
 
@@ -458,12 +458,12 @@ public class ChatsHelper extends BaseController {
         item.setVisibility(t ? View.VISIBLE : View.GONE);
     }
 
-    public void makeReplyButtonClick(ChatActivity chatActivity, boolean noForwards) {
-        if (noForwards || chatActivity.isInScheduleMode()) createReplyAction(chatActivity);
+    public void makeReplyButtonClick(ChatActivity chatActivity, MessageObject selectedObject, boolean noForwards) {
+        if (noForwards || chatActivity.isInScheduleMode()) createReplyAction(chatActivity, selectedObject);
 
         switch (CherrygramChatsConfig.INSTANCE.getLeftBottomButton()) {
             case CherrygramChatsConfig.LEFT_BUTTON_REPLY:
-                createReplyAction(chatActivity);
+                createReplyAction(chatActivity, selectedObject);
                 break;
             case CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE:
                 createCGSaveMessagesSelected(chatActivity);
@@ -506,37 +506,55 @@ public class ChatsHelper extends BaseController {
         PopupHelper.show(configStringKeys, getString(R.string.CP_LeftBottomButtonAction), configValues.indexOf(CherrygramChatsConfig.INSTANCE.getLeftBottomButton()), chatActivity.getContext(), i -> {
             CherrygramChatsConfig.INSTANCE.setLeftBottomButton(configValues.get(i));
 
-            if (chatActivity.replyButton == null) return;
+            if (chatActivity.actionsButtonsLayout.getReplyButton() == null) return;
 
-            if (chatActivity.bottomMessagesActionContainer != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                LaunchActivity.makeRipple(chatActivity.bottomMessagesActionContainer.getLeft(), chatActivity.bottomMessagesActionContainer.getBottom(), 5);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+                int[] location = new int[2];
+                chatActivity.actionsButtonsLayout.getReplyButton().getLocationOnScreen(location);
+
+                float centerX = location[0] + chatActivity.actionsButtonsLayout.getReplyButton().getWidth() / 2f;
+                float centerY = location[1] + chatActivity.actionsButtonsLayout.getReplyButton().getHeight() / 2f;
+
+                LaunchActivity.makeRipple(centerX, centerY, 5);
             }
 
-            chatActivity.replyButton.setText(CGResourcesHelper.INSTANCE.getLeftButtonText(noForwards));
+            chatActivity.actionsButtonsLayout.updateReplyButtonUI(CGResourcesHelper.INSTANCE.getLeftButtonText(noForwards), CGResourcesHelper.INSTANCE.getLeftButtonDrawable(noForwards), CherrygramChatsConfig.INSTANCE.getLeftBottomButton() != CherrygramChatsConfig.LEFT_BUTTON_REPLY);
+            chatActivity.actionsButtonsLayout.updateForwardButtonUI(getString(R.string.Forward), R.drawable.input_forward, CherrygramChatsConfig.INSTANCE.getLeftBottomButton() == CherrygramChatsConfig.LEFT_BUTTON_REPLY);
 
-            Drawable image = chatActivity.getContext().getResources().getDrawable(CGResourcesHelper.INSTANCE.getLeftButtonDrawable(noForwards)).mutate();
-            image.setColorFilter(new PorterDuffColorFilter(chatActivity.getThemedColor(Theme.key_actionBarActionModeDefaultIcon), PorterDuff.Mode.MULTIPLY));
-            chatActivity.replyButton.setCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
         }, resourcesProvider);
     }
 
-    private void createReplyAction(ChatActivity chatActivity) {
-        MessageObject messageObject = null;
-        for (int a = 1; a >= 0; a--) {
-            if (messageObject == null && chatActivity.selectedMessagesIds[a].size() != 0) {
-                messageObject = chatActivity.messagesDict[a].get(chatActivity.selectedMessagesIds[a].keyAt(0));
+    private void createReplyAction(ChatActivity chatActivity, MessageObject selectedObject) {
+        if (selectedObject != null && selectedObject.messageOwner != null && selectedObject.messageOwner.noforwards) {
+            return;
+        }
+        if (selectedObject != null && chatActivity.getCurrentChat() != null && (ChatObject.isNotInChat(chatActivity.getCurrentChat()) && !ChatObject.isMonoForum(chatActivity.getCurrentChat()) && !chatActivity.isThreadChat() || ChatObject.isChannel(chatActivity.getCurrentChat()) && !ChatObject.canPost(chatActivity.getCurrentChat()) && !chatActivity.getCurrentChat().megagroup || !ChatObject.canSendMessages(chatActivity.getCurrentChat()))) {
+            MessageObject messageObject = selectedObject;
+            if (messageObject.getGroupId() != 0) {
+                MessageObject.GroupedMessages group = chatActivity.getGroup(messageObject.getGroupId());
+                if (group != null) {
+                    messageObject = group.captionMessage;
+                }
             }
-            chatActivity.selectedMessagesIds[a].clear();
-            chatActivity.selectedMessagesCanCopyIds[a].clear();
-            chatActivity.selectedMessagesCanStarIds[a].clear();
+            chatActivity.replyingMessageObject = messageObject;
+            Bundle args = new Bundle();
+            args.putBoolean("onlySelect", true);
+            args.putInt("dialogsType", DialogsActivity.DIALOGS_TYPE_FORWARD);
+            args.putBoolean("quote", true);
+            args.putBoolean("reply_to", true);
+            final long author = DialogObject.getPeerDialogId(selectedObject.getFromPeer());
+            if (author != 0 && author != chatActivity.getDialogId() && author != getUserConfig().getClientUserId() && author > 0) {
+                args.putLong("reply_to_author", author);
+            }
+            args.putInt("messagesCount", 1);
+            args.putBoolean("canSelectTopics", true);
+            DialogsActivity fragment = new DialogsActivity(args);
+            fragment.setDelegate(chatActivity);
+            chatActivity.presentFragment(fragment);
+        } else {
+            chatActivity.showFieldPanelForReply(selectedObject);
         }
-        chatActivity.hideActionMode();
-        if (messageObject != null && (messageObject.messageOwner.id > 0 || messageObject.messageOwner.id < 0 && chatActivity.getCurrentEncryptedChat() != null)) {
-            chatActivity.showFieldPanelForReply(messageObject);
-        }
-        chatActivity.updatePinnedMessageView(true);
-        chatActivity.updateVisibleRows();
-        chatActivity.updateSelectedMessageReactions();
     }
 
     private void createCGSaveMessagesSelected(ChatActivity chatActivity) {
@@ -775,6 +793,13 @@ public class ChatsHelper extends BaseController {
             str.append(messageObject.messageText);
         }
         return str;
+    }
+
+    public boolean isTopic(MessageObject messageObject) {
+        TLRPC.TL_forumTopic topic = MessagesController.getInstance(currentAccount).getTopicsController().findTopic(
+                -messageObject.getDialogId(), MessageObject.getTopicId(currentAccount, messageObject.messageOwner, true)
+        );
+        return topic != null;
     }
 
 }

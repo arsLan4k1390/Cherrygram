@@ -13,6 +13,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -24,6 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -55,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 
 public class DataAutoDownloadActivity extends BaseFragment {
 
@@ -689,6 +692,7 @@ public class DataAutoDownloadActivity extends BaseFragment {
                         view.setTag(typePreset.enabled ? Theme.key_windowBackgroundChecked : Theme.key_windowBackgroundUnchecked);
                         view.setBackgroundColor(Theme.getColor(typePreset.enabled ? Theme.key_windowBackgroundChecked : Theme.key_windowBackgroundUnchecked));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case 2: {
@@ -698,11 +702,13 @@ public class DataAutoDownloadActivity extends BaseFragment {
                     } else if (position == typeHeaderRow) {
                         view.setText(LocaleController.getString(R.string.AutoDownloadTypes));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case 3: {
                     SlideChooseView slideChooseView = (SlideChooseView) holder.itemView;
                     updatePresetChoseView(slideChooseView);
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case 4: {
@@ -788,6 +794,7 @@ public class DataAutoDownloadActivity extends BaseFragment {
                         view.setChecked(count != 0);
                     }
                     view.setTextAndValueAndCheck(text, builder, count != 0, 0, true, position != storiesRow);
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case 5: {
@@ -818,6 +825,7 @@ public class DataAutoDownloadActivity extends BaseFragment {
                                 view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
                             }
                         }
+                        applyMD3Background(holder, position);
                         break;
                     }
                 }
@@ -918,6 +926,105 @@ public class DataAutoDownloadActivity extends BaseFragment {
                 return 5;
             }
         }
+
+        /** Cherrygram start */
+        private int VIEW_TYPE_SHADOW = 1;
+        private int VIEW_TYPE_TEXT_INFO_PRIVACY = 5;
+        private int VIEW_TYPE_HEADER = 2;
+
+        @Override
+        public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+            int position = holder.getAdapterPosition();
+
+            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY)
+                return;
+
+            int side = AndroidUtilities.dp(16);
+            int top = 0;
+            int bottom = 0;
+
+            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER;
+            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER;
+
+            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_SHADOW || getItemViewType(position - 1) == VIEW_TYPE_TEXT_INFO_PRIVACY) {
+                top = AndroidUtilities.dp(2);
+            }
+
+            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
+                top = AndroidUtilities.dp(16);
+            }
+
+            if (prevIsHeader) {
+                top = 0;
+            }
+
+            if (position == getItemCount() - 1
+                    || nextIsHeader
+                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW
+                    || getItemViewType(position + 1) == VIEW_TYPE_TEXT_INFO_PRIVACY
+            ) {
+                bottom = AndroidUtilities.dp(2);
+            }
+
+            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
+            lp.leftMargin = side;
+            lp.rightMargin = side;
+            lp.topMargin = top;
+            lp.bottomMargin = bottom;
+            holder.itemView.setLayoutParams(lp);
+        }
+
+        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+
+            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY) {
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                return;
+            }
+
+            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
+            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
+
+            boolean isHeader = viewType == VIEW_TYPE_HEADER;
+
+            boolean isGroupStart = position == 0
+                    || prevType == VIEW_TYPE_SHADOW
+                    || prevType == VIEW_TYPE_TEXT_INFO_PRIVACY;
+
+            boolean isGroupEnd = position == getItemCount() - 1
+                    || nextType == VIEW_TYPE_SHADOW
+                    || nextType == VIEW_TYPE_TEXT_INFO_PRIVACY;
+
+            int r = AndroidUtilities.dp(14);
+
+            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
+
+            if (isHeader) {
+                topLeft = topRight = r;
+            } else if (isGroupStart && isGroupEnd) {
+                topLeft = topRight = bottomLeft = bottomRight = r;
+            } else if (isGroupStart) {
+                topLeft = topRight = r;
+            } else if (isGroupEnd) {
+                bottomLeft = bottomRight = r;
+            }
+
+            Drawable bg = Theme.createRoundRectDrawable(
+                    topLeft, topRight, bottomRight, bottomLeft,
+                    Theme.getColor(Theme.key_windowBackgroundWhite)
+            );
+            holder.itemView.setBackground(bg);
+
+            final int side = 0;
+            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
+        }
+        /** Cherrygram finish */
+
     }
 
     private void updatePresetChoseView(SlideChooseView slideChooseView) {

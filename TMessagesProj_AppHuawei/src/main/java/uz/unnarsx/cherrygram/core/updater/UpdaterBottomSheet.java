@@ -165,6 +165,7 @@ public class UpdaterBottomSheet extends BottomSheet {
                 isForce = true;
                 CherrygramCoreConfig.INSTANCE.setAutoOTA(true);
             }
+            CherrygramCoreConfig.INSTANCE.setForceFound(update.isForce());
         } else {
             final String bType = CGResourcesHelper.INSTANCE.getBuildType() + " | " + CGResourcesHelper.INSTANCE.getAbiCode();
 
@@ -191,7 +192,7 @@ public class UpdaterBottomSheet extends BottomSheet {
                 CherrygramCoreConfig.INSTANCE.setAutoOTA(!CherrygramCoreConfig.INSTANCE.getAutoOTA());
                 checkOnLaunch.setChecked(!checkOnLaunch.isChecked());
             });
-            linearLayout.addView(checkOnLaunch);
+            if (!CherrygramCoreConfig.INSTANCE.getForceFound()) linearLayout.addView(checkOnLaunch);
 
             TextCell clearUpdates = new TextCell(context, resourcesProvider);
             clearUpdates.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 100, 0));

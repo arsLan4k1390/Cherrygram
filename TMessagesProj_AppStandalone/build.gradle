@@ -9,11 +9,12 @@ import java.util.concurrent.TimeUnit
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.firebase.crashlytics'
+apply plugin: 'kotlin-android'
 
-repositories {
+/*repositories {
     mavenCentral()
     google()
-}
+}*/
 
 configurations {
     compile.exclude module: 'support-v4'
@@ -27,13 +28,18 @@ configurations.configureEach {
 dependencies {
     implementation project(':TMessagesProj')
     implementation 'androidx.fragment:fragment:1.8.9'
-    implementation 'androidx.multidex:multidex:2.0.1'
-    implementation 'androidx.core:core:1.17.0'
+    implementation 'androidx.core:core-ktx:1.16.0'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation files('../TMessagesProj/libs/libgsaverification-client.aar')
+
+    implementation 'com.aheaditec.talsec.security:TalsecSecurity-Community:17.0.0'
 }
 
 android {
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
     compileSdk 36
     buildToolsVersion = '36.0.0'
 
@@ -77,6 +83,7 @@ android {
             signingConfig signingConfigs.release
 //            applicationIdSuffix ".web"
             minifyEnabled false
+            shrinkResources false
             multiDexEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro', '../TMessagesProj/proguard-rules-beta.pro'
             ndk.debugSymbolLevel = 'FULL'
@@ -87,9 +94,10 @@ android {
             signingConfig signingConfigs.release
 //            applicationIdSuffix ".web"
             minifyEnabled true
+            shrinkResources true
             multiDexEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), '../TMessagesProj/proguard-rules.pro'
-            ndk.debugSymbolLevel = 'FULL'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), '../TMessagesProj/proguard-rules.pro'
+            ndk.debugSymbolLevel = 'NONE'
         }
     }
 
@@ -136,7 +144,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 35
         versionName APP_VERSION_NAME
         ndkVersion "21.4.7075529"
@@ -150,6 +158,12 @@ android {
                 version '3.10.2'
                 arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21' //, '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
             }
+        }
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
         }
     }
 

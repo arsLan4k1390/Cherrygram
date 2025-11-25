@@ -14,6 +14,8 @@ import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.text.SpannableStringBuilder;
@@ -35,7 +37,6 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.browser.Browser;
-import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
@@ -57,10 +58,11 @@ import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 import uz.unnarsx.cherrygram.misc.Constants;
 
@@ -128,7 +130,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
 
     private final static int update_donates_list = 1;
 
-    private final boolean isTestBackend = ConnectionsManager.getInstance(getCurrentAccount()).isTestBackend();
+    private final boolean isTestBackend = getConnectionsManager().isTestBackend();
     private boolean didDonate = DonatesManager.INSTANCE.checkAllDonatedAccounts() || DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
     private boolean showDonates = !isTestBackend && (ApplicationLoader.isStandaloneBuild() || didDonate);
     public DonatesPreferencesEntry forceShowDonates() {
@@ -202,7 +204,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
 
                         }
                     };
-                    DonatesManager.INSTANCE.startAutoRefresh(getContext(), true, suspendResult);
+                    DonatesManager.INSTANCE.startAutoRefresh(getContext(), true, false, suspendResult);
                 }
             }
         });
@@ -233,7 +235,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                 }
                 AppRestartHelper.createRestartBulletin(this);
             } else if (position == rateUsRow) {
-                CherrygramExtras.INSTANCE.requestReviewFlow(this, getContext(), getParentActivity());
+                CherrygramExtras.INSTANCE.requestReviewFlow(this);
             } else if (position == masterCardRow) {
                 copyNumberAndMakeToast("5181000156329583", true);
             } else if (position == visaRow) {
@@ -259,7 +261,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                 openURL.setData(Uri.parse("https://tirikchilik.uz/arslan4k1390"));
                 getParentActivity().startActivity(openURL);
             } else if (position == walletBitcoinRow) {
-                copyNumberAndMakeToast("158BXPmSGEcKXpYhVeKU11ETEgsSn4eMt7", false);
+                copyNumberAndMakeToast("bc1ql4f7nuxv44y6tc72zy5z4h2sucqzk93nnmpyrl", false);
             } else if (position == walletTonRow) {
                 copyNumberAndMakeToast("UQCK2zt2pHa9ag-lUFTCuvsxW4lqPmkX6eSYFhS5xCKBwKAN", false);
             } else if (position == walletUSDTRow) {
@@ -312,6 +314,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_SHADOW: {
                     holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_HEADER: {
@@ -335,6 +338,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     } else if (position == binanceHeaderRow) {
                         headerCell.setText("Crypto // Binance");
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TEXT_CELL: {
@@ -416,6 +420,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                         icon = isDarkMode ? R.drawable.card_usdt_dark : R.drawable.card_usdt_light;
                     }
                     textCell.setTextAndIcon(title, icon, divider);
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TEXT_CHECK: {
@@ -424,6 +429,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     if (position == brandedScreenshotsSwitchRow) {
                         textCheckCell.setTextAndCheck(getString(R.string.DP_CameraCutout), CherrygramCoreConfig.INSTANCE.getCgBrandedScreenshots(), false);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TEXT_INFO_PRIVACY: {
@@ -437,6 +443,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     } else if (position == bonusesInfoRow) {
                         textInfoPrivacyCell.setText(CGResourcesHelper.INSTANCE.getDonatesAdvice());
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TABLE: {
@@ -456,7 +463,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                                 false, true, 15, true
                         );
                     } else if (position == bonusesPriceRow) {
-                        tableView.addRow(getString(R.string.GiftValue2), getString(R.string.Gift2UniqueTitle2), true);
+                        tableView.addRow(getString(R.string.GiftValue2), getString(R.string.Gift2UniqueTitle2), null);
 
                         CharSequence badgeTitle = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Badge_desc),
                                 Theme.key_windowBackgroundWhiteLinkText,
@@ -473,7 +480,10 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                                             .show();
                                 }
                         );
-                        tableView.addRow("$2 / €2 / 200₽ \n\n1.5 TON", badgeTitle);
+                        tableView.addRow(
+                                "$2 / €2 / 200 \n\n" + DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 2.0, false) + " TON",
+                                badgeTitle
+                        );
 
                         CharSequence epicBadgeTitle = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_EpicBadge_desc),
                                 Theme.key_windowBackgroundWhiteLinkText,
@@ -512,11 +522,14 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                         sb.append(marketPlaceText);
                         sb.append("\n");
                         sb.append(filterText);
-                        if (Build.VERSION.SDK_INT >= 31) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             sb.append("\n");
                             sb.append(messageMenuText);
                         }
-                        tableView.addRow("$5 / €5 / 500₽ \n\n3 TON", sb);
+                        tableView.addRow(
+                                "$5 / €5 / 500₽ \n\n" + DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 5.0, true) + " TON",
+                                sb
+                        );
 
                         CharSequence chequeText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Cheque),
                                 Theme.key_windowBackgroundWhiteLinkText,
@@ -532,11 +545,13 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                         );
                         tableView.addFullRow(personalDataText);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_STICKER: {
                     StickerImageView stickerImageView = (StickerImageView) ((FrameLayout) holder.itemView).getChildAt(0);
                     bindStickerCell(stickerImageView);
+                    applyMD3Background(holder, position);
                     break;
                 }
             }
@@ -599,6 +614,51 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
         }
 
         @Override
+        public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+            int position = holder.getAdapterPosition();
+
+            if (viewType == VIEW_TYPE_SHADOW /*|| viewType == VIEW_TYPE_TEXT_INFO_PRIVACY*/)
+                return;
+
+            int side = viewType == VIEW_TYPE_STICKER || position == stickerTableInfoRow ? 0 : AndroidUtilities.dp(16);
+            int top = 0;
+            int bottom = 0;
+
+            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER;
+            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER;
+
+            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_SHADOW /*|| getItemViewType(position - 1) == VIEW_TYPE_TEXT_INFO_PRIVACY*/) {
+                top = AndroidUtilities.dp(2);
+            }
+
+            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
+                top = AndroidUtilities.dp(16);
+            }
+
+            if (prevIsHeader) {
+                top = 0;
+            }
+
+            if (position == getItemCount() - 1
+                    || nextIsHeader
+                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW
+                /*|| getItemViewType(position + 1) == VIEW_TYPE_TEXT_INFO_PRIVACY*/
+            ) {
+                bottom = AndroidUtilities.dp(2);
+            }
+
+            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
+            lp.leftMargin = side;
+            lp.rightMargin = side;
+            lp.topMargin = top;
+            lp.bottomMargin = bottom;
+            holder.itemView.setLayoutParams(lp);
+        }
+
+        @Override
         public int getItemViewType(int position) {
             if (position == brandedScreenshotsDivisorRow || position == enjoyingEndDivisor || position == bonusesDivisorRow || position == intDivisorRow || position == rusDivisorRow || position == uzbDivisorRow || position == binanceDivisorRow || position == walletDivisorRow) {
                 return VIEW_TYPE_SHADOW;
@@ -657,6 +717,54 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
 
             stickerImageView.invalidate();
         }
+
+        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+
+            if (viewType == VIEW_TYPE_SHADOW/* || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY*/ || viewType == VIEW_TYPE_STICKER || position == stickerTableInfoRow) {
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                return;
+            }
+
+            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
+            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
+
+            boolean isHeader = viewType == VIEW_TYPE_HEADER;
+
+            boolean isGroupStart = position == 0
+                    || prevType == VIEW_TYPE_SHADOW
+                    /*|| prevType == VIEW_TYPE_TEXT_INFO_PRIVACY*/;
+
+            boolean isGroupEnd = position == getItemCount() - 1
+                    || nextType == VIEW_TYPE_SHADOW
+                    /*|| nextType == VIEW_TYPE_TEXT_INFO_PRIVACY*/;
+
+            int r = AndroidUtilities.dp(14);
+
+            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
+
+            if (isHeader) {
+                topLeft = topRight = r;
+            } else if (isGroupStart && isGroupEnd) {
+                topLeft = topRight = bottomLeft = bottomRight = r;
+            } else if (isGroupStart) {
+                topLeft = topRight = r;
+            } else if (isGroupEnd) {
+                bottomLeft = bottomRight = r;
+            }
+
+            Drawable bg = Theme.createRoundRectDrawable(
+                    topLeft, topRight, bottomRight, bottomLeft,
+                    Theme.getColor(Theme.key_windowBackgroundWhite)
+            );
+            holder.itemView.setBackground(bg);
+
+            final int side = position == bonusesPriceRow || position == intCredsRow || position == rusCredsRow ? dp(20) : 0;
+            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
+        }
+
     }
 
     private void updateRowsId(boolean notify) {

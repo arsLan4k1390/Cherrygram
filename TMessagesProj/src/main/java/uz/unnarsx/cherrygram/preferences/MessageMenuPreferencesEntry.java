@@ -12,6 +12,9 @@ package uz.unnarsx.cherrygram.preferences;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -33,14 +36,18 @@ import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
+import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
 import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitListPreference;
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSwitchPreference;
 
 public class MessageMenuPreferencesEntry extends BaseFragment {
 
@@ -53,6 +60,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
     private int autoScrollMessagesRow;
     private int fixedMessageHeightRow;
     private int blurMessageMenuItemsRow;
+    private int useNativeBlurRow;
     private int redesignEndDivisorRow;
 
     private int miscellaneousHeaderRow;
@@ -147,7 +155,13 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                         getString(R.string.DP_Donate_Exclusive),
                         getString(R.string.DP_Donate_ExclusiveDesc),
                         getString(R.string.MoreInfo),
-                        () -> CherrygramPreferencesNavigator.INSTANCE.createDonate(this)
+                        () -> {
+                            if (getConnectionsManager().isTestBackend()) {
+                                CherrygramPreferencesNavigator.INSTANCE.createDonate(this);
+                            } else {
+                                CherrygramPreferencesNavigator.INSTANCE.createDonateForce(this);
+                            }
+                        }
                 ).show();
                 return;
             }
@@ -160,6 +174,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                 listAdapter.notifyItemChanged(autoScrollMessagesRow, false);
                 listAdapter.notifyItemChanged(fixedMessageHeightRow, false);
                 listAdapter.notifyItemChanged(blurMessageMenuItemsRow, false);
+                listAdapter.notifyItemChanged(useNativeBlurRow, false);
             } else if (position == autoScrollMessagesRow) {
                 CherrygramChatsConfig.INSTANCE.setMsgMenuAutoScroll(!CherrygramChatsConfig.INSTANCE.getMsgMenuAutoScroll());
                 if (view instanceof TextCheckCell) {
@@ -186,6 +201,16 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                     ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems());
 
                     if (CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems() && !CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground()) {
+                        CherrygramChatsConfig.INSTANCE.setBlurMessageMenuBackground(true);
+                        listAdapter.notifyItemChanged(enableNewMessageMenuRow, false);
+                    }
+                }
+            } else if (position == useNativeBlurRow) {
+                CherrygramChatsConfig.INSTANCE.setMsgMenuNativeBlur(!CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur());
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur());
+
+                    if (CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur() && !CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground()) {
                         CherrygramChatsConfig.INSTANCE.setBlurMessageMenuBackground(true);
                         listAdapter.notifyItemChanged(enableNewMessageMenuRow, false);
                     }
@@ -229,6 +254,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                 case VIEW_TYPE_SHADOW:
                     ShadowSectionCell shadowSectionCell = (ShadowSectionCell) holder.itemView;
                     shadowSectionCell.setEnabled(false);
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_HEADER:
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
@@ -239,6 +265,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                     } else if (position == miscellaneousHeaderRow) {
                         headerCell.setText(getString(R.string.LocalMiscellaneousCache));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_TEXT_CELL:
                     TextCell textCell = (TextCell) holder.itemView;
@@ -247,6 +274,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                         textCell.setEnabled(true);
                         textCell.setTextAndIcon(getString(R.string.CP_MessageMenuItems), R.drawable.msg_list, false);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_TEXT_CHECK:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
@@ -288,9 +316,19 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                                 getString(R.string.CP_BlurMessageMenuItems_Desc),
                                 CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems(),
                                 true,
+                                true
+                        );
+                    } else if (position == useNativeBlurRow) {
+                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground(), null);
+                        textCheckCell.setTextAndValueAndCheck(
+                                getString(R.string.CP_MessageMenuNativeBlur),
+                                getString(R.string.CP_MessageMenuNativeBlur_Desc),
+                                CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur(),
+                                true,
                                 false
                         );
                     }
+                    applyMD3Background(holder, position);
                     break;
             }
         }
@@ -329,29 +367,137 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
         }
 
         @Override
+        public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+            int position = holder.getAdapterPosition();
+
+            if (viewType == VIEW_TYPE_SHADOW /*|| viewType == VIEW_TYPE_TEXT_INFO_PRIVACY*/)
+                return;
+
+            int side = AndroidUtilities.dp(16);
+            int top = 0;
+            int bottom = 0;
+
+            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER;
+            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER;
+
+            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_SHADOW /*|| getItemViewType(position - 1) == VIEW_TYPE_TEXT_INFO_PRIVACY*/) {
+                top = AndroidUtilities.dp(2);
+            }
+
+            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
+                top = AndroidUtilities.dp(16);
+            }
+
+            if (prevIsHeader) {
+                top = 0;
+            }
+
+            if (position == getItemCount() - 1
+                    || nextIsHeader
+                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW
+                    /*|| getItemViewType(position + 1) == VIEW_TYPE_TEXT_INFO_PRIVACY*/
+            ) {
+                bottom = AndroidUtilities.dp(2);
+            }
+
+            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
+            lp.leftMargin = side;
+            lp.rightMargin = side;
+            lp.topMargin = top;
+            lp.bottomMargin = bottom;
+            holder.itemView.setLayoutParams(lp);
+        }
+
+        @Override
         public int getItemViewType(int position) {
             if (position == redesignEndDivisorRow || position == miscellaneousEndDivisor) {
                 return VIEW_TYPE_SHADOW;
             } else if (position == redesignHeaderRow || position == miscellaneousHeaderRow) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == enableNewMessageMenuRow || position == autoScrollMessagesRow || position == fixedMessageHeightRow || position == blurMessageMenuItemsRow) {
+            } else if (position == enableNewMessageMenuRow || position == autoScrollMessagesRow || position == fixedMessageHeightRow || position == blurMessageMenuItemsRow || position == useNativeBlurRow) {
                 return VIEW_TYPE_TEXT_CHECK;
             } else if (position == messageMenuItemsRow) {
                 return VIEW_TYPE_TEXT_CELL;
             }
             return VIEW_TYPE_SHADOW;
         }
+
+        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+
+            if (viewType == VIEW_TYPE_SHADOW/* || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY*/) {
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                return;
+            }
+
+            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
+            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
+
+            boolean isHeader = viewType == VIEW_TYPE_HEADER;
+
+            boolean isGroupStart = position == 0
+                    || prevType == VIEW_TYPE_SHADOW
+                    /*|| prevType == VIEW_TYPE_TEXT_INFO_PRIVACY*/;
+
+            boolean isGroupEnd = position == getItemCount() - 1
+                    || nextType == VIEW_TYPE_SHADOW
+                    /*|| nextType == VIEW_TYPE_TEXT_INFO_PRIVACY*/;
+
+            int r = AndroidUtilities.dp(14);
+
+            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
+
+            if (isHeader) {
+                topLeft = topRight = r;
+            } else if (isGroupStart && isGroupEnd) {
+                topLeft = topRight = bottomLeft = bottomRight = r;
+            } else if (isGroupStart) {
+                topLeft = topRight = r;
+            } else if (isGroupEnd) {
+                bottomLeft = bottomRight = r;
+            }
+
+            Drawable bg = Theme.createRoundRectDrawable(
+                    topLeft, topRight, bottomRight, bottomLeft,
+                    Theme.getColor(Theme.key_windowBackgroundWhite)
+            );
+            holder.itemView.setBackground(bg);
+
+            final int side = 0;
+            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
+        }
+
     }
 
     private void updateRowsId(boolean notify) {
         rowCount = 0;
 
-        redesignHeaderRow = rowCount++;
-        enableNewMessageMenuRow = rowCount++;
-        autoScrollMessagesRow = rowCount++;
-        fixedMessageHeightRow = rowCount++;
-        blurMessageMenuItemsRow = rowCount++;
-        redesignEndDivisorRow = rowCount++;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            redesignHeaderRow = rowCount++;
+            enableNewMessageMenuRow = rowCount++;
+            autoScrollMessagesRow = rowCount++;
+            fixedMessageHeightRow = rowCount++;
+            blurMessageMenuItemsRow = rowCount++;
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
+                useNativeBlurRow = -1;
+            } else {
+                useNativeBlurRow = rowCount++;
+            }
+            redesignEndDivisorRow = rowCount++;
+        } else {
+            redesignHeaderRow = -1;
+            enableNewMessageMenuRow = -1;
+            autoScrollMessagesRow = -1;
+            fixedMessageHeightRow = -1;
+            blurMessageMenuItemsRow = -1;
+            useNativeBlurRow = -1;
+            redesignEndDivisorRow = -1;
+        }
 
         miscellaneousHeaderRow = rowCount++;
         messageMenuItemsRow = rowCount++;

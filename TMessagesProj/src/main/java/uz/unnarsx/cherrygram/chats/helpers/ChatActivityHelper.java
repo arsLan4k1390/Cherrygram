@@ -118,16 +118,15 @@ public class ChatActivityHelper extends BaseController {
     public final static int OPTION_TRANSLATE_DOUBLE_TAP = 2022;
     public final static int OPTION_TEXT_CODE = 2023;
     public final static int OPTION_GO_TO_SAVED = 2024;
-    public final static int OPTION_BLUR_SETTINGS = 2025;
-    public final static int OPTION_ASK_PASSCODE = 2026;
-    public final static int OPTION_DO_NOT_ASK_PASSCODE = 2027;
-    public final static int OPTION_OPEN_TELEGRAM_BROWSER = 2028;
-    public final static int OPTION_REPLY_GEMINI = 2029;
-    public final static int OPTION_TRANSLATE_GEMINI = 2030;
-    public final static int OPTION_TRANSCRIBE_GEMINI = 2031;
-    public final static int OPTION_EXPLANATION_GEMINI = 2032;
-    public final static int OPTION_SUMMARIZE_GEMINI = 2033;
-    public final static int OPTION_ADVANCED_SEARCH = 2034;
+    public final static int OPTION_ASK_PASSCODE = 2025;
+    public final static int OPTION_DO_NOT_ASK_PASSCODE = 2026;
+    public final static int OPTION_OPEN_TELEGRAM_BROWSER = 2027;
+    public final static int OPTION_REPLY_GEMINI = 2028;
+    public final static int OPTION_TRANSLATE_GEMINI = 2029;
+    public final static int OPTION_TRANSCRIBE_GEMINI = 2030;
+    public final static int OPTION_EXPLANATION_GEMINI = 2031;
+    public final static int OPTION_SUMMARIZE_GEMINI = 2032;
+    public final static int OPTION_ADVANCED_SEARCH = 2033;
 
     public final static int OPTION_VIEW_EDITED_MESSAGE_HISTORY = 2100;
     public final static int OPTION_MARK_TTL_AS_READ = 2101;
@@ -229,8 +228,6 @@ public class ChatActivityHelper extends BaseController {
             }
         } else if (id == OPTION_GO_TO_SAVED) {
             chatActivity.presentFragment(ChatActivity.of(ChatsHelper2.INSTANCE.getCustomChatID()));
-        } else if (id == OPTION_BLUR_SETTINGS) {
-            CherrygramPreferencesNavigator.INSTANCE.createBlur(chatActivity);
         } else if (id == OPTION_ASK_PASSCODE) {
             CGBiometricPrompt.prompt(chatActivity.getParentActivity(), () -> {
                 List<String> arr = chatActivity.getChatsPasswordHelper().getArrayList(chatActivity.getChatsPasswordHelper().getPasscodeArray());

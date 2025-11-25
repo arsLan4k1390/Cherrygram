@@ -50,8 +50,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
-
 public class SharedConfig {
     /**
      * V2: Ping and check time serialized
@@ -1744,9 +1742,6 @@ public class SharedConfig {
     }
 
     public static boolean canBlurChat() {
-        if (CherrygramDebugConfig.INSTANCE.getForceChatBlurEffect()) {
-            return true;
-        }
         return getDevicePerformanceClass() >= (Build.VERSION.SDK_INT >= 31 ? PERFORMANCE_CLASS_AVERAGE : PERFORMANCE_CLASS_HIGH) || BuildVars.DEBUG_PRIVATE_VERSION;
     }
 

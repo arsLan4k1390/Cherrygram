@@ -96,7 +96,6 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
     public final static int TYPE_FILTER = 0;
     public final static int TYPE_AUTO_DELETE_EXISTING_CHATS = 1;
     public final static int TYPE_PRIVATE = 2;
-    public final static int TYPE_LOCKED_CHATS = 1390;
 
     private ScrollView scrollView;
     private SpansContainer spansContainer;
@@ -383,16 +382,6 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
         return this;
     }
 
-    public UsersSelectActivity asLockedChats() {
-        type = TYPE_LOCKED_CHATS;
-        allowSelf = true;
-        return this;
-    }
-
-    public boolean isLockedContent() {
-        return type == TYPE_LOCKED_CHATS;
-    }
-
     public UsersSelectActivity(int type) {
         super();
         this.type = type;
@@ -476,7 +465,7 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
         selectedContacts.clear();
         currentDeletingSpan = null;
 
-        if (type == TYPE_AUTO_DELETE_EXISTING_CHATS || type == TYPE_LOCKED_CHATS) {
+        if (type == TYPE_AUTO_DELETE_EXISTING_CHATS || type == TYPE_LOCKED_CHATS || type == TYPE_FILTER_EXCLUDED_CHATS) {
             animatedAvatarContainer = new AnimatedAvatarContainer(getContext());
             actionBar.addView(animatedAvatarContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, 0, LocaleController.isRTL ? 0 : 64, 0,  LocaleController.isRTL ? 64 : 0, 0));
             actionBar.setAllowOverlayTitle(false);
@@ -490,7 +479,7 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
             } else {
                 actionBar.setTitle(getString(R.string.FilterNeverShow));
             }
-        } else if (type == TYPE_AUTO_DELETE_EXISTING_CHATS || type == TYPE_LOCKED_CHATS){
+        } else if (type == TYPE_AUTO_DELETE_EXISTING_CHATS || type == TYPE_LOCKED_CHATS || type == TYPE_FILTER_EXCLUDED_CHATS){
             updateHint();
         }
 
@@ -1150,6 +1139,17 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
                 animatedAvatarContainer.getTitle().setText(LocaleController.formatPluralString("Chats", selectedCount, selectedCount));
                 animatedAvatarContainer.getSubtitleTextView().setText(getString(R.string.SP_LockedChats_Lock_Destination_Sure), true);
             }
+        } else if (type == TYPE_FILTER_EXCLUDED_CHATS) {
+            actionBar.setTitle("");
+            actionBar.setSubtitle("");
+
+            if (selectedCount == 0) {
+                animatedAvatarContainer.getTitle().setText(getString(R.string.SelectChats), true);
+                animatedAvatarContainer.getSubtitleTextView().setText(getString(R.string.CP_Message_Filtering_Exclude_Destination), true);
+            } else {
+                animatedAvatarContainer.getTitle().setText(LocaleController.formatPluralString("Chats", selectedCount, selectedCount));
+                animatedAvatarContainer.getSubtitleTextView().setText(getString(R.string.CP_Message_Filtering_Exclude_Sure), true);
+            }
         }
     }
 
@@ -1425,7 +1425,7 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
                     }
                     boolean blueText = false;
                     boolean enabled = true;
-                    if (type == TYPE_PRIVATE || type == TYPE_LOCKED_CHATS) {
+                    if (type == TYPE_PRIVATE || type == TYPE_LOCKED_CHATS || type == TYPE_FILTER_EXCLUDED_CHATS) {
 
                     } else if (type == TYPE_FILTER) {
                         if (!searching) {
@@ -1739,4 +1739,22 @@ public class UsersSelectActivity extends BaseFragment implements NotificationCen
 
         return themeDescriptions;
     }
+
+    /** Cherrygram start */
+    public final static int TYPE_LOCKED_CHATS = 1390;
+    public final static int TYPE_FILTER_EXCLUDED_CHATS = 1391;
+
+    public UsersSelectActivity asLockedChats() {
+        type = TYPE_LOCKED_CHATS;
+        allowSelf = true;
+        return this;
+    }
+
+    public UsersSelectActivity asFilterExcludedChats() {
+        type = TYPE_FILTER_EXCLUDED_CHATS;
+        allowSelf = true;
+        return this;
+    }
+    /** Cherrygram finish */
+
 }

@@ -23,13 +23,12 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.RadioColorCell;
 import org.telegram.ui.Cells.TextCell;
-import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.helpers.network.DonatesManager;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.preferences.ChatsPreferencesEntry;
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
@@ -146,7 +145,11 @@ public class PopupHelper {
                             getString(R.string.MoreInfo),
                             () -> {
                                 fragment.dismissCurrentDialog();
-                                CherrygramPreferencesNavigator.INSTANCE.createDonate(fragment);
+                                if (fragment.getConnectionsManager().isTestBackend()) {
+                                    CherrygramPreferencesNavigator.INSTANCE.createDonate(fragment);
+                                } else {
+                                    CherrygramPreferencesNavigator.INSTANCE.createDonateForce(fragment);
+                                }
                             }
                     ).show();
                 } else {

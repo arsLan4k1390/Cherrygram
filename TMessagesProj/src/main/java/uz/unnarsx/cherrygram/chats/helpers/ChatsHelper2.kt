@@ -39,7 +39,7 @@ import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 
 object ChatsHelper2 {
 
-    /** Avatar admin actions start **/
+    /** Avatar admin actions start */
     /*fun injectChatActivityAvatarArraySize(cf: ChatActivity): Int {
         var objs = 0
 
@@ -245,9 +245,9 @@ object ChatsHelper2 {
         }
         return username ?: ""
     }
-    /** Avatar admin actions finish **/
+    /** Avatar admin actions finish */
 
-    /** Chat search filter start **/
+    /** Chat search filter start */
     fun getSearchFilterType(): TLRPC.MessagesFilter {
         val filter: TLRPC.MessagesFilter = when (CherrygramChatsConfig.messagesSearchFilter) {
             CherrygramChatsConfig.FILTER_PHOTOS -> {
@@ -286,9 +286,9 @@ object ChatsHelper2 {
         }
         return filter
     }
-    /** Chat search filter finish **/
+    /** Chat search filter finish */
 
-    /** Custom chat id for Saved Messages start **/
+    /** Custom chat id for Saved Messages start */
     fun getCustomChatID(): Long {
         val preferences = MessagesController.getMainSettings(UserConfig.selectedAccount)
         val savedMessagesChatID =
@@ -298,9 +298,9 @@ object ChatsHelper2 {
         return if (CherrygramExperimentalConfig.customChatForSavedMessages) chatID
         else UserConfig.getInstance(UserConfig.selectedAccount).clientUserId
     }
-    /** Custom chat id for Saved Messages finish **/
+    /** Custom chat id for Saved Messages finish */
 
-    /** Direct share menu start **/
+    /** Direct share menu start */
     fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {
 //        val options: ItemOptions = ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
         ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
@@ -327,9 +327,9 @@ object ChatsHelper2 {
             .translate(-AndroidUtilities.dp(15f).toFloat(), 0f)
             .show()
     }
-    /** Direct share menu finish **/
+    /** Direct share menu finish */
 
-    /** JSON menu start **/
+    /** JSON menu start */
     fun showJsonMenu(sa: JsonBottomSheet, field: FrameLayout, messageObject: MessageObject) {
         ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
             .addIf(
@@ -355,14 +355,47 @@ object ChatsHelper2 {
                     .createCopyBulletin(getString(R.string.TextCopied))
                     .show()
             }
+            .addIf(messageObject.messageOwner != null,
+                R.drawable.msg_calendar2,
+                if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.document != null) {
+                    "Date: ➥ " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.document.date.toLong())
+                } else if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.photo != null) {
+                    "Date: ➥ " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.photo.date.toLong())
+                } else {
+                    "Message is not forwarded."
+                }
+            ) {
+                var textToCopy = ""
+                if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.document != null) {
+                    textToCopy = CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.document.date.toLong())
+                } else if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.photo != null) {
+                    textToCopy = CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.media.photo.date.toLong())
+                }
+                if (textToCopy != "") {
+                    AndroidUtilities.addToClipboard(textToCopy)
+                    BulletinFactory.of(sa.container, sa.resourcesProvider)
+                        .createCopyBulletin(getString(R.string.TextCopied))
+                        .show()
+                }
+            }
+            .addIf(messageObject.messageOwner != null,
+                R.drawable.msg_info,
+                if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.document != null) {
+                    "DC: " + messageObject.messageOwner.media.document.dc_id
+                } else if (messageObject.messageOwner.media != null && messageObject.messageOwner.media.photo != null) {
+                    "DC: " + messageObject.messageOwner.media.photo.dc_id
+                } else {
+                    "DC: Available only for media."
+                }
+            ) {}
 
             .setDimAlpha(100)
             .translate(-AndroidUtilities.dp(15f).toFloat(), 0f)
             .show()
     }
-    /** JSON menu finish **/
+    /** JSON menu finish */
 
-    /** Message slide action start **/
+    /** Message slide action start */
     fun injectChatActivityMsgSlideAction(cf: ChatActivity, msg: MessageObject, isChannel: Boolean, classGuid: Int) {
         when (CherrygramChatsConfig.messageSlideAction) {
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_REPLY -> {
@@ -428,7 +461,7 @@ object ChatsHelper2 {
             }
         }
     }
-    /** Message slide action finish **/
+    /** Message slide action finish */
 
     /*fun isCherryVerified(chat: TLRPC.Chat): Boolean {
         return LocalVerificationsHelper.getVerify().stream().anyMatch { id: Long -> id == chat.id }

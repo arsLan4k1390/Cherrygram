@@ -12,6 +12,8 @@ package uz.unnarsx.cherrygram.preferences;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +49,7 @@ import uz.unnarsx.cherrygram.camera.CameraTypeSelector;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
@@ -214,7 +217,7 @@ public class CameraPreferencesEntry extends BaseFragment {
                     ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
                 }
             } else if (position == cameraXFpsRangeRow) {
-                if (!CherrygramCoreConfig.INSTANCE.isDevBuild()) return;
+//                if (!CherrygramCoreConfig.INSTANCE.isDevBuild()) return;
                 ArrayList<String> configStringKeys = new ArrayList<>();
                 ArrayList<Integer> configValues = new ArrayList<>();
 
@@ -309,6 +312,7 @@ public class CameraPreferencesEntry extends BaseFragment {
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_SHADOW:
                     holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_HEADER:
                     HeaderCell headerCell = (HeaderCell) holder.itemView;
@@ -319,6 +323,7 @@ public class CameraPreferencesEntry extends BaseFragment {
                     } else if (position == videoMessagesHeaderRow) {
                         headerCell.setText(getString(R.string.CP_Header_Videomessages));
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_TEXT_CHECK:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
@@ -336,6 +341,7 @@ public class CameraPreferencesEntry extends BaseFragment {
                     } else if (position == rearCamRow) {
                         textCheckCell.setTextAndValueAndCheck(getString(R.string.CP_RearCam), getString(R.string.CP_RearCam_Desc), CherrygramCameraConfig.INSTANCE.getRearCam(), true, true);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_TEXT_SETTINGS:
                     TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
@@ -350,6 +356,7 @@ public class CameraPreferencesEntry extends BaseFragment {
                     } else if (position == exposureSliderRow) {
                         textSettingsCell.setTextAndValue(getString(R.string.CP_ExposureSliderPosition), CGResourcesHelper.INSTANCE.getExposureSliderPosition(), true);
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_TEXT_INFO_PRIVACY:
                     TextInfoPrivacyCell textInfoPrivacyCell = (TextInfoPrivacyCell) holder.itemView;
@@ -357,12 +364,14 @@ public class CameraPreferencesEntry extends BaseFragment {
                     if (position == cameraAdviseRow) {
                         textInfoPrivacyCell.setText(CGResourcesHelper.INSTANCE.getCameraAdvise());
                     }
+                    applyMD3Background(holder, position);
                     break;
                 case VIEW_TYPE_CAMERA_SELECTOR:
                     /*CameraTypeSelector cameraTypeSelector = (CameraTypeSelector) holder.itemView;
                     if (position == cameraAdviseRow) {
 
                     }*/
+                    applyMD3Background(holder, position);
                     break;
             }
         }
@@ -415,7 +424,7 @@ public class CameraPreferencesEntry extends BaseFragment {
                             listAdapter.notifyItemChanged(cameraXQualityRow);
                             listAdapter.notifyItemChanged(cameraUseDualCameraRow);
                             listAdapter.notifyItemChanged(startFromUltraWideRow);
-                            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) listAdapter.notifyItemChanged(cameraXFpsRangeRow);
+                            /*if (CherrygramCoreConfig.INSTANCE.isDevBuild())*/ listAdapter.notifyItemChanged(cameraXFpsRangeRow);
                             listAdapter.notifyItemChanged(cameraStabilisationRow);
                             listAdapter.notifyItemChanged(exposureSliderRow);
                             listAdapter.notifyItemChanged(cameraControlButtonsRow);
@@ -431,6 +440,51 @@ public class CameraPreferencesEntry extends BaseFragment {
             }
             view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
             return new RecyclerListView.Holder(view);
+        }
+
+        @Override
+        public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+            int position = holder.getAdapterPosition();
+
+            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY)
+                return;
+
+            int side = AndroidUtilities.dp(16);
+            int top = 0;
+            int bottom = 0;
+
+            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER;
+            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER;
+
+            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_SHADOW || getItemViewType(position - 1) == VIEW_TYPE_TEXT_INFO_PRIVACY) {
+                top = AndroidUtilities.dp(2);
+            }
+
+            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
+                top = AndroidUtilities.dp(16);
+            }
+
+            if (prevIsHeader) {
+                top = 0;
+            }
+
+            if (position == getItemCount() - 1
+                    || nextIsHeader
+                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW
+                || getItemViewType(position + 1) == VIEW_TYPE_TEXT_INFO_PRIVACY
+            ) {
+                bottom = AndroidUtilities.dp(2);
+            }
+
+            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
+            lp.leftMargin = side;
+            lp.rightMargin = side;
+            lp.topMargin = top;
+            lp.bottomMargin = bottom;
+            holder.itemView.setLayoutParams(lp);
         }
 
         @Override
@@ -450,6 +504,54 @@ public class CameraPreferencesEntry extends BaseFragment {
             }
             return VIEW_TYPE_SHADOW;
         }
+
+        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
+            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
+
+            int viewType = holder.getItemViewType();
+
+            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY) {
+                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+                return;
+            }
+
+            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
+            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
+
+            boolean isHeader = viewType == VIEW_TYPE_HEADER;
+
+            boolean isGroupStart = position == 0
+                    || prevType == VIEW_TYPE_SHADOW
+                    || prevType == VIEW_TYPE_TEXT_INFO_PRIVACY;
+
+            boolean isGroupEnd = position == getItemCount() - 1
+                    || nextType == VIEW_TYPE_SHADOW
+                    || nextType == VIEW_TYPE_TEXT_INFO_PRIVACY;
+
+            int r = AndroidUtilities.dp(14);
+
+            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
+
+            if (isHeader) {
+                topLeft = topRight = r;
+            } else if (isGroupStart && isGroupEnd) {
+                topLeft = topRight = bottomLeft = bottomRight = r;
+            } else if (isGroupStart) {
+                topLeft = topRight = r;
+            } else if (isGroupEnd) {
+                bottomLeft = bottomRight = r;
+            }
+
+            Drawable bg = Theme.createRoundRectDrawable(
+                    topLeft, topRight, bottomRight, bottomLeft,
+                    Theme.getColor(Theme.key_windowBackgroundWhite)
+            );
+            holder.itemView.setBackground(bg);
+
+            final int side = 0;
+            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
+        }
+
     }
 
     private void updateRowsId(boolean notify) {
@@ -490,12 +592,12 @@ public class CameraPreferencesEntry extends BaseFragment {
 
         if (CameraXUtils.isCurrentCameraCameraX()) {
             startFromUltraWideRow = rowCount++;
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) cameraXFpsRangeRow = rowCount++;
+            /*if (CherrygramCoreConfig.INSTANCE.isDevBuild())*/ cameraXFpsRangeRow = rowCount++;
             cameraStabilisationRow = rowCount++;
             exposureSliderRow = rowCount++;
         } else {
             startFromUltraWideRow = -1;
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) cameraXFpsRangeRow = -1;
+            /*if (CherrygramCoreConfig.INSTANCE.isDevBuild())*/ cameraXFpsRangeRow = -1;
             cameraStabilisationRow = -1;
             exposureSliderRow = -1;
         }

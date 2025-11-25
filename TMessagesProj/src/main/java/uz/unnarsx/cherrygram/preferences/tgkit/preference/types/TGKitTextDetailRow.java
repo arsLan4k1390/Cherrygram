@@ -24,11 +24,11 @@ public class TGKitTextDetailRow extends TGKitPreference {
     @Nullable
     public TGTDListener listener;
 
-    public void bindCell(TextDetailSettingsCell textDetailCell) {
+    public void bindCell(TextDetailSettingsCell textDetailSettingsCell) {
         if (icon != -1 && detail != null) {
-            textDetailCell.setTextAndValueAndIcon(title.toString(), detail, icon, divider);
+            textDetailSettingsCell.setTextAndValueAndIcon(title.toString(), detail, icon, divider);
         } else if (detail != null) {
-            textDetailCell.setTextAndValue(title, detail, divider);
+            textDetailSettingsCell.setTextAndValue(title, detail, divider);
         }
     }
 

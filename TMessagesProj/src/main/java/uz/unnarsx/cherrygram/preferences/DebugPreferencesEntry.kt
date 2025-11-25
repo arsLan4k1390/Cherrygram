@@ -133,16 +133,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 }
             }
         }
-        category("Blur") {
-            switch {
-                title = "Force chat blur *"
-
-                contract({
-                    return@contract CherrygramDebugConfig.forceChatBlurEffect
-                }) {
-                    CherrygramDebugConfig.forceChatBlurEffect = it
-                }
-            }
+        category("Redesign") {
             switch {
                 isAvailable = Build.VERSION.SDK_INT >= 31
                 title = "New blur (GPU)"
@@ -151,6 +142,16 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                     return@contract SharedConfig.useNewBlur
                 }) {
                     SharedConfig.toggleUseNewBlur()
+                }
+            }
+            switch {
+                title = "MD3 Containers *"
+                description = "Material Design 3 containers inside settings"
+
+                contract({
+                    return@contract CherrygramDebugConfig.mdContainers
+                }) {
+                    CherrygramDebugConfig.mdContainers = it
                 }
             }
         }

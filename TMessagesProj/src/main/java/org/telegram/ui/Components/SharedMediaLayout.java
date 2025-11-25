@@ -5059,7 +5059,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                     for (int a = 0; a < dids.size(); a++) {
                         long did = dids.get(a).dialogId;
                         if (message != null) {
-                            profileActivity.getSendMessagesHelper().sendMessage(SendMessagesHelper.SendMessageParams.of(message.toString(), did, null, null, null, true, null, null, null, true, 0, null, false));
+                            profileActivity.getSendMessagesHelper().sendMessage(SendMessagesHelper.SendMessageParams.of(message.toString(), did, null, null, null, true, null, null, null, true, 0, 0, null, false));
                         }
                         profileActivity.getSendMessagesHelper().sendMessage(fmessages, did, false, false, true, 0, 0);
                     }
@@ -10932,7 +10932,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
     }
 
     public void showPremiumFloodWaitBulletin(final boolean isUpload) {
-        if (profileActivity == null) return;
+        /*if (profileActivity == null) return;
 
 //        final long now = System.currentTimeMillis();
 //        if (now - ConnectionsManager.lastPremiumFloodWaitShown < 1000L * MessagesController.getInstance(currentAccount).uploadPremiumSpeedupNotifyPeriod) {
@@ -10961,7 +10961,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
             AndroidUtilities.replaceCharSequence("%d", AndroidUtilities.premiumText(LocaleController.getString(isUpload ? R.string.UploadSpeedLimitedMessage : R.string.DownloadSpeedLimitedMessage), () -> {
                 profileActivity.presentFragment(new PremiumPreviewFragment(isUpload ? "upload_speed" : "download_speed"));
             }), boldN)
-        ).setDuration(8000).show(true);
+        ).setDuration(8000).show(true);*/
     }
 
     public boolean canEditStories() {

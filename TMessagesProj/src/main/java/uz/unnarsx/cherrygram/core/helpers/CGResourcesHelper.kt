@@ -31,7 +31,7 @@ import java.util.Locale
 
 object CGResourcesHelper {
 
-    /** About app start **/
+    /** About app start */
     fun getAppName(): String {
         if (CherrygramCoreConfig.isStandaloneStableBuild() || CherrygramCoreConfig.isPlayStoreBuild()) {
             return "Cherrygram"
@@ -70,9 +70,9 @@ object CGResourcesHelper {
         }
         return abi
     }
-    /** About app finish **/
+    /** About app finish */
 
-    /** Camera start **/
+    /** Camera start */
     fun getCameraName(): String { // Crashlytics.java:\ Camera type
         return when (CherrygramCameraConfig.cameraType) {
             CherrygramCameraConfig.TELEGRAM_CAMERA -> "Telegram"
@@ -141,9 +141,9 @@ object CGResourcesHelper {
             else -> getString(R.string.Disable)
         }
     }
-    /** Camera finish **/
+    /** Camera finish */
 
-    /** Chats start **/
+    /** Chats start */
     fun getLeftButtonText(noForwards: Boolean): String {
         if (noForwards) return getString(R.string.Reply)
 
@@ -176,9 +176,9 @@ object CGResourcesHelper {
             else -> R.drawable.filled_button_reply
         }
     }
-    /** Chats finish **/
+    /** Chats finish */
 
-    /** Profile activity start **/
+    /** Profile activity start */
     fun getDCGeo(dcId: Int): String {
         return when (dcId) {
             1, 3 -> "USA (Miami)"
@@ -198,9 +198,9 @@ object CGResourcesHelper {
             else -> getString(R.string.NumberUnknown)
         }
     }
-    /** Profile activity finish **/
+    /** Profile activity finish */
 
-    /** Misc start **/
+    /** Misc start */
     fun getProperNotificationIcon(): Int { // App notification icon
         return if (CherrygramCoreConfig.oldNotificationIcon) {
             R.drawable.notification
@@ -310,5 +310,5 @@ object CGResourcesHelper {
         }
         return capitalizeString
     }
-    /** Misc finish **/
+    /** Misc finish */
 }

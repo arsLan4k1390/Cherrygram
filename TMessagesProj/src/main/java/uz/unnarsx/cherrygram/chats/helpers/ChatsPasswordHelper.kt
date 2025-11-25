@@ -23,7 +23,6 @@ import org.telegram.tgnet.TLRPC.MessageEntity
 import org.telegram.tgnet.TLRPC.TL_messageEntitySpoiler
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
 
 class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {

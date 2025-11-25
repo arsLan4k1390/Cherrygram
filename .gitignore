@@ -15,6 +15,9 @@ obj/
 /TMessagesProj/src/main/java/org/telegram/messenger/KotlinFragmentsManager.kt
 /TMessagesProj/src/main/java/org/telegram/messenger/SamsungDatastore.kt
 /TMessagesProj/src/main/java/org/telegram/tgnet/ConnectionManagerDelegate.java
+/TMessagesProj_App/src/main/java/org/telegram/ui/ApplicationLoaderlmpl.kt
+/TMessagesProj_AppStandalone/src/main/java/org/telegram/ui/ApplicationLoaderlmpl.kt
+/TMessagesProj_AppHuawei/src/main/java/org/telegram/ui/HuaweiApplicationLoaderlmpl.kt
 *.iml
 local.properties
 TMessagesProj/.cxx/

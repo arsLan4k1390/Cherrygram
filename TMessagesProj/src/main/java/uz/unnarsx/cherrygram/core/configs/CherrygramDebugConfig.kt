@@ -19,20 +19,19 @@ object CherrygramDebugConfig {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
-    /** Misc start **/
+    /** Misc start */
     var showRPCErrors by sharedPreferences.boolean("EP_ShowRPCErrors", false)
     var oldTimeStyle by sharedPreferences.boolean("CP_OldTimeStyle", false)
-    /** Misc finish **/
+    /** Misc finish */
 
-    /** Blur start **/
-    var forceChatBlurEffect by sharedPreferences.boolean("AP_ForceBlur", false)
-    var forceChatBlurEffectIntensity by sharedPreferences.int("AP_ForceBlur_Intensity", 155)
-    /** Blur finish **/
+    /** Redesign start */
+    var mdContainers by sharedPreferences.boolean("EP_MaterialDes_Containers", false)
+    /** Redesign finish */
 
-    /** Chats start **/
+    /** Chats start */
     var replacePunctuationMarks by sharedPreferences.boolean("replacePunctuationMarks", true)
     var editTextSuggestionsFix by sharedPreferences.boolean("editTextSuggestionsFix", false)
-    /** Microphone Audio Source start **/
+    /** Microphone Audio Source start */
     const val AUDIO_SOURCE_DEFAULT = 0
     const val AUDIO_SOURCE_CAMCORDER = 1
     const val AUDIO_SOURCE_MIC = 2
@@ -45,11 +44,11 @@ object CherrygramDebugConfig {
     const val AUDIO_SOURCE_VOICE_RECOGNITION = 9
     const val AUDIO_SOURCE_VOICE_UPLINK = 10
     var audioSource by sharedPreferences.int("audioSource", AUDIO_SOURCE_DEFAULT)
-    /** Microphone Audio Source finish **/
+    /** Microphone Audio Source finish */
 
-    var sendVideosAtMaxQuality by sharedPreferences.boolean("sendVideosMaxQuality", false)
+    var sendVideosAtMaxQuality by sharedPreferences.boolean("sendVideosMaxQuality", true)
     var playGIFsAsVideos by sharedPreferences.boolean("CP_PlayGIFsAsVideos", true)
     var hideVideoTimestamp by sharedPreferences.boolean("CP_HideVideoTimestamp", true)
-    /** Chats finish **/
+    /** Chats finish */
 
 }

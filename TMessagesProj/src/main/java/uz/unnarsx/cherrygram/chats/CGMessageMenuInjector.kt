@@ -33,7 +33,6 @@ import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
-import androidx.core.graphics.drawable.toDrawable
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
 // Because manual editing of drklo's sources harms your mental health.
@@ -279,8 +278,10 @@ object CGMessageMenuInjector {
         options: ArrayList<Int?>,
         icons: ArrayList<Int?>
     ) {
-        if (CherrygramChatsConfig.showForwardWoAuthorship && !selectedObject.isSponsored && chatMode != ChatActivity.MODE_SCHEDULED && (!selectedObject.needDrawBluredPreview() || selectedObject.hasExtendedMediaPreview())
-            && !selectedObject.isLiveLocation && selectedObject.type != MessageObject.TYPE_PHONE_CALL && selectedObject.type != MessageObject.TYPE_GIFT_PREMIUM && selectedObject.type != MessageObject.TYPE_SUGGEST_PHOTO
+        if (CherrygramChatsConfig.showForwardWoAuthorship && !selectedObject.isSponsored && chatMode != ChatActivity.MODE_QUICK_REPLIES && chatMode != ChatActivity.MODE_SCHEDULED
+            && (!selectedObject.needDrawBluredPreview() || selectedObject.hasExtendedMediaPreview()) && !selectedObject.isLiveLocation && selectedObject.type != MessageObject.TYPE_PHONE_CALL
+            && selectedObject.type != MessageObject.TYPE_GIFT_PREMIUM && selectedObject.type != MessageObject.TYPE_GIFT_PREMIUM_CHANNEL && selectedObject.type != MessageObject.TYPE_SUGGEST_PHOTO
+            && !selectedObject.isWallpaperAction && !selectedObject.isExpiredStory && selectedObject.type != MessageObject.TYPE_STORY_MENTION && selectedObject.type != MessageObject.TYPE_GIFT_STARS
         ) {
             items.add(
                 getString(R.string.Forward) + " " + getString(
@@ -345,7 +346,7 @@ object CGMessageMenuInjector {
         if (selectedObject?.isAnimatedSticker == false) {
             items.add(getString(R.string.CG_SaveSticker))
             options.add(ChatActivityHelper.OPTION_DOWNLOAD_STICKER)
-            icons.add(R.drawable.msg_download)
+            icons.add(R.drawable.msg_gallery)
         }
     }
 
@@ -375,6 +376,35 @@ object CGMessageMenuInjector {
         }
     }
 
+    fun removeItems(
+        selectedObject: MessageObject?,
+        items: ArrayList<CharSequence?>,
+        options: ArrayList<Int?>,
+        icons: ArrayList<Int?>
+    ) {
+        if (selectedObject == null) return
+
+        val toRemove = mutableListOf<Int>()
+
+        options.forEachIndexed { index, option ->
+            val remove = when (option) {
+                ChatActivity.OPTION_REPLY -> !CherrygramChatsConfig.showReply
+                ChatActivity.OPTION_SAVE_TO_GALLERY, ChatActivity.OPTION_SAVE_TO_GALLERY2 -> !CherrygramChatsConfig.showSaveToGallery
+                ChatActivity.OPTION_SAVE_TO_DOWNLOADS_OR_MUSIC -> !CherrygramChatsConfig.showSaveToDownloads
+                ChatActivity.OPTION_SHARE -> !CherrygramChatsConfig.showShare
+                else -> false
+            }
+
+            if (remove) toRemove.add(index)
+        }
+
+        for (i in toRemove.asReversed()) {
+            options.removeAt(i)
+            items.removeAt(i)
+            icons.removeAt(i)
+        }
+    }
+
     fun showMessageMenuItemsConfigurator(fragment: BaseFragment) {
         val menuItems = listOf(
             MenuItemConfig(
@@ -398,6 +428,12 @@ object CGMessageMenuInjector {
                 { CherrygramChatsConfig.showReply = !CherrygramChatsConfig.showReply }
             ),
             MenuItemConfig(
+                getString(R.string.SaveToGallery),
+                R.drawable.msg_gallery,
+                { CherrygramChatsConfig.showSaveToGallery },
+                { CherrygramChatsConfig.showSaveToGallery = !CherrygramChatsConfig.showSaveToGallery }
+            ),
+            MenuItemConfig(
                 getString(R.string.CG_CopyPhoto),
                 R.drawable.msg_copy,
                 { CherrygramChatsConfig.showCopyPhoto },
@@ -408,6 +444,18 @@ object CGMessageMenuInjector {
                 R.drawable.msg_copy,
                 { CherrygramChatsConfig.showCopyPhotoAsSticker },
                 { CherrygramChatsConfig.showCopyPhotoAsSticker = !CherrygramChatsConfig.showCopyPhotoAsSticker }
+            ),
+            MenuItemConfig(
+                getString(R.string.SaveToDownloads),
+                R.drawable.msg_download,
+                { CherrygramChatsConfig.showSaveToDownloads },
+                { CherrygramChatsConfig.showSaveToDownloads = !CherrygramChatsConfig.showSaveToDownloads }
+            ),
+            MenuItemConfig(
+                getString(R.string.ShareFile),
+                R.drawable.msg_shareout,
+                { CherrygramChatsConfig.showShare },
+                { CherrygramChatsConfig.showShare = !CherrygramChatsConfig.showShare }
             ),
             MenuItemConfig(
                 getString(R.string.CG_ClearFromCache),

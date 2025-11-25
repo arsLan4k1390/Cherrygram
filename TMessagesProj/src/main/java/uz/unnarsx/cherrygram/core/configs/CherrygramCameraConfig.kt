@@ -21,15 +21,15 @@ object CherrygramCameraConfig {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
-    /** Camera type start **/
+    /** Camera type start */
     const val TELEGRAM_CAMERA = 0
     const val CAMERA_X = 1
     const val CAMERA_2 = 2
     const val SYSTEM_CAMERA = 3
     var cameraType by sharedPreferences.int("CP_CameraType", if (CameraXUtils.isCameraXSupported()) CAMERA_X else TELEGRAM_CAMERA)
-    /** Camera type finish **/
+    /** Camera type finish */
 
-    /** Camera start **/
+    /** Camera start */
     var disableAttachCamera by sharedPreferences.boolean("CP_DisableCam", true)
     var useDualCamera by sharedPreferences.boolean("CP_UseDualCamera", false)
 
@@ -38,13 +38,13 @@ object CherrygramCameraConfig {
     const val Camera1to1 = 2
     const val CameraAspectDefault = 3
     var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", CameraAspectDefault)
-    /** Camera finish **/
+    /** Camera finish */
 
-    /** Videomessages start **/
+    /** Videomessages start */
     var cameraResolution by sharedPreferences.int("CP_CameraResolution", -1)
     var startFromUltraWideCam by sharedPreferences.boolean("CP_StartFromUltraWideCam", true)
 
-    /** CameraX FPS start **/
+    /** CameraX FPS start */
     const val CameraXFpsRangeDefault = 0
     const val CameraXFpsRange25to30 = 1
     const val CameraXFpsRange30to30 = 2
@@ -52,7 +52,7 @@ object CherrygramCameraConfig {
     const val CameraXFpsRange60to60 = 4
     var cameraXFpsRange by sharedPreferences.int("CP_CameraXFpsRangeValue",
         if (SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE) CameraXFpsRange25to30 else CameraXFpsRangeDefault)
-    /** CameraX FPS finish **/
+    /** CameraX FPS finish */
 
     var cameraStabilisation by sharedPreferences.boolean("CP_CameraStabilisation", false)
     var centerCameraControlButtons by sharedPreferences.boolean("CP_CenterCameraControlButtons", true)
@@ -65,8 +65,7 @@ object CherrygramCameraConfig {
 
     var rearCam by sharedPreferences.boolean("CP_RearCam", false)
 
-    var whiteBackground by sharedPreferences.boolean("CG_WhiteBG", false)
     var videoMessagesResolution by sharedPreferences.int("CG_Round_Video_Resolution", 512)
-    /** Videomessages finish **/
+    /** Videomessages finish */
 
 }
