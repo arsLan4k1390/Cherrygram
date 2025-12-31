@@ -29166,8 +29166,6 @@ public class ChatActivity extends BaseFragment implements
                         topChatPanelViewOffset = (float) animation.getAnimatedValue();
                         invalidateChatListViewTopPadding();
                         invalidateMessagesVisiblePart();
-
-                        getChatActivityHelper().invalidateBlur(contentView);
                     });
                     reportSpamViewAnimator.playTogether(animator);
                     reportSpamViewAnimator.setDuration(200);

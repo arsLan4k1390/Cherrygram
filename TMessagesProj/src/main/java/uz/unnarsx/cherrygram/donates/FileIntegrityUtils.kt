@@ -11,10 +11,10 @@ package uz.unnarsx.cherrygram.donates
 
 import android.content.Context
 import org.telegram.messenger.FileLog
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import java.io.File
 import java.security.MessageDigest
 import androidx.core.content.edit
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 
 object FileIntegrityUtils {
 
@@ -37,7 +37,6 @@ object FileIntegrityUtils {
     suspend fun verifyFileIntegrity(context: Context, file: File): Boolean {
         return try {
             if (!file.exists()) {
-                if (CherrygramCoreConfig.isDevBuild()) FileLog.d("FileIntegrity: file missing: ${file.name}")
                 if (!isIntegrityRefreshRunning) {
                     isIntegrityRefreshRunning = true
                     try {
@@ -52,8 +51,6 @@ object FileIntegrityUtils {
             if (!file.canRead() || !file.canWrite()) {
                 CherrygramCoreConfig.showNotifications = false
 
-                if (CherrygramCoreConfig.isDevBuild()) FileLog.d("FileIntegrity: file exists but unreadable/unwritable: ${file.name}")
-
                 if (!isIntegrityRefreshRunning) {
                     isIntegrityRefreshRunning = true
                     try {
@@ -67,10 +64,8 @@ object FileIntegrityUtils {
 
             val currentHash = computeFileHash(file)
             val savedHash = getFileHash(context, file.name)
-            if (CherrygramCoreConfig.isDevBuild()) FileLog.d("FileIntegrity: saved hash for ${file.name}: $savedHash")
 
             if (savedHash == null || savedHash != currentHash) {
-                if (CherrygramCoreConfig.isDevBuild()) FileLog.d("FileIntegrity: hash mismatch for ${file.name}, forcing reload")
                 if (!isIntegrityRefreshRunning) {
                     isIntegrityRefreshRunning = true
                     try {
@@ -94,7 +89,6 @@ object FileIntegrityUtils {
         try {
             val hash = computeFileHash(file)
             saveFileHash(context, file.name, hash)
-            if (CherrygramCoreConfig.isDevBuild()) FileLog.d("FileIntegrity: saved new hash for ${file.name}")
         } catch (e: Exception) {
             FileLog.e(e)
         }

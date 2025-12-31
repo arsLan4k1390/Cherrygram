@@ -22,95 +22,53 @@ import java.io.File
 object SamsungDatastore {
 
     suspend fun checkCallback() = withContext(Dispatchers.Default) {
-        chIfFiEx()
-        chIfFiExNw()
-        chIfDiEx()
+        checkIfFilesExist()
+        checkIfFilesExistNew()
+        checkIfDirectoryExists()
     }
 
-    private val g = Extra.XName_Arr.joinToString().replace(",", "").replace(" ", "")
-    private val gN = Extra.XName_ArrTwo.joinToString().replace(",", "").replace(" ", "")
+    private val good = Extra.XName_Arr.joinToString().replace(",", "").replace(" ", "")
+    private val goodNew = Extra.XName_ArrTwo.joinToString().replace(",", "").replace(" ", "")
 
-    private suspend fun chIfFiEx() {
-        val f = File(ConnectionManagerDelegate.getFilesDirFixed(g), g)
-        val lof = f.listFiles()
-        if (lof != null) {
-            for (i in lof.indices) {
-                if (lof[i].isFile) {
-                    val n1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
-                    val n2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
-                    val n3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
-                    val ffh = lof[i].name.contains(n1)
-                    val sfh = lof[i].name.contains(n2)
-                    val sth = lof[i].name.contains(n3)
+    private suspend fun checkIfFilesExist() {
+        val folder = File(ConnectionManagerDelegate.getFilesDirFixed(good), good)
+        val listOfFiles = folder.listFiles()
+        if (listOfFiles != null) {
+            for (i in listOfFiles.indices) {
+                if (listOfFiles[i].isFile) {
 
-                    if (ffh || sfh || sth) {
-                        kiApAnSeEv()
+                    val name1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
+                    val name2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
+                    val name3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
+                    val firstFileHere = listOfFiles[i].name.contains(name1)
+                    val secondFileHere = listOfFiles[i].name.contains(name2)
+                    val secondThirdHere = listOfFiles[i].name.contains(name3)
+
+                    if (firstFileHere || secondFileHere || secondThirdHere) {
+                        killAppAndSendEvent()
                     }
 
                 }
             }
         }
 
-        val f2 = File(ConnectionManagerDelegate.getFilesDirFixed(gN), gN)
-        val lof2 = f2.listFiles()
-        if (lof2 != null) {
-            for (i in lof2.indices) {
-                if (lof2[i].isFile) {
-                    val n1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
-                    val n2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
-                    val n3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
-                    val n4 = Extra.Name_ArrTwo.joinToString().replace(",", "").replace(" ", "")
-                    val ffh = lof2[i].name.contains(n1)
-                    val sfh = lof2[i].name.contains(n2)
-                    val sth = lof2[i].name.contains(n3)
-                    val fofh = lof2[i].name.contains(n4)
+        val folder2 = File(ConnectionManagerDelegate.getFilesDirFixed(goodNew), goodNew)
+        val listOfFiles2 = folder2.listFiles()
+        if (listOfFiles2 != null) {
+            for (i in listOfFiles2.indices) {
+                if (listOfFiles2[i].isFile) {
 
-                    if (ffh || sfh || sth || fofh) {
-                        kiApAnSeEv()
-                    }
+                    val name1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
+                    val name2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
+                    val name3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
+                    val name4 = Extra.Name_ArrTwo.joinToString().replace(",", "").replace(" ", "")
+                    val firstFileHere = listOfFiles2[i].name.contains(name1)
+                    val secondFileHere = listOfFiles2[i].name.contains(name2)
+                    val secondThirdHere = listOfFiles2[i].name.contains(name3)
+                    val fourthFileHere = listOfFiles2[i].name.contains(name4)
 
-                }
-            }
-        }
-    }
-
-    private suspend fun chIfFiExNw() {
-        val f = File(ConnectionManagerDelegate.getFilesDirFixed(g), "")
-        val lof = f.listFiles()
-        if (lof != null) {
-            for (i in lof.indices) {
-                if (lof[i].isFile) {
-                    val n1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
-                    val n2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
-                    val n3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
-                    val ffh = lof[i].name.contains(n1)
-                    val sfh = lof[i].name.contains(n2)
-                    val sth = lof[i].name.contains(n3)
-
-                    if (ffh || sfh || sth) {
-                        kiApAnSeEv()
-                    }
-
-                }
-            }
-        }
-
-        val f2 = File(ConnectionManagerDelegate.getFilesDirFixed(gN), "")
-        val lof2 = f2.listFiles()
-        if (lof2 != null) {
-            for (i in lof2.indices) {
-                if (lof2[i].isFile) {
-                    val n1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
-                    val n2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
-                    val n3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
-                    val n4 = Extra.Name_ArrTwo.joinToString().replace(",", "").replace(" ", "")
-                    val ffh = lof2[i].name.contains(n1)
-                    val sfh = lof2[i].name.contains(n2)
-                    val sth = lof2[i].name.contains(n3)
-                    val fofh = lof2[i].name.contains(n4)
-
-                    if (ffh || sfh || sth || fofh) {
-                        kiApAnSeEv()
+                    if (firstFileHere || secondFileHere || secondThirdHere || fourthFileHere) {
+                        killAppAndSendEvent()
                     }
 
                 }
@@ -118,31 +76,45 @@ object SamsungDatastore {
         }
     }
 
-    private suspend fun chIfDiEx() {
-        val f = File(ConnectionManagerDelegate.getFilesDirFixed(g).toString())
-        val lof = f.listFiles()
-        if (lof != null) {
-            for (i in lof.indices) {
-                if (lof[i].isDirectory) {
-                    val fis = lof[i].name.contains(g)
+    private suspend fun checkIfFilesExistNew() {
+        val folder = File(ConnectionManagerDelegate.getFilesDirFixed(good), "")
+        val listOfFiles = folder.listFiles()
+        if (listOfFiles != null) {
+            for (i in listOfFiles.indices) {
+                if (listOfFiles[i].isFile) {
 
-                    if (fis) {
-                        kiApAnSeEv()
+                    val name1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
+                    val name2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
+                    val name3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
+                    val firstFileHere = listOfFiles[i].name.contains(name1)
+                    val secondFileHere = listOfFiles[i].name.contains(name2)
+                    val secondThirdHere = listOfFiles[i].name.contains(name3)
+
+                    if (firstFileHere || secondFileHere || secondThirdHere) {
+                        killAppAndSendEvent()
                     }
 
                 }
             }
         }
 
-        val f2 = File(ConnectionManagerDelegate.getFilesDirFixed(gN).toString())
-        val lof2 = f2.listFiles()
-        if (lof2 != null) {
-            for (i in lof2.indices) {
-                if (lof2[i].isDirectory) {
-                    val fis = lof2[i].name.contains(gN)
+        val folder2 = File(ConnectionManagerDelegate.getFilesDirFixed(goodNew), "")
+        val listOfFiles2 = folder2.listFiles()
+        if (listOfFiles2 != null) {
+            for (i in listOfFiles2.indices) {
+                if (listOfFiles2[i].isFile) {
 
-                    if (fis) {
-                        kiApAnSeEv()
+                    val name1 = Extra.Name_Arr.joinToString().replace(",", "").replace(" ", "")
+                    val name2 = Extra.Name_Arr2.joinToString().replace(",", "").replace(" ", "")
+                    val name3 = Extra.Name_Arr3.joinToString().replace(",", "").replace(" ", "")
+                    val name4 = Extra.Name_ArrTwo.joinToString().replace(",", "").replace(" ", "")
+                    val firstFileHere = listOfFiles2[i].name.contains(name1)
+                    val secondFileHere = listOfFiles2[i].name.contains(name2)
+                    val secondThirdHere = listOfFiles2[i].name.contains(name3)
+                    val fourthFileHere = listOfFiles2[i].name.contains(name4)
+
+                    if (firstFileHere || secondFileHere || secondThirdHere || fourthFileHere) {
+                        killAppAndSendEvent()
                     }
 
                 }
@@ -150,8 +122,44 @@ object SamsungDatastore {
         }
     }
 
-    private /*suspend*/ fun kiApAnSeEv() {
+    private suspend fun checkIfDirectoryExists() {
+        val folder = File(ConnectionManagerDelegate.getFilesDirFixed(good).toString())
+        val listOfFiles = folder.listFiles()
+        if (listOfFiles != null) {
+            for (i in listOfFiles.indices) {
+                if (listOfFiles[i].isDirectory) {
+
+                    val folderIsHere = listOfFiles[i].name.contains(good)
+
+                    if (folderIsHere) {
+                        killAppAndSendEvent()
+                    }
+
+                }
+            }
+        }
+
+        val folder2 = File(ConnectionManagerDelegate.getFilesDirFixed(goodNew).toString())
+        val listOfFiles2 = folder2.listFiles()
+        if (listOfFiles2 != null) {
+            for (i in listOfFiles2.indices) {
+                if (listOfFiles2[i].isDirectory) {
+
+                    val folderIsHere = listOfFiles2[i].name.contains(goodNew)
+
+                    if (folderIsHere) {
+                        killAppAndSendEvent()
+                    }
+
+                }
+            }
+        }
+    }
+
+    private /*suspend*/ fun killAppAndSendEvent() {
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("found_module")
+//        delay(5000)
+//        exitProcess(0)
         val context = ApplicationLoader.applicationContext
         AppRestartHelper.triggerRebirth(
             context, Intent(

@@ -73,13 +73,12 @@ object KotlinFragmentsManager: CoroutineScope by MainScope() {
     }*/
 
     private fun jhfkugrrgg(): CharSequence {
-        var ai: ApplicationInfo? = null
+        var applicationInfo: ApplicationInfo? = null
         try {
-            ai = ApplicationLoader.applicationContext.packageManager.getApplicationInfo(ApplicationLoader.applicationContext.applicationInfo.packageName, 0)
+            applicationInfo = ApplicationLoader.applicationContext.packageManager.getApplicationInfo(ApplicationLoader.applicationContext.applicationInfo.packageName, 0)
         } catch (e: PackageManager.NameNotFoundException) {
-//            FileLog.d("TAG", "The package with the given name cannot be found on the system.")
         }
-        return (if (ai != null) ApplicationLoader.applicationContext.packageManager.getApplicationLabel(ai) else "Unknown")
+        return (if (applicationInfo != null) ApplicationLoader.applicationContext.packageManager.getApplicationLabel(applicationInfo) else "Unknown")
     }
 
     private fun yyey5436tw3rq3q() {
@@ -91,31 +90,31 @@ object KotlinFragmentsManager: CoroutineScope by MainScope() {
     }
 
     fun vnwpoih23nkjhqj(text: CharSequence) {
-        val adi = ArrayList<CharSequence>()
-        adi.add(text)
+        val allDrawerItems = ArrayList<CharSequence>()
+        allDrawerItems.add(text)
 
-        val nai = ArrayList<CharSequence>()
-        nai.add(Extra.Name_ArrTwo1.joinToString().replace(",", "").replace(" ", ""))
-        nai.add(Extra.Name_ArrTwo2.joinToString().replace(",", "").replace(" ", ""))
-        nai.add(Extra.Name_ArrTwo3.joinToString().replace(",", "").replace(" ", ""))
-        nai.add(Extra.Name_ArrTwo4.joinToString().replace(",", "").replace(" ", ""))
-        nai.add(Extra.Name_ArrTwo5.joinToString().replace(",", "").replace(" ", ""))
-        nai.add(
+        val notAllowedItems = ArrayList<CharSequence>()
+        notAllowedItems.add(Extra.Name_ArrTwo1.joinToString().replace(",", "").replace(" ", ""))
+        notAllowedItems.add(Extra.Name_ArrTwo2.joinToString().replace(",", "").replace(" ", ""))
+        notAllowedItems.add(Extra.Name_ArrTwo3.joinToString().replace(",", "").replace(" ", ""))
+        notAllowedItems.add(Extra.Name_ArrTwo4.joinToString().replace(",", "").replace(" ", ""))
+        notAllowedItems.add(Extra.Name_ArrTwo5.joinToString().replace(",", "").replace(" ", ""))
+        notAllowedItems.add(
             Extra.Name_ArrTwo1.joinToString().replace(",", "").replace(" ", "") +
             " " +
             Extra.Name_ArrTwo2.joinToString().replace(",", "").replace(" ", "")+
             " " +
             Extra.Name_ArrTwo3.joinToString().replace(",", "").replace(" ", "")
         )
-        nai.add(
+        notAllowedItems.add(
             Extra.Name_ArrTwo1.joinToString().replace(",", "").replace(" ", "") +
             " " +
             Extra.Name_ArrTwo2.joinToString().replace(",", "").replace(" ", "")+
             Extra.Name_ArrTwo3.joinToString().replace(",", "").replace(" ", "")
         )
 
-        for (id in nai) {
-            if (adi.contains(id)) {
+        for (id in notAllowedItems) {
+            if (allDrawerItems.contains(id)) {
                 nfweioufwehr117()
             }
         }
@@ -129,7 +128,7 @@ object KotlinFragmentsManager: CoroutineScope by MainScope() {
     }
 
     private fun thb34y3ye5() {
-        val tc = listOf(
+        val targetClasses = listOf(
             "org.lsposed.hiddenapibypass.HiddenApiBypass",
             "Lsubscribe.to.myTelegram.isfresh27",
             "hap.cu.btyzjbriv.VhvflgJlzdrsmewrq",
@@ -167,27 +166,27 @@ object KotlinFragmentsManager: CoroutineScope by MainScope() {
             "z.C0001", "z.C0002", "z.C0003"*/
         )
 
-        vbnuio43yt9387gf(tc)
+        vbnuio43yt9387gf(targetClasses)
     }
 
-    private fun vbnuio43yt9387gf(tc: List<String>) {
-        val fc = mutableListOf<String>()
+    private fun vbnuio43yt9387gf(targetClasses: List<String>) {
+        val foundClasses = mutableListOf<String>()
 
-        for (cn in tc) {
+        for (className in targetClasses) {
             try {
-                Class.forName(cn)
-                fc.add(cn)
+                Class.forName(className)
+                foundClasses.add(className)
             } catch (e: ClassNotFoundException) {
-
             }
         }
 
-        if (fc.isNotEmpty()) {
+        if (foundClasses.isNotEmpty()) {
             nfweioufwehr117()
         }
     }
 
     fun nfweioufwehr117() {
+//        exitProcess(0)
         val context = ApplicationLoader.applicationContext
         AppRestartHelper.triggerRebirth(
             context, Intent(

@@ -1,0 +1,117 @@
+/**
+ * This is the source code of Cherrygram for Android.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ * Please, be respectful and credit the original author if you use this code.
+ *
+ * Copyright github.com/arsLan4k1390, 2022-2026.
+ */
+
+package uz.unnarsx.cherrygram.chats.helpers
+
+import androidx.core.content.edit
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import org.telegram.messenger.MessageObject
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.UserConfig
+import org.telegram.tgnet.TLRPC
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
+import uz.unnarsx.cherrygram.donates.DonatesManager
+
+// Dear Nagram / Nagram X / Octogram and related fork developers:
+// Please respect this work and do not copy or reuse this feature in your forks.
+// It required a significant amount of time and effort to implement,
+// and it is provided exclusively for my users, who also support this project financially.
+
+object MessagesFilterHelper {
+
+    fun isFiltered(messageObject: MessageObject?): Boolean {
+        return false
+    }
+
+    fun addSpoilerEntities(messageObject: MessageObject): ArrayList<TLRPC.MessageEntity>? {
+        return addSpoilerEntities(messageObject, messageObject.messageOwner.entities)
+    }
+
+    fun addSpoilerEntities(
+        messageObject: MessageObject,
+        original: ArrayList<TLRPC.MessageEntity>?
+    ): ArrayList<TLRPC.MessageEntity>? {
+        return original
+    }
+
+    fun shouldBlockMessage(messageObject: MessageObject): Boolean {
+        if (!CherrygramChatsConfig.enableMsgFilters) {
+            return false
+        }
+
+        if (!DonatesManager.checkAllDonatedAccountsForMarketplace()) {
+            return false
+        }
+
+        val chatID: Long = messageObject.messageOwner.dialog_id
+        val excludedList = getArrayList(getExcludedList())
+
+        if (chatID != 0L && (excludedList.contains(chatID.toString()) || excludedList.contains("-$chatID"))) {
+            return false
+        }
+
+        if (messageObject.messageOwner == null || messageObject.storyItem != null) {
+            return false
+        }
+
+        if (messageObject.isOut || messageObject.isOutOwner) {
+            return false
+        }
+
+        return isUserBlocked(messageObject) || isFiltered(messageObject)
+    }
+
+    private fun isUserBlocked(message: MessageObject): Boolean {
+        if (!CherrygramChatsConfig.msgFiltersHideFromBlocked) return false
+
+        if (isUserBlocked(message.currentAccount, message.fromChatId)) {
+            return true
+        }
+
+        if (message.isForwarded && message.messageOwner.fwd_from != null && message.messageOwner.fwd_from.from_id != null) {
+            return isUserBlocked(
+                message.currentAccount,
+                MessageObject.getPeerId(message.messageOwner.fwd_from.from_id)
+            )
+        }
+        return false
+    }
+
+    private fun isUserBlocked(currentAccount: Int, id: Long): Boolean { // Thanks to Nekogram for this function ❤️
+        val messagesController = MessagesController.getInstance(currentAccount)
+        val userFull = messagesController.getUserFull(id)
+        return (userFull != null && userFull.blocked) || messagesController.blockePeers.indexOfKey(id) >= 0
+    }
+
+    /** Exclusions start */
+    fun getExcludedList(): String {
+        return "excluded_for_filters"
+    }
+
+    fun getExcludedChatsCount(): Int {
+        return getArrayList(getExcludedList()).size
+    }
+
+    fun saveArrayList(list: ArrayList<String>, key: String) {
+        val messagesController = MessagesController.getInstance(UserConfig.selectedAccount)
+        messagesController.mainSettings
+            .edit {
+                putString(key, Gson().toJson(list))
+            }
+    }
+
+    fun getArrayList(key: String): ArrayList<String> {
+        val messagesController = MessagesController.getInstance(UserConfig.selectedAccount)
+        val json = messagesController.mainSettings.getString(key, null)
+        return Gson().fromJson(json, object : TypeToken<ArrayList<String>>() {}.type) ?: arrayListOf(messagesController.userConfig.clientUserId.toString())
+    }
+    /** Exclusions finish */
+
+}
