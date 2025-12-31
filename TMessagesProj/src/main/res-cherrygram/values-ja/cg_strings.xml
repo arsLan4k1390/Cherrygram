@@ -5,10 +5,12 @@
     <string name="CG_FollowChannelInfo">チャンネルに参加して、Cherrygramのニュースや機能の最新情報を入手!</string>
     <string name="CG_DoNotRemindAgain">今後は表示しない</string>
     <!--Telegram screens-->
-    <string name="CG_RegistrationDate">アカウント登録日:</string>
-    <string name="CG_RegistrationDateNewer">%s より最新</string>
-    <string name="CG_RegistrationDateOlder">%s より古い</string>
-    <string name="CG_RegistrationDateApproximately">およそ %s</string>
+    <string name="CG_JoinedDate">You joined **%1$s** **%2$s**</string>
+    <string name="CG_CreatedDate">**%1$s** was created **%2$s**</string>
+    <string name="CG_RegistrationDate">**%1$s** joined Telegram **%2$s**</string>
+    <string name="CG_RegistrationDateNewer">later than %s</string>
+    <string name="CG_RegistrationDateOlder">older than %s</string>
+    <string name="CG_RegistrationDateApproximately">approximately %s</string>
     <string name="CG_RegistrationDateFailed">登録日の取得に失敗しました。</string>
     <!--Sign in screen-->
     <string name="CG_QRLoginTitle">QRログイン</string>
@@ -56,7 +58,7 @@
     <string name="CG_FwdMenu_Captions">キャプション</string>
     <string name="CG_FwdMenu_Notify">通知</string>
     <string name="CG_Without_Authorship">著作者権限なし</string>
-    <string name="CG_Without_Caption">without caption</string>
+    <string name="CG_Without_Caption">キャプションなし</string>
     <string name="CG_CopyTitle">タイトルをコピー</string>
     <string name="CG_CopyCallback">コールバックデータをコピー</string>
     <string name="CG_CopyInlineQuery">インラインクエリをコピー</string>
@@ -82,6 +84,8 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_SortByDate">メッセージの日付順で並べ替え</string>
+    <string name="CG_SortByUnread">未読順に並べ替え</string>
     <string name="CG_UnknownCherrySettingsOption">Cherrygram の設定オプションにはありません。</string>
     <string name="CG_Restart">アプリを再起動</string>
     <string name="CG_RestartToApply">アプリを再起動後に適用されます</string>
@@ -109,6 +113,10 @@
     <string name="CG_ProfileBackground">プロフィールの背景を適用する</string>
     <string name="CG_MessageContainsCustomReactions_one">リアクションにはカスタム絵文字が含まれています。\n%1$d パックから。</string>
     <string name="CG_MessageContainsCustomReactions_other">リアクションにはカスタム絵文字が含まれています。\n%1$d パックから。</string>
+    <string name="CG_Sleep">スリープタイマー</string>
+    <string name="CG_Sleep_Timer">スリープタイマーは **%s** に設定されています</string>
+    <string name="CG_Sleep_Disabled">スリープタイマーは無効です</string>
+    <string name="CG_Sleep_Permission">スリープタイマーが正しく動作するように、Cherrygramが正確なアラームをスケジュールできるようにしてください。</string>
     <!--Misc-->
     <!--Telegram screens-->
     <!--Cherrygram screens-->
@@ -126,6 +134,7 @@
     <!--Cherrygram Preferences-->
     <!--General Preferences-->
     <string name="AP_Header_General">一般</string>
+    <string name="CG_ResidentNotification">Show a resident notification</string>
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">外観</string>
@@ -145,13 +154,13 @@
     <string name="AP_IconReplacement_VKUI">VKUI</string>
     <string name="AP_IconReplacement_Solar">Solar - @Design480</string>
     <string name="AP_IconReplacement_Default">デフォルト</string>
+    <string name="AP_MD3_Containers">MD3 リストデザイン</string>
+    <string name="AP_MD3_Containers_Desc">Material Design 3 style list containers with rounded corners</string>
     <string name="AP_OneUI_Switch_Style">OneUIの切り替えスタイル</string>
     <string name="AP_SystemEmoji">システムの絵文字を使用する</string>
     <string name="AP_ShowPencilIcon">編集されたメッセージの鉛筆アイコン</string>
     <string name="AP_CenterTitle">アクションバーのタイトルを中央に表示</string>
     <string name="AP_iosSearchPanel">iOSスタイルの検索パネル</string>
-    <string name="AP_OverrideHeader">ヘッダーの色を上書き</string>
-    <string name="AP_OverrideHeader_Desc">ヘッダーはメインの背景と同じ色になります。</string>
     <string name="AP_DisableDividers">区切り線を無効化</string>
     <string name="AP_ToolBarShadow">ツールバーの影を無効化</string>
     <string name="AP_SystemFonts">システムフォントを使用する</string>
@@ -213,14 +222,28 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">チャット</string>
     <string name="CP_Header_Messages">メッセージ</string>
+    <string name="CP_AutoQuoteReplies">返信を引用</string>
+    <string name="CP_AutoQuoteReplies_Desc">通常の返信ではなく、メッセージ全体を引用して送信します。トピックでは機能しません。</string>
     <string name="CP_TimeOnStick">ステッカーの時間表示を無効化</string>
     <string name="CP_ChatMenuShortcuts">チャットメニューのショートカット</string>
     <string name="CP_AdminActions">管理者のショートカット</string>
     <string name="CP_MessageMenu">メッセージメニュー</string>
+    <string name="CP_MessageMenuItems">メッセージメニュー項目</string>
+    <string name="CP_BlurMessageMenu">iOSスタイルのメッセージメニュー</string>
+    <string name="CP_BlurMessageMenu_Desc">iOSのTelegramと同様に、メッセージ メニューにぼかしの背景を適用してメッセージの上にリアクションパネルを表示します。</string>
+    <string name="CP_MessageMenuUnifiedScroll">スクロールを統合</string>
+    <string name="CP_MessageMenuUnifiedScroll_Desc">Menu and message content will be displayed on a single, continuous sheet, utilizing a unified scroll instead of two separate scrolling areas.</string>
+    <string name="CP_MessageMenuAutoscroll">メッセージの自動スクロール</string>
+    <string name="CP_MessageMenuAutoscroll_Desc">Automatically scrolls the message menu content to the bottom on opening, similar to Telegram on iOS.</string>
+    <string name="CP_MessageMenuFixedHeight">Comfortable message menu height</string>
+    <string name="CP_MessageMenuFixedHeight_Desc">The message menu will occupy half of the screen area for easier interaction.</string>
+    <string name="CP_BlurMessageMenuItems">ぼかしメニュー項目</string>
+    <string name="CP_BlurMessageMenuItems_Desc">Blurs the menu items for a more authentic iOS look.</string>
+    <string name="CP_MessageMenuNativeBlur">ネイティブなぼかし</string>
+    <string name="CP_MessageMenuNativeBlur_Desc">Android\'s built-in blur system will be used for the message menu background: smooth, live, and with minimal impact on performance..</string>
     <string name="AP_CenterChatsTitle">チャットのタイトルを中央に表示する</string>
     <string name="CP_UnreadBadgeOnBackButton">チャットの未読カウンターを表示</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">開いているチャット上の戻るボタンで未読のチャットカウンターが有効化します。</string>
-    <string name="CP_BlurMessageMenu">Blur message menu background</string>
     <string name="CP_Slider_RecentEmojisAndStickers">最近の絵文字とステッカーのカウンター</string>
     <string name="CP_NoRounding">四捨五入の表示を無効化</string>
     <string name="CP_DeleteForAll">デフォルトで｢すべて削除｣を使用する</string>
@@ -232,7 +255,7 @@
     <string name="CG_MsgSlideAction">メッセージをスワイプ時のアクション</string>
     <string name="CP_DisableSwipeToNext">次のチャンネルへの遷移を無効化</string>
     <string name="CP_DisableSwipeToNext_Desc">チャンネルをスクロール時に次のチャンネルへの切り替えを無効化します。</string>
-    <string name="CP_HideMuteUnmuteButton">チャンネルの下部のボタンを非表示</string>
+    <string name="CP_HideMuteUnmuteButton">チャンネルのボトムバーを非表示</string>
     <string name="CP_HideKbdOnScroll">スクロール強度を上げてキーボードを非表示にする</string>
     <string name="CP_HideSendAsChannel">｢チャンネルとして送信｣を非表示</string>
     <string name="CP_HideSendAsChannelDesc">絵文字/ステッカー/GIFボタンを長押しでメニューにアクセスできます</string>
@@ -254,13 +277,16 @@
     <string name="CP_GeminiAI_Temperature_Desc">テキストの創造性を制御します。値を低くすると、テキストはより予測可能で焦点が絞られたものになり、値を大きくするとよりランダムで独創的なものになります。</string>
     <string name="CP_GeminiAI_ExtractText">テキストを抽出 (OCR)</string>
     <string name="CP_GeminiAI_Summarize">要約する</string>
+    <string name="CP_GeminiAI_VoiceTranscriptionProvider">Voice transcription provider</string>
     <string name="CP_Header_Record">メディア</string>
     <string name="CP_Messages_Size">メッセージバブルのサイズ</string>
     <string name="CP_Message_Filtering">メッセージのフィルタリング</string>
     <string name="CP_Message_Filtering_Filter">フィルターを有効化</string>
     <string name="CP_Message_Filtering_Filter_Desc">When the filter is enabled, selected words in incoming messages will automatically be hidden under a spoiler effect, making them unreadable until revealed.</string>
     <string name="CP_Message_Filtering_Field">フィルタリングする単語を入力してください</string>
-    <string name="CP_Message_Filtering_Field_Desc">単語はコンマ、スペースまたは改行で区切ります。大文字と小文字は区別されません。</string>
+    <string name="CP_Message_Filtering_Field_Desc">Separate words with a comma, space, or line break. Use parentheses to group multiple words into a phrase. Case insensitive.
+        \nExample: word, another, (multiple words here).
+    </string>
     <string name="CP_Message_Filtering_Translit">翻字を検出</string>
     <string name="CP_Message_Filtering_Translit_Desc">When enabled, the filter will also detect words written in transliteration (for example, \"test\" will be recognized as \"тест\").
         This helps to catch and hide messages under a spoiler even if Cyrillic letters are replaced with Latin ones. May slightly increase device CPU load.
@@ -269,7 +295,10 @@
     <string name="CP_Message_Filtering_Exact_Words_Desc">When enabled, only words that fully match those in the filter list will be hidden.
         If a word appears in a different form (with prefixes, endings, or inside other words), it will not be hidden.
     </string>
-    <string name="CP_Message_Filtering_Entities">Link Entity Filter</string>
+    <string name="CP_Message_Filtering_Exclusions">Exclusions</string>
+    <string name="CP_Message_Filtering_Exclude_Destination">to update exclusions</string>
+    <string name="CP_Message_Filtering_Exclude_Sure">will be excluded</string>
+    <string name="CP_Message_Filtering_Entities">リンクエンティティフィルター</string>
     <string name="CP_Message_Filtering_EntitiesDesc">When enabled, this option extends filtering to links (entities) contained in messages. The system will scan the URLs for any of your configured filter keywords.
         If a match is found inside the link, the entire message will be automatically hidden under a spoiler, regardless of whether the keyword appears in the visible text or not.
         \n\nThis helps protect against disguised spam, hidden advertising, or phishing domains that could otherwise bypass regular text-based filtering.
@@ -280,8 +309,12 @@
     <string name="CP_Message_Filtering_HideAllDesc">フィルタリングされた単語が含まれている場合、ネタバレの下にメッセージテキストとメディア全体を非表示にします。</string>
     <string name="CP_Message_Filtering_Collapse">メッセージを折りたたむ</string>
     <string name="CP_Message_Filtering_Collapse_Desc">有効化するとメッセージは自動的に折りたたまれます。メッセージをタップで展開できます。</string>
+    <string name="CP_Message_Filtering_Transparent">メッセージの透過</string>
+    <string name="CP_Message_Filtering_Transparent_Desc">Filtered messages become transparent so you can easily tell them apart.</string>
     <string name="CP_Slider_MediaAmplifier">写真と動画</string>
     <string name="CP_Slider_MediaAmplifier_Hint">アルバムでは動作しません (グループされたメディア)</string>
+    <string name="CP_LargeVoiceMessages">Adaptive audio message length</string>
+    <string name="CP_LargeVoiceMessages_Desc">The audio message bubble length will depend on the recording duration and automatically adjust to the screen width.</string>
     <string name="CP_VoiceEnhancements">音声の強化</string>
     <string name="CP_VoiceEnhancements_Desc">ノイズの抑制と音声のノーマライズがされます。</string>
     <string name="CP_PlayVideo">音量ボタンを押してビデオを再生</string>
@@ -292,8 +325,8 @@
     <string name="CP_VideoSeekDuration">ダブルタップで動画をシーク (秒単位)</string>
     <string name="CP_Header_Notification">通知</string>
     <string name="CP_NotificationSound">通知の音</string>
-    <string name="CP_VibrateInChats">チャット中のバイブレーション</string>
-    <string name="CP_VibrateInChats_Desc">チャットでメッセージを受信時に短いバイブレーションを出します。</string>
+    <string name="CP_VibrateInChats">チャット内のバイブレーション</string>
+    <string name="CP_VibrateInChats_Desc">Make a short vibration when you receive a message in chats</string>
     <string name="CP_SilenceNonContacts">連絡先にない場合はサイレントにする</string>
     <string name="CP_SilenceNonContacts_Desc">有効化するとサウンド付きの通知は連絡先に登録されているユーザーのみになります。電話番号がなくても連絡先に追加することができます。</string>
     <!--Chats Preferences-->
@@ -316,7 +349,7 @@
     <string name="CP_CenterCameraControlButtons_Desc">中央のボタンをカメラとフラッシュライトに切り替えます。</string>
     <string name="CP_RearCam">リアカメラを使用する</string>
     <string name="CP_RearCam_Desc">ビデオメッセージでフロントカメラの代替として使用可能にします。</string>
-    <string name="CP_DisableCam">Camera button at bottom</string>
+    <string name="CP_DisableCam">下部のカメラボタン</string>
     <string name="CP_DisableCam_Desc">The camera button will appear next to the gallery button. \nTap to open Telegram Camera, hold to launch the system camera.</string>
     <string name="CP_Header_Videomessages">ビデオメッセージ</string>
     <string name="CP_ExposureSliderPosition">露光スライダーの位置</string>
@@ -389,11 +422,18 @@
     <string name="UP_Download">ダウンロード</string>
     <!--Updates Preferences-->
     <!--Donations-->
-    <string name="DP_RateUs">Cherrygramを評価する</string>
+    <string name="DP_EnjoyingUs">Cherrygram にご満足いただけていますか?</string>
+    <string name="DP_RateUs">Google Play で評価してください!</string>
+    <string name="DP_DonatesMoreInfo">Want to help Cherrygram grow? Check out **Cherrygram Support** chat.</string>
+    <string name="DP_DonatesThanks">Thanks for your support! You made Cherry happy ❤️</string>
     <string name="DP_DonateBadge">寄付をしてボーナスを獲得</string>
-    <string name="DP_Donate_Desc">When you donate $2 or more, you\'ll receive an epic badge next to your name.
-    Send a payment confirmation to <![CDATA[<a href="https://t.me/arsLan">@arsLan</a>]]> or in the <![CDATA[<a href="https://t.me/CherrygramSupport">Cherrygram Support chat</a>]]> to get it.
-    If your donation is $5 or more, you\'ll also get a bonus gift — a quick access button to the \"Gift Market\" in the side menu and unlock \"<![CDATA[<a href="tg://cg_filters">Message filter</a>]]>\" feature.</string>
+    <string name="DP_Donate_Desc">When you donate $2 or more, you\'ll also get some bonus gifts:</string>
+    <string name="DP_Donate_Badge_desc">**Cherrygram badge** next to your name.</string>
+    <string name="DP_Donate_EpicBadge_desc">1. An **epic Cherrygram badge** next to your name.</string>
+    <string name="DP_Donate_GiftMarket_Desc">2. \"**Gift Market**\" button in the side menu.</string>
+    <string name="DP_Donate_MessageFilter_Desc">3. \"**Message filter**\" feature.</string>
+    <string name="DP_Donate_MessageMenu_Desc">4. \"**iOS-styled**\" message menu.</string>
+    <string name="DP_Donate_Cheque">Send a payment confirmation to **@arsLan** to get bonuses.</string>
     <string name="DP_Donate_Bulletin">**%s**が**Cherrygram**の開発をサポートしました!</string>
     <string name="DP_Support">Cherrygramを気に入ってますか? ならばご支援を!</string>
     <string name="DP_SupportOptions">サポートオプション</string>
@@ -402,6 +442,10 @@
     <string name="DP_CameraCutoutDesc">カメラの下にCherrygramのロゴを表示できます — スクリーンショットに表示されます。
      \nロゴが**正しく表示とカメラ領域内に収まっている**場合は、このオプションを有効のままにしてください。
      \nアプリの宣伝やプロジェクトのサポートに役立ちます — ありがとうごさいます! ❤️</string>
+    <string name="DP_Donate_Method_Int">国際決済システム</string>
+    <string name="DP_Donate_Method_Rus">For residents of the Russian Federation</string>
+    <string name="DP_Donate_Method_Uzb">ウズベキスタン在住者向け</string>
+    <string name="DP_Donate_Method_Surname">決済システムで受取人の個人情報が必要な場合は **@arsLan** までご連絡ください。</string>
     <string name="DP_Donate_Exclusive">サポーター限定</string>
     <string name="DP_Donate_ExclusiveDesc">プロジェクトをサポートしてすべての機能をアンロックしましょう。</string>
     <!--Donations-->

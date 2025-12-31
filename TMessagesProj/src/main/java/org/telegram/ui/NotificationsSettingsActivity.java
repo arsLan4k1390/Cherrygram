@@ -15,8 +15,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -30,8 +28,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -58,6 +54,7 @@ import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
+import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.NotificationsCheckCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
@@ -74,9 +71,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 
 public class NotificationsSettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -433,26 +427,8 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
     }
 
     @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
-
         actionBar.setAllowOverlayTitle(true);
         actionBar.setTitle(getString("NotificationsAndSounds", R.string.NotificationsAndSounds));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
@@ -898,7 +874,7 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
         }
     }
 
-    private class ListAdapter extends RecyclerListView.SelectionAdapter {
+    private class ListAdapter extends MD3ListAdapter {
 
         private Context mContext;
 
@@ -980,7 +956,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     } else if (position == accountsSectionRow) {
                         headerCell.setText(getString("ShowNotificationsFor", R.string.ShowNotificationsFor));
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case 1: {
@@ -1017,7 +992,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     } else if (position == accountsAllRow) {
                         checkCell.setTextAndCheck(getString("AllAccounts", R.string.AllAccounts), MessagesController.getGlobalNotificationsSettings().getBoolean("AllAccounts", true), false);
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case 2: {
@@ -1026,7 +1000,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     if (position == resetNotificationsRow) {
                         settingsCell.setTextAndValue(getString("ResetAllNotifications", R.string.ResetAllNotifications), getString("UndoAllCustom", R.string.UndoAllCustom), false);
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case 3: {
@@ -1124,7 +1097,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                         builder.append(getString("TapToChange", R.string.TapToChange));
                     }
                     checkCell.setTextAndValueAndIconAndCheck(text, builder, icon, enabled, iconType, false, position != reactionsRow);
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case 4: {
@@ -1133,7 +1105,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     } else {
                         holder.itemView.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case 5: {
@@ -1173,7 +1144,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                         textCell.setTextAndValue(getString("RepeatNotifications", R.string.RepeatNotifications), value, updateRepeatNotifications, false);
                         updateRepeatNotifications = false;
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case 6: {
@@ -1181,7 +1151,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                     if (position == accountsInfoRow) {
                         textCell.setText(getString("ShowNotificationsForInfo", R.string.ShowNotificationsForInfo));
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
             }
@@ -1213,105 +1182,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
                 return 5;
             }
         }
-
-        /** Cherrygram start */
-        private int VIEW_TYPE_SHADOW = 4;
-        private int VIEW_TYPE_TEXT_INFO_PRIVACY = 6;
-        private int VIEW_TYPE_HEADER = 0;
-
-        @Override
-        public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
-            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
-
-            int viewType = holder.getItemViewType();
-            int position = holder.getAdapterPosition();
-
-            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY)
-                return;
-
-            int side = AndroidUtilities.dp(16);
-            int top = 0;
-            int bottom = 0;
-
-            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER;
-            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER;
-
-            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_SHADOW || getItemViewType(position - 1) == VIEW_TYPE_TEXT_INFO_PRIVACY) {
-                top = AndroidUtilities.dp(2);
-            }
-
-            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
-                top = AndroidUtilities.dp(16);
-            }
-
-            if (prevIsHeader) {
-                top = 0;
-            }
-
-            if (position == getItemCount() - 1
-                    || nextIsHeader
-                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW
-                    || getItemViewType(position + 1) == VIEW_TYPE_TEXT_INFO_PRIVACY
-            ) {
-                bottom = AndroidUtilities.dp(2);
-            }
-
-            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
-            lp.leftMargin = side;
-            lp.rightMargin = side;
-            lp.topMargin = top;
-            lp.bottomMargin = bottom;
-            holder.itemView.setLayoutParams(lp);
-        }
-
-        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
-            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
-
-            int viewType = holder.getItemViewType();
-
-            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY) {
-                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                return;
-            }
-
-            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
-            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
-
-            boolean isHeader = viewType == VIEW_TYPE_HEADER;
-
-            boolean isGroupStart = position == 0
-                    || prevType == VIEW_TYPE_SHADOW
-                    || prevType == VIEW_TYPE_TEXT_INFO_PRIVACY;
-
-            boolean isGroupEnd = position == getItemCount() - 1
-                    || nextType == VIEW_TYPE_SHADOW
-                    || nextType == VIEW_TYPE_TEXT_INFO_PRIVACY;
-
-            int r = AndroidUtilities.dp(14);
-
-            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
-
-            if (isHeader) {
-                topLeft = topRight = r;
-            } else if (isGroupStart && isGroupEnd) {
-                topLeft = topRight = bottomLeft = bottomRight = r;
-            } else if (isGroupStart) {
-                topLeft = topRight = r;
-            } else if (isGroupEnd) {
-                bottomLeft = bottomRight = r;
-            }
-
-            Drawable bg = Theme.createRoundRectDrawable(
-                    topLeft, topRight, bottomRight, bottomLeft,
-                    Theme.getColor(Theme.key_windowBackgroundWhite)
-            );
-            holder.itemView.setBackground(bg);
-
-            final int side = 0;
-            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
-        }
-        /** Cherrygram finish */
-
     }
 
     @Override
@@ -1320,18 +1190,6 @@ public class NotificationsSettingsActivity extends BaseFragment implements Notif
 
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{HeaderCell.class, TextCheckCell.class, TextDetailSettingsCell.class, TextSettingsCell.class, NotificationsCheckCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
-        } else {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));

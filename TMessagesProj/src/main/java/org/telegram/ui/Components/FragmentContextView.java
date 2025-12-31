@@ -98,7 +98,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 import me.vkryl.android.animator.ListAnimator;
@@ -138,6 +137,7 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
     private View applyingView;
     private FrameLayout frameLayout;
     private FrameLayout groupCallMessagesContainer;
+    private View shadow;
     private View selector;
     private RLottieImageView importingImageView;
     private RLottieImageView muteButton;
@@ -404,6 +404,10 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
 
         selector = new View(context);
         frameLayout.addView(selector, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+        shadow = new View(context);
+        shadow.setBackgroundResource(R.drawable.blockpanel_shadow);
+        addView(shadow, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 2, Gravity.LEFT | Gravity.TOP, 0, 36, 0, 0));
 
         playButton = new ImageView(context);
         playButton.setScaleType(ImageView.ScaleType.CENTER);
@@ -757,10 +761,16 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
             if (currentStyle == STYLE_LIVE_STORY) {
                 final LivePlayer player = LivePlayer.recording;
                 if (player == null) return;
+                if (player.currentAccount != UserConfig.selectedAccount) {
+                    if (LaunchActivity.instance == null) return;
+                    LaunchActivity.instance.switchToAccount(player.currentAccount, true);
+                }
+                final BaseFragment lastFragment = LaunchActivity.getSafeLastFragment();
+                if (lastFragment == null) return;
                 final TL_stories.StoryItem story = MessagesController.getInstance(player.currentAccount).getStoriesController().findStory(player.dialogId, player.storyId);
                 if (story != null) {
                     story.dialogId = player.dialogId;
-                    fragment.getOrCreateStoryViewer(player.currentAccount).open(player.currentAccount, getContext(), story, null);
+                    lastFragment.getOrCreateStoryViewer(player.currentAccount).open(player.currentAccount, getContext(), story, null);
                 }
             } else if (currentStyle == STYLE_AUDIO_PLAYER) {
                 MessageObject messageObject = MediaController.getInstance().getPlayingMessageObject();
@@ -1162,6 +1172,7 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
             avatars.setLayoutParams(LayoutHelper.createFrame(108, getStyleHeight(), Gravity.LEFT | Gravity.TOP));
         }
         frameLayout.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, getStyleHeight(), Gravity.TOP | Gravity.LEFT, 0, 0, 0, 0));
+        shadow.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 2, Gravity.LEFT | Gravity.TOP, 0, getStyleHeight(), 0, 0));
 
         if (topPadding > 0 && topPadding != AndroidUtilities.dp2(getStyleHeight())) {
             updatePaddings();
@@ -1195,8 +1206,8 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
             titleTextView.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, -1, (isSideMenued ? 64 : 0), 0));
         } else if (style == STYLE_IMPORTING_MESSAGES) {
             selector.setBackground(Theme.getSelectorDrawable(false));
-            frameLayout.setBackgroundColor(getThemedColor((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground));
-            frameLayout.setTag((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground);
+            frameLayout.setBackgroundColor(getThemedColor(Theme.key_inappPlayerBackground));
+            frameLayout.setTag(Theme.key_inappPlayerBackground);
 
             for (int i = 0; i < 2; i++) {
                 TextView textView = i == 0 ? titleTextView.getTextView() : titleTextView.getNextTextView();
@@ -1225,8 +1236,8 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
             titleTextView.setLayoutParams(LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 36, Gravity.LEFT | Gravity.TOP, 35, 0, (isSideMenued ? 64 : 0) + 36, 0));
         } else if (style == STYLE_AUDIO_PLAYER || style == STYLE_LIVE_LOCATION) {
             selector.setBackground(Theme.getSelectorDrawable(false));
-            frameLayout.setBackgroundColor(getThemedColor((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground));
-            frameLayout.setTag((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground);
+            frameLayout.setBackgroundColor(getThemedColor(Theme.key_inappPlayerBackground));
+            frameLayout.setTag(Theme.key_inappPlayerBackground);
 
             subtitleTextView.setVisibility(GONE);
             joinButton.setVisibility(GONE);
@@ -1267,8 +1278,8 @@ public class FragmentContextView extends FrameLayout implements NotificationCent
             }
         } else if (style == STYLE_INACTIVE_GROUP_CALL) {
             selector.setBackground(Theme.getSelectorDrawable(false));
-            frameLayout.setBackgroundColor(getThemedColor((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground));
-            frameLayout.setTag((CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor() && (Theme.isCurrentThemeDark() || Theme.isCurrentThemeNight())) ? Theme.key_windowBackgroundWhite : Theme.key_inappPlayerBackground);
+            frameLayout.setBackgroundColor(getThemedColor(Theme.key_inappPlayerBackground));
+            frameLayout.setTag(Theme.key_inappPlayerBackground);
             muteButton.setVisibility(GONE);
             subtitleTextView.setVisibility(VISIBLE);
 

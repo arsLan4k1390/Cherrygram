@@ -468,8 +468,8 @@ object DonatesManager {
     fun getTonAmountForUsd(context: Context, usdPrice: Double, marketplace: Boolean): Double {
         val rate = getTonUsdtRate(context) * 0.80
         val amount = usdPrice / rate
-//        return max(if (marketplace) 3.5 else 1.5, roundTo(amount, 2))
-        return roundTo(amount, 2)
+        return max(if (marketplace) 4.0 else 2.0, roundTo(amount, 2))
+//        return roundTo(amount, 2)
     }
 
     fun roundTo(value: Double, decimals: Int): Double {

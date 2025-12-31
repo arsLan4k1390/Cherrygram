@@ -266,8 +266,37 @@ public class ProfileActivityHelper extends BaseController {
             float[] expandAnimatorValues
     ) {
         if (donatorHint == null) return;
-        int padding = nameTextView[1].getRightDrawableWidth() != 0 ? dp(29) : nameTextView[1].getTextWidth() - dp(10);
-        donatorHint.setJointPx(0, -donatorHint.getPaddingLeft() + nameTextView[1].getX() + padding + (nameTextView[1].getRightDrawableX() - nameTextView[1].getRightDrawableWidth() * lerp(0.45f, 0.25f, currentExpandAnimatorValue)) * nameTextView[1].getScaleX());
+
+        float emojiRight;
+        int extra;
+        if (nameTextView[1].getRightDrawableWidth() != 0) {
+            emojiRight = (nameTextView[1].getRightDrawableX()
+                    - nameTextView[1].getRightDrawableWidth() * lerp(0.45f, 0.25f, currentExpandAnimatorValue))
+                    * nameTextView[1].getScaleX();
+
+            extra = dp(30);
+        } else {
+            float textWidth;
+
+            if (nameTextView[1].getLayout() != null) {
+                textWidth = nameTextView[1].getLayout().getLineWidth(0);
+            } else {
+                textWidth = nameTextView[1].getPaint().measureText(nameTextView[1].getText().toString());
+            }
+
+            emojiRight = textWidth * nameTextView[1].getScaleX();
+
+            extra = dp(2);
+        }
+
+        donatorHint.setJointPx(
+                0,
+                -donatorHint.getPaddingLeft()
+                        + nameTextView[1].getX()
+                        + emojiRight
+                        + extra
+        );
+
         final float expanded = AndroidUtilities.lerp(expandAnimatorValues, currentExpanAnimatorFracture);
         donatorHint.setTranslationY(-donatorHint.getPaddingBottom() + nameTextView[1].getY() - dp(24) + lerp(dp(6), -dp(12), expanded));
         donatorHint.setBgColor(ColorUtils.blendARGB(donatorHintBackgroundColor, 0x50000000, expanded));

@@ -13,16 +13,25 @@ import android.content.Intent
 import org.telegram.messenger.*
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.RecyclerListView
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper
+import uz.unnarsx.cherrygram.preferences.tgkit.preference.TGKitSettings
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class MainPreferencesEntry : BasePreferencesEntry {
+
+    private var listView: RecyclerListView? = null
+
+    override fun setListView(rv: RecyclerListView) {
+        listView = rv
+    }
+
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.CGP_AdvancedSettings)) {
         category(getString(R.string.CGP_Header_Categories)) {
             textIcon {
@@ -115,4 +124,5 @@ class MainPreferencesEntry : BasePreferencesEntry {
 
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("main_preferences_screen")
     }
+
 }

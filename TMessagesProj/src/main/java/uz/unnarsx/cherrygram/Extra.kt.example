@@ -10,7 +10,21 @@
 package uz.unnarsx.cherrygram
 
 import android.app.Activity
+import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.ChatObject
+import org.telegram.messenger.FileLog
+import org.telegram.messenger.LocaleController
+import org.telegram.messenger.LocaleController.getString
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.R
+import org.telegram.messenger.UserConfig
+import org.telegram.tgnet.TLRPC
+import org.telegram.ui.ActionBar.AlertDialog
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.Bulletin
+import org.telegram.ui.Components.BulletinFactory
+import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
+import uz.unnarsx.cherrygram.helpers.UserHelper
 
 object Extra {
     // https://core.telegram.org/api/obtaining_api_id
@@ -19,13 +33,189 @@ object Extra {
 
     // https://developers.google.com/identity/sms-retriever/verify#computing_your_apps_hash_string
     const val SMS_HASH = ""
+    val SMS_ARRAY = arrayOf("", "", "", "", "", "", "", "", "", "", "")
 
-    fun getRegistrationDate(fragment: BaseFragment, parentActivity: Activity, userId: Long) {
+    const val PACKAGE_HASH = ""
+    val HASH_ARRAY = arrayOf("", "", "", "")
+    const val PACKAGE_HASH_NEW = ""
+    val APP_ARRAY = arrayOf("C", "h", "e", "r", "r", "y", "g", "r", "a", "m")
 
+    val XName_Arr = arrayOf("R", "e", "-", "T", "e", "l", "e", "g", "r", "a", "m")
+    val Name_Arr = arrayOf("co", "nf", "igs", ".c", "fg")
+    val Name_Arr2 = arrayOf("de", "let", "edM", "ess", "age", "s.d", "b")
+    val Name_Arr3 = arrayOf("de", "let", "edM", "ess", "age", "s.d", "b", "-", "jo", "urn", "al")
+
+    val XName_ArrTwo = arrayOf("T", "e", "l", "e", "V", "i", "p")
+    val Name_ArrTwo = arrayOf("A", "nt", "iR", "ec", "al", "l", ".c", "fg")
+    val Name_ArrTwo1 = arrayOf("G", "h", "o", "s", "t")
+    val Name_ArrTwo2 = arrayOf("M", "o", "d", "e")
+    val Name_ArrTwo3 = arrayOf("\uD83D", "\uDC7B")
+    val Name_ArrTwo4 = arrayOf("К", "а", "с", "т", "о", "м", "и", "з", "а", "ц", "и", "я")
+    val Name_ArrTwo5 = arrayOf("C", "u", "s", "t", "o", "m", "i", "s", "a", "t", "i", "o", "n")
+    val Name_ArrTwo6 = arrayOf("t", "r", "i", "m")
+
+    val pkg_arrOne = arrayOf("u", "z.", "u", "n")
+    val pkg_arrTwo = arrayOf("n", "a", "r")
+    val pkg_arrThree = arrayOf("s", "x.c", "he", "r", "r", "yg", "r", "a", "m")
+
+    val pkg_hashOne = arrayOf("", "", "", "")
+    val pkg_hashTwo = arrayOf("", "", "")
+    val pkg_hashThree = arrayOf("", "", "")
+
+    val pkg_hashGPOne = arrayOf("", "", "", "")
+    val pkg_hashGPTwo = arrayOf("", "", "")
+    val pkg_hashGPThree = arrayOf("", "", "")
+
+    /** Donates links start */
+    val FILE_NAME_HASH = arrayOf("ZG9u", "YXRl", "ZF91", "c2Vy", "c19s", "aXN0", "LnR4", "dA==")
+    val GITLAB_RAW_URL_HASH = arrayOf(
+        "aHR0", "cHM6", "Ly9n", "aXRs", "YWIu", "Y29t", "L2Fy",
+        "c0xh", "bjRr", "MTM5", "MC9D", "aGVy", "cnln", "cmFt",
+        "LUlE", "Uy8t", "L3Jh", "dy9t", "YWlu", "L2Rv", "bmF0",
+        "ZXM", "udHh0", "P2lu", "bGlu", "ZT1m", "YWxz", "ZQ=="
+    )
+
+    val FILE_NAME_MARKETPLACE_HASH = arrayOf("ZG9u", "YXRl", "ZF91", "c2Vy", "c19s", "aXN0", "X21h", "cmtl", "dGxw", "YWNl", "LnR4", "dA==")
+    val GITLAB_RAW_URL_MARKETPLACE_HASH = arrayOf(
+        "aHR0", "cHM6", "Ly9n", "aXRs", "YWIu", "Y29t", "L2Fy", "c0xh",
+        "bjRr", "MTM5", "MC9D", "aGVy", "cnln", "cmFt", "LUlE", "Uy8t",
+        "L3Jh", "dy9t", "YWlu", "L2Rv", "bmF0", "ZXNf", "bWFy", "a2V0",
+        "cGxh", "Y2Uu", "dHh0", "P2lu", "bGlu", "ZT1m", "YWxz", "ZQ=="
+    )
+
+    val FILE_NAME_BLOCKED_HASH = arrayOf("dmlw", "X3Vz", "ZXJz", "X2xp", "c3Qu", "dHh0")
+    val GITLAB_RAW_URL_BLOCKED_HASH = arrayOf(
+        "aHR0", "cHM6", "Ly9n", "aXRs", "YWIu", "Y29t", "L2Fy",
+        "c0xh", "bjRr", "MTM5", "MC9D", "aGVy", "cnln", "cmFt",
+        "LUlE", "Uy8t", "L3Jh", "dy9t", "YWlu", "L3Zp", "cF91",
+        "c2Vy", "cy50", "eHQ/", "aW5s", "aW5l", "PWZhbHNl"
+    )
+
+    val FILE_NAME_BADGE_COLORS_HASH = arrayOf("YmFk", "Z2Vf", "Y29s", "b3Jz", "LnR4", "dA==")
+    val GITLAB_RAW_URL_BADGE_COLORS_HASH = arrayOf(
+        "aHR0", "cHM6", "Ly9n", "aXRs", "YWIu", "Y29t", "L2Fy",
+        "c0xh", "bjRr", "MTM5", "MC9D", "aGVy", "cnln", "cmFt",
+        "LUlE", "Uy8t", "L3Jh", "dy9t", "YWlu", "L2Jh", "ZGdl",
+        "X2Nvb", "G9y", "cy50", "eHQ/", "aW5s", "aW5l", "PWZhbHNl"
+    )
+
+    val FILE_NAME_TON_RATE_HASH = arrayOf("dG9u", "X3Vz", "ZHRf", "cmF0", "ZS5q", "c29u")
+    val TON_RATE_URL_HASH = arrayOf(
+        "aHR0", "cHM6", "Ly9j", "ZG4u", "anNk", "ZWxp", "dnIu",
+        "bmV0", "L25w", "bS9A", "ZmF3", "YXph", "aG1l", "ZDAv",
+        "Y3Vy", "cmVu", "Y3kt", "YXBp", "QGxh", "dGVz", "dC92",
+        "MS9j", "dXJy", "ZW5j", "aWVz", "L3Rv", "bi5q", "c29u"
+    )
+    /** Donates links finish */
+
+    const val ENDPOINT_FOR_DATE = "abcdefg"
+    const val ENDPOINT_FOR_DATE_SECRET = "abcdefg"
+
+    fun getRegistrationDate(fragment: BaseFragment, parentActivity: Activity, userID: Long, chatId: Long) {
+
+        if (chatId != 0L) {
+            val chat = fragment.messagesController.getChat(chatId)
+            if (chat != null) {
+                val date: CharSequence = if (ChatObject.isInChat(chat)) {
+                    AndroidUtilities.replaceTags(
+                        LocaleController.formatString(
+                            R.string.CG_JoinedDate, chat.title,
+                            LocaleController.formatDateTime(chat.date.toLong(), true)
+                        )
+                    )
+                } else {
+                    AndroidUtilities.replaceTags(
+                        LocaleController.formatString(
+                            R.string.CG_CreatedDate, chat.title,
+                            LocaleController.formatDateTime(chat.date.toLong(), true)
+                        )
+                    )
+                }
+
+                BulletinFactory.of(fragment.getLayoutContainer(), fragment.resourceProvider)
+                    .createSimpleBulletin(R.raw.chats_infotip, date)
+                    .setDuration(Bulletin.DURATION_PROLONG)
+                    .show()
+
+                return
+            }
+        }
+
+        val regDateFromTelegram = fragment.messagesController?.getPeerSettings(userID)?.registration_month
+
+        if (regDateFromTelegram != null) {
+            BulletinFactory.of(fragment.layoutContainer, fragment.resourceProvider)
+                .createSimpleBulletin(R.raw.chats_infotip, UserHelper.getInstance(UserConfig.selectedAccount).getCreationDate(userID, true, regDateFromTelegram))
+                .setDuration(Bulletin.DURATION_PROLONG)
+                .show()
+        } else {
+            val progressDialog = AlertDialog(parentActivity, AlertDialog.ALERT_TYPE_SPINNER, fragment.resourceProvider)
+
+            AndroidUtilities.runOnUIThread {
+                try {
+                    progressDialog.show()
+                } catch (e: Exception) {
+                    FileLog.e(e)
+                }
+            }
+
+            UserHelper.getInstance(UserConfig.selectedAccount).getCreationDate(userID,
+                {
+                    BulletinFactory.of(fragment.layoutContainer, fragment.resourceProvider)
+                        .createSimpleBulletin(R.raw.chats_infotip, getString(R.string.CG_RegistrationDateFailed))
+                        .setDuration(Bulletin.DURATION_PROLONG)
+                        .show()
+                }
+            ) {
+                AndroidUtilities.runOnUIThread {
+                    try {
+                        if (progressDialog.isShowing) progressDialog.dismiss()
+                    } catch (e: Exception) {
+                        FileLog.e(e)
+                    }
+                }
+                BulletinFactory.of(fragment.layoutContainer, fragment.resourceProvider)
+                    .createSimpleBulletin(R.raw.chats_infotip, UserHelper.getInstance(UserConfig.selectedAccount).getCreationDate(userID, false, null))
+                    .setDuration(Bulletin.DURATION_PROLONG)
+                    .show()
+            }
+        }
     }
 
     fun addBirthdayToCalendar(parentActivity: Activity, userId: Long) {
+        UserHelper.getInstance(UserConfig.selectedAccount).addBirthdayEvent(parentActivity, userId)
+    }
 
+    fun getProfileDC(user: TLRPC.User?, chat: TLRPC.Chat?): StringBuilder {
+        val sb = StringBuilder()
+
+        val dcId: Int = if (chat?.photo != null && chat.photo.dc_id > 0) {
+            chat.photo.dc_id
+        } else if (user != null) {
+            user.photo?.dc_id?.takeIf { it > 0 }
+                ?: run {
+                    val userFull = MessagesController.getInstance(UserConfig.selectedAccount).getUserFull(user.id)
+                    userFull?.profile_photo?.dc_id?.takeIf { it > 0 }
+                        ?: userFull?.personal_photo?.dc_id?.takeIf { it > 0 }
+                        ?: userFull?.fallback_photo?.dc_id?.takeIf { it > 0 }
+                        ?: 0
+                }
+        } else {
+            0
+        }
+
+        if (dcId > 0) {
+            sb.append("DC: ")
+                .append(dcId)
+                .append(", ")
+                .append(CGResourcesHelper.getDCName(dcId))
+                .append(", ")
+                .append(CGResourcesHelper.getDCGeo(dcId))
+        } else {
+            sb.append("DC: ").append(getString(R.string.NumberUnknown))
+        }
+
+        return sb
     }
 
 }

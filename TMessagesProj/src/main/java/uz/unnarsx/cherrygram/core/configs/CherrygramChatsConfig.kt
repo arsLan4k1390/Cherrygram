@@ -37,7 +37,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var shortcut_JumpToBegin by sharedPreferences.boolean("CP_Shortcut_JumpToBegin", true)
     var shortcut_DeleteAll by sharedPreferences.boolean("CP_Shortcut_DeleteAll", true)
     var shortcut_SavedMessages by sharedPreferences.boolean("CP_Shortcut_SavedMessages", false)
-    var shortcut_Blur by sharedPreferences.boolean("CP_Shortcut_Blur", false)
     var shortcut_Browser by sharedPreferences.boolean("CP_Shortcut_Browser", false)
     /** Chat shortcuts finish */
 
@@ -83,8 +82,9 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     /** Message menu start */
     var blurMessageMenuBackground by sharedPreferences.boolean("CP_BlurMessageMenuBackground", false)
+    var msgMenuUnifiedScroll by sharedPreferences.boolean("CP_MsgMenuUnifiedScrollForce", true)
     var msgMenuAutoScroll by sharedPreferences.boolean("CP_MsgMenuAutoScroll", true)
-    var msgMenuFixedHeight by sharedPreferences.boolean("CP_MsgMenuFixedHeight", false)
+    var msgMenuFixedHeight by sharedPreferences.boolean("CP_MsgMenuFixedHeightForce", true)
     var blurMessageMenuItems by sharedPreferences.boolean("CP_BlurMessageMenuItems", false)
     var msgMenuNativeBlur by sharedPreferences.boolean("CP_MsgMenuNativeBlur", Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
     /** Message menu items start */

@@ -154,13 +154,13 @@
     <string name="AP_IconReplacement_VKUI">Іконки VKUI</string>
     <string name="AP_IconReplacement_Solar">Solar Icons від @Design480</string>
     <string name="AP_IconReplacement_Default">Стандартні іконки</string>
+    <string name="AP_MD3_Containers">MD3 Lists Design</string>
+    <string name="AP_MD3_Containers_Desc">Material Design 3 style list containers with rounded corners</string>
     <string name="AP_OneUI_Switch_Style">Вигляд інтерфейсу OneUI</string>
     <string name="AP_SystemEmoji">Використовувати системні емодзі</string>
     <string name="AP_ShowPencilIcon">Значок олівця для відредагованих повідомлень</string>
     <string name="AP_CenterTitle">Центрувати заголовок в панелі дій</string>
     <string name="AP_iosSearchPanel">Панель пошуку в стилі IOS</string>
-    <string name="AP_OverrideHeader">Перевизначити колір заголовків</string>
-    <string name="AP_OverrideHeader_Desc">Заголовки матимуть той самий колір, що й основний фон</string>
     <string name="AP_DisableDividers">Вимкнути роздільники</string>
     <string name="AP_ToolBarShadow">Відключити тінь у тулбару</string>
     <string name="AP_SystemFonts">Використовувати системний шрифт</string>
@@ -222,6 +222,8 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Діалоги</string>
     <string name="CP_Header_Messages">Повідомлення</string>
+    <string name="CP_AutoQuoteReplies">Цитувати відповіді</string>
+    <string name="CP_AutoQuoteReplies_Desc">Send a quote with the text of the entire message instead of a normal reply. Does not work in topics.</string>
     <string name="CP_TimeOnStick">Приховати час надсилання на наліпках</string>
     <string name="CP_ChatMenuShortcuts">Ярлики меню чату</string>
     <string name="CP_AdminActions">Швидкі адмін-дії</string>
@@ -229,12 +231,16 @@
     <string name="CP_MessageMenuItems">Елементи меню повідомлень</string>
     <string name="CP_BlurMessageMenu">Меню повідомлень у стилі iOS</string>
     <string name="CP_BlurMessageMenu_Desc">Застосовує розмитий фон до меню повідомлень і показує панель реакцій над повідомленням, як у Telegram на iOS.</string>
+    <string name="CP_MessageMenuUnifiedScroll">Unified Scroll</string>
+    <string name="CP_MessageMenuUnifiedScroll_Desc">Menu and message content will be displayed on a single, continuous sheet, utilizing a unified scroll instead of two separate scrolling areas.</string>
     <string name="CP_MessageMenuAutoscroll">Автопрокрутка повідомлень</string>
     <string name="CP_MessageMenuAutoscroll_Desc">Автоматична прокрутка вмісту меню повідомлень униз при відкритті, як у Telegram на iOS.</string>
     <string name="CP_MessageMenuFixedHeight">Комфортна висота меню повідомлень</string>
     <string name="CP_MessageMenuFixedHeight_Desc">Меню повідомлень займатиме половину екрана для спрощення взаємодії.</string>
     <string name="CP_BlurMessageMenuItems">Розмиття елементів меню</string>
     <string name="CP_BlurMessageMenuItems_Desc">Розмиває пункти меню для більш автентичного вигляду iOS.</string>
+    <string name="CP_MessageMenuNativeBlur">Нативне розмиття</string>
+    <string name="CP_MessageMenuNativeBlur_Desc">Для фону меню повідомлень буде використана вбудована в Android система розмиття (blur): плавна, динамічна і з мінімальним впливом на продуктивність..</string>
     <string name="AP_CenterChatsTitle">Центрувати заголовок у чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Показувати лічильник непрочитаних</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включити лічильник непрочитаних чатів на кнопці «Назад» в відкритому чаті</string>
@@ -249,7 +255,7 @@
     <string name="CG_MsgSlideAction">Дія при свайпі повідомлення</string>
     <string name="CP_DisableSwipeToNext">Вимкнути перехід на наступний канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Вимкнути перехід на наступний канал при прокрутці будь якого каналу</string>
-    <string name="CP_HideMuteUnmuteButton">Приховати нижню кнопку в каналах</string>
+    <string name="CP_HideMuteUnmuteButton">Hide bottom bar in channels</string>
     <string name="CP_HideKbdOnScroll">Інтенсивність прокручування, щоб приховати клавіатуру</string>
     <string name="CP_HideSendAsChannel">Приховати \"Відправити як канал\"</string>
     <string name="CP_HideSendAsChannelDesc">Ви можете отримати доступ до меню, довго натиснувши на кнопку з Емодзі/Наліпками/GIF</string>
@@ -283,6 +289,9 @@
     <string name="CP_Message_Filtering_Exact_Words">Точна відповідність слова</string>
     <string name="CP_Message_Filtering_Exact_Words_Desc">Коли цю опцію увімкнено, будуть приховані лише ті слова, які повністю збігаються зі словами у списку фільтра.
 Якщо слово зустрічається в іншій формі (з префіксами, закінченнями або в складі інших слів), воно не буде приховано    </string>
+    <string name="CP_Message_Filtering_Exclusions">Винятки</string>
+    <string name="CP_Message_Filtering_Exclude_Destination">для оновлення винятків</string>
+    <string name="CP_Message_Filtering_Exclude_Sure">буде виключено</string>
     <string name="CP_Message_Filtering_Entities">Фільтр сутності посилань</string>
     <string name="CP_Message_Filtering_EntitiesDesc">Коли увімкнено, ця опція поширює фільтрацію на посилання (сутності), що містяться в повідомленнях. Система скануватиме URL-адреси на наявність будь-яких ключових слів з вашого фільтра.
 Якщо збіг знайдено всередині посилання, все повідомлення буде автоматично приховано під спойлером, незалежно від того, чи з’являється ключове слово у видимому тексті.
@@ -309,8 +318,8 @@
     <string name="CP_VideoSeekDuration">Подвійний тап для перемотування відео (секунди)</string>
     <string name="CP_Header_Notification">Сповіщення</string>
     <string name="CP_NotificationSound">Звук сповіщення</string>
-    <string name="CP_VibrateInChats">Вібрація в чаті</string>
-    <string name="CP_VibrateInChats_Desc">Зробити коротку вібрацію, коли отримаєте повідомлення в чатах</string>
+    <string name="CP_VibrateInChats">In-chat vibration</string>
+    <string name="CP_VibrateInChats_Desc">Make a short vibration when you receive a message in chats</string>
     <string name="CP_SilenceNonContacts">Заглушити не-контакти</string>
     <string name="CP_SilenceNonContacts_Desc">Якщо увімкнено, то сповіщення зі звуком приходитимуть тільки від контактів. Ви можете додати людину в контакти, без номера його телефона (в профілі людини)</string>
     <!--Chats Preferences-->

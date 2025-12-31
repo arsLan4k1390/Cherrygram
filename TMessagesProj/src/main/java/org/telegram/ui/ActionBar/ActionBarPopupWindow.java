@@ -54,6 +54,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper;
+
 public class ActionBarPopupWindow extends PopupWindow {
 
     private static Method layoutInScreenMethod;
@@ -542,7 +544,7 @@ public class ActionBarPopupWindow extends PopupWindow {
                         AndroidUtilities.lerp(rect, AndroidUtilities.rectTmp2, reactionsEnterProgress, AndroidUtilities.rectTmp2);
                     }
                     if (rounded_corners) {
-                        var pd = 50;
+                        var pd = AndroidUtilities.dp(MessageMenuHelper.getInstance(UserConfig.selectedAccount).getMenuCornersRadius());
                         canvas.drawRoundRect(AndroidUtilities.rectTmp2.left + bgPaddings.left, AndroidUtilities.rectTmp2.top + bgPaddings.top, AndroidUtilities.rectTmp2.right - bgPaddings.right, AndroidUtilities.rectTmp2.bottom - bgPaddings.top, pd, pd, roundedBackgroundPaint);
                         backgroundDrawable.setBounds(AndroidUtilities.rectTmp2);
                     } else {
@@ -701,6 +703,10 @@ public class ActionBarPopupWindow extends PopupWindow {
         /** Cherrygram start */
         private final boolean rounded_corners;
         private final Paint roundedBackgroundPaint = new Paint();
+
+        public LinearLayout getLinearLayout() {
+            return linearLayout;
+        }
         /** Cherrygram finish */
     }
 

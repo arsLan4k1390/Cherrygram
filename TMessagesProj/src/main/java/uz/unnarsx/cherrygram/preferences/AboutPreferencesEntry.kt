@@ -19,6 +19,7 @@ import org.telegram.messenger.browser.Browser
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.Components.BulletinFactory
+import org.telegram.ui.Components.RecyclerListView
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.crashlytics.Crashlytics
@@ -34,6 +35,13 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextDetailR
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class AboutPreferencesEntry : BasePreferencesEntry {
+
+    private var listView: RecyclerListView? = null
+
+    override fun setListView(rv: RecyclerListView) {
+        listView = rv
+    }
+
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.CGP_Header_About)) {
         category(getString(R.string.Info)) {
             textDetail {
@@ -153,4 +161,5 @@ class AboutPreferencesEntry : BasePreferencesEntry {
 
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("about_preferences_screen")
     }
+
 }

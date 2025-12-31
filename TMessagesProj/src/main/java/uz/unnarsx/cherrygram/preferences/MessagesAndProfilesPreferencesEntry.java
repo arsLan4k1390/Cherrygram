@@ -88,6 +88,8 @@ import java.util.Locale;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.Extra;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
+import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
@@ -112,7 +114,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         private ProfilePreview profilePreview;
 
         private RecyclerListView listView;
-        private RecyclerView.Adapter listAdapter;
+        private MD3ListAdapter listAdapter;
 
         private int selectedColor;
         private long selectedEmoji;
@@ -200,7 +202,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             };
             ((DefaultItemAnimator) listView.getItemAnimator()).setSupportsChangeAnimations(false);
             listView.setLayoutManager(new LinearLayoutManager(getContext()));
-            listView.setAdapter(listAdapter = new RecyclerListView.SelectionAdapter() {
+            listView.setAdapter(listAdapter = new MD3ListAdapter() {
                 @Override
                 public boolean isEnabled(RecyclerView.ViewHolder holder) {
                     return holder.getItemViewType() == VIEW_TYPE_SWITCH || holder.getItemViewType() == VIEW_TYPE_TEXT_SETTING
@@ -782,6 +784,15 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 profileBackgroundSwitchRow = rowCount++;
                 profileEmojiSwitchRow = rowCount++;
             }
+
+            if (listView != null) {
+                listView.post(() -> {
+                    RecyclerView.Adapter adapter = listView.getAdapter();
+                    if (adapter instanceof MD3ListAdapter md3) {
+                        md3.reapplyVisible();
+                    }
+                });
+            }
         }
 
         private void updateMessages() {
@@ -829,6 +840,14 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 AndroidUtilities.forEachViews(listView, view -> {
                     if (view instanceof ProfileChannelCell) {
                         ((ProfileChannelCell) view).updateColors();
+                    }
+                });
+            }
+            if (listView != null) {
+                listView.post(() -> {
+                    RecyclerView.Adapter adapter = listView.getAdapter();
+                    if (adapter instanceof MD3ListAdapter md3) {
+                        md3.reapplyVisible();
                     }
                 });
             }
@@ -1452,4 +1471,10 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
     public boolean isActionBarCrossfadeEnabled() {
         return false;
     }
+
+    @Override
+    public boolean isSupportEdgeToEdge() {
+        return false; // Breaks status bar
+    }
+
 }

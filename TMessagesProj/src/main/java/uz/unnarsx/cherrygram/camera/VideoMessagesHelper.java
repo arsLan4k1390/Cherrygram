@@ -34,7 +34,7 @@ import org.telegram.messenger.R;
 import org.telegram.ui.Components.InstantCameraView;
 import org.telegram.ui.Components.RLottieDrawable;
 
-import uz.unnarsx.cherrygram.chats.WindowBlurHelper;
+import uz.unnarsx.cherrygram.chats.ui.WindowBlurHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 
 public class VideoMessagesHelper {

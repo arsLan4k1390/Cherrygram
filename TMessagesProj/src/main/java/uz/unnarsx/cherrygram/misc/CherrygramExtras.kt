@@ -12,6 +12,11 @@ package uz.unnarsx.cherrygram.misc
 import android.app.Activity
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
+import android.provider.Settings
+import android.view.View
+import android.view.WindowInsets
+import androidx.annotation.RequiresApi
 import androidx.core.graphics.ColorUtils
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.CoroutineScope
@@ -36,6 +41,8 @@ import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.tgkit.TGKitSettingsFragment
 import androidx.core.content.edit
+import org.telegram.ui.LaunchActivity
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 
 object CherrygramExtras : CoroutineScope by MainScope() {
 
@@ -153,15 +160,16 @@ object CherrygramExtras : CoroutineScope by MainScope() {
                         }
                     }
                 } else {
-                    reviewInGooglePlay(fragment.context)
+                    reviewInGooglePlay()
                 }
             } else {
-                reviewInGooglePlay(fragment.context)
+                reviewInGooglePlay()
             }
         }
     }
 
-    private fun reviewInGooglePlay(context: Context) {
+    private fun reviewInGooglePlay() {
+        val context = ApplicationLoader.applicationContext
         Browser.openUrl(context, "market://details?id=${context.packageName}")
     }
 
@@ -194,6 +202,51 @@ object CherrygramExtras : CoroutineScope by MainScope() {
         val hsl = FloatArray(3)
         ColorUtils.RGBToHSL(red, green, blue, hsl)
         return hsl[2] >= 0.5f
+    }
+
+    private var isEdgeToEdgeCached: Boolean? = null
+
+    @JvmStatic
+    fun isEdgeToEdgeSupported(): Boolean {
+        if (CherrygramCoreConfig.edgeToEdgeMode == CherrygramCoreConfig.EDGE_MODE_ENABLE) {
+            return true
+        } else {
+            isEdgeToEdgeCached?.let { return it }
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R || CherrygramCoreConfig.edgeToEdgeMode == CherrygramCoreConfig.EDGE_MODE_DISABLE) {
+                isEdgeToEdgeCached = false
+                return false
+            }
+
+            val activity = LaunchActivity.getSafeLastFragment()?.parentActivity ?: return false
+
+            val supported = isGestureNavigation(activity) || isGestureNavigationFallback(activity.window?.decorView)
+
+            isEdgeToEdgeCached = supported
+
+            return supported
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun isGestureNavigation(context: Context): Boolean {
+        return try {
+            val mode = Settings.Secure.getInt(
+                context.contentResolver,
+                "navigation_mode"
+            )
+            mode == 2 // GESTURES (pill)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private fun isGestureNavigationFallback(view: View?): Boolean {
+        val insets = view?.rootWindowInsets ?: return false
+        val navInsets = insets.getInsets(WindowInsets.Type.navigationBars())
+
+        return navInsets.bottom == 0
     }
 
 }

@@ -176,13 +176,13 @@
     <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
     <string name="AP_IconReplacement_Solar">Иконки Solar от @Design480</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
+    <string name="AP_MD3_Containers">Дизайн списков в стиле MD3</string>
+    <string name="AP_MD3_Containers_Desc">Списки в стиле Material Design 3 с контейнерами и скруглёнными углами</string>
     <string name="AP_OneUI_Switch_Style">Переключатели в стиле OneUI</string>
     <string name="AP_SystemEmoji">Использовать системные эмодзи</string>
     <string name="AP_ShowPencilIcon">Иконка карандаша для изменённых сообщений</string>
     <string name="AP_CenterTitle">Центрирование заголовка</string>
     <string name="AP_iosSearchPanel">Панель поиска в стиле iOS</string>
-    <string name="AP_OverrideHeader">Изменение цвета заголовков</string>
-    <string name="AP_OverrideHeader_Desc">Заголовки будут такого же цвета, как и основной фон</string>
     <string name="AP_DisableDividers">Отключить разделители</string>
     <string name="AP_ToolBarShadow">Отключить тень у тулбара</string>
     <string name="AP_SystemFonts">Использовать системный шрифт</string>
@@ -261,6 +261,8 @@
     <string name="CP_MessageMenuItems">Элементы меню сообщения</string>
     <string name="CP_BlurMessageMenu">Меню сообщений в стиле iOS</string>
     <string name="CP_BlurMessageMenu_Desc">Добавляет размытие фона в меню сообщений и размещает панель реакций над сообщением, как в Telegram на iOS.</string>
+    <string name="CP_MessageMenuUnifiedScroll">Единый скролл</string>
+    <string name="CP_MessageMenuUnifiedScroll_Desc">Контент меню и сообщения будет отображаться на одном непрерывном листе, используя единый скролл вместо двух отдельных.</string>
     <string name="CP_MessageMenuAutoscroll">Автопрокрутка сообщения</string>
     <string name="CP_MessageMenuAutoscroll_Desc">При открытии меню сообщений автоматически прокручивает содержимое вниз, как в Telegram на iOS.</string>
     <string name="CP_MessageMenuFixedHeight">Комфортная высота меню сообщений</string>

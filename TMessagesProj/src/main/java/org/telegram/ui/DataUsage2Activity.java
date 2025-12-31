@@ -43,6 +43,7 @@ import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
+import uz.unnarsx.cherrygram.core.ui.MD3AdapterWithDiffUtils;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
@@ -516,7 +517,11 @@ public class DataUsage2Activity extends BaseFragment {
             return string;
         }
 
-        private class Adapter extends AdapterWithDiffUtils {
+        private class Adapter extends MD3AdapterWithDiffUtils {
+            Adapter() {
+                forceLearnRole(VIEW_TYPE_CHART, ROLE_DIVIDER);
+                forceLearnRole(VIEW_TYPE_SUBTITLE, ROLE_DIVIDER);
+            }
 
             @NonNull
             @Override

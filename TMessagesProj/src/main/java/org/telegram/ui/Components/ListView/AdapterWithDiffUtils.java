@@ -29,14 +29,14 @@ public abstract class AdapterWithDiffUtils extends RecyclerListView.SelectionAda
             this.selectable = selectable;
         }
 
-        boolean compare(Item item) {
+        public boolean compare(Item item) {
             if (viewType != item.viewType) {
                 return false;
             }
             return this.equals(item);
         }
 
-        boolean compareContents(Item item) {
+        public boolean compareContents(Item item) {
             if (viewType != item.viewType) {
                 return false;
             }

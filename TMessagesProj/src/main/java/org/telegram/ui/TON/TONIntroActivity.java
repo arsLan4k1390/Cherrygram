@@ -844,4 +844,11 @@ public class TONIntroActivity extends GradientHeaderActivity implements Notifica
             }
         }
     }
+
+    /** Cherrygram start */
+    public boolean isSupportEdgeToEdge() {
+        return false;
+    }
+    /** Cherrygram finish */
+
 }

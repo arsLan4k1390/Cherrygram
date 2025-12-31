@@ -19,6 +19,7 @@ import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.NotificationsService
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.RecyclerListView
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
@@ -34,6 +35,13 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class GeneralPreferencesEntry : BasePreferencesEntry {
+
+    private var listView: RecyclerListView? = null
+
+    override fun setListView(rv: RecyclerListView) {
+        listView = rv
+    }
+
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.AP_Header_General)) {
         category(getString(R.string.AP_Header_General)) {
             switch {
@@ -61,6 +69,26 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramCoreConfig.systemFonts
                 }) {
                     CherrygramCoreConfig.systemFonts = it
+                    AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
+            list {
+                title = "Edge-to-Edge"
+
+                contract({
+                    return@contract listOf(
+                        Pair(CherrygramCoreConfig.EDGE_MODE_AUTO, getString(R.string.QualityAuto)),
+                        Pair(CherrygramCoreConfig.EDGE_MODE_ENABLE, getString(R.string.EP_DownloadSpeedBoostAverage)),
+                        Pair(CherrygramCoreConfig.EDGE_MODE_DISABLE, getString(R.string.EP_DownloadSpeedBoostNone))
+                    )
+                }, {
+                    return@contract when (CherrygramCoreConfig.edgeToEdgeMode) {
+                        CherrygramCoreConfig.EDGE_MODE_ENABLE -> getString(R.string.EP_DownloadSpeedBoostAverage)
+                        CherrygramCoreConfig.EDGE_MODE_DISABLE -> getString(R.string.EP_DownloadSpeedBoostNone)
+                        else -> getString(R.string.QualityAuto)
+                    }
+                }) {
+                    CherrygramCoreConfig.edgeToEdgeMode = it
                     AppRestartHelper.createRestartBulletin(bf)
                 }
             }

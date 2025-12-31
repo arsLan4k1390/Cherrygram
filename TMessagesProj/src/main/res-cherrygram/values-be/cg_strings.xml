@@ -132,8 +132,6 @@
     <string name="AP_SystemEmoji">Выкарыстоўваць сістэмныя эмодзі</string>
     <string name="AP_ShowPencilIcon">Іконка алоўка для рэдагавання паведамленняў</string>
     <string name="AP_CenterTitle">Цэнтральны загаловак на панэлі дзеянняў</string>
-    <string name="AP_OverrideHeader">Змена колеру загалоўкаў</string>
-    <string name="AP_OverrideHeader_Desc">Загалоўкі будуць такога ж колеру, як і асноўны фон</string>
     <string name="AP_DisableDividers">Адключыць падзельнікі</string>
     <string name="AP_ToolBarShadow">Адключыць цень у тулбара</string>
     <string name="AP_SystemFonts">Выкарыстоўваць сістэмны шрыфт</string>

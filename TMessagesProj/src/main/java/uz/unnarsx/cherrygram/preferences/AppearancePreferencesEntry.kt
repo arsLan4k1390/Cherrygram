@@ -31,9 +31,16 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 import androidx.core.content.edit
-import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
+import org.telegram.ui.Components.RecyclerListView
 
 class AppearancePreferencesEntry : BasePreferencesEntry {
+
+    private var listView: RecyclerListView? = null
+
+    override fun setListView(rv: RecyclerListView) {
+        listView = rv
+    }
+
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.AP_Header_Appearance)) {
         category(getString(R.string.AP_RedesignCategory)) {
             list {
@@ -60,12 +67,26 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
+                title = getString(R.string.AP_MD3_Containers)
+                description = getString(R.string.AP_MD3_Containers_Desc)
+
+                contract({
+                    return@contract CherrygramAppearanceConfig.md3Containers
+                }) {
+                    CherrygramAppearanceConfig.md3Containers = it
+                    bf.parentLayout.rebuildAllFragmentViews(true, true)
+                }
+            }
+            switch {
                 title = getString(R.string.AP_OneUI_Switch_Style)
 
                 contract({
                     return@contract CherrygramAppearanceConfig.oneUI_SwitchStyle
                 }) {
                     CherrygramAppearanceConfig.oneUI_SwitchStyle = it
+                    listView?.post {
+                        listView!!.adapter?.notifyDataSetChanged()
+                    }
                 }
             }
             switch {
@@ -75,7 +96,9 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                 }) {
                     CherrygramAppearanceConfig.disableDividers = it
                     Theme.applyCommonTheme()
-                    bf.parentLayout.rebuildAllFragmentViews(true, true)
+                    listView?.post {
+                        listView!!.adapter?.notifyDataSetChanged()
+                    }
                 }
             }
         }
@@ -142,17 +165,6 @@ class AppearancePreferencesEntry : BasePreferencesEntry {
                     bf.parentLayout.setHeaderShadow(
                         if (CherrygramAppearanceConfig.disableToolBarShadow) null else bf.parentLayout.parentActivity.getDrawable(R.drawable.header_shadow)?.mutate()
                     )
-                    bf.parentLayout.rebuildAllFragmentViews(false, false)
-                }
-            }
-            switch {
-                title = getString(R.string.AP_OverrideHeader)
-                description = getString(R.string.AP_OverrideHeader_Desc)
-
-                contract({
-                    return@contract CherrygramAppearanceConfig.overrideHeaderColor
-                }) {
-                    CherrygramAppearanceConfig.overrideHeaderColor = it
                     bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
             }

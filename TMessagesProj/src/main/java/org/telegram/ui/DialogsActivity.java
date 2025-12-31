@@ -55,6 +55,7 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.util.LongSparseArray;
 import android.util.Property;
 import android.util.StateSet;
@@ -3465,6 +3466,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     }
                 }
             };
+//            filterTabsView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
 
             updateSearchField();
             filterTabsView.getGlobalSearchView().setOnClickListener(v -> {
@@ -5206,7 +5208,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (searchString == null && initialDialogsType == DIALOGS_TYPE_DEFAULT && CherrygramCoreConfig.INSTANCE.getUpdateAvailable() && updateFileExists()) {
             updateButton = ApplicationLoader.applicationLoaderInstance.takeUpdateButton(context);
             if (updateButton != null) {
-                contentView.addView(updateButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.CENTER | Gravity.BOTTOM, dp(25), 0, dp(25), dp(10)));
+                int updateButtonBottomMargin = isSupportEdgeToEdge() ? AndroidUtilities.navigationBarHeight + dp(10) : dp(10);
+                contentView.addView(updateButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.CENTER | Gravity.BOTTOM, dp(25), 0, dp(25), updateButtonBottomMargin));
                 updateButton.onTranslationUpdate(ty -> {
                     additionalFloatingTranslation2 = dp(75) - ty;
                     if (additionalFloatingTranslation2 < 0) {
@@ -6045,7 +6048,23 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 true
             );
             updateAuthHintCellVisibility(false);
-        }else if (folderId == 0 && getMessagesController().pendingSuggestions.contains("PREMIUM_GRACE")) {
+        } /*else if (folderId == 0 && getMessagesController().pendingSuggestions.contains("SETUP_PASSKEY")) {
+            dialogsHintCellVisible = true;
+            dialogsHintCell.setVisibility(View.VISIBLE);
+            dialogsHintCell.setCompact(true);
+            dialogsHintCell.setOnClickListener(v -> {
+                PasskeysActivity.showLearnSheet(getContext(), currentAccount, resourceProvider, true);
+            });
+            dialogsHintCell.setText(Emoji.replaceWithRestrictedEmoji(getString(R.string.PasskeyPopupTitle), dialogsHintCell.titleView, this::updateDialogsHint), getString(R.string.PasskeyPopupText));
+            dialogsHintCell.setOnCloseListener(v -> {
+                MessagesController.getInstance(currentAccount).removeSuggestion(0, "SETUP_PASSKEY");
+                ChangeBounds transition = new ChangeBounds();
+                transition.setDuration(200);
+                TransitionManager.beginDelayedTransition((ViewGroup) dialogsHintCell.getParent(), transition);
+                updateDialogsHint();
+            });
+            updateAuthHintCellVisibility(false);
+        }*/ else if (folderId == 0 && getMessagesController().pendingSuggestions.contains("PREMIUM_GRACE")) {
             dialogsHintCellVisible = true;
             dialogsHintCell.setVisibility(View.VISIBLE);
             dialogsHintCell.setCompact(true);
@@ -7235,8 +7254,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             if (getParentActivity() == null) {
                 return;
             }
-            if (MessagesController.getGlobalNotificationsSettings().getBoolean("askedAboutFSILockscreen", false)) {
-                return;
+            if (getUserConfig() != null && getUserConfig().clientUserId != 706402791) {
+                if (MessagesController.getGlobalNotificationsSettings().getBoolean("askedAboutFSILockscreen", false)) {
+                    return;
+                }
             }
             showDialog(new AlertDialog.Builder(getParentActivity())
                 .setTopAnimation(R.raw.permission_request_apk, AlertsCreator.PERMISSIONS_REQUEST_TOP_ICON_SIZE, false, Theme.getColor(Theme.key_dialogTopBackground))
@@ -8859,7 +8880,11 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
 
         final ChatActivity[] chatActivity = new ChatActivity[1];
-        previewMenu[0] = new ActionBarPopupWindow.ActionBarPopupWindowLayout(getParentActivity(), R.drawable.popup_fixed_alert2, getResourceProvider(), flags);
+        previewMenu[0] = new ActionBarPopupWindow.ActionBarPopupWindowLayout(getParentActivity(), R.drawable.popup_fixed_alert2, getResourceProvider(), flags, getMessageMenuHelper().allowNewMessageMenu());
+        if (getMessageMenuHelper().allowNewMessageMenu()) {
+            int alpha = getMessageMenuHelper().getMessageMenuAlpha(false);
+            previewMenu[0].setBackAlpha(alpha);
+        }
 
         if (!UserObject.isUserSelf(getMessagesController().getUser(dialogId))) {
             ActionBarMenuSubItem openProfileItem = new ActionBarMenuSubItem(getParentActivity(), false, false);
@@ -12876,7 +12901,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     float slideFragmentProgress = 1f;
-    final int slideAmplitudeDp = 40;
+    final int slideAmplitudeDp = 120;
     boolean slideFragmentLite;
     boolean isSlideBackTransition;
     boolean isDrawerTransition;
@@ -12968,7 +12993,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
     @Override
     public void onSlideProgress(boolean isOpen, float progress) {
-        if (SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_LOW) {
+        if (SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_LOW && !BuildVars.DEBUG_PRIVATE_VERSION) {
             return;
         }
         if (isSlideBackTransition && slideBackTransitionAnimator == null) {
@@ -12977,7 +13002,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     }
 
     private void setSlideTransitionProgress(float progress) {
-        if (SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_LOW || slideFragmentProgress == progress) {
+        if (SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_LOW && !BuildVars.DEBUG_PRIVATE_VERSION || slideFragmentProgress == progress) {
             return;
         }
 
@@ -13994,20 +14019,21 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         return isSearchPanelVisible() && hasFolders ? 85 : 44;
     }
 
-    private boolean updateFileExists() { // Cause of missing UpdaterUtils.java in Play Store version
-        File otaPath, versionPath, apkFile;
-        String version = CherrygramCoreConfig.INSTANCE.getUpdateVersionName();
-
-        otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
-        versionPath = new File(otaPath, version);
-        apkFile = new File(versionPath, "update.apk");
-        try {
-            if (!versionPath.exists())
-                versionPath.mkdirs();
-        } catch (Exception e) {
-            FileLog.e(e);
+    public boolean updateFileExists() { // Cause of missing UpdaterUtils.java in Play Store version
+        if (!ApplicationLoader.isStandaloneBuild()) {
+            return false;
         }
-        return ApplicationLoader.isStandaloneBuild() && (apkFile != null || apkFile.getAbsolutePath() != null || apkFile.getPath() != null) && apkFile.exists();
+
+        String version = CherrygramCoreConfig.INSTANCE.getUpdateVersionName();
+        if (version.isEmpty()) {
+            return false;
+        }
+
+        File otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
+        File versionPath = new File(otaPath, version);
+        File apkFile = new File(versionPath, "update.apk");
+
+        return apkFile.exists();
     }
 
     private static boolean USE_SPRING_ANIMATION = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING;

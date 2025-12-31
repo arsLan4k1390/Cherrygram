@@ -43,8 +43,16 @@ import androidx.core.content.edit
 import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.Components.AlertsCreator
 import androidx.core.net.toUri
+import org.telegram.ui.Components.RecyclerListView
 
 class DebugPreferencesEntry : BasePreferencesEntry {
+
+    private var listView: RecyclerListView? = null
+
+    override fun setListView(rv: RecyclerListView) {
+        listView = rv
+    }
+
     override fun getPreferences(bf: BaseFragment) = tgKitScreen("Debug // WIP") {
         category("Misc") {
             switch {
@@ -142,16 +150,6 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                     return@contract SharedConfig.useNewBlur
                 }) {
                     SharedConfig.toggleUseNewBlur()
-                }
-            }
-            switch {
-                title = "MD3 Containers *"
-                description = "Material Design 3 containers inside settings"
-
-                contract({
-                    return@contract CherrygramDebugConfig.mdContainers
-                }) {
-                    CherrygramDebugConfig.mdContainers = it
                 }
             }
         }
@@ -366,4 +364,5 @@ class DebugPreferencesEntry : BasePreferencesEntry {
 
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("debug_preferences_screen")
     }
+
 }

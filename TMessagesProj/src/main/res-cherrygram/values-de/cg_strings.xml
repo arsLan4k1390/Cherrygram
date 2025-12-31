@@ -128,8 +128,6 @@
     <string name="AP_SystemEmoji">System-Emojis verwenden</string>
     <string name="AP_ShowPencilIcon">Stift-Symbol für bearbeitete Nachrichten</string>
     <string name="AP_CenterTitle">Titel in Aktionsleiste zentrieren</string>
-    <string name="AP_OverrideHeader">Überschreibe Headerfarbe</string>
-    <string name="AP_OverrideHeader_Desc">Header werden die gleiche Farbe wie der Haupthintergrund sein</string>
     <string name="AP_DisableDividers">Trennlinien ausblenden</string>
     <string name="AP_ToolBarShadow">Schatten der Toolbar deaktivieren</string>
     <string name="AP_SystemFonts">Systemschriftart verwenden</string>

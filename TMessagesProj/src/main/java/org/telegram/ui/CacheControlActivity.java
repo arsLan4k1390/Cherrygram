@@ -9,7 +9,6 @@
 package org.telegram.ui;
 
 import static android.content.Context.ACTIVITY_SERVICE;
-import static org.webrtc.ContextUtils.getApplicationContext;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -182,7 +181,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private CacheChart cacheChart;
     private CacheChartHeader cacheChartHeader;
     private ClearCacheButtonInternal clearCacheButton;
-    private KaboomButtonInternal kaboomButton;
 
     public static volatile boolean canceled = false;
 
@@ -204,7 +202,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     public final static int TYPE_OTHER = 6;
     public final static int TYPE_STORIES = 7;
 
-    private static final int kaboom_id = 1390;
     private static final int delete_id = 1;
     private static final int other_id = 2;
     private static final int clear_database_id = 3;
@@ -212,7 +209,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private boolean loadingDialogs;
     private NestedSizeNotifierLayout nestedSizeNotifierLayout;
 
-    private ActionBarMenuSubItem kaboomItem;
     private ActionBarMenuSubItem clearDatabaseItem;
     private ActionBarMenuSubItem resetDatabaseItem;
     private void updateDatabaseItemSize() {
@@ -1250,7 +1246,9 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
-                if (id == -1) {
+                if (id == kaboom_id) {
+                    kaboomDurov(context);
+                } else if (id == -1) {
                     if (actionBar.isActionModeShowed()) {
                         if (cacheModel != null) {
                             cacheModel.clearSelection();
@@ -1268,8 +1266,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     clearDatabase(false);
                 } else if (id == reset_database_id) {
                     clearDatabase(true);
-                } else if (id == kaboom_id) {
-                    kaboomDurov(context);
                 }
             }
         });
@@ -1320,7 +1316,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         }
         updateDatabaseItemSize();
 
-        kaboomItem = otherItem.addSubItem(kaboom_id, R.drawable.msg_delete, "Kaboom");
+        ActionBarMenuSubItem kaboomItem = otherItem.addSubItem(kaboom_id, R.drawable.msg_delete, "Kaboom");
         kaboomItem.setIconColor(Theme.getColor(Theme.key_text_RedRegular));
         kaboomItem.setTextColor(Theme.getColor(Theme.key_text_RedRegular));
 
@@ -2387,6 +2383,9 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view;
             switch (viewType) {
+                case VIEW_TYPE_KABOOM:
+                    view = new KaboomButtonInternal(mContext);
+                    break;
                 case VIEW_TYPE_TEXT_SETTINGS:
                     view = new TextSettingsCell(mContext);
                     view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
@@ -2570,9 +2569,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     break;
                 case VIEW_TYPE_CLEAR_CACHE_BUTTON:
                     view = clearCacheButton = new ClearCacheButtonInternal(mContext);
-                    break;
-                case VIEW_TYPE_KABOOM:
-                    view = kaboomButton = new KaboomButtonInternal(mContext);
                     break;
                 case VIEW_TYPE_MAX_CACHE_SIZE:
                     SlideChooseView slideChooseView2 = new SlideChooseView(mContext);
@@ -3237,22 +3233,21 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         return super.onBackPressed();
     }
 
+    /** Cherrygram start */
+    private static final int kaboom_id = 1390;
+
     private void kaboomDurov(Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
         builder.setTitle("Kaboom");
         builder.setMessage(LocaleController.getString(R.string.CG_Kaboom));
         builder.setPositiveButton("Kaboom!", (dialogInterface, i) -> {
             try {
-                if (Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT) {
-                    ((ActivityManager) context.getSystemService(ACTIVITY_SERVICE)).clearApplicationUserData();
-                } else {
-                    Runtime.getRuntime().exec("pm clear " + getApplicationContext().getPackageName());
-                }
-            } catch (Exception durovrelogin) {
-                durovrelogin.printStackTrace();
+                ((ActivityManager) context.getSystemService(ACTIVITY_SERVICE)).clearApplicationUserData();
+            } catch (Exception e) {
+                FileLog.e(e);
             }
         });
-        builder.setNegativeButton(LocaleController.getString("Cancel", R.string.Cancel), null);
+        builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
         AlertDialog alertDialog = builder.create();
         alertDialog.setOnShowListener(dialog1 -> {
             TextView button = (TextView) alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
@@ -3348,10 +3343,10 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         public KaboomButtonInternal(Context context) {
             super(context);
             ((MarginLayoutParams) button.getLayoutParams()).topMargin = AndroidUtilities.dp(5);
-            button.setOnClickListener(e -> {
-                kaboomDurov(context);
-            });
+            button.setOnClickListener(e -> kaboomDurov(context));
         }
 
     }
+    /** Cherrygram finish */
+
 }

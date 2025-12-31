@@ -14,8 +14,6 @@ import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.text.SpannableStringBuilder;
@@ -26,7 +24,6 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -54,14 +51,16 @@ import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.StickerImageView;
 import org.telegram.ui.Components.TableView;
 
+import java.util.HashSet;
+
 import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 import uz.unnarsx.cherrygram.misc.Constants;
@@ -99,6 +98,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
     private int alfaRow;
     private int vtbRow;
     private int sberRow;
+    private int yooMoneyMirRow;
     private int tinkoffRow;
     private int yooMoneyRow;
     private int rusCredsRow;
@@ -152,28 +152,9 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
         getNotificationCenter().removeObserver(this, NotificationCenter.cgDonatesLoaded);
     }
 
-    protected boolean hasWhiteActionBar() {
-        return true;
-    }
-
-    @Override
-    public boolean isLightStatusBar() {
-        if (!hasWhiteActionBar()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
     @Override
     public View createView(Context context) {
         actionBar.setBackButtonDrawable(new BackDrawable(false));
-
-        actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-        actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-        actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-        actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-        actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-        actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-        actionBar.setCastShadows(false);
 
         actionBar.setTitle(getString(R.string.DP_SupportOptions));
         actionBar.setAllowOverlayTitle(false);
@@ -237,47 +218,50 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
             } else if (position == rateUsRow) {
                 CherrygramExtras.INSTANCE.requestReviewFlow(this);
             } else if (position == masterCardRow) {
-                copyNumberAndMakeToast("5181000156329583", true);
+                copyNumberAndMakeToast(CardsRepo.Card_Tenge_Master_UZS, true);
             } else if (position == visaRow) {
-                copyNumberAndMakeToast("4278310028377794", true);
+                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Visa_USD, true);
             } else if (position == alfaRow) {
-                copyNumberAndMakeToast("4278310028377794", true);
+                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Visa_USD, true);
             } else if (position == vtbRow) {
-                copyNumberAndMakeToast("9860100124370345", true);
+                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Humo, true);
             } else if (position == sberRow) {
-                copyNumberAndMakeToast("5614683516520707", true);
+                copyNumberAndMakeToast(CardsRepo.Card_Anor_UzCard, true);
+            } else if (position == yooMoneyMirRow) {
+                copyNumberAndMakeToast(CardsRepo.Card_Yoomoney_MIR, true);
             } else if (position == tinkoffRow) {
-                copyNumberAndMakeToast("5614683588301333", true);
+                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Humo, true);
+//                copyNumberAndMakeToast(CardsRepo.Card_Anor_UzCard_Kids, true);
             } else if (position == yooMoneyRow) {
-                copyNumberAndMakeToast("4100116983696293", false);
+                copyNumberAndMakeToast(CardsRepo.Card_Yoomoney_Account, false);
             } else if (position == humoRow) {
-                copyNumberAndMakeToast("9860100124370345", true);
+                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Humo, true);
             } else if (position == uzCardRow) {
-                copyNumberAndMakeToast("5614683588301333", true);
+                copyNumberAndMakeToast(CardsRepo.Card_Anor_UzCard_Kids, true);
             } else if (position == uzCardMirRow) {
-                copyNumberAndMakeToast("5614683516520707", true);
+                copyNumberAndMakeToast(CardsRepo.Card_Anor_UzCard, true);
             } else if (position == tirikchilikRow) {
                 Intent openURL = new Intent(Intent.ACTION_VIEW);
-                openURL.setData(Uri.parse("https://tirikchilik.uz/arslan4k1390"));
+                openURL.setData(Uri.parse(CardsRepo.Tirikchilik_URL));
                 getParentActivity().startActivity(openURL);
             } else if (position == walletBitcoinRow) {
-                copyNumberAndMakeToast("bc1ql4f7nuxv44y6tc72zy5z4h2sucqzk93nnmpyrl", false);
+                copyNumberAndMakeToast(CryptoWalletsRepo.Wallet_Bitcoin, false);
             } else if (position == walletTonRow) {
-                copyNumberAndMakeToast("UQCK2zt2pHa9ag-lUFTCuvsxW4lqPmkX6eSYFhS5xCKBwKAN", false);
+                copyNumberAndMakeToast(CryptoWalletsRepo.Wallet_TON, false);
             } else if (position == walletUSDTRow) {
-                copyNumberAndMakeToast("UQCK2zt2pHa9ag-lUFTCuvsxW4lqPmkX6eSYFhS5xCKBwKAN", false);
+                copyNumberAndMakeToast(CryptoWalletsRepo.Wallet_USDT, false);
             } else if (position == tonKeeperTonRow) {
-                copyNumberAndMakeToast("UQBG--q68OfxTQNE_-wcWIWTWxSSL1GxYGUW75CyrTrTUUCT", false);
+                copyNumberAndMakeToast(CryptoWalletsRepo.Tonkeeper_TON, false);
             } else if (position == tonKeeperUSDTRow) {
-                copyNumberAndMakeToast("UQBG--q68OfxTQNE_-wcWIWTWxSSL1GxYGUW75CyrTrTUUCT", false);
+                copyNumberAndMakeToast(CryptoWalletsRepo.Tonkeeper_USDT, false);
             } else if (position == binanceIDRow) {
-                copyNumberAndMakeToast("220943480", false);
+                copyNumberAndMakeToast(CryptoWalletsRepo.Binance_Account, false);
             } else if (position == binanceBitcoinRow) {
-                copyNumberAndMakeToast("1Pr6GqqWakgKWW1nDjVyHUYo1AcWbSN453", false);
+                copyNumberAndMakeToast(CryptoWalletsRepo.Binance_Bitcoin, false);
             } else if (position == binanceEthereumRow) {
-                copyNumberAndMakeToast("0xa8392346f426443ef7e3d98047bace6dbcc0e7d8", false);
+                copyNumberAndMakeToast(CryptoWalletsRepo.Binance_Ethereum, false);
             } else if (position == binanceUSDTRow) {
-                copyNumberAndMakeToast("TKnPT5rojMf851ejov2Xu4pxKcMfSh4Ws9", false);
+                copyNumberAndMakeToast(CryptoWalletsRepo.Binance_USDT, false);
             }
         });
 
@@ -286,7 +270,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
         return fragmentView;
     }
 
-    public class ListAdapter extends RecyclerListView.SelectionAdapter {
+    private class ListAdapter extends MD3ListAdapter {
 
         private final Context mContext;
 
@@ -301,7 +285,23 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
         private final int VIEW_TYPE_STICKER = 9;
 
         ListAdapter(Context context) {
+            forceLearnRole(VIEW_TYPE_TEXT_INFO_PRIVACY, ROLE_CONTENT);
             mContext = context;
+        }
+
+        private final HashSet<Integer> md3Ignore = new HashSet<>();
+
+        public void addIgnore(int rowId) {
+            md3Ignore.add(rowId);
+        }
+
+        public void removeIgnore(int rowId) {
+            md3Ignore.remove(rowId);
+        }
+
+        @Override
+        protected boolean mustIgnoreViewForPosition(int position) {
+            return md3Ignore.contains(position);
         }
 
         @Override
@@ -314,7 +314,6 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
             switch (holder.getItemViewType()) {
                 case VIEW_TYPE_SHADOW: {
                     holder.itemView.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_HEADER: {
@@ -338,7 +337,6 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     } else if (position == binanceHeaderRow) {
                         headerCell.setText("Crypto // Binance");
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TEXT_CELL: {
@@ -372,6 +370,9 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     } else if (position == sberRow) {
                         title = "СберБанк";
                         icon = isDarkMode ? R.drawable.card_sber_dark : R.drawable.card_sber_light;
+                    } else if (position == yooMoneyMirRow) {
+                        title = "МИР";
+                        icon = isDarkMode ? R.drawable.card_mir_dark : R.drawable.card_mir_light;
                     } else if (position == tinkoffRow) {
                         title = "Т-Банк";
                         icon = isDarkMode ? R.drawable.card_tinkoff_dark : R.drawable.card_tinkoff_light;
@@ -420,7 +421,6 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                         icon = isDarkMode ? R.drawable.card_usdt_dark : R.drawable.card_usdt_light;
                     }
                     textCell.setTextAndIcon(title, icon, divider);
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TEXT_CHECK: {
@@ -429,7 +429,6 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     if (position == brandedScreenshotsSwitchRow) {
                         textCheckCell.setTextAndCheck(getString(R.string.DP_CameraCutout), CherrygramCoreConfig.INSTANCE.getCgBrandedScreenshots(), false);
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TEXT_INFO_PRIVACY: {
@@ -443,7 +442,6 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     } else if (position == bonusesInfoRow) {
                         textInfoPrivacyCell.setText(CGResourcesHelper.INSTANCE.getDonatesAdvice());
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_TABLE: {
@@ -462,6 +460,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                                 didDonate && !isTestBackend ? getString(R.string.DP_DonatesThanks) : moreInfoText,
                                 false, true, 15, true
                         );
+                        addIgnore(position);
                     } else if (position == bonusesPriceRow) {
                         tableView.addRow(getString(R.string.GiftValue2), getString(R.string.Gift2UniqueTitle2), null);
 
@@ -545,13 +544,12 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                         );
                         tableView.addFullRow(personalDataText);
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_STICKER: {
                     StickerImageView stickerImageView = (StickerImageView) ((FrameLayout) holder.itemView).getChildAt(0);
                     bindStickerCell(stickerImageView);
-                    applyMD3Background(holder, position);
+                    addIgnore(position);
                     break;
                 }
             }
@@ -614,51 +612,6 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
         }
 
         @Override
-        public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
-            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
-
-            int viewType = holder.getItemViewType();
-            int position = holder.getAdapterPosition();
-
-            if (viewType == VIEW_TYPE_SHADOW /*|| viewType == VIEW_TYPE_TEXT_INFO_PRIVACY*/)
-                return;
-
-            int side = viewType == VIEW_TYPE_STICKER || position == stickerTableInfoRow ? 0 : AndroidUtilities.dp(16);
-            int top = 0;
-            int bottom = 0;
-
-            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER;
-            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER;
-
-            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_SHADOW /*|| getItemViewType(position - 1) == VIEW_TYPE_TEXT_INFO_PRIVACY*/) {
-                top = AndroidUtilities.dp(2);
-            }
-
-            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
-                top = AndroidUtilities.dp(16);
-            }
-
-            if (prevIsHeader) {
-                top = 0;
-            }
-
-            if (position == getItemCount() - 1
-                    || nextIsHeader
-                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW
-                /*|| getItemViewType(position + 1) == VIEW_TYPE_TEXT_INFO_PRIVACY*/
-            ) {
-                bottom = AndroidUtilities.dp(2);
-            }
-
-            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
-            lp.leftMargin = side;
-            lp.rightMargin = side;
-            lp.topMargin = top;
-            lp.bottomMargin = bottom;
-            holder.itemView.setLayoutParams(lp);
-        }
-
-        @Override
         public int getItemViewType(int position) {
             if (position == brandedScreenshotsDivisorRow || position == enjoyingEndDivisor || position == bonusesDivisorRow || position == intDivisorRow || position == rusDivisorRow || position == uzbDivisorRow || position == binanceDivisorRow || position == walletDivisorRow) {
                 return VIEW_TYPE_SHADOW;
@@ -666,7 +619,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                 return VIEW_TYPE_HEADER;
             } else if (position == rateUsRow
                     || position == masterCardRow || position == visaRow
-                    || position == alfaRow || position == vtbRow || position == sberRow || position == tinkoffRow || position == yooMoneyRow
+                    || position == alfaRow || position == vtbRow || position == sberRow || position == yooMoneyMirRow || position == tinkoffRow || position == yooMoneyRow
                     || position == humoRow || position == uzCardRow || position == uzCardMirRow || position == tirikchilikRow
                     || position == walletBitcoinRow || position == walletTonRow || position == walletUSDTRow || position == tonKeeperTonRow || position == tonKeeperUSDTRow
                     || position == binanceIDRow || position ==  binanceBitcoinRow || position == binanceEthereumRow || position == binanceUSDTRow
@@ -717,54 +670,6 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
 
             stickerImageView.invalidate();
         }
-
-        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
-            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
-
-            int viewType = holder.getItemViewType();
-
-            if (viewType == VIEW_TYPE_SHADOW/* || viewType == VIEW_TYPE_TEXT_INFO_PRIVACY*/ || viewType == VIEW_TYPE_STICKER || position == stickerTableInfoRow) {
-                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                return;
-            }
-
-            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
-            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
-
-            boolean isHeader = viewType == VIEW_TYPE_HEADER;
-
-            boolean isGroupStart = position == 0
-                    || prevType == VIEW_TYPE_SHADOW
-                    /*|| prevType == VIEW_TYPE_TEXT_INFO_PRIVACY*/;
-
-            boolean isGroupEnd = position == getItemCount() - 1
-                    || nextType == VIEW_TYPE_SHADOW
-                    /*|| nextType == VIEW_TYPE_TEXT_INFO_PRIVACY*/;
-
-            int r = AndroidUtilities.dp(14);
-
-            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
-
-            if (isHeader) {
-                topLeft = topRight = r;
-            } else if (isGroupStart && isGroupEnd) {
-                topLeft = topRight = bottomLeft = bottomRight = r;
-            } else if (isGroupStart) {
-                topLeft = topRight = r;
-            } else if (isGroupEnd) {
-                bottomLeft = bottomRight = r;
-            }
-
-            Drawable bg = Theme.createRoundRectDrawable(
-                    topLeft, topRight, bottomRight, bottomLeft,
-                    Theme.getColor(Theme.key_windowBackgroundWhite)
-            );
-            holder.itemView.setBackground(bg);
-
-            final int side = position == bonusesPriceRow || position == intCredsRow || position == rusCredsRow ? dp(20) : 0;
-            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
-        }
-
     }
 
     private void updateRowsId(boolean notify) {
@@ -811,12 +716,9 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
             alfaRow = rowCount++;
             vtbRow = rowCount++;
             sberRow = rowCount++;
+            yooMoneyMirRow = rowCount++;
             tinkoffRow = rowCount++;
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) {
-                yooMoneyRow = rowCount++;
-            } else {
-                yooMoneyRow = -1;
-            }
+            yooMoneyRow = rowCount++;
             rusCredsRow = rowCount++;
             rusDivisorRow = rowCount++;
 
@@ -865,6 +767,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
             alfaRow = -1;
             vtbRow = -1;
             sberRow = -1;
+            yooMoneyMirRow = -1;
             tinkoffRow = -1;
             yooMoneyRow = -1;
             rusCredsRow = -1;
@@ -926,6 +829,39 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
     private void copyNumberAndMakeToast(String cardNumber, boolean card) {
         AndroidUtilities.addToClipboard(cardNumber);
         Toast.makeText(getParentActivity(), getString(card ? R.string.CardNumberCopied : R.string.TextCopied), Toast.LENGTH_SHORT).show();
+    }
+
+    private static class CardsRepo {
+
+        public static String Card_Kapital_Humo = "9860100124370345";
+        public static String Card_Kapital_Visa_USD = "4278310028377794";
+
+        public static String Card_Tenge_Master_UZS = "5181000156329583";
+
+        public static String Card_Anor_UzCard = "5614683516520707";
+        public static String Card_Anor_UzCard_Kids = "5614683588301333";
+
+        public static String Card_Yoomoney_MIR = "2204120134366927";
+        public static String Card_Yoomoney_Account = "4100116983696293";
+
+        public static String Tirikchilik_URL = "https://tirikchilik.uz/arslan4k1390";
+
+    }
+
+    private static class CryptoWalletsRepo {
+
+        public static String Binance_Account = "220943480";
+        public static String Binance_Bitcoin = "1Pr6GqqWakgKWW1nDjVyHUYo1AcWbSN453";
+        public static String Binance_Ethereum = "0xa8392346f426443ef7e3d98047bace6dbcc0e7d8";
+        public static String Binance_USDT = "TKnPT5rojMf851ejov2Xu4pxKcMfSh4Ws9";
+
+        public static String Tonkeeper_TON = "UQBG--q68OfxTQNE_-wcWIWTWxSSL1GxYGUW75CyrTrTUUCT";
+        public static String Tonkeeper_USDT = "UQBG--q68OfxTQNE_-wcWIWTWxSSL1GxYGUW75CyrTrTUUCT";
+
+        public static String Wallet_Bitcoin = "bc1ql4f7nuxv44y6tc72zy5z4h2sucqzk93nnmpyrl";
+        public static String Wallet_TON = "UQCK2zt2pHa9ag-lUFTCuvsxW4lqPmkX6eSYFhS5xCKBwKAN";
+        public static String Wallet_USDT = "UQCK2zt2pHa9ag-lUFTCuvsxW4lqPmkX6eSYFhS5xCKBwKAN";
+
     }
 
 }

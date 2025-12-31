@@ -17,7 +17,6 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Outline;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -47,7 +46,6 @@ import android.widget.Toast;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -67,6 +65,7 @@ import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
+import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
@@ -92,10 +91,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.VibrateUtil;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 
 public class PasscodeActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     public final static int TYPE_MANAGE_CODE_SETTINGS = 0,
@@ -190,26 +187,8 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
     }
 
     @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
-
         actionBar.setAllowOverlayTitle(false);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
@@ -1129,7 +1108,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
         }, isPinCode() ? 150 : 1000));
     }
 
-    private class ListAdapter extends RecyclerListView.SelectionAdapter {
+    private class ListAdapter extends MD3ListAdapter {
         private final static int VIEW_TYPE_CHECK = 0,
                 VIEW_TYPE_SETTING = 1,
                 VIEW_TYPE_INFO = 2,
@@ -1139,6 +1118,7 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
         private Context mContext;
 
         public ListAdapter(Context context) {
+            forceLearnRole(VIEW_TYPE_UTYAN, ROLE_IGNORE);
             mContext = context;
         }
 
@@ -1192,7 +1172,6 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
                     } else if (position == captureRow) {
                         textCell.setTextAndCheck(LocaleController.getString(R.string.ScreenCaptureShowContent), SharedConfig.allowScreenCapture, false);
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_SETTING: {
@@ -1225,7 +1204,6 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
                         textCell.setTag(Theme.key_text_RedBold);
                         textCell.setTextColor(Theme.getColor(Theme.key_text_RedBold));
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_HEADER: {
@@ -1234,14 +1212,12 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
                     if (position == captureHeaderRow) {
                         cell.setText(LocaleController.getString(R.string.ScreenCaptureHeader));
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_UTYAN: {
                     RLottieImageHolderView holderView = (RLottieImageHolderView) holder.itemView;
                     holderView.imageView.setAnimation(R.raw.utyan_passcode, 100, 100);
                     holderView.imageView.playAnimation();
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_INFO: {
@@ -1259,7 +1235,6 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
                         cell.setBackground(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                         cell.getTextView().setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
             }
@@ -1280,97 +1255,6 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
             }
             return VIEW_TYPE_CHECK;
         }
-
-        /** Cherrygram start */
-        @Override
-        public void onViewAttachedToWindow(@NonNull RecyclerView.ViewHolder holder) {
-            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
-
-            int viewType = holder.getItemViewType();
-            int position = holder.getAdapterPosition();
-
-            if (viewType == VIEW_TYPE_INFO || viewType == VIEW_TYPE_UTYAN)
-                return;
-
-            int side = AndroidUtilities.dp(16);
-            int top = 0;
-            int bottom = 0;
-
-            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER;
-            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER;
-
-            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_INFO) {
-                top = AndroidUtilities.dp(2);
-            }
-
-            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
-                top = AndroidUtilities.dp(16);
-            }
-
-            if (prevIsHeader) {
-                top = 0;
-            }
-
-            if (position == getItemCount() - 1
-                    || nextIsHeader
-                    || getItemViewType(position + 1) == VIEW_TYPE_INFO
-            ) {
-                bottom = AndroidUtilities.dp(2);
-            }
-
-            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
-            lp.leftMargin = side;
-            lp.rightMargin = side;
-            lp.topMargin = top;
-            lp.bottomMargin = bottom;
-            holder.itemView.setLayoutParams(lp);
-        }
-
-        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
-            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
-
-            int viewType = holder.getItemViewType();
-
-            if (viewType == VIEW_TYPE_INFO || viewType == VIEW_TYPE_UTYAN) {
-                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                return;
-            }
-
-            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
-            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
-
-            boolean isHeader = viewType == VIEW_TYPE_HEADER;
-
-            boolean isGroupStart = position == 0
-                    || prevType == VIEW_TYPE_INFO;
-
-            boolean isGroupEnd = position == getItemCount() - 1
-                    || nextType == VIEW_TYPE_INFO;
-
-            int r = AndroidUtilities.dp(14);
-
-            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
-
-            if (isHeader) {
-                topLeft = topRight = r;
-            } else if (isGroupStart && isGroupEnd) {
-                topLeft = topRight = bottomLeft = bottomRight = r;
-            } else if (isGroupStart) {
-                topLeft = topRight = r;
-            } else if (isGroupEnd) {
-                bottomLeft = bottomRight = r;
-            }
-
-            Drawable bg = Theme.createRoundRectDrawable(
-                    topLeft, topRight, bottomRight, bottomLeft,
-                    Theme.getColor(Theme.key_windowBackgroundWhite)
-            );
-            holder.itemView.setBackground(bg);
-
-            final int side = 0;
-            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
-        }
-        /** Cherrygram finish */
     }
 
     @Override
@@ -1380,18 +1264,6 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{TextCheckCell.class, TextSettingsCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND | ThemeDescription.FLAG_CHECKTAG, null, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND | ThemeDescription.FLAG_CHECKTAG, null, null, null, null, Theme.key_windowBackgroundGray));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
-        } else {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));

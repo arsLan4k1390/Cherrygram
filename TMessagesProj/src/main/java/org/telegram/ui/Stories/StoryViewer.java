@@ -1801,7 +1801,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
         if (!ATTACH_TO_FRAGMENT) {
             globalInstances.add(this);
         }
-        if (fragment != null ) AndroidUtilities.hideKeyboard(fragment.getFragmentView());
+        AndroidUtilities.hideKeyboard(fragment.getFragmentView());
     }
 
     static int J = 0;

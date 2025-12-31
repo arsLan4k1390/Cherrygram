@@ -147,7 +147,7 @@ public class UpdateLayout extends IUpdateLayout {
             updateTextViews[i].setGravity(Gravity.LEFT);
             updateLayout.addView(updateTextViews[i], LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 74, 0, 0, 0));
         }
-        updateTextViews[0].setText(LocaleController.getString(R.string.AppUpdate));
+        updateTextViews[0].setText(LocaleController.getString(R.string.AppUpdate).replace("Telegram", LocaleController.getString(R.string.CG_AppName)));
         updateTextViews[1].setAlpha(0f);
         updateTextViews[1].setVisibility(View.GONE);
 
@@ -163,11 +163,11 @@ public class UpdateLayout extends IUpdateLayout {
         if (sideMenuContainer == null) {
             return;
         }
-        if (CherrygramCoreConfig.INSTANCE.getUpdateAvailable() && UpdaterUtils.downloadURL != null && UpdaterUtils.version != null) {
+        if (CherrygramCoreConfig.INSTANCE.getUpdateAvailable() && UpdaterUtils.downloadURL != null && UpdaterUtils.version != null || UpdaterUtils.updateFileExists()) {
             createUpdateUI(currentAccount);
             updateSizeTextView.setText(CherrygramCoreConfig.INSTANCE.getUpdateSize());
             boolean showSize;
-            if (UpdaterUtils.updateFileExists() && CherrygramCoreConfig.INSTANCE.getUpdateDownloadingProgress() >= 99f) {
+            if (UpdaterUtils.updateFileExists()) {
                 updateLayoutIcon.setIcon(MediaActionDrawable.ICON_UPDATE, true, animated);
                 setUpdateText(LocaleController.getString(R.string.AppUpdateNow), animated);
                 showSize = false;

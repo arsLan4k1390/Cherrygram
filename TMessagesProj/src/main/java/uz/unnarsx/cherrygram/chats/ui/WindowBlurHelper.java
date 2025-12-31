@@ -7,7 +7,7 @@
  * Copyright github.com/arsLan4k1390, 2022-2026.
  */
 
-package uz.unnarsx.cherrygram.chats;
+package uz.unnarsx.cherrygram.chats.ui;
 
 import android.app.Activity;
 import android.graphics.RenderEffect;
@@ -24,9 +24,9 @@ import androidx.annotation.RequiresApi;
 // It required a significant amount of time and effort to implement,
 // and it is provided exclusively for my users, who also support this project financially.
 
-@RequiresApi(Build.VERSION_CODES.S)
 public class WindowBlurHelper {
 
+    @RequiresApi(Build.VERSION_CODES.S)
     public void setWindowBlur(
             Activity activity,
             boolean enable,

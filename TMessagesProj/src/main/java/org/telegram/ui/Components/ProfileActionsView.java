@@ -40,6 +40,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
+
 public class ProfileActionsView extends View {
 
     private final List<Action> actions = new ArrayList<>();
@@ -117,7 +119,7 @@ public class ProfileActionsView extends View {
         paint.setColor(Color.BLACK);
         paint.setAlpha(40);
 
-        xpadding = dpf2(14);
+        xpadding = dpf2(MD3ListAdapter.isMd3ContainersEnabled() ? 16 : 14);
         ypadding = dpf2(12);
         top = dpf2(8);
         textPadding = dpf2(4);
@@ -440,7 +442,7 @@ public class ProfileActionsView extends View {
     }
 
     public float getRoundRadius() {
-        return dp(10);
+        return dp(MD3ListAdapter.isMd3ContainersEnabled() ? MD3ListAdapter.config.cornerRadiusDp : 10);
     }
 
     private Action hit = null;

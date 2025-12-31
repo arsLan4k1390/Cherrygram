@@ -179,13 +179,13 @@
     <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
     <string name="AP_IconReplacement_Default">Default</string>
+    <string name="AP_MD3_Containers">MD3 Lists Design</string>
+    <string name="AP_MD3_Containers_Desc">Material Design 3 style list containers with rounded corners</string>
     <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
     <string name="AP_SystemEmoji">Use system emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
     <string name="AP_CenterTitle">Center title in action bar</string>
     <string name="AP_iosSearchPanel">iOS-styled search panel</string>
-    <string name="AP_OverrideHeader">Override headers color</string>
-    <string name="AP_OverrideHeader_Desc">Headers will be the same color as the main background</string>
     <string name="AP_DisableDividers">Disable dividers</string>
     <string name="AP_ToolBarShadow">Disable toolbar shadow</string>
     <string name="AP_SystemFonts">Use system fonts</string>
@@ -264,6 +264,8 @@
     <string name="CP_MessageMenuItems">Message menu items</string>
     <string name="CP_BlurMessageMenu">iOS-styled message menu</string>
     <string name="CP_BlurMessageMenu_Desc">Applies a blurred background to the message menu and displays the reaction panel above the message, similar to Telegram on iOS.</string>
+    <string name="CP_MessageMenuUnifiedScroll">Unified Scroll</string>
+    <string name="CP_MessageMenuUnifiedScroll_Desc">Menu and message content will be displayed on a single, continuous sheet, utilizing a unified scroll instead of two separate scrolling areas.</string>
     <string name="CP_MessageMenuAutoscroll">Message Autoscroll</string>
     <string name="CP_MessageMenuAutoscroll_Desc">Automatically scrolls the message menu content to the bottom on opening, similar to Telegram on iOS.</string>
     <string name="CP_MessageMenuFixedHeight">Comfortable message menu height</string>

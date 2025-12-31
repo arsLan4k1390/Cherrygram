@@ -31,7 +31,7 @@ import org.telegram.ui.ActionBar.Theme;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.chats.MessageMenuHelper;
+import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper;
 
 public class PopupSwipeBackLayout extends FrameLayout {
     private final static int DURATION = MessageMenuHelper.getInstance(UserConfig.selectedAccount).allowNewMessageMenu() ? 400 : 300;
@@ -446,7 +446,7 @@ public class PopupSwipeBackLayout extends FrameLayout {
 
         int s = canvas.save();
         mPath.rewind();
-        int rad = AndroidUtilities.dp(MessageMenuHelper.getInstance(UserConfig.selectedAccount).allowNewMessageMenu() ? 18 : 6);
+        int rad = AndroidUtilities.dp(MessageMenuHelper.getInstance(UserConfig.selectedAccount).getMenuCornersRadius());
         if (stickToRight) {
             mRect.set(getWidth() - w, y, getWidth(), y + h);
         } else {

@@ -83,15 +83,16 @@ public class UpdaterUtils {
     public static boolean checkDirs() {
         try {
             otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
-            if (!otaPath.exists()) {
-                if (!otaPath.mkdirs() && !otaPath.exists()) {
-                    return false;
-                }
+
+            if (version == null || version.isEmpty()) {
+                updateDownloaded = false;
+                return false;
             }
-            if (version == null) return false;
+
             versionPath = new File(otaPath, version);
             if (!versionPath.exists()) {
                 if (!versionPath.mkdirs() && !versionPath.exists()) {
+                    updateDownloaded = false;
                     return false;
                 }
             }
@@ -100,14 +101,28 @@ public class UpdaterUtils {
             return true;
         } catch (Exception e) {
             FileLog.e(e);
+            updateDownloaded = false;
             return false;
         }
     }
 
     public static boolean updateFileExists() {
-        String version = CherrygramCoreConfig.INSTANCE.getUpdateVersionName();
+        version = CherrygramCoreConfig.INSTANCE.getUpdateVersionName();
 
-        if (!checkDirs()) return false;
+        if (version.isEmpty()) {
+            CherrygramCoreConfig.INSTANCE.setUpdateAvailable(false);
+            return false;
+        }
+
+        otaPath = new File(ApplicationLoader.applicationContext.getExternalFilesDir(null), "ota");
+        versionPath = new File(otaPath, version);
+        apkFile = new File(versionPath, "update.apk");
+
+        try {
+            if (!versionPath.exists()) versionPath.mkdirs();
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
 
         String[] current = Constants.INSTANCE.getCherryVersion().split("\\.");
         String[] downloaded = version.split("\\.");
@@ -116,7 +131,7 @@ public class UpdaterUtils {
         boolean isNew = cmp < 0;
         CherrygramCoreConfig.INSTANCE.setUpdateAvailable(isNew);
 
-        return isNew && apkFile != null && apkFile.exists();
+        return isNew && apkFile.exists();
     }
 
     public interface OnUpdateNotFound {
@@ -497,7 +512,9 @@ public class UpdaterUtils {
         for (int i = 0; i < length; i++) {
             int v1 = i < a.length ? Utilities.parseInt(a[i]) : 0;
             int v2 = i < b.length ? Utilities.parseInt(b[i]) : 0;
-            if (v1 != v2) return Integer.compare(v1, v2);
+            if (v1 != v2) {
+                return Integer.compare(v1, v2);
+            }
         }
         return 0;
     }

@@ -24,6 +24,7 @@ import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.BulletinFactory
+import org.telegram.ui.Components.RecyclerListView
 import org.telegram.ui.LaunchActivity
 import org.telegram.ui.UsersSelectActivity
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
@@ -42,6 +43,13 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
+
+    private var listView: RecyclerListView? = null
+
+    override fun setListView(rv: RecyclerListView) {
+        listView = rv
+    }
+
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.SP_Category_PrivacyAndSecurity)) {
         category(getString(R.string.SP_Header_Privacy)) {
             switch {
@@ -171,7 +179,9 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }) {
                     CGBiometricPrompt.prompt(bf.parentActivity) {
                         CherrygramPrivacyConfig.askPasscodeBeforeDelete = it
-                        bf.parentLayout.rebuildAllFragmentViews(true, true)
+                        listView?.post {
+                            listView!!.adapter?.notifyDataSetChanged()
+                        }
                     }
                 }
             }

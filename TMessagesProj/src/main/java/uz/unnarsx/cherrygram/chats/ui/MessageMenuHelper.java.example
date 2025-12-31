@@ -1,0 +1,126 @@
+/**
+ * This is the source code of Cherrygram for Android.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ * Please, be respectful and credit the original author if you use this code.
+ *
+ * Copyright github.com/arsLan4k1390, 2022-2026.
+ */
+
+package uz.unnarsx.cherrygram.chats.ui;
+
+import android.app.Activity;
+import android.os.Build;
+import android.view.View;
+
+import org.telegram.messenger.BaseController;
+import org.telegram.messenger.MessageObject;
+import org.telegram.messenger.UserConfig;
+import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.ActionBarPopupWindow;
+import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.ChatActivity;
+import org.telegram.ui.Components.ChatScrimPopupContainerLayout;
+import org.telegram.ui.Components.ReactionsContainerLayout;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
+
+// Dear Nagram / Nagram X / Octogram and related fork developers:
+// Please respect this work and do not copy or reuse this feature in your forks.
+// It required a significant amount of time and effort to implement,
+// and it is provided exclusively for my users, who also support this project financially.
+
+public class MessageMenuHelper extends BaseController {
+
+    private static final MessageMenuHelper[] Instance = new MessageMenuHelper[UserConfig.MAX_ACCOUNT_COUNT];
+
+    public MessageMenuHelper(int num) {
+        super(num);
+    }
+
+    public static MessageMenuHelper getInstance(int num) {
+        MessageMenuHelper localInstance = Instance[num];
+        if (localInstance == null) {
+            synchronized (MessageMenuHelper.class) {
+                localInstance = Instance[num];
+                if (localInstance == null) {
+                    Instance[num] = localInstance = new MessageMenuHelper(num);
+                }
+            }
+        }
+        return localInstance;
+    }
+
+    public void createMenu(
+            ChatActivity chatActivity,
+            View view,
+            ChatActivity.ChatActivityFragmentView contentView,
+            ChatScrimPopupContainerLayout scrimPopupContainerLayout,
+            ReactionsContainerLayout reactionsLayout,
+            MessageObject messageObject,
+            ActionBarPopupWindow.ActionBarPopupWindowLayout popupWindowLayout
+    ) {
+
+    }
+
+    public void checkBlur(Activity activity, boolean enable, boolean hideStatusBar, float windowBlurRadius) {
+
+    }
+
+    public void hideMessageView(
+            View originalCell,
+            ChatActivity chatActivity,
+            ChatActivity.ChatActivityAdapter chatAdapter,
+            MessageObject messageObjectToReset,
+            Activity parentActivity,
+            boolean hide
+    ) {
+
+    }
+
+    public int getMessageMenuAlpha(boolean divider) {
+        if (CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems()) {
+            if (Theme.isCurrentThemeDay()) {
+                return divider ? 90 : 200;
+            } else {
+                return divider ? 90 : 180;
+            }
+        } else {
+            return 255;
+        }
+    }
+
+    public int getMenuCornersRadius() {
+        if (allowNewMessageMenu()) {
+            return 15;
+        } else {
+            return 6;
+        }
+    }
+
+    public boolean showDivider() {
+        return !Theme.getActiveTheme().isMonet() && !Theme.getActiveTheme().isAmoled() && !(Theme.isCurrentThemeDay() && CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems());
+    }
+
+    public boolean showCustomDivider() {
+        return allowNewMessageMenu() && CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems();
+    }
+
+    public boolean allowUnifiedScroll() {
+        return allowNewMessageMenu() && CherrygramChatsConfig.INSTANCE.getMsgMenuUnifiedScroll();
+    }
+
+    public boolean allowNewMessageMenu() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace() && CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground();
+    }
+
+    public boolean allowNewMessageMenu(MessageObject messageObject) {
+        if (messageObject != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetMessagesTTL) {
+            return false;
+        } else {
+            return allowNewMessageMenu();
+        }
+    }
+
+}

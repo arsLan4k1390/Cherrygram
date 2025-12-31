@@ -154,13 +154,13 @@
     <string name="AP_IconReplacement_VKUI">VKUI 圖示</string>
     <string name="AP_IconReplacement_Solar">由 @Design480 設計的 Solar 圖示</string>
     <string name="AP_IconReplacement_Default">預設</string>
+    <string name="AP_MD3_Containers">MD3 Lists Design</string>
+    <string name="AP_MD3_Containers_Desc">Material Design 3 style list containers with rounded corners</string>
     <string name="AP_OneUI_Switch_Style">OneUI 開關風格</string>
     <string name="AP_SystemEmoji">使用系統 Emoji</string>
     <string name="AP_ShowPencilIcon">將訊息底部的「已編輯」替換為鉛筆圖示</string>
     <string name="AP_CenterTitle">在操作列中置中標題</string>
     <string name="AP_iosSearchPanel">iOS 風格的搜尋面板</string>
-    <string name="AP_OverrideHeader">覆蓋頂部顏色</string>
-    <string name="AP_OverrideHeader_Desc">頂部顏色將會和背景色彩保持一致</string>
     <string name="AP_DisableDividers">停用分隔線</string>
     <string name="AP_ToolBarShadow">停用工具列陰影</string>
     <string name="AP_SystemFonts">使用系統字型</string>
@@ -222,6 +222,8 @@
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">對話</string>
     <string name="CP_Header_Messages">訊息</string>
+    <string name="CP_AutoQuoteReplies">引用回覆</string>
+    <string name="CP_AutoQuoteReplies_Desc">發送包括整則訊息內容的引用，而不是普通的回覆。此功能不適用於主題討論。</string>
     <string name="CP_TimeOnStick">隱藏貼圖時間</string>
     <string name="CP_ChatMenuShortcuts">對話功能表捷徑</string>
     <string name="CP_AdminActions">管理員捷徑</string>
@@ -229,12 +231,16 @@
     <string name="CP_MessageMenuItems">訊息選單項目</string>
     <string name="CP_BlurMessageMenu">模糊訊息選單背景</string>
     <string name="CP_BlurMessageMenu_Desc">為訊息選單套用模糊背景，並將回應面板顯示於訊息上方，類似 iOS 版 Telegram 的設計。</string>
+    <string name="CP_MessageMenuUnifiedScroll">Unified Scroll</string>
+    <string name="CP_MessageMenuUnifiedScroll_Desc">Menu and message content will be displayed on a single, continuous sheet, utilizing a unified scroll instead of two separate scrolling areas.</string>
     <string name="CP_MessageMenuAutoscroll">訊息自動捲動</string>
     <string name="CP_MessageMenuAutoscroll_Desc">開啟時自動將訊息選單內容捲動至底部，類似 iOS 版 Telegram 的操作方式。</string>
     <string name="CP_MessageMenuFixedHeight">更大的訊息選單高度</string>
     <string name="CP_MessageMenuFixedHeight_Desc">訊息選單將佔據半個螢幕區域，以便更容易使用。</string>
     <string name="CP_BlurMessageMenuItems">模糊選單項目</string>
     <string name="CP_BlurMessageMenuItems_Desc">模糊選單項目，呈現更真實的 iOS 外觀。</string>
+    <string name="CP_MessageMenuNativeBlur">原生模糊</string>
+    <string name="CP_MessageMenuNativeBlur_Desc">Android 內建的模糊系統功能將用於訊息選單背景：效果流暢、動態呈現，且對效能影響極小…</string>
     <string name="AP_CenterChatsTitle">對話標題列置中</string>
     <string name="CP_UnreadBadgeOnBackButton">顯示未讀對話數量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已開啟的對話中顯示未讀訊息數量</string>
@@ -249,7 +255,7 @@
     <string name="CG_MsgSlideAction">訊息滑動操作</string>
     <string name="CP_DisableSwipeToNext">停用頻道切換</string>
     <string name="CP_DisableSwipeToNext_Desc">瀏覽頻道訊息時禁止切換至下一個頻道</string>
-    <string name="CP_HideMuteUnmuteButton">隱藏頻道底部按鈕</string>
+    <string name="CP_HideMuteUnmuteButton">隱藏頻道底部工具列</string>
     <string name="CP_HideKbdOnScroll">滾動強度以隱藏鍵盤</string>
     <string name="CP_HideSendAsChannel">隱藏頻道身份傳送按鈕</string>
     <string name="CP_HideSendAsChannelDesc">您可以透過長按Emoji/貼紙/GIF 按鈕，開啟以頻道身份傳送的選單</string>
@@ -288,6 +294,9 @@
 
         若某個詞彙以不同形式出現（例如帶有前綴、後綴，或嵌套於其他詞彙中），則不會被隱藏。
     </string>
+    <string name="CP_Message_Filtering_Exclusions">排除清單</string>
+    <string name="CP_Message_Filtering_Exclude_Destination">更新排除項</string>
+    <string name="CP_Message_Filtering_Exclude_Sure">將被排除</string>
     <string name="CP_Message_Filtering_Entities">連結實體過濾器</string>
     <string name="CP_Message_Filtering_EntitiesDesc">啟用此選項後，系統將把過濾範圍擴展至訊息內含的連結（實體）。系統會掃描網址中是否包含您設定的過濾關鍵字。
         如在連結內發現匹配內容，整則訊息將自動隱藏於劇透標籤下，無論關鍵字是否出現在可見文字中。
@@ -315,8 +324,8 @@
     <string name="CP_VideoSeekDuration">雙擊尋找視頻（秒）</string>
     <string name="CP_Header_Notification">通知</string>
     <string name="CP_NotificationSound">通知音效</string>
-    <string name="CP_VibrateInChats">來電震動</string>
-    <string name="CP_VibrateInChats_Desc">當您正在使用應用程式時，收到新對話訊息便震動</string>
+    <string name="CP_VibrateInChats">對話震動功能</string>
+    <string name="CP_VibrateInChats_Desc">收到訊息時發出短暫震動</string>
     <string name="CP_SilenceNonContacts">將非聯絡人訊息設為靜音</string>
     <string name="CP_SilenceNonContacts_Desc">啟用後僅限聯絡人的通知會發出聲效，您可以在個人檔案頁面新增聯絡人</string>
     <!--Chats Preferences-->
@@ -415,6 +424,7 @@
     <string name="DP_EnjoyingUs">喜歡使用 Cherrygram 嗎？</string>
     <string name="DP_RateUs">評價 Cherrygram</string>
     <string name="DP_DonatesMoreInfo">想協助 Cherrygram 發展嗎？歡迎加入 **Cherrygram Support** 聊天室。</string>
+    <string name="DP_DonatesThanks">感謝您的支持！正是您讓 Cherrygram 茁壯成長❤️</string>
     <string name="DP_DonateBadge">捐款並解鎖額外功能</string>
     <string name="DP_Donate_Desc">當您捐款達2美元或以上時，您還將獲得額外贈品：</string>
     <string name="DP_Donate_Badge_desc">**Cherrygram 徽章** 顯示於您的姓名旁。</string>

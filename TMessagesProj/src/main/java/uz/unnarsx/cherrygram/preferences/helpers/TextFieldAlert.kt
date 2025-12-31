@@ -31,10 +31,13 @@ import org.telegram.ui.Components.LayoutHelper
 object TextFieldAlert {
 
     fun createFieldAlertForAppName(
-        context: Context,
+        context: Context?,
         title: String,
         defaultValue: String,
-        finish: (String) -> Unit) {
+        finish: (String) -> Unit
+    ) {
+        if (context == null) return
+
         val builder = AlertDialog.Builder(context)
         builder.setTitle(title)
 

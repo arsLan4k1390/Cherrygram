@@ -25,7 +25,6 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ReactedUserHolderView;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
@@ -36,7 +35,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.chats.MessageMenuHelper;
+import uz.unnarsx.cherrygram.chats.ui.MessageMenuHelper;
 
 public class ReactedUsersListView extends FrameLayout {
 

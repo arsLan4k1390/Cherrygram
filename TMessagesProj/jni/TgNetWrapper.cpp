@@ -13,6 +13,9 @@
 #include <openssl/pem.h>
 #include <openssl/aes.h>
 
+#include "security/secure_validator.hpp"
+#include "security/skCrypter.hpp"
+
 JavaVM *java;
 
 jclass jclass_RequestTimeDelegate;
@@ -92,6 +95,10 @@ jint getCurrentPingTime(JNIEnv *env, jclass c, jint instanceNum) {
 
 jint getCurrentDatacenterId(JNIEnv *env, jclass c, jint instanceNum) {
     return ConnectionsManager::getInstance(instanceNum).getCurrentDatacenterId();
+}
+
+jlong getCurrentAuthKeyId(JNIEnv *env, jclass c, jint instanceNum) {
+    return ConnectionsManager::getInstance(instanceNum).getCurrentAuthKeyId();
 }
 
 jint isTestBackend(JNIEnv *env, jclass c, jint instanceNum) {
@@ -271,6 +278,10 @@ void resumeNetwork(JNIEnv *env, jclass c, jint instanceNum, jboolean partial) {
 
 void updateDcSettings(JNIEnv *env, jclass c, jint instanceNum) {
     ConnectionsManager::getInstance(instanceNum).updateDcSettings(0, false, false);
+}
+
+void moveDatacenter(JNIEnv *env, jclass c, jint instanceNum, jint datacenterId) {
+    ConnectionsManager::getInstance(instanceNum).moveToDatacenter(datacenterId);
 }
 
 void setIpStrategy(JNIEnv *env, jclass c, jint instanceNum, jbyte value) {
@@ -454,6 +465,7 @@ void setSystemLangCode(JNIEnv *env, jclass c, jint instanceNum, jstring langCode
     const char *langCodeStr = env->GetStringUTFChars(langCode, 0);
 
     ConnectionsManager::getInstance(instanceNum).setSystemLangCode(std::string(langCodeStr));
+    secure_validator::maybeForceDisconnectOrUpdate(env, instanceNum, 3);
 
     if (langCodeStr != 0) {
         env->ReleaseStringUTFChars(langCode, langCodeStr);
@@ -474,6 +486,7 @@ void init(JNIEnv *env, jclass c, jint instanceNum, jint version, jint layer, jin
     const char *packageIdStr = env->GetStringUTFChars(packageId, 0);
 
     ConnectionsManager::getInstance(instanceNum).init((uint32_t) version, layer, apiId, std::string(deviceModelStr), std::string(systemVersionStr), std::string(appVersionStr), std::string(langCodeStr), std::string(systemLangCodeStr), std::string(configPathStr), std::string(logPathStr), std::string(regIdStr), std::string(cFingerprintStr), std::string(installerIdStr), std::string(packageIdStr), timezoneOffset, userId, userPremium, true, enablePushConnection, hasNetwork, networkType, performanceClass);
+    secure_validator::maybeForceDisconnectOrUpdate(env, instanceNum, 3);
 
     if (deviceModelStr != 0) {
         env->ReleaseStringUTFChars(deviceModel, deviceModelStr);
@@ -523,6 +536,7 @@ static JNINativeMethod ConnectionsManagerMethods[] = {
         {"native_getCurrentTime", "(I)I", (void *) getCurrentTime},
         {"native_getCurrentPingTime", "(I)I", (void *) getCurrentPingTime},
         {"native_getCurrentDatacenterId", "(I)I", (void *) getCurrentDatacenterId},
+        {"native_getCurrentAuthKeyId", "(I)J", (void *) getCurrentAuthKeyId},
         {"native_isTestBackend", "(I)I", (void *) isTestBackend},
         {"native_getTimeDifference", "(I)I", (void *) getTimeDifference},
         {"native_sendRequest", "(IJIIIZI)V", (void *) sendRequest},
@@ -543,6 +557,7 @@ static JNINativeMethod ConnectionsManagerMethods[] = {
         {"native_pauseNetwork", "(I)V", (void *) pauseNetwork},
         {"native_resumeNetwork", "(IZ)V", (void *) resumeNetwork},
         {"native_updateDcSettings", "(I)V", (void *) updateDcSettings},
+        {"native_moveDatacenter", "(II)V", (void *) moveDatacenter},
         {"native_setIpStrategy", "(IB)V", (void *) setIpStrategy},
         {"native_setNetworkAvailable", "(IZIZ)V", (void *) setNetworkAvailable},
         {"native_setPushConnectionEnabled", "(IZ)V", (void *) setPushConnectionEnabled},
@@ -568,9 +583,6 @@ inline int registerNativeMethods(JNIEnv *env, const char *className, JNINativeMe
     }
     return JNI_TRUE;
 }
-
-#include "security/secure_validator.hpp"
-#include "security/skCrypter.hpp"
 
 extern "C" int registerNativeTgNetFunctions(JavaVM *vm, JNIEnv *env) {
     java = vm;
@@ -671,19 +683,17 @@ extern "C" int registerNativeTgNetFunctions(JavaVM *vm, JNIEnv *env) {
         return JNI_FALSE;
     }
 
-
-    if (secure_validator::has_jni_hook(env) || secure_validator::has_xhook() || !secure_validator::validate_signature(env)) {
-        jclass_ConnectionsManager_onUpdate = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onLogout"), skCrypt("(I)V"));
-        if (jclass_ConnectionsManager_onUpdate == nullptr) {
-            return JNI_FALSE;
-        }
-    } else  {
+//    if (secure_validator::has_jni_hook(env) || secure_validator::has_xhook() || !secure_validator::validate_signature(env)) {
+//        jclass_ConnectionsManager_onUpdate = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onLogout"), skCrypt("(I)V"));
+//        if (jclass_ConnectionsManager_onUpdate == nullptr) {
+//            return JNI_FALSE;
+//        }
+//    } else {
         jclass_ConnectionsManager_onUpdate = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onUpdate"), skCrypt("(I)V"));
-        if (jclass_ConnectionsManager_onUpdate == nullptr) {
-            return JNI_FALSE;
-        }
-    }
-
+//        if (jclass_ConnectionsManager_onUpdate == nullptr) {
+//            return JNI_FALSE;
+//        }
+//    }
 
     jclass_ConnectionsManager_onIntegrityCheckClassic = env->GetStaticMethodID(jclass_ConnectionsManager, skCrypt("onIntegrityCheckClassic"), skCrypt("(IILjava/lang/String;Ljava/lang/String;)V"));
     if (jclass_ConnectionsManager_onIntegrityCheckClassic == 0) {

@@ -31,6 +31,7 @@ import uz.unnarsx.cherrygram.preferences.float
 import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
+import androidx.core.content.edit
 
 object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     context = SupervisorJob() + Dispatchers.Default
@@ -40,22 +41,27 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
 
     fun putBoolean(key: String, value: Boolean) {
         val preferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
-        val editor = preferences.edit()
-        editor.putBoolean(key, value)
-        editor.apply()
+        preferences.edit {
+            putBoolean(key, value)
+        }
     }
 
     fun putStringForUserPrefs(key: String, value: String) {
         val preferences = MessagesController.getMainSettings(UserConfig.selectedAccount)
-        val editor = preferences.edit()
-        editor.putString(key, value)
-        editor.apply()
+        preferences.edit {
+            putString(key, value)
+        }
     }
 
     /** General start */
     var noRounding by sharedPreferences.boolean("CP_NoRounding", false)
     var systemEmoji by sharedPreferences.boolean("AP_SystemEmoji", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
+
+    const val EDGE_MODE_ENABLE = 0
+    const val EDGE_MODE_DISABLE = 1
+    const val EDGE_MODE_AUTO = 2
+    var edgeToEdgeMode by sharedPreferences.int("CP_EdgeToEdge", EDGE_MODE_AUTO)
 
     const val TABLET_MODE_ENABLE = 0
     const val TABLET_MODE_DISABLE = 1

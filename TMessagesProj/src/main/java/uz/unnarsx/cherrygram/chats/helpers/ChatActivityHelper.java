@@ -29,6 +29,7 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.R;
+import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.browser.Browser;
@@ -629,5 +630,13 @@ public class ChatActivityHelper extends BaseController {
         }
     }
     /** Cherrygram chat functions finish */
+
+    /** Misc start */
+    public void invalidateBlur(ChatActivity.ChatActivityFragmentView contentView) {
+        if (contentView != null && SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH) {
+            contentView.invalidateBlurredViews();
+        }
+    }
+    /** Misc finish */
 
 }

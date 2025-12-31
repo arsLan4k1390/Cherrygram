@@ -31,6 +31,7 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
+import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import org.telegram.ui.ProfileActivity;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
@@ -89,6 +90,12 @@ public class ProfileMusicView extends View {
             }
             color1 = Theme.getColor(Theme.key_actionBarDefault, resourcesProvider);
             color2 = Theme.getColor(Theme.key_actionBarDefault, resourcesProvider);
+
+            if (MD3ListAdapter.canTryToIgnoreTopBarBackground(this)) {
+                color1 = color2 = Theme.getColor(Theme.key_windowBackgroundGray);
+                setBackgroundColor(color1);
+                return;
+            }
         } else {
             color1 = peerColor.getBgColor1(Theme.isCurrentThemeDark());
             color2 = peerColor.getBgColor2(Theme.isCurrentThemeDark());

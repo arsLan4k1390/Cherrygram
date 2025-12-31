@@ -36,6 +36,7 @@ class HuaweiApplicationLoaderlmpl : HuaweiApplicationLoader(), ThreatListener.Th
         private const val watcherMail = "arslan4k1390@gmail.com"
 
         private val supportedAlternativeStores = arrayOf(
+            "com.android.vending",               // Google Play Store
             "com.sec.android.app.samsungapps",   // Samsung Galaxy Store
             "com.huawei.appmarket",              // Huawei AppGallery
             "com.xiaomi.market",                 // Xiaomi GetApps
@@ -76,6 +77,22 @@ class HuaweiApplicationLoaderlmpl : HuaweiApplicationLoader(), ThreatListener.Th
 
         ThreatListener(this, null, null).registerListener(this)
         Talsec.start(this, config)
+
+        /*registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+                Talsec.blockScreenCapture(activity, false)
+            }
+            override fun onActivityStarted(activity: Activity) {}
+            override fun onActivityResumed(activity: Activity) {
+                ScreenProtector.INSTANCE.registerScreenCallbacks(activity)
+            }
+            override fun onActivityPaused(activity: Activity) {
+                ScreenProtector.INSTANCE.unregisterScreenCallbacks(activity)
+            }
+            override fun onActivityStopped(activity: Activity) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+            override fun onActivityDestroyed(activity: Activity) {}
+        })*/
     }
 
     override fun onRootDetected() {

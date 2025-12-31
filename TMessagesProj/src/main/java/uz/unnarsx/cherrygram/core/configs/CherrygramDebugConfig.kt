@@ -25,7 +25,6 @@ object CherrygramDebugConfig {
     /** Misc finish */
 
     /** Redesign start */
-    var mdContainers by sharedPreferences.boolean("EP_MaterialDes_Containers", false)
     /** Redesign finish */
 
     /** Chats start */

@@ -1440,7 +1440,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                     } else {
                         menu.getItem(2).setVisible(true);
                     }
-                    menu.getItem(SEARCH).setVisible(canCopy());
+                    menu.getItem(SEARCH).setVisible(canCopy() && selectedView instanceof ChatMessageCell);
                 }
                 menu.getItem(3).setVisible(LanguageDetector.hasSupport() && getSelectedText() != null);
                 if (/*onTranslateListener != null &&*/ LanguageDetector.hasSupport() && getSelectedText() != null) {
@@ -1615,6 +1615,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
         clear(true);
     }
 
+    private String fromLang = null;
     private void translateText() {
         if (!isInSelectionMode()) {
             return;
@@ -1623,9 +1624,6 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
         MessageObject messageObject = null;
         if (selectedView instanceof ChatMessageCell) {
             messageObject = ((ChatMessageCell) selectedView).getMessageObject();
-        }
-        if (messageObject == null) {
-            return;
         }
 
         MessagesController mc = MessagesController.getInstance(UserConfig.selectedAccount);
@@ -1637,11 +1635,17 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
             return;
         }
 
-        String fromLang = messageObject.messageOwner.originalLanguage;
+        LanguageDetector.detectLanguage(getSelectedText().toString(), lng -> fromLang = lng, err -> {
+            FileLog.e("mlkit: failed to detect language in selection");
+            FileLog.e(err);
+            fromLang = null;
+        });
+        if (fromLang == null && messageObject != null) {
+            fromLang = messageObject.messageOwner.originalLanguage;
+        }
         String toLang = TranslateAlert2.getToLanguage();
-        ArrayList<TLRPC.MessageEntity> entities = messageObject.messageOwner != null ? messageObject.messageOwner.entities : null;
 
-        TranslateAlert2 alert = TranslateAlert2.showAlert(parentView.getContext(), baseFragment, UserConfig.selectedAccount, fromLang, toLang, str, entities, noforwardsOrPaidMedia, null, this::showActions);
+        TranslateAlert2 alert = TranslateAlert2.showAlert(parentView.getContext(), baseFragment, UserConfig.selectedAccount, fromLang, toLang, str, null, noforwardsOrPaidMedia, null, this::showActions);
         alert.setDimBehindAlpha(140);
         alert.setDimBehind(true);
         clear(true);

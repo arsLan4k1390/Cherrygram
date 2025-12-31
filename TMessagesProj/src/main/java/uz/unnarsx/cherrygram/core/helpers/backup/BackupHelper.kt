@@ -216,7 +216,7 @@ object BackupHelper {
 
             // Appearance
             "AP_Icon_Replacements", "AP_OneUI_SwitchStyle", "AP_DisableDividers", "AP_CenterTitle", "AP_iosSearchPanel",
-            "AP_ToolBarShadow", "AP_OverrideHeaderColor", "AP_FlatNavBar", "CP_ShowSeconds", "CP_DisablePremiumStatuses",
+            "AP_ToolBarShadow", "AP_FlatNavBar", "CP_ShowSeconds", "CP_DisablePremiumStatuses",
             "CP_ReplyBackground", "CP_ReplyCustomColors", "CP_ReplyBackgroundEmoji", "CP_ProfileChannelPreview",
             "AP_ShowID_DC", "CP_ProfileBirthDatePreview", "CP_ProfileBusinessPreview", "CP_ProfileBackgroundColor",
             "CP_ProfileBackgroundEmoji", "AP_FolderNameInHeader", "CP_NewTabs_RemoveAllChats", "CP_NewTabs_NoCounter",
@@ -229,7 +229,7 @@ object BackupHelper {
             "AP_DrawSnowInActionBar", "AP_DrawSnowInChat",
 
             // Chats
-            "CP_Shortcut_JumpToBegin", "CP_Shortcut_DeleteAll", "CP_Shortcut_SavedMessages", "CP_Shortcut_Blur",
+            "CP_Shortcut_JumpToBegin", "CP_Shortcut_DeleteAll", "CP_Shortcut_SavedMessages",
             "CP_Shortcut_Browser", "CP_Admins_Reactions", "CP_Admins_Permissions", "CP_Admins_Administrators",
             "CP_Admins_Members", "CP_Admins_Statistics", "CP_Admins_RecentActions", "CP_UnreadBadgeOnBackButton",
             "AP_CenterChatTitle", "CP_Slider_RecentEmojisAmplifier", "CP_Slider_RecentStickersAmplifier",

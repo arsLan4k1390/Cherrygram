@@ -66,6 +66,7 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Enable/Disable members rounding,
 - Enable/Disable system emoji,
 - Enable/Disable system fonts,
+- Force and auto Edge-to-Edge,
 - Tablet mode,
 - Default notification icon (Telegram),
 - Show a resident notification,
@@ -79,11 +80,11 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 
 *Cherrygram Appearance Preferences:*
 - VKUI/Solar icons in app,
+- MD3 Expressive containers design in settings,
 - One UI (Samsung) Switchers style,
 - Center title in action bar,
 - IOS-styled search panel,
 - Enable/Disable toolbar shadow or dividers,
-- Overriding header color,
 - Snow in App Header and Chats.
 
 *Messages and profiles Preferences:*
@@ -175,12 +176,13 @@ MTproto protocol manuals: https://core.telegram.org/mtproto
 
 ## Compilation Guide
 
-1. Download the Cherrygram source code ( `git clone https://github.com/arslan4k1390/Cherrygram.git` )
+1. Download the Cherrygram source code (`git clone https://github.com/arslan4k1390/Cherrygram.git`)
 2. Fill out storeFile, storePassword, keyAlias, keyPassword in app's build.gradle to sign your app
 3. Go to https://console.firebase.google.com/, create two android apps with application IDs uz.unnarsx.cherrygram and uz.unnarsx.cherrygram.beta, turn on firebase messaging and download `google-services.json`, which should be copied into `TMessagesProj` folder.
 4. Open the project in the Studio (note that it should be opened, NOT imported).
-5. Fill out values in `TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt` – there’s a link for each of the variables showing where and which data to obtain.
-6. You are ready to compile and use Cherrygram.
+5. Locate the files `TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt.example` and `TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuHelper.java.example`, then remove the .example extension from their filenames.
+6. Fill out values in `TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt` – there’s a link for each of the variables showing where and which data to obtain. Do not forget to disable signature verification checks.
+7. You are ready to compile and use Cherrygram.
 
 
 ## Thanks to:

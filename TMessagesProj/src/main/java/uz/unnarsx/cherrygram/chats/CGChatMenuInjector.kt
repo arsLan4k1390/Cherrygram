@@ -85,7 +85,7 @@ object CGChatMenuInjector {
         val requireBiometrics = CherrygramPrivacyConfig.askBiometricsToOpenChat && !secretChat
         val isAnyButtonEnabled = requireBiometrics || CherrygramChatsConfig.shortcut_JumpToBegin
                     || CherrygramChatsConfig.shortcut_DeleteAll || CherrygramChatsConfig.shortcut_SavedMessages
-                    || CherrygramChatsConfig.shortcut_Blur || CherrygramChatsConfig.shortcut_Browser
+                    || CherrygramChatsConfig.shortcut_Browser
 
         if (isAnyButtonEnabled) headerItem.lazilyAddColoredGap()
 

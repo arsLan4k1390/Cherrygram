@@ -41,6 +41,8 @@ import org.telegram.ui.Components.ThemeSmallPreviewView;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
+
 @SuppressLint("ViewConstructor")
 public class DefaultThemesPreviewCell extends LinearLayout {
 
@@ -458,7 +460,7 @@ public class DefaultThemesPreviewCell extends LinearLayout {
                 dayNightCell.setColors(-1, Theme.key_windowBackgroundWhiteBlueText4);
             }
             if (browseThemesCell != null) {
-                browseThemesCell.setBackground(Theme.createSelectorWithBackgroundDrawable(Theme.getColor(Theme.key_windowBackgroundWhite), Theme.getColor(Theme.key_listSelector)));
+                browseThemesCell.setBackground(Theme.createSelectorWithBackgroundDrawable(MD3ListAdapter.getBackgroundColor(), Theme.getColor(Theme.key_listSelector)));
                 browseThemesCell.setColors(Theme.key_windowBackgroundWhiteBlueText4, Theme.key_windowBackgroundWhiteBlueText4);
             }
         }

@@ -42,8 +42,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DefaultItemAnimator;
-
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -108,8 +106,7 @@ import org.telegram.ui.Components.spoilers.SpoilersTextView;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
+import uz.unnarsx.cherrygram.core.ui.MD3AdapterWithDiffUtils;
 import uz.unnarsx.cherrygram.preferences.folders.helpers.FolderIconHelper;
 import uz.unnarsx.cherrygram.preferences.folders.IconSelectorAlert;
 
@@ -407,26 +404,8 @@ public class FilterCreateActivity extends BaseFragment {
     float shiftDp = -5;
 
     @Override
-    public boolean isLightStatusBar() {
-        if (!CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) return super.isLightStatusBar();
-        int color = getThemedColor(Theme.key_windowBackgroundWhite);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    @Override
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
-            actionBar.setItemsColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText), false);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
-            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarWhiteSelector), false);
-            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
-            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
-            //actionBar.setCastShadows(false);
-        }
-
         actionBar.setAllowOverlayTitle(true);
         ActionBarMenu menu = actionBar.createMenu();
         if (creatingNew) {
@@ -1452,7 +1431,7 @@ public class FilterCreateActivity extends BaseFragment {
         }
     }
 
-    private class ListAdapter extends AdapterWithDiffUtils {
+    private class ListAdapter extends MD3AdapterWithDiffUtils {
 
         private Context mContext;
 
@@ -1603,51 +1582,6 @@ public class FilterCreateActivity extends BaseFragment {
             } else if (viewType == VIEW_TYPE_HEADER_COLOR_PREVIEW) {
                 ((HeaderCellColorPreview) holder.itemView).setPreviewText(AnimatedEmojiSpan.cloneSpans(newFilterName, -1, folderTagsHeader.getPreviewTextPaint().getFontMetricsInt(), .5f), true);
             }
-
-            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
-
-            int position = holder.getAdapterPosition();
-
-            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_SHADOW_TEXT)
-                return;
-
-            int side = AndroidUtilities.dp(16);
-            int top = 0;
-            int bottom = 0;
-
-            boolean prevIsHeader = position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER
-                    || position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER_ANIMATED
-                    || position > 0 && getItemViewType(position - 1) == VIEW_TYPE_HEADER_COLOR_PREVIEW;
-            boolean nextIsHeader = position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER
-                    || position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER_ANIMATED
-                    || position < getItemCount() - 1 && getItemViewType(position + 1) == VIEW_TYPE_HEADER_COLOR_PREVIEW;
-
-            if (position == 0 || getItemViewType(position - 1) == VIEW_TYPE_SHADOW || getItemViewType(position - 1) == VIEW_TYPE_SHADOW_TEXT) {
-                top = AndroidUtilities.dp(2);
-            }
-
-            if (position == 0 /*|| viewType == VIEW_TYPE_HEADER*/) {
-                top = AndroidUtilities.dp(16);
-            }
-
-            if (prevIsHeader) {
-                top = 0;
-            }
-
-            if (position == getItemCount() - 1
-                    || nextIsHeader
-                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW
-                    || getItemViewType(position + 1) == VIEW_TYPE_SHADOW_TEXT
-            ) {
-                bottom = AndroidUtilities.dp(2);
-            }
-
-            RecyclerView.LayoutParams lp = (RecyclerView.LayoutParams) holder.itemView.getLayoutParams();
-            lp.leftMargin = side;
-            lp.rightMargin = side;
-            lp.topMargin = top;
-            lp.bottomMargin = bottom;
-            holder.itemView.setLayoutParams(lp);
         }
 
         @Override
@@ -1674,7 +1608,6 @@ public class FilterCreateActivity extends BaseFragment {
                     } else {
                         headerCell.setText(item.text);
                     }
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_HEADER_ANIMATED: {
@@ -1683,7 +1616,6 @@ public class FilterCreateActivity extends BaseFragment {
                     cell.setText(item.text);
                     cell.rightTextView.setText(item.subtext);
                     cell.rightTextView.setOnClickListener(item.onClickListener);
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_CHAT: {
@@ -1732,42 +1664,32 @@ public class FilterCreateActivity extends BaseFragment {
                             userCell.setData(chat, null, status, 0, divider);
                         }
                     }
-                    applyMD3Background(holder, position);
-                    break;
-                }
-                case VIEW_TYPE_EDIT: {
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_SHADOW: {
                     holder.itemView.setBackground(Theme.getThemedDrawableByKey(mContext, divider ? R.drawable.greydivider : R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_BUTTON: {
                     ButtonCell buttonCell = (ButtonCell) holder.itemView;
                     buttonCell.setRed(item.isRed);
                     buttonCell.set(item.iconResId, item.text, divider);
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_SHADOW_TEXT: {
                     TextInfoPrivacyCell cell = (TextInfoPrivacyCell) holder.itemView;
                     cell.setText(item.text);
                     holder.itemView.setBackground(Theme.getThemedDrawableByKey(mContext, divider ? R.drawable.greydivider : R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_LINK: {
                     LinkCell linkCell = (LinkCell) holder.itemView;
                     linkCell.setInvite(item.link, divider);
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_CREATE_LINK: {
                     createLinkCell = (CreateLinkCell) holder.itemView;
                     createLinkCell.setDivider(divider);
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_HEADER_COLOR_PREVIEW: {
@@ -1775,7 +1697,6 @@ public class FilterCreateActivity extends BaseFragment {
                     folderTagsHeader.setPreviewText(AnimatedEmojiSpan.cloneSpans(newFilterName, -1, folderTagsHeader.getPreviewTextPaint().getFontMetricsInt(), .5f), false);
                     folderTagsHeader.setPreviewColor(!getUserConfig().isPremium() ? -1 : newFilterColor, false);
                     folderTagsHeader.setText(LocaleController.getString(R.string.FolderTagColor));
-                    applyMD3Background(holder, position);
                     break;
                 }
                 case VIEW_TYPE_COLOR: {
@@ -1793,7 +1714,6 @@ public class FilterCreateActivity extends BaseFragment {
                         }
                         checkDoneButton(true);
                     });
-                    applyMD3Background(holder, position);
                     break;
                 }
             }
@@ -1807,56 +1727,6 @@ public class FilterCreateActivity extends BaseFragment {
             }
             return item.viewType;
         }
-
-        /** Cherrygram start */
-        private void applyMD3Background(RecyclerView.ViewHolder holder, int position) {
-            if (!CherrygramDebugConfig.INSTANCE.getMdContainers()) return;
-
-            int viewType = holder.getItemViewType();
-
-            if (viewType == VIEW_TYPE_SHADOW || viewType == VIEW_TYPE_SHADOW_TEXT) {
-                holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                return;
-            }
-
-            int prevType = position > 0 ? getItemViewType(position - 1) : -1;
-            int nextType = position < getItemCount() - 1 ? getItemViewType(position + 1) : -1;
-
-            boolean isHeader = viewType == VIEW_TYPE_HEADER || viewType == VIEW_TYPE_HEADER_ANIMATED || viewType == VIEW_TYPE_HEADER_COLOR_PREVIEW;
-
-            boolean isGroupStart = position == 0
-                    || prevType == VIEW_TYPE_SHADOW
-                    || prevType == VIEW_TYPE_SHADOW_TEXT;
-
-            boolean isGroupEnd = position == getItemCount() - 1
-                    || nextType == VIEW_TYPE_SHADOW
-                    || nextType == VIEW_TYPE_SHADOW_TEXT;
-
-            int r = AndroidUtilities.dp(14);
-
-            int topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0;
-
-            if (isHeader) {
-                topLeft = topRight = r;
-            } else if (isGroupStart && isGroupEnd) {
-                topLeft = topRight = bottomLeft = bottomRight = r;
-            } else if (isGroupStart) {
-                topLeft = topRight = r;
-            } else if (isGroupEnd) {
-                bottomLeft = bottomRight = r;
-            }
-
-            Drawable bg = Theme.createRoundRectDrawable(
-                    topLeft, topRight, bottomRight, bottomLeft,
-                    Theme.getColor(Theme.key_windowBackgroundWhite)
-            );
-            holder.itemView.setBackground(bg);
-
-            final int side = 0;
-            holder.itemView.setPadding(side, holder.itemView.getPaddingTop(), side, holder.itemView.getPaddingBottom());
-        }
-        /** Cherrygram finish */
-
     }
 
     @Override
@@ -1877,18 +1747,6 @@ public class FilterCreateActivity extends BaseFragment {
 
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{HeaderCell.class, TextCell.class, UserCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
-
-        if (CherrygramAppearanceConfig.INSTANCE.getOverrideHeaderColor()) {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarWhiteSelector));
-        } else {
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
-            themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));
-        }
 
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));

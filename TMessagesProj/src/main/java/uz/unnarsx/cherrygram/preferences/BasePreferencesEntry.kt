@@ -10,6 +10,7 @@
 package uz.unnarsx.cherrygram.preferences
 
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.RecyclerListView
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.TGKitSettings
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitListPreference
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSettingsCellRow
@@ -43,5 +44,7 @@ interface BasePreferencesEntry {
     }
 
     fun getPreferences(bf: BaseFragment): TGKitSettings
+
+    fun setListView(rv: RecyclerListView)
 
 }

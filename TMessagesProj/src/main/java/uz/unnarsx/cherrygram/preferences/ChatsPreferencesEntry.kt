@@ -15,6 +15,7 @@ import androidx.core.util.Pair
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.RecyclerListView
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.VibrateUtil
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
@@ -33,6 +34,13 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSliderPrefe
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
 
 object ChatsPreferencesEntry : BasePreferencesEntry {
+
+    private var listView: RecyclerListView? = null
+
+    override fun setListView(rv: RecyclerListView) {
+        listView = rv
+    }
+
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.CP_Header_Chats)) {
         category(getString(R.string.CP_Header_Chats)) {
             textIcon {
@@ -549,12 +557,6 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 R.drawable.msg_saved,
                 { CherrygramChatsConfig.shortcut_SavedMessages },
                 { CherrygramChatsConfig.shortcut_SavedMessages = !CherrygramChatsConfig.shortcut_SavedMessages }
-            ),
-            MenuItemConfig(
-                getString(R.string.BlurInChat),
-                R.drawable.msg_theme,
-                { CherrygramChatsConfig.shortcut_Blur },
-                { CherrygramChatsConfig.shortcut_Blur = !CherrygramChatsConfig.shortcut_Blur }
             ),
             MenuItemConfig(
                 "Telegram Browser",

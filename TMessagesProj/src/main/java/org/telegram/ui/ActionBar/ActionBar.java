@@ -53,6 +53,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.ui.Adapters.FiltersView;
+import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.CounterView;
@@ -368,7 +369,7 @@ public class ActionBar extends FrameLayout {
         subtitleTextView = new SimpleTextView(getContext());
         subtitleTextView.setGravity(CherrygramAppearanceConfig.INSTANCE.getCenterTitle() ? Gravity.CENTER : Gravity.LEFT);
         subtitleTextView.setVisibility(GONE);
-        subtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
+        subtitleTextView.setTextColor(shouldTryToForceColors() ? Color.BLACK : getThemedColor(Theme.key_actionBarDefaultSubtitle));
         addView(subtitleTextView, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
     }
 
@@ -379,7 +380,7 @@ public class ActionBar extends FrameLayout {
         additionalSubtitleTextView = new SimpleTextView(getContext());
         additionalSubtitleTextView.setGravity(CherrygramAppearanceConfig.INSTANCE.getCenterTitle() ? Gravity.CENTER : Gravity.LEFT);
         additionalSubtitleTextView.setVisibility(GONE);
-        additionalSubtitleTextView.setTextColor(getThemedColor(Theme.key_actionBarDefaultSubtitle));
+        additionalSubtitleTextView.setTextColor(shouldTryToForceColors() ? Color.BLACK : getThemedColor(Theme.key_actionBarDefaultSubtitle));
         addView(additionalSubtitleTextView, 0, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
     }
 
@@ -420,7 +421,9 @@ public class ActionBar extends FrameLayout {
         }
         titleTextView[i] = new SimpleTextView(getContext());
         titleTextView[i].setGravity(isCenterTitle ? Gravity.CENTER : Gravity.LEFT | Gravity.CENTER_VERTICAL);
-        if (titleColorToSet != 0) {
+        if (shouldTryToForceColors()) {
+            titleTextView[i].setTextColor(Color.BLACK);
+        } else if (titleColorToSet != 0) {
             titleTextView[i].setTextColor(titleColorToSet);
         } else {
             titleTextView[i].setTextColor(getThemedColor(Theme.key_actionBarDefaultTitle));
@@ -1627,7 +1630,15 @@ public class ActionBar extends FrameLayout {
         }
     }
 
+    private boolean shouldTryToForceColors() {
+        return MD3ListAdapter.canTryToIgnoreTopBarBackground() && ColorUtils.calculateLuminance(getBackgroundColor()) >= 0.7f;
+    }
+
     public void setItemsColor(int color, boolean isActionMode) {
+        if (shouldTryToForceColors()) {
+            color = Color.BLACK;
+        }
+
         if (isActionMode) {
             itemsActionModeColor = color;
             if (actionMode != null) {
@@ -1662,7 +1673,9 @@ public class ActionBar extends FrameLayout {
     }
 
     public void setCastShadows(boolean value) {
-        if (CherrygramAppearanceConfig.INSTANCE.getDisableToolBarShadow()) return;
+        if (value && (CherrygramAppearanceConfig.INSTANCE.getDisableToolBarShadow() || MD3ListAdapter.canTryToIgnoreTopBarBackground())) {
+            value = false;
+        }
         if (castShadows != value && getParent() instanceof View) {
             ((View) getParent()).invalidate();
             invalidate();
@@ -1671,7 +1684,7 @@ public class ActionBar extends FrameLayout {
     }
 
     public boolean getCastShadows() {
-        return castShadows;
+        return castShadows && !MD3ListAdapter.canTryToIgnoreTopBarBackground();
     }
 
     @Override
