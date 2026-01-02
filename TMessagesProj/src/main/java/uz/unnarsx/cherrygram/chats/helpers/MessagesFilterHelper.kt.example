@@ -41,6 +41,10 @@ object MessagesFilterHelper {
         return original
     }
 
+    fun addSpoilerEntities(originalText: String?): String? {
+        return originalText
+    }
+
     fun shouldBlockMessage(messageObject: MessageObject): Boolean {
         if (!CherrygramChatsConfig.enableMsgFilters) {
             return false
