@@ -5,6 +5,7 @@ afat/
 build/
 obj/
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/helpers/MessagesFilterHelper.kt
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuCompactView.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuHelper.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuMessageCells.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuRoundVideoPlayer.java
