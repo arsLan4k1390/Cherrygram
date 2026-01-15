@@ -246,11 +246,11 @@ public class VideoAds {
         final TLRPC.TL_sponsoredMessage ad = ads.get(0);
 
         boolean hide;
-        if (CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) {
+        if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
             hide = true;
         } else {
             int num = Utilities.random.nextInt(2);
-            hide = num == 1 && (ApplicationLoader.isStandaloneBuild() || CherrygramCoreConfig.INSTANCE.isDevBuild());
+            hide = num == 1 && (ApplicationLoader.isStandaloneBuild() || CherrygramCoreConfig.isDevBuild());
         }
         if (UserConfig.getInstance(currentAccount).isPremium()) hide = false;
 

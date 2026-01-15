@@ -151,7 +151,7 @@ public class UpdaterUtils {
     }*/
 
     public static void checkUpdates(BaseFragment fragment, boolean manual, OnUpdateNotFound onUpdateNotFound, OnUpdateFound onUpdateFound, Browser.Progress progress) {
-        if (CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) return;
+        if (CherrygramCoreConfig.isStandalonePremiumBuild()) return;
 
         if (checkingForUpdates || id != 1L || (System.currentTimeMillis() - CherrygramCoreConfig.INSTANCE.getUpdateScheduleTimestamp() < updateCheckInterval && !manual))
             return;
@@ -189,7 +189,7 @@ public class UpdaterUtils {
                     link = arr.getJSONObject(i).getString("browser_download_url")
                             .replace("Cherrygram-", "Cherrygram-Huawei-");
                     downloadURL = link;
-                    if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("DownloadLinkHuawei: " + downloadURL);
+                    if (CherrygramCoreConfig.isDevBuild()) FileLog.d("DownloadLinkHuawei: " + downloadURL);
 
                     size = AndroidUtilities.formatFileSize(arr.getJSONObject(i).getLong("size"));
                     for (String type : supportedTypes) {
@@ -219,6 +219,7 @@ public class UpdaterUtils {
                     if (onUpdateNotFound != null)
                         AndroidUtilities.runOnUIThread(onUpdateNotFound::run);
                     if (progress != null) progress.end();
+                    cleanOtaDir();
                 }
             } catch (Exception e) {
                 FileLog.e(e);
@@ -445,7 +446,7 @@ public class UpdaterUtils {
                                     updateLayoutIcon.setProgress((float) progress / 100, true);
                                 }
                                 CherrygramCoreConfig.INSTANCE.setUpdateDownloadingProgress(progress);
-                                if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("Загрузка: " + progress + "%");
+                                if (CherrygramCoreConfig.isDevBuild()) FileLog.e("Загрузка: " + progress + "%");
                             }
                         }
                     }

@@ -545,11 +545,8 @@
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
             android:hardwareAccelerated="@bool/useHardwareAcceleration"
             android:windowSoftInputMode="adjustPan"
-            android:exported="true">
-            <intent-filter android:icon="@mipmap/icon_launcher_cherry">
-                <action android:name="org.telegram.passport.AUTHORIZE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
+            android:exported="true"
+            android:launchMode="singleTop">
         </activity>
         <activity
             android:name="org.telegram.ui.ChatsWidgetConfigActivity"

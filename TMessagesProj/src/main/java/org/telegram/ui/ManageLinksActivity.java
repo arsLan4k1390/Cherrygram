@@ -533,6 +533,15 @@ public class ManageLinksActivity extends BaseFragment implements NotificationCen
         if (listViewAdapter != null && notify) {
             listViewAdapter.notifyDataSetChanged();
         }
+
+        if (listView != null) {
+            listView.post(() -> {
+                RecyclerView.Adapter adapter = listView.getAdapter();
+                if (adapter instanceof MD3ListAdapter md3) {
+                    md3.reapplyVisible();
+                }
+            });
+        }
     }
 
     @Override

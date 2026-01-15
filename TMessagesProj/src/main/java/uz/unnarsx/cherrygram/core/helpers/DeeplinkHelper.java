@@ -18,6 +18,7 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Premium.LimitReachedBottomSheet;
 import org.telegram.ui.LaunchActivity;
+import org.telegram.ui.Stars.StarsIntroActivity;
 
 import java.util.Locale;
 
@@ -63,7 +64,15 @@ public class DeeplinkHelper {
                     CherrygramPreferencesNavigator.INSTANCE.createDonate(fragment);
                     return;
                 }
-                case "cg_donate_force", "cg_donates_force", "cg_support_force", "cg_badge_force" -> {
+                case "cg_stars" -> {
+                    if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
+                        CherrygramPreferencesNavigator.INSTANCE.createStars(fragment, null, null, -1);
+                    } else {
+                        new StarsIntroActivity.StarsOptionsSheet(fragment.getContext(), fragment.getResourceProvider()).show();
+                    }
+                    return;
+                }
+                case "cg_donate_force", "cg_donates_force", "cg_support_force", "cg_support_f", "cg_badge_force" -> {
                     CherrygramPreferencesNavigator.INSTANCE.createDonateForce(fragment);
                     return;
                 }
@@ -104,10 +113,10 @@ public class DeeplinkHelper {
                 }
                 case "cg_settings", "cg_main" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createMainMenu(false);
                 case "cg_update", "cg_upgrade", "update", "upgrade" -> {
-                    if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
+                    if (CherrygramCoreConfig.isPlayStoreBuild()) {
                         Browser.openUrl(fragment.getContext(), Constants.UPDATE_APP_URL);
                         return;
-                    } else if (CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) {
+                    } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
                         // Fuckoff :)
                         unknown.run();
                         return;
@@ -117,13 +126,13 @@ public class DeeplinkHelper {
                     }
                 }
                 case "cg_updates", "updates" -> {
-                    if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
+                    if (CherrygramCoreConfig.isPlayStoreBuild()) {
                         Browser.openUrl(fragment.getContext(), Constants.UPDATE_APP_URL);
-                    } else if (CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) {
+                    } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
                         // Fuckoff :)
                         unknown.run();
                         return;
-                    } else if (!CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) {
+                    } else if (!CherrygramCoreConfig.isStandalonePremiumBuild()) {
                         LaunchActivity.instance.showCgUpdaterSettings(fragment);
                     }
                     return;

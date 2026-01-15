@@ -3787,9 +3787,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             int requestId = getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 progressDialog.dismiss();
                 if (error == null) {
-                    if (response instanceof TLRPC.TL_auth_loginToken) {
+                    if (response instanceof TLRPC.TL_auth_loginToken res) {
                         getNotificationCenter().addObserver(this, NotificationCenter.onUpdateLoginToken);
-                        TLRPC.TL_auth_loginToken res = (TLRPC.TL_auth_loginToken) response;
                         if (show) {
                             LinearLayout linearLayout = new LinearLayout(context);
                             linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -3857,7 +3856,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         showDoneButton(true, true);
                         TLRPC.TL_auth_loginTokenMigrateTo res = (TLRPC.TL_auth_loginTokenMigrateTo) response;
 
-                        ConnectionsManager.native_moveToDatacenter(currentAccount, res.dc_id);
+                        getConnectionsManager().setDefaultDatacenterId(res.dc_id);
                         TLRPC.TL_auth_importLoginToken request = new TLRPC.TL_auth_importLoginToken();
                         request.token = res.token;
                         getConnectionsManager().sendRequest(request, (response1, error1) -> AndroidUtilities.runOnUIThread(() -> {

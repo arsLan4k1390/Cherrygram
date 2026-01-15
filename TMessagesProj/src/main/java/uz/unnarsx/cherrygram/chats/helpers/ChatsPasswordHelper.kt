@@ -170,8 +170,6 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     fun checkBiometricAvailable(): Boolean {
         if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил checkBiometricAvailable")
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false
-
         val hasBiometrics = CGBiometricPrompt.hasBiometricEnrolled()
         if (!hasBiometrics) return false
 

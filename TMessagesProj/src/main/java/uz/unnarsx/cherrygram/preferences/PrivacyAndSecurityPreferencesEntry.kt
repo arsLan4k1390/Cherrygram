@@ -17,7 +17,6 @@ import androidx.biometric.BiometricPrompt
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.DialogObject
 import org.telegram.messenger.FileLog
-import org.telegram.messenger.FingerprintController
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
@@ -91,6 +90,18 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
 
         category(getString(R.string.CP_Header_Chats)) {
             switch {
+                isAvailable = (CherrygramCoreConfig.isStandalonePremiumBuild() || CherrygramCoreConfig.isDevBuild()) && (bf.userConfig.clientUserId == 6578415824L || bf.userConfig.clientUserId == 282287840L)
+                title = "Скрыть архивированные истории"
+                description = "Скрывает раздел архивированных историй в профиле"
+
+                contract({
+                    return@contract CherrygramPrivacyConfig.hideArchivedStories
+                }) {
+                    CherrygramPrivacyConfig.hideArchivedStories = it
+                    AppRestartHelper.createRestartBulletin(bf)
+                }
+            }
+            switch {
                 title = getString(R.string.SP_HideArchive)
                 description = getString(R.string.SP_HideArchive_Desc)
 
@@ -151,23 +162,6 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     }
                 }
             }
-            /*textIcon {
-                isAvailable = CherrygramCoreConfig.isDevBuild() && CherrygramPrivacyConfig.askBiometricsToOpenChat && Build.VERSION.SDK_INT >= 23 && CGBiometricPrompt.hasBiometricEnrolled() && FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
-
-                icon = R.drawable.msg_clear
-                title = getString(R.string.SP_LockedChats)
-                value = bf.chatsPasswordHelper.getLockedChatsCount().toString()
-                divider = true
-
-                listener = TGKitTextIconRow.TGTIListener {
-                    val arr = bf.chatsPasswordHelper.getArrayList(bf.chatsPasswordHelper.getPasscodeArray())!!
-                    arr.clear()
-                    bf.chatsPasswordHelper.saveArrayList(arr, bf.chatsPasswordHelper.getPasscodeArray())
-
-                    value = bf.chatsPasswordHelper.getLockedChatsCount().toString()
-                    bf.parentLayout.rebuildAllFragmentViews(true, true)
-                }
-            }*/
             switch {
                 isAvailable = bf.chatsPasswordHelper.checkBiometricAvailable()
 
@@ -198,8 +192,6 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }
             }
             textIcon {
-                isAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-
                 title = getString(R.string.SP_TestFingerprint)
                 icon = R.drawable.fingerprint
 
@@ -276,7 +268,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
 
                 }
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) hint(getString(R.string.SP_TestFingerprint_Desc))
+            hint(getString(R.string.SP_TestFingerprint_Desc))
         }
 
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("privacy_preferences_screen")

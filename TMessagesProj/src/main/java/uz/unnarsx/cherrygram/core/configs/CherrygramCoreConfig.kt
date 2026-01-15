@@ -104,25 +104,31 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var cgBrandedScreenshots by sharedPreferences.boolean("DP_BrandedScreenshots", false)
     var sleepTimer by sharedPreferences.boolean("CG_Sleep_Timer", false)
     var showNotifications by sharedPreferences.boolean("CG_ShowNotifications", true)
+    var allowSafeStars by sharedPreferences.boolean("CG_AllowSafeStarsUI", true)
     /** Misc finish */
 
     /** Cherrygram build types start */
+    @JvmStatic
     fun isStandaloneStableBuild(): Boolean {
         return ApplicationLoader.isStandaloneBuild() && !isDevBuild() && !isStandalonePremiumBuild() && !isStandaloneBetaBuild()
     }
 
+    @JvmStatic
     fun isStandaloneBetaBuild(): Boolean {
         return false
     }
 
+    @JvmStatic
     fun isDevBuild(): Boolean {
         return false
     }
 
+    @JvmStatic
     fun isStandalonePremiumBuild(): Boolean {
         return false
     }
 
+    @JvmStatic
     fun isPlayStoreBuild(): Boolean {
         return !ApplicationLoader.isStandaloneBuild()
     }
@@ -131,6 +137,15 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     /** Misc start */
     var lastDonatesCheckTime by sharedPreferences.long("CG_LastDonatesCheckTime", 0)
     /** Misc finish*/
+
+    /** Migration start */
+    private fun migratePreferences() {
+        if (CherrygramAppearanceConfig.showIDDC_old >= CherrygramAppearanceConfig.ID_DC) {
+            CherrygramAppearanceConfig.showIDDC_old = 1
+            CherrygramAppearanceConfig.showIDDC = true
+        }
+    }
+    /** Migration finish */
 
     fun init() {
         launch {
@@ -153,6 +168,8 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
             ) {
                 KotlinFragmentsManager.nfweioufwehr117()
             }
+
+            migratePreferences()
         }
     }
 

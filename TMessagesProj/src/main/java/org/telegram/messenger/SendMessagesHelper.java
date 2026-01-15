@@ -8011,8 +8011,7 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
     public TLRPC.TL_photo generatePhotoSizes(TLRPC.TL_photo photo, String path, Uri imageUri, boolean highQuality) {
         Bitmap bitmap = ImageLoader.loadBitmap(path, imageUri, AndroidUtilities.getPhotoSize(highQuality), AndroidUtilities.getPhotoSize(highQuality), true);
         if (bitmap == null) {
-            int max = CherrygramChatsConfig.INSTANCE.getLargePhotos() ? 1280 : 800;
-            bitmap = ImageLoader.loadBitmap(path, imageUri, max, max, true);
+            bitmap = ImageLoader.loadBitmap(path, imageUri, 800, 800, true);
         }
         ArrayList<TLRPC.PhotoSize> sizes = new ArrayList<>();
         TLRPC.PhotoSize size = ImageLoader.scaleAndSaveImage(bitmap, 90, 90, 55, true);

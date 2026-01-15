@@ -154,8 +154,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet;
+import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 public class ChannelAdminLogActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -1581,8 +1583,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
     private final static int OPTION_REPORT_FALSE_POSITIVE = 34;
     private final static int OPTION_BAN = 35;
 
-    //Cherrygram
-    private final static int OPTION_DETAILS = 1390;
+    private final static int OPTION_SAVE_TO_DOWNLOADS_VOICE_OR_ROUND = 1390;
 
     private boolean createMenu(View v) {
         return createMenu(v, 0, 0);
@@ -1795,13 +1796,13 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                 icons.add(R.drawable.msg_calls);
                 options.add(OPTION_CALL);
             }
+        } else if (selectedObject != null && (selectedObject.isRoundVideo() || selectedObject.isVoice())) {
+            items.add(getString(R.string.SaveToDownloads));
+            icons.add(R.drawable.msg_download);
+            options.add(OPTION_SAVE_TO_DOWNLOADS_VOICE_OR_ROUND);
         }
 
-        if (CherrygramChatsConfig.INSTANCE.getShowJSON()) {
-            items.add("JSON");
-            options.add(OPTION_DETAILS);
-            icons.add(R.drawable.msg_info);
-        }
+        CGMessageMenuInjector.INSTANCE.injectJSON(null, true, items, options, icons);
 
         boolean callbackSent = false;
 
@@ -2358,9 +2359,28 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                 }
                 break;
             }
-            case OPTION_DETAILS: {
+            case ChatActivityHelper.OPTION_DETAILS: {
                 JsonBottomSheet.getMessageId(selectedObject);
                 JsonBottomSheet.showAlert(getContext(), getResourceProvider(), this, selectedObject, currentChat);
+                break;
+            }
+            case OPTION_SAVE_TO_DOWNLOADS_VOICE_OR_ROUND: {
+                if ((Build.VERSION.SDK_INT <= Build.VERSION_CODES.P || BuildVars.NO_SCOPED_STORAGE) && getParentActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    getParentActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 4);
+                    selectedObject = null;
+                    return;
+                }
+                ArrayList<MessageObject> messageObjects;
+                messageObjects = new ArrayList<>();
+                messageObjects.add(selectedObject);
+                MediaController.saveFilesFromMessages(getParentActivity(), getAccountInstance(), messageObjects, (count) -> {
+                    if (getParentActivity() == null || fragmentView == null) {
+                        return;
+                    }
+                    if (count > 0) {
+                        BulletinFactory.of(this).createDownloadBulletin(selectedObject.isVoice() ? BulletinFactory.FileType.UNKNOWN : BulletinFactory.FileType.VIDEO_TO_DOWNLOADS, getResourceProvider()).show();
+                    }
+                });
                 break;
             }
         }

@@ -478,6 +478,14 @@ object DonatesManager {
     }
     /** USDT to TON converter end */
 
+    fun donatesCounter(type: Int) : Int {
+        return when (type) {
+            0 -> verifiedUserIds.size
+            1 -> verifiedUserIdsMarketplace.size
+            else -> verifiedUserIds.size + verifiedUserIdsMarketplace.size
+        }
+    }
+
     private fun canAccess(file: File): Boolean {
         val can = file.canRead() && file.canWrite()
         if (!can) CherrygramCoreConfig.showNotifications = false

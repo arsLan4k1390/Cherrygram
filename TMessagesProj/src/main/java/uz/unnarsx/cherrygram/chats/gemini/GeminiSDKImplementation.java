@@ -158,7 +158,7 @@ public class GeminiSDKImplementation {
             public void onSuccess(GenerateContentResponse result) {
                 if (result.getText() != null) {
                     String resultText = result.getText().strip(); // Remove spaces
-                    if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("успешный ответ: " + resultText);
+                    if (CherrygramCoreConfig.isDevBuild()) FileLog.e("успешный ответ: " + resultText);
 
                     AndroidUtilities.runOnUIThread(() -> {
                         try {
@@ -257,7 +257,7 @@ public class GeminiSDKImplementation {
 
             content.addImage(inputBitmap);
 
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + imagePrompt);
+            if (CherrygramCoreConfig.isDevBuild()) FileLog.e("промпт: " + imagePrompt);
         } else if (translateText) { // Message translation
             String lang = capitalFirst(languageName(CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()));
             String translationPrompt = "You are a professional translator. Translate all input text into " +
@@ -266,7 +266,7 @@ public class GeminiSDKImplementation {
                     "Here is the text to translate into " + lang + ": " + inputText;
             content.addText(translationPrompt);
 
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + translationPrompt);
+            if (CherrygramCoreConfig.isDevBuild()) FileLog.e("промпт: " + translationPrompt);
         } else if (transcribe) { // Voice to text
             byte[] audioBytes = readBytesCompat(mediaFile);
             Part audioPart = new BlobPart("audio/ogg", audioBytes);
@@ -289,7 +289,7 @@ public class GeminiSDKImplementation {
             content.addText(voiceToTextPrompt);
             content.addPart(audioPart);
 
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + voiceToTextPrompt);
+            if (CherrygramCoreConfig.isDevBuild()) FileLog.e("промпт: " + voiceToTextPrompt);
         } else { // Answer only to text
             String textPrompt;
             if (summarize) {
@@ -304,7 +304,7 @@ public class GeminiSDKImplementation {
 
             content.addText(textPrompt);
 
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.e("промпт: " + textPrompt);
+            if (CherrygramCoreConfig.isDevBuild()) FileLog.e("промпт: " + textPrompt);
         }
 
         return content.build();

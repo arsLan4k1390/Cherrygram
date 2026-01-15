@@ -4242,7 +4242,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 return;
             }
             listView.stopScroll();
-            if ((position == idRow || position == idDcRow) && (userId != 0 || chatId != 0)){
+            if (position == idDcRow && (userId != 0 || chatId != 0)){
                 long id;
                 if (userId != 0) {
                     id = userId;
@@ -4585,7 +4585,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             @Override
             public boolean onItemClick(View view, int position) {
-                if ((position == idRow || position == idDcRow) && userId != 0) {
+                if (position == idDcRow && userId != 0) {
                     try {
                         AndroidUtilities.addToClipboard("tg://user?id=" + userId);
                         BulletinFactory.of(ProfileActivity.this).createCopyBulletin(LocaleController.getString(R.string.LinkCopied)).show();
@@ -8490,7 +8490,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         isStarRatingVisible1 = diff > 0.2f && !searchMode && (imageUpdater == null || setAvatarRow == -1);
         checkStarRatingVisible();
         if (writeButtonVisible && chatId != 0) {
-            writeButtonVisible = /*ChatObject.isChannel(currentChat) && !currentChat.megagroup &&*/ chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow != -1 || idRow != -1 || idDcRow != -1);
+            writeButtonVisible = /*ChatObject.isChannel(currentChat) && !currentChat.megagroup &&*/ chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow != -1 || idDcRow != -1);
         }
 
         if (writeButton != null && writeButton.getVisibility() != View.GONE) {
@@ -8498,7 +8498,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             writeButtonVisible = diff > 0.2f && !searchMode && !myProfile && (imageUpdater == null || setAvatarRow == -1);
             if (writeButtonVisible && chatId != 0) {
-                writeButtonVisible = /*ChatObject.isChannel(currentChat) && !currentChat.megagroup &&*/ chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow != -1 || idRow != -1 || idDcRow != -1);
+                writeButtonVisible = /*ChatObject.isChannel(currentChat) && !currentChat.megagroup &&*/ chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow != -1 || idDcRow != -1);
             }
             if (!openAnimationInProgress) {
                 boolean currentVisible = writeButton.getTag() == null;
@@ -8597,7 +8597,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (actionsView != null) {
                 if (chatId != 0) {
                     actionsView.set(ProfileActionsView.KEY_MESSAGE, true);
-                    boolean discuss = /*ChatObject.isChannel(currentChat) && !currentChat.megagroup &&*/ chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow != -1 || idRow != -1 || idDcRow != -1);
+                    boolean discuss = /*ChatObject.isChannel(currentChat) && !currentChat.megagroup &&*/ chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow != -1 || idDcRow != -1);
                     actionsView.set(ProfileActionsView.KEY_DISCUSS, discuss);
                     actionsView.set(ProfileActionsView.KEY_OPEN_CHANNEL, discuss);
                 }
@@ -10625,7 +10625,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         numberRow = -1;
         birthdayRow = -1;
         setUsernameRow = -1;
-        idRow = -1;
         idDcRow = -1;
         bioRow = -1;
         channelRow = -1;
@@ -10793,9 +10792,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 numberRow = rowCount++;
                 setUsernameRow = rowCount++;
 
-                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_ONLY) {
-                    idRow = rowCount++;
-                } else if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_DC) {
+                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC()) {
                     idDcRow = rowCount++;
                 }
 
@@ -10896,9 +10893,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     usernameRow = rowCount++;
                 }
 
-                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_ONLY) {
-                    idRow = rowCount++;
-                } else if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_DC) {
+                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC()) {
                     idDcRow = rowCount++;
                 }
 
@@ -11062,9 +11057,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
             }
 
-            if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_ONLY) {
-                idRow = rowCount++;
-            } else if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_DC) {
+            if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC()) {
                 idDcRow = rowCount++;
             }
 
@@ -11572,7 +11565,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (userInfo != null && userInfo.stars_rating != null && userInfo.stars_rating.stars < 0) {
                         newString2 = getString(R.string.StarRatingLevelNegative).toLowerCase(Locale.ROOT);
                     } else {
-                        if (CherrygramCoreConfig.INSTANCE.isDevBuild() || CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) {
+                        if (CherrygramCoreConfig.isDevBuild() || CherrygramCoreConfig.isStandalonePremiumBuild()) {
                             newString2 = LocaleController.formatUserStatus(currentAccount, user, isOnline, shortStatus ? new boolean[1] : null);
                         } else {
                             newString2 = LocaleController.getString(R.string.Online);
@@ -11799,7 +11792,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (userInfo != null && userInfo.stars_rating != null && userInfo.stars_rating.stars < 0) {
                     onlineTextView[3].setText(newString2 = getString(R.string.StarRatingLevelNegative).toLowerCase(Locale.ROOT));
                 } else {
-                    if (CherrygramCoreConfig.INSTANCE.isDevBuild() || CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) {
+                    if (CherrygramCoreConfig.isDevBuild() || CherrygramCoreConfig.isStandalonePremiumBuild()) {
                         onlineTextView[3].setText(LocaleController.formatUserStatus(currentAccount, user, isOnline, shortStatus ? new boolean[1] : null));
                     } else {
                         onlineTextView[3].setText(LocaleController.getString(R.string.Online));
@@ -12305,7 +12298,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         boolean selfUser = false;
 
         boolean shareAction = false;
-        boolean discussAction = /*ChatObject.isChannel(currentChat) && !currentChat.megagroup &&*/ chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow != -1 || idRow != -1 || idDcRow != -1);
+        boolean discussAction = /*ChatObject.isChannel(currentChat) && !currentChat.megagroup &&*/ chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow != -1 || idDcRow != -1);
         boolean giftAction = false;
         boolean streamAction = false;
         boolean voiceChatAction = false;
@@ -12491,7 +12484,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         otherItem.setSubItemShown(gift_premium, chatInfo != null && chatInfo.stargifts_available);
                         giftAction = true;
                     }
-                    if (chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow == -1 && idRow == -1 && idDcRow == -1)) {
+                    if (chatInfo != null && chatInfo.linked_chat_id != 0 && (infoHeaderRow == -1 && idDcRow == -1)) {
                         otherItem.addSubItem(view_discussion, R.drawable.msg_discussion, LocaleController.getString(R.string.ViewDiscussion));
                         discussAction = true;
                     }
@@ -13660,22 +13653,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
                     boolean hasRegistrationDate = false;
                     boolean hasBirthday = false;
-                    if (position == idRow) {
-                        final long id;
-                        if (userId != 0) {
-                            id = userId;
-                        } else if (chatId != 0) {
-                            id = chatId;
-                        } else {
-                            id = dialogId;
-                        }
-                        hasRegistrationDate = id != 0;
-
-                        DecimalFormat df = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US) {{ setGroupingSeparator(' '); }});
-                        CharSequence formattedID = chatId != 0 ? "-100 " + df.format(id) : df.format(id);
-
-                        detailCell.setTextAndValue(formattedID, "ID", false);
-                    } else if (position == idDcRow) {
+                    if (position == idDcRow) {
                         final long id;
                         if (userId != 0) {
                             id = userId;
@@ -14546,7 +14524,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         position == clearLogsRow || position == switchBackendRow || position == setAvatarRow ||
                         position == addToGroupButtonRow || position == premiumRow || position == premiumGiftingRow ||
                         position == businessRow || position == liteModeRow || position == birthdayRow || position == channelRow ||
-                        position == starsRow || position == tonRow || position == musicRow || position == idRow || position == idDcRow;
+                        position == starsRow || position == tonRow || position == musicRow || position == idDcRow;
             }
             if (holder.itemView instanceof UserCell) {
                 UserCell userCell = (UserCell) holder.itemView;
@@ -14574,7 +14552,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (position == cgSettingsHeaderRow || position == infoHeaderRow || position == membersHeaderRow || position == settingsSectionRow2 ||
                     position == numberSectionRow || position == helpHeaderRow || position == debugHeaderRow || position == botPermissionsHeader) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == idRow || position == idDcRow || position == phoneRow || position == locationRow || position == numberRow || position == birthdayRow) {
+            } else if (position == idDcRow || position == phoneRow || position == locationRow || position == numberRow || position == birthdayRow) {
                 return VIEW_TYPE_TEXT_DETAIL;
             } else if (position == usernameRow || position == setUsernameRow) {
                 return VIEW_TYPE_TEXT_DETAIL_MULTILINE;
@@ -15745,7 +15723,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
             showDialog(new GiftSheet(getContext(), currentAccount, userId, null, null));*/
             Extra.INSTANCE.addBirthdayToCalendar(getParentActivity(), userId);
-        } else if (parent.getTag() != null && ((((int) parent.getTag()) == idDcRow) || (((int) parent.getTag()) == idRow))) {
+        } else if (parent.getTag() != null && ((int) parent.getTag()) == idDcRow) {
             Extra.INSTANCE.getRegistrationDate(this, getParentActivity(), userId, chatId);
         }
     }
@@ -15888,7 +15866,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             put(++pointer, numberSectionRow, sparseIntArray);
             put(++pointer, numberRow, sparseIntArray);
             put(++pointer, setUsernameRow, sparseIntArray);
-            put(++pointer, idRow, sparseIntArray);
             put(++pointer, idDcRow, sparseIntArray);
             put(++pointer, bioRow, sparseIntArray);
             /*put(++pointer, phoneSuggestionRow, sparseIntArray);
@@ -17082,7 +17059,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     }
 
     /** Cherrygram start */
-    private int idRow;
     private int idDcRow;
     private StringBuilder userDcLine;
 

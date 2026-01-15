@@ -10,8 +10,10 @@
 package uz.unnarsx.cherrygram.chats.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import org.telegram.messenger.BaseController;
 import org.telegram.messenger.MessageObject;
@@ -76,6 +78,22 @@ public class MessageMenuHelper extends BaseController {
             Activity parentActivity,
             boolean hide
     ) {
+
+    }
+
+    public static class MaxHeightLinearLayout extends LinearLayout {
+
+        public MaxHeightLinearLayout(Context context) {
+            super(context);
+        }
+
+        public void setMaxHeight(int maxHeight) {
+
+        }
+
+        public void setMaxWidth(int maxWidth) {
+
+        }
 
     }
 

@@ -581,7 +581,7 @@ public class AndroidUtilities {
             index = startIndex;
         }
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
-        if (runnable != null && index >= 0) {
+        if (/*runnable != null &&*/ index >= 0) {
             if (type == REPLACING_TAG_TYPE_LINK_NBSP) {
                 spannableStringBuilder.replace(index, index + len, AndroidUtilities.replaceMultipleCharSequence(" ", spannableStringBuilder.subSequence(index, index + len), " "));
             }
@@ -2924,7 +2924,7 @@ public class AndroidUtilities {
     }
 
     public static int getPhotoSize() {
-        return getPhotoSize(CherrygramChatsConfig.INSTANCE.getLargePhotos());
+        return getPhotoSize(false);
     }
 
     public static int getPhotoSize(boolean highQuality) {

@@ -157,6 +157,7 @@ import java.util.Objects;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 
 @SuppressWarnings("unchecked")
 public class SharedMediaLayout extends FrameLayout implements NotificationCenter.NotificationCenterDelegate, DialogCell.DialogCellDelegate {
@@ -3684,6 +3685,9 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
     }
 
     private MediaPage getMediaPage(int type) {
+        if (type == TAB_ARCHIVED_STORIES && CherrygramPrivacyConfig.INSTANCE.getHideArchivedStories()) {
+            return null;
+        }
         for (int i = 0; i < mediaPages.length; i++) {
             if (mediaPages[i] != null && mediaPages[i].selectedType == type) {
                 return mediaPages[i];
@@ -9628,6 +9632,9 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
     }
 
     public int getStoriesCount(int tab) {
+        if (tab == TAB_ARCHIVED_STORIES && CherrygramPrivacyConfig.INSTANCE.getHideArchivedStories()) {
+            return 0;
+        }
         if (isAnyStoryPageType(tab)) {
             StoriesAdapter adapter = storyAlbums_getStoriesAdapterByTabType(tab);
             if (adapter != null && adapter.storiesList != null) {

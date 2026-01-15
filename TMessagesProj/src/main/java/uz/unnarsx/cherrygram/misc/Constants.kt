@@ -19,7 +19,7 @@ object Constants {
     }
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
-    /** CG Chats Links start**/
+    /** CG Links start**/
     @JvmField
     var CG_CHANNEL_USERNAME = "cherrygram"
     @JvmField
@@ -37,7 +37,17 @@ object Constants {
 
     @JvmField
     var UPDATE_APP_URL = if (CherrygramCoreConfig.isPlayStoreBuild()) "https://play.google.com/store/apps/details?id=uz.unnarsx.cherrygram" else CG_CHANNEL_URL
-    /** CG Chats Links finish**/
+
+    @JvmField
+    var CG_PRIVACY_URL = "https://arslan4k1390.github.io/cherrygram/privacy"
+    @JvmField
+    var CG_DONATIONS_AND_TERMS_URL = "https://arslan4k1390.github.io/cherrygram/donation-terms"
+
+    @JvmField
+    var CG_SAFESTARS = "https://safestars.pro/?partner=cherrygram"
+    @JvmField
+    var CG_SAFESTARS_RU = "https://safestars.pro/ru/?partner=cherrygram"
+    /** CG Links finish**/
 
     const val PACKAGE_NAME = "uz.unnarsx.cherrygram"
 
@@ -68,6 +78,7 @@ object Constants {
     const val Is_Donate_Screen_Available = "is_donate_screen_available"
     const val Re_Tg_Check = "re_tg_check"
     const val is_new_updates_ui_available = "is_new_updates_ui_available"
+    const val allow_use_safestars = "allow_use_safestars"
     /** Firebase remote Config finish */
 
 }

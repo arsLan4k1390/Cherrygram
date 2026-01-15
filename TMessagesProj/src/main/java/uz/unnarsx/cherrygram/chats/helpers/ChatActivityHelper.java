@@ -29,7 +29,6 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.R;
-import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.browser.Browser;
@@ -241,7 +240,7 @@ public class ChatActivityHelper extends BaseController {
                     arr.add(dialogIdStr);
                     headerItem.hideSubItem(OPTION_ASK_PASSCODE);
 
-                    if (CherrygramCoreConfig.INSTANCE.isDevBuild()) {
+                    if (CherrygramCoreConfig.isDevBuild()) {
                         FileLog.d("new locked chats array: " + arr);
                     }
 
@@ -255,7 +254,7 @@ public class ChatActivityHelper extends BaseController {
                     if (arr.remove(String.valueOf(chatActivity.getDialogId()))) { // Удаляем и проверяем, изменился ли список
                         headerItem.hideSubItem(OPTION_DO_NOT_ASK_PASSCODE);
 
-                        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) {
+                        if (CherrygramCoreConfig.isDevBuild()) {
                             FileLog.d("new locked chats array: " + arr);
                         }
 
@@ -341,7 +340,7 @@ public class ChatActivityHelper extends BaseController {
                 break;
             }
             case OPTION_CLEAR_FROM_CACHE: {
-                if (Build.VERSION.SDK_INT >= 23 && (Build.VERSION.SDK_INT <= 28 || BuildVars.NO_SCOPED_STORAGE) && chatActivity.getParentActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if ((Build.VERSION.SDK_INT <= Build.VERSION_CODES.P || BuildVars.NO_SCOPED_STORAGE) && chatActivity.getParentActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     chatActivity.getParentActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 4);
                     /*selectedObject = null;
                     selectedObjectGroup = null;
@@ -544,7 +543,7 @@ public class ChatActivityHelper extends BaseController {
                 break;
             }
             case OPTION_DOWNLOAD_STICKER: {
-                if (Build.VERSION.SDK_INT >= 23 && (Build.VERSION.SDK_INT <= 28 || BuildVars.NO_SCOPED_STORAGE) && chatActivity.getParentActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if ((Build.VERSION.SDK_INT <= Build.VERSION_CODES.P || BuildVars.NO_SCOPED_STORAGE) && chatActivity.getParentActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     chatActivity.getParentActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 4);
                     /*selectedObject = null;
                     selectedObjectGroup = null;
@@ -630,13 +629,5 @@ public class ChatActivityHelper extends BaseController {
         }
     }
     /** Cherrygram chat functions finish */
-
-    /** Misc start */
-    public void invalidateBlur(ChatActivity.ChatActivityFragmentView contentView) {
-        if (contentView != null && SharedConfig.getDevicePerformanceClass() == SharedConfig.PERFORMANCE_CLASS_HIGH) {
-            contentView.invalidateBlurredViews();
-        }
-    }
-    /** Misc finish */
 
 }

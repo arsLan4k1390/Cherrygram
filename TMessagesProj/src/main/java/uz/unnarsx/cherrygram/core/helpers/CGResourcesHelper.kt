@@ -20,7 +20,6 @@ import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.Components.URLSpanNoUnderline
 import org.telegram.ui.LauncherIconController
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
@@ -252,38 +251,19 @@ object CGResourcesHelper {
         return getUrlNoUnderlineText(htmlParsed)
     }
 
-    @SuppressWarnings("deprecation")
-    fun getDonatesAdvice(): CharSequence {
-        val advise = getString(R.string.DP_Donate_Desc)
-
-        val htmlParsed: Spannable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY))
-        } else {
-            SpannableString(Html.fromHtml(advise))
-        }
-        return getUrlNoUnderlineText(htmlParsed)
-    }
-
-    fun getShowDcIdText(): String { // MessagesAndProfilesPreferencesEntry.java:\Show dc id
-        return when (CherrygramAppearanceConfig.showIDDC) {
-            CherrygramAppearanceConfig.ID_ONLY -> "ID"
-            CherrygramAppearanceConfig.ID_DC -> "ID + DC"
-            else -> getString(R.string.Disable)
-        }
-    }
-
     fun createDateAndTime(date: Long): String {
         var dateAndTime = date
         try {
             dateAndTime *= 1000
             val rightNow = Calendar.getInstance()
             rightNow.timeInMillis = dateAndTime
-            return String.format("%1\$s | %2\$s", LocaleController.getInstance().formatterYear.format(
+            return String.format(
+                $$"%1$s | %2$s", LocaleController.getInstance().formatterYear.format(
                 Date(dateAndTime)
             ),
                 LocaleController.getInstance().formatterDay.format(Date(dateAndTime))
             )
-        } catch (ignore: Exception) { }
+        } catch (_: Exception) { }
         return "LOC_ERR"
     }
 
@@ -293,12 +273,13 @@ object CGResourcesHelper {
             dateAndTime *= 1000
             val rightNow = Calendar.getInstance()
             rightNow.timeInMillis = dateAndTime
-            return String.format("%1\$s | %2\$s", LocaleController.getInstance().formatterYear.format(
+            return String.format(
+                $$"%1$s | %2$s", LocaleController.getInstance().formatterYear.format(
                 Date(dateAndTime)
             ),
                 LocaleController.getInstance().formatterDayWithSeconds.format(Date(dateAndTime))
             )
-        } catch (ignore: Exception) { }
+        } catch (_: Exception) { }
         return "LOC_ERR"
     }
 
@@ -306,7 +287,7 @@ object CGResourcesHelper {
         var capitalizeString = ""
         if (text.trim() != "") {
             capitalizeString =
-                text.substring(0, 1).uppercase(Locale.getDefault()) + text.substring(1)
+                text.take(1).uppercase(Locale.getDefault()) + text.substring(1)
         }
         return capitalizeString
     }

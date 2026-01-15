@@ -99,6 +99,10 @@
     <!--Chats screen-->
 
     <!--Misc-->
+    <string name="CG_SafeStars_buy">Купить звезды (мультичейн и без KYC)</string>
+    <string name="CG_SafeStars_buy_Telegram">Купить звезды через Telegram</string>
+    <string name="CG_Stats_TOS">Продолжая, вы автоматически принимаете **Условия покупки Telegram** и **Пользовательское соглашение Cherrygram**.</string>
+
     <string name="CG_SortByDate">Сортировка по дате сообщения</string>
     <string name="CG_SortByUnread">Сортировка по непрочитанным</string>
 
@@ -271,6 +275,9 @@
     <string name="CP_BlurMessageMenuItems_Desc">Размывает элементы меню для более аутентичного вида в стиле iOS.</string>
     <string name="CP_MessageMenuNativeBlur">Системный блюр</string>
     <string name="CP_MessageMenuNativeBlur_Desc">Для размытия фона меню сообщений будет использоваться встроенная в Android система размытия: плавная, живая и с минимальной нагрузкой на устройство.</string>
+    <string name="CP_MessageMenuCompactLayout">Компактная компоновка меню</string>
+    <string name="CP_MessageMenuCompactLayout_Desc">Отображает основные действия сообщения в компактном виде в нижней части меню.</string>
+    <string name="CP_MessageMenuCompactLayout_Dot">Точка рядом с кнопкой указывает, что у неё есть действие по зажатию.</string>
 
     <string name="AP_CenterChatsTitle">Центрирование заголовка в чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
@@ -481,12 +488,19 @@
     <string name="DP_DonateBadge">Поддержите проект и получите бонусы</string>
     <string name="DP_Donate_Desc">При поддержке от 2$ вы также получите небольшие бонусы:</string>
 
-    <string name="DP_Donate_Badge_desc">**Значок Cherrygram** рядом с вашим ником.</string>
+    <string name="DP_Donate_Badge_desc">1. **Значок Cherrygram** рядом с вашим ником.</string>
+    <string name="DP_Donate_MsgMenuCompactView_Desc">2. Компактный вид элементов **меню сообщения**.</string>
     <string name="DP_Donate_EpicBadge_desc">1. **Эпический значок Cherrygram** рядом с вашим ником.</string>
     <string name="DP_Donate_GiftMarket_Desc">2. Кнопку \"**Маркетплейс подарков**\" в боковом меню.</string>
     <string name="DP_Donate_MessageFilter_Desc">3. Функцию \"**Фильтр сообщений**\"</string>
     <string name="DP_Donate_MessageMenu_Desc">4. Меню сообщения \"**в стиле Telegram iOS**\".</string>
     <string name="DP_Donate_Cheque">Отправьте подтверждение платежа **@arsLan** для получения бонусов.</string>
+    <string name="DP_Donate_Terms">Перед донатом, пожалуйста, ознакомьтесь с **Условиями донатов**. Все донаты являются добровольными и безвозвратными.</string>
+
+    <string name="DP_Donate_Counter_one">**%1$d** человек уже поддержал проект и получил бонусы</string>
+    <string name="DP_Donate_Counter_few">**%1$d** человек уже поддержали проект и получили бонусы</string>
+    <string name="DP_Donate_Counter_many">**%1$d** человек уже поддержали проект и получили бонусы</string>
+    <string name="DP_Donate_Counter_other">**%1$d** человек уже поддержали проект и получили бонусы</string>
 
     <string name="DP_Donate_Bulletin">**%s** поддержал(а) разработку **Cherrygram**!</string>
 

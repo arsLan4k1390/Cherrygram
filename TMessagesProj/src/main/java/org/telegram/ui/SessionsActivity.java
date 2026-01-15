@@ -722,6 +722,17 @@ public class SessionsActivity extends BaseFragment implements NotificationCenter
             ttlRow = rowCount++;
             ttlDivideRow = rowCount++;
         }
+
+        if (listView != null) {
+            AndroidUtilities.runOnUIThread(()-> {
+                listView.post(() -> {
+                    RecyclerView.Adapter adapter = listView.getAdapter();
+                    if (adapter instanceof MD3ListAdapter md3) {
+                        md3.reapplyVisible();
+                    }
+                });
+            }, 200);
+        }
     }
 
     private final int VIEW_TYPE_TEXT = 0;

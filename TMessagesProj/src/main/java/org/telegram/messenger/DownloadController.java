@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+
 public class DownloadController extends BaseController implements NotificationCenter.NotificationCenterDelegate {
 
     public interface FileDownloadProgressListener {
@@ -607,6 +609,10 @@ public class DownloadController extends BaseController implements NotificationCe
     }
 
     public boolean canDownloadMedia(MessageObject messageObject) {
+        if (!checkCanDownloadMedia(null, messageObject)) {
+            return false;
+        }
+
         if (messageObject.type == MessageObject.TYPE_STORY) {
             if (!SharedConfig.isAutoplayVideo()) return false;
             TLRPC.TL_messageMediaStory mediaStory = (TLRPC.TL_messageMediaStory) MessageObject.getMedia(messageObject);
@@ -650,6 +656,10 @@ public class DownloadController extends BaseController implements NotificationCe
     }
 
     public int canDownloadMediaType(MessageObject messageObject) {
+        if (!checkCanDownloadMedia(null, messageObject)) {
+            return 0;
+        }
+
         if (messageObject.type == MessageObject.TYPE_STORY) {
             if (!SharedConfig.isAutoplayVideo()) return 0;
             TLRPC.TL_messageMediaStory mediaStory = (TLRPC.TL_messageMediaStory) MessageObject.getMedia(messageObject);
@@ -668,6 +678,10 @@ public class DownloadController extends BaseController implements NotificationCe
     }
 
     public int canDownloadMediaType(MessageObject messageObject, long overrideSize) {
+        if (!checkCanDownloadMedia(null, messageObject)) {
+            return 0;
+        }
+
         if (messageObject.type == MessageObject.TYPE_STORY) {
             if (!SharedConfig.isAutoplayVideo()) return 0;
             TLRPC.TL_messageMediaStory mediaStory = (TLRPC.TL_messageMediaStory) MessageObject.getMedia(messageObject);
@@ -780,6 +794,11 @@ public class DownloadController extends BaseController implements NotificationCe
         if (message.messageOwner.media instanceof TLRPC.TL_messageMediaStory) {
             return canPreloadStories() ? 2 : 0;
         }
+
+        if (!checkCanDownloadMedia(null, message)) {
+            return 0;
+        }
+
         TLRPC.Message msg = message.messageOwner;
         int type;
         boolean isVideo;
@@ -862,6 +881,14 @@ public class DownloadController extends BaseController implements NotificationCe
         if (message == null || message.media instanceof TLRPC.TL_messageMediaStory) {
             return canPreloadStories() ? 2 : 0;
         }
+
+        if (CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
+            MessageObject messageObject = new MessageObject(currentAccount, message, false, false);
+            if (messageObject.shouldBlockMessage()) {
+                return 0;
+            }
+        }
+
         int type;
         boolean isVideo;
         if ((isVideo = MessageObject.isVideoMessage(message)) || MessageObject.isGifMessage(message) || MessageObject.isRoundVideoMessage(message) || MessageObject.isGameMessage(message)) {
@@ -943,6 +970,11 @@ public class DownloadController extends BaseController implements NotificationCe
         if (message == null || media instanceof TLRPC.TL_messageMediaStory) {
             return canPreloadStories() ? 2 : 0;
         }
+
+        if (!checkCanDownloadMedia(message, null)) {
+            return 0;
+        }
+
         int type;
         boolean isVideo = false;
         if (MessageObject.isVideoDocument(media.document)) {
@@ -1807,4 +1839,19 @@ public class DownloadController extends BaseController implements NotificationCe
         }
         return preset.preloadStories;
     }
+
+    /** Cherrygram start */
+    private boolean checkCanDownloadMedia(TLRPC.Message message, MessageObject messageObject) {
+
+        if (CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
+            if (messageObject == null) {
+                messageObject = new MessageObject(currentAccount, message, false, false);
+            }
+            return !messageObject.shouldBlockMessage();
+        }
+
+        return true;
+    }
+    /** Cherrygram Finish */
+
 }

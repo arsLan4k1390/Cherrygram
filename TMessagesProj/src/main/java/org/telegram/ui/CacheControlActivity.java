@@ -799,21 +799,23 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             sectionsEndRow = -1;
         }
 
-        itemInners.add(new ItemInner(VIEW_TYPE_HEADER, LocaleController.getString(R.string.AutoDeleteCachedMedia), null));
-        itemInners.add(new ItemInner(VIEW_TYPE_KEEP_MEDIA_CELL, KEEP_MEDIA_TYPE_USER));
-        itemInners.add(new ItemInner(VIEW_TYPE_KEEP_MEDIA_CELL, KEEP_MEDIA_TYPE_GROUP));
-        itemInners.add(new ItemInner(VIEW_TYPE_KEEP_MEDIA_CELL, KEEP_MEDIA_TYPE_CHANNEL));
-        itemInners.add(new ItemInner(VIEW_TYPE_KEEP_MEDIA_CELL, KEEP_MEDIA_TYPE_STORIES));
-        itemInners.add(ItemInner.asInfo(LocaleController.getString(R.string.KeepMediaInfoPart)));
+        if (!isInKaboomMode) {
+            itemInners.add(new ItemInner(VIEW_TYPE_HEADER, LocaleController.getString(R.string.AutoDeleteCachedMedia), null));
+            itemInners.add(new ItemInner(VIEW_TYPE_KEEP_MEDIA_CELL, KEEP_MEDIA_TYPE_USER));
+            itemInners.add(new ItemInner(VIEW_TYPE_KEEP_MEDIA_CELL, KEEP_MEDIA_TYPE_GROUP));
+            itemInners.add(new ItemInner(VIEW_TYPE_KEEP_MEDIA_CELL, KEEP_MEDIA_TYPE_CHANNEL));
+            itemInners.add(new ItemInner(VIEW_TYPE_KEEP_MEDIA_CELL, KEEP_MEDIA_TYPE_STORIES));
+            itemInners.add(ItemInner.asInfo(LocaleController.getString(R.string.KeepMediaInfoPart)));
 
-        if (totalDeviceSize > 0) {
-            itemInners.add(new ItemInner(VIEW_TYPE_HEADER, LocaleController.getString(R.string.MaxCacheSize), null));
-            itemInners.add(new ItemInner(VIEW_TYPE_MAX_CACHE_SIZE));
-            itemInners.add(ItemInner.asInfo(LocaleController.getString(R.string.MaxCacheSizeInfo)));
-        }
+            if (totalDeviceSize > 0) {
+                itemInners.add(new ItemInner(VIEW_TYPE_HEADER, LocaleController.getString(R.string.MaxCacheSize), null));
+                itemInners.add(new ItemInner(VIEW_TYPE_MAX_CACHE_SIZE));
+                itemInners.add(ItemInner.asInfo(LocaleController.getString(R.string.MaxCacheSizeInfo)));
+            }
 
-        if (hasCache && cacheModel != null && !cacheModel.isEmpty()) {
-            itemInners.add(new ItemInner(VIEW_TYPE_CACHE_VIEW_PAGER, null, null));
+            if (hasCache && cacheModel != null && !cacheModel.isEmpty()) {
+                itemInners.add(new ItemInner(VIEW_TYPE_CACHE_VIEW_PAGER, null, null));
+            }
         }
 
         if (listAdapter != null) {
@@ -3236,6 +3238,12 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     /** Cherrygram start */
     private static final int kaboom_id = 1390;
 
+    private boolean isInKaboomMode;
+    public CacheControlActivity setInKaboomMode() {
+        this.isInKaboomMode = true;
+        return this;
+    }
+
     private void kaboomDurov(Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
         builder.setTitle("Kaboom");
@@ -3254,7 +3262,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             button.setTextColor(Theme.getColor(Theme.key_text_RedRegular));
             button.setEnabled(false);
             var buttonText = button.getText();
-            new CountDownTimer(5000, 100) {
+            new CountDownTimer(isInKaboomMode ? 1000 : 5000, 100) {
                 @Override
                 public void onTick(long millisUntilFinished) {
                     button.setText(String.format(Locale.getDefault(), "%s (%d)", buttonText, millisUntilFinished / 1000 + 1));

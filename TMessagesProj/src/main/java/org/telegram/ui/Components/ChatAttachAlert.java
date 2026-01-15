@@ -2517,7 +2517,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                         restrictedLayout = new ChatAttachRestrictedLayout(6, this, getContext(), resourcesProvider);
                         showLayout(restrictedLayout);
                     } else {
-                        if (CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
+                        if (CherrygramCoreConfig.isPlayStoreBuild()) {
                             boolean locationDenied = Build.VERSION.SDK_INT >= 23 && AndroidUtilities.findActivity(getContext()) != null && AndroidUtilities.findActivity(getContext()).checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
                             if (locationDenied) {
                                 createLocationRequiredDialog(getContext(), AndroidUtilities.findActivity(getContext()),

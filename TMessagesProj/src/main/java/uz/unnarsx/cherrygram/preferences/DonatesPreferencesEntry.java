@@ -10,6 +10,7 @@
 package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
+import static org.telegram.messenger.LocaleController.formatPluralString;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
@@ -58,7 +59,6 @@ import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
-import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
@@ -86,6 +86,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
     private int bonusesHeaderRow;
     private int bonusesInfoRow;
     private int bonusesPriceRow;
+    private int bonusesTermsRow;
     private int bonusesDivisorRow;
 
     private int intHeaderRow;
@@ -440,7 +441,14 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     if (position == brandedScreenshotsInfoRow) {
                         textInfoPrivacyCell.setText(AndroidUtilities.replaceTags(getString(R.string.DP_CameraCutoutDesc)));
                     } else if (position == bonusesInfoRow) {
-                        textInfoPrivacyCell.setText(CGResourcesHelper.INSTANCE.getDonatesAdvice());
+                        textInfoPrivacyCell.setText(getString(R.string.DP_Donate_Desc));
+                    } else if (position == bonusesTermsRow) {
+                        CharSequence termsText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Terms),
+                                Theme.key_windowBackgroundWhiteLinkText,
+                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                                () -> Browser.openUrl(getContext(), Constants.CG_DONATIONS_AND_TERMS_URL)
+                        );
+                        textInfoPrivacyCell.setText(termsText);
                     }
                     break;
                 }
@@ -464,70 +472,14 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                     } else if (position == bonusesPriceRow) {
                         tableView.addRow(getString(R.string.GiftValue2), getString(R.string.Gift2UniqueTitle2), null);
 
-                        CharSequence badgeTitle = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Badge_desc),
-                                Theme.key_windowBackgroundWhiteLinkText,
-                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                                () -> {
-                                    getMessageMenuHelper().checkBlur(getParentActivity(), true, true, 50f);
-                                    ItemOptions.makeOptions(DonatesPreferencesEntry.this, tableView)
-                                            .addEmojiStatus(getUserConfig().getCurrentUser(), Constants.CHERRY_EMOJI_ID_VERIFIED, false)
-                                            .forceTop(true)
-                                            .setDrawScrim(false)
-                                            .setGravity(Gravity.RIGHT)
-                                            .translate(-dp(30), dp(50))
-                                            .setOnDismiss(() -> getMessageMenuHelper().checkBlur(getParentActivity(), false, false, 0f))
-                                            .show();
-                                }
-                        );
                         tableView.addRow(
-                                "$2 / €2 / 200 \n\n" + DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 2.0, false) + " TON",
-                                badgeTitle
+                                "$2 / €2 / 200₽ \n\n" + DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 2.0, false) + " TON",
+                                generateDescForDonates(tableView)
                         );
 
-                        CharSequence epicBadgeTitle = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_EpicBadge_desc),
-                                Theme.key_windowBackgroundWhiteLinkText,
-                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                                () -> {
-                                    getMessageMenuHelper().checkBlur(getParentActivity(), true, true, 50f);
-                                    ItemOptions.makeOptions(DonatesPreferencesEntry.this, tableView)
-                                            .addEmojiStatus(getUserConfig().getCurrentUser(), Constants.CHERRY_EMOJI_ID_VERIFIED, true)
-                                            .forceTop(true)
-                                            .setDrawScrim(false)
-                                            .setGravity(Gravity.RIGHT)
-                                            .translate(-dp(30), dp(100))
-                                            .setOnDismiss(() -> getMessageMenuHelper().checkBlur(getParentActivity(), false, false, 0f))
-                                            .show();
-                                }
-                        );
-                        CharSequence marketPlaceText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_GiftMarket_Desc),
-                                Theme.key_windowBackgroundWhiteLinkText,
-                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                                () -> CherrygramPreferencesNavigator.INSTANCE.createDrawerItems(DonatesPreferencesEntry.this)
-                        );
-                        CharSequence filterText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_MessageFilter_Desc),
-                                Theme.key_windowBackgroundWhiteLinkText,
-                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                                () -> CherrygramPreferencesNavigator.INSTANCE.createMessageFilter(DonatesPreferencesEntry.this)
-                        );
-                        CharSequence messageMenuText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_MessageMenu_Desc),
-                                Theme.key_windowBackgroundWhiteLinkText,
-                                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                                () -> CherrygramPreferencesNavigator.INSTANCE.createMessageMenu(DonatesPreferencesEntry.this)
-                        );
-
-                        SpannableStringBuilder sb = new SpannableStringBuilder();
-                        sb.append(epicBadgeTitle);
-                        sb.append("\n");
-                        sb.append(marketPlaceText);
-                        sb.append("\n");
-                        sb.append(filterText);
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            sb.append("\n");
-                            sb.append(messageMenuText);
-                        }
                         tableView.addRow(
                                 "$5 / €5 / 500₽ \n\n" + DonatesManager.INSTANCE.getTonAmountForUsd(getContext(), 5.0, true) + " TON",
-                                sb
+                                generateDescForMarketplace(tableView)
                         );
 
                         CharSequence chequeText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Cheque),
@@ -536,6 +488,16 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                                 () -> Browser.openUrl(getContext(), "https://t.me/arsLan")
                         );
                         tableView.addFullRow(chequeText);
+
+                        int counter = DonatesManager.INSTANCE.donatesCounter(2);
+                        if (counter > 1) {
+                            CharSequence countText = AndroidUtilities.replaceSingleTag(formatPluralString("DP_Donate_Counter", counter) + " \uD83C\uDF52",
+                                    Theme.key_windowBackgroundWhiteLinkText,
+                                    AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                                    null
+                            );
+                            tableView.addFullRow(countText, false, true, 15, false);
+                        }
                     } else if (position == intCredsRow || position == rusCredsRow) {
                         CharSequence personalDataText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Method_Surname),
                                 Theme.key_windowBackgroundWhiteLinkText,
@@ -627,7 +589,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                 return VIEW_TYPE_TEXT_CELL;
             } else if (position == brandedScreenshotsSwitchRow) {
                 return VIEW_TYPE_TEXT_CHECK;
-            } else if (position == brandedScreenshotsInfoRow || position == bonusesInfoRow) {
+            } else if (position == brandedScreenshotsInfoRow || position == bonusesInfoRow || position == bonusesTermsRow) {
                 return VIEW_TYPE_TEXT_INFO_PRIVACY;
             } else if (position == stickerTableInfoRow || position == bonusesPriceRow || position == intCredsRow || position == rusCredsRow) {
                 return VIEW_TYPE_TABLE;
@@ -704,6 +666,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
             bonusesHeaderRow = rowCount++;
             bonusesInfoRow = rowCount++;
             bonusesPriceRow = rowCount++;
+            bonusesTermsRow = rowCount++;
             bonusesDivisorRow = rowCount++;
 
             intHeaderRow = rowCount++;
@@ -731,7 +694,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
 
             walletHeaderRow = rowCount++;
             walletBitcoinRow = rowCount++;
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) {
+            if (CherrygramCoreConfig.isDevBuild()) {
                 walletTonRow = rowCount++;
             } else {
                 walletTonRow = -1;
@@ -744,7 +707,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
             binanceHeaderRow = rowCount++;
             binanceIDRow = rowCount++;
             binanceBitcoinRow = rowCount++;
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) {
+            if (CherrygramCoreConfig.isDevBuild()) {
                 binanceEthereumRow = rowCount++;
             } else {
                 binanceEthereumRow = -1;
@@ -755,6 +718,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
             bonusesHeaderRow = -1;
             bonusesInfoRow = -1;
             bonusesPriceRow = -1;
+            bonusesTermsRow = -1;
             bonusesDivisorRow = -1;
 
             intHeaderRow = -1;
@@ -829,6 +793,82 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
     private void copyNumberAndMakeToast(String cardNumber, boolean card) {
         AndroidUtilities.addToClipboard(cardNumber);
         Toast.makeText(getParentActivity(), getString(card ? R.string.CardNumberCopied : R.string.TextCopied), Toast.LENGTH_SHORT).show();
+    }
+
+    private SpannableStringBuilder generateDescForDonates(TableView tableView) {
+        CharSequence badgeTitle = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_Badge_desc),
+                Theme.key_windowBackgroundWhiteLinkText,
+                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                () -> {
+                    getMessageMenuHelper().checkBlur(getParentActivity(), true, true, 50f);
+                    ItemOptions.makeOptions(DonatesPreferencesEntry.this, tableView)
+                            .addEmojiStatus(getUserConfig().getCurrentUser(), Constants.CHERRY_EMOJI_ID_VERIFIED, false)
+                            .forceTop(true)
+                            .setDrawScrim(false)
+                            .setGravity(Gravity.RIGHT)
+                            .translate(-dp(30), dp(50))
+                            .setOnDismiss(() -> getMessageMenuHelper().checkBlur(getParentActivity(), false, false, 0f))
+                            .show();
+                }
+        );
+        CharSequence compactMessageMenuText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_MsgMenuCompactView_Desc),
+                Theme.key_windowBackgroundWhiteLinkText,
+                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                () -> CherrygramPreferencesNavigator.INSTANCE.createMessageMenu(DonatesPreferencesEntry.this)
+        );
+
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append(badgeTitle);
+        sb.append("\n");
+        sb.append(compactMessageMenuText);
+
+        return sb;
+    }
+
+    private SpannableStringBuilder generateDescForMarketplace(TableView tableView) {
+        CharSequence epicBadgeTitle = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_EpicBadge_desc),
+                Theme.key_windowBackgroundWhiteLinkText,
+                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                () -> {
+                    getMessageMenuHelper().checkBlur(getParentActivity(), true, true, 50f);
+                    ItemOptions.makeOptions(DonatesPreferencesEntry.this, tableView)
+                            .addEmojiStatus(getUserConfig().getCurrentUser(), Constants.CHERRY_EMOJI_ID_VERIFIED, true)
+                            .forceTop(true)
+                            .setDrawScrim(false)
+                            .setGravity(Gravity.RIGHT)
+                            .translate(-dp(30), dp(100))
+                            .setOnDismiss(() -> getMessageMenuHelper().checkBlur(getParentActivity(), false, false, 0f))
+                            .show();
+                }
+        );
+        CharSequence marketPlaceText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_GiftMarket_Desc),
+                Theme.key_windowBackgroundWhiteLinkText,
+                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                () -> CherrygramPreferencesNavigator.INSTANCE.createDrawerItems(DonatesPreferencesEntry.this)
+        );
+        CharSequence filterText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_MessageFilter_Desc),
+                Theme.key_windowBackgroundWhiteLinkText,
+                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                () -> CherrygramPreferencesNavigator.INSTANCE.createMessageFilter(DonatesPreferencesEntry.this)
+        );
+        CharSequence messageMenuText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_MessageMenu_Desc),
+                Theme.key_windowBackgroundWhiteLinkText,
+                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                () -> CherrygramPreferencesNavigator.INSTANCE.createMessageMenu(DonatesPreferencesEntry.this)
+        );
+
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append(epicBadgeTitle);
+        sb.append("\n");
+        sb.append(marketPlaceText);
+        sb.append("\n");
+        sb.append(filterText);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            sb.append("\n");
+            sb.append(messageMenuText);
+        }
+
+        return sb;
     }
 
     private static class CardsRepo {

@@ -258,7 +258,7 @@ public class ApplicationLoader extends Application {
         SharedConfig.loadConfig();
         hasPlayServices = checkPlayServices();
         CameraXUtils.loadCameraXSizes();
-        /*if (!CherrygramCoreConfig.INSTANCE.isPlayStoreBuild()) {
+        /*if (!CherrygramCoreConfig.isPlayStoreBuild()) {
             Continuation<Object> suspendResult = new Continuation<>() {
                 @NonNull
                 @Override

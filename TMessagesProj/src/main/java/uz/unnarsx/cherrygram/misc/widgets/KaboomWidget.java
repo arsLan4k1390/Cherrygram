@@ -14,12 +14,17 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.widget.RemoteViews;
 
-import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.R;
 
 public class KaboomWidget extends AppWidgetProvider {
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+    }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -28,14 +33,25 @@ public class KaboomWidget extends AppWidgetProvider {
         }
     }
 
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
+        updateAppWidget(context, appWidgetManager, appWidgetId);
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
+    }
+
     private void updateAppWidget(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.kaboom_widget);
 
-//        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("tg://settings/folders"));
-        Intent intent = new Intent(ApplicationLoader.applicationContext, KaboomWidgetActivity.class);
+        Intent intent = new Intent(context, KaboomWidgetActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context,
+                appWidgetId,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE
+        );
 
         views.setOnClickPendingIntent(R.id.tvWidget, pendingIntent);
         appWidgetManager.updateAppWidget(appWidgetId, views);

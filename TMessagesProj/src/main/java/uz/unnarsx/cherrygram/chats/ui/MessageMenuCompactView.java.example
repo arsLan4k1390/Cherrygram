@@ -1,0 +1,31 @@
+package uz.unnarsx.cherrygram.chats.ui;
+
+import android.annotation.SuppressLint;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+
+import org.telegram.messenger.MessageObject;
+import org.telegram.ui.ChatActivity;
+
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
+
+@SuppressLint("ViewConstructor")
+public class MessageMenuCompactView extends FrameLayout {
+
+    public LinearLayout linearLayout;
+
+    public MessageMenuCompactView(
+            ChatActivity chatActivity, MessageObject messageObject,
+            boolean allowReply, boolean allowEdit, boolean allowForward,
+            boolean allowCopy, boolean allowCopyPhoto, boolean allowCopyLink,
+            boolean allowDelete
+    ) {
+        super(chatActivity.getContext());
+    }
+
+    public static boolean allowCompactStyle() {
+        return CherrygramChatsConfig.INSTANCE.getMsgMenuItemsCompactView() && (DonatesManager.INSTANCE.checkAllDonatedAccounts() || DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace());
+    }
+
+}

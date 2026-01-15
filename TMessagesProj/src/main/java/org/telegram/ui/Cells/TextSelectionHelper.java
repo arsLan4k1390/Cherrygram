@@ -1627,8 +1627,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
         }
 
         MessagesController mc = MessagesController.getInstance(UserConfig.selectedAccount);
-        boolean noforwards = mc.isChatNoForwards(messageObject.getChatId()) || messageObject.messageOwner.noforwards || messageObject.getDialogId() == UserObject.VERIFY;
-        boolean noforwardsOrPaidMedia = noforwards || messageObject.type == MessageObject.TYPE_PAID_MEDIA;
+        boolean noforwardsOrPaidMedia = messageObject != null && (mc.isChatNoForwards(messageObject.getChatId()) || messageObject.messageOwner.noforwards || messageObject.getDialogId() == UserObject.VERIFY || messageObject.type == MessageObject.TYPE_PAID_MEDIA);
 
         CharSequence str = getSelectedText();
         if (str == null) {

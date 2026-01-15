@@ -139,14 +139,12 @@ class AboutPreferencesEntry : BasePreferencesEntry {
                 }
             }
 
-            if (CherrygramCoreConfig.isPlayStoreBuild()) {
-                textIcon {
-                    icon = R.drawable.msg2_policy
-                    title = getString(R.string.PrivacyPolicy)
+            textIcon {
+                icon = R.drawable.msg2_policy
+                title = getString(R.string.PrivacyPolicy)
 
-                    listener = TGKitTextIconRow.TGTIListener {
-                        Browser.openUrl(bf.parentActivity, "https://arslan4k1390.github.io/cherrygram/privacy")
-                    }
+                listener = TGKitTextIconRow.TGTIListener {
+                    Browser.openUrl(bf.parentActivity, Constants.CG_PRIVACY_URL)
                 }
             }
             /*textIcon {

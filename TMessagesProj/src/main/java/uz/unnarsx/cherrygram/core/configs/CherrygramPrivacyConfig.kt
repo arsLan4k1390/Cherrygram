@@ -42,6 +42,7 @@ object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
     /** Passcode lock finish */
 
     /** Misc **/
+    var hideArchivedStories by sharedPreferences.boolean("CP_HideArchivedStories", false)
     var reTgCheck by sharedPreferences.boolean("SP_ReTgCheck", true)
     /** Misc **/
 

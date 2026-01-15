@@ -45,7 +45,7 @@ public class BuildVars {
     public static String HUAWEI_APP_ID = "106911607";
 
     // You can use this flag to disable Google Play Billing (If you're making fork and want it to be in Google Play)
-    public static boolean IS_BILLING_UNAVAILABLE = CherrygramCoreConfig.INSTANCE.isPlayStoreBuild();
+    public static boolean IS_BILLING_UNAVAILABLE = CherrygramCoreConfig.isPlayStoreBuild();
 
     static {
         APP_ID = Extra.APP_ID;
@@ -94,7 +94,7 @@ public class BuildVars {
             betaApp = ApplicationLoader.applicationContext != null && "org.telegram.messenger.beta".equals(ApplicationLoader.applicationContext.getPackageName());
         }
         return betaApp;*/
-        return CherrygramCoreConfig.INSTANCE.isStandaloneBetaBuild();
+        return CherrygramCoreConfig.isStandaloneBetaBuild();
     }
 
 

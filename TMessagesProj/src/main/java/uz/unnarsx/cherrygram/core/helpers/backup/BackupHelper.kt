@@ -45,7 +45,7 @@ object BackupHelper {
     const val FILE_TYPE_CG_BACKUP = 1390
 
     fun backupSettings(fragment: BaseFragment, context: Context) {
-        if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isStoragePermissionGranted()) {
+        if (!PermissionsUtils.isStoragePermissionGranted()) {
             PermissionsUtils.requestStoragePermission(fragment.parentActivity)
             return
         }
@@ -62,7 +62,7 @@ object BackupHelper {
     }
 
     fun importSettings(fragment: BaseFragment, context: Context) {
-        if (Build.VERSION.SDK_INT >= 23 && !PermissionsUtils.isStoragePermissionGranted()) {
+        if (!PermissionsUtils.isStoragePermissionGranted()) {
             PermissionsUtils.requestStoragePermission(fragment.parentActivity)
             return
         }
@@ -218,7 +218,7 @@ object BackupHelper {
             "AP_Icon_Replacements", "AP_OneUI_SwitchStyle", "AP_DisableDividers", "AP_CenterTitle", "AP_iosSearchPanel",
             "AP_ToolBarShadow", "AP_FlatNavBar", "CP_ShowSeconds", "CP_DisablePremiumStatuses",
             "CP_ReplyBackground", "CP_ReplyCustomColors", "CP_ReplyBackgroundEmoji", "CP_ProfileChannelPreview",
-            "AP_ShowID_DC", "CP_ProfileBirthDatePreview", "CP_ProfileBusinessPreview", "CP_ProfileBackgroundColor",
+            "AP_ShowID_DC_new", "CP_ProfileBirthDatePreview", "CP_ProfileBusinessPreview", "CP_ProfileBackgroundColor",
             "CP_ProfileBackgroundEmoji", "AP_FolderNameInHeader", "CP_NewTabs_RemoveAllChats", "CP_NewTabs_NoCounter",
             "AP_TabMode", "AP_TabStyle", "AP_TabStyleAddStroke", "AP_DrawSnowInDrawer", "AP_DrawerAvatar",
             "AP_DrawerSmallAvatar", "AP_DrawerDarken", "AP_DrawerGradient", "AP_DrawerBlur", "AP_DrawerBlur_Intensity",

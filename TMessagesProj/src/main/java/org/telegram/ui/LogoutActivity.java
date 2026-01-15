@@ -47,6 +47,8 @@ import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
+
 public class LogoutActivity extends BaseFragment {
 
     private ListAdapter listAdapter;
@@ -185,7 +187,7 @@ public class LogoutActivity extends BaseFragment {
         }
     }
 
-    private class ListAdapter extends RecyclerListView.SelectionAdapter {
+    private class ListAdapter extends MD3ListAdapter {
 
         private Context mContext;
 

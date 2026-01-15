@@ -50,6 +50,7 @@ import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class CameraPreferencesEntry extends BaseFragment {
@@ -195,7 +196,6 @@ public class CameraPreferencesEntry extends BaseFragment {
                     ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
                 }
             } else if (position == cameraXFpsRangeRow) {
-//                if (!CherrygramCoreConfig.INSTANCE.isDevBuild()) return;
                 ArrayList<String> configStringKeys = new ArrayList<>();
                 ArrayList<Integer> configValues = new ArrayList<>();
 
@@ -205,7 +205,7 @@ public class CameraPreferencesEntry extends BaseFragment {
                 configStringKeys.add("30-30");
                 configValues.add(CherrygramCameraConfig.CameraXFpsRange30to30);
 
-                if (CherrygramCoreConfig.INSTANCE.isDevBuild()) {
+                if (isExtendedFpsAvailable()) {
                     configStringKeys.add("30-60");
                     configValues.add(CherrygramCameraConfig.CameraXFpsRange30to60);
 
@@ -398,7 +398,7 @@ public class CameraPreferencesEntry extends BaseFragment {
                             listAdapter.notifyItemChanged(cameraXQualityRow);
                             listAdapter.notifyItemChanged(cameraUseDualCameraRow);
                             listAdapter.notifyItemChanged(startFromUltraWideRow);
-                            /*if (CherrygramCoreConfig.INSTANCE.isDevBuild())*/ listAdapter.notifyItemChanged(cameraXFpsRangeRow);
+                            listAdapter.notifyItemChanged(cameraXFpsRangeRow);
                             listAdapter.notifyItemChanged(cameraStabilisationRow);
                             listAdapter.notifyItemChanged(exposureSliderRow);
                             listAdapter.notifyItemChanged(cameraControlButtonsRow);
@@ -473,12 +473,12 @@ public class CameraPreferencesEntry extends BaseFragment {
 
         if (CameraXUtils.isCurrentCameraCameraX()) {
             startFromUltraWideRow = rowCount++;
-            /*if (CherrygramCoreConfig.INSTANCE.isDevBuild())*/ cameraXFpsRangeRow = rowCount++;
+            cameraXFpsRangeRow = rowCount++;
             cameraStabilisationRow = rowCount++;
             exposureSliderRow = rowCount++;
         } else {
             startFromUltraWideRow = -1;
-            /*if (CherrygramCoreConfig.INSTANCE.isDevBuild())*/ cameraXFpsRangeRow = -1;
+            cameraXFpsRangeRow = -1;
             cameraStabilisationRow = -1;
             exposureSliderRow = -1;
         }
@@ -495,6 +495,11 @@ public class CameraPreferencesEntry extends BaseFragment {
         if (listAdapter != null && notify) {
             listAdapter.notifyDataSetChanged();
         }
+    }
+
+    private boolean isExtendedFpsAvailable() {
+        return CherrygramCoreConfig.isDevBuild() || CherrygramCoreConfig.isStandalonePremiumBuild()
+                || DonatesManager.INSTANCE.checkAllDonatedAccounts() || DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
     }
 
 }

@@ -39,7 +39,7 @@ public class NotificationsService extends Service {
                     .setVibrationEnabled(false)
                     .setSound(null, null)
                     .build();
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) Log.d("cgPush", "Starting resident notification...");
+            if (CherrygramCoreConfig.isDevBuild()) Log.d("cgPush", "Starting resident notification...");
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
             notificationManager.createNotificationChannel(channel);
 
@@ -62,7 +62,7 @@ public class NotificationsService extends Service {
                             .setCategory(NotificationCompat.CATEGORY_STATUS)
                             .setContentIntent(pendingIntent)
                             .build());
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) Log.d("cgPush", "Started foreground");
+            if (CherrygramCoreConfig.isDevBuild()) Log.d("cgPush", "Started foreground");
         }
     }
 

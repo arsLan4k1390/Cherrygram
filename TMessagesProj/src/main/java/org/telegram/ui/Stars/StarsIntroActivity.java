@@ -164,6 +164,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
+
 public class StarsIntroActivity extends GradientHeaderActivity implements NotificationCenter.NotificationCenterDelegate {
 
     private StarsBalanceView balanceView;
@@ -365,7 +368,11 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 AccountFrozenAlert.show(currentAccount);
                 return;
             }
-            new StarsOptionsSheet(context, resourceProvider).show();
+            if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
+                createSafeStars(null, null, -1);
+            } else {
+                new StarsOptionsSheet(context, resourceProvider).show();
+            }
         });
         oneButtonsLayout.addView(buyButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.FILL));
 
@@ -384,7 +391,11 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         ssb.append(getString(R.string.StarsTopUp));
         topupButton.setText(ssb, false);
         topupButton.setOnClickListener(v -> {
-            new StarsOptionsSheet(context, resourceProvider).show();
+            if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
+                createSafeStars(null, null, -1);
+            } else {
+                new StarsOptionsSheet(context, resourceProvider).show();
+            }
         });
         twoButtonsLayout.addView(topupButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, Gravity.CENTER, 1, 0, 0, 8, 0));
 
@@ -2432,8 +2443,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
     public static class StarsOptionsSheet extends BottomSheetWithRecyclerListView implements NotificationCenter.NotificationCenterDelegate {
 
-        private final FrameLayout footerView;
-        private final FireworksOverlay fireworksOverlay;
+        private FrameLayout footerView;
+        private FireworksOverlay fireworksOverlay;
 
         @Override
         public void didReceivedNotification(int id, int account, Object... args) {
@@ -2471,6 +2482,11 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             Theme.ResourcesProvider resourcesProvider
         ) {
             super(context, null, false, false, false, resourcesProvider);
+
+            if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
+                createSafeStars(null, null, -1);
+                return;
+            }
 
             recyclerListView.setPadding(backgroundPaddingLeft, 0, backgroundPaddingLeft, 0);
             recyclerListView.setOnItemClickListener((view, position) -> {
@@ -2591,12 +2607,12 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
 
     public static class StarsNeededSheet extends BottomSheetWithRecyclerListView implements NotificationCenter.NotificationCenterDelegate {
 
-        private final long starsNeeded;
-        private final HeaderView headerView;
-        private final FrameLayout footerView;
-        private final FireworksOverlay fireworksOverlay;
+        private long starsNeeded;
+        private HeaderView headerView;
+        private FrameLayout footerView;
+        private FireworksOverlay fireworksOverlay;
         private Runnable whenPurchased;
-        private final TLRPC.InputPeer purposePeer;
+        private TLRPC.InputPeer purposePeer;
 
         @Override
         public void didReceivedNotification(int id, int account, Object... args) {
@@ -2637,6 +2653,8 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 }
             }
             super.show();
+            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starOptionsLoaded);
+            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
         }
 
         @Override
@@ -2674,6 +2692,16 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
             long purposePeerDialogId
         ) {
             super(context, null, false, false, false, resourcesProvider);
+
+            if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
+                long balance = StarsController.getInstance(currentAccount).getBalance().amount;
+                createSafeStars(
+                        formatPluralString("StarsNeededTitle", (int) Math.max(0, starsNeeded - balance)),
+                        botName,
+                        type
+                );
+                return;
+            }
 
             topPadding = .2f;
 
@@ -2975,8 +3003,6 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 }
             }
             super.show();
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starOptionsLoaded);
-            NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.starBalanceUpdated);
         }
 
         @Override
@@ -5696,9 +5722,11 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
     }
 
     /** Cherrygram start */
-    public boolean isSupportEdgeToEdge() {
-        return false;
+    public static void createSafeStars(String customTitle, String userName, int type) {
+        final BaseFragment lastFragment = LaunchActivity.getLastFragment();
+        if (lastFragment != null) {
+            CherrygramPreferencesNavigator.INSTANCE.createStars(lastFragment, customTitle, userName, type);
+        }
     }
     /** Cherrygram finish */
-
 }

@@ -77,6 +77,15 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                     CherrygramDebugConfig.oldTimeStyle = it
                 }
             }
+            switch {
+                title = "Use SafeStars *"
+
+                contract({
+                    return@contract CherrygramCoreConfig.allowSafeStars
+                }) {
+                    CherrygramCoreConfig.allowSafeStars = it
+                }
+            }
             textIcon {
                 title = "Force performance class:"
                 value = SharedConfig.performanceClassName(SharedConfig.getDevicePerformanceClass())
@@ -143,7 +152,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
         }
         category("Redesign") {
             switch {
-                isAvailable = Build.VERSION.SDK_INT >= 31
+                isAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                 title = "New blur (GPU)"
 
                 contract({
@@ -186,7 +195,7 @@ class DebugPreferencesEntry : BasePreferencesEntry {
                 }
             }
             list {
-                isAvailable = Build.VERSION.SDK_INT >= 29
+                isAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                 title = "Microphone Audio Source *"
 
                 contract({

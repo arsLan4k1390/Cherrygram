@@ -105,7 +105,7 @@ public class CameraTypeSelector extends LinearLayout {
                 float stroke = outlinePaint.getStrokeWidth() / 2;
 
                 Rect rect1 = new Rect();
-                int rad = AndroidUtilities.dp(25);
+                int rad = AndroidUtilities.dp(15);
                 ShapeDrawable phoneDrawable = new ShapeDrawable(new RoundRectShape(new float[]{rad, rad, rad, rad, 0, 0, 0, 0}, null, null));
 
                 rect.set(left, top, right, bottom);
@@ -130,7 +130,13 @@ public class CameraTypeSelector extends LinearLayout {
 
                 Drawable d = ContextCompat.getDrawable(context, icons[currentIcon]);
                 int ICON_WIDTH = AndroidUtilities.dp(16 + 2 * progress);
-                d.setBounds(getMeasuredWidth() / 2 - ICON_WIDTH, getMeasuredHeight() / 2, getMeasuredWidth() / 2 + ICON_WIDTH, getMeasuredHeight() / 2 + 2 * ICON_WIDTH);
+                int iconOffsetY = AndroidUtilities.dp(10);
+                d.setBounds(
+                        getMeasuredWidth() / 2 - ICON_WIDTH,
+                        getMeasuredHeight() / 2 + iconOffsetY,
+                        getMeasuredWidth() / 2 + ICON_WIDTH,
+                        getMeasuredHeight() / 2 + iconOffsetY + 2 * ICON_WIDTH
+                );
                 d.setColorFilter(new PorterDuffColorFilter(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_switchTrack), (int) (0x4F * progress)), PorterDuff.Mode.MULTIPLY));
                 d.draw(canvas);
 
@@ -140,12 +146,15 @@ public class CameraTypeSelector extends LinearLayout {
 
                 Theme.dialogs_onlineCirclePaint.setColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_switchTrack), 0x3F));
                 outlinePaint.setStrokeWidth(Math.max(3, AndroidUtilities.dp(1.5f)));
-                for (int i = 0; i < 2; i++) {
-                    int p = i == 1 ? AndroidUtilities.dp(35) : 0;
-                    gd.setBounds(left + AndroidUtilities.dp(16), top + AndroidUtilities.dp(16) + p, left + AndroidUtilities.dp(44), top + AndroidUtilities.dp(44) + p);
-                    gd.draw(canvas);
-                    canvas.drawCircle(left + AndroidUtilities.dp(30), top + AndroidUtilities.dp(30) + p, AndroidUtilities.dp(14), outlinePaint);
-                }
+
+                CameraClusterDrawable cameraCluster = new CameraClusterDrawable();
+                cameraCluster.draw(
+                        canvas,
+                        left + AndroidUtilities.dp(16),
+                        top + AndroidUtilities.dp(16),
+                        color,
+                        Math.max(AndroidUtilities.dp(1.5f), 3)
+                );
             }
         };
         preview.setWillNotDraw(false);
@@ -184,6 +193,83 @@ public class CameraTypeSelector extends LinearLayout {
         numberPicker.setValue(selectedButton);
         addView(numberPicker, LayoutHelper.createFrame(132, 102, Gravity.RIGHT, 0, 33, 21, 33));
         updateIcon(false);
+    }
+
+    private static class CameraClusterDrawable {
+        private final Paint outlinePaint;
+        private final GradientDrawable fillDrawable;
+
+        private final int bigSize;
+        private final int bigRadius;
+        private final int bigSpacing;
+
+        private final int smallSize;
+        private final int smallRadius;
+
+        private final int flashRadius;
+
+        public CameraClusterDrawable() {
+            outlinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            outlinePaint.setStyle(Paint.Style.STROKE);
+
+            fillDrawable = new GradientDrawable();
+            fillDrawable.setShape(GradientDrawable.OVAL);
+
+            bigSize = AndroidUtilities.dp(28);
+            bigRadius = bigSize / 2;
+            bigSpacing = AndroidUtilities.dp(35);
+
+            smallSize = bigSize / 2;
+            smallRadius = smallSize / 2;
+
+            flashRadius = smallRadius / 2;
+        }
+
+        public void draw(Canvas canvas, int left, int top, int color, float strokeWidth) {
+            int r = Color.red(color);
+            int g = Color.green(color);
+            int b = Color.blue(color);
+
+            outlinePaint.setColor(ColorUtils.setAlphaComponent(color, 0x3F));
+            outlinePaint.setStrokeWidth(strokeWidth);
+
+            fillDrawable.setColor(Color.argb(30, r, g, b));
+
+            int bigX = left;
+            int smallX = bigX + bigSize + AndroidUtilities.dp(10);
+            int flashX = smallX + smallRadius;
+
+            float cy1 = top + bigRadius;
+            float cy2 = cy1 + bigSpacing;
+            float cy3 = cy2 + bigSpacing;
+
+            drawModule(canvas, bigX, cy1, bigSize, bigRadius);
+            drawModule(canvas, bigX, cy2, bigSize, bigRadius);
+            drawModule(canvas, bigX, cy3, bigSize, bigRadius);
+
+            drawModule(canvas, smallX, cy1, smallSize, smallRadius);
+            drawModule(canvas, smallX, cy2, smallSize, smallRadius);
+
+            float flashCy = (cy1 + cy2) / 2f;
+            canvas.drawCircle(flashX, flashCy, flashRadius, outlinePaint);
+        }
+
+        private void drawModule(Canvas canvas, int x, float cy, int size, int radius) {
+            fillDrawable.setBounds(
+                    x,
+                    (int) (cy - radius),
+                    x + size,
+                    (int) (cy + radius)
+            );
+            fillDrawable.draw(canvas);
+
+            canvas.drawCircle(
+                    x + radius,
+                    cy,
+                    radius,
+                    outlinePaint
+            );
+        }
     }
 
     protected void onSelectedCamera(int cameraSelected) {

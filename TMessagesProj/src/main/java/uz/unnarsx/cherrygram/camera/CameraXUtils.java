@@ -51,9 +51,8 @@ public class CameraXUtils {
     private static Exception qualityException;
     private static int cameraResolution = -1;
 
-    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.M)
     public static boolean isCameraXSupported() {
-        return SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
+        return SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE;
     }
 
     public static boolean isCurrentCameraCameraX() {

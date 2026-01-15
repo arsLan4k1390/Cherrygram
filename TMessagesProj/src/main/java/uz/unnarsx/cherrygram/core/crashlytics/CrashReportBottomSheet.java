@@ -80,14 +80,12 @@ public class CrashReportBottomSheet extends OnceBottomSheetHelper {
             try {
                 File cacheFile = Crashlytics.shareLogs();
                 Uri uri;
+                Intent i = new Intent(Intent.ACTION_SEND);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     uri = FileProvider.getUriForFile(activity, ApplicationLoader.getApplicationId() + ".provider", cacheFile);
+                    i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 } else {
                     uri = Uri.fromFile(cacheFile);
-                }
-                Intent i = new Intent(Intent.ACTION_SEND);
-                if (Build.VERSION.SDK_INT >= 24) {
-                    i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 }
                 i.setType("message/rfc822");
                 i.putExtra(Intent.EXTRA_SUBJECT, Crashlytics.getCrashReportMessage());

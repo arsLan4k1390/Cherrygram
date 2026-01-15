@@ -12,6 +12,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -80,6 +81,10 @@ public class ButtonWithCounterView extends FrameLayout implements Loadable {
     }
 
     public ButtonWithCounterView(Context context, boolean filled, Theme.ResourcesProvider resourcesProvider) {
+        this(context, filled, false, resourcesProvider);
+    }
+
+    public ButtonWithCounterView(Context context, boolean filled, boolean stroke, Theme.ResourcesProvider resourcesProvider) {
         super(context);
 
         this.filled = filled;
@@ -92,6 +97,15 @@ public class ButtonWithCounterView extends FrameLayout implements Loadable {
 
         if (filled) {
             setBackground(Theme.createRoundRectDrawable(dp(8), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider)));
+        }
+
+        if (stroke) {
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setShape(GradientDrawable.RECTANGLE);
+            drawable.setCornerRadius(dp(8));
+            drawable.setColor(Color.TRANSPARENT);
+            drawable.setStroke(dp(1), Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
+            setBackground(drawable);
         }
 
         paint = new Paint(Paint.ANTI_ALIAS_FLAG);

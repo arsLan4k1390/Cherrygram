@@ -100,6 +100,10 @@
     <!--Chats screen-->
 
     <!--Misc-->
+    <string name="CG_SafeStars_buy">Buy Stars (Multi-chain &amp; No KYC)</string>
+    <string name="CG_SafeStars_buy_Telegram">Buy Stars via Telegram</string>
+    <string name="CG_Stats_TOS">By proceeding, you automatically agree to the **Telegram Terms and Conditions** and the **Cherrygram Terms of Service**.</string>
+
     <string name="CG_SortByDate">Sort by message date</string>
     <string name="CG_SortByUnread">Sort by unread first</string>
 
@@ -273,7 +277,10 @@
     <string name="CP_BlurMessageMenuItems">Blur menu items</string>
     <string name="CP_BlurMessageMenuItems_Desc">Blurs the menu items for a more authentic iOS look.</string>
     <string name="CP_MessageMenuNativeBlur">Native Blur</string>
-    <string name="CP_MessageMenuNativeBlur_Desc">Android\'s built-in blur system will be used for the message menu background: smooth, live, and with minimal impact on performance..</string>
+    <string name="CP_MessageMenuNativeBlur_Desc">Android\'s built-in blur system will be used for the message menu background: smooth, live, and with minimal impact on performance.</string>
+    <string name="CP_MessageMenuCompactLayout">Compact menu layout</string>
+    <string name="CP_MessageMenuCompactLayout_Desc">Displays primary message actions in a compact layout at the bottom of the menu.</string>
+    <string name="CP_MessageMenuCompactLayout_Dot">A dot next to the button indicates it has a long-press action.</string>
 
     <string name="AP_CenterChatsTitle">Center title in chats</string>
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
@@ -491,12 +498,19 @@
     <string name="DP_DonateBadge">Donate and unlock bonuses</string>
     <string name="DP_Donate_Desc">When you donate $2 or more, you\'ll also get some bonus gifts:</string>
 
-    <string name="DP_Donate_Badge_desc">**Cherrygram badge** next to your name.</string>
+    <string name="DP_Donate_Badge_desc">1. **Cherrygram badge** next to your name.</string>
+    <string name="DP_Donate_MsgMenuCompactView_Desc">2. Compact view of **message menu** items.</string>
     <string name="DP_Donate_EpicBadge_desc">1. An **epic Cherrygram badge** next to your name.</string>
     <string name="DP_Donate_GiftMarket_Desc">2. \"**Gift Market**\" button in the side menu.</string>
     <string name="DP_Donate_MessageFilter_Desc">3. \"**Message filter**\" feature.</string>
     <string name="DP_Donate_MessageMenu_Desc">4. \"**iOS-styled**\" message menu.</string>
     <string name="DP_Donate_Cheque">Send a payment confirmation to **@arsLan** to get bonuses.</string>
+    <string name="DP_Donate_Terms">Before making a donation, please read the **Donation Terms**. All donations are voluntary and non-refundable.</string>
+
+    <string name="DP_Donate_Counter_one">**%1$d** person has already supported the project and received bonuses</string>
+    <string name="DP_Donate_Counter_few">**%1$d** people have already supported the project and received bonuses</string>
+    <string name="DP_Donate_Counter_many">**%1$d** people have already supported the project and received bonuses</string>
+    <string name="DP_Donate_Counter_other">**%1$d** people have already supported the project and received bonuses</string>
 
     <string name="DP_Donate_Bulletin">**%s** supported **Cherrygram\'s** development!</string>
 

@@ -13,8 +13,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,30 +22,22 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
+
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.FileLog;
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
-import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.tgnet.ConnectionsManager;
-import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.tl.TL_account;
-import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.DrawerLayoutContainer;
 import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.CacheControlActivity;
-import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
-import org.telegram.ui.LoginActivity;
-import org.telegram.ui.PassportActivity;
-import org.telegram.ui.PhotoViewer;
+
 import java.util.ArrayList;
 
 public class KaboomWidgetActivity extends Activity implements INavigationLayout.INavigationLayoutDelegate {
@@ -72,10 +62,6 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
         getWindow().setBackgroundDrawableResource(R.drawable.transparent);
 
         super.onCreate(savedInstanceState);
-
-        if (SharedConfig.passcodeHash.length() != 0 && SharedConfig.appLocked) {
-            SharedConfig.lastPauseTime = (int) (SystemClock.elapsedRealtime() / 1000);
-        }
 
         AndroidUtilities.fillStatusBarHeight(this, false);
         Theme.createDialogsResources(this);
@@ -179,154 +165,29 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
             layersActionBarLayout.removeAllFragments();
         }
 
-        handleIntent(getIntent(), UserConfig.selectedAccount, 0);
+        handleIntent(getIntent());
         needLayout();
     }
 
-    protected boolean handleIntent(final Intent intent, final int intentAccount, int state) {
-        if ("org.telegram.passport.AUTHORIZE".equals(intent.getAction())) {
-            if (state == 0) {
-                int activatedAccountsCount = UserConfig.getActivatedAccountsCount();
-                if (activatedAccountsCount == 0) {
-
-                    LoginActivity fragment = new LoginActivity();
-                    if (AndroidUtilities.isTablet()) {
-                        layersActionBarLayout.addFragmentToStack(fragment);
-                    } else {
-                        actionBarLayout.addFragmentToStack(fragment);
-                    }
-                    if (!AndroidUtilities.isTablet()) {
-                        backgroundTablet.setVisibility(View.GONE);
-                    }
-                    actionBarLayout.showLastFragment();
-                    if (AndroidUtilities.isTablet()) {
-                        layersActionBarLayout.showLastFragment();
-                    }
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(KaboomWidgetActivity.this);
-                    builder.setTitle(LocaleController.getString(R.string.CG_AppName));
-                    builder.setMessage(LocaleController.getString(R.string.PleaseLoginPassport));
-                    builder.setPositiveButton(LocaleController.getString(R.string.OK), null);
-                    builder.show();
-
-                    return true;
-                } else if (activatedAccountsCount >= 2) {
-                    AlertDialog alertDialog = AlertsCreator.createAccountSelectDialog(this, account -> {
-                        if (account != intentAccount) {
-                            switchToAccount(account);
-                        }
-                        handleIntent(intent, account, 1);
-                    });
-                    alertDialog.show();
-                    alertDialog.setCanceledOnTouchOutside(false);
-                    alertDialog.setOnDismissListener(dialog -> {
-                        setResult(RESULT_CANCELED);
-                        finish();
-                    });
-                    return true;
-                }
+    protected boolean handleIntent(final Intent intent) {
+        if (AndroidUtilities.isTablet()) {
+            if (layersActionBarLayout.getFragmentStack().isEmpty()) {
+                layersActionBarLayout.addFragmentToStack(new CacheControlActivity().setInKaboomMode());
             }
-
-            final long bot_id = intent.getLongExtra("bot_id", intent.getIntExtra("bot_id", 0));
-            final String nonce = intent.getStringExtra("nonce");
-            final String payload = intent.getStringExtra("payload");
-            final TL_account.getAuthorizationForm req = new TL_account.getAuthorizationForm();
-            req.bot_id = bot_id;
-            req.scope = intent.getStringExtra("scope");
-            req.public_key = intent.getStringExtra("public_key");
-
-            if (bot_id == 0 || TextUtils.isEmpty(payload) && TextUtils.isEmpty(nonce) || TextUtils.isEmpty(req.scope) || TextUtils.isEmpty(req.public_key)) {
-                finish();
-                return false;
-            }
-
-            final int[] requestId = {0};
-
-            final AlertDialog progressDialog = new AlertDialog(this, AlertDialog.ALERT_TYPE_SPINNER);
-            progressDialog.setOnCancelListener(dialog -> ConnectionsManager.getInstance(intentAccount).cancelRequest(requestId[0], true));
-
-            progressDialog.show();
-            requestId[0] = ConnectionsManager.getInstance(intentAccount).sendRequest(req, (response, error) -> {
-                final TL_account.authorizationForm authorizationForm = (TL_account.authorizationForm) response;
-                if (authorizationForm != null) {
-                    TL_account.getPassword req2 = new TL_account.getPassword();
-                    requestId[0] = ConnectionsManager.getInstance(intentAccount).sendRequest(req2, (response1, error1) -> AndroidUtilities.runOnUIThread(() -> {
-                        try {
-                            progressDialog.dismiss();
-                        } catch (Exception e) {
-                            FileLog.e(e);
-                        }
-                        if (response1 != null) {
-                            TL_account.Password accountPassword = (TL_account.Password) response1;
-                            MessagesController.getInstance(intentAccount).putUsers(authorizationForm.users, false);
-                            PassportActivity fragment = new PassportActivity(PassportActivity.TYPE_PASSWORD, req.bot_id, req.scope, req.public_key, payload, nonce, null, authorizationForm, accountPassword);
-                            fragment.setNeedActivityResult(true);
-                            if (AndroidUtilities.isTablet()) {
-                                layersActionBarLayout.addFragmentToStack(fragment);
-                            } else {
-                                actionBarLayout.addFragmentToStack(fragment);
-                            }
-                            if (!AndroidUtilities.isTablet()) {
-                                backgroundTablet.setVisibility(View.GONE);
-                            }
-                            actionBarLayout.showLastFragment();
-                            if (AndroidUtilities.isTablet()) {
-                                layersActionBarLayout.showLastFragment();
-                            }
-                        }
-                    }));
-                } else {
-                    AndroidUtilities.runOnUIThread(() -> {
-                        try {
-                            progressDialog.dismiss();
-                            if ("APP_VERSION_OUTDATED".equals(error.text)) {
-                                AlertDialog dialog = AlertsCreator.showUpdateAppAlert(KaboomWidgetActivity.this, LocaleController.getString(R.string.UpdateAppAlert), true);
-                                if (dialog != null) {
-                                    dialog.setOnDismissListener(dialog1 -> {
-                                        setResult(RESULT_FIRST_USER, new Intent().putExtra("error", error.text));
-                                        finish();
-                                    });
-                                } else {
-                                    setResult(RESULT_FIRST_USER, new Intent().putExtra("error", error.text));
-                                    finish();
-                                }
-                            } else if (("BOT_INVALID".equals(error.text) ||
-                                    "PUBLIC_KEY_REQUIRED".equals(error.text) ||
-                                    "PUBLIC_KEY_INVALID".equals(error.text)
-                                    || "SCOPE_EMPTY".equals(error.text) ||
-                                    "PAYLOAD_EMPTY".equals(error.text))) {
-                                setResult(RESULT_FIRST_USER, new Intent().putExtra("error", error.text));
-                                finish();
-                            } else {
-                                setResult(RESULT_CANCELED);
-                                finish();
-                            }
-                        } catch (Exception e) {
-                            FileLog.e(e);
-                        }
-                    });
-                }
-            }, ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
         } else {
-            if (AndroidUtilities.isTablet()) {
-                if (layersActionBarLayout.getFragmentStack().isEmpty()) {
-                    layersActionBarLayout.addFragmentToStack(new CacheControlActivity());
-                }
-            } else {
-                if (actionBarLayout.getFragmentStack().isEmpty()) {
-                    actionBarLayout.addFragmentToStack(new CacheControlActivity());
-                }
+            if (actionBarLayout.getFragmentStack().isEmpty()) {
+                actionBarLayout.addFragmentToStack(new CacheControlActivity().setInKaboomMode());
             }
-            if (!AndroidUtilities.isTablet()) {
-                backgroundTablet.setVisibility(View.GONE);
-            }
-            actionBarLayout.showLastFragment();
-            if (AndroidUtilities.isTablet()) {
-                layersActionBarLayout.showLastFragment();
-            }
-            intent.setAction(null);
         }
-        return false;
+        if (!AndroidUtilities.isTablet()) {
+            backgroundTablet.setVisibility(View.GONE);
+        }
+        actionBarLayout.showLastFragment();
+        if (AndroidUtilities.isTablet()) {
+            layersActionBarLayout.showLastFragment();
+        }
+        intent.setAction(null);
+        return true;
     }
 
     public void switchToAccount(int account) {
@@ -342,14 +203,9 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
     }
 
     @Override
-    public boolean onPreIme() {
-        return false;
-    }
-
-    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        handleIntent(intent, UserConfig.selectedAccount, 0);
+        handleIntent(intent);
     }
 
     private void onFinish() {
@@ -451,27 +307,16 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
     }
 
     @Override
-    public void onConfigurationChanged(android.content.res.Configuration newConfig) {
+    public void onConfigurationChanged(@NonNull android.content.res.Configuration newConfig) {
         AndroidUtilities.checkDisplaySize(this, newConfig);
+        AndroidUtilities.setPreferredMaxRefreshRate(getWindow());
         super.onConfigurationChanged(newConfig);
         fixLayout();
     }
 
     @Override
     public void onBackPressed() {
-        if (PhotoViewer.getInstance().isVisible()) {
-            PhotoViewer.getInstance().closePhoto(true, false);
-        } else if (drawerLayoutContainer.isDrawerOpened()) {
-            drawerLayoutContainer.closeDrawer(false);
-        } else if (AndroidUtilities.isTablet()) {
-            if (layersActionBarLayout.getView().getVisibility() == View.VISIBLE) {
-                layersActionBarLayout.onBackPressed();
-            } else {
-                actionBarLayout.onBackPressed();
-            }
-        } else {
-            actionBarLayout.onBackPressed();
-        }
+        finish();
     }
 
     @Override
@@ -481,16 +326,6 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
         if (AndroidUtilities.isTablet()) {
             layersActionBarLayout.onLowMemory();
         }
-    }
-
-    @Override
-    public boolean needPresentFragment(BaseFragment fragment, boolean removeLast, boolean forceWithoutAnimation, INavigationLayout layout) {
-        return true;
-    }
-
-    @Override
-    public boolean needAddFragmentToStack(BaseFragment fragment, INavigationLayout layout) {
-        return true;
     }
 
     @Override
@@ -523,4 +358,5 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
             }
         }
     }
+
 }

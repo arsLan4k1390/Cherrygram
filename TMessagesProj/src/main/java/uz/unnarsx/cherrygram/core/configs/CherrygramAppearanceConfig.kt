@@ -56,9 +56,9 @@ object CherrygramAppearanceConfig {
     var profileChannelPreview by sharedPreferences.boolean("CP_ProfileChannelPreview", true)
 
     const val ID_DC_NONE = 0
-    const val ID_ONLY = 1
-    const val ID_DC = 2
-    var showIDDC by sharedPreferences.int("AP_ShowID_DC", ID_DC_NONE)
+    const val ID_DC = 1
+    var showIDDC_old by sharedPreferences.int("AP_ShowID_DC", ID_DC_NONE) // Not used anymore, use only for migration
+    var showIDDC by sharedPreferences.boolean("AP_ShowID_DC_new", false)
 
     var profileBirthDatePreview by sharedPreferences.boolean("CP_ProfileBirthDatePreview", true)
     var profileBusinessPreview by sharedPreferences.boolean("CP_ProfileBusinessPreview", true)

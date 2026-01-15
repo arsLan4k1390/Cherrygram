@@ -98,6 +98,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 
 public class SendGiftSheet extends BottomSheetWithRecyclerListView implements NotificationCenter.NotificationCenterDelegate, GiftAuctionController.OnAuctionUpdateListener {
@@ -502,6 +503,14 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
                 messageEdit.editTextEmoji.closeKeyboard();
             }
             if (starGift != null) {
+
+                if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
+                    if (closeParentSheet != null) {
+                        closeParentSheet.run();
+                    }
+                    dismiss();
+                }
+
                 buyStarGift();
             } else {
                 buyPremiumTier();

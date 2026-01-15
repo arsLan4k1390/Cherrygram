@@ -52,6 +52,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import androidx.collection.LongSparseArray;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -108,6 +109,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
+import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 
 public class ContactsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -249,6 +251,13 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         searching = false;
         searchWas = false;
 
+        if (MD3ListAdapter.isMd3ContainersEnabled()) {
+            actionBar.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+            actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
+            actionBar.setItemsColor(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), true);
+            actionBar.setTitleColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+        }
+
         actionBar.setAllowOverlayTitle(true);
         if (destroyAfterSelect) {
             if (returnAsResult) {
@@ -309,6 +318,12 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                 }
                 if (sortItem != null) {
                     sortItem.setVisibility(View.GONE);
+                }
+
+                if (MD3ListAdapter.isMd3ContainersEnabled()) {
+                    actionBar.setSearchTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText), true);
+                    actionBar.setSearchTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), false);
+                    actionBar.setSearchCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
                 }
             }
 
@@ -1695,4 +1710,13 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
 
         return lp;
     }
+
+    /** Cherrygram start */
+    @Override
+    public boolean isLightStatusBar() {
+        if (!MD3ListAdapter.isMd3ContainersEnabled()) return super.isLightStatusBar();
+        int color = getThemedColor(Theme.key_windowBackgroundWhite);
+        return ColorUtils.calculateLuminance(color) > 0.7f;
+    }
+    /** Cherrygram finish */
 }

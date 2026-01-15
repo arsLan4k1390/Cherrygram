@@ -30,6 +30,7 @@ import org.telegram.ui.Components.LayoutHelper
 import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
+import uz.unnarsx.cherrygram.chats.ui.MessageMenuCompactView
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
@@ -72,7 +73,7 @@ object CGMessageMenuInjector {
         )
 
         if (showDivider) {
-            if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider()) {
+            if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider(true)) {
                 linearLayout.addView(
                     ActionBarPopupWindow.GapView(
                         chatActivity.context,
@@ -182,7 +183,7 @@ object CGMessageMenuInjector {
         }
 
         if (showDivider) {
-            val gap = if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider()) {
+            val gap = if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider(true)) {
                 ActionBarPopupWindow.GapView(
                     chatActivity.context,
                     ColorUtils.setAlphaComponent(chatActivity.getThemedColor(Theme.key_windowBackgroundGray), chatActivity.messageMenuHelper.getMessageMenuAlpha(true)),
@@ -224,7 +225,7 @@ object CGMessageMenuInjector {
         }
 
         if (showDivider) {
-            if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider()) {
+            if (chatActivity.messageMenuHelper.allowNewMessageMenu() && chatActivity.messageMenuHelper.showCustomDivider(true)) {
                 popupLayout.addView(
                     ActionBarPopupWindow.GapView(
                         chatActivity.context,
@@ -278,7 +279,7 @@ object CGMessageMenuInjector {
         options: ArrayList<Int?>,
         icons: ArrayList<Int?>
     ) {
-        if (CherrygramChatsConfig.showForwardWoAuthorship && !selectedObject.isSponsored && chatMode != ChatActivity.MODE_QUICK_REPLIES && chatMode != ChatActivity.MODE_SCHEDULED
+        if (!selectedObject.isSponsored && chatMode != ChatActivity.MODE_QUICK_REPLIES && chatMode != ChatActivity.MODE_SCHEDULED
             && (!selectedObject.needDrawBluredPreview() || selectedObject.hasExtendedMediaPreview()) && !selectedObject.isLiveLocation && selectedObject.type != MessageObject.TYPE_PHONE_CALL
             && selectedObject.type != MessageObject.TYPE_GIFT_PREMIUM && selectedObject.type != MessageObject.TYPE_GIFT_PREMIUM_CHANNEL && selectedObject.type != MessageObject.TYPE_SUGGEST_PHOTO
             && !selectedObject.isWallpaperAction && !selectedObject.isExpiredStory && selectedObject.type != MessageObject.TYPE_STORY_MENTION && selectedObject.type != MessageObject.TYPE_GIFT_STARS
@@ -365,19 +366,28 @@ object CGMessageMenuInjector {
     }
 
     fun injectJSON(
+        chatActivity: ChatActivity?,
+        force: Boolean,
         items: ArrayList<CharSequence?>,
         options: ArrayList<Int?>,
         icons: ArrayList<Int?>
     ) {
-        if (CherrygramChatsConfig.showJSON) {
+
+        val show = force || (chatActivity != null && CherrygramChatsConfig.showJSON &&
+                !(chatActivity.messageMenuHelper.allowNewMessageMenu() && MessageMenuCompactView.allowCompactStyle()))
+
+        if (show) {
             items.add("JSON")
             options.add(ChatActivityHelper.OPTION_DETAILS)
-            icons.add(R.drawable.msg_info)
+            icons.add(R.drawable.icon_json_solar)
         }
     }
 
     fun removeItems(
+        chatActivity: ChatActivity,
         selectedObject: MessageObject?,
+        allowEdit: Boolean,
+        noforwardsOrPaidMedia: Boolean,
         items: ArrayList<CharSequence?>,
         options: ArrayList<Int?>,
         icons: ArrayList<Int?>
@@ -386,12 +396,36 @@ object CGMessageMenuInjector {
 
         val toRemove = mutableListOf<Int>()
 
+        val primaryMessageText: CharSequence? = chatActivity.chatsHelper.getMessageCaption(
+            selectedObject,
+            chatActivity.getValidGroupedMessage(selectedObject)
+        )
+
         options.forEachIndexed { index, option ->
             val remove = when (option) {
-                ChatActivity.OPTION_REPLY -> !CherrygramChatsConfig.showReply
-                ChatActivity.OPTION_SAVE_TO_GALLERY, ChatActivity.OPTION_SAVE_TO_GALLERY2 -> !CherrygramChatsConfig.showSaveToGallery
-                ChatActivity.OPTION_SAVE_TO_DOWNLOADS_OR_MUSIC -> !CherrygramChatsConfig.showSaveToDownloads
-                ChatActivity.OPTION_SHARE -> !CherrygramChatsConfig.showShare
+                ChatActivity.OPTION_REPLY -> MessageMenuCompactView.allowCompactStyle()
+
+                ChatActivity.OPTION_SAVE_TO_GALLERY, ChatActivity.OPTION_SAVE_TO_GALLERY2 -> noforwardsOrPaidMedia || !CherrygramChatsConfig.showSaveToGallery
+                ChatActivity.OPTION_SAVE_TO_DOWNLOADS_OR_MUSIC -> noforwardsOrPaidMedia || !CherrygramChatsConfig.showSaveToDownloads
+                ChatActivity.OPTION_SHARE -> noforwardsOrPaidMedia || !CherrygramChatsConfig.showShare
+
+                ChatActivity.OPTION_COPY -> noforwardsOrPaidMedia || MessageMenuCompactView.allowCompactStyle()
+                ChatActivity.OPTION_COPY_LINK -> MessageMenuCompactView.allowCompactStyle()
+
+                ChatActivityHelper.OPTION_COPY_PHOTO ->
+                    noforwardsOrPaidMedia || !CherrygramChatsConfig.showCopyPhoto || (MessageMenuCompactView.allowCompactStyle() && primaryMessageText == null)
+                ChatActivityHelper.OPTION_COPY_PHOTO_AS_STICKER ->
+                    noforwardsOrPaidMedia || !CherrygramChatsConfig.showCopyPhotoAsSticker || (MessageMenuCompactView.allowCompactStyle() && primaryMessageText == null)
+
+                ChatActivity.OPTION_FORWARD ->
+                    noforwardsOrPaidMedia || !CherrygramChatsConfig.showForward || MessageMenuCompactView.allowCompactStyle()
+
+                ChatActivityHelper.OPTION_FORWARD_WO_AUTHOR ->
+                    noforwardsOrPaidMedia || !CherrygramChatsConfig.showForwardWoAuthorship || MessageMenuCompactView.allowCompactStyle()
+
+                ChatActivity.OPTION_DELETE -> MessageMenuCompactView.allowCompactStyle() && !allowEdit
+                ChatActivity.OPTION_EDIT -> MessageMenuCompactView.allowCompactStyle() && allowEdit
+
                 else -> false
             }
 

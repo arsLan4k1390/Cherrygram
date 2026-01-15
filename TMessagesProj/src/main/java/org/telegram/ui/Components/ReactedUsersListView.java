@@ -120,7 +120,7 @@ public class ReactedUsersListView extends FrameLayout {
 
                         FrameLayout frameLayout = new FrameLayout(context);
                         var getMessageMenuHelper = MessageMenuHelper.getInstance(currentAccount);
-                        if (getMessageMenuHelper.allowNewMessageMenu() && getMessageMenuHelper.showCustomDivider()) {
+                        if (getMessageMenuHelper.allowNewMessageMenu() && getMessageMenuHelper.showCustomDivider(false)) {
                             // Don't remove the divider here cause of broken layout
                             View gap = new View(context);
                             gap.setBackgroundColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider), getMessageMenuHelper.getMessageMenuAlpha(true)));

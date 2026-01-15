@@ -5646,7 +5646,7 @@ public class MediaDataController extends BaseController {
                 if (type == SHORTCUT_TYPE_ATTACHED_BOT) {
                     name = UserObject.getUserName(MessagesController.getInstance(currentAccount).getUser(dialogId));
                     if (user.photo != null) {
-                        photo = user.photo.photo_small;
+                        photo = user.photo.photo_big != null ? user.photo.photo_big : user.photo.photo_small;
                     }
                 } else if (UserObject.isReplyUser(user)) {
                     name = LocaleController.getString(R.string.RepliesTitle);
@@ -5657,13 +5657,13 @@ public class MediaDataController extends BaseController {
                 } else {
                     name = ContactsController.formatName(user.first_name, user.last_name);
                     if (user.photo != null) {
-                        photo = user.photo.photo_small;
+                        photo = user.photo.photo_big != null ? user.photo.photo_big : user.photo.photo_small;
                     }
                 }
             } else {
                 name = chat.title;
                 if (chat.photo != null) {
-                    photo = chat.photo.photo_small;
+                    photo = chat.photo.photo_big != null ? chat.photo.photo_big : chat.photo.photo_small;
                 }
             }
 
@@ -5702,12 +5702,12 @@ public class MediaDataController extends BaseController {
                             canvas.drawRoundRect(bitmapRect, bitmap.getWidth(), bitmap.getHeight(), roundPaint);
                             canvas.restore();
                         }
-                        Drawable drawable = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.book_logo);
+                        /*Drawable drawable = ApplicationLoader.applicationContext.getResources().getDrawable(R.drawable.book_logo);
                         int w = AndroidUtilities.dp(15);
                         int left = size - w - AndroidUtilities.dp(2);
                         int top = size - w - AndroidUtilities.dp(2);
                         drawable.setBounds(left, top, left + w, top + w);
-                        drawable.draw(canvas);
+                        drawable.draw(canvas);*/
                         try {
                             canvas.setBitmap(null);
                         } catch (Exception e) {

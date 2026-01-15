@@ -185,7 +185,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                 listAdapter.notifyItemChanged(exclusionsRow, false);
                 listAdapter.notifyItemChanged(miscellaneousHeaderRow, false);
                 listAdapter.notifyItemChanged(detectEntitiesRow, false);
-                if (CherrygramCoreConfig.INSTANCE.isDevBuild() || CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) listAdapter.notifyItemChanged(hideFromBlockedRow, false);
+                if (CherrygramCoreConfig.isDevBuild() || CherrygramCoreConfig.isStandalonePremiumBuild()) listAdapter.notifyItemChanged(hideFromBlockedRow, false);
                 listAdapter.notifyItemChanged(hideAllRow, false);
                 listAdapter.notifyItemChanged(collapseAutomaticallyRow, false);
                 listAdapter.notifyItemChanged(makeTransparentRow, false);
@@ -218,7 +218,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                         Set<Long> chatIds = new HashSet<>(ids);
                         Set<String> excludedChats = new HashSet<>(messagesFilterHelper.getArrayList(messagesFilterHelper.getExcludedList()));
 
-                        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("old excluded chats array: " + excludedChats);
+                        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("old excluded chats array: " + excludedChats);
                         excludedChats.clear();
 
                         if (!chatIds.isEmpty()) {
@@ -230,7 +230,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                         }
 
                         messagesFilterHelper.saveArrayList(new ArrayList<>(excludedChats), messagesFilterHelper.getExcludedList());
-                        if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("new excluded chats array: " + excludedChats);
+                        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("new excluded chats array: " + excludedChats);
 
                         listAdapter.notifyItemChanged(exclusionsRow, false);
                     });
@@ -544,7 +544,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
 
         miscellaneousHeaderRow = rowCount++;
         detectEntitiesRow = rowCount++;
-        if (CherrygramCoreConfig.INSTANCE.isDevBuild() || CherrygramCoreConfig.INSTANCE.isStandalonePremiumBuild()) hideFromBlockedRow = rowCount++;
+        if (CherrygramCoreConfig.isDevBuild() || CherrygramCoreConfig.isStandalonePremiumBuild()) hideFromBlockedRow = rowCount++;
         hideAllRow = rowCount++;
         collapseAutomaticallyRow = rowCount++;
         makeTransparentRow = rowCount++;

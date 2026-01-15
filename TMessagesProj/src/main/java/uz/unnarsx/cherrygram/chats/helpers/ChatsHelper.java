@@ -356,13 +356,11 @@ public class ChatsHelper extends BaseController {
         );
 
         if (buttonAvailable && getCustomReactionsCount(selectedObject) > 0) {
-            if (chatActivity.getMessageMenuHelper().allowNewMessageMenu() && chatActivity.getMessageMenuHelper().showCustomDivider()) {
-                if (chatActivity.getMessageMenuHelper().showCustomDivider()) {
-                    // Don't remove the divider here cause of broken layout
-                    View gap = new FrameLayout(chatActivity.contentView.getContext());
-                    gap.setBackgroundColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundGray, themeDelegate), chatActivity.getMessageMenuHelper().getMessageMenuAlpha(true)));
-                    popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
-                }
+            if (chatActivity.getMessageMenuHelper().allowNewMessageMenu() && chatActivity.getMessageMenuHelper().showCustomDivider(false)) {
+                // Don't remove the divider here cause of broken layout
+                View gap = new FrameLayout(chatActivity.contentView.getContext());
+                gap.setBackgroundColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundGray, themeDelegate), chatActivity.getMessageMenuHelper().getMessageMenuAlpha(true)));
+                popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
             } else {
                 View gap = new FrameLayout(chatActivity.getContext());
                 gap.setBackgroundColor(chatActivity.getThemedColor(Theme.key_actionBarDefaultSubmenuSeparator));

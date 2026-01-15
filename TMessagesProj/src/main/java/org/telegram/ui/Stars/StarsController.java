@@ -85,6 +85,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+
 public class StarsController {
 
     public static final String currency = "XTR";
@@ -1294,6 +1296,9 @@ public class StarsController {
                     return;
                 }
                 final boolean[] purchased = new boolean[] { false };
+                if (whenDone != null && CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
+                    whenDone.run(true);
+                }
                 StarsIntroActivity.StarsNeededSheet sheet = new StarsIntroActivity.StarsNeededSheet(context, resourcesProvider, stars, isBiz ? StarsIntroActivity.StarsNeededSheet.TYPE_BIZ : StarsIntroActivity.StarsNeededSheet.TYPE_BOT, bot, () -> {
                     purchased[0] = true;
                     payAfterConfirmed(messageObject, inputInvoice, form, success -> {

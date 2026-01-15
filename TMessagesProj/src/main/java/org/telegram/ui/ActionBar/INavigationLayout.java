@@ -263,7 +263,7 @@ public interface INavigationLayout {
     default boolean presentFragment(BaseFragment fragment) {
         AtomicBoolean fragment1 = new AtomicBoolean(false);
         if (fragment instanceof ChatActivity && (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())) {
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity");
+            if (CherrygramCoreConfig.isDevBuild()) FileLog.d("fragment is chat activity");
 
             long userID = fragment.arguments.getLong("user_id");
             long chatID = fragment.arguments.getLong("chat_id");
@@ -279,7 +279,7 @@ public interface INavigationLayout {
             }
             return fragment1.get();
         } else if (fragment instanceof DialogsActivity && CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive()) {
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is dialogs activity");
+            if (CherrygramCoreConfig.isDevBuild()) FileLog.d("fragment is dialogs activity");
 
             if (getParentActivity() != null
                     && fragment.arguments.getInt("folderId") != 0
@@ -304,7 +304,7 @@ public interface INavigationLayout {
     default boolean presentFragmentAsPreview(BaseFragment fragment) {
         AtomicBoolean fragment1 = new AtomicBoolean(false);
         if (fragment instanceof ChatActivity && (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())) {
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity2");
+            if (CherrygramCoreConfig.isDevBuild()) FileLog.d("fragment is chat activity2");
 
             long userID = fragment.arguments.getLong("user_id");
             long chatID = fragment.arguments.getLong("chat_id");
@@ -327,7 +327,7 @@ public interface INavigationLayout {
     default boolean presentFragmentAsPreviewWithMenu(BaseFragment fragment, ActionBarPopupWindow.ActionBarPopupWindowLayout menuView) {
         AtomicBoolean fragment1 = new AtomicBoolean(false);
         if (fragment instanceof ChatActivity && (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())) {
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity3");
+            if (CherrygramCoreConfig.isDevBuild()) FileLog.d("fragment is chat activity3");
 
             long userID = fragment.arguments.getLong("user_id");
             long chatID = fragment.arguments.getLong("chat_id");
@@ -354,7 +354,7 @@ public interface INavigationLayout {
     default boolean presentFragment(BaseFragment fragment, boolean removeLast, boolean forceWithoutAnimation, boolean check, boolean preview) {
         AtomicBoolean fragment1 = new AtomicBoolean(false);
         if (fragment instanceof ChatActivity && !check && (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())) {
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity4");
+            if (CherrygramCoreConfig.isDevBuild()) FileLog.d("fragment is chat activity4");
 
             long userID = fragment.arguments.getLong("user_id");
             long chatID = fragment.arguments.getLong("chat_id");
@@ -381,7 +381,7 @@ public interface INavigationLayout {
     default boolean presentFragment(BaseFragment fragment, boolean removeLast, boolean forceWithoutAnimation, boolean check, boolean preview, ActionBarPopupWindow.ActionBarPopupWindowLayout menuView) {
         AtomicBoolean fragment1 = new AtomicBoolean(false);
         if (fragment instanceof ChatActivity && (CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat() || CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted())) {
-            if (CherrygramCoreConfig.INSTANCE.isDevBuild()) FileLog.d("fragment is chat activity5");
+            if (CherrygramCoreConfig.isDevBuild()) FileLog.d("fragment is chat activity5");
 
             long userID = fragment.arguments.getLong("user_id");
             long chatID = fragment.arguments.getLong("chat_id");

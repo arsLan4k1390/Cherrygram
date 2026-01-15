@@ -31,6 +31,7 @@ object CherrygramPreferencesNavigator {
     fun createExperimental(fragment: BaseFragment) = fragment.presentFragment(ExperimentalPreferencesEntry())
     fun createPrivacyAndSecurity() = TGKitSettingsFragment(PrivacyAndSecurityPreferencesEntry())
     fun createDonate(fragment: BaseFragment) = fragment.presentFragment(DonatesPreferencesEntry())
+    fun createStars(fragment: BaseFragment, customTitle: String?, userName: String?, type: Int) = fragment.presentFragment(StarsIntroActivityCG(customTitle, userName, type))
     fun createDonateForce(fragment: BaseFragment) = fragment.presentFragment(DonatesPreferencesEntry().forceShowDonates())
     fun createAbout() = TGKitSettingsFragment(AboutPreferencesEntry())
     fun createDebug() = TGKitSettingsFragment(DebugPreferencesEntry())

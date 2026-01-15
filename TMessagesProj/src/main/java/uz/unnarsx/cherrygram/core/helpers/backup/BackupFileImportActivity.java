@@ -229,7 +229,7 @@ public class BackupFileImportActivity extends BaseFragment {
             filter.addAction(Intent.ACTION_MEDIA_UNMOUNTABLE);
             filter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
             filter.addDataScheme("file");
-            if (Build.VERSION.SDK_INT >= 33) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 ApplicationLoader.applicationContext.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED);
             } else {
                 ApplicationLoader.applicationContext.registerReceiver(receiver, filter);

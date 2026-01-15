@@ -657,4 +657,11 @@ public abstract class GradientHeaderActivity extends BaseFragment {
             savedScrollPosition = -1;
         }
     }
+
+    /** Cherrygram start */
+    public boolean isSupportEdgeToEdge() {
+        return false;
+    }
+    /** Cherrygram finish */
+
 }

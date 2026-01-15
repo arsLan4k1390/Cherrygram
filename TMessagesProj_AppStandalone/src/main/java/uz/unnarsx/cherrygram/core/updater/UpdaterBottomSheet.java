@@ -267,7 +267,7 @@ public class UpdaterBottomSheet extends BottomSheet {
 
     private void openGithubReleases() {
         String githubLink;
-        if (CherrygramCoreConfig.INSTANCE.isStandaloneBetaBuild()) {
+        if (CherrygramCoreConfig.isStandaloneBetaBuild()) {
             githubLink = "https://github.com/arsLan4k1390/CherrygramBeta-APKs/releases/latest";
         } else {
             githubLink = "https://github.com/arsLan4k1390/Cherrygram/releases/latest";

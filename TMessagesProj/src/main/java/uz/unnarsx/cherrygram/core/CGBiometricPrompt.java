@@ -131,53 +131,45 @@ public class CGBiometricPrompt {
                 return false;
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                // BIOMETRIC_WEAK включает отпечатки и лицо
                 return biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK) == BiometricManager.BIOMETRIC_SUCCESS;
             } else {
                 return biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS;
             }
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // На старых Android только отпечатки
+        } else {
             return hasEnrolledFingerprints();
         }
-        return false;
     }
 
     public static boolean hasEnrolledFingerprints() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            FingerprintManager fingerprintManager = ApplicationLoader.applicationContext.getSystemService(FingerprintManager.class);
-            if (fingerprintManager != null) {
-                try {
-                    return fingerprintManager.isHardwareDetected() && fingerprintManager.hasEnrolledFingerprints();
-                } catch (SecurityException e) {
-                    FileLog.e(e);
-                    return false;
-                }
-            } else {
-                // Fallback на FingerprintManagerCompat
-                try {
-                    FingerprintManagerCompat compat = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
-                    return compat.isHardwareDetected() && compat.hasEnrolledFingerprints();
-                } catch (Throwable e) {
-                    FileLog.e(e);
-                    return false;
-                }
+        FingerprintManager fingerprintManager = ApplicationLoader.applicationContext.getSystemService(FingerprintManager.class);
+        if (fingerprintManager != null) {
+            try {
+                return fingerprintManager.isHardwareDetected() && fingerprintManager.hasEnrolledFingerprints();
+            } catch (SecurityException e) {
+                FileLog.e(e);
+                return false;
+            }
+        } else {
+            try {
+                FingerprintManagerCompat compat = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
+                return compat.isHardwareDetected() && compat.hasEnrolledFingerprints();
+            } catch (Throwable e) {
+                FileLog.e(e);
+                return false;
             }
         }
-        return false;
     }
 
     public static int getBiometricIconResId() {
         boolean hasFingerprint = hasEnrolledFingerprints();
         boolean hasFace = false;
 
-        // Проверяем наличие лица на Android 10+ (Q+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             BiometricManager bm = ApplicationLoader.applicationContext.getSystemService(BiometricManager.class);
             if (bm != null && bm.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS && !hasFingerprint) {
-                hasFace = true; // есть биометрия, но отпечатков нет → лицо
+                hasFace = true;
             } else if (bm != null && bm.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS && hasFingerprint) {
-                hasFace = true; // есть и отпечаток, и лицо
+                hasFace = true;
             }
         }
 
@@ -193,10 +185,6 @@ public class CGBiometricPrompt {
     private static final String TAG = "CGBiometricPrompt";
 
     public static void fixFingerprint(Activity activity, CGBiometricListener callback) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            callback.onFailed();
-            return;
-        }
 
         FingerprintController.checkKeyReady();
         FingerprintController.deleteInvalidKey();
@@ -251,31 +239,27 @@ public class CGBiometricPrompt {
     }
 
     private static boolean hasFingerprintInternal() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
-                Log.d(TAG, "Starting fingerprint check...");
+        try {
+            Log.d(TAG, "Starting fingerprint check...");
 
-                FingerprintManagerCompat fingerprintManager = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
+            FingerprintManagerCompat fingerprintManager = FingerprintManagerCompat.from(ApplicationLoader.applicationContext);
 
-                boolean conditions = fingerprintManager.isHardwareDetected();
-                Log.d(TAG, "Fingerprint hardware detected: " + conditions);
+            boolean conditions = fingerprintManager.isHardwareDetected();
+            Log.d(TAG, "Fingerprint hardware detected: " + conditions);
 
-                conditions &= fingerprintManager.hasEnrolledFingerprints();
-                Log.d(TAG, "Enrolled fingerprints: " + fingerprintManager.hasEnrolledFingerprints());
+            conditions &= fingerprintManager.hasEnrolledFingerprints();
+            Log.d(TAG, "Enrolled fingerprints: " + fingerprintManager.hasEnrolledFingerprints());
 
-                conditions &= FingerprintController.isKeyReady();
-                Log.d(TAG, "Fingerprint key ready: " + FingerprintController.isKeyReady());
+            conditions &= FingerprintController.isKeyReady();
+            Log.d(TAG, "Fingerprint key ready: " + FingerprintController.isKeyReady());
 
-                conditions &= !FingerprintController.checkDeviceFingerprintsChanged();
-                Log.d(TAG, "Device fingerprints changed: " + !FingerprintController.checkDeviceFingerprintsChanged());
+            conditions &= !FingerprintController.checkDeviceFingerprintsChanged();
+            Log.d(TAG, "Device fingerprints changed: " + !FingerprintController.checkDeviceFingerprintsChanged());
 
-                Log.d(TAG, "Final fingerprint check result: " + conditions);
-                return conditions;
-            } catch (Throwable e) {
-                FileLog.e("Error checking fingerprint availability", e);
-            }
-        } else {
-            Log.d(TAG, "Fingerprint check skipped: SDK version < 23");
+            Log.d(TAG, "Final fingerprint check result: " + conditions);
+            return conditions;
+        } catch (Throwable e) {
+            FileLog.e("Error checking fingerprint availability", e);
         }
         return false;
     }

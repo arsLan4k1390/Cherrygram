@@ -18,7 +18,6 @@ import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper
-import uz.unnarsx.cherrygram.preferences.tgkit.preference.TGKitSettings
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen

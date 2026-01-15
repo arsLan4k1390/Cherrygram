@@ -88,7 +88,7 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var blurMessageMenuItems by sharedPreferences.boolean("CP_BlurMessageMenuItems", false)
     var msgMenuNativeBlur by sharedPreferences.boolean("CP_MsgMenuNativeBlur", Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
     /** Message menu items start */
-    var showSaveForNotifications by sharedPreferences.boolean("CP_ShowSaveForNotifications", false)
+    var showSaveForNotifications by sharedPreferences.boolean("CP_ShowSaveForNotifications", true)
     var showGemini by sharedPreferences.boolean("CP_ShowGemini", GeminiButtonsLayout.geminiButtonsVisible())
     var showReply by sharedPreferences.boolean("CP_ShowReply", true)
     var showSaveToGallery by sharedPreferences.boolean("CP_ShowSaveToGallery", true)
@@ -105,6 +105,8 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     var showJSON by sharedPreferences.boolean("CP_ShowJSON", false)
     var jacksonJSON_Provider by sharedPreferences.boolean("CP_JacksonJSON_Provider", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+
+    var msgMenuItemsCompactView by sharedPreferences.boolean("CP_MsgMenuItemsCompactView", false)
     /** Message menu items finish */
     /** Message menu finish */
 

@@ -57,6 +57,7 @@ object FirebaseRemoteConfigHelper {
                 }
                 toggleReTgCheck(it.getBoolean(Constants.Re_Tg_Check))
                 toggleNewUpdatesUI(it.getBoolean(Constants.is_new_updates_ui_available))
+                toggleSafeStars(it.getBoolean(Constants.allow_use_safestars))
 
                 if (CherrygramCoreConfig.isDevBuild() || CherrygramDebugConfig.showRPCErrors) {
                     AndroidUtilities.runOnUIThread {
@@ -120,6 +121,18 @@ object FirebaseRemoteConfigHelper {
         if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
             FileLog.d("New updates value:" + CherrygramCoreConfig.updatesNewUI)
         }
+    }
+
+    private fun toggleSafeStars(enable: Boolean) {
+        /*if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
+            FileLog.d("Old safeStars value:" + CherrygramCoreConfig.allowSafeStars)
+        }
+
+        CherrygramCoreConfig.allowSafeStars = enable
+
+        if (CherrygramCoreConfig.isDevBuild() || BuildVars.LOGS_ENABLED) {
+            FileLog.d("New safeStars value:" + CherrygramCoreConfig.allowSafeStars)
+        }*/
     }
 
     /*fun getVideoMessageResolution(): Int {

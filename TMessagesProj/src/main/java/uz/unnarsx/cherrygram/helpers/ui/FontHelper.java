@@ -75,15 +75,15 @@ public class FontHelper {
             case AndroidUtilities.TYPEFACE_ROBOTO_CONDENSED_BOLD ->
                     Typeface.create("sans-serif-condensed", Typeface.BOLD);
             case AndroidUtilities.TYPEFACE_ROBOTO_ITALIC ->
-                    Build.VERSION.SDK_INT >= 28 ? Typeface.create(Typeface.SANS_SERIF, 400, true) : Typeface.create("sans-serif", Typeface.ITALIC);
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? Typeface.create(Typeface.SANS_SERIF, 400, true) : Typeface.create("sans-serif", Typeface.ITALIC);
             case AndroidUtilities.TYPEFACE_ROBOTO_MONO ->
                     Typeface.MONOSPACE;
-            default -> Build.VERSION.SDK_INT >= 28 ? Typeface.create(Typeface.SANS_SERIF, 400, false) : Typeface.create("sans-serif", Typeface.NORMAL);
+            default -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.P ? Typeface.create(Typeface.SANS_SERIF, 400, false) : Typeface.create("sans-serif", Typeface.NORMAL);
         };
     }
 
     public static Typeface createTypefaceFromAsset(String assetPath) {
-        if (Build.VERSION.SDK_INT >= 26) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Typeface.Builder builder = new Typeface.Builder(ApplicationLoader.applicationContext.getAssets(), assetPath);
             if (assetPath.contains("medium")) {
                 builder.setWeight(700);

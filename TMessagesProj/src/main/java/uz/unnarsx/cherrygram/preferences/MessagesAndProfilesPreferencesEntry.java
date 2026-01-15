@@ -133,7 +133,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         int replyEmojiSwitchRow = -1;
 
         int infoHeaderRow;
-        int idPreviewRow;
         int idDcPreviewRow;
         int birthdayPreviewRow;
         int businessHoursPreviewRow;
@@ -151,7 +150,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         private final int VIEW_TYPE_MESSAGE = 0;
         private final int VIEW_TYPE_HEADER = 1;
         private final int VIEW_TYPE_SWITCH = 2;
-        private final int VIEW_TYPE_TEXT_SETTING = 3;
+//        private final int VIEW_TYPE_TEXT_SETTING = 3;
         private final int VIEW_TYPE_TEXT_DETAIL = 4;
         private final int VIEW_TYPE_CHANNEL = 5;
         private final int VIEW_TYPE_SHADOW = 6;
@@ -205,7 +204,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             listView.setAdapter(listAdapter = new MD3ListAdapter() {
                 @Override
                 public boolean isEnabled(RecyclerView.ViewHolder holder) {
-                    return holder.getItemViewType() == VIEW_TYPE_SWITCH || holder.getItemViewType() == VIEW_TYPE_TEXT_SETTING
+                    return holder.getItemViewType() == VIEW_TYPE_SWITCH /*|| holder.getItemViewType() == VIEW_TYPE_TEXT_SETTING*/
                             || holder.getItemViewType() == VIEW_TYPE_TEXT_DETAIL || holder.getItemViewType() == VIEW_TYPE_CHANNEL;
                 }
 
@@ -233,11 +232,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             TextCheckCell switchCell = new TextCheckCell(getContext());
                             switchCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                             view = switchCell;
-                            break;
-                        case VIEW_TYPE_TEXT_SETTING:
-                            TextSettingsCell textSettingsCell = new TextSettingsCell(getContext());
-                            textSettingsCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                            view = textSettingsCell;
                             break;
                         case VIEW_TYPE_TEXT_DETAIL:
                             TextDetailCell textDetailCell = new TextDetailCell(getContext(), getResourceProvider(), true, true);
@@ -289,6 +283,8 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                                 switchCell.setTextAndCheck(getString(R.string.CP_ReplyBackgroundEmoji), CherrygramAppearanceConfig.INSTANCE.getReplyBackgroundEmoji(), false);
                             } else if (position == channelPreviewSwitchRow) {
                                 switchCell.setTextAndCheck(getString(R.string.CP_ProfileChannelPreview), CherrygramAppearanceConfig.INSTANCE.getProfileChannelPreview(), false);
+                            } else if (position == showDcIdSwitchRow) {
+                                switchCell.setTextAndCheck(getString(R.string.AP_ShowID), CherrygramAppearanceConfig.INSTANCE.getShowIDDC(), false);
                             } else if (position == birthdayPreviewSwitchRow) {
                                 switchCell.setTextAndCheck(getString(R.string.CP_ProfileBirthDatePreview), CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview(), false);
                             } else if (position == businessPreviewSwitchRow) {
@@ -300,30 +296,11 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                             }
                             break;
                         }
-                        case VIEW_TYPE_TEXT_SETTING: {
-                            TextSettingsCell textSettingsCell = (TextSettingsCell) holder.itemView;
-                            textSettingsCell.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                            if (position == showDcIdSwitchRow) {
-                                textSettingsCell.setTextAndValue(getString(R.string.AP_ShowID), CGResourcesHelper.INSTANCE.getShowDcIdText(), true);
-                            }
-                            break;
-                        }
                         case VIEW_TYPE_TEXT_DETAIL: {
                             TextDetailCell detailCell = (TextDetailCell) holder.itemView;
                             final TLRPC.User me = getUserConfig().getCurrentUser();
 
-                            if (position == idPreviewRow) {
-                                DecimalFormat df = new DecimalFormat("#,###", new DecimalFormatSymbols(Locale.US) {{ setGroupingSeparator(' '); }});
-                                detailCell.setTextAndValue(df.format(me.id), "ID", false);
-
-                                Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.msg_calendar2);
-                                detailCell.setImage(drawable);
-                                if (drawable != null && colorBar != null && colorBar.getActionBarButtonColor() != 0) {
-                                    final int buttonColor = processColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueHeader, getResourceProvider()));
-                                    drawable.setColorFilter(new PorterDuffColorFilter(buttonColor, PorterDuff.Mode.MULTIPLY));
-                                }
-                                detailCell.setImageClickListener(v -> Extra.INSTANCE.getRegistrationDate(MessagesAndProfilesPreferencesEntry.this, getParentActivity(), getUserConfig().getClientUserId(), 0));
-                            } else if (position == idDcPreviewRow) {
+                            if (position == idDcPreviewRow) {
                                 StringBuilder sb = new StringBuilder();
                                 if (me.photo != null && me.photo.dc_id > 0) {
                                     sb = new StringBuilder();
@@ -397,13 +374,10 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                         return VIEW_TYPE_HEADER;
                     }
                     if (position == timeWithSecondsSwitchRow || position == premiumStatusSwitchRow || position == replyBackgroundSwitchRow || position == replyColorSwitchRow || position == replyEmojiSwitchRow
-                            || position == channelPreviewSwitchRow || position == birthdayPreviewSwitchRow || position == businessPreviewSwitchRow || position == profileBackgroundSwitchRow || position == profileEmojiSwitchRow) {
+                            || position == channelPreviewSwitchRow || position == showDcIdSwitchRow || position == birthdayPreviewSwitchRow || position == businessPreviewSwitchRow || position == profileBackgroundSwitchRow || position == profileEmojiSwitchRow) {
                         return VIEW_TYPE_SWITCH;
                     }
-                    if (position == showDcIdSwitchRow) {
-                        return VIEW_TYPE_TEXT_SETTING;
-                    }
-                    if (position == idPreviewRow || position == idDcPreviewRow || position == birthdayPreviewRow
+                    if (position == idDcPreviewRow || position == birthdayPreviewRow
                             || position == businessHoursPreviewRow || position == businessLocationPreviewRow) {
                         return VIEW_TYPE_TEXT_DETAIL;
                     }
@@ -490,7 +464,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     listAdapter.notifyItemChanged(channelPreviewSwitchRow);
                     listAdapter.notifyItemChanged(channelPreviewRow);
                     listAdapter.notifyItemChanged(profilePreviewDivisorRow);
-                    listAdapter.notifyItemChanged(idPreviewRow);
                     listAdapter.notifyItemChanged(idDcPreviewRow);
                     listAdapter.notifyItemChanged(birthdayPreviewRow);
                     listAdapter.notifyItemChanged(businessHoursPreviewRow);
@@ -498,32 +471,20 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     profilePage.updateRows();
                     parentLayout.rebuildAllFragmentViews(false, false);
                 } else if (position == showDcIdSwitchRow) {
-                    ArrayList<String> configStringKeys = new ArrayList<>();
-                    ArrayList<Integer> configValues = new ArrayList<>();
+                    CherrygramAppearanceConfig.INSTANCE.setShowIDDC(!CherrygramAppearanceConfig.INSTANCE.getShowIDDC());
+                    if (view instanceof TextCheckCell) {
+                        ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getShowIDDC());
+                    }
 
-                    configStringKeys.add(getString(R.string.Disable));
-                    configValues.add(CherrygramAppearanceConfig.ID_DC_NONE);
-
-                    configStringKeys.add("ID");
-                    configValues.add(CherrygramAppearanceConfig.ID_ONLY);
-
-                    configStringKeys.add("ID + DC");
-                    configValues.add(CherrygramAppearanceConfig.ID_DC);
-
-                    PopupHelper.show(configStringKeys, getString(R.string.AP_ShowID), configValues.indexOf(CherrygramAppearanceConfig.INSTANCE.getShowIDDC()), context, i -> {
-                        CherrygramAppearanceConfig.INSTANCE.setShowIDDC(configValues.get(i));
-
-                        listAdapter.notifyItemChanged(channelPreviewRow);
-                        listAdapter.notifyItemChanged(showDcIdSwitchRow);
-                        listAdapter.notifyItemChanged(profilePreviewDivisorRow);
-                        listAdapter.notifyItemChanged(idPreviewRow);
-                        listAdapter.notifyItemChanged(idDcPreviewRow);
-                        listAdapter.notifyItemChanged(birthdayPreviewRow);
-                        listAdapter.notifyItemChanged(businessHoursPreviewRow);
-                        listAdapter.notifyItemChanged(businessLocationPreviewRow);
-                        profilePage.updateRows();
-                        parentLayout.rebuildAllFragmentViews(false, false);
-                    });
+                    listAdapter.notifyItemChanged(channelPreviewRow);
+                    listAdapter.notifyItemChanged(showDcIdSwitchRow);
+                    listAdapter.notifyItemChanged(profilePreviewDivisorRow);
+                    listAdapter.notifyItemChanged(idDcPreviewRow);
+                    listAdapter.notifyItemChanged(birthdayPreviewRow);
+                    listAdapter.notifyItemChanged(businessHoursPreviewRow);
+                    listAdapter.notifyItemChanged(businessLocationPreviewRow);
+                    profilePage.updateRows();
+                    parentLayout.rebuildAllFragmentViews(false, false);
                 } else if (position == birthdayPreviewSwitchRow) {
                     CherrygramAppearanceConfig.INSTANCE.setProfileBirthDatePreview(!CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview());
                     if (view instanceof TextCheckCell) {
@@ -533,7 +494,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     listAdapter.notifyItemChanged(channelPreviewRow);
                     listAdapter.notifyItemChanged(birthdayPreviewSwitchRow);
                     listAdapter.notifyItemChanged(profilePreviewDivisorRow);
-                    listAdapter.notifyItemChanged(idPreviewRow);
                     listAdapter.notifyItemChanged(idDcPreviewRow);
                     listAdapter.notifyItemChanged(birthdayPreviewRow);
                     listAdapter.notifyItemChanged(businessHoursPreviewRow);
@@ -549,7 +509,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                     listAdapter.notifyItemChanged(channelPreviewRow);
                     listAdapter.notifyItemChanged(businessPreviewSwitchRow);
                     listAdapter.notifyItemChanged(profilePreviewDivisorRow);
-                    listAdapter.notifyItemChanged(idPreviewRow);
                     listAdapter.notifyItemChanged(idDcPreviewRow);
                     listAdapter.notifyItemChanged(birthdayPreviewRow);
                     listAdapter.notifyItemChanged(businessHoursPreviewRow);
@@ -685,7 +644,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
                 int prevInfoHeaderRow = infoHeaderRow;
                 infoHeaderRow = -1;
-                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() != CherrygramAppearanceConfig.ID_DC_NONE
+                if (!CherrygramAppearanceConfig.INSTANCE.getShowIDDC()
                         || CherrygramAppearanceConfig.INSTANCE.getProfileBirthDatePreview()
                         || CherrygramAppearanceConfig.INSTANCE.getProfileBusinessPreview()
                 ) {
@@ -700,22 +659,9 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 }
 
                 // DC ID
-                int prevIdPreviewRow = idPreviewRow;
-                idPreviewRow = -1;
-                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_ONLY) {
-                    idPreviewRow = rowCount++;
-                }
-                if (listAdapter != null) {
-                    if (prevIdPreviewRow == -1 && idPreviewRow != -1) {
-                        listAdapter.notifyItemInserted(idPreviewRow);
-                    } else if (prevIdPreviewRow != -1 && idPreviewRow == -1) {
-                        listAdapter.notifyItemRemoved(prevIdPreviewRow);
-                    }
-                }
-
                 int prevIdDcPreviewRow = idDcPreviewRow;
                 idDcPreviewRow = -1;
-                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC() == CherrygramAppearanceConfig.ID_DC) {
+                if (CherrygramAppearanceConfig.INSTANCE.getShowIDDC()) {
                     idDcPreviewRow = rowCount++;
                 }
                 if (listAdapter != null) {

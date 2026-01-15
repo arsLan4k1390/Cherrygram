@@ -60,6 +60,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
 
     private int miscellaneousHeaderRow;
     private int messageMenuItemsRow;
+    private int messageMenuItemsCompactView;
     private int miscellaneousEndDivisor;
 
     protected Theme.ResourcesProvider resourcesProvider;
@@ -117,7 +118,13 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
         listView.setOnItemClickListener((view, position, x, y) -> {
-            boolean requireDonate = !DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
+            boolean requireDonate;
+
+            if (position == messageMenuItemsCompactView) {
+                requireDonate = !DonatesManager.INSTANCE.checkAllDonatedAccounts() && !DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
+            } else {
+                requireDonate = !DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
+            }
 
             var holder = listView.findViewHolderForAdapterPosition(position);
             if (holder == null || !listAdapter.isEnabled(holder)) {
@@ -209,6 +216,11 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                 }
             } else if (position == messageMenuItemsRow) {
                 CGMessageMenuInjector.INSTANCE.showMessageMenuItemsConfigurator(this);
+            } else if (position == messageMenuItemsCompactView) {
+                CherrygramChatsConfig.INSTANCE.setMsgMenuItemsCompactView(!CherrygramChatsConfig.INSTANCE.getMsgMenuItemsCompactView());
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgMenuItemsCompactView());
+                }
             }
         });
 
@@ -262,13 +274,18 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
 
                     if (position == messageMenuItemsRow) {
                         textCell.setEnabled(true);
-                        textCell.setTextAndIcon(getString(R.string.CP_MessageMenuItems), R.drawable.msg_list, false);
+                        textCell.setTextAndIcon(getString(R.string.CP_MessageMenuItems), R.drawable.msg_list, true);
                     }
                     break;
                 case VIEW_TYPE_TEXT_CHECK:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
                     textCheckCell.setEnabled(!requireDonate, null);
 
+                    if (position == messageMenuItemsCompactView) {
+                        requireDonate = !DonatesManager.INSTANCE.checkAllDonatedAccounts() && !DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
+                    } else {
+                        requireDonate = !DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
+                    }
                     if (requireDonate) textCheckCell.setCheckBoxIcon(R.drawable.permission_locked);
 
                     if (position == enableNewMessageMenuRow) {
@@ -325,6 +342,15 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                                 true,
                                 false
                         );
+                    } else if (position == messageMenuItemsCompactView) {
+                        textCheckCell.setEnabled(true, null);
+                        textCheckCell.setTextAndValueAndCheck(
+                                getString(R.string.CP_MessageMenuCompactLayout),
+                                getString(R.string.CP_MessageMenuCompactLayout_Desc) + "\n\n" + getString(R.string.CP_MessageMenuCompactLayout_Dot),
+                                CherrygramChatsConfig.INSTANCE.getMsgMenuItemsCompactView(),
+                                true,
+                                false
+                        );
                     }
                     break;
             }
@@ -369,7 +395,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                 return VIEW_TYPE_SHADOW;
             } else if (position == redesignHeaderRow || position == miscellaneousHeaderRow) {
                 return VIEW_TYPE_HEADER;
-            } else if (position == enableNewMessageMenuRow || position == unifiedScrollRow || position == autoScrollMessagesRow || position == fixedMessageHeightRow || position == blurMessageMenuItemsRow || position == useNativeBlurRow) {
+            } else if (position == enableNewMessageMenuRow || position == unifiedScrollRow || position == autoScrollMessagesRow || position == fixedMessageHeightRow || position == blurMessageMenuItemsRow || position == useNativeBlurRow || position == messageMenuItemsCompactView) {
                 return VIEW_TYPE_TEXT_CHECK;
             } else if (position == messageMenuItemsRow) {
                 return VIEW_TYPE_TEXT_CELL;
@@ -407,6 +433,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
 
         miscellaneousHeaderRow = rowCount++;
         messageMenuItemsRow = rowCount++;
+        messageMenuItemsCompactView = rowCount++;
         miscellaneousEndDivisor = rowCount++;
 
         if (listAdapter != null && notify) {
