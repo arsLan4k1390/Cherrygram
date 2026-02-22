@@ -49,7 +49,7 @@ public class WindowBlurHelper {
         }
     }
 
-    public void hideStatusBar(Window window, boolean hide) {
+    public static void hideStatusBar(Window window, boolean hide) {
         if (hide) {
             window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         } else {

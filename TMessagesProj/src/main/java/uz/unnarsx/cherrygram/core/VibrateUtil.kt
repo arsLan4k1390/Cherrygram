@@ -36,13 +36,11 @@ object VibrateUtil {
         if (CherrygramChatsConfig.disableVibration) return
 
         if (!VibrateUtil::vibrator.isInitialized) {
-            // Use new VibratorManager service for API >= 31
             vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 val vibratorManager =
                     ApplicationLoader.applicationContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
                 vibratorManager.defaultVibrator
             } else {
-                // Backward compatibility for API < 31
                 @Suppress("DEPRECATION")
                 ApplicationLoader.applicationContext.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
             }
@@ -57,7 +55,6 @@ object VibrateUtil {
             }
         } else {
             runCatching {
-                // Backward compatibility for API < 26
                 @Suppress("DEPRECATION")
                 vibrator.vibrate(time)
             }
@@ -77,7 +74,7 @@ object VibrateUtil {
         } catch (ignore: Exception) { }
     }
 
-    fun makeWaveVibration() { //MIUI moment
+    fun makeWaveVibration() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 val vibrator = AndroidUtilities.getVibrator()

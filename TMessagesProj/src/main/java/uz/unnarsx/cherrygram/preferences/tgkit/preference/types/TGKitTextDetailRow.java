@@ -39,5 +39,9 @@ public class TGKitTextDetailRow extends TGKitPreference {
 
     public interface TGTDListener {
         void onClick(BaseFragment bf);
+
+        default void onLongClick(BaseFragment bf) {
+        }
     }
+
 }

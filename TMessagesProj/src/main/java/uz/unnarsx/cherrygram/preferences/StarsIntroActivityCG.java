@@ -1,3 +1,12 @@
+/**
+ * This is the source code of Cherrygram for Android.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ * Please, be respectful and credit the original author if you use this code.
+ *
+ * Copyright github.com/arsLan4k1390, 2022-2026.
+ */
+
 package uz.unnarsx.cherrygram.preferences;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
@@ -61,6 +70,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 
 public class StarsIntroActivityCG extends GradientHeaderActivity implements NotificationCenter.NotificationCenterDelegate {
@@ -124,7 +134,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
         iconTextureView.mRenderer.colorKey2 = Theme.key_starsGradient2;
         iconTextureView.mRenderer.updateColors();
         iconTextureView.setStarParticlesView(particlesView);
-        aboveTitleView.addView(iconTextureView, LayoutHelper.createFrame(190, 190, Gravity.CENTER, 0, 32, 0, 24));
+        aboveTitleView.addView(iconTextureView, LayoutHelper.createFrame(190, 190, Gravity.CENTER, 0, 12, 0, 24));
 
         if (customTitle != null && !customTitle.isEmpty()) {
             configureHeader(
@@ -175,13 +185,15 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
 
         BotStarsController.getInstance(currentAccount).preloadStarsStats(getUserConfig().getClientUserId());
 
+        FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("safestars_screen");
+
         return fragmentView;
     }
 
     private void createBalanceView() {
         balanceLayout = new LinearLayout(getContext());
         balanceLayout.setOrientation(LinearLayout.VERTICAL);
-        balanceLayout.setPadding(0, 0, 0, dp(10));
+        balanceLayout.setPadding(0, dp(24), 0, dp(10));
 
         starBalanceTextView = new AnimatedTextView(getContext(), false, true, false);
         starBalanceTextView.setTypeface(AndroidUtilities.bold());
@@ -215,6 +227,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
         buttonsLayout.addView(oneButtonsLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
         ButtonWithCounterView buyViaSafeStarsButton = new ButtonWithCounterView(getContext(), resourceProvider);
+        buyViaSafeStarsButton.setRound();
         buyViaSafeStarsButton.setText(getString(R.string.CG_SafeStars_buy), false);
         buyViaSafeStarsButton.setOnClickListener(v -> {
             if (MessagesController.getInstance(currentAccount).isFrozen()) {
@@ -226,6 +239,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
         oneButtonsLayout.addView(buyViaSafeStarsButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, 0, 0, 0, 8));
 
         ButtonWithCounterView buyViaTelegramButton = new ButtonWithCounterView(getContext(), false, true, resourceProvider);
+        buyViaTelegramButton.setRoundRadius(24);
         buyViaTelegramButton.text.setTypeface(AndroidUtilities.bold());
         buyViaTelegramButton.setText(getString(R.string.CG_SafeStars_buy_Telegram), false);
         buyViaTelegramButton.setOnClickListener(v -> {
@@ -233,12 +247,12 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
                 AccountFrozenAlert.show(currentAccount);
                 return;
             }
+            StarsIntroActivity.StarsOptionsSheet.fromSafeStars = true;
             new StarsIntroActivity.StarsOptionsSheet(context, resourceProvider).show();
         });
         oneButtonsLayout.addView(buyViaTelegramButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
 
         balanceLayout.addView(buttonsLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 20, 17, 20, 0));
-
     }
 
     private void openSafeStars(Context context) {
@@ -310,7 +324,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
         footerTextView.setMaxWidth(HintView2.cutInFancyHalf(footerTextView.getText(), footerTextView.getPaint()));
 
         termsView.addView(footerTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 20, 0, 20, 0));
-        termsView.setBackgroundColor(Theme.getColor(Theme.key_dialogBackground, resourceProvider));
+//        termsView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourceProvider)); // Breaks monet
     }
 
     private void updateBalance() {
@@ -353,7 +367,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
     private UniversalAdapter adapter;
     @Override
     protected RecyclerView.Adapter<?> createAdapter() {
-        return adapter = new UniversalAdapter(listView, getContext(), currentAccount, classGuid, true, this::fillItems, getResourceProvider()) {
+        adapter = new UniversalAdapter(listView, getContext(), currentAccount, classGuid, true, this::fillItems, getResourceProvider()) {
             @NonNull
             @Override
             public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -365,6 +379,8 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
                 return super.onCreateViewHolder(parent, viewType);
             }
         };
+        adapter.setApplyBackground(false);
+        return adapter;
     }
 
     public void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
@@ -391,7 +407,7 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
             stringRes = "StarsNeededTextKeepSubscription";
         } else if (type == StarsIntroActivity.StarsNeededSheet.TYPE_LINK) {
             stringRes = botName == null ? "StarsNeededTextLink" : "StarsNeededTextLink_" + botName.toLowerCase();
-            if (LocaleController.nullable(LocaleController.getString(stringRes)) == null) {
+            if (LocaleController.nullable(getString(stringRes)) == null) {
                 stringRes = "StarsNeededTextLink";
             }
         } else if (type == StarsIntroActivity.StarsNeededSheet.TYPE_REACTIONS) {

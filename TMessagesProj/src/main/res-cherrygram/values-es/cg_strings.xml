@@ -32,7 +32,6 @@
     <string name="CG_AndMoreTypingGroup_other">%1$s y %2$d más</string>
     <!--Typing status-->
     <!--Telegram Folders Settings-->
-    <string name="CG_FoldersType_Header">Tipo de icono de pestaña</string>
     <string name="CG_FoldersTypeTitles">Solo títulos</string>
     <string name="CG_FoldersTypeIcons">Solo iconos</string>
     <string name="CG_FoldersTypeIconsTitles">Iconos con títulos</string>
@@ -151,16 +150,12 @@
     <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
     <string name="AP_ChangeIcon_Sunset">Atardecer</string>
     <string name="AP_ChangeIcon_Sunrise">Amanecer</string>
-    <string name="AP_IconReplacement_VKUI">Iconos VKUI</string>
     <string name="AP_IconReplacement_Solar">Iconos solares por @Design480</string>
     <string name="AP_IconReplacement_Default">Por defecto</string>
-    <string name="AP_MD3_Containers">MD3 Lists Design</string>
-    <string name="AP_MD3_Containers_Desc">Material Design 3 style list containers with rounded corners</string>
     <string name="AP_OneUI_Switch_Style">Estilo de interruptor OneUI</string>
     <string name="AP_SystemEmoji">Usar emojis del sistema</string>
     <string name="AP_ShowPencilIcon">Ícono de lápiz para los mensajes editados</string>
     <string name="AP_CenterTitle">Centrar título en la barra de acción</string>
-    <string name="AP_iosSearchPanel">panel de búsqueda con estilo iOS</string>
     <string name="AP_DisableDividers">Deshabilitar divisores</string>
     <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
     <string name="AP_SystemFonts">Usar fuentes del sistema</string>
@@ -200,20 +195,7 @@
     <string name="AP_FolderNameInHeader_Desc">Esto cambiará \"Cherrygram\" en la barra de acción al nombre de tu carpeta (útil si solo tienes iconos en lugar de nombres de carpetas)</string>
     <string name="CP_NewTabs_RemoveAllChats">Ocultar carpeta \"Todos\"</string>
     <string name="AP_Tab_Style">Estilo Tabs (Pestañas)</string>
-    <string name="AP_Tab_Style_Default">Por defecto</string>
-    <string name="AP_Tab_Style_Rounded">Redondeado</string>
-    <string name="AP_Tab_Style_Text">Texto</string>
-    <string name="AP_Tab_Style_Pills">Pastillas</string>
     <string name="AP_Tab_Style_Stroke">Añadir trazo</string>
-    <string name="AP_DrawerCategory">Cajón</string>
-    <string name="AP_DrawerAvatar">Foto de perfil como fondo del cajón</string>
-    <string name="AP_DrawerShowAvatar">Mostrar avatar</string>
-    <string name="AP_DrawerDarken">Oscurecer el fondo</string>
-    <string name="AP_ShadeBackground">Fondo degradado</string>
-    <string name="AP_DrawerBlur">Desenfoque del fondo</string>
-    <string name="AP_DrawerBlurIntensity">Intensidad de desenfoque</string>
-    <string name="AP_DrawerIconPack_Header">Conjunto de iconos del cajón</string>
-    <string name="AP_DrawerButtonsCategory">Elementos de la barra lateral</string>
     <string name="AP_HideUserPhone_Show">Toca para mostrar</string>
     <string name="AP_HideUserPhone_Copy">Mantén pulsado para copiar</string>
     <string name="AP_MutualContacts_Description">Este es un contacto mutuo.</string>
@@ -311,8 +293,6 @@ Si se encuentra una coincidencia dentro del enlace, el mensaje completo se ocult
     <string name="CP_Slider_MediaAmplifier_Hint">No funciona con álbumes (medios agrupados)</string>
     <string name="CP_LargeVoiceMessages">Longitud adaptativa del mensaje de audio</string>
     <string name="CP_LargeVoiceMessages_Desc">La longitud de la burbuja de mensajes de audio dependerá de la duración de la grabación y se ajustará automáticamente al ancho de la pantalla.</string>
-    <string name="CP_VoiceEnhancements">Mejora de la voz</string>
-    <string name="CP_VoiceEnhancements_Desc">Supresión de ruido y normalización de voz</string>
     <string name="CP_PlayVideo">Reproducir video al pulsar el botón de volumen</string>
     <string name="CP_PlayVideo_Desc">Al pulsar el botón de volumen, se reproducirá cualquier video en la pantalla del chat</string>
     <string name="CP_AutoPauseVideo">Pausar video automáticamente</string>
@@ -360,7 +340,6 @@ Si se encuentra una coincidencia dentro del enlace, el mensaje completo se ocult
     <string name="EP_NavigationAnimationBezier">Clásico</string>
     <string name="EP_NavigationAnimationCrossfading">Efecto de desplazamiento</string>
     <string name="EP_PhotosSize">Enviar fotos grandes (2560px)</string>
-    <string name="EP_CustomAppTitle">Título de la app</string>
     <string name="EP_CustomChat">Chat personalizado para mensajes guardados</string>
     <string name="EP_CustomChat_Desc">Configure un ID de otro chat/grupo/canal para reenviar mensajes allí (botón en la barra de acciones, menú de mensajes o toque doble)</string>
     <string name="EP_CustomChat_Selected_Title">en lugar de</string>

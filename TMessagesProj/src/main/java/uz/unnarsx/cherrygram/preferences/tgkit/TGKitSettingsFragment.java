@@ -38,7 +38,6 @@ import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
-import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.TGKitCategory;
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.TGKitPreference;
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.TGKitSettings;
@@ -154,12 +153,38 @@ public class TGKitSettingsFragment extends BaseFragment {
                 });
             }
         });
+        listView.setOnItemLongClickListener((view, position, x, y) -> {
+            TGKitPreference pref = positions.get(position);
+            /*if (pref instanceof TGKitSwitchPreference) {
+                ((TGKitSwitchPreference) pref).contract.toggleValue();
+                if (view instanceof TextCheckCell) {
+                    ((TextCheckCell) view).setChecked(((TGKitSwitchPreference) pref).contract.getPreferenceValue());
+                }
+            } else*/ if (pref instanceof TGKitTextIconRow preference) {
+                if (preference.listener != null) preference.listener.onLongClick(this);
+            } else if (pref instanceof TGKitTextDetailRow preference) {
+                if (preference.listener != null) preference.listener.onLongClick(this);
+            } else if (pref instanceof TGKitSettingsCellRow preference) {
+                if (preference.listener != null) preference.listener.onLongClick(this);
+            } /*else if (pref instanceof TGKitListPreference preference) {
+                preference.callActionHueta(this, getParentActivity(), () -> {
+                    if (view instanceof TextSettingsCell) {
+                        ((TextSettingsCell) view).setTextAndValue(preference.title, preference.getContract().getValue(), true, preference.getDivider());
+                    }
+                });
+            }*/
+            return true;
+        });
+
+        listView.setSections(true);
+        actionBar.setAdaptiveBackground(listView);
+
         entry.setListView(listView);
 
         return fragmentView;
     }
 
-    private class ListAdapter extends MD3ListAdapter {
+    private class ListAdapter extends RecyclerListView.SelectionAdapter {
 
         private final Context mContext;
 
@@ -173,8 +198,7 @@ public class TGKitSettingsFragment extends BaseFragment {
         private final int VIEW_TYPE_SLIDER = 7;
 
         ListAdapter(Context context) {
-            forceLearnRole(VIEW_TYPE_SHADOW, ROLE_DIVIDER);
-            forceLearnRole(VIEW_TYPE_TEXT_INFO_PRIVACY, ROLE_DIVIDER);
+            setApplyBackground(false);
             mContext = context;
         }
 
@@ -280,41 +304,59 @@ public class TGKitSettingsFragment extends BaseFragment {
                     break;
                 case VIEW_TYPE_HEADER:
                     view = new HeaderCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_TEXT_CELL:
                     view = new TextCell(mContext, 21, false);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_TEXT_CHECK:
                     view = new TextCheckCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_TEXT_SETTINGS:
                     view = new TextSettingsCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_TEXT_INFO_PRIVACY:
                     view = new TextInfoPrivacyCell(mContext);
                     break;
                 case VIEW_TYPE_TEXT_DETAIL_SETTINGS:
                     view = new TextDetailSettingsCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_SLIDER:
                     view = new StickerSliderCell(mContext, resourceProvider);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 default:
                     throw new IllegalStateException("Unexpected value: " + viewType);
             }
             view.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
+            if (shouldApplyBackground(viewType)) {
+                view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
+            }
             return new RecyclerListView.Holder(view);
         }
 
         @Override
         public int getItemViewType(int position) {
             return positions.get(position).getType().adapterType;
+        }
+
+        private boolean applyBackground = true;
+
+        public void setApplyBackground(boolean applyBackground) {
+            this.applyBackground = applyBackground;
+        }
+
+        public boolean shouldApplyBackground(int viewType) {
+            if (!applyBackground) return false;
+            switch (viewType) {
+                case VIEW_TYPE_HEADER:
+                case VIEW_TYPE_TEXT_CELL:
+                case VIEW_TYPE_TEXT_CHECK:
+                case VIEW_TYPE_TEXT_SETTINGS:
+                case VIEW_TYPE_TEXT_INFO_PRIVACY:
+                case VIEW_TYPE_TEXT_DETAIL_SETTINGS:
+                case VIEW_TYPE_SLIDER:
+                    return true;
+            }
+            return false;
         }
     }
 

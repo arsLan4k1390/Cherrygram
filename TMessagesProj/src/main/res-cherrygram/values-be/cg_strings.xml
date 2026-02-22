@@ -26,7 +26,6 @@
     <string name="CG_LastSeenHours_other">apošni raz %1$d hadzin tamu</string>
     <!--Last seen status-->
     <!--Telegram Folders Settings-->
-    <string name="CG_FoldersType_Header">Тып значка ўкладкі</string>
     <string name="CG_FoldersTypeTitles">Толькі загалозагаловак</string>
     <string name="CG_FoldersTypeIcons">Толькі значок</string>
     <string name="CG_FoldersTypeIconsTitles">Значок з загалозагалоўкам</string>
@@ -125,7 +124,6 @@
     <string name="AP_ChangeIcon_Lavanda">Лаванда</string>
     <string name="AP_ChangeIcon_Sunset">Заход</string>
     <string name="AP_ChangeIcon_Sunrise">Узыход</string>
-    <string name="AP_IconReplacement_VKUI">Іконкі VKUI</string>
     <string name="AP_IconReplacement_Solar">Іконкі Solar ад @Design480</string>
     <string name="AP_IconReplacement_Default">Стандартны</string>
     <string name="AP_OneUI_Switch_Style">Перамыкачы ў стылі OneUI</string>
@@ -168,20 +166,7 @@
     <string name="AP_FolderNameInHeader_Desc">Гэта зменіць \"Cherrygram\" у загалоўку зверху на назву Вашай папкі (зручна пры адлюстраванні іконкаў замест назваў папкаў)</string>
     <string name="CP_NewTabs_RemoveAllChats">Схаваць ўкладку \"Усе чаты\"</string>
     <string name="AP_Tab_Style">Стыль укладкі</string>
-    <string name="AP_Tab_Style_Default">Стандартны</string>
-    <string name="AP_Tab_Style_Rounded">Авал</string>
-    <string name="AP_Tab_Style_Text">Тэкст</string>
-    <string name="AP_Tab_Style_Pills">Таблеткі</string>
     <string name="AP_Tab_Style_Stroke">Дадаць абвядзенне</string>
-    <string name="AP_DrawerCategory">Бакавое меню</string>
-    <string name="AP_DrawerAvatar">Аватар як фон меню</string>
-    <string name="AP_DrawerShowAvatar">Паказаць аватар</string>
-    <string name="AP_DrawerDarken">Зацямніць фон</string>
-    <string name="AP_ShadeBackground">Градыентны фон</string>
-    <string name="AP_DrawerBlur">Размыццё фону</string>
-    <string name="AP_DrawerBlurIntensity">Інтэнсіўнасць размыцця</string>
-    <string name="AP_DrawerIconPack_Header">Набор іконкаў меню</string>
-    <string name="AP_DrawerButtonsCategory">Кнопкі меню</string>
     <string name="AP_HideUserPhone_Show">Тыкніце, каб паказаць</string>
     <string name="AP_HideUserPhone_Copy">Утрымлівайце для капіравання</string>
     <string name="AP_MutualContacts_Description">Гэты кантакт з\'яўляецца ўзаемным.</string>
@@ -212,8 +197,6 @@
     <string name="CP_HideSendAsChannel">Схаваць \"Адправіць як канал\"</string>
     <string name="CP_HideSendAsChannelDesc">Вы можаце трапіць у гэта меню праз доўгі націск кнопкі Эмодзі/Стыкераў/Анімацый</string>
     <string name="CP_Header_Record">Медыя</string>
-    <string name="CP_VoiceEnhancements">Паляпшэнне гуку</string>
-    <string name="CP_VoiceEnhancements_Desc">Падаўленне шуму і нармалізацыя голасу</string>
     <string name="CP_PlayVideo">Прайграванне відэа пры націску кнопкі гучнасці</string>
     <string name="CP_PlayVideo_Desc">Пры націску на кнопку гучнасці будзе ўлучана відэа на экране ў дыялогу</string>
     <string name="CP_AutoPauseVideo">Запыніць відэа</string>
@@ -259,7 +242,6 @@
     <string name="EP_NavigationAnimationBezier">Класічны</string>
     <string name="EP_NavigationAnimationCrossfading">Эфект плаўнага згасання</string>
     <string name="EP_PhotosSize">Адпраўляць вялікія фота (2560px)</string>
-    <string name="EP_CustomAppTitle">Назва дадатку</string>
     <string name="EP_CustomChat">Карыстацкі чат для Захаванага</string>
     <string name="EP_CustomChat_Desc">Усталюйце ID іншага чату/групы/канала, каб перасылаць туды паведамленні (праз кнопку ў панэлі дзеянняў, у меню паведамлення ці пры падвойным націску)</string>
     <string name="EP_Network">Сетка</string>

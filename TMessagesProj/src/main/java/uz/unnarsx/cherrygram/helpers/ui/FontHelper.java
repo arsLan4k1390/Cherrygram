@@ -85,7 +85,10 @@ public class FontHelper {
     public static Typeface createTypefaceFromAsset(String assetPath) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Typeface.Builder builder = new Typeface.Builder(ApplicationLoader.applicationContext.getAssets(), assetPath);
-            if (assetPath.contains("medium")) {
+            if (assetPath.contains("rextrabold")) {
+                builder.setWeight(800);
+            }
+            if (assetPath.contains("medium") || assetPath.contains("rbold")) {
                 builder.setWeight(700);
             }
             if (assetPath.contains("italic")) {

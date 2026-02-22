@@ -446,7 +446,7 @@ public class PopupSwipeBackLayout extends FrameLayout {
 
         int s = canvas.save();
         mPath.rewind();
-        int rad = AndroidUtilities.dp(MessageMenuHelper.getInstance(UserConfig.selectedAccount).getMenuCornersRadius());
+        int rad = AndroidUtilities.dp(12);
         if (stickToRight) {
             mRect.set(getWidth() - w, y, getWidth(), y + h);
         } else {

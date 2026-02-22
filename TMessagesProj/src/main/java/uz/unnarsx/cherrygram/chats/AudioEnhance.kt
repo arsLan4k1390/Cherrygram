@@ -9,50 +9,10 @@
 
 package uz.unnarsx.cherrygram.chats
 
-import android.media.AudioRecord
 import android.media.MediaRecorder
-import android.media.audiofx.AcousticEchoCanceler
-import android.media.audiofx.AutomaticGainControl
-import android.media.audiofx.NoiseSuppressor
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig
 
 object AudioEnhance {
-
-    private var agc: AutomaticGainControl? = null
-    private var ns: NoiseSuppressor? = null
-    private var aec: AcousticEchoCanceler? = null
-
-    fun initVoiceEnhancements(audioRecord: AudioRecord) {
-        if (!CherrygramChatsConfig.voicesAgc) return
-
-        agc = if (AutomaticGainControl.isAvailable()) {
-            AutomaticGainControl.create(audioRecord.audioSessionId)?.apply { enabled = true }
-        } else null
-
-        ns = if (NoiseSuppressor.isAvailable()) {
-            NoiseSuppressor.create(audioRecord.audioSessionId)?.apply { enabled = true }
-        } else null
-
-        aec = if (AcousticEchoCanceler.isAvailable()) {
-            AcousticEchoCanceler.create(audioRecord.audioSessionId)?.apply { enabled = true }
-        } else null
-    }
-
-    fun releaseVoiceEnhancements() {
-        agc?.let {
-            it.release()
-            agc = null
-        }
-        ns?.let {
-            it.release()
-            ns = null
-        }
-        aec?.let {
-            it.release()
-            aec = null
-        }
-    }
 
     fun getAudioSource(): Int = when (CherrygramDebugConfig.audioSource) {
         CherrygramDebugConfig.AUDIO_SOURCE_CAMCORDER -> MediaRecorder.AudioSource.CAMCORDER

@@ -2571,7 +2571,10 @@ public class NotificationsController extends BaseController {
 //                        return replaceSpoilers(messageObject);
 //                    }
                     if (messageObject.messageOwner instanceof TLRPC.TL_messageService) {
-                        if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetSameChatWallPaper) {
+                        if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionChangeCreator ||
+                            messageObject.messageOwner.action instanceof TLRPC.TL_messageActionNewCreatorPending) {
+                            msg = messageObject.messageText.toString();
+                        } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetSameChatWallPaper) {
                             msg = LocaleController.getString(R.string.WallpaperSameNotification);
                         } else if (messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetChatWallPaper) {
                             msg = LocaleController.getString(R.string.WallpaperNotification);

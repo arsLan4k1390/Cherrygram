@@ -50,12 +50,12 @@ public class ChatActivityChannelButtonsLayout extends FrameLayout implements Fac
         R.drawable.msg_help
     };
     private static final int[] buttonsOrderLeft = new int[] {
-        BUTTON_SEARCH
-    };
-    private static final int[] buttonsOrderRight = new int[] {
         BUTTON_GIFT,
         BUTTON_DIRECT,
         BUTTON_GIGA_GROUP_INFO
+    };
+    private static final int[] buttonsOrderRight = new int[] {
+        BUTTON_SEARCH
     };
 
     private final Theme.ResourcesProvider resourcesProvider;
@@ -108,8 +108,14 @@ public class ChatActivityChannelButtonsLayout extends FrameLayout implements Fac
             final BoolAnimator visibilityAnimator = new BoolAnimator(animatorId, this,
                 CubicBezierInterpolator.EASE_OUT_QUINT, 300);
 
-            final ChatActivityBlurredRoundButton button = ChatActivityBlurredRoundButton.create(getContext(),
-                blurredBackgroundDrawableViewFactory, colorProvider, resourcesProvider, buttonIcons[buttonId]);
+            final ChatActivityBlurredRoundButton button = ChatActivityBlurredRoundButton.create(
+                getContext(),
+                blurredBackgroundDrawableViewFactory,
+                colorProvider,
+                resourcesProvider,
+                buttonIcons[buttonId],
+                48
+            );
 
             ScaleStateListAnimator.apply(button, .13f, 2f);
             button.setVisibility(GONE);

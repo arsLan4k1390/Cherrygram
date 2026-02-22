@@ -66,6 +66,7 @@ import org.telegram.ui.ChatActivity;
 import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.FilterCreateActivity;
 import org.telegram.ui.FiltersSetupActivity;
+import org.telegram.ui.MainTabsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -503,7 +504,7 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
                     BaseFragment lastFragment = null;
                     for (int i = fragments.size() - 1; i >= 0; --i) {
                         lastFragment = fragments.get(i);
-                        if (lastFragment instanceof DialogsActivity) {
+                        if (lastFragment instanceof DialogsActivity || lastFragment instanceof MainTabsActivity) {
                             break;
                         }
 
@@ -515,6 +516,9 @@ public class FolderBottomSheet extends BottomSheetWithRecyclerListView {
                         }
                     }
                     final BaseFragment fragment = lastFragment;
+                    if (lastFragment instanceof MainTabsActivity) {
+                        lastFragment = ((MainTabsActivity) lastFragment).getDialogsActivity();
+                    }
                     if (lastFragment instanceof DialogsActivity) {
                         DialogsActivity dialogsActivity = (DialogsActivity) lastFragment;
                         dialogsActivity.closeSearching();

@@ -81,10 +81,8 @@ public class UserHelper extends BaseController {
                 con.setRequestProperty("User-Agent", NetworkHelper.formatUserAgent());
                 con.setRequestProperty("X-Api-Key", Extra.ENDPOINT_FOR_DATE_SECRET);
 
-                // For POST only - START
                 con.setDoOutput(true);
 
-//                FileLog.d("id of user: " + userID);
                 String requestBody = "{\"telegramId\":" + userID +"}";
                 byte[] outputInBytes = requestBody.getBytes(StandardCharsets.UTF_8);
 
@@ -92,10 +90,8 @@ public class UserHelper extends BaseController {
                 os.write(outputInBytes);
                 os.flush();
                 os.close();
-                // For POST only - END
 
                 int responseCode = con.getResponseCode();
-//                System.out.println("POST Response Code :: " + responseCode);
 
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -142,8 +138,6 @@ public class UserHelper extends BaseController {
                 FileLog.e(e);
             }
         }, 0);
-
-//        FileLog.d ("Full reg date:" + formattedDate);
     }
 
     public CharSequence getCreationDate(long userID, boolean telegram, String telegramDate) {

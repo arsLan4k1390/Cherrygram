@@ -978,7 +978,7 @@ public class BackupFileImportActivity extends BaseFragment {
     }
 
     @Override
-    public boolean onBackPressed() {
+    public boolean onBackPressed(boolean invoked) {
         if (commentTextView != null && commentTextView.isPopupShowing()) {
             commentTextView.hidePopup(true);
             return false;
@@ -986,7 +986,7 @@ public class BackupFileImportActivity extends BaseFragment {
         if (!canClosePicker()) {
             return false;
         }
-        return super.onBackPressed();
+        return super.onBackPressed(invoked);
     }
 
     public void setDelegate(DocumentSelectActivityDelegate delegate) {

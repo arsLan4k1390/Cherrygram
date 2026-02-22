@@ -67,6 +67,13 @@ enum class BadgeHelper {
             }
         }
 
+        fun hasCustomUserColor(userId: Long): Boolean {
+            if (userId == 0L) return false
+            synchronized(badgeColors) {
+                return badgeColors.containsKey(userId)
+            }
+        }
+
         fun getUserColor(userId: Long): UserColor? {
             synchronized(badgeColors) {
                 return badgeColors[userId]
@@ -90,6 +97,7 @@ enum class BadgeHelper {
             }
 
             return when {
+                isPremium && isDonated -> DONATES.forTheme()
                 isPremium -> PREMIUM.forTheme() // convertColor("#C7637F", 255) //B45872
                 isDonated -> DONATES.forTheme()
                 else -> defaultColor
@@ -102,6 +110,16 @@ enum class BadgeHelper {
             val rgb = hex.toColorInt() and 0x00FFFFFF
 
             return (alpha.coerceIn(0, 255) shl 24) or rgb
+        }
+
+        fun getUserColorString(userId: Long): String? {
+            val uc = getUserColor(userId) ?: return null
+
+            val color = if (Theme.isCurrentThemeDay()) uc.lightColor else uc.darkColor
+            val alpha = (color ushr 24) and 0xFF
+            val rgb = color and 0x00FFFFFF
+
+            return "#%06X, %d".format(rgb, alpha)
         }
 
         private fun Int.toHexString(): String {

@@ -33,6 +33,8 @@ import android.text.TextPaint;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -58,17 +60,10 @@ public class FoldersPreviewCell extends FrameLayout {
     private final Paint outlinePaint2 = new Paint(Paint.ANTI_ALIAS_FLAG);
 
     private float hideAllChatsProgress;
-    private float roundedStyleProgress = 0f;
-    private float chipsStyleProgress = 0f;
-    private float textStyleProgress = 0f;
-    private float pillsStyleProgress = 0f;
     private float iconProgress = 0f, titleProgress = 0f;
     private float counterProgress = 0f;
-    private float strokeProgress = 0f;
-    private int oldStyle, currentStyle;
     private String allChatsTabName;
     private String allChatsTabIcon;
-    int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
 
     private ValueAnimator animator;
 
@@ -85,7 +80,6 @@ public class FoldersPreviewCell extends FrameLayout {
     public FoldersPreviewCell(Context context) {
         super(context);
         setWillNotDraw(false);
-        setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
 
         outlinePaint.setStyle(Paint.Style.STROKE);
         outlinePaint.setColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_switchTrack), 0x3F));
@@ -94,7 +88,7 @@ public class FoldersPreviewCell extends FrameLayout {
         preview = new FrameLayout(context) {
             @SuppressLint("DrawAllocation")
             @Override
-            protected void onDraw(Canvas canvas) {
+            protected void onDraw(@NonNull Canvas canvas) {
                 int color = Theme.getColor(Theme.key_switchTrack);
                 int r = Color.red(color);
                 int g = Color.green(color);
@@ -102,21 +96,50 @@ public class FoldersPreviewCell extends FrameLayout {
                 float w = getMeasuredWidth();
                 float h = getMeasuredHeight();
 
-                rect.set(0, 0, w, h);
+                float frameStartX = dp(10);
+                float contentInset = dp(5);
+
+                float chipHeight = dp(32);
+                float paddingAround = dp(5);
+
+                float centerY = h / 2;
+
+                float frameTop = centerY - (chipHeight / 2) - paddingAround;
+                float frameBottom = centerY + (chipHeight / 2) + paddingAround;
+                float frameLeft = frameStartX;
+                float frameRight = w - frameStartX;
+
+                float startX = frameLeft + contentInset;
+
+                rect.set(frameLeft, frameTop, frameRight, frameBottom);
                 Theme.dialogs_onlineCirclePaint.setColor(Color.argb(20, r, g, b));
-                canvas.drawRoundRect(rect, dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 50 : 8), dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 50 : 8), Theme.dialogs_onlineCirclePaint);
+                canvas.drawRoundRect(rect, dp(50), dp(50), Theme.dialogs_onlineCirclePaint);
 
                 float stroke = outlinePaint.getStrokeWidth() / 2;
-                rect.set(stroke, stroke, w - stroke, h - stroke);
-                canvas.drawRoundRect(rect, dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 50 : 8), dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 50 : 8), outlinePaint);
+                rect.set(frameLeft + stroke, frameTop + stroke, frameRight - stroke, frameBottom - stroke);
+                canvas.drawRoundRect(rect, dp(50), dp(50), outlinePaint);
+
+                canvas.save();
+
+                Path frameClip = new Path();
+                frameClip.addRoundRect(
+                        frameLeft + stroke,
+                        frameTop + stroke,
+                        frameRight - stroke,
+                        frameBottom - stroke,
+                        dp(50),
+                        dp(50),
+                        Path.Direction.CW
+                );
+                canvas.clipPath(frameClip);
 
                 if (CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
                     outlinePaint2.setStyle(Paint.Style.STROKE);
                     outlinePaint2.setStrokeWidth(Math.max(5, AndroidUtilities.dp(0.5f)));
-                    outlinePaint2.setColor(ColorUtils.blendARGB(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_switchTrack), 0x3F), Theme.getColor(Theme.key_windowBackgroundWhiteValueText), chipsStyleProgress));
+                    outlinePaint2.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteValueText));
                 }
 
-                float startY = h - dp(4) - dpf2(4.5f * chipsStyleProgress) - stroke;
+                float startY = h - dp(4) - dpf2(4.5f) - stroke;
 
                 @SuppressLint("DrawAllocation") Path tab = new Path();
                 tab.addRect(0, startY + dp(4), getMeasuredWidth(), startY + dp(10), Path.Direction.CCW);
@@ -124,74 +147,89 @@ public class FoldersPreviewCell extends FrameLayout {
 
                 textPaint.setTypeface(AndroidUtilities.bold());
 
-                float startX = dp(25);
                 for (int i = 0; i < filters.length; i++) {
                     textPaint.setTextSize(dp(15));
+
+                    String name = i == 0 ? allChatsTabName : filters[i][0];
+
                     if (i == 0) {
                         textPaint.setColor(ColorUtils.blendARGB(0x00, Theme.getColor(Theme.key_windowBackgroundWhiteValueText), hideAllChatsProgress));
                         textPaint.setTextScaleX(hideAllChatsProgress * titleProgress);
-                        Theme.dialogs_onlineCirclePaint.setColor(ColorUtils.blendARGB(Theme.getColor(Theme.key_windowBackgroundWhiteValueText), ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundWhiteValueText), 0x2F), chipsStyleProgress));
-                        Theme.dialogs_onlineCirclePaint.setColor(ColorUtils.blendARGB(0x00, Theme.dialogs_onlineCirclePaint.getColor(), hideAllChatsProgress));
+
+                        int chipBgColor = ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundWhiteValueText), 0x2F);
+                        Theme.dialogs_onlineCirclePaint.setColor(ColorUtils.blendARGB(0x00, chipBgColor, hideAllChatsProgress));
                     } else {
                         textPaint.setColor(ColorUtils.blendARGB(0x00, color, titleProgress));
                         textPaint.setTextScaleX(titleProgress);
                     }
-                    String name = i == 0 ? allChatsTabName : filters[i][0];
-                    Drawable icon = context.getDrawable(FolderIconHelper.getTabIcon(i == 0 ? allChatsTabIcon : filters[i][1])).mutate();
-                    icon.setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(0x00, i == 0 ? textPaint.getColor() : color, iconProgress), PorterDuff.Mode.MULTIPLY));
-                    float sw = textPaint.measureText(name) + dp(30 + 4) * iconProgress + (i == 0 ? dpf2(24) * counterProgress : 1) + 14 * (1 - iconProgress) * titleProgress - dp(4) * iconProgress * (1 - titleProgress) * counterProgress;
-                    if (i == 0) {
-                        canvas.drawRoundRect(
-                                startX,
-                                startY + dpf2(6) * textStyleProgress - dpf2(37.5f) * chipsStyleProgress,
-                                startX + sw + dpf2(4) * (1 - titleProgress) * (1 - counterProgress) + dpf2(22) * chipsStyleProgress,
-                                startY + dp(8) - dpf2(4) * roundedStyleProgress - dpf2(9.5f) * chipsStyleProgress,
-                                dpf2(8 + 15 * pillsStyleProgress),
-                                dpf2(8 + 15 * pillsStyleProgress),
-                                Theme.dialogs_onlineCirclePaint);
 
-                        if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI && CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
-                            canvas.drawRoundRect(
-                                    startX,
-                                    startY + dpf2(6) * textStyleProgress - dpf2(37.5f) * chipsStyleProgress,
-                                    startX + sw + dpf2(4) * (1 - titleProgress) * (1 - counterProgress) + dpf2(22) * chipsStyleProgress,
-                                    startY + dp(8) - dpf2(4) * roundedStyleProgress - dpf2(9.5f) * chipsStyleProgress,
-                                    dpf2(8 + 15 * pillsStyleProgress),
-                                    dpf2(8 + 15 * pillsStyleProgress),
-                                    outlinePaint2);
+                    Drawable icon = ContextCompat.getDrawable(context, FolderIconHelper.getTabIcon(i == 0 ? allChatsTabIcon : filters[i][1])).mutate();
+                    icon.setColorFilter(new PorterDuffColorFilter(ColorUtils.blendARGB(0x00, i == 0 ? textPaint.getColor() : color, iconProgress), PorterDuff.Mode.MULTIPLY));
+
+                    float sw = textPaint.measureText(name) + dp(30 + 4) * iconProgress + (i == 0 ? dpf2(24) * counterProgress : 1) + 14 * (1 - iconProgress) * titleProgress - dp(4) * iconProgress * (1 - titleProgress) * counterProgress;
+                    float itemGap = dp(10);
+
+                    if (i == 0) {
+                        float chipTop = centerY - chipHeight / 2;
+                        float chipBottom = centerY + chipHeight / 2;
+                        float chipRight = startX + sw + dpf2(4) * (1 - titleProgress) * (1 - counterProgress) + dpf2(22);
+                        float cornerRadius = chipHeight / 2;
+
+                        canvas.drawRoundRect(startX, chipTop, chipRight, chipBottom, cornerRadius, cornerRadius, Theme.dialogs_onlineCirclePaint);
+
+                        if (CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
+                            canvas.drawRoundRect(startX, chipTop, chipRight, chipBottom, cornerRadius, cornerRadius, outlinePaint2);
                         }
 
-                        float iconOffset = startX + dpf2(6) * (1 - titleProgress) * (1 - counterProgress) + dpf2(11) * chipsStyleProgress;
-                        icon.setBounds((int) (iconOffset), (int) h / 2 - dp(13), (int) (dpf2(26) * iconProgress * hideAllChatsProgress + iconOffset), (int) h / 2 + dp(13));
-                        canvas.drawText(name, startX + dp(30 * iconProgress) + dpf2(10) * chipsStyleProgress + 7f * (1 - iconProgress) * titleProgress, startY - dp(14), textPaint);
-                        textPaint.setTextScaleX(counterProgress);
+                        float iconOffset = startX + dpf2(6) * (1 - titleProgress) * (1 - counterProgress) + dpf2(11);
+                        int iconSizeHalf = dp(13);
+                        icon.setBounds((int) (iconOffset), (int) (centerY - iconSizeHalf), (int) (dpf2(26) * iconProgress * hideAllChatsProgress + iconOffset), (int) (centerY + iconSizeHalf));
+
+                        Paint.FontMetrics fm = textPaint.getFontMetrics();
+                        float textY = centerY - (fm.ascent + fm.descent) / 2;
+                        canvas.drawText(name, startX + dp(30 * iconProgress) + dpf2(10) + 7f * (1 - iconProgress) * titleProgress, textY, textPaint);
+
                         textPaint.setTextSize(dp(14 * hideAllChatsProgress * counterProgress));
-                        textPaint.setColor(ColorUtils.blendARGB(0x00, Color.argb(20, r, g, b), counterProgress));
+                        textPaint.setTextScaleX(counterProgress);
+
+                        float counterX = startX + sw - dpf2(15.5f) + dpf2(12) - dp(1) * (1 - titleProgress);
+                        float circleCenterX = counterX + dpf2(4);
+
                         Path path = new Path();
-                        textPaint.getTextPath("7", 0, 1, (int) (startX + sw - dpf2(15.5f) + dpf2(12) * chipsStyleProgress - dp(1) * (1 - titleProgress)), (int) (startY - dpf2(15f)), path);
+                        textPaint.getTextPath("7", 0, 1, 0, 0, path);
+
+                        RectF bounds = new RectF();
+                        path.computeBounds(bounds, true);
+
+                        float offsetX = circleCenterX - bounds.centerX();
+                        float offsetY = centerY - bounds.centerY();
+
+                        path.offset(offsetX, offsetY);
+
+                        canvas.save();
                         canvas.clipPath(path, Region.Op.DIFFERENCE);
 
                         textPaint.setColor(ColorUtils.blendARGB(0x00, Theme.getColor(Theme.key_windowBackgroundWhiteValueText), counterProgress * hideAllChatsProgress));
-                        canvas.drawCircle(startX + sw - dpf2(11.5f) + dpf2(12) * chipsStyleProgress - dp(1) * (1 - titleProgress), h / 2, dp(10 * counterProgress * hideAllChatsProgress), textPaint);
+                        canvas.drawCircle(circleCenterX, centerY, dp(10 * counterProgress * hideAllChatsProgress), textPaint);
 
-                        startX += dp(25) + sw + dpf2(22) * chipsStyleProgress;
+                        startX += itemGap + sw + dpf2(22);
                     } else {
-                        icon.setBounds((int) startX, (int) h / 2 - dp(13), (int) startX + dp(26 * iconProgress), (int) h / 2 + dp(13));
-                        canvas.drawText(name, startX + dp(30) * iconProgress, startY - dp(14), textPaint);
-                        startX += dp(25) + sw + dpf2(5) * chipsStyleProgress;
+                        icon.setBounds((int) startX, (int) (centerY - dp(13)), (int) startX + dp(26 * iconProgress), (int) (centerY + dp(13)));
+                        Paint.FontMetrics fm = textPaint.getFontMetrics();
+                        canvas.drawText(name, startX + dp(30) * iconProgress, centerY - (fm.ascent + fm.descent) / 2, textPaint);
+                        startX += itemGap + sw + dpf2(5);
                     }
                     icon.draw(canvas);
                 }
+                canvas.restore();
             }
         };
         preview.setWillNotDraw(false);
-        addView(preview, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.CENTER, 21, 15, 21, 21));
-        updateTabStyle(false);
+        addView(preview, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.CENTER, 15, 15, 15, 15));
         updateTabIcons(false);
         updateTabTitle(false);
         updateAllChatsTabName(false);
         updateTabCounter(false);
-        updateTabStroke(false);
     }
 
     public void updateAllChatsTabName(boolean animate) {
@@ -222,95 +260,6 @@ public class FoldersPreviewCell extends FrameLayout {
             hideAllChatsProgress = 1f;
             invalidate();
         }
-    }
-
-    public void updateTabStyle(boolean animate) {
-        if (Objects.equals(currentStyle, CherrygramAppearanceConfig.INSTANCE.getTabStyle()) && animate)
-            return;
-
-        oldStyle = currentStyle;
-        currentStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
-
-        if (animate) {
-            ValueAnimator def = ValueAnimator.ofFloat(0f, 1f).setDuration(250);
-            def.setStartDelay(100);
-            def.setInterpolator(Easings.easeInOutQuad);
-            def.addUpdateListener(animation -> {
-                switch (currentStyle) {
-                    case 1:
-                        roundedStyleProgress = (Float) animation.getAnimatedValue();
-                        break;
-                    case 2:
-                        textStyleProgress = (Float) animation.getAnimatedValue();
-                        break;
-                    case 3:
-                        if (oldStyle != 4)
-                            chipsStyleProgress = (Float) animation.getAnimatedValue();
-                        break;
-                    case 4:
-                        pillsStyleProgress = (Float) animation.getAnimatedValue();
-                        if (oldStyle != 3)
-                            chipsStyleProgress = pillsStyleProgress;
-                        break;
-                    case 5:
-                        strokeProgress = (Float) animation.getAnimatedValue();
-                        break;
-                }
-                invalidate();
-                requestLayout();
-            });
-
-            animator = ValueAnimator.ofFloat(1f, 0f).setDuration(250);
-            animator.setStartDelay(100);
-            animator.setInterpolator(Easings.easeInOutQuad);
-            animator.addUpdateListener(animation -> {
-                switch (oldStyle) {
-                    case 1:
-                        roundedStyleProgress = (Float) animation.getAnimatedValue();
-                        break;
-                    case 2:
-                        textStyleProgress = (Float) animation.getAnimatedValue();
-                        break;
-                    case 3:
-                        if (currentStyle != 4)
-                            chipsStyleProgress = (Float) animation.getAnimatedValue();
-                        break;
-                    case 4:
-                        pillsStyleProgress = (Float) animation.getAnimatedValue();
-                        if (currentStyle != 3)
-                            chipsStyleProgress = (Float) animation.getAnimatedValue();
-                        break;
-                    case 5:
-                        strokeProgress = (Float) animation.getAnimatedValue();
-                        break;
-                }
-                invalidate();
-            });
-
-            animator.start();
-            def.start();
-        } else {
-            switch (currentStyle) {
-                case 1:
-                    roundedStyleProgress = 1f;
-                    break;
-                case 2:
-                    textStyleProgress = 1f;
-                    break;
-                case 3:
-                    chipsStyleProgress = 1f;
-                    break;
-                case 4:
-                    chipsStyleProgress = 1f;
-                    pillsStyleProgress = 1f;
-                    break;
-                case 5:
-                    strokeProgress = 1f;
-                    break;
-            }
-            invalidate();
-        }
-
     }
 
     public void updateTabTitle(boolean animate) {
@@ -367,24 +316,6 @@ public class FoldersPreviewCell extends FrameLayout {
         }
     }
 
-    public void updateTabStroke(boolean animate) {
-        float to = CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke() ? 1 : 0;
-        if (to == strokeProgress && animate)
-            return;
-        if (animate) {
-            animator = ValueAnimator.ofFloat(strokeProgress, to).setDuration(250);
-            animator.setInterpolator(Easings.easeInOutQuad);
-            animator.addUpdateListener(animation -> {
-                strokeProgress = (Float) animation.getAnimatedValue();
-                invalidate();
-            });
-            animator.start();
-        } else {
-            strokeProgress = to;
-            invalidate();
-        }
-    }
-
     private String getAllChatsTabName() {
         return CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats() ? filters[6][0] : filters[0][0];
     }
@@ -400,13 +331,15 @@ public class FoldersPreviewCell extends FrameLayout {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawLine(LocaleController.isRTL ? 0 : dp(21), getMeasuredHeight() - 1, getMeasuredWidth() - (LocaleController.isRTL ? dp(21) : 0), getMeasuredHeight() - 1, Theme.dividerPaint);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(dp(86 + 8 * chipsStyleProgress), MeasureSpec.EXACTLY));
+        int customHeightSpec = MeasureSpec.makeMeasureSpec(dp(80), MeasureSpec.EXACTLY);
+        super.onMeasure(widthMeasureSpec, customHeightSpec);
     }
+
 }

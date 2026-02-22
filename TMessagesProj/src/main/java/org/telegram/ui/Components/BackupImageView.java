@@ -464,4 +464,12 @@ public class BackupImageView extends View {
     protected boolean verifyDrawable(@NonNull Drawable who) {
         return who == imageReceiver.getDrawable() || who == imageReceiver.getImageDrawable() || super.verifyDrawable(who);
     }
+
+    /** Cherrygram start */
+    public void setForUserOrChat(TLObject object, AvatarDrawable avatarDrawable, boolean big) {
+        imageReceiver.setForUserOrChat(object, avatarDrawable, null, false, 0, big);
+        onNewImageSet();
+    }
+    /** Cherrygram finish */
+
 }

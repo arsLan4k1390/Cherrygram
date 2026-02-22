@@ -129,8 +129,6 @@ public class SimpleTextView extends View implements Drawable.Callback {
     private boolean rightDrawableHidden;
     private OnClickListener rightDrawableOnClickListener;
     private boolean maybeClick;
-    private OnClickListener rightDrawable2OnClickListener;
-    private boolean maybeClick2;
     private float touchDownX, touchDownY;
 
     private AnimatedEmojiSpan.EmojiGroupedSpans emojiStack;
@@ -1306,10 +1304,6 @@ public class SimpleTextView extends View implements Drawable.Callback {
         rightDrawableOnClickListener = onClickListener;
     }
 
-    public void setRightDrawable2OnClick(OnClickListener onClickListener) {
-        rightDrawable2OnClickListener = onClickListener;
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (rightDrawableOnClickListener != null && rightDrawable != null && !maybeClick2) {
@@ -1382,4 +1376,14 @@ public class SimpleTextView extends View implements Drawable.Callback {
 
         public boolean isPressed();
     }
+
+    /** Cherrygram start */
+    private OnClickListener rightDrawable2OnClickListener;
+    private boolean maybeClick2;
+
+    public void setRightDrawable2OnClick(OnClickListener onClickListener) {
+        rightDrawable2OnClickListener = onClickListener;
+    }
+    /** Cherrygram finish */
+
 }

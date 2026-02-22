@@ -334,10 +334,6 @@ public abstract class MD3ListAdapter extends RecyclerListView.SelectionAdapter {
             return;
         }
 
-        if (rv instanceof RecyclerListView rv1) {
-            rv1.setUseLegacySelector(!isMd3ContainersEnabled());
-        }
-
         for (int i = 0, count = rv.getChildCount(); i < count; i++) {
             View child = rv.getChildAt(i);
             RecyclerView.ViewHolder vh = rv.getChildViewHolder(child);
@@ -391,7 +387,7 @@ public abstract class MD3ListAdapter extends RecyclerListView.SelectionAdapter {
     }
 
     protected static boolean isDividerView(@NonNull View view) {
-        return view instanceof ShadowSectionCell || view instanceof TextInfoPrivacyCell || view instanceof FakeProfileHeaderEmpty;
+        return view instanceof ShadowSectionCell || view instanceof TextInfoPrivacyCell;
     }
 
     protected boolean isDividerView(int viewType) {
@@ -448,10 +444,10 @@ public abstract class MD3ListAdapter extends RecyclerListView.SelectionAdapter {
     }
 
     public static class Md3Config {
-        public int sidePaddingDp = 16;
-        public int firstTopPaddingDp = 16; // Use when actionBar background == listView's background
-        public int innerGapDp = 2;
-        public int cornerRadiusDp = 14;
+        public int sidePaddingDp = 12; // 16
+        public int firstTopPaddingDp = 12; // Use when actionBar background == listView's background
+        public int innerGapDp = 0; // 2
+        public int cornerRadiusDp = 16; // 14
 
         public boolean useRipple = false;
         public boolean headerBackgroundEnabled = true;
@@ -507,7 +503,7 @@ public abstract class MD3ListAdapter extends RecyclerListView.SelectionAdapter {
     }
 
     public static boolean isMd3ContainersEnabled() {
-        return CherrygramAppearanceConfig.INSTANCE.getMd3Containers();
+        return true;
     }
 
     public static boolean canTryToIgnoreHeaderBackground(Object fragment) {

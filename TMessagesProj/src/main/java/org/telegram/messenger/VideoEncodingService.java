@@ -11,9 +11,12 @@ package org.telegram.messenger;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.text.TextUtils;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import org.telegram.tgnet.TLRPC;
 
 public class VideoEncodingService extends Service implements NotificationCenter.NotificationCenterDelegate {
 
@@ -151,16 +154,42 @@ public class VideoEncodingService extends Service implements NotificationCenter.
             return;
         }
         boolean isGif = videoConvertMessage.messageObject != null && MessageObject.isGifMessage(videoConvertMessage.messageObject.messageOwner);
+        String status;
         if (videoConvertMessage.foregroundConversion) {
-            builder.setTicker(LocaleController.getString(R.string.ConvertingVideo));
-            builder.setContentText(LocaleController.getString(R.string.ConvertingVideo));
+            status = LocaleController.getString(R.string.ConvertingVideo);
         } else if (isGif) {
-            builder.setTicker(LocaleController.getString(R.string.SendingGif));
-            builder.setContentText(LocaleController.getString(R.string.SendingGif));
+            status = LocaleController.getString(R.string.SendingGif);
         } else {
-            builder.setTicker(LocaleController.getString(R.string.SendingVideo));
-            builder.setContentText(LocaleController.getString(R.string.SendingVideo));
+            status = LocaleController.getString(R.string.SendingVideo);
         }
+
+        String name = "";
+        if (videoConvertMessage.messageObject != null) {
+            long dialogId = videoConvertMessage.messageObject.getDialogId();
+
+            if (DialogObject.isUserDialog(dialogId)) {
+                TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialogId);
+                if (user != null) {
+                    name = UserObject.getUserName(user);
+                }
+            } else if (DialogObject.isChatDialog(dialogId)) {
+                TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
+                if (chat != null) {
+                    name = chat.title;
+                }
+            }
+        }
+
+        String finalText;
+        if (!TextUtils.isEmpty(name)) {
+            finalText = name + " • " + status;
+        } else {
+            finalText = status;
+        }
+
+        builder.setTicker(finalText);
+        builder.setContentText(finalText);
+
         int currentProgress = 0;
         builder.setProgress(100, currentProgress, true);
     }

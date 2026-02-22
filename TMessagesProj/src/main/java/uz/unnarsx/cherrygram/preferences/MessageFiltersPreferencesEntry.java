@@ -41,7 +41,6 @@ import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
-import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.OutlineEditText;
 import org.telegram.ui.Components.RecyclerListView;
@@ -54,7 +53,8 @@ import java.util.Set;
 import uz.unnarsx.cherrygram.chats.helpers.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 
@@ -154,19 +154,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
             if (requireDonate) {
                 AndroidUtilities.shakeViewSpring(view);
                 BotWebViewVibrationEffect.APP_ERROR.vibrate();
-                BulletinFactory.of(this).createSimpleBulletin(
-                        R.raw.cg_star_reaction, // stars_topup // star_premium_2
-                        getString(R.string.DP_Donate_Exclusive),
-                        getString(R.string.DP_Donate_ExclusiveDesc),
-                        getString(R.string.MoreInfo),
-                        () -> {
-                            if (getConnectionsManager().isTestBackend()) {
-                                CherrygramPreferencesNavigator.INSTANCE.createDonate(this);
-                            } else {
-                                CherrygramPreferencesNavigator.INSTANCE.createDonateForce(this);
-                            }
-                        }
-                ).show();
+                CGBulletinCreator.INSTANCE.createRequireDonateBulletin(this);
                 return;
             }
             if (position == enableFilterRow) {
@@ -291,7 +279,9 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
             }
         });
 
-        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("filters_preferences_screen");
+        FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("filters_preferences_screen");
+
+        actionBar.setAdaptiveBackground(listView);
 
         return fragmentView;
     }

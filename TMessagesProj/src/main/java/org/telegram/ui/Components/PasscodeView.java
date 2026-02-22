@@ -1216,7 +1216,7 @@ public class PasscodeView extends FrameLayout implements NotificationCenter.Noti
         Activity parentActivity = AndroidUtilities.findActivity(getContext());
         if (Build.VERSION.SDK_INT >= 23 && parentActivity != null && SharedConfig.useFingerprintLock) {
             try {
-                boolean biometricEnrolled = CGBiometricPrompt.hasBiometricEnrolled(); // включает Face ID на Android 10+
+                boolean biometricEnrolled = CGBiometricPrompt.hasBiometricEnrolled();
 
                 if (biometricEnrolled) {
                     hasBiometric = true;

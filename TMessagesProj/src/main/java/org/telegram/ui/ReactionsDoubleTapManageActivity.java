@@ -29,7 +29,6 @@ import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
-import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import org.telegram.ui.Cells.AvailableReactionCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.ThemePreviewMessagesCell;
@@ -87,7 +86,7 @@ public class ReactionsDoubleTapManageActivity extends BaseFragment implements No
         listView = new RecyclerListView(context);
         ((DefaultItemAnimator)listView.getItemAnimator()).setSupportsChangeAnimations(false);
         listView.setLayoutManager(new LinearLayoutManager(context));
-        listView.setAdapter(listAdapter = new MD3ListAdapter() {
+        listView.setAdapter(listAdapter = new RecyclerListView.SelectionAdapter() {
             @Override
             public boolean isEnabled(RecyclerView.ViewHolder holder) {
                 return holder.getItemViewType() == 3 || holder.getItemViewType() == 2;
@@ -151,7 +150,7 @@ public class ReactionsDoubleTapManageActivity extends BaseFragment implements No
 
             @Override
             public int getItemCount() {
-                return rowCount + (premiumReactionRow < 0 ? getAvailableReactions().size() : 0) + 1 + (MD3ListAdapter.canTryToIgnoreTopBarBackground() ? -1 : 0);
+                return rowCount + (premiumReactionRow < 0 ? getAvailableReactions().size() : 0) + 1;
             }
 
             @Override

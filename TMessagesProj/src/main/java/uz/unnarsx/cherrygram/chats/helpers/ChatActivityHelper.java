@@ -69,7 +69,6 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
 import uz.unnarsx.cherrygram.helpers.network.StickersManager;
-import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
 public class ChatActivityHelper extends BaseController {
 
@@ -127,10 +126,6 @@ public class ChatActivityHelper extends BaseController {
     public final static int OPTION_EXPLANATION_GEMINI = 2031;
     public final static int OPTION_SUMMARIZE_GEMINI = 2032;
     public final static int OPTION_ADVANCED_SEARCH = 2033;
-
-    public final static int OPTION_VIEW_EDITED_MESSAGE_HISTORY = 2100;
-    public final static int OPTION_MARK_TTL_AS_READ = 2101;
-    public final static int OPTION_MARK_MESSAGE_AS_READ = 2102;
     /** Cherrygram chat options constant id's finish */
 
     /** ActionBar options start*/
@@ -165,7 +160,6 @@ public class ChatActivityHelper extends BaseController {
                 chatActivity.getChatActivityEnterView().getEditField().makeSelectedMention();
             }
         } else if (id == OPTION_SELECT_BETWEEN) {
-            // For selecting messages between the first and the last.
             ArrayList<Integer> ids = new ArrayList<>();
             for (int a = 1; a >= 0; a--) {
                 for (int b = 0; b < selectedMessagesIds[a].size(); b++) {
@@ -251,7 +245,7 @@ public class ChatActivityHelper extends BaseController {
             CGBiometricPrompt.prompt(chatActivity.getParentActivity(), () -> {
                 List<String> arr = chatActivity.getChatsPasswordHelper().getArrayList(chatActivity.getChatsPasswordHelper().getPasscodeArray());
                 if (DialogObject.isUserDialog(chatActivity.getDialogId()) || DialogObject.isChatDialog(chatActivity.getDialogId())) {
-                    if (arr.remove(String.valueOf(chatActivity.getDialogId()))) { // Удаляем и проверяем, изменился ли список
+                    if (arr.remove(String.valueOf(chatActivity.getDialogId()))) {
                         headerItem.hideSubItem(OPTION_DO_NOT_ASK_PASSCODE);
 
                         if (CherrygramCoreConfig.isDevBuild()) {
@@ -280,9 +274,6 @@ public class ChatActivityHelper extends BaseController {
             case OPTION_FORWARD_WO_AUTHOR: {
                 if (getMessagesController().isFrozen()) {
                     AccountFrozenAlert.show(currentAccount);
-                    /*selectedObject = null;
-                    selectedObjectToEditCaption = null;
-                    selectedObjectGroup = null;*/
                     return;
                 }
                 CGFeatureHooks.INSTANCE.switchNoAuthor(true);
@@ -304,9 +295,6 @@ public class ChatActivityHelper extends BaseController {
             case OPTION_FORWARD_WO_CAPTION: {
                 if (getMessagesController().isFrozen()) {
                     AccountFrozenAlert.show(currentAccount);
-                    /*selectedObject = null;
-                    selectedObjectToEditCaption = null;
-                    selectedObjectGroup = null;*/
                     return;
                 }
                 CGFeatureHooks.INSTANCE.switchNoAuthor(true);
@@ -342,9 +330,6 @@ public class ChatActivityHelper extends BaseController {
             case OPTION_CLEAR_FROM_CACHE: {
                 if ((Build.VERSION.SDK_INT <= Build.VERSION_CODES.P || BuildVars.NO_SCOPED_STORAGE) && chatActivity.getParentActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     chatActivity.getParentActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 4);
-                    /*selectedObject = null;
-                    selectedObjectGroup = null;
-                    selectedObjectToEditCaption = null;*/
                     return;
                 }
                 ChatMessageCell messageCell = null;
@@ -545,9 +530,6 @@ public class ChatActivityHelper extends BaseController {
             case OPTION_DOWNLOAD_STICKER: {
                 if ((Build.VERSION.SDK_INT <= Build.VERSION_CODES.P || BuildVars.NO_SCOPED_STORAGE) && chatActivity.getParentActivity().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     chatActivity.getParentActivity().requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 4);
-                    /*selectedObject = null;
-                    selectedObjectGroup = null;
-                    selectedObjectToEditCaption = null;*/
                     return;
                 }
                 chatActivity.getChatsHelper().saveStickerToGallery(chatActivity.getParentActivity(), selectedObject.getDocument(), (uri) -> {

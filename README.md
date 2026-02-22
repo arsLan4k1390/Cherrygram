@@ -79,11 +79,9 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Enable/Disable "Send as channel" button.
 
 *Cherrygram Appearance Preferences:*
-- VKUI/Solar icons in app,
-- MD3 Expressive containers design in settings,
+- Solar icons in app,
 - One UI (Samsung) Switchers style,
 - Center title in action bar,
-- IOS-styled search panel,
 - Enable/Disable toolbar shadow or dividers,
 - Snow in App Header and Chats.
 
@@ -100,24 +98,19 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Show folder name instead of app name,
 - Hide "All chats" tab,
 - Hide messages counter in tabs.
-- Tab style (Default, Rounded, Text, VKUI or Pills),
 - Tab icon style (Only titles, Only icons and Icons with titles) with stroke.
 
-*Drawer Preferences:*
-- Snow in drawer,
-- Profile photo as drawer background,
-- Darken menu header background,
-- Gradient menu header background,
-- Blur menu header background and blur intensity,
-- Enable/Disable drawer items,
-- Drawer icons set.
+*Bottom tabs organizer:*
+- Enable/disable and rearrange items within the panel,
+- Show or hide tab titles,
+- Option to disable the bottom panel,
+- Option to open settings with a swipe when the bottom panel is disabled (like a side menu).
 
 *Cherrygram Chats Preferences:*
 - Configure admin shortcuts in chats,
 - Showing unread chats counter on "Back" button like on IOS,
 - Center chat title like on IOS,
 - Recent emojis and stickers counter (amplifier),
-- Ask before a call,
 - Hide keyboard while scrolling a chat,
 - Enable/Disable transition to the next channel,
 - Show/Hide bottom bar in channels (Mute/Unmute),
@@ -136,7 +129,6 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Message swipe action (Reply, Save, Translate or Direct Share),
 - Use "Delete for all" by default,
 - Large photos (2560px),
-- Voice enhancements,
 - Enable/Disable playing video on volume button click,
 - Auto pause video while switching to the background,
 - Disable in-app vibration,
@@ -150,8 +142,8 @@ Join the [Cherrygram official group](https://t.me/CherrygramSupport)
 - Disable camera in attachments menu,
 - Default camera for video messages,
 - Custom camera aspect ratio for video-messages (1:1, 4:3 or 16:9),
-- Camera stabilisation in videomessages,
-- Exposure and zoom slider in videomessages.
+- Camera stabilization in video messages,
+- Exposure and zoom slider in video messages.
 
 *Cherrygram Experimental Preferences:*
 - Enable/Disable spring animations for app navigation,

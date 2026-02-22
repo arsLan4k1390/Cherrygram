@@ -237,6 +237,12 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
                 chatLinearLayout.setTranslationY(((b - t) - chatLinearLayout.getMeasuredHeight()) / 2f);
                 actionCell.setVisiblePart(chatLinearLayout.getY() + actionCell.getY(), getBackgroundSizeY());
             }
+
+            @Override
+            protected void onBackgroundViewInvalidate() {
+                super.onBackgroundViewInvalidate();
+                recyclerListView.invalidate();
+            }
         };
 
         final Drawable drawable = PreviewView.getBackgroundDrawable(null, currentAccount, dialogId, Theme.isCurrentThemeDark());
@@ -477,6 +483,7 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
         valueContainerView.addView(soldTextView2, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.RIGHT, 11, 0, 11, 0));
 
         button = new ButtonWithCounterView(context, resourcesProvider);
+        button.setRound();
         setButtonText(false);
         buttonContainer.addView(button, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, Gravity.FILL, 10, 10, 10, 10));
         button.setOnClickListener(v -> {

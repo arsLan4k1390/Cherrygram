@@ -51,6 +51,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.StickerImageView;
 import org.telegram.ui.Components.TableView;
+import org.telegram.ui.SettingsActivity;
 
 import java.util.HashSet;
 
@@ -58,8 +59,8 @@ import kotlin.coroutines.Continuation;
 import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
-import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
@@ -215,11 +216,11 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                 if (view instanceof TextCheckCell) {
                     ((TextCheckCell) view).setChecked(CherrygramCoreConfig.INSTANCE.getCgBrandedScreenshots());
                 }
-                AppRestartHelper.createRestartBulletin(this);
+                CGBulletinCreator.INSTANCE.createRestartBulletin(this);
             } else if (position == rateUsRow) {
                 CherrygramExtras.INSTANCE.requestReviewFlow(this);
             } else if (position == masterCardRow) {
-                copyNumberAndMakeToast(CardsRepo.Card_Tenge_Master_UZS, true);
+                copyNumberAndMakeToast(CardsRepo.Card_Kapital_Master_UZS, true);
             } else if (position == visaRow) {
                 copyNumberAndMakeToast(CardsRepo.Card_Kapital_Visa_USD, true);
             } else if (position == alfaRow) {
@@ -266,7 +267,9 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
             }
         });
 
-        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("donates_screen");
+        FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("donates_screen");
+
+        actionBar.setAdaptiveBackground(listView);
 
         return fragmentView;
     }
@@ -844,7 +847,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
         CharSequence marketPlaceText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_GiftMarket_Desc),
                 Theme.key_windowBackgroundWhiteLinkText,
                 AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
-                () -> CherrygramPreferencesNavigator.INSTANCE.createDrawerItems(DonatesPreferencesEntry.this)
+                () -> presentFragment(new SettingsActivity())
         );
         CharSequence filterText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_MessageFilter_Desc),
                 Theme.key_windowBackgroundWhiteLinkText,
@@ -875,6 +878,7 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
 
         public static String Card_Kapital_Humo = "9860100124370345";
         public static String Card_Kapital_Visa_USD = "4278310028377794";
+        public static String Card_Kapital_Master_UZS = "5397170005511325";
 
         public static String Card_Tenge_Master_UZS = "5181000156329583";
 

@@ -24,14 +24,13 @@ import org.telegram.messenger.UserConfig
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.BulletinFactory
 import org.telegram.ui.Components.RecyclerListView
-import org.telegram.ui.LaunchActivity
 import org.telegram.ui.UsersSelectActivity
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
@@ -40,13 +39,18 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
+import java.lang.ref.WeakReference
 
 class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
 
-    private var listView: RecyclerListView? = null
+    private var listViewRef: WeakReference<RecyclerListView>? = null
 
     override fun setListView(rv: RecyclerListView) {
-        listView = rv
+        listViewRef = WeakReference(rv)
+    }
+
+    fun getListView(): RecyclerListView? {
+        return listViewRef?.get()
     }
 
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.SP_Category_PrivacyAndSecurity)) {
@@ -69,7 +73,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramPrivacyConfig.googleAnalytics
                 }) {
                     CherrygramPrivacyConfig.googleAnalytics = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    FirebaseAnalyticsHelper.onPrivacyConfigChanged(CherrygramPrivacyConfig.googleAnalytics)
                 }
             }
             textIcon {
@@ -91,6 +95,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
         category(getString(R.string.CP_Header_Chats)) {
             switch {
                 isAvailable = (CherrygramCoreConfig.isStandalonePremiumBuild() || CherrygramCoreConfig.isDevBuild()) && (bf.userConfig.clientUserId == 6578415824L || bf.userConfig.clientUserId == 282287840L)
+
                 title = "Скрыть архивированные истории"
                 description = "Скрывает раздел архивированных историй в профиле"
 
@@ -98,7 +103,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramPrivacyConfig.hideArchivedStories
                 }) {
                     CherrygramPrivacyConfig.hideArchivedStories = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -109,20 +114,20 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramPrivacyConfig.hideArchiveFromChatsList
                 }) {
                     CherrygramPrivacyConfig.hideArchiveFromChatsList = it
-                    if (!CherrygramAppearanceConfig.archivedChatsDrawerButton) CherrygramAppearanceConfig.archivedChatsDrawerButton = true
                 }
             }
             textIcon {
                 isAvailable = bf.chatsPasswordHelper.checkBiometricAvailable()
 
                 title = getString(R.string.SP_AskBioToOpenChats)
-                divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
                     CGBiometricPrompt.prompt(bf.parentActivity) {
                         showPasscodeItemsSelector(bf)
                     }
                 }
+
+                divider = true
             }
             if (bf.chatsPasswordHelper.checkBiometricAvailable()) hint(getString(R.string.SP_AskBioToOpenChats_Desc))
             textIcon {
@@ -131,7 +136,6 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 icon = R.drawable.msg_discussion
                 title = getString(R.string.SP_LockedChats)
                 value = bf.chatsPasswordHelper.getLockedChatsCount().toString()
-                divider = true
 
                 listener = TGKitTextIconRow.TGTIListener {
                     CGBiometricPrompt.prompt(bf.parentActivity) {
@@ -161,6 +165,8 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                         }, 300)
                     }
                 }
+
+                divider = true
             }
             switch {
                 isAvailable = bf.chatsPasswordHelper.checkBiometricAvailable()
@@ -173,8 +179,8 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                 }) {
                     CGBiometricPrompt.prompt(bf.parentActivity) {
                         CherrygramPrivacyConfig.askPasscodeBeforeDelete = it
-                        listView?.post {
-                            listView!!.adapter?.notifyDataSetChanged()
+                        getListView()?.post {
+                            getListView()!!.adapter?.notifyDataSetChanged()
                         }
                     }
                 }
@@ -221,7 +227,7 @@ class PrivacyAndSecurityPreferencesEntry : BasePreferencesEntry {
                                         getString(R.string.CG_RestartToApply),
                                         getString(R.string.OK)
                                     ) {
-                                        AppRestartHelper.triggerRebirth(bf.context, Intent(bf.context, LaunchActivity::class.java))
+                                        AppRestartHelper.restartApp(bf.context)
                                     }.show()
 //                                    bf.parentLayout.rebuildAllFragmentViews(true, true)
                                 }, 300)

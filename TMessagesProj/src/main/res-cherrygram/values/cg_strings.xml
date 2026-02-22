@@ -7,6 +7,8 @@
     <string name="CG_DoNotRemindAgain">Don\'t remind again</string>
 
     <!--Telegram screens-->
+    <string name="CG_SwitchedToAccount">Switched to **%1$s**</string>
+
     <string name="CG_JoinedDate">You joined **%1$s** **%2$s**</string>
     <string name="CG_CreatedDate">**%1$s** was created **%2$s**</string>
     <string name="CG_RegistrationDate">**%1$s** joined Telegram **%2$s**</string>
@@ -39,7 +41,6 @@
     <!--Typing status-->
 
     <!--Telegram Folders Settings-->
-    <string name="CG_FoldersType_Header">Tab icon type</string>
     <string name="CG_FoldersTypeTitles">Only titles</string>
     <string name="CG_FoldersTypeIcons">Only icons</string>
     <string name="CG_FoldersTypeIconsTitles">Icons with Titles</string>
@@ -180,16 +181,12 @@
     <string name="AP_ChangeIcon_Violet_Sunset" translatable="false">Violet Sunset</string>
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
-    <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
     <string name="AP_IconReplacement_Default">Default</string>
-    <string name="AP_MD3_Containers">MD3 Lists Design</string>
-    <string name="AP_MD3_Containers_Desc">Material Design 3 style list containers with rounded corners</string>
     <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
     <string name="AP_SystemEmoji">Use system emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
     <string name="AP_CenterTitle">Center title in action bar</string>
-    <string name="AP_iosSearchPanel">iOS-styled search panel</string>
     <string name="AP_DisableDividers">Disable dividers</string>
     <string name="AP_ToolBarShadow">Disable toolbar shadow</string>
     <string name="AP_SystemFonts">Use system fonts</string>
@@ -232,21 +229,16 @@
     <string name="AP_FolderNameInHeader_Desc">This will change \"Cherrygram\" in action bar to your folder\'s name (useful if you have only icons instead of folder names)</string>
     <string name="CP_NewTabs_RemoveAllChats">Hide \"All chats\" tab</string>
     <string name="AP_Tab_Style">Tab style</string>
-    <string name="AP_Tab_Style_Default">Default</string>
-    <string name="AP_Tab_Style_Rounded">Rounded</string>
-    <string name="AP_Tab_Style_Text">Text</string>
-    <string name="AP_Tab_Style_Pills">Pills</string>
     <string name="AP_Tab_Style_Stroke">Add stroke</string>
 
-    <string name="AP_DrawerCategory">Drawer</string>
-    <string name="AP_DrawerAvatar">Profile photo as drawer background</string>
-    <string name="AP_DrawerShowAvatar">Show avatar</string>
-    <string name="AP_DrawerDarken">Darken background</string>
-    <string name="AP_ShadeBackground">Gradient background</string>
-    <string name="AP_DrawerBlur">Blur background</string>
-    <string name="AP_DrawerBlurIntensity">Blur intensity</string>
-    <string name="AP_DrawerIconPack_Header">Drawer icons set</string>
-    <string name="AP_DrawerButtonsCategory">Drawer items</string>
+    <string name="CP_MainTabs_Header">Bottom tabs organizer</string>
+    <string name="CP_MainTabs_Layout">Tabs</string>
+    <string name="CP_MainTabs_ShowTabs">Show tabs</string>
+    <string name="CP_MainTabs_OpenSettings">Open settings by swipe</string>
+    <string name="CP_MainTabs_OpenSettings_Desc">Swipe from left to right on the tabs to open the settings, similar to a drawer when tabs are disabled.</string>
+    <string name="CP_MainTabs_Layout_Desc">Tap to enable/disable, hold and drag to reorder.</string>
+    <string name="CP_MainTabs_DoubleTap_Desc">Double-tap a chat tab to open "Saved Messages". Double-tap the profile tab (or Settings if the profile tab is hidden) to switch accounts.</string>
+    <string name="CP_MainTabs_ShowTabsTitle">Show tabs titles</string>
 
     <string name="AP_HideUserPhone_Show">Tap to show</string>
     <string name="AP_HideUserPhone_Copy">Hold to copy</string>
@@ -366,8 +358,6 @@
     <string name="CP_LargeVoiceMessages">Adaptive audio message length</string>
     <string name="CP_LargeVoiceMessages_Desc">The audio message bubble length will depend on the recording duration and automatically adjust to the screen width.</string>
 
-    <string name="CP_VoiceEnhancements">Voice Enhancements</string>
-    <string name="CP_VoiceEnhancements_Desc">Noise Suppression and Voice Normalization</string>
     <string name="CP_PlayVideo">Play video with volume button press</string>
     <string name="CP_PlayVideo_Desc">When you press the volume button, any video on the screen in chat will be played</string>
     <string name="CP_AutoPauseVideo">Auto pause video</string>
@@ -420,8 +410,8 @@
     <string name="EP_NavigationAnimationSpring" translatable="false">Spring</string>
     <string name="EP_NavigationAnimationBezier">Classic</string>
     <string name="EP_NavigationAnimationCrossfading">Crossfading effect</string>
+    <string name="CG_PredictiveBackAnimation">Predictive-Back navigation</string>
     <string name="EP_PhotosSize">Send large photos (2560px)</string>
-    <string name="EP_CustomAppTitle">App Title</string>
     <string name="EP_CustomChat">Custom chat for Saved Messages</string>
     <string name="EP_CustomChat_Desc">You can choose any other chat/group/channel to forward messages there (button in action bar, message menu, double tap or on message swipe)</string>
     <string name="EP_CustomChat_Selected_Title">instead of</string>

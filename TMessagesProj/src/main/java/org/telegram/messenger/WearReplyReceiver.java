@@ -70,13 +70,13 @@ public class WearReplyReceiver extends BroadcastReceiver {
     private void sendMessage(AccountInstance accountInstance, CharSequence text, long dialog_id, long topicId, int max_id) {
         MessageObject replyToMsgId = null;
         MessageObject replyToTopMsgId = null;
-        if (max_id != 0) {
+        /*if (max_id != 0) {
             TLRPC.TL_message replyMessage = new TLRPC.TL_message();
             replyMessage.message = "";
             replyMessage.id = max_id;
             replyMessage.peer_id = accountInstance.getMessagesController().getPeer(dialog_id);
             replyToMsgId = new MessageObject(accountInstance.getCurrentAccount(), replyMessage, false, false);
-        }
+        }*/
         if (topicId != 0) {
             TLRPC.TL_message topicStartMessage = new TLRPC.TL_message();
             topicStartMessage.message = "";

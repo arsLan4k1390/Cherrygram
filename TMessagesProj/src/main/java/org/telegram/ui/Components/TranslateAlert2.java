@@ -52,7 +52,6 @@ import org.json.JSONArray;
 import org.json.JSONTokener;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.Emoji;
-import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LanguageDetector;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
@@ -70,6 +69,7 @@ import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -89,6 +89,7 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
     private ArrayList<TLRPC.MessageEntity> reqMessageEntities;
     private TLRPC.InputPeer reqPeer;
     private int reqMessageId;
+    private boolean reqSum;
 
     private String fromLanguage, toLanguage;
     private String prevToLanguage;
@@ -117,13 +118,13 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
         CharSequence text, ArrayList<TLRPC.MessageEntity> entities,
         Theme.ResourcesProvider resourcesProvider
     ) {
-        this(context, fromLanguage, toLanguage, text, entities, null, 0, resourcesProvider);
+        this(context, fromLanguage, toLanguage, text, entities, null, 0, false, resourcesProvider);
     }
 
     private TranslateAlert2(
         Context context,
         String fromLanguage, String toLanguage,
-        CharSequence text, ArrayList<TLRPC.MessageEntity> entities, TLRPC.InputPeer peer, int messageId,
+        CharSequence text, ArrayList<TLRPC.MessageEntity> entities, TLRPC.InputPeer peer, int messageId, boolean sum,
         Theme.ResourcesProvider resourcesProvider
     ) {
         super(context, false, resourcesProvider);
@@ -135,6 +136,7 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
         this.reqText = text;
         this.reqPeer = peer;
         this.reqMessageId = messageId;
+        this.reqSum = sum;
 
         this.fromLanguage = fromLanguage;
         this.toLanguage = toLanguage;
@@ -255,15 +257,15 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
         buttonTextView.setTypeface(AndroidUtilities.bold());
         buttonTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         buttonTextView.setText(LocaleController.getString(R.string.CloseTranslation));
-        buttonTextView.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 6));
+        buttonTextView.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton), 24));
         buttonTextView.setOnClickListener(e -> dismiss());
         buttonView.addView(buttonTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
-        ImageView copyButton = new ImageView(context);
-        copyButton.setScaleType(ImageView.ScaleType.CENTER);
-        copyButton.setImageResource(R.drawable.msg_copy);
-        copyButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_buttonText, resourcesProvider), PorterDuff.Mode.MULTIPLY));
-        copyButton.setBackground(Theme.AdaptiveRipple.filledRect(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider), 6));
+        ButtonWithCounterView copyButton = new ButtonWithCounterView(context, resourcesProvider).setRound();
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append("+");
+        sb.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.msg_copy_filled_solar)), 0, 1, 0);
+        copyButton.setText(sb, false);
         copyButton.setOnClickListener(v -> processCopyText(peer));
         buttonView.addView(copyButton, LayoutHelper.createFrame(48, 48, Gravity.BOTTOM | Gravity.RIGHT, 0, 16, 16, 16));
 
@@ -297,12 +299,51 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
             return;
         }*/
 
-        TLRPC.TL_messages_translateText req = new TLRPC.TL_messages_translateText();
+        String lang = toLanguage;
+        if (lang != null) {
+            lang = lang.split("_")[0];
+        }
+        if ("nb".equals(lang)) {
+            lang = "no";
+        }
+
         TLRPC.TL_textWithEntities textWithEntities = new TLRPC.TL_textWithEntities();
         textWithEntities.text = reqText == null ? "" : reqText.toString();
         if (reqMessageEntities != null) {
             textWithEntities.entities = reqMessageEntities;
         }
+
+        if (reqSum && reqPeer != null) {
+            TLRPC.TL_messages_summarizeText req = new TLRPC.TL_messages_summarizeText();
+            req.flags |= 1;
+            req.peer = reqPeer;
+            req.id = reqMessageId;
+            req.to_lang = lang;
+            reqId = ConnectionsManager.getInstance(currentAccount).sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
+                reqId = null;
+                if (err != null && "TRANSLATIONS_DISABLED_ALT".equalsIgnoreCase(err.text)) {
+                    translateAlt();
+                } else if (res != null) {
+                    firstTranslation = false;
+                    TLRPC.TL_textWithEntities text = preprocess(textWithEntities, res);
+                    CharSequence translated = SpannableStringBuilder.valueOf(text.text);
+                    MessageObject.addEntitiesToText(translated, text.entities, false, true, false, false);
+                    translated = preprocessText(translated);
+                    textView.setText(translated);
+                    adapter.updateMainView(textViewContainer);
+                } else if (firstTranslation) {
+                    dismiss();
+                    NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.showBulletin, Bulletin.TYPE_ERROR, LocaleController.getString(R.string.TranslationFailedAlert2));
+                } else {
+                    BulletinFactory.of((FrameLayout) containerView, resourcesProvider).createErrorBulletin(LocaleController.getString(R.string.TranslationFailedAlert2)).show();
+                    headerView.toLanguageTextView.setText(languageName(toLanguage = prevToLanguage));
+                    adapter.updateMainView(textViewContainer);
+                }
+            });
+            return;
+        }
+
+        TLRPC.TL_messages_translateText req = new TLRPC.TL_messages_translateText();
         if (reqPeer != null) {
             req.flags |= 1;
             req.peer = reqPeer;
@@ -315,13 +356,6 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
 //            req.flags |= 4;
 //            req.from_lang = fromLanguage;
 //        }
-        String lang = toLanguage;
-        if (lang != null) {
-            lang = lang.split("_")[0];
-        }
-        if ("nb".equals(lang)) {
-            lang = "no";
-        }
         req.to_lang = lang;
         reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> {
             AndroidUtilities.runOnUIThread(() -> {
@@ -1633,8 +1667,8 @@ public class TranslateAlert2 extends BottomSheet implements NotificationCenter.N
         }
     }
 
-    public static TranslateAlert2 showAlert(Context context, BaseFragment fragment, int currentAccount, TLRPC.InputPeer peer, int msgId, String fromLanguage, String toLanguage, CharSequence text, ArrayList<TLRPC.MessageEntity> entities, boolean noforwards, Utilities.CallbackReturn<URLSpan, Boolean> onLinkPress, Runnable onDismiss) {
-        TranslateAlert2 alert = new TranslateAlert2(context, fromLanguage, toLanguage, text, entities, peer, msgId, null) {
+    public static TranslateAlert2 showAlert(Context context, BaseFragment fragment, int currentAccount, TLRPC.InputPeer peer, int msgId, boolean sum, String fromLanguage, String toLanguage, CharSequence text, ArrayList<TLRPC.MessageEntity> entities, boolean noforwards, Utilities.CallbackReturn<URLSpan, Boolean> onLinkPress, Runnable onDismiss) {
+        TranslateAlert2 alert = new TranslateAlert2(context, fromLanguage, toLanguage, text, entities, peer, msgId, sum, null) {
             @Override
             public void dismiss() {
                 super.dismiss();

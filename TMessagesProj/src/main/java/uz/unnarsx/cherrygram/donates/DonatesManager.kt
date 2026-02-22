@@ -157,7 +157,6 @@ object DonatesManager {
                         tempFile.renameTo(file)
                     }
 
-                    // обновляем хэш после записи
                     FileIntegrityUtils.updateFileHash(context, file)
 
                     synchronized(targetSet) {
@@ -210,7 +209,6 @@ object DonatesManager {
     /** Donates start */
     private val FILE_NAME = decodeBase64Array(Extra.FILE_NAME_HASH)
     private val GITLAB_RAW_URL = decodeBase64Array(Extra.GITLAB_RAW_URL_HASH)
-//    private const val GITHUB_RAW_URL = "https://raw.githubusercontent.com/arsLan4k1390/Cherrygram/main/donates.txt"
 
     private val verifiedUserIds = mutableSetOf<Long>()
 
@@ -241,6 +239,12 @@ object DonatesManager {
     fun didUserDonate(userId: Long): Boolean {
         synchronized(verifiedUserIds) {
             return verifiedUserIds.contains(userId) || didUserDonateForMarketplace(userId)
+        }
+    }
+
+    fun didUserDonate2(userId: Long): Boolean {
+        synchronized(verifiedUserIds) {
+            return verifiedUserIds.contains(userId)
         }
     }
     /** Donates finish */
@@ -350,7 +354,6 @@ object DonatesManager {
                         file.setWritable(true, true)
                     }
 
-                    // Записываем данные во временный файл
                     val tempFile = File(context.filesDir, "$fileName.tmp")
                     OutputStreamWriter(tempFile.outputStream()).use { writer ->
                         tempMap.forEach { (id, uc) ->
@@ -380,7 +383,6 @@ object DonatesManager {
             try {
                 val file = File(context.filesDir, fileName)
 
-                // Если файл отсутствует, пустой или не прошёл проверку → перекачка внутри verifyFileIntegrity
                 val isValid = FileIntegrityUtils.verifyFileIntegrity(context, file)
                 if (!isValid) return@withContext
 
@@ -469,7 +471,6 @@ object DonatesManager {
         val rate = getTonUsdtRate(context) * 0.80
         val amount = usdPrice / rate
         return max(if (marketplace) 4.0 else 2.0, roundTo(amount, 2))
-//        return roundTo(amount, 2)
     }
 
     fun roundTo(value: Double, decimals: Int): Double {

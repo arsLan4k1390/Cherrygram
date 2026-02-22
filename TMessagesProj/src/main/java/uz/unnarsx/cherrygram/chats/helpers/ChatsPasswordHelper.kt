@@ -154,7 +154,6 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     fun shouldRequireBiometricsToOpenChats(): Boolean {
         if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил shouldRequireBiometricsToOpenChats")
         return CherrygramPrivacyConfig.askBiometricsToOpenChat && checkBiometricAvailable()
-                /*&& getArrayList(Passcode_Array).isNotEmpty()*/
     }
 
     fun shouldRequireBiometricsToOpenEncryptedChats(): Boolean {
@@ -177,7 +176,6 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
         return if (hasFingerprints) {
             FingerprintController.isKeyReady() && !FingerprintController.checkDeviceFingerprintsChanged()
         } else {
-            // лицо — ключи не проверяем
             true
         }
     }

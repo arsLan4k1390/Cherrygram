@@ -115,8 +115,6 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
     private float indicatorXAnimationDx;
     private float indicatorWidthAnimationDx;
 
-    int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
-
     public long animationDuration = 200;
     private View dragging;
 
@@ -161,13 +159,9 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
         this.resourcesProvider = resourcesProvider;
 
         selectorDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, null);
-        float rad = AndroidUtilities.dpf2(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 10 : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 30 : 3);
-        if (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_ROUNDED || tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
-            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
-        } else {
-            selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
-        }
-        selectorDrawable.setColor(ColorUtils.setAlphaComponent(processColor(Theme.getColor(tabLineColorKey, resourcesProvider)), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
+        float rad = AndroidUtilities.dpf2(30);
+        selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
+        selectorDrawable.setColor(ColorUtils.setAlphaComponent(processColor(Theme.getColor(tabLineColorKey, resourcesProvider)), 0x2F));
 
         setFillViewport(true);
         setWillNotDraw(false);
@@ -506,7 +500,7 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
             };
             tab.setGravity(Gravity.CENTER);
             tab.setTextAlignment(TEXT_ALIGNMENT_CENTER);
-            if (tabStyle < CherrygramAppearanceConfig.TAB_STYLE_VKUI) tab.setBackground(Theme.createSelectorDrawable(Theme.multAlpha(processColor(Theme.getColor(activeTextColorKey, resourcesProvider)), 0f), 3));
+//            tab.setBackground(Theme.createSelectorDrawable(Theme.multAlpha(processColor(Theme.getColor(activeTextColorKey, resourcesProvider)), .15f), 3));
             tab.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
 //            tab.setSingleLine(true);
             tab.setMaxLines(2);
@@ -593,7 +587,7 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
         activeTextColorKey = active;
         unactiveTextColorKey = unactive;
         selectorColorKey = selector;
-        selectorDrawable.setColor(ColorUtils.setAlphaComponent(processColor(Theme.getColor(tabLineColorKey, resourcesProvider)), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
+        selectorDrawable.setColor(ColorUtils.setAlphaComponent(processColor(Theme.getColor(tabLineColorKey, resourcesProvider)), 0x2F));
     }
 
     public void updateColors() {
@@ -603,7 +597,7 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
             tab.setTextColor(processColor(Theme.getColor(currentPosition == a ? activeTextColorKey : unactiveTextColorKey, resourcesProvider)));
             tab.setBackground(Theme.createSelectorDrawable(Theme.multAlpha(processColor(Theme.getColor(activeTextColorKey, resourcesProvider)), 0f), 3));
         }
-        selectorDrawable.setColor(ColorUtils.setAlphaComponent(processColor(Theme.getColor(tabLineColorKey, resourcesProvider)), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
+        selectorDrawable.setColor(ColorUtils.setAlphaComponent(processColor(Theme.getColor(tabLineColorKey, resourcesProvider)), 0x2F));
         invalidate();
     }
 
@@ -648,17 +642,16 @@ public class ScrollSlidingTextTabStrip extends HorizontalScrollView {
             }
             selectorDrawable.setAlpha((int) (0xFF * tabsContainer.getAlpha()));
             selectorDrawable.setBounds(
-                    (int) l - (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
-                    tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(15) : height - dpr(4),
-                    (int) r + (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
-                    tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(15) : height
+                    (int) l - AndroidUtilities.dp(10),
+                    height / 2 - AndroidUtilities.dp(15),
+                    (int) r + AndroidUtilities.dp(10),
+                    height / 2 + AndroidUtilities.dp(15)
             );
-            if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI && CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
-//                selectorDrawable.setColor(ColorUtils.setAlphaComponent(processColor(Theme.getColor(tabLineColorKey, resourcesProvider)), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
+            if (CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
+//                selectorDrawable.setColor(ColorUtils.setAlphaComponent(processColor(Theme.getColor(tabLineColorKey, resourcesProvider)), 0x2F));
                 selectorDrawable.setStroke(AndroidUtilities.dp(1), processColor(Theme.getColor(activeTextColorKey, resourcesProvider)));
             }
-            if (tabStyle != CherrygramAppearanceConfig.TAB_STYLE_TEXT)
-                selectorDrawable.draw(canvas);
+            selectorDrawable.draw(canvas);
         }
         return result;
     }

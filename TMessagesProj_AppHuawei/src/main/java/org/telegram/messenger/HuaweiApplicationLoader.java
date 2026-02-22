@@ -1,7 +1,6 @@
 package org.telegram.messenger;
 
 import android.app.Activity;
-import android.content.Context;
 import android.view.ViewGroup;
 
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -10,9 +9,7 @@ import com.huawei.hms.push.HmsMessaging;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.huawei.BuildConfig;
 import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.Components.UpdateButton;
 import org.telegram.ui.Components.UpdateLayout;
-import org.telegram.ui.IUpdateButton;
 import org.telegram.ui.IUpdateLayout;
 import org.telegram.ui.LaunchActivity;
 
@@ -65,18 +62,9 @@ public class HuaweiApplicationLoader extends ApplicationLoader {
     }
 
     @Override
-    public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenu, ViewGroup sideMenuContainer) {
+    public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenuContainer) {
         if (CherrygramCoreConfig.INSTANCE.getUpdatesNewUI()) {
-            return new UpdateLayout(activity, sideMenu, sideMenuContainer);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public IUpdateButton takeUpdateButton(Context context) {
-        if (CherrygramCoreConfig.INSTANCE.getUpdatesNewUI()) {
-            return new UpdateButton(context);
+            return new UpdateLayout(activity, sideMenuContainer);
         } else {
             return null;
         }

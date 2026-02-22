@@ -46,9 +46,12 @@ import org.telegram.ui.Components.RLottieImageView;
 import org.telegram.ui.Components.Switch;
 import org.telegram.ui.FilterCreateActivity;
 import org.telegram.ui.PeerColorActivity;
+import org.telegram.ui.SettingsActivity;
 import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.util.ArrayList;
+
+import uz.unnarsx.cherrygram.helpers.ui.MonetHelper;
 
 public class TextCell extends FrameLayout {
 
@@ -464,7 +467,7 @@ public class TextCell extends FrameLayout {
         valueTextView.setText(value == null ? "" : TextUtils.ellipsize(valueText = value, valueTextView.getPaint(), AndroidUtilities.displaySize.x / 2.5f, TextUtils.TruncateAt.END), animated);
     }
 
-    public void setTextAndValueAndColorfulIcon(String text, CharSequence value, boolean animated, int resId, int color, boolean divider) {
+    public void setTextAndValueAndColorfulIcon(String text, CharSequence value, boolean animated, int resId, int colorTop, int colorBottom, boolean divider) {
         imageLeft = 21;
         offsetFromImage = getOffsetFromImage(false);
         textView.setText(text);
@@ -472,7 +475,7 @@ public class TextCell extends FrameLayout {
         valueTextView.setText(value == null ? "" : TextUtils.ellipsize(valueText = value, valueTextView.getPaint(), AndroidUtilities.displaySize.x / 2.5f, TextUtils.TruncateAt.END), animated);
         valueTextView.setVisibility(VISIBLE);
         valueSpoilersTextView.setVisibility(GONE);
-        setColorfulIcon(color, resId);
+        setColorfulIcon(colorTop, colorBottom, resId);
         valueImageView.setVisibility(GONE);
         needDivider = divider;
         setWillNotDraw(!needDivider);
@@ -600,13 +603,26 @@ public class TextCell extends FrameLayout {
     }
 
     public void setColorfulIcon(int color, int resId) {
+        setColorfulIcon(color, color, resId);
+    }
+
+    public void setColorfulIcon(int colorTop, int colorBottom, int resId) {
+
+        colorTop = MonetHelper.getSettingsIconBackgroundColor(colorTop);
+        colorBottom = MonetHelper.getSettingsIconBackgroundColor(colorBottom);
+
         offsetFromImage = getOffsetFromImage(true);
         imageView.setVisibility(VISIBLE);
         imageView.setPadding(dp(2), dp(2), dp(2), dp(2));
         imageView.setTranslationX(dp(LocaleController.isRTL ? 0 : -3));
         imageView.setImageResource(resId);
-        imageView.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN));
-        imageView.setBackground(Theme.createRoundRectDrawable(dp(9), color));
+        imageView.setColorFilter(new PorterDuffColorFilter(MonetHelper.getSettingsIconForegroundColor(Color.WHITE), PorterDuff.Mode.SRC_IN));
+
+        final boolean border = resourcesProvider != null ? resourcesProvider.isDark() : Theme.isCurrentThemeDark();
+        SettingsActivity.SettingCell.Background drawable = new SettingsActivity.SettingCell.Background();
+        drawable.setColor(colorTop, colorBottom);
+        drawable.setDrawBorder(border);
+        imageView.setBackground(drawable);
     }
 
     public void setTextAndCheck(CharSequence text, boolean checked, boolean divider) {

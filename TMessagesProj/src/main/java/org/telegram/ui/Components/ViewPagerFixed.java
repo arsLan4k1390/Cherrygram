@@ -6,11 +6,9 @@ import static org.telegram.messenger.Utilities.swapItems;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -19,7 +17,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.SystemClock;
 import android.text.Layout;
-import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.transition.TransitionManager;
@@ -38,6 +35,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
+import androidx.core.math.MathUtils;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -55,6 +53,7 @@ import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Components.blur3.drawable.BlurredBackgroundDrawable;
 import org.telegram.ui.Stories.recorder.HintView2;
 
 import java.util.ArrayList;
@@ -118,6 +117,14 @@ public class ViewPagerFixed extends FrameLayout {
 
     }
 
+    public float getPositionVisibility(int position) {
+        if (getMeasuredWidth() == 0) {
+            return MathUtils.clamp(1 - Math.abs(getCurrentPosition() - position), 0, 1);
+        } else {
+            return MathUtils.clamp(1f - Math.abs(getPositionAnimated() - position), 0, 1);
+        }
+    }
+
     public float getPositionAnimated() {
         float position = 0;
         if (viewPages[0] != null && viewPages[0].getVisibility() == View.VISIBLE) {
@@ -157,6 +164,10 @@ public class ViewPagerFixed extends FrameLayout {
 
     protected boolean canScrollForward(MotionEvent e) {
         return canScroll(e);
+    }
+
+    protected boolean canScrollBackward(MotionEvent e) {
+        return true;
     }
 
     protected void onScrollEnd() {}
@@ -273,11 +284,17 @@ public class ViewPagerFixed extends FrameLayout {
                 notificationsLocker.unlock();
             }
         });
-        manualScrolling.setDuration(540);
+        manualScrolling.setDuration(getManualScrollDuration());
         manualScrolling.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
         manualScrolling.start();
         return true;
     }
+
+    protected long getManualScrollDuration() {
+        return 540;
+    }
+
+    public static final int SELECTOR_TYPE_BUBBLE_STYLE = -2;
 
     public TabsView createTabsView(boolean hasStableIds, int selectorType) {
         tabsView = new TabsView(getContext(), hasStableIds, selectorType, resourcesProvider) {
@@ -378,9 +395,19 @@ public class ViewPagerFixed extends FrameLayout {
             }
         });
         a.addListener(new AnimatorListenerAdapter() {
+            boolean canceled;
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                super.onAnimationCancel(animation);
+                canceled = true;
+            }
+
             @Override
             public void onAnimationEnd(Animator animation) {
-                setTranslationX(view, toTx);
+                if (!canceled) {
+                    setTranslationX(view, toTx);
+                }
             }
         });
         return a;
@@ -498,6 +525,10 @@ public class ViewPagerFixed extends FrameLayout {
         if (forward && !canScrollForward(ev)) {
             return false;
         }
+        if (!forward && !canScrollBackward(ev)) {
+            return false;
+        }
+
         if (adapter != null && !adapter.canScrollTo(currentPosition + (forward ? +1 : -1))) {
             return false;
         }
@@ -1546,12 +1577,6 @@ public class ViewPagerFixed extends FrameLayout {
         ValueAnimator tabsAnimator;
         private float animationValue;
 
-        int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
-
-        public TabsView(Context context) {
-            this(context, false, 8, null);
-        }
-
         public TabsView(Context context, boolean hasStableIds, int tabsSelectorType, Theme.ResourcesProvider resourcesProvider) {
             super(context);
             this.resourcesProvider = resourcesProvider;
@@ -1559,20 +1584,21 @@ public class ViewPagerFixed extends FrameLayout {
             this.selectorType = tabsSelectorType;
             textCounterPaint.setTextSize(dp(13));
             textCounterPaint.setTypeface(AndroidUtilities.bold());
-            textPaint.setTextSize(dp(tabsSelectorType == 9 ? 14 : 15));
+            textPaint.setTextSize(dp(tabsSelectorType == 9 || tabsSelectorType == SELECTOR_TYPE_BUBBLE_STYLE ? 14 : 15));
             textPaint.setTypeface(AndroidUtilities.bold());
             deletePaint.setStyle(Paint.Style.STROKE);
             deletePaint.setStrokeCap(Paint.Cap.ROUND);
             deletePaint.setStrokeWidth(dp(1.5f));
 
             selectorDrawable = new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT, null);
-            float rad = AndroidUtilities.dpf2(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 10 : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? 30 : 3);
-            if (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_ROUNDED || tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
+            selectorDrawable.setColor(Theme.getColor(tabLineColorKey, resourcesProvider));
+            if (tabsSelectorType == SELECTOR_TYPE_BUBBLE_STYLE) {
+                float rad = AndroidUtilities.dpf2(13);
                 selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, rad, rad, rad, rad});
             } else {
+                float rad = AndroidUtilities.dpf2(3);
                 selectorDrawable.setCornerRadii(new float[]{rad, rad, rad, rad, 0, 0, 0, 0});
             }
-            selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey, resourcesProvider), tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF));
 
             setHorizontalScrollBarEnabled(false);
             listView = new RecyclerListView(context) {
@@ -1616,9 +1642,18 @@ public class ViewPagerFixed extends FrameLayout {
                 ((DefaultItemAnimator) listView.getItemAnimator()).setDelayAnimations(false);
             }
 
-            listView.setSelectorType(tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 100 : tabsSelectorType);
-            if (tabsSelectorType < 3) listView.setSelectorRadius(6);
-            listView.setSelectorDrawableColor(tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x00 : Theme.getColor(selectorColorKey, resourcesProvider));
+            if (tabsSelectorType == SELECTOR_TYPE_BUBBLE_STYLE) {
+                listView.setSelectorType(9);
+                listView.setSelectorRadius(6);
+            } else {
+                listView.setSelectorType(tabsSelectorType);
+                if (tabsSelectorType == 3) {
+                    listView.setSelectorRadius(0);
+                } else {
+                    listView.setSelectorRadius(6);
+                }
+            }
+            listView.setSelectorDrawableColor(Theme.getColor(selectorColorKey, resourcesProvider));
             listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false) {
                 @Override
                 public void smoothScrollToPosition(RecyclerView recyclerView, RecyclerView.State state, int position) {
@@ -1992,19 +2027,25 @@ public class ViewPagerFixed extends FrameLayout {
                             indicatorX = (int) AndroidUtilities.lerp(lastDrawnIndicatorX, indicatorX, indicatorProgress2);
                             indicatorWidth = (int) AndroidUtilities.lerp(lastDrawnIndicatorW, indicatorWidth, indicatorProgress2);
                         }
-                        selectorDrawable.setBounds(
-                                indicatorX - (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
-                                (int) (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(15) * (1f - hideProgress) : height - AndroidUtilities.dpr(4) + hideProgress * AndroidUtilities.dpr(4)),
-                                indicatorX + indicatorWidth + (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0),
-                                (int) (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(15) * (1f - hideProgress) : height + hideProgress * AndroidUtilities.dpr(4))
-                        );
-                        if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI && CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
-    //                    selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), 0));
-                            selectorDrawable.setStroke(AndroidUtilities.dp(1), Theme.getColor(activeTextColorKey));
+                        if (CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
+                            selectorDrawable.setStroke(AndroidUtilities.dp(1), Theme.getColor(activeTextColorKey, resourcesProvider));
+                            selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey), 50));
                         }
-                        if (tabStyle != CherrygramAppearanceConfig.TAB_STYLE_TEXT)
+                        if (selectorType == SELECTOR_TYPE_BUBBLE_STYLE) {
+                            final float TAB_INTERNAL_PADDING = 12.5f;
+                            final float add = additionalTabWidth / 2f;
+                            final int y = height / 2 - dp(14);
+                            selectorDrawable.setBounds(
+                                (int) (indicatorX - dp(TAB_INTERNAL_PADDING) - add), y,
+                                (int) (indicatorX + indicatorWidth + dp(TAB_INTERNAL_PADDING) + add),
+                                y + dp(28));
+                            if (!CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) selectorDrawable.setAlpha(31);
+                            selectorDrawable.draw(canvas);
+                        } else {
+                            selectorDrawable.setBounds(indicatorX, (int) (height - AndroidUtilities.dpr(4) + hideProgress * AndroidUtilities.dpr(4)), indicatorX + indicatorWidth, (int) (height + hideProgress * AndroidUtilities.dpr(4)));
                             selectorDrawable.draw(canvas);
                         }
+                    }
                 }
             }
 
@@ -2033,7 +2074,10 @@ public class ViewPagerFixed extends FrameLayout {
         }
 
         public void updateColors() {
-            selectorDrawable.setColor(ColorUtils.setAlphaComponent(Theme.getColor(tabLineColorKey, resourcesProvider), tabStyle >= 3 ? 0x2F : 0xFF));
+            if (blurredBackgroundDrawable != null) {
+                blurredBackgroundDrawable.updateColors();
+            }
+            selectorDrawable.setColor(Theme.getColor(tabLineColorKey, resourcesProvider));
             listView.invalidateViews();
             listView.invalidate();
             invalidate();
@@ -2052,7 +2096,12 @@ public class ViewPagerFixed extends FrameLayout {
                 return;
             }
             scrollingToChild = position;
-            listView.smoothScrollToPosition(position);
+
+            if (listView.getVisibility() == GONE || listView.getMeasuredWidth() == 0) {
+                AndroidUtilities.runOnUIThread(() -> listView.smoothScrollToPosition(position), 100);
+            } else {
+                listView.smoothScrollToPosition(position);
+            }
         }
 
         @Override
@@ -2192,6 +2241,12 @@ public class ViewPagerFixed extends FrameLayout {
                 });
                 orderChanged = false;
             }
+        }
+
+        BlurredBackgroundDrawable blurredBackgroundDrawable;
+
+        public void setBlurredBackground(BlurredBackgroundDrawable drawable) {
+            setBackground(blurredBackgroundDrawable = drawable);
         }
 
         private class ListAdapter extends RecyclerListView.SelectionAdapter {

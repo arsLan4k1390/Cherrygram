@@ -32,7 +32,6 @@
     <string name="CG_AndMoreTypingGroup_other">%1$s e altri %2$d</string>
     <!--Typing status-->
     <!--Telegram Folders Settings-->
-    <string name="CG_FoldersType_Header">Tipo di icona sulla Tab</string>
     <string name="CG_FoldersTypeTitles">Solo titolo</string>
     <string name="CG_FoldersTypeIcons">Solo Icona</string>
     <string name="CG_FoldersTypeIconsTitles">Icone e titoli</string>
@@ -151,16 +150,12 @@
     <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
     <string name="AP_ChangeIcon_Sunset">Tramonto</string>
     <string name="AP_ChangeIcon_Sunrise">Alba</string>
-    <string name="AP_IconReplacement_VKUI">Icone VKUI</string>
     <string name="AP_IconReplacement_Solar">Icone solari di @Design480</string>
     <string name="AP_IconReplacement_Default">Predefinito</string>
-    <string name="AP_MD3_Containers">Liste in stile MD3</string>
-    <string name="AP_MD3_Containers_Desc">Contenitori di lista stile Material Design 3 con angoli arrotondati</string>
     <string name="AP_OneUI_Switch_Style">Stile Switch OneUI</string>
     <string name="AP_SystemEmoji">Usa le emoji di sistema</string>
     <string name="AP_ShowPencilIcon">Icona della matita per i messaggi modificati</string>
     <string name="AP_CenterTitle">Centra titolo nella barra delle azioni</string>
-    <string name="AP_iosSearchPanel">Pannello di ricerca in stile iOS</string>
     <string name="AP_DisableDividers">Disabilita divisori</string>
     <string name="AP_ToolBarShadow">Disabilita ombra barra strumenti</string>
     <string name="AP_SystemFonts">Usa il font di sistema</string>
@@ -200,20 +195,7 @@
     <string name="AP_FolderNameInHeader_Desc">Sostituisce il titolo \'Cherrygram\' sulla barra in alto con il nome della cartella corrente (utile se hai solo icone al posto dei nomi delle cartelle)</string>
     <string name="CP_NewTabs_RemoveAllChats">Nascondi la cartella \"Tutte le chat\"</string>
     <string name="AP_Tab_Style">Stili di cartella</string>
-    <string name="AP_Tab_Style_Default">Predefinito</string>
-    <string name="AP_Tab_Style_Rounded">Arrotondato</string>
-    <string name="AP_Tab_Style_Text">Testo</string>
-    <string name="AP_Tab_Style_Pills">Pillole</string>
     <string name="AP_Tab_Style_Stroke">Aggiungi stroke</string>
-    <string name="AP_DrawerCategory">Cassetto di sinistra (☰)</string>
-    <string name="AP_DrawerAvatar">Foto del profilo come sfondo</string>
-    <string name="AP_DrawerShowAvatar">Mostra avatar</string>
-    <string name="AP_DrawerDarken">Sfondo scuro</string>
-    <string name="AP_ShadeBackground">Sfondo con gradiente</string>
-    <string name="AP_DrawerBlur">Sfoca sfondo</string>
-    <string name="AP_DrawerBlurIntensity">Intensità sfocatura</string>
-    <string name="AP_DrawerIconPack_Header">Set di icone Drawer</string>
-    <string name="AP_DrawerButtonsCategory">Elementi del cassetto</string>
     <string name="AP_HideUserPhone_Show">Tocca per mostrare</string>
     <string name="AP_HideUserPhone_Copy">Tieni premuto per copiare</string>
     <string name="AP_MutualContacts_Description">Questo contatto è reciproco.</string>
@@ -318,8 +300,6 @@
     <string name="CP_Slider_MediaAmplifier_Hint">Non funziona con gli album (foto/video raggruppati)</string>
     <string name="CP_LargeVoiceMessages">Lunghezza adattiva dei messaggi audio</string>
     <string name="CP_LargeVoiceMessages_Desc">La misura della \'bolla\' del messaggio audio sarà proporzionata alla sua durata (si imposta automaticamente in base alla larghezza dello schermo).</string>
-    <string name="CP_VoiceEnhancements">Miglioramenti Vocali</string>
-    <string name="CP_VoiceEnhancements_Desc">Soppressione del rumore e normalizzazione vocale</string>
     <string name="CP_PlayVideo">Riproduci video alla pressione dei tasti volume</string>
     <string name="CP_PlayVideo_Desc">Quando si preme il pulsante volume, qualsiasi video sullo schermo in chat verrà riprodotto</string>
     <string name="CP_AutoPauseVideo">Pausa automatica video</string>
@@ -367,7 +347,6 @@
     <string name="EP_NavigationAnimationBezier">Classico</string>
     <string name="EP_NavigationAnimationCrossfading">Effetto crossfading</string>
     <string name="EP_PhotosSize">Invia foto grandi (2560px)</string>
-    <string name="EP_CustomAppTitle">Titolo app</string>
     <string name="EP_CustomChat">Chat personalizzata per i Messaggi Salvati</string>
     <string name="EP_CustomChat_Desc">Imposta un ID di un\'altra chat/gruppo/canale per inoltrare qui i messaggi (tasto nella barra azioni, menù messaggi o facendo doppio tap)</string>
     <string name="EP_CustomChat_Selected_Title">invece di</string>

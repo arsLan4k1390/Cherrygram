@@ -10,6 +10,9 @@ package org.telegram.ui;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
+import static org.telegram.messenger.LocaleController.formatString;
+
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -20,8 +23,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -72,6 +73,7 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.Utilities;
+import org.telegram.messenger.utils.ViewOutlineProviderImpl;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
@@ -94,6 +96,8 @@ import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.AnimatedFloat;
 import org.telegram.ui.Components.AnimatedTextView;
 import org.telegram.ui.Components.BackupImageView;
+import org.telegram.ui.Components.Bulletin;
+import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CacheChart;
 import org.telegram.ui.Components.CheckBox2;
 import org.telegram.ui.Components.CubicBezierInterpolator;
@@ -105,6 +109,7 @@ import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.NestedSizeNotifierLayout;
 import org.telegram.ui.Components.RLottieImageView;
 import org.telegram.ui.Components.RecyclerListView;
+import org.telegram.ui.Components.ScaleStateListAnimator;
 import org.telegram.ui.Components.SlideChooseView;
 import org.telegram.ui.Components.StorageDiagramView;
 import org.telegram.ui.Components.StorageUsageView;
@@ -136,7 +141,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private static final int VIEW_TYPE_SECTION = 11;
     private static final int VIEW_TYPE_SECTION_LOADING = 12;
     private static final int VIEW_TYPE_CLEAR_CACHE_BUTTON = 13;
-    private static final int VIEW_TYPE_MAX_CACHE_SIZE = 14;
+    public static final int VIEW_TYPE_MAX_CACHE_SIZE = 14;
     private static final int VIEW_TYPE_KABOOM = 15;
 
     public static final int KEEP_MEDIA_TYPE_USER = 0;
@@ -187,8 +192,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     private View bottomSheetView;
     private BottomSheet bottomSheet;
     private View actionTextView;
-
-    private UndoView cacheRemovedTooltip;
 
     long fragmentCreateTime;
 
@@ -280,42 +283,22 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         }
         Utilities.cacheClearQueue.postRunnable(() -> {
             File path;
-            if (Build.VERSION.SDK_INT >= 19) {
-                ArrayList<File> storageDirs = AndroidUtilities.getRootDirs();
-                String dir = (path = storageDirs.get(0)).getAbsolutePath();
-                if (!TextUtils.isEmpty(SharedConfig.storageCacheDir)) {
-                    for (int a = 0, N = storageDirs.size(); a < N; a++) {
-                        File file = storageDirs.get(a);
-                        if (file.getAbsolutePath().startsWith(SharedConfig.storageCacheDir) && file.canWrite()) {
-                            path = file;
-                            break;
-                        }
+            ArrayList<File> storageDirs = AndroidUtilities.getRootDirs();
+            String dir = (path = storageDirs.get(0)).getAbsolutePath();
+            if (!TextUtils.isEmpty(SharedConfig.storageCacheDir)) {
+                for (int a = 0, N = storageDirs.size(); a < N; a++) {
+                    File file = storageDirs.get(a);
+                    if (file.getAbsolutePath().startsWith(SharedConfig.storageCacheDir) && file.canWrite()) {
+                        path = file;
+                        break;
                     }
                 }
-            } else {
-                path = new File(SharedConfig.storageCacheDir);
             }
             try {
                 StatFs stat = new StatFs(path.getPath());
-                long blockSize;
-                long blockSizeExternal;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    blockSize = stat.getBlockSizeLong();
-                } else {
-                    blockSize = stat.getBlockSize();
-                }
-                long availableBlocks;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    availableBlocks = stat.getAvailableBlocksLong();
-                } else {
-                    availableBlocks = stat.getAvailableBlocks();
-                }
-                long blocksTotal;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    blocksTotal = stat.getBlockCountLong();
-                } else {
-                    blocksTotal = stat.getBlockCount();
-                }
+                final long blockSize = stat.getBlockSizeLong();
+                final long availableBlocks = stat.getAvailableBlocksLong();
+                final long blocksTotal = stat.getBlockCountLong();
 
                 AndroidUtilities.runOnUIThread(() -> {
                     lastDeviceTotalSize = blocksTotal * blockSize;
@@ -394,42 +377,22 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             lastTotalSizeCalculatedTime = System.currentTimeMillis();
 
             File path;
-            if (Build.VERSION.SDK_INT >= 19) {
-                ArrayList<File> storageDirs = AndroidUtilities.getRootDirs();
-                String dir = (path = storageDirs.get(0)).getAbsolutePath();
-                if (!TextUtils.isEmpty(SharedConfig.storageCacheDir)) {
-                    for (int a = 0, N = storageDirs.size(); a < N; a++) {
-                        File file = storageDirs.get(a);
-                        if (file.getAbsolutePath().startsWith(SharedConfig.storageCacheDir)) {
-                            path = file;
-                            break;
-                        }
+            ArrayList<File> storageDirs = AndroidUtilities.getRootDirs();
+            String dir = (path = storageDirs.get(0)).getAbsolutePath();
+            if (!TextUtils.isEmpty(SharedConfig.storageCacheDir)) {
+                for (int a = 0, N = storageDirs.size(); a < N; a++) {
+                    File file = storageDirs.get(a);
+                    if (file.getAbsolutePath().startsWith(SharedConfig.storageCacheDir)) {
+                        path = file;
+                        break;
                     }
                 }
-            } else {
-                path = new File(SharedConfig.storageCacheDir);
             }
             try {
                 StatFs stat = new StatFs(path.getPath());
-                long blockSize;
-                long blockSizeExternal;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    blockSize = stat.getBlockSizeLong();
-                } else {
-                    blockSize = stat.getBlockSize();
-                }
-                long availableBlocks;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    availableBlocks = stat.getAvailableBlocksLong();
-                } else {
-                    availableBlocks = stat.getAvailableBlocks();
-                }
-                long blocksTotal;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                    blocksTotal = stat.getBlockCountLong();
-                } else {
-                    blocksTotal = stat.getBlockCount();
-                }
+                final long blockSize = stat.getBlockSizeLong();
+                final long availableBlocks = stat.getAvailableBlocksLong();
+                final long blocksTotal = stat.getBlockCountLong();
 
                 totalDeviceSize = blocksTotal * blockSize;
                 totalDeviceFreeSize = availableBlocks * blockSize;
@@ -1127,24 +1090,9 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 
         File path = Environment.getDataDirectory();
         StatFs stat = new StatFs(path.getPath());
-        long blockSize;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            blockSize = stat.getBlockSizeLong();
-        } else {
-            blockSize = stat.getBlockSize();
-        }
-        long availableBlocks;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            availableBlocks = stat.getAvailableBlocksLong();
-        } else {
-            availableBlocks = stat.getAvailableBlocks();
-        }
-        long blocksTotal;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            blocksTotal = stat.getBlockCountLong();
-        } else {
-            blocksTotal = stat.getBlockCount();
-        }
+        final long blockSize = stat.getBlockSizeLong();
+        final long availableBlocks = stat.getAvailableBlocksLong();
+        final long blocksTotal = stat.getBlockCountLong();
 
         totalDeviceSize = blocksTotal * blockSize;
         totalDeviceFreeSize = availableBlocks * blockSize;
@@ -1170,8 +1118,9 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 
             getMediaDataController().ringtoneDataStore.checkRingtoneSoundsLoaded();
             AndroidUtilities.runOnUIThread(() -> {
-                cacheRemovedTooltip.setInfoText(LocaleController.formatString("CacheWasCleared", R.string.CacheWasCleared, AndroidUtilities.formatFileSize(finalClearedSize)));
-                cacheRemovedTooltip.showWithAction(0, UndoView.ACTION_CACHE_WAS_CLEARED, null, null);
+                Bulletin b = BulletinFactory.of(this).createSimpleBulletin(R.raw.ic_delete, formatString(R.string.CacheWasCleared, AndroidUtilities.formatFileSize(finalClearedSize)));
+                b.hideAfterBottomSheet = false;
+                b.show();
             }, 150);
             MediaDataController.getInstance(currentAccount).checkAllMedia(true);
 
@@ -1348,22 +1297,14 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 
         listView = new RecyclerListView(context) {
             @Override
-            protected void dispatchDraw(Canvas canvas) {
-                if (sectionsStartRow >= 0 && sectionsEndRow >= 0) {
-                    drawSectionBackgroundExclusive(canvas, sectionsStartRow - 1, sectionsEndRow, Theme.getColor(Theme.key_windowBackgroundWhite));
-                }
-                super.dispatchDraw(canvas);
-            }
-
-            @Override
             protected boolean allowSelectChildAtPosition(View child) {
                 return child != cacheChart;
             }
         };
-
+        listView.setSections();
         listView.setVerticalScrollBarEnabled(false);
-        listView.setClipToPadding(false);
         listView.setPadding(0, AndroidUtilities.statusBarHeight + ActionBar.getCurrentActionBarHeight() / 2, 0, 0);
+        listView.setClipToPadding(false);
         listView.setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         listView.setAdapter(listAdapter);
@@ -1429,8 +1370,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 
         frameLayout.addView(actionBar, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-        cacheRemovedTooltip = new UndoView(context);
-        frameLayout.addView(cacheRemovedTooltip, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.LEFT, 8, 0, 8, 8));
         nestedSizeNotifierLayout.setTargetListView(listView);
         return fragmentView;
     }
@@ -1595,8 +1534,9 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             this.cacheModel.onFileDeleted(fileInfo);
         }
 
-        cacheRemovedTooltip.setInfoText(LocaleController.formatString("CacheWasCleared", R.string.CacheWasCleared, AndroidUtilities.formatFileSize(totalSizeBefore - totalSize)));
-        cacheRemovedTooltip.showWithAction(0, UndoView.ACTION_CACHE_WAS_CLEARED, null, null);
+        final Bulletin b = BulletinFactory.of(this).createSimpleBulletin(R.raw.ic_delete, formatString(R.string.CacheWasCleared, AndroidUtilities.formatFileSize(totalSizeBefore - totalSize)));
+        b.hideAfterBottomSheet = false;
+        b.show();
 
         ArrayList<CacheModel.FileInfo> fileInfos = new ArrayList<>(filesToRemove);
         getFileLoader().getFileDatabase().removeFiles(fileInfos);
@@ -1654,7 +1594,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         SpannableStringBuilder message = new SpannableStringBuilder();
         message.append(LocaleController.getString(R.string.LocalDatabaseClearText));
         message.append("\n\n");
-        message.append(AndroidUtilities.replaceTags(LocaleController.formatString("LocalDatabaseClearText2", R.string.LocalDatabaseClearText2, AndroidUtilities.formatFileSize(databaseSize))));
+        message.append(AndroidUtilities.replaceTags(formatString("LocalDatabaseClearText2", R.string.LocalDatabaseClearText2, AndroidUtilities.formatFileSize(databaseSize))));
         builder.setMessage(message);
         builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
         builder.setPositiveButton(LocaleController.getString(R.string.CacheClear), (dialogInterface, i) -> {
@@ -1712,7 +1652,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 
         AnimatedTextView title;
         TextView[] subtitle = new TextView[3];
-        View bottomImage;
 
         RectF progressRect = new RectF();
         LoadingDrawable loadingDrawable = new LoadingDrawable();
@@ -1759,21 +1698,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                 addView(subtitle[i], LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, i == 2 ? 12 : -6, 0, 0));
             }
 
-            bottomImage = new View(context) {
-                @Override
-                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                    super.onMeasure(MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec) + getPaddingLeft() + getPaddingRight(), MeasureSpec.EXACTLY), heightMeasureSpec);
-                }
-            };
-            Drawable bottomImageDrawable = getContext().getResources().getDrawable(R.drawable.popup_fixed_alert2).mutate();
-            bottomImageDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhite), PorterDuff.Mode.MULTIPLY));
-            bottomImage.setBackground(bottomImageDrawable);
-            MarginLayoutParams bottomImageParams = LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 24, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL);
-            bottomImageParams.leftMargin = -bottomImage.getPaddingLeft();
-            bottomImageParams.bottomMargin = -AndroidUtilities.dp(11);
-            bottomImageParams.rightMargin = -bottomImage.getPaddingRight();
-            addView(bottomImage, bottomImageParams);
-
             int color = Theme.getColor(Theme.key_windowBackgroundWhiteGrayText4);
             loadingDrawable.setColors(
                 Theme.getColor(Theme.key_actionBarActionModeDefaultSelector),
@@ -1791,19 +1715,13 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             );
             if (hasCache) {
                 if (percent < 0.01f) {
-                    subtitle[1].setText(LocaleController.formatString(R.string.StorageUsageTelegramLess, formatPercent(percent)));
+                    subtitle[1].setText(formatString(R.string.StorageUsageTelegramLess, formatPercent(percent)));
                 } else {
-                    subtitle[1].setText(LocaleController.formatString(R.string.StorageUsageTelegram, formatPercent(percent)));
+                    subtitle[1].setText(formatString(R.string.StorageUsageTelegram, formatPercent(percent)));
                 }
                 switchSubtitle(1);
             } else {
                 switchSubtitle(2);
-            }
-            bottomImage.animate().cancel();
-            if (firstSet) {
-                bottomImage.setAlpha(hasCache ? 1 : 0);
-            } else {
-                bottomImage.animate().alpha(hasCache ? 1 : 0).setDuration(365).setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT).start();
             }
             firstSet = false;
             this.percent = percent;
@@ -2178,8 +2096,9 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     return true;
                 }
             };
-            button.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_featuredStickers_addButton, 8));
+            button.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_featuredStickers_addButton, 24));
             button.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
+            ScaleStateListAnimator.apply(button, 0.02f, 1.2f);
 
             if (LocaleController.isRTL) {
                 rtlTextView = new TextView(context);
@@ -2210,7 +2129,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 
             button.setContentDescription(TextUtils.concat(textView.getText(), "\t", valueTextView.getText()));
 
-            setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
             addView(button, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.FILL, 16, 16, 16, 16));
         }
 
@@ -2390,20 +2308,16 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     break;
                 case VIEW_TYPE_TEXT_SETTINGS:
                     view = new TextSettingsCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_STORAGE:
                     view = new StorageUsageView(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_HEADER:
                     view = new HeaderCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_CHOOSER:
                     SlideChooseView slideChooseView = new SlideChooseView(mContext);
                     view = slideChooseView;
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     slideChooseView.setCallback(index -> {
                         if (index == 0) {
                             SharedConfig.setKeepMedia(3);
@@ -2426,7 +2340,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     break;
                 case VIEW_TYPE_CHAT:
                     UserCell userCell = new UserCell(getContext(), getResourceProvider());
-                    userCell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     view = userCell;
                     break;
                 case VIEW_FLICKER_LOADING_DIALOG:
@@ -2435,12 +2348,10 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     flickerLoadingView.setItemsCount(3);
                     flickerLoadingView.setIgnoreHeightCheck(true);
                     flickerLoadingView.setViewType(FlickerLoadingView.DIALOG_CACHE_CONTROL);
-                    flickerLoadingView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     view = flickerLoadingView;
                     break;
                 case VIEW_TYPE_KEEP_MEDIA_CELL:
                     view = new TextCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_CHART:
                     view = cacheChart = new CacheChart(mContext) {
@@ -2484,9 +2395,11 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                             }
                         }
                     };
+                    view.setTag(RecyclerListView.TAG_NOT_SECTION);
                     break;
                 case VIEW_TYPE_CHART_HEADER:
                     view = cacheChartHeader = new CacheChartHeader(mContext);
+                    view.setTag(RecyclerListView.TAG_NOT_SECTION);
                     break;
                 case VIEW_TYPE_SECTION_LOADING:
                     FlickerLoadingView flickerLoadingView2 = new FlickerLoadingView(getContext());
@@ -2494,12 +2407,10 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     flickerLoadingView2.setItemsCount(1);
                     flickerLoadingView2.setIgnoreHeightCheck(true);
                     flickerLoadingView2.setViewType(FlickerLoadingView.CHECKBOX_TYPE);
-                    flickerLoadingView2.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     view = flickerLoadingView2;
                     break;
                 case VIEW_TYPE_SECTION:
                     view = new CheckBoxCell(mContext, 4, 21, getResourceProvider());
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_INFO:
                 default:
@@ -2509,7 +2420,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     view = cachedMediaLayout = new CachedMediaLayout(mContext, CacheControlActivity.this) {
                         @Override
                         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                            super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec) - (ActionBar.getCurrentActionBarHeight() / 2), MeasureSpec.EXACTLY));
+                            super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(heightMeasureSpec) - (ActionBar.getCurrentActionBarHeight() / 2) - dp(12), MeasureSpec.EXACTLY));
                         }
 
                         @Override
@@ -2566,7 +2477,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     });
                     cachedMediaLayout.setCacheModel(cacheModel);
                     nestedSizeNotifierLayout.setChildLayout(cachedMediaLayout);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     view.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     break;
                 case VIEW_TYPE_CLEAR_CACHE_BUTTON:
@@ -2575,7 +2485,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                 case VIEW_TYPE_MAX_CACHE_SIZE:
                     SlideChooseView slideChooseView2 = new SlideChooseView(mContext);
                     view = slideChooseView2;
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
 
                     float totalSizeInGb = (int) (totalDeviceSize / 1024L / 1024L) / 1000.0f;
                     ArrayList<Integer> options = new ArrayList<>();
@@ -2668,13 +2577,13 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     }
                     String value = CacheByChatsController.getKeepMediaString(cacheByChatsController.getKeepMedia(keepMediaType));
                     if (itemInners.get(position).keepMediaType == KEEP_MEDIA_TYPE_USER) {
-                        textCell2.setTextAndValueAndColorfulIcon(LocaleController.getString(R.string.PrivateChats), value, true, R.drawable.msg_filled_menu_users, getThemedColor(Theme.key_statisticChartLine_lightblue), true);
+                        textCell2.setTextAndValueAndColorfulIcon(LocaleController.getString(R.string.PrivateChats), value, true, R.drawable.msg_filled_menu_users, 0xFF4F85F6, 0xFF3568E8, true);
                     } else if (itemInners.get(position).keepMediaType == KEEP_MEDIA_TYPE_GROUP) {
-                        textCell2.setTextAndValueAndColorfulIcon(LocaleController.getString(R.string.GroupChats), value, true, R.drawable.msg_filled_menu_groups, getThemedColor(Theme.key_statisticChartLine_green), true);
+                        textCell2.setTextAndValueAndColorfulIcon(LocaleController.getString(R.string.GroupChats), value, true, R.drawable.msg_filled_menu_groups, 0xFF55CA47, 0xFF27B434, true);
                     } else if (itemInners.get(position).keepMediaType == KEEP_MEDIA_TYPE_CHANNEL) {
-                        textCell2.setTextAndValueAndColorfulIcon(LocaleController.getString(R.string.CacheChannels), value, true, R.drawable.msg_filled_menu_channels, getThemedColor(Theme.key_statisticChartLine_golden), true);
+                        textCell2.setTextAndValueAndColorfulIcon(LocaleController.getString(R.string.CacheChannels), value, true, R.drawable.msg_filled_menu_channels, 0xFFF09F1B, 0xFFE18A11, true);
                     } else if (itemInners.get(position).keepMediaType == KEEP_MEDIA_TYPE_STORIES) {
-                        textCell2.setTextAndValueAndColorfulIcon(LocaleController.getString(R.string.CacheStories), value, false, R.drawable.msg_filled_stories, getThemedColor(Theme.key_statisticChartLine_red), false);
+                        textCell2.setTextAndValueAndColorfulIcon(LocaleController.getString(R.string.CacheStories), value, false, R.drawable.msg_filled_stories, 0xFFF45255, 0xFFDF3955, false);
                     }
                     textCell2.setSubtitle(subtitle);
                     break;
@@ -2690,16 +2599,7 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     break;
                 case VIEW_TYPE_INFO:
                     TextInfoPrivacyCell privacyCell = (TextInfoPrivacyCell) holder.itemView;
-//                    if (position == databaseInfoRow) {
-//                        privacyCell.setText(LocaleController.getString(R.string.LocalDatabaseInfo));
-//                        privacyCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
-//                    } else if (position == keepMediaInfoRow) {
-//                        privacyCell.setText(AndroidUtilities.replaceTags(LocaleController.getString(R.string.KeepMediaInfo)));
-//                        privacyCell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
-//                    } else {
-                        privacyCell.setText(AndroidUtilities.replaceTags(item.text));
-                        privacyCell.setBackgroundDrawable(Theme.getThemedDrawableByKey(mContext, R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
-//                    }
+                    privacyCell.setText(AndroidUtilities.replaceTags(item.text));
                     break;
                 case VIEW_TYPE_STORAGE:
                     StorageUsageView storageUsageView = (StorageUsageView) holder.itemView;
@@ -2770,7 +2670,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         arrayList.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{TextSettingsCell.class, SlideChooseView.class, StorageUsageView.class, HeaderCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
         arrayList.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
 
-        arrayList.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         arrayList.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));
         arrayList.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
         arrayList.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
@@ -2781,7 +2680,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         arrayList.add(new ThemeDescription(listView, 0, new Class[]{TextSettingsCell.class}, new String[]{"textView"}, null, null, null, Theme.key_windowBackgroundWhiteBlackText));
         arrayList.add(new ThemeDescription(listView, 0, new Class[]{TextSettingsCell.class}, new String[]{"valueTextView"}, null, null, null, Theme.key_windowBackgroundWhiteValueText));
 
-        arrayList.add(new ThemeDescription(listView, ThemeDescription.FLAG_BACKGROUNDFILTER, new Class[]{TextInfoPrivacyCell.class}, null, null, null, Theme.key_windowBackgroundGrayShadow));
         arrayList.add(new ThemeDescription(listView, 0, new Class[]{TextInfoPrivacyCell.class}, new String[]{"textView"}, null, null, null, Theme.key_windowBackgroundWhiteGrayText4));
         arrayList.add(new ThemeDescription(listView, 0, new Class[]{HeaderCell.class}, new String[]{"textView"}, null, null, null, Theme.key_windowBackgroundWhiteBlueHeader));
         arrayList.add(new ThemeDescription(listView, 0, new Class[]{StorageUsageView.class}, new String[]{"paintFill"}, null, null, null, Theme.key_player_progressBackground));
@@ -3116,6 +3014,10 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
         public ArrayList<CacheModel.FileInfo> files = new ArrayList<>();
     }
 
+    public void scrollTo() {
+
+    }
+
     public static class ItemInner extends AdapterWithDiffUtils.Item {
 
         int headerTopMargin = 15;
@@ -3223,16 +3125,28 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
     }
 
     @Override
-    public boolean onBackPressed() {
+    public boolean onBackPressed(boolean invoked) {
         if (cacheModel != null && !cacheModel.selectedFiles.isEmpty()) {
-            cacheModel.clearSelection();
-            if (cachedMediaLayout != null) {
-                cachedMediaLayout.showActionMode(false);
-                cachedMediaLayout.updateVisibleRows();
+            if (invoked) {
+                cacheModel.clearSelection();
+                if (cachedMediaLayout != null) {
+                    cachedMediaLayout.showActionMode(false);
+                    cachedMediaLayout.updateVisibleRows();
+                }
             }
             return false;
         }
-        return super.onBackPressed();
+        return super.onBackPressed(invoked);
+    }
+
+    @Override
+    public boolean isSupportEdgeToEdge() {
+        return true;
+    }
+    @Override
+    public void onInsets(int left, int top, int right, int bottom) {
+        listView.setPadding(0, AndroidUtilities.statusBarHeight + ActionBar.getCurrentActionBarHeight() / 2, 0, bottom);
+        listView.setClipToPadding(false);
     }
 
     /** Cherrygram start */
@@ -3308,7 +3222,8 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
                     return who == valueTextView || who == textView || super.verifyDrawable(who);
                 }
             };
-            button.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_text_RedRegular, 8));
+            button.setBackground(Theme.AdaptiveRipple.filledRectByKey(Theme.key_text_RedRegular, 24));
+            ScaleStateListAnimator.apply(button, 0.02f, 1.2f);
 
             textView = new AnimatedTextView.AnimatedTextDrawable(true, true, true);
             textView.setAnimationProperties(.25f, 0, 300, CubicBezierInterpolator.EASE_OUT_QUINT);
@@ -3327,7 +3242,6 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
             valueTextView.setTextColor(Theme.adaptHSV(Theme.getColor(Theme.key_featuredStickers_addButton), -.46f, +.08f));
             valueTextView.setText("");
 
-            setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
             addView(button, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.FILL, 16, 16, 16, 16));
         }
 

@@ -119,11 +119,12 @@ public class SMSJobController implements NotificationCenter.NotificationCenterDe
     }
 
     public boolean isAvailable() {
-        if (currentState != STATE_NONE && currentState != STATE_JOINED) {
+        /*if (currentState != STATE_NONE && currentState != STATE_JOINED) {
             checkIsEligible(false, null);
             loadStatus(false);
         }
-        return currentState != STATE_NONE && (isEligible != null || currentStatus != null);
+        return currentState != STATE_NONE && (isEligible != null || currentStatus != null);*/
+        return false;
     }
 
     public void checkIsEligible(boolean force, Utilities.Callback<TL_smsjobs.TL_smsjobs_eligibleToJoin> whenDone) {

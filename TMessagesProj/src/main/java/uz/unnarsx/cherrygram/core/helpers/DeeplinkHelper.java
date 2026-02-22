@@ -9,7 +9,6 @@
 
 package uz.unnarsx.cherrygram.core.helpers;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -23,6 +22,7 @@ import org.telegram.ui.Stars.StarsIntroActivity;
 import java.util.Locale;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
@@ -48,23 +48,33 @@ public class DeeplinkHelper {
         if (segments.size() == 1) {
             var segment = segments.get(0).toLowerCase(Locale.US);
             switch (segment) {
-                case "cg_about" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createAbout();
-                case "cg_appearance" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createAppearance();
-                case "cg_camera", "cg_cam" -> {
+                case DeepLinksRepo.CG_About-> {
+                    CherrygramPreferencesNavigator.INSTANCE.createAbout(fragment);
+                    return;
+                }
+                case DeepLinksRepo.CG_Appearance -> fragment = CherrygramPreferencesNavigator.INSTANCE.createAppearance();
+                case DeepLinksRepo.CG_Camera -> {
                     CherrygramPreferencesNavigator.INSTANCE.createCamera(fragment);
                     return;
                 }
-                case "cg_chats" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createChats();
-                case "cg_message_menu", "cg_messages_menu", "cg_ios_menu" -> {
+                case DeepLinksRepo.CG_Chats -> fragment = CherrygramPreferencesNavigator.INSTANCE.createChats();
+                case DeepLinksRepo.CG_Message_Menu, "cg_messages_menu", "cg_ios_menu" -> {
                     CherrygramPreferencesNavigator.INSTANCE.createMessageMenu(fragment);
                     return;
                 }
-                case "cg_debug" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createDebug();
-                case "cg_donate", "cg_donates", "cg_support", "cg_badge" -> {
+                case DeepLinksRepo.CG_Debug -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createDebug(fragment);
+                    return;
+                }
+                case DeepLinksRepo.CG_Support, "cg_donate", "cg_donates", "cg_badge" -> {
                     CherrygramPreferencesNavigator.INSTANCE.createDonate(fragment);
                     return;
                 }
-                case "cg_stars" -> {
+                case DeepLinksRepo.CG_Support_Force, "cg_donate_force", "cg_donates_force", "cg_support_f", "cg_badge_force" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createDonateForce(fragment);
+                    return;
+                }
+                case DeepLinksRepo.CG_Stars -> {
                     if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
                         CherrygramPreferencesNavigator.INSTANCE.createStars(fragment, null, null, -1);
                     } else {
@@ -72,47 +82,50 @@ public class DeeplinkHelper {
                     }
                     return;
                 }
-                case "cg_donate_force", "cg_donates_force", "cg_support_force", "cg_support_f", "cg_badge_force" -> {
-                    CherrygramPreferencesNavigator.INSTANCE.createDonateForce(fragment);
-                    return;
-                }
-                case "cg_drawer" -> {
-                    CherrygramPreferencesNavigator.INSTANCE.createDrawerPrefs(fragment);
-                    return;
-                }
-                case "cg_drawer_items" -> {
-                    CherrygramPreferencesNavigator.INSTANCE.createDrawerItems(fragment);
-                    return;
-                }
-                case "cg_experimental" -> {
+                case DeepLinksRepo.CG_Experimental -> {
                     CherrygramPreferencesNavigator.INSTANCE.createExperimental(fragment);
                     return;
                 }
-                case "cg_filter", "cg_filters" -> {
+                case DeepLinksRepo.CG_Message_Filters, "cg_filter" -> {
                     CherrygramPreferencesNavigator.INSTANCE.createMessageFilter(fragment);
                     return;
                 }
-                case "cg_folders", "cg_tabs" -> {
+                case DeepLinksRepo.CG_Folders -> {
                     CherrygramPreferencesNavigator.INSTANCE.createFoldersPrefs(fragment);
                     return;
                 }
-                case "cg_gemini" -> {
+                /*case DeepLinksRepo.CG_Luck, "luck" -> {
+                    unknown.run();
+                    return;
+                }*/
+                case DeepLinksRepo.CG_Gemini -> {
                     CherrygramPreferencesNavigator.INSTANCE.createGemini(fragment);
                     return;
                 }
-                case "cg_general" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createGeneral();
-                case "cg_premium" -> {
+                case DeepLinksRepo.CG_General -> fragment = CherrygramPreferencesNavigator.INSTANCE.createGeneral();
+                case DeepLinksRepo.CG_Messages_And_Profiles -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createMessagesAndProfiles(fragment);
+                    return;
+                }
+                case DeepLinksRepo.CG_Premium -> {
                     // Fuckoff :)
                     unknown.run();
                     return;
                 }
-                case "cg_privacy", "cg_security" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createPrivacyAndSecurity();
-                case "cg_restart", "cg_reboot", "restart", "reboot" -> {
-                    AppRestartHelper.triggerRebirth(fragment.getContext(), new Intent(fragment.getContext(), LaunchActivity.class));
+                case DeepLinksRepo.CG_Privacy, "cg_security" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createPrivacyAndSecurity();
+                case DeepLinksRepo.CG_Restart, "cg_reboot", "restart", "reboot" -> {
+                    CGBulletinCreator.INSTANCE.createRestartBulletin(fragment);
                     return;
                 }
-                case "cg_settings", "cg_main" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createMainMenu(false);
-                case "cg_update", "cg_upgrade", "update", "upgrade" -> {
+                case DeepLinksRepo.CG_Settings, "cg_main" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createCherrySettings(fragment);
+                    return;
+                }
+                case DeepLinksRepo.CG_Tabs -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createTabs(fragment);
+                    return;
+                }
+                case DeepLinksRepo.CG_Update, "cg_upgrade", "update", "upgrade" -> {
                     if (CherrygramCoreConfig.isPlayStoreBuild()) {
                         Browser.openUrl(fragment.getContext(), Constants.UPDATE_APP_URL);
                         return;
@@ -125,7 +138,7 @@ public class DeeplinkHelper {
                         return;
                     }
                 }
-                case "cg_updates", "updates" -> {
+                case DeepLinksRepo.CG_Updater_Bottom_Sheet, "updates" -> {
                     if (CherrygramCoreConfig.isPlayStoreBuild()) {
                         Browser.openUrl(fragment.getContext(), Constants.UPDATE_APP_URL);
                     } else if (CherrygramCoreConfig.isStandalonePremiumBuild()) {
@@ -137,7 +150,7 @@ public class DeeplinkHelper {
                     }
                     return;
                 }
-                case "cg_username_limits" -> {
+                case DeepLinksRepo.CG_Username_Limits -> {
                     fragment.showDialog(new LimitReachedBottomSheet(fragment, fragment.getContext(), LimitReachedBottomSheet.TYPE_PUBLIC_LINKS, fragment.getCurrentAccount(), fragment.getResourceProvider()));
                     return;
                 }
@@ -152,6 +165,45 @@ public class DeeplinkHelper {
 
     public interface Callback {
         void presentFragment(BaseFragment fragment);
+    }
+
+    public static class DeepLinksRepo {
+
+        public static final String CG_Settings = "cg_settings";
+
+        public static final String CG_General = "cg_general";
+
+        public static final String CG_Appearance = "cg_appearance";
+        public static final String CG_Folders = "cg_folders";
+        public static final String CG_Luck = "cg_luck";
+        public static final String CG_Tabs = "cg_tabs";
+        public static final String CG_Messages_And_Profiles = "cg_messages_profiles";
+
+        public static final String CG_Chats = "cg_chats";
+        public static final String CG_Gemini = "cg_gemini";
+        public static final String CG_Message_Menu = "cg_message_menu";
+        public static final String CG_Message_Filters = "cg_filters";
+
+        public static final String CG_Camera = "cg_camera";
+
+        public static final String CG_Experimental = "cg_experimental";
+
+        public static final String CG_Privacy = "cg_privacy";
+
+        public static final String CG_Support = "cg_support";
+        public static final String CG_Support_Force = "cg_support_force";
+        public static final String CG_Stars = "cg_stars";
+
+        public static final String CG_Restart = "cg_restart";
+
+        public static final String CG_About = "cg_about";
+        public static final String CG_Debug = "cg_debug";
+        public static final String CG_Update = "cg_update";
+        public static final String CG_Updater_Bottom_Sheet = "cg_updates";
+
+        public static final String CG_Username_Limits = "cg_username_limits";
+
+        public static final String CG_Premium = "cg_premium";
     }
 
 }

@@ -5,6 +5,7 @@
     <string name="CG_FollowChannelInfo">加入頻道，隨時掌握 Cherrygram 的最新資訊和功能！</string>
     <string name="CG_DoNotRemindAgain">下次不要顯示</string>
     <!--Telegram screens-->
+    <string name="CG_SwitchedToAccount">Switched to **%1$s**</string>
     <string name="CG_JoinedDate">您加入了 **%1$s** **%2$s**</string>
     <string name="CG_CreatedDate">**%1$s** 已建立 **%2$s**</string>
     <string name="CG_RegistrationDate">註冊日期：</string>
@@ -32,7 +33,6 @@
     <string name="CG_AndMoreTypingGroup_other">%1$s及另%2$d個</string>
     <!--Typing status-->
     <!--Telegram Folders Settings-->
-    <string name="CG_FoldersType_Header">Tab 圖示類型</string>
     <string name="CG_FoldersTypeTitles">僅顯示文本</string>
     <string name="CG_FoldersTypeIcons">僅顯示圖示</string>
     <string name="CG_FoldersTypeIconsTitles">帶有文本的圖示</string>
@@ -84,6 +84,9 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_SafeStars_buy">購買星幣（Multi-chain 且無需KYC實名驗證）</string>
+    <string name="CG_SafeStars_buy_Telegram">透過 Telegram 購買星幣</string>
+    <string name="CG_Stats_TOS">繼續操作即表示您自動同意**Telegram使用條款**及**Cherrygram服務條款**。</string>
     <string name="CG_SortByDate">Sort by message date</string>
     <string name="CG_SortByUnread">Sort by unread first</string>
     <string name="CG_UnknownCherrySettingsOption">沒有這樣的 Cherry 設定選項</string>
@@ -151,16 +154,12 @@
     <string name="AP_ChangeIcon_Lavanda">薰衣草</string>
     <string name="AP_ChangeIcon_Sunset">日落</string>
     <string name="AP_ChangeIcon_Sunrise">日出</string>
-    <string name="AP_IconReplacement_VKUI">VKUI 圖示</string>
     <string name="AP_IconReplacement_Solar">由 @Design480 設計的 Solar 圖示</string>
     <string name="AP_IconReplacement_Default">預設</string>
-    <string name="AP_MD3_Containers">MD3 Lists Design</string>
-    <string name="AP_MD3_Containers_Desc">Material Design 3 style list containers with rounded corners</string>
     <string name="AP_OneUI_Switch_Style">OneUI 開關風格</string>
     <string name="AP_SystemEmoji">使用系統 Emoji</string>
     <string name="AP_ShowPencilIcon">將訊息底部的「已編輯」替換為鉛筆圖示</string>
     <string name="AP_CenterTitle">在操作列中置中標題</string>
-    <string name="AP_iosSearchPanel">iOS 風格的搜尋面板</string>
     <string name="AP_DisableDividers">停用分隔線</string>
     <string name="AP_ToolBarShadow">停用工具列陰影</string>
     <string name="AP_SystemFonts">使用系統字型</string>
@@ -200,20 +199,15 @@
     <string name="AP_FolderNameInHeader_Desc">這會將操作列中的「Cherrygram」變更為資料夾名稱 (開啟僅顯示圖示時效果為最佳)</string>
     <string name="CP_NewTabs_RemoveAllChats">隱藏所有對話 Tab</string>
     <string name="AP_Tab_Style">Tab 樣式</string>
-    <string name="AP_Tab_Style_Default">預設</string>
-    <string name="AP_Tab_Style_Rounded">圓形</string>
-    <string name="AP_Tab_Style_Text">文字</string>
-    <string name="AP_Tab_Style_Pills">藥丸</string>
     <string name="AP_Tab_Style_Stroke">新增筆畫</string>
-    <string name="AP_DrawerCategory">側邊欄</string>
-    <string name="AP_DrawerAvatar">側邊欄背景使用大頭貼圖片</string>
-    <string name="AP_DrawerShowAvatar">顯示大頭貼</string>
-    <string name="AP_DrawerDarken">暗色背景</string>
-    <string name="AP_ShadeBackground">漸變背景</string>
-    <string name="AP_DrawerBlur">背景模糊</string>
-    <string name="AP_DrawerBlurIntensity">模糊程度</string>
-    <string name="AP_DrawerIconPack_Header">側邊欄圖示設定</string>
-    <string name="AP_DrawerButtonsCategory">抽屜項目</string>
+    <string name="CP_MainTabs_Header">Bottom tabs organizer</string>
+    <string name="CP_MainTabs_Layout">Tabs</string>
+    <string name="CP_MainTabs_ShowTabs">Show tabs</string>
+    <string name="CP_MainTabs_OpenSettings">Open settings by swipe</string>
+    <string name="CP_MainTabs_OpenSettings_Desc">Swipe from left to right on the tabs to open the settings, similar to a drawer when tabs are disabled.</string>
+    <string name="CP_MainTabs_Layout_Desc">Tap to enable/disable, hold and drag to reorder.</string>
+    <string name="CP_MainTabs_DoubleTap_Desc">Double-tap a chat tab to open \"Saved Messages\". Double-tap the profile tab (or Settings if the profile tab is hidden) to switch accounts.</string>
+    <string name="CP_MainTabs_ShowTabsTitle">Show tabs titles</string>
     <string name="AP_HideUserPhone_Show">按一下顯示</string>
     <string name="AP_HideUserPhone_Copy">長按複製</string>
     <string name="AP_MutualContacts_Description">該帳戶為相互聯絡人，對方同時也新增您為聯絡人</string>
@@ -231,8 +225,8 @@
     <string name="CP_MessageMenuItems">訊息選單項目</string>
     <string name="CP_BlurMessageMenu">模糊訊息選單背景</string>
     <string name="CP_BlurMessageMenu_Desc">為訊息選單套用模糊背景，並將回應面板顯示於訊息上方，類似 iOS 版 Telegram 的設計。</string>
-    <string name="CP_MessageMenuUnifiedScroll">Unified Scroll</string>
-    <string name="CP_MessageMenuUnifiedScroll_Desc">Menu and message content will be displayed on a single, continuous sheet, utilizing a unified scroll instead of two separate scrolling areas.</string>
+    <string name="CP_MessageMenuUnifiedScroll">訊息選單隨頁面滾動</string>
+    <string name="CP_MessageMenuUnifiedScroll_Desc">訊息選單將直接顯示在訊息內容的最下方，並隨頁面捲動，而不再使用兩個獨立的捲動區域。</string>
     <string name="CP_MessageMenuAutoscroll">訊息自動捲動</string>
     <string name="CP_MessageMenuAutoscroll_Desc">開啟時自動將訊息選單內容捲動至底部，類似 iOS 版 Telegram 的操作方式。</string>
     <string name="CP_MessageMenuFixedHeight">更大的訊息選單高度</string>
@@ -240,7 +234,10 @@
     <string name="CP_BlurMessageMenuItems">模糊選單項目</string>
     <string name="CP_BlurMessageMenuItems_Desc">模糊選單項目，呈現更真實的 iOS 外觀。</string>
     <string name="CP_MessageMenuNativeBlur">原生模糊</string>
-    <string name="CP_MessageMenuNativeBlur_Desc">Android 內建的模糊系統功能將用於訊息選單背景：效果流暢、動態呈現，且對效能影響極小…</string>
+    <string name="CP_MessageMenuNativeBlur_Desc">訊息選單背景使用 Android 內建高斯模糊，更流暢、動態效果更佳，且對效能影響極小。</string>
+    <string name="CP_MessageMenuCompactLayout">緊湊型訊息選單</string>
+    <string name="CP_MessageMenuCompactLayout_Desc">在訊息選單底部以更緊湊的佈局顯示主要的訊息操作。</string>
+    <string name="CP_MessageMenuCompactLayout_Dot">對於具有長按功能的按鈕在其旁邊顯示圓點標記。</string>
     <string name="AP_CenterChatsTitle">對話標題列置中</string>
     <string name="CP_UnreadBadgeOnBackButton">顯示未讀對話數量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已開啟的對話中顯示未讀訊息數量</string>
@@ -314,8 +311,6 @@
     <string name="CP_Slider_MediaAmplifier_Hint">放大功能對於相簿（分組媒體）無效</string>
     <string name="CP_LargeVoiceMessages">自適應語音訊息長度</string>
     <string name="CP_LargeVoiceMessages_Desc">語音訊息氣泡的長度將取決於錄音時長，並會自動調整以適應螢幕寬度。</string>
-    <string name="CP_VoiceEnhancements">語音增強</string>
-    <string name="CP_VoiceEnhancements_Desc">噪聲抑制和音量一致化</string>
     <string name="CP_PlayVideo">按下音量鍵播放影片</string>
     <string name="CP_PlayVideo_Desc">按下音量鍵時，播放當前介面任意影片</string>
     <string name="CP_AutoPauseVideo">自動暫停影片</string>
@@ -363,7 +358,6 @@
     <string name="EP_NavigationAnimationBezier">經典</string>
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
     <string name="EP_PhotosSize">傳送大型圖片(2560 像素)</string>
-    <string name="EP_CustomAppTitle">應用程式標題</string>
     <string name="EP_CustomChat">自訂已儲存訊息的對話</string>
     <string name="EP_CustomChat_Desc">為來自另一個對話/群組/頻道的 ID 設定轉寄訊息 (操作列中的按鈕、訊息選單或按兩下)</string>
     <string name="EP_CustomChat_Selected_Title">代替</string>
@@ -427,12 +421,18 @@
     <string name="DP_DonatesThanks">感謝您的支持！正是您讓 Cherrygram 茁壯成長❤️</string>
     <string name="DP_DonateBadge">捐款並解鎖額外功能</string>
     <string name="DP_Donate_Desc">當您捐款達2美元或以上時，您還將獲得額外贈品：</string>
-    <string name="DP_Donate_Badge_desc">**Cherrygram 徽章** 顯示於您的姓名旁。</string>
+    <string name="DP_Donate_Badge_desc">1. 在使用者名稱旁顯示 **Cherrygram 徽章**。</string>
+    <string name="DP_Donate_MsgMenuCompactView_Desc">2. **訊息選單** 使用緊湊型風格。</string>
     <string name="DP_Donate_EpicBadge_desc">1. **史詩級 Cherrygram 徽章** 顯示於您的姓名旁。</string>
     <string name="DP_Donate_GiftMarket_Desc">2. 側邊選單中的「**禮物市集**」按鈕。</string>
     <string name="DP_Donate_MessageFilter_Desc">3. 「**訊息過濾器**」功能。</string>
     <string name="DP_Donate_MessageMenu_Desc">4. 「**iOS風格**」的訊息選單。</string>
     <string name="DP_Donate_Cheque">將付款確認書傳送至 **@arsLan** 以獲取獎勵。</string>
+    <string name="DP_Donate_Terms">在捐贈前，請閱讀 **捐贈條款**。所有捐贈行為均為自願執行且不可退款。</string>
+    <string name="DP_Donate_Counter_one">已有**%1$d**人支持此專案並獲得獎勵</string>
+    <string name="DP_Donate_Counter_few">已有**%1$d**人支持此專案並獲得獎勵</string>
+    <string name="DP_Donate_Counter_many">已有**%1$d**人支持此專案並獲得獎勵</string>
+    <string name="DP_Donate_Counter_other">已有**%1$d**人支持此專案並獲得獎勵</string>
     <string name="DP_Donate_Bulletin">**%s** 支持了 **Cherrygram** 的開發！</string>
     <string name="DP_Support">喜歡 Cherrygram 嗎？支持它！</string>
     <string name="DP_SupportOptions">支持選項</string>

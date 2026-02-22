@@ -23,6 +23,7 @@ import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
+import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Cells.ChatMessageCell
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.ChatRightsEditActivity
@@ -36,80 +37,12 @@ import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
+import androidx.core.view.isVisible
+import org.telegram.messenger.AndroidUtilities.dp
 
 object ChatsHelper2 {
 
     /** Avatar admin actions start */
-    /*fun injectChatActivityAvatarArraySize(cf: ChatActivity): Int {
-        var objs = 0
-
-        if (ChatObject.canBlockUsers(cf.currentChat)) objs++
-        if (ChatObject.hasAdminRights(cf.currentChat)) objs++
-        if (ChatObject.canAddAdmins(cf.currentChat)) objs++
-
-        return objs
-    }
-
-    fun injectChatActivityAvatarArrayItems(cf: ChatActivity, arr: Array<AvatarPreviewer.MenuItem>, enableMention: Boolean,  enableSearchMessages: Boolean) {
-        var startPos = if (enableMention || enableSearchMessages) 3 else 2
-
-        if (ChatObject.canBlockUsers(cf.currentChat)) {
-            arr[startPos] = AvatarPreviewer.MenuItem.CG_KICK
-            startPos++
-        }
-
-        if (ChatObject.hasAdminRights(cf.currentChat)) {
-            arr[startPos] = AvatarPreviewer.MenuItem.CG_CHANGE_PERMS
-            startPos++
-        }
-
-        if (ChatObject.canAddAdmins(cf.currentChat)) {
-            arr[startPos] = AvatarPreviewer.MenuItem.CG_CHANGE_ADMIN_PERMS
-            startPos++
-        }
-    }
-
-    fun injectChatActivityAvatarOnClick(cf: ChatActivity, item: AvatarPreviewer.MenuItem, user: TLRPC.User, participantsIDs: ArrayList<Long>) {
-        when (item) {
-            AvatarPreviewer.MenuItem.CG_KICK -> {
-                cf.messagesController.deleteParticipantFromChat(cf.currentChat.id, cf.messagesController.getUser(user.id), cf.currentChatInfo)
-            }
-            AvatarPreviewer.MenuItem.CG_CHANGE_PERMS, AvatarPreviewer.MenuItem.CG_CHANGE_ADMIN_PERMS -> {
-                val action = if (item == AvatarPreviewer.MenuItem.CG_CHANGE_PERMS) 1 else 0 // 0 - change admin rights
-
-                val chatParticipant = cf.currentChatInfo.participants.participants.filter {
-                    it.user_id == user.id
-                }[0]
-
-                var channelParticipant: TLRPC.ChannelParticipant? = null
-
-                if (ChatObject.isChannel(cf.currentChat)) {
-                    channelParticipant = (chatParticipant as TLRPC.TL_chatChannelParticipant).channelParticipant
-                } else {
-                    chatParticipant is TLRPC.TL_chatParticipantAdmin
-                }
-
-                val frag = ChatRightsEditActivity(
-                    user.id,
-                    cf.currentChatInfo.id,
-                    channelParticipant?.admin_rights,
-                    cf.currentChat.default_banned_rights,
-                    channelParticipant?.banned_rights,
-                    channelParticipant?.rank,
-                    action,
-                    true,
-                    false,
-                    null
-                )
-
-                cf.presentFragment(frag)
-            }
-
-            else -> {}
-        }
-        participantsIDs.clear()
-    }*/
-
     fun injectChatActivityAvatarOnClickNew(
         chatActivity: ChatActivity, chatMessageCellDelegate: ChatActivity.ChatMessageCellDelegate, cell: ChatMessageCell, user: TLRPC.User,
         enableMention: Boolean, enableSearchMessages: Boolean
@@ -127,7 +60,6 @@ object ChatsHelper2 {
         val participant = participants.find { it.user_id == user.id }
         val isChatParticipant = participant != null
 
-//        val options: ItemOptions = ItemOptions.makeOptions(chatActivity, cell)
         ItemOptions.makeOptions(chatActivity, cell)
             .add(R.drawable.msg_discussion, getString(R.string.SendMessage)) {
                 chatMessageCellDelegate.openDialog(cell, user)
@@ -213,9 +145,6 @@ object ChatsHelper2 {
             .addProfile(user, getString(R.string.ViewProfile)) {
                 chatMessageCellDelegate.openProfile(user)
             }
-//            .addChat(user, false) {
-//                chatMessageCellDelegate.openProfile(user) // No description
-//            }
 
             .setGravity(Gravity.LEFT)
             .forceBottom(true)
@@ -301,9 +230,8 @@ object ChatsHelper2 {
     /** Custom chat id for Saved Messages finish */
 
     /** Direct share menu start */
-    fun showForwardMenu(sa: ShareAlert, field: FrameLayout) {
-//        val options: ItemOptions = ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
-        ItemOptions.makeOptions(sa.container, sa.resourcesProvider, field)
+    fun showForwardMenu(sa: ShareAlert, scrimView: View) {
+        ItemOptions.makeOptions(sa.container, sa.resourcesProvider, scrimView)
             .addChecked(
                 CherrygramChatsConfig.forwardAuthorship,
                 getString(R.string.CG_FwdMenu_Authorship)
@@ -324,7 +252,7 @@ object ChatsHelper2 {
             }
 
             .setDimAlpha(100)
-            .translate(-AndroidUtilities.dp(15f).toFloat(), 0f)
+            .translate(-dp(10f).toFloat(), dp(5f).toFloat())
             .show()
     }
     /** Direct share menu finish */
@@ -347,7 +275,8 @@ object ChatsHelper2 {
                         .show()
                 }
             }
-            .add(R.drawable.msg_calendar2,
+            .add(
+                R.drawable.msg_calendar2,
                 "Date: " + CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.date.toLong()),
             ) {
                 AndroidUtilities.addToClipboard(CGResourcesHelper.createDateAndTimeForJSON(messageObject.messageOwner.date.toLong()))
@@ -399,11 +328,9 @@ object ChatsHelper2 {
     fun injectChatActivityMsgSlideAction(cf: ChatActivity, msg: MessageObject, isChannel: Boolean, classGuid: Int) {
         when (CherrygramChatsConfig.messageSlideAction) {
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_REPLY -> {
-                // Reply (default)
                 cf.showFieldPanelForReply(msg)
             }
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE -> {
-                // Save message
                 val chatID = getCustomChatID()
 
                 cf.sendMessagesHelper.sendMessage(arrayListOf(msg), chatID, false, false, true, 0, 0)
@@ -417,7 +344,6 @@ object ChatsHelper2 {
                 }
             }
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> {
-                // Translate
                 val languageAndTextToTranslate: String = msg.messageOwner.message
                 val toLang = TranslateAlert2.getToLanguage()
                 val alert = TranslateAlert2.showAlert(
@@ -444,12 +370,11 @@ object ChatsHelper2 {
                 cf.processGeminiWithText(msg, null, true, false)
             }
             CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> {
-                // Direct Share
                 cf.showDialog(object : ShareAlert(cf.parentActivity, arrayListOf(msg), null, isChannel, null, false) {
                     override fun dismissInternal() {
                         super.dismissInternal()
                         AndroidUtilities.requestAdjustResize(cf.parentActivity, classGuid)
-                        if (cf.chatActivityEnterView.visibility == View.VISIBLE) {
+                        if (cf.chatActivityEnterView.isVisible) {
                             cf.fragmentView.requestLayout()
                         }
                         cf.updatePinnedMessageView(true)
@@ -463,8 +388,32 @@ object ChatsHelper2 {
     }
     /** Message slide action finish */
 
-    /*fun isCherryVerified(chat: TLRPC.Chat): Boolean {
-        return LocalVerificationsHelper.getVerify().stream().anyMatch { id: Long -> id == chat.id }
-    }*/
+    /** Misc start */
+    fun updateStickerSetCache(fragment: BaseFragment, stickerSet: TLRPC.TL_messages_stickerSet, emoji: Boolean, isKeyboardVisible: Boolean) {
+        val req = TLRPC.TL_messages_getStickerSet()
+        val input = TLRPC.TL_inputStickerSetShortName().apply {
+            short_name = stickerSet.set.short_name
+        }
+        req.stickerset = input
+
+        fragment.connectionsManager.sendRequest(req) { res, err ->
+            AndroidUtilities.runOnUIThread {
+                if (res is TLRPC.TL_messages_stickerSet) {
+                    fragment.mediaDataController.putStickerSet(res, true)
+
+                    if (fragment.parentActivity == null || fragment.context == null) return@runOnUIThread
+
+                } else {
+                    BulletinFactory.of(fragment)
+                        .createSimpleBulletin(
+                            R.raw.error,
+                            getString(if (emoji) R.string.AddEmojiNotFound else R.string.AddStickersNotFound)
+                        )
+                        .show(true)
+                }
+            }
+        }
+    }
+    /** Misc finish */
 
 }

@@ -111,6 +111,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
+
 public class StickersAlert extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
     public final static boolean DISABLE_STICKER_EDITOR = false;
@@ -1116,6 +1118,8 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
         optionsButton.addSubItem(1, R.drawable.msg_share, LocaleController.getString(R.string.StickersShare));
         optionsButton.addSubItem(2, R.drawable.msg_link, LocaleController.getString(R.string.CopyLink));
         optionsButton.addSubItem(6, R.drawable.msg_info, LocaleController.getString(R.string.CG_CopySetId));
+        optionsButton.addSubItem(7, R.drawable.msg_openprofile, LocaleController.getString(R.string.ChannelCreator));
+        optionsButton.addSubItem(8, R.drawable.msg_retry, LocaleController.getString(R.string.ClearMediaCache));
 
         optionsButton.setOnClickListener(v -> {
             checkOptions();
@@ -1427,6 +1431,31 @@ public class StickersAlert extends BottomSheet implements NotificationCenter.Not
             } catch (Exception e) {
                 FileLog.e(e);
             }
+        } else if (id == 7) {
+            long userId = stickerSet.set.id >> 32;
+
+            if ((stickerSet.set.id >> 16 & 0xff) == 0x3f) {
+                userId |= 0x80000000L;
+            }
+
+            if ((stickerSet.set.id >> 24 & 0xff) != 0) {
+                userId += 0x100000000L;
+            }
+
+            if (parentFragment != null) {
+                TLRPC.User user = parentFragment.getMessagesController().getUser(userId);
+                if (user != null) {
+                    dismiss();
+                    MessagesController.getInstance(currentAccount).openChatOrProfileWith(user, null, parentFragment, 0, false);
+                    return;
+                }
+            }
+
+            if (AndroidUtilities.addToClipboard("@dateregbot " + userId)) {
+                BulletinFactory.of((FrameLayout) containerView, resourcesProvider).createCopyLinkBulletin().show();
+            }
+        } else if (id == 8) {
+            ChatsHelper2.INSTANCE.updateStickerSetCache(parentFragment, stickerSet, false, isKeyboardVisible());
         }
     }
 

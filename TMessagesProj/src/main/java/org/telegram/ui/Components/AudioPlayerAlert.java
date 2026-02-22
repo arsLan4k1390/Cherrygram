@@ -191,6 +191,8 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
     private int searchOpenPosition = -1;
     private int searchOpenOffset;
 
+    private boolean padWithItem;
+
     private MessagesController.SavedMusicList savedMusicList;
     private boolean isMyList() {
         return savedMusicList != null && savedMusicList.dialogId == UserConfig.getInstance(currentAccount).getClientUserId();
@@ -352,8 +354,11 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
                         padding = 0;
                     }
                 }
-                if (isMyList()) {
-                    padding = Math.min(padding/2, dp(240));
+//                if (isMyList()) {
+//                    padding = Math.min(padding/2, dp(240));
+//                }
+                if (padWithItem) {
+                    padding = 0;
                 }
                 if (listView.getPaddingTop() != padding) {
                     listView.setPadding(0, padding, 0, searching && keyboardVisible ? 0 : listView.getPaddingBottom());
@@ -489,7 +494,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
         actionBar.setAlpha(0.0f);
 
         ActionBarMenu menu = actionBar.createMenu();
-        searchItem = menu.addItem(0, R.drawable.ic_ab_search).setIsSearchField(true).setActionBarMenuItemSearchListener(new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
+        searchItem = menu.addItem(0, R.drawable.outline_header_search).setIsSearchField(true).setActionBarMenuItemSearchListener(new ActionBarMenuItem.ActionBarMenuItemSearchListener() {
             @Override
             public void onSearchCollapse() {
                 if (searching) {
@@ -1249,8 +1254,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
                     int offset = dp(13);
                     int top = scrollOffsetY - backgroundPaddingTop - offset;
                     if (top + backgroundPaddingTop < ActionBar.getCurrentActionBarHeight() && listView.canScrollVertically(1)) {
-                        View child = listView.getChildAt(0);
-                        RecyclerListView.Holder holder = (RecyclerListView.Holder) listView.findViewHolderForAdapterPosition(0);
+                        RecyclerListView.Holder holder = (RecyclerListView.Holder) listView.findViewHolderForAdapterPosition(padWithItem ? 1 : 0);
                         if (holder != null && holder.itemView.getTop() > dp(7)) {
                             listView.smoothScrollBy(0, holder.itemView.getTop() - dp(7));
                         }
@@ -1267,6 +1271,9 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
 
                 if (!searchWas) {
                     int firstVisibleItem = layoutManager.findFirstVisibleItemPosition();
+                    if (padWithItem) {
+                        firstVisibleItem = Math.max(0, firstVisibleItem - 1);
+                    }
                     int visibleItemCount = firstVisibleItem == RecyclerView.NO_POSITION ? 0 : Math.abs(layoutManager.findLastVisibleItemPosition() - firstVisibleItem) + 1;
                     int totalItemCount = recyclerView.getAdapter().getItemCount();
 
@@ -1303,7 +1310,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
         }), true, dp(1.33f), dp(1)));
         playerLayout.addView(unsaveFromProfileTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 42, Gravity.FILL_HORIZONTAL | Gravity.BOTTOM, 12, 12, 12, 12));
 
-        saveToProfileButton = new ButtonWithCounterView(context, resourcesProvider);
+        saveToProfileButton = new ButtonWithCounterView(context, resourcesProvider).setRound();
         SpannableStringBuilder sb = new SpannableStringBuilder();
         sb.append("+ ");
         sb.setSpan(new ColoredImageSpan(R.drawable.filled_track_add), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -1323,7 +1330,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
         });
         playerLayout.addView(saveToProfileButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 44, Gravity.FILL_HORIZONTAL | Gravity.BOTTOM, 16, 22, 72, 16));
 
-        sleepTimerButton = new ButtonWithCounterView(context, resourcesProvider);
+        sleepTimerButton = new ButtonWithCounterView(context, resourcesProvider).setRound();
         SpannableStringBuilder sb1 = new SpannableStringBuilder();
         sb1.append("+");
         sb1.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.alarm_sleep_filled_solar)), 0, 1, 0);
@@ -1332,6 +1339,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
         playerLayout.addView(sleepTimerButton, LayoutHelper.createFrame(48, 44, Gravity.BOTTOM | Gravity.RIGHT, 0, 22, 16, 16));
 
         savedMusicList = MediaController.getInstance().currentSavedMusicList;
+        padWithItem = isMyList();
         playlist = MediaController.getInstance().getPlaylist();
         listAdapter.setup();
         listAdapter.notifyDataSetChanged();
@@ -1380,14 +1388,23 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
             itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.Callback() {
                 @Override
                 public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+                    if (viewHolder.getItemViewType() != 0) {
+                        return 0;
+                    }
                     return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
                 }
 
                 @Override
                 public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
-                    final int fromPosition = viewHolder.getAdapterPosition();
-                    final int toPosition = target.getAdapterPosition();
-                    savedMusicList.move(fromPosition, toPosition);
+                    int fromPosition = viewHolder.getAdapterPosition();
+                    int toPosition = target.getAdapterPosition();
+                    if (padWithItem) {
+                        if (fromPosition <= 0 || toPosition <= 0)
+                            return false;
+                        savedMusicList.move(fromPosition - 1, toPosition - 1);
+                    } else {
+                        savedMusicList.move(fromPosition, toPosition);
+                    }
                     playlist.clear();
                     playlist.addAll(savedMusicList.list);
                     listAdapter.notifyItemMoved(fromPosition, toPosition);
@@ -1529,6 +1546,9 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
             }
             if (!found) {
                 int idx = playlist.indexOf(playingMessageObject);
+                if (padWithItem) {
+                    idx++;
+                }
                 if (idx >= 0) {
                     if (SharedConfig.playOrderReversed) {
                         layoutManager.scrollToPosition(idx);
@@ -1898,7 +1918,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
         }
         View child = listView.getChildAt(0);
         RecyclerListView.Holder holder = (RecyclerListView.Holder) listView.findContainingViewHolder(child);
-        int top = child.getTop();
+        int top = child instanceof AudioPlayerCell ? child.getTop() : child.getBottom();
         int newOffset = dp(7);
         if (top >= dp(7) && holder != null && holder.getAdapterPosition() == 0) {
             newOffset = top;
@@ -2379,12 +2399,32 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
 
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = new AudioPlayerCell(context, MediaController.getInstance().currentPlaylistIsGlobalSearch() ? AudioPlayerCell.VIEW_TYPE_GLOBAL_SEARCH  : AudioPlayerCell.VIEW_TYPE_DEFAULT, resourcesProvider);
-            return new RecyclerListView.Holder(view);
+            if (viewType == 1) {
+                View paddingView = new View(context) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        super.onMeasure(
+                            MeasureSpec.makeMeasureSpec(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.EXACTLY),
+                            MeasureSpec.makeMeasureSpec(dp(300), MeasureSpec.EXACTLY)
+                        );
+                    }
+                };
+                return new RecyclerListView.Holder(paddingView);
+            } else {
+                View view = new AudioPlayerCell(context, MediaController.getInstance().currentPlaylistIsGlobalSearch() ? AudioPlayerCell.VIEW_TYPE_GLOBAL_SEARCH : AudioPlayerCell.VIEW_TYPE_DEFAULT, resourcesProvider);
+                return new RecyclerListView.Holder(view);
+            }
         }
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if (padWithItem) {
+                if (position == 0) {
+                    final View paddingView = holder.itemView;
+                    return;
+                }
+                position--;
+            }
             final AudioPlayerCell cell = (AudioPlayerCell) holder.itemView;
             final MessageObject messageObject;
             final boolean needDivider;
@@ -2415,6 +2455,9 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
 
         @Override
         public int getItemViewType(int i) {
+            if (padWithItem && i == 0) {
+                return 1;
+            }
             return 0;
         }
 
@@ -2990,7 +3033,7 @@ public class AudioPlayerAlert extends BottomSheet implements NotificationCenter.
             fmessages.add(messageObject);
             document = null;
         }
-        fragment.setDelegate((fragment1, dids, message, param, notify, scheduleDate, topicsFragment) -> {
+        fragment.setDelegate((fragment1, dids, message, param, notify, scheduleDate, scheduleRepeatPeriod, topicsFragment) -> {
             if (dids.size() > 1 || dids.get(0).dialogId == UserConfig.getInstance(currentAccount).getClientUserId() || message != null || fmessages == null) {
                 for (int a = 0; a < dids.size(); a++) {
                     long did = dids.get(a).dialogId;

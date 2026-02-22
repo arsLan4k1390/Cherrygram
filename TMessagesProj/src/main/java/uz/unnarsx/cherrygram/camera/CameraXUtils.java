@@ -15,10 +15,8 @@ import static android.hardware.camera2.CameraMetadata.LENS_FACING_BACK;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.camera2.CameraCharacteristics;
-import android.os.Build;
 import android.util.Size;
 
-import androidx.annotation.ChecksSdkIntAtLeast;
 import androidx.camera.camera2.interop.Camera2CameraInfo;
 import androidx.camera.core.CameraInfo;
 import androidx.camera.core.CameraSelector;
@@ -35,7 +33,6 @@ import org.telegram.messenger.FileLog;
 import org.telegram.messenger.SharedConfig;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,14 +145,6 @@ public class CameraXUtils {
                 });
     }
 
-    public static Size getPreviewBestSize() {
-        int suggestedRes = getSuggestedResolution(true);
-        return getAvailableVideoSizes().values().stream()
-                .filter(size -> size.getHeight() <= cameraResolution && size.getHeight() <= suggestedRes)
-                .max(Comparator.comparingInt(Size::getHeight))
-                .orElse(new Size(0, 0));
-    }
-
     public static Quality getVideoQuality() {
         return getAvailableVideoSizes().entrySet().stream()
                 .filter(entry -> entry.getValue().getHeight() == cameraResolution)
@@ -187,7 +176,7 @@ public class CameraXUtils {
                 if (cameraCharacteristics == null) continue;
 
                 Integer lensFacing = cameraCharacteristics.get(CameraCharacteristics.LENS_FACING);
-                if (lensFacing == null || lensFacing != LENS_FACING_BACK) continue; // Потому что некоторые девайсы не отдают lensFacing :)
+                if (lensFacing == null || lensFacing != LENS_FACING_BACK) continue;
 
                 availableBackCamera++;
                 ZoomState zoomState = cameraInfo.getZoomState().getValue();

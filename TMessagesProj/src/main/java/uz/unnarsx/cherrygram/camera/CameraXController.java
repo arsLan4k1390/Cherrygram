@@ -12,7 +12,6 @@ package uz.unnarsx.cherrygram.camera;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,9 +26,13 @@ import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.annotation.RestrictTo;
 import androidx.camera.camera2.interop.Camera2CameraControl;
 import androidx.camera.camera2.interop.CaptureRequestOptions;
+import androidx.camera.camera2.interop.ExperimentalCamera2Interop;
+import androidx.camera.core.AspectRatio;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraInfoUnavailableException;
 import androidx.camera.core.CameraSelector;
@@ -43,6 +46,8 @@ import androidx.camera.core.Preview;
 import androidx.camera.core.ZoomState;
 import androidx.camera.core.impl.utils.Exif;
 import androidx.camera.core.internal.compat.workaround.ExifRotationAvailability;
+import androidx.camera.core.resolutionselector.ResolutionSelector;
+import androidx.camera.core.resolutionselector.ResolutionStrategy;
 import androidx.camera.extensions.ExtensionMode;
 import androidx.camera.extensions.ExtensionsManager;
 import androidx.camera.lifecycle.ProcessCameraProvider;
@@ -79,6 +84,8 @@ import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
@@ -107,6 +114,7 @@ public class CameraXController {
     public static final int CAMERA_HDR = 2;
     public static final int CAMERA_AUTO = 3;
     public static final int CAMERA_WIDE = 4;
+    public static final int CAMERA_ASPECT_RATIO_SELECTOR = 5;
     public float oldZoomSelection = CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam() ? 0F : 5F;
     private int selectedEffect = CAMERA_NONE;
 
@@ -146,12 +154,12 @@ public class CameraXController {
         this.surfaceProvider = surfaceProvider;
     }
 
-    public boolean isInitied() {
+    public boolean isInitiated() {
         return isInitiated;
     }
 
-    public boolean setFrontFace(boolean isFrontFace) {
-        return this.isFrontface = isFrontFace;
+    public void setFrontFace(boolean isFrontFace) {
+        this.isFrontface = isFrontFace;
     }
 
     public boolean isFrontface() {
@@ -178,11 +186,11 @@ public class CameraXController {
                                 onPreInit.run();
                                 isInitiated = true;
                             } catch (ExecutionException | InterruptedException e) {
-                                e.printStackTrace();
+                                FileLog.e(e);
                             }
                         }, ContextCompat.getMainExecutor(context));
                     } catch (ExecutionException | InterruptedException e) {
-                        e.printStackTrace();
+                        FileLog.e(e);
                     }
                 }, ContextCompat.getMainExecutor(context)
         );
@@ -306,15 +314,18 @@ public class CameraXController {
         }
     }
 
-    public android.util.Size getVideoBestSize() {
-        int w, h;
-        android.util.Size size = CameraXUtils.getPreviewBestSize();
-        w = size.getWidth();
-        h = size.getHeight();
-        if ((getDisplayOrientation() == 0 || getDisplayOrientation() == 180) && getDeviceDefaultOrientation() == Configuration.ORIENTATION_PORTRAIT) {
-            return new android.util.Size(h, w);
+    @Nullable
+    private Integer getAspectRatio() {
+        int cfg = CherrygramCameraConfig.INSTANCE.getCameraAspectRatio();
+
+        if (cfg == CherrygramCameraConfig.Camera1to1) {
+            return null;
+        } else if (cfg == CherrygramCameraConfig.Camera4to3) {
+            return AspectRatio.RATIO_4_3;
+        } else if (cfg == CherrygramCameraConfig.Camera16to9) {
+            return AspectRatio.RATIO_16_9;
         } else {
-            return new android.util.Size(w, h);
+            return AspectRatio.RATIO_DEFAULT;
         }
     }
 
@@ -322,8 +333,27 @@ public class CameraXController {
     public void bindUseCases() {
         if (provider == null) return;
 
+        int targetRotation = getDisplayOrientation();
+
         Preview.Builder previewBuilder = new Preview.Builder();
-        previewBuilder.setTargetResolution(getVideoBestSize());
+        previewBuilder.setTargetRotation(targetRotation);
+        Integer aspect = getAspectRatio();
+        if (aspect != null) {
+            previewBuilder.setTargetAspectRatio(aspect);
+        } else {
+            ResolutionSelector selector = new ResolutionSelector.Builder()
+                    .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                    .setResolutionFilter((sizes, rotationDegrees) -> {
+                        List<android.util.Size> out = new ArrayList<>();
+                        for (android.util.Size s : sizes) {
+                            if (s.getWidth() == s.getHeight()) {
+                                out.add(s);
+                            }
+                        }
+                        return out.isEmpty() ? sizes : out;
+                    }).build();
+            previewBuilder.setResolutionSelector(selector);
+        }
 
         if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() != CherrygramCameraConfig.CameraXFpsRangeDefault) {
             previewBuilder.setTargetFrameRate(VideoMessagesHelper.getCameraXFpsRange());
@@ -345,16 +375,35 @@ public class CameraXController {
 
         Quality quality = CameraXUtils.getVideoQuality();
         QualitySelector selector = QualitySelector.from(quality, FallbackStrategy.higherQualityOrLowerThan(quality));
-        Recorder recorder = new Recorder.Builder()
-                .setQualitySelector(selector)
-                .setAspectRatio(VideoMessagesHelper.getCameraXAspectRatio())
-                .build();
+        Recorder.Builder recorder = new Recorder.Builder()
+                .setQualitySelector(selector);
 
-        vCapture = VideoCapture.withOutput(recorder);
+        if (aspect != null) {
+            recorder.setAspectRatio(aspect);
+        }
+
+        vCapture = VideoCapture.withOutput(recorder.build());
 
         ImageCapture.Builder iCaptureBuilder = new ImageCapture.Builder()
                 .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
-                .setTargetAspectRatio(VideoMessagesHelper.getCameraXAspectRatio());
+                .setTargetRotation(getDisplayOrientation());
+
+        if (aspect != null) {
+            iCaptureBuilder.setTargetAspectRatio(aspect);
+        } else {
+            ResolutionSelector selector2 = new ResolutionSelector.Builder()
+                    .setResolutionStrategy(ResolutionStrategy.HIGHEST_AVAILABLE_STRATEGY)
+                    .setResolutionFilter((sizes, rotationDegrees) -> {
+                        List<android.util.Size> out = new ArrayList<>();
+                        for (android.util.Size s : sizes) {
+                            if (s.getWidth() == s.getHeight()) {
+                                out.add(s);
+                            }
+                        }
+                        return out.isEmpty() ? sizes : out;
+                    }).build();
+            iCaptureBuilder.setResolutionSelector(selector2);
+        }
 
         provider.unbindAll();
         previewUseCase = previewBuilder.build();
@@ -367,19 +416,9 @@ public class CameraXController {
             if (CherrygramCameraConfig.INSTANCE.getCameraStabilisation()
                     || CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() != CherrygramCameraConfig.CameraXFpsRangeDefault
             ) {
-                CaptureRequestOptions.Builder captureRequestOptions = new CaptureRequestOptions.Builder();
-
-                if (CherrygramCameraConfig.INSTANCE.getCameraStabilisation()) {
-                    captureRequestOptions.setCaptureRequestOption(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, CameraMetadata.CONTROL_VIDEO_STABILIZATION_MODE_ON);
-                    captureRequestOptions.setCaptureRequestOption(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CameraMetadata.LENS_OPTICAL_STABILIZATION_MODE_ON);
-                }
-
-                if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() != CherrygramCameraConfig.CameraXFpsRangeDefault) {
-                    captureRequestOptions.setCaptureRequestOption(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, VideoMessagesHelper.getCameraXFpsRange());
-                }
 
                 Camera2CameraControl cameraControl = Camera2CameraControl.from(camera.getCameraControl());
-                cameraControl.setCaptureRequestOptions(captureRequestOptions.build());
+                cameraControl.setCaptureRequestOptions(buildCaptureRequestOptions());
             }
         } else {
             iCapture = iCaptureBuilder.build();
@@ -397,6 +436,32 @@ public class CameraXController {
         if (camera != null) {
             camera.getCameraControl().setLinearZoom(oldZoomSelection);
         }
+    }
+
+    @OptIn(markerClass = ExperimentalCamera2Interop.class)
+    @SuppressLint({"UnsafeExperimentalUsageError", "RestrictedApi"})
+    private CaptureRequestOptions buildCaptureRequestOptions() {
+        CaptureRequestOptions.Builder builder = new CaptureRequestOptions.Builder();
+
+        if (CherrygramCameraConfig.INSTANCE.getCameraStabilisation()) {
+            builder.setCaptureRequestOption(
+                    CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE,
+                    CameraMetadata.CONTROL_VIDEO_STABILIZATION_MODE_ON
+            );
+            builder.setCaptureRequestOption(
+                    CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE,
+                    CameraMetadata.LENS_OPTICAL_STABILIZATION_MODE_ON
+            );
+        }
+
+        if (CherrygramCameraConfig.INSTANCE.getCameraXFpsRange() != CherrygramCameraConfig.CameraXFpsRangeDefault) {
+            builder.setCaptureRequestOption(
+                    CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE,
+                    VideoMessagesHelper.getCameraXFpsRange()
+            );
+        }
+
+        return builder.build();
     }
 
     public void setZoom(float value) {
@@ -544,11 +609,12 @@ public class CameraXController {
 
         String fileName = Integer.MIN_VALUE + "_" + SharedConfig.getLastLocalId() + ".jpg";
         final File cacheFile = new File(FileLoader.getDirectory(FileLoader.MEDIA_DIR_CACHE), fileName);
-        try {
-            FileOutputStream stream = new FileOutputStream(cacheFile);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
-        } catch (Throwable e) {
-            FileLog.e(e);
+        if (bitmap != null) {
+            try (FileOutputStream stream = new FileOutputStream(cacheFile)) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 87, stream);
+            } catch (IOException e) {
+                FileLog.e(e);
+            }
         }
         SharedConfig.saveConfig();
         final long durationFinal = duration;
@@ -610,7 +676,6 @@ public class CameraXController {
                     }
                     exif.save();
                 } catch (JpegImageUtils.CodecFailedException | IOException e) {
-                    e.printStackTrace();
                     FileLog.e(e);
                 }
                 image.close();
@@ -639,30 +704,12 @@ public class CameraXController {
     public int getDisplayOrientation() {
         WindowManager mgr = (WindowManager) ApplicationLoader.applicationContext.getSystemService(Context.WINDOW_SERVICE);
         int rotation = mgr.getDefaultDisplay().getRotation();
-        switch (rotation) {
-            case Surface.ROTATION_90:
-                return 90;
-            case Surface.ROTATION_180:
-                return 180;
-            case Surface.ROTATION_270:
-                return 270;
-            case Surface.ROTATION_0:
-            default:
-                return 0;
-        }
-    }
-
-    private int getDeviceDefaultOrientation() {
-        WindowManager windowManager = (WindowManager) (ApplicationLoader.applicationContext.getSystemService(Context.WINDOW_SERVICE));
-        Configuration config = ApplicationLoader.applicationContext.getResources().getConfiguration();
-        int rotation = windowManager.getDefaultDisplay().getRotation();
-
-        if (((rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) && config.orientation == Configuration.ORIENTATION_LANDSCAPE) ||
-                ((rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) && config.orientation == Configuration.ORIENTATION_PORTRAIT)) {
-            return Configuration.ORIENTATION_LANDSCAPE;
-        } else {
-            return Configuration.ORIENTATION_PORTRAIT;
-        }
+        return switch (rotation) {
+            case Surface.ROTATION_90 -> 90;
+            case Surface.ROTATION_180 -> 180;
+            case Surface.ROTATION_270 -> 270;
+            default -> 0;
+        };
     }
 
     private float mix(Float x, Float y, Float f) {

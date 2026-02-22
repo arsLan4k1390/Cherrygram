@@ -374,6 +374,7 @@ public class NotificationCenter {
     public static final int botForumDraftUpdate = totalEvents++;
     public static final int botForumDraftDelete = totalEvents++;
     public static final int tlSchemeParseException = totalEvents++;
+    public static final int callTabsVisibleToggled = totalEvents++;
 
     public static boolean alreadyLogged;
 
@@ -694,6 +695,14 @@ public class NotificationCenter {
         }
     }
 
+    public void updateObserver(boolean add, NotificationCenterDelegate observer, int id) {
+        if (add) {
+            addObserver(observer, id);
+        } else {
+            removeObserver(observer, id);
+        }
+    }
+
     public void addObserver(NotificationCenterDelegate observer, int id) {
         if (BuildVars.DEBUG_VERSION) {
             if (Thread.currentThread() != ApplicationLoader.applicationHandler.getLooper().getThread()) {
@@ -981,6 +990,8 @@ public class NotificationCenter {
     /** Cherrygram start */
     public static final int onUpdateLoginToken = totalEvents++;
     public static final int cgDonatesLoaded = totalEvents++;
+    public static final int cgTabsUpdated = totalEvents++;
+    public static final int cgTabsOpenSearch = totalEvents++;
     /** Cherrygram finish */
 
 }

@@ -92,7 +92,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var updateScheduleTimestamp by sharedPreferences.long("CG_UpdateScheduleTimestamp", 0)
     var forceFound by sharedPreferences.boolean("CG_ForceFound", false)
 
-    var updatesNewUI by sharedPreferences.boolean("CG_UpdatesNewUI", true)
+    var updatesNewUI by sharedPreferences.boolean("CG_UpdatesNewUI_Redesign", false)
     var updateVersionName by sharedPreferences.string("CG_UpdateVersionName", "idk")
     var updateSize by sharedPreferences.string("CG_UpdateSize", "0")
     var updateIsDownloading by sharedPreferences.boolean("CG_UpdateIsDownloading", false)

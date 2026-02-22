@@ -10,20 +10,20 @@
 package uz.unnarsx.cherrygram.core.helpers
 
 import android.os.Build
-import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.URLSpan
+import org.telegram.messenger.BuildConfig
+import org.telegram.messenger.BuildVars
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.Components.URLSpanNoUnderline
 import org.telegram.ui.LauncherIconController
-import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
+import uz.unnarsx.cherrygram.misc.Constants
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -31,6 +31,7 @@ import java.util.Locale
 object CGResourcesHelper {
 
     /** About app start */
+    @JvmStatic
     fun getAppName(): String {
         if (CherrygramCoreConfig.isStandaloneStableBuild() || CherrygramCoreConfig.isPlayStoreBuild()) {
             return "Cherrygram"
@@ -44,6 +45,7 @@ object CGResourcesHelper {
         return getString(R.string.CG_AppName)
     }
 
+    @JvmStatic
     fun getBuildType(): String {
         if (CherrygramCoreConfig.isStandaloneStableBuild()) {
             return getString(R.string.UP_BTRelease)
@@ -59,6 +61,7 @@ object CGResourcesHelper {
         return "Unknown"
     }
 
+    @JvmStatic
     fun getAbiCode(): String {
         var abi: String
         try {
@@ -69,78 +72,26 @@ object CGResourcesHelper {
         }
         return abi
     }
+
+    @JvmStatic
+    fun getCherryVersion() : String {
+        return BuildConfig.BUILD_VERSION_STRING_CHERRY
+    }
+
+    @JvmStatic
+    private fun getSourceCodeVersion() : String {
+        return BuildConfig.BUILD_SOURCE_CODE_VERSION
+    }
+
+    @JvmStatic
+    fun getAboutString(): String {
+        return getAppName() + " v" + getCherryVersion() + " (" + getAbiCode() + ")" +
+                    "\n" +
+                    "Based on Telegram v" + BuildVars.BUILD_VERSION_STRING + " (" + getSourceCodeVersion() + ")" +
+                    "\n" +
+                    Constants.CG_AUTHOR;
+    }
     /** About app finish */
-
-    /** Camera start */
-    fun getCameraName(): String { // Crashlytics.java:\ Camera type
-        return when (CherrygramCameraConfig.cameraType) {
-            CherrygramCameraConfig.TELEGRAM_CAMERA -> "Telegram"
-            CherrygramCameraConfig.CAMERA_X -> "CameraX"
-            CherrygramCameraConfig.CAMERA_2 -> "Camera 2 (Telegram)"
-            else -> getString(R.string.CP_CameraTypeSystem)
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    fun getCameraAdvise(): CharSequence {
-        val advise: String = when (CherrygramCameraConfig.cameraType) {
-            CherrygramCameraConfig.TELEGRAM_CAMERA -> getString(R.string.CP_DefaultCameraDesc)
-            CherrygramCameraConfig.CAMERA_X -> getString(R.string.CP_CameraXDesc)
-            CherrygramCameraConfig.CAMERA_2 -> getString(R.string.CP_Camera2Desc)
-            else -> getString(R.string.CP_SystemCameraDesc)
-        }
-
-        val htmlParsed: Spannable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY))
-        } else {
-            SpannableString(Html.fromHtml(advise))
-        }
-        return getUrlNoUnderlineText(htmlParsed)
-    }
-
-    private fun getUrlNoUnderlineText(charSequence: CharSequence): CharSequence {
-        val spannable: Spannable = SpannableString(charSequence)
-        val spans = spannable.getSpans(0, charSequence.length, URLSpan::class.java)
-        for (urlSpan in spans) {
-            var span = urlSpan
-            val start = spannable.getSpanStart(span)
-            val end = spannable.getSpanEnd(span)
-            spannable.removeSpan(span)
-            span = object : URLSpanNoUnderline(span.url) {
-            }
-            spannable.setSpan(span, start, end, 0)
-        }
-        return spannable
-    }
-
-    fun getCameraAspectRatio(): String { // CameraPreferences.java:\Camera aspect ratio
-        return when (CherrygramCameraConfig.cameraAspectRatio) {
-            CherrygramCameraConfig.Camera1to1 -> "1:1"
-            CherrygramCameraConfig.Camera4to3 -> "4:3"
-            CherrygramCameraConfig.Camera16to9 -> "16:9"
-            else -> getString(R.string.Default)
-        }
-    }
-
-    fun getCameraXFpsRange(): String { //CameraPreferences.java:\CameraX FPS
-        return when (CherrygramCameraConfig.cameraXFpsRange) {
-            CherrygramCameraConfig.CameraXFpsRange25to30 -> "25-30"
-            CherrygramCameraConfig.CameraXFpsRange30to30 -> "30-30"
-            CherrygramCameraConfig.CameraXFpsRange30to60 -> "30-60"
-            CherrygramCameraConfig.CameraXFpsRange60to60 -> "60-60"
-            else -> getString(R.string.Default)
-        }
-    }
-
-    fun getExposureSliderPosition(): String { // CameraPreferences.java:\Exposure slider
-        return when (CherrygramCameraConfig.exposureSlider) {
-//            CherrygramCameraConfig.EXPOSURE_SLIDER_BOTTOM -> getString(R.string.CP_ZoomSliderPosition_Bottom)
-            CherrygramCameraConfig.EXPOSURE_SLIDER_RIGHT -> getString(R.string.CP_ZoomSliderPosition_Right)
-//            CherrygramCameraConfig.EXPOSURE_SLIDER_LEFT -> getString(R.string.CP_ZoomSliderPosition_Left)
-            else -> getString(R.string.Disable)
-        }
-    }
-    /** Camera finish */
 
     /** Chats start */
     fun getLeftButtonText(noForwards: Boolean): String {
@@ -219,38 +170,6 @@ object CGResourcesHelper {
         )
     }
 
-    fun getDownloadSpeedBoostText(): String { // ExperimentalPreferences.java:\Download speed boost
-        return when (CherrygramExperimentalConfig.downloadSpeedBoost) {
-            CherrygramExperimentalConfig.BOOST_NONE -> getString(R.string.EP_DownloadSpeedBoostNone)
-            CherrygramExperimentalConfig.BOOST_AVERAGE -> getString(R.string.EP_DownloadSpeedBoostAverage)
-            else -> getString(R.string.EP_DownloadSpeedBoostExtreme)
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    fun getGeminiApiKeyAdvice(): CharSequence {
-        val advise = getString(R.string.CP_GeminiAI_API_Key_Desc)
-
-        val htmlParsed: Spannable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY))
-        } else {
-            SpannableString(Html.fromHtml(advise))
-        }
-        return getUrlNoUnderlineText(htmlParsed)
-    }
-
-    @SuppressWarnings("deprecation")
-    fun getGeminiModelNameAdvice(): CharSequence {
-        val advise = getString(R.string.CP_GeminiAI_Model_Desc)
-
-        val htmlParsed: Spannable = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            SpannableString(Html.fromHtml(advise, Html.FROM_HTML_MODE_LEGACY))
-        } else {
-            SpannableString(Html.fromHtml(advise))
-        }
-        return getUrlNoUnderlineText(htmlParsed)
-    }
-
     fun createDateAndTime(date: Long): String {
         var dateAndTime = date
         try {
@@ -291,5 +210,21 @@ object CGResourcesHelper {
         }
         return capitalizeString
     }
+
+    fun getUrlNoUnderlineText(charSequence: CharSequence): CharSequence {
+        val spannable: Spannable = SpannableString(charSequence)
+        val spans = spannable.getSpans(0, charSequence.length, URLSpan::class.java)
+        for (urlSpan in spans) {
+            var span = urlSpan
+            val start = spannable.getSpanStart(span)
+            val end = spannable.getSpanEnd(span)
+            spannable.removeSpan(span)
+            span = object : URLSpanNoUnderline(span.url) {
+            }
+            spannable.setSpan(span, start, end, 0)
+        }
+        return spannable
+    }
     /** Misc finish */
+
 }

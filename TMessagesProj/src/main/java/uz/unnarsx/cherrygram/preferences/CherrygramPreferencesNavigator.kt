@@ -10,21 +10,20 @@
 package uz.unnarsx.cherrygram.preferences
 
 import org.telegram.ui.ActionBar.BaseFragment
-import uz.unnarsx.cherrygram.preferences.drawer.DrawerPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.folders.FoldersPreferencesEntry
+import uz.unnarsx.cherrygram.preferences.tabs.MainTabsPreferencesEntry
 import uz.unnarsx.cherrygram.preferences.tgkit.TGKitSettingsFragment
 
 object CherrygramPreferencesNavigator {
 
-    fun createMainMenu(setDelay: Boolean) = TGKitSettingsFragment(MainPreferencesEntry()).withOpenDelay(setDelay)
+    fun createCherrySettings(fragment: BaseFragment) = fragment.presentFragment(CGPreferencesEntry())
     fun createGeneral() = TGKitSettingsFragment(GeneralPreferencesEntry())
     fun createAppearance() = TGKitSettingsFragment(AppearancePreferencesEntry())
-    fun createMessagesAndProfiles(fragment: BaseFragment) = fragment.presentFragment(MessagesAndProfilesPreferencesEntry())
     fun createFoldersPrefs(fragment: BaseFragment) = fragment.presentFragment(FoldersPreferencesEntry())
-    fun createDrawerPrefs(fragment: BaseFragment) = fragment.presentFragment(DrawerPreferencesEntry())
-    fun createDrawerItems(fragment: BaseFragment) = DrawerPreferencesEntry.showDrawerItemsSelector(fragment)
+    fun createTabs(fragment: BaseFragment) = fragment.presentFragment(MainTabsPreferencesEntry())
+    fun createMessagesAndProfiles(fragment: BaseFragment) = fragment.presentFragment(MessagesAndProfilesPreferencesEntry())
     fun createChats() = TGKitSettingsFragment(ChatsPreferencesEntry)
-    fun createGemini(fragment: BaseFragment): GeminiPreferencesBottomSheet = GeminiPreferencesBottomSheet.showAlert(fragment)
+    fun createGemini(fragment: BaseFragment) = fragment.presentFragment(GeminiPreferencesEntry())
     fun createMessageFilter(fragment: BaseFragment) = fragment.presentFragment(MessageFiltersPreferencesEntry())
     fun createMessageMenu(fragment: BaseFragment) = fragment.presentFragment(MessageMenuPreferencesEntry())
     fun createCamera(fragment: BaseFragment) = fragment.presentFragment(CameraPreferencesEntry())
@@ -33,7 +32,7 @@ object CherrygramPreferencesNavigator {
     fun createDonate(fragment: BaseFragment) = fragment.presentFragment(DonatesPreferencesEntry())
     fun createStars(fragment: BaseFragment, customTitle: String?, userName: String?, type: Int) = fragment.presentFragment(StarsIntroActivityCG(customTitle, userName, type))
     fun createDonateForce(fragment: BaseFragment) = fragment.presentFragment(DonatesPreferencesEntry().forceShowDonates())
-    fun createAbout() = TGKitSettingsFragment(AboutPreferencesEntry())
-    fun createDebug() = TGKitSettingsFragment(DebugPreferencesEntry())
+    fun createAbout(fragment: BaseFragment) = fragment.presentFragment(AboutPreferencesEntry())
+    fun createDebug(fragment: BaseFragment) = fragment.presentFragment(DebugPreferencesEntry())
 
 }

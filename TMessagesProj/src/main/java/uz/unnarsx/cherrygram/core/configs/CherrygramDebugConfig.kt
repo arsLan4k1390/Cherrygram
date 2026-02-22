@@ -28,6 +28,7 @@ object CherrygramDebugConfig {
     /** Redesign finish */
 
     /** Chats start */
+    var chatPreviewFix by sharedPreferences.boolean("chatPreviewFix", true)
     var replacePunctuationMarks by sharedPreferences.boolean("replacePunctuationMarks", true)
     var editTextSuggestionsFix by sharedPreferences.boolean("editTextSuggestionsFix", false)
     /** Microphone Audio Source start */

@@ -5,6 +5,7 @@
     <string name="CG_FollowChannelInfo">Долучайтеся до нашого каналу, щоб бути в курсі всіх новин та можливостей Cherrygram!</string>
     <string name="CG_DoNotRemindAgain">Не нагадувати</string>
     <!--Telegram screens-->
+    <string name="CG_SwitchedToAccount">Переключився на %1$s</string>
     <string name="CG_JoinedDate">Ви приєдналися **%1$s** **%2$s**</string>
     <string name="CG_CreatedDate">**%1$s** було створено **%2$s**</string>
     <string name="CG_RegistrationDate">**%1$s** приєданався до Telegram **%2$s**</string>
@@ -32,7 +33,6 @@
     <string name="CG_AndMoreTypingGroup_other">%1$s і ще %2$d</string>
     <!--Typing status-->
     <!--Telegram Folders Settings-->
-    <string name="CG_FoldersType_Header">Тип іконок</string>
     <string name="CG_FoldersTypeTitles">Тільки назви</string>
     <string name="CG_FoldersTypeIcons">Тільки іконки</string>
     <string name="CG_FoldersTypeIconsTitles">Іконки з назвами</string>
@@ -84,6 +84,9 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_SafeStars_buy">Купити Зірки (мультичейн та без KYC)</string>
+    <string name="CG_SafeStars_buy_Telegram">Придбати Зірки через Telegram</string>
+    <string name="CG_Stats_TOS">Продовжуючи, ви автоматично погоджуєтеся з Умовами надання послуг Telegram та Умовами використання Cherrygram.</string>
     <string name="CG_SortByDate">Сортувати повідомлення за датою</string>
     <string name="CG_SortByUnread">Сортувати перше непрочитані</string>
     <string name="CG_UnknownCherrySettingsOption">Немає такого параметра Cherry.</string>
@@ -106,8 +109,8 @@
     <string name="CG_ExportSettings">Експортувати налаштування</string>
     <string name="CG_ImportSettings">Імпортувати налаштування</string>
     <string name="CG_ImportSettingsAlert">Перезаписати налаштування? Імпортування налаштувань з невідомих джерел може призвести до того, що програма не працюватиме.</string>
-    <string name="CG_OpenStickerPack">Натисніть, щоб відкрити наліпку</string>
-    <string name="CG_OpenEmojiPack">Натисніть, щоб отримати емодзі</string>
+    <string name="CG_OpenStickerPack">Тапніть, щоб відкрити наліпку</string>
+    <string name="CG_OpenEmojiPack">Тапніть, щоб отримати емодзі</string>
     <string name="CG_ReplyContainsEmojiPack">Ця відповідь містить **%s** емодзі</string>
     <string name="CG_GetEmojiPack">Взяти емодзі</string>
     <string name="CG_ProfileBackground">Застосувати задній план профілю</string>
@@ -151,16 +154,12 @@
     <string name="AP_ChangeIcon_Lavanda">Лаванда</string>
     <string name="AP_ChangeIcon_Sunset">Вечiрня</string>
     <string name="AP_ChangeIcon_Sunrise">Світанок</string>
-    <string name="AP_IconReplacement_VKUI">Іконки VKUI</string>
     <string name="AP_IconReplacement_Solar">Solar Icons від @Design480</string>
     <string name="AP_IconReplacement_Default">Стандартні іконки</string>
-    <string name="AP_MD3_Containers">MD3 Lists Design</string>
-    <string name="AP_MD3_Containers_Desc">Material Design 3 style list containers with rounded corners</string>
     <string name="AP_OneUI_Switch_Style">Вигляд інтерфейсу OneUI</string>
     <string name="AP_SystemEmoji">Використовувати системні емодзі</string>
     <string name="AP_ShowPencilIcon">Значок олівця для відредагованих повідомлень</string>
     <string name="AP_CenterTitle">Центрувати заголовок в панелі дій</string>
-    <string name="AP_iosSearchPanel">Панель пошуку в стилі IOS</string>
     <string name="AP_DisableDividers">Вимкнути роздільники</string>
     <string name="AP_ToolBarShadow">Відключити тінь у тулбару</string>
     <string name="AP_SystemFonts">Використовувати системний шрифт</string>
@@ -200,30 +199,26 @@
     <string name="AP_FolderNameInHeader_Desc">Ця опція змінить назву \"Cherrygram\" на назву вашої папки в панелі дій (корисно, якщо замість назв папок у вас лише іконки)</string>
     <string name="CP_NewTabs_RemoveAllChats">Приховати вкладку \"Всі чати\"</string>
     <string name="AP_Tab_Style">Стилі папок</string>
-    <string name="AP_Tab_Style_Default">По замовчуванню</string>
-    <string name="AP_Tab_Style_Rounded">Округлі</string>
-    <string name="AP_Tab_Style_Text">Текст</string>
-    <string name="AP_Tab_Style_Pills">Таблетки</string>
     <string name="AP_Tab_Style_Stroke">Додати обведення</string>
-    <string name="AP_DrawerCategory">Бічне меню</string>
-    <string name="AP_DrawerAvatar">Аватар як фон меню</string>
-    <string name="AP_DrawerShowAvatar">Показувати аватар</string>
-    <string name="AP_DrawerDarken">Затемнити фон меню</string>
-    <string name="AP_ShadeBackground">Градієнт  фон</string>
-    <string name="AP_DrawerBlur">Розмити фон меню</string>
-    <string name="AP_DrawerBlurIntensity">Інтенсивність розмиття</string>
-    <string name="AP_DrawerIconPack_Header">Набір іконок меню</string>
-    <string name="AP_DrawerButtonsCategory">Елементи меню</string>
+    <string name="CP_MainTabs_Header">Організатор нижніх вкладок</string>
+    <string name="CP_MainTabs_Layout">Вкладки</string>
+    <string name="CP_MainTabs_ShowTabs">Показувати вкладки</string>
+    <string name="CP_MainTabs_OpenSettings">Відкрити налаштування свайпом</string>
+    <string name="CP_MainTabs_OpenSettings_Desc">Проведіть пальцем зліва направо по вкладках, щоб відкрити налаштування — аналогічно до бічної панелі, коли вкладки вимкнено.</string>
+    <string name="CP_MainTabs_Layout_Desc">Тапніть для увімкнення/вимкнення, утримуйте й перетягніть для зміни порядку.</string>
+    <string name="CP_MainTabs_DoubleTap_Desc">Подвійний тап по вкладці чатів відкриває «Збережене».
+Подвійний тап по вкладці профілю (або «Налаштування», якщо вкладка профілю прихована) перемикає акаунти.</string>
+    <string name="CP_MainTabs_ShowTabsTitle">Відображати назви вкладок</string>
     <string name="AP_HideUserPhone_Show">Торкніться щоб показати</string>
     <string name="AP_HideUserPhone_Copy">Затисніть щоб копіювати</string>
-    <string name="AP_MutualContacts_Description">Цей контакт є є взаємним</string>
+    <string name="AP_MutualContacts_Description">Цей контакт є взаємним.</string>
     <string name="AP_ShowID">Показати ID та DC у профілі</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
     <string name="CP_Header_Chats">Діалоги</string>
     <string name="CP_Header_Messages">Повідомлення</string>
     <string name="CP_AutoQuoteReplies">Цитувати відповіді</string>
-    <string name="CP_AutoQuoteReplies_Desc">Send a quote with the text of the entire message instead of a normal reply. Does not work in topics.</string>
+    <string name="CP_AutoQuoteReplies_Desc">Відправити цитату з текстом всього повідомлення замість звичайної відповіді.</string>
     <string name="CP_TimeOnStick">Приховати час надсилання на наліпках</string>
     <string name="CP_ChatMenuShortcuts">Ярлики меню чату</string>
     <string name="CP_AdminActions">Швидкі адмін-дії</string>
@@ -231,8 +226,8 @@
     <string name="CP_MessageMenuItems">Елементи меню повідомлень</string>
     <string name="CP_BlurMessageMenu">Меню повідомлень у стилі iOS</string>
     <string name="CP_BlurMessageMenu_Desc">Застосовує розмитий фон до меню повідомлень і показує панель реакцій над повідомленням, як у Telegram на iOS.</string>
-    <string name="CP_MessageMenuUnifiedScroll">Unified Scroll</string>
-    <string name="CP_MessageMenuUnifiedScroll_Desc">Menu and message content will be displayed on a single, continuous sheet, utilizing a unified scroll instead of two separate scrolling areas.</string>
+    <string name="CP_MessageMenuUnifiedScroll">Об\'єднана прокрутка</string>
+    <string name="CP_MessageMenuUnifiedScroll_Desc">Меню та вміст повідомлень відображатимуться на одному суцільному екрані зі спільною прокруткою замість розділення на дві окремі зони.</string>
     <string name="CP_MessageMenuAutoscroll">Автопрокрутка повідомлень</string>
     <string name="CP_MessageMenuAutoscroll_Desc">Автоматична прокрутка вмісту меню повідомлень униз при відкритті, як у Telegram на iOS.</string>
     <string name="CP_MessageMenuFixedHeight">Комфортна висота меню повідомлень</string>
@@ -240,7 +235,10 @@
     <string name="CP_BlurMessageMenuItems">Розмиття елементів меню</string>
     <string name="CP_BlurMessageMenuItems_Desc">Розмиває пункти меню для більш автентичного вигляду iOS.</string>
     <string name="CP_MessageMenuNativeBlur">Нативне розмиття</string>
-    <string name="CP_MessageMenuNativeBlur_Desc">Для фону меню повідомлень буде використана вбудована в Android система розмиття (blur): плавна, динамічна і з мінімальним впливом на продуктивність..</string>
+    <string name="CP_MessageMenuNativeBlur_Desc">Для фону меню повідомлень буде використана вбудована в Android система розмиття (blur): плавна, динамічна і з мінімальним впливом на продуктивність.</string>
+    <string name="CP_MessageMenuCompactLayout">Компактне меню</string>
+    <string name="CP_MessageMenuCompactLayout_Desc">Відображає основні дії з повідомленням у компактному вигляді внизу меню.</string>
+    <string name="CP_MessageMenuCompactLayout_Dot">Крапка поруч із кнопкою означає наявність дії за довгим натисканням.</string>
     <string name="AP_CenterChatsTitle">Центрувати заголовок у чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Показувати лічильник непрочитаних</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включити лічильник непрочитаних чатів на кнопці «Назад» в відкритому чаті</string>
@@ -255,7 +253,7 @@
     <string name="CG_MsgSlideAction">Дія при свайпі повідомлення</string>
     <string name="CP_DisableSwipeToNext">Вимкнути перехід на наступний канал</string>
     <string name="CP_DisableSwipeToNext_Desc">Вимкнути перехід на наступний канал при прокрутці будь якого каналу</string>
-    <string name="CP_HideMuteUnmuteButton">Hide bottom bar in channels</string>
+    <string name="CP_HideMuteUnmuteButton">Приховати нижню панель у каналах</string>
     <string name="CP_HideKbdOnScroll">Інтенсивність прокручування, щоб приховати клавіатуру</string>
     <string name="CP_HideSendAsChannel">Приховати \"Відправити як канал\"</string>
     <string name="CP_HideSendAsChannelDesc">Ви можете отримати доступ до меню, довго натиснувши на кнопку з Емодзі/Наліпками/GIF</string>
@@ -264,7 +262,7 @@
     <string name="CP_GeminiAI_Model">Код моделі Gemini</string>
     <string name="CP_GeminiAI_Model_Desc">Відвідайте <![CDATA[<a href="https://ai.google.dev/gemini-api/docs/models/gemini#model-variations">https://ai.google.dev/gemini-api/docs/models/gemini</a>]]>, щоб отримати список доступних моделей.</string>
     <string name="CP_GeminiAI_Model_Selector">Список моделей Gemini</string>
-    <string name="CP_GeminiAI_Model_Selector_Desc">Якщо у вас є дійсний ключ API, натисніть тут щоб обрати модель і заповнити поле автоматично.</string>
+    <string name="CP_GeminiAI_Model_Selector_Desc">Якщо у вас є дійсний ключ API, тапніть тут щоб обрати модель і заповнити поле автоматично.</string>
     <string name="CP_GeminiAI_Sample">Наприклад:</string>
     <string name="CP_GeminiAI_Instruction">Щоб використати Gemini, вам потрібно заповнити всі значення на цьому екрані.
 \n\nПісля цього відкрийте будь-який чат, наберіть повідомлення і натисніть та утримуйте кнопку відправки.
@@ -308,8 +306,6 @@
     <string name="CP_Slider_MediaAmplifier_Hint">Не працює з альбомами (згруповані)</string>
     <string name="CP_LargeVoiceMessages">Адаптивна довжина голосового повідомлення</string>
     <string name="CP_LargeVoiceMessages_Desc">Довжина бульбашки голосового повідомлення залежатиме від тривалості запису та автоматично підлаштовуватиметься під ширину екрана.</string>
-    <string name="CP_VoiceEnhancements">Покращення звуку</string>
-    <string name="CP_VoiceEnhancements_Desc">Шумогасіння і нормалізація голосу</string>
     <string name="CP_PlayVideo">Відтворювати відео після натискання на кнопку гучності</string>
     <string name="CP_PlayVideo_Desc">При натисканні на кнопку гучності буде ввімкнено відео на екранi в діалозі</string>
     <string name="CP_AutoPauseVideo">Зупиняти вiдео</string>
@@ -318,8 +314,8 @@
     <string name="CP_VideoSeekDuration">Подвійний тап для перемотування відео (секунди)</string>
     <string name="CP_Header_Notification">Сповіщення</string>
     <string name="CP_NotificationSound">Звук сповіщення</string>
-    <string name="CP_VibrateInChats">In-chat vibration</string>
-    <string name="CP_VibrateInChats_Desc">Make a short vibration when you receive a message in chats</string>
+    <string name="CP_VibrateInChats">Вібрація в чаті</string>
+    <string name="CP_VibrateInChats_Desc">Коротка вібрація при отриманні повідомлення в чатах</string>
     <string name="CP_SilenceNonContacts">Заглушити не-контакти</string>
     <string name="CP_SilenceNonContacts_Desc">Якщо увімкнено, то сповіщення зі звуком приходитимуть тільки від контактів. Ви можете додати людину в контакти, без номера його телефона (в профілі людини)</string>
     <!--Chats Preferences-->
@@ -343,7 +339,7 @@
     <string name="CP_RearCam">Використовувати задню камеру</string>
     <string name="CP_RearCam_Desc">Замість фронтальної камери під час запису відеоповідомлень</string>
     <string name="CP_DisableCam">Кнопка камери внизу</string>
-    <string name="CP_DisableCam_Desc">Кнопка камери з\'явиться поруч із кнопкою галереї. \nНатисніть для відкриття Telegram камери, щоб запустити системну камеру.</string>
+    <string name="CP_DisableCam_Desc">Кнопка камери з\'явиться поруч із кнопкою галереї. \Тапніть для відкриття Telegram камери, щоб запустити системну камеру.</string>
     <string name="CP_Header_Videomessages">Відеоповідомлення</string>
     <string name="CP_ExposureSliderPosition">Положення повзунка експозиції</string>
     <string name="CP_ZoomSliderPosition_Bottom">Знизу</string>
@@ -357,7 +353,6 @@
     <string name="EP_NavigationAnimationBezier">Класична</string>
     <string name="EP_NavigationAnimationCrossfading">Ефект перехресного затухання</string>
     <string name="EP_PhotosSize">Відправляти великі фотографії (2560px)</string>
-    <string name="EP_CustomAppTitle">Назва додатка</string>
     <string name="EP_CustomChat">Власний чат для збереження повідомлень</string>
     <string name="EP_CustomChat_Desc">Ви можете обрати будь-який інший чат/групу/канал, щоб переслати туди повідомлення (кнопка на панелі дій, меню повідомлень, подвійне натискання або свайп по повідомленню)</string>
     <string name="EP_CustomChat_Selected_Title">замість</string>
@@ -395,7 +390,7 @@
     <!--Security Preferences-->
     <!--Updates Preferences-->
     <string name="UP_Category_Updates">Оновлення</string>
-    <string name="UP_TapToCheckUpdates">Натисніть тут, щоб отримати інформацію про оновлення</string>
+    <string name="UP_TapToCheckUpdates">Тапніть тут, щоб отримати інформацію про оновлення</string>
     <string name="UP_LastCheck">Остання перевірка</string>
     <string name="UP_CurrentVersion">Актуальна версія</string>
     <string name="UP_BuildType">Тип збірки</string>
@@ -421,12 +416,18 @@
     <string name="DP_DonatesThanks">Дякую за вашу підтримку! Ви зробили Вишню щасливою ❤️</string>
     <string name="DP_DonateBadge">Пожертвуйте і розблоковуйте бонуси</string>
     <string name="DP_Donate_Desc">При пожертвуванні від $2 ви також отримаєте бонусні подарунки:</string>
-    <string name="DP_Donate_Badge_desc">**Cherrygram значок** поруч з вашим ім\'ям.</string>
+    <string name="DP_Donate_Badge_desc">**Значок Cherrygram** поруч з вашим ім\'ям.</string>
+    <string name="DP_Donate_MsgMenuCompactView_Desc">Компактний вигляд елементів **меню повідомлення**.</string>
     <string name="DP_Donate_EpicBadge_desc">1. **Епічний значок Cherrygram** поруч з вашим ім\'ям.</string>
     <string name="DP_Donate_GiftMarket_Desc">2. Кнопка \"**Магазин подарунків**\" у боковому меню.</string>
     <string name="DP_Donate_MessageFilter_Desc">3. Функція \"**Фільтр повідомлень**\".</string>
     <string name="DP_Donate_MessageMenu_Desc">4. \"**iOS - стиль**\" меню повідомлень.</string>
     <string name="DP_Donate_Cheque">Надішліть підтвердження оплати на **@arsLan**, щоб отримати бонуси.</string>
+    <string name="DP_Donate_Terms">Перед здійсненням пожертви, будь ласка, прочитайте Умови здійснення пожертв. Усі пожертви є добровільними та не підлягають поверненню.</string>
+    <string name="DP_Donate_Counter_one">**%1$d** людина вже підтримала проект і отримала бонуси</string>
+    <string name="DP_Donate_Counter_few">**%1$d** людина вже підтримала проект і отримала бонуси</string>
+    <string name="DP_Donate_Counter_many">**%1$d** людина вже підтримала проект і отримала бонуси</string>
+    <string name="DP_Donate_Counter_other">**%1$d** людина вже підтримала проект і отримала бонуси</string>
     <string name="DP_Donate_Bulletin">%s підтримав(ла) розробку Cherrygram!</string>
     <string name="DP_Support">Подобається Cherrygram? Підтримай його!</string>
     <string name="DP_SupportOptions">Варіанти підтримки</string>

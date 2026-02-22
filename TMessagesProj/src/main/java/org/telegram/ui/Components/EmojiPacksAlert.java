@@ -84,6 +84,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
+
 public class EmojiPacksAlert extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
     private LongSparseArray<AnimatedEmojiDrawable> animatedEmojiDrawables;
@@ -191,7 +193,7 @@ public class EmojiPacksAlert extends BottomSheet implements NotificationCenter.N
                 layout.setButton(undoButton);
                 Bulletin.make((FrameLayout) containerView, layout, Bulletin.DURATION_SHORT).show();
             } else {
-                BulletinFactory.of((FrameLayout) containerView, resourcesProvider).createEmojiBulletin(document, LocaleController.getString(R.string.SetAsEmojiStatusInfo), LocaleController.getString(R.string.Undo), undoAction).show();
+                BulletinFactory.of((FrameLayout) containerView, resourcesProvider).createEmojiBulletin(document, LocaleController.getString(R.string.SetAsEmojiStatusInfo), LocaleController.getString(R.string.UndoNoCaps), undoAction).show();
             }
         }
 
@@ -1524,6 +1526,31 @@ public class EmojiPacksAlert extends BottomSheet implements NotificationCenter.N
             } catch (Exception e) {
                 FileLog.e(e);
             }
+        } else if (id == 4) {
+            long userId = stickerSet.set.id >> 32;
+
+            if ((stickerSet.set.id >> 16 & 0xff) == 0x3f) {
+                userId |= 0x80000000L;
+            }
+
+            if ((stickerSet.set.id >> 24 & 0xff) != 0) {
+                userId += 0x100000000L;
+            }
+
+            if (fragment != null) {
+                TLRPC.User user = fragment.getMessagesController().getUser(userId);
+                if (user != null) {
+                    dismiss();
+                    MessagesController.getInstance(currentAccount).openChatOrProfileWith(user, null, fragment, 0, false);
+                    return;
+                }
+            }
+
+            if (AndroidUtilities.addToClipboard("@dateregbot " + userId)) {
+                BulletinFactory.of((FrameLayout) containerView, resourcesProvider).createCopyLinkBulletin().show();
+            }
+        } else if (id == 5) {
+            ChatsHelper2.INSTANCE.updateStickerSetCache(fragment, stickerSet, true, isKeyboardVisible());
         }
     }
 
@@ -1740,6 +1767,8 @@ public class EmojiPacksAlert extends BottomSheet implements NotificationCenter.N
                 optionsButton.addSubItem(1, R.drawable.msg_share, LocaleController.getString(R.string.StickersShare));
                 optionsButton.addSubItem(2, R.drawable.msg_link, LocaleController.getString(R.string.CopyLink));
                 optionsButton.addSubItem(3, R.drawable.msg_info, LocaleController.getString(R.string.CG_CopySetId));
+                optionsButton.addSubItem(4, R.drawable.msg_openprofile, LocaleController.getString(R.string.ChannelCreator));
+                optionsButton.addSubItem(5, R.drawable.msg_retry, LocaleController.getString(R.string.ClearMediaCache));
                 optionsButton.setOnClickListener(v -> optionsButton.toggleSubMenu());
                 optionsButton.setDelegate(EmojiPacksAlert.this::onSubItemClick);
                 optionsButton.setContentDescription(LocaleController.getString(R.string.AccDescrMoreOptions));

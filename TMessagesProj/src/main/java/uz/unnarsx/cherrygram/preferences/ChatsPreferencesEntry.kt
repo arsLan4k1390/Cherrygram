@@ -12,14 +12,16 @@ package uz.unnarsx.cherrygram.preferences
 import android.media.MediaPlayer
 import android.view.HapticFeedbackConstants
 import androidx.core.util.Pair
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.RecyclerListView
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.VibrateUtil
-import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.helpers.AlertDialogSwitchers
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
@@ -32,13 +34,18 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSliderPreference.TGSLContract
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
+import java.lang.ref.WeakReference
 
 object ChatsPreferencesEntry : BasePreferencesEntry {
 
-    private var listView: RecyclerListView? = null
+    private var listViewRef: WeakReference<RecyclerListView>? = null
 
     override fun setListView(rv: RecyclerListView) {
-        listView = rv
+        listViewRef = WeakReference(rv)
+    }
+
+    fun getListView(): RecyclerListView? {
+        return listViewRef?.get()
     }
 
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.CP_Header_Chats)) {
@@ -46,9 +53,11 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
             textIcon {
                 title = getString(R.string.CP_ChatMenuShortcuts)
                 icon = R.drawable.msg_list
+
                 listener = TGKitTextIconRow.TGTIListener {
                     showChatMenuItemsConfigurator(bf)
                 }
+
                 divider = true
             }
             switch {
@@ -63,6 +72,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
             }
             switch {
                 title = getString(R.string.AP_CenterChatsTitle)
+
                 contract({
                     return@contract CherrygramChatsConfig.centerChatTitle
                 }) {
@@ -76,6 +86,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 listener = TGKitTextIconRow.TGTIListener {
                     AlertDialogSwitchers.showRecentEmojisAndStickers(bf)
                 }
+
                 divider = true
             }
             switch {
@@ -125,8 +136,15 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
             textIcon {
                 title = getString(R.string.CP_GeminiAI_Header)
                 icon = R.drawable.magic_stick_solar
-                listener = TGKitTextIconRow.TGTIListener {
-                    CherrygramPreferencesNavigator.createGemini(bf)
+
+                listener = object : TGKitTextIconRow.TGTIListener {
+                    override fun onClick(bf: BaseFragment) {
+                        CherrygramPreferencesNavigator.createGemini(bf)
+                    }
+
+                    override fun onLongClick(bf: BaseFragment) {
+                        AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Gemini)
+                    }
                 }
             }
             list {
@@ -152,33 +170,53 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
             textIcon {
                 title = getString(R.string.DirectShare)
                 icon = R.drawable.msg_share
+
                 listener = TGKitTextIconRow.TGTIListener {
                     showDirectShareConfigurator(bf)
                 }
+
                 divider = true
             }
             textIcon {
                 title = getString(R.string.CP_MessageMenu)
                 icon = R.drawable.msg_list
-                listener = TGKitTextIconRow.TGTIListener {
-                    CherrygramPreferencesNavigator.createMessageMenu(bf)
+
+                listener = object : TGKitTextIconRow.TGTIListener {
+                    override fun onClick(bf: BaseFragment) {
+                        CherrygramPreferencesNavigator.createMessageMenu(bf)
+                    }
+
+                    override fun onLongClick(bf: BaseFragment) {
+                        AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Message_Menu)
+                    }
                 }
+
                 divider = true
             }
             textIcon {
                 title = getString(R.string.CP_Messages_Size)
                 icon = R.drawable.msg_photo_settings
+
                 listener = TGKitTextIconRow.TGTIListener {
                     AlertDialogSwitchers.showMessageSize(bf)
                 }
+
                 divider = true
             }
             textIcon {
                 title = getString(R.string.CP_Message_Filtering)
                 icon = R.drawable.msg_notspam
-                listener = TGKitTextIconRow.TGTIListener {
-                    CherrygramPreferencesNavigator.createMessageFilter(bf)
+
+                listener = object : TGKitTextIconRow.TGTIListener {
+                    override fun onClick(bf: BaseFragment) {
+                        CherrygramPreferencesNavigator.createMessageFilter(bf)
+                    }
+
+                    override fun onLongClick(bf: BaseFragment) {
+                        AndroidUtilities.addToClipboard("tg://" + DeeplinkHelper.DeepLinksRepo.CG_Message_Filters)
+                    }
                 }
+
                 divider = true
             }
             switch {
@@ -310,17 +348,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramChatsConfig.largePhotos
                 }) {
                     CherrygramChatsConfig.largePhotos = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            switch {
-                title = getString(R.string.CP_VoiceEnhancements)
-                description = getString(R.string.CP_VoiceEnhancements_Desc)
-
-                contract({
-                    return@contract CherrygramChatsConfig.voicesAgc
-                }) {
-                    CherrygramChatsConfig.voicesAgc = it
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -350,7 +378,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramChatsConfig.disableVibration
                 }) {
                     CherrygramChatsConfig.disableVibration = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
         }
@@ -404,9 +432,9 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     try {
                         val mp: MediaPlayer = MediaPlayer.create(bf.context, tone)
                         mp.start()
-                    } catch (ignore: Exception) { }
+                    } catch (_: Exception) { }
 
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
             list {
@@ -446,7 +474,7 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                                 VibrateUtil.vibrate()
                             }
                         }
-                    } catch (ignore: Exception) { }
+                    } catch (_: Exception) { }
 
                 }
             }
@@ -455,7 +483,6 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
             switch {
                 title = getString(R.string.CP_SilenceNonContacts)
                 description = getString(R.string.CP_SilenceNonContacts_Desc)
-
 
                 contract({
                     return@contract CherrygramChatsConfig.silenceNonContacts

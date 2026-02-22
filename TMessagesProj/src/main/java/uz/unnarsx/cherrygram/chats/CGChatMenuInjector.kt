@@ -9,25 +9,52 @@
 
 package uz.unnarsx.cherrygram.chats
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import android.os.Bundle
 import android.text.TextUtils
+import android.util.Base64
+import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.BuildVars
 import org.telegram.messenger.ChatObject
+import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
+import org.telegram.messenger.UserConfig
+import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLRPC
-import org.telegram.ui.ActionBar.ActionBarMenu
 import org.telegram.ui.ActionBar.ActionBarMenuItem
-import org.telegram.ui.ActionBar.ActionBarMenuSubItem
-import org.telegram.ui.ActionBar.Theme
+import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.ActionBar.INavigationLayout
+import org.telegram.ui.ActionIntroActivity
+import org.telegram.ui.CameraScanActivity
+import org.telegram.ui.ChannelCreateActivity
 import org.telegram.ui.ChatActivity
-import org.telegram.ui.Components.ChatActivityEnterView
-import org.telegram.ui.Components.ChatAttachAlert
+import org.telegram.ui.Components.AlertsCreator
+import org.telegram.ui.Components.ItemOptions
+import org.telegram.ui.DialogsActivity
+import org.telegram.ui.Gifts.GiftSheet
+import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
-import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2.getCustomChatID
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig
+import uz.unnarsx.cherrygram.donates.DonatesManager
 import uz.unnarsx.cherrygram.misc.Constants
 import kotlin.math.abs
+import androidx.core.content.edit
+import org.telegram.messenger.AccountInstance
+import org.telegram.ui.ActionBar.ActionBarMenu
+import org.telegram.ui.ActionBar.ActionBarMenuSubItem
+import org.telegram.ui.ActionBar.Theme
+import org.telegram.ui.CallLogActivity
+import org.telegram.ui.Components.ChatActivityEnterView
+import org.telegram.ui.Components.ChatAttachAlert
+import org.telegram.ui.ProxyListActivity
+import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2
+import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig
+import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager
 
 // I've created this so CG features can be injected in a source file with 1 line only (maybe)
 // Because manual editing of drklo's sources harms your mental health.
@@ -125,8 +152,8 @@ object CGChatMenuInjector {
                 getString(R.string.UpgradeGroup)
         )
 
-        if (currentChat != null && currentChat.id != abs(getCustomChatID())
-            || currentUser != null && currentUser.id != abs(getCustomChatID())
+        if (currentChat != null && currentChat.id != abs(ChatsHelper2.getCustomChatID())
+            || currentUser != null && currentUser.id != abs(ChatsHelper2.getCustomChatID())
         ) {
             if (CherrygramChatsConfig.shortcut_SavedMessages) headerItem.lazilyAddSubItem(
                 ChatActivityHelper.OPTION_GO_TO_SAVED,
@@ -196,5 +223,178 @@ object CGChatMenuInjector {
     private fun isDeleteAllHidden(chat: TLRPC.Chat): Boolean {
         return Constants.Cherrygram_Support == chat.id
     }
+
+    /** Dialogs Activity start */
+    fun injectCreateChannel(io: ItemOptions, fragment: BaseFragment) {
+        io.add(
+            R.drawable.msg_channel,
+            getString(R.string.NewChannel)
+        ) {
+            val preferences = fragment.messagesController.mainSettings
+
+            if (!BuildVars.DEBUG_VERSION && preferences.getBoolean("channel_intro", false)) {
+                val args = Bundle().apply {
+                    putInt("step", 0)
+                }
+                fragment.presentFragment(ChannelCreateActivity(args))
+            } else {
+                fragment.presentFragment(ActionIntroActivity(ActionIntroActivity.ACTION_TYPE_CHANNEL_CREATE))
+                preferences.edit { putBoolean("channel_intro", true) }
+            }
+        }
+    }
+
+    fun injectArchived(io: ItemOptions, fragment: BaseFragment) {
+        io.addIf(
+            !CherrygramPrivacyConfig.hideArchiveFromChatsList && (CherrygramAppearanceConfig.tabsHideAllChats || !MainTabsManager.hasTab(MainTabsManager.TabType.SETTINGS) || !CherrygramAppearanceConfig.showMainTabs),
+            R.drawable.msg_archive,
+            getString(R.string.ArchivedChats)
+        ) {
+            openArchivedChats(fragment)
+        }
+    }
+
+    fun injectSaved(io: ItemOptions, fragment: BaseFragment) {
+        io.addIf(
+            !MainTabsManager.hasTab(MainTabsManager.TabType.SETTINGS) || !CherrygramAppearanceConfig.showMainTabs,
+            R.drawable.msg_saved,
+            getString(R.string.SavedMessages)
+        ) {
+            fragment.presentFragment(ChatActivity.of(ChatsHelper2.getCustomChatID()))
+        }
+    }
+
+    fun injectCalls(io: ItemOptions, fragment: BaseFragment) {
+        io.addIf(
+            !CherrygramAppearanceConfig.showMainTabs || !MainTabsManager.hasTab(MainTabsManager.TabType.CALLS),
+            R.drawable.msg_calls,
+            getString(R.string.Calls)
+        ) {
+            val args = Bundle().apply {
+                putBoolean("needFinishFragment", false)
+                putBoolean("hasMainTabs", false)
+            }
+            fragment.presentFragment(CallLogActivity(args))
+        }
+    }
+
+    fun injectGifts(io: ItemOptions, currentAccount: Int, context: Context) {
+        val available: Boolean = CherrygramAppearanceConfig.marketPlaceDrawerButton && DonatesManager.checkAllDonatedAccountsForMarketplace()
+
+        io.addGapIf(available)
+
+        io.addIf(
+            available,
+            R.drawable.menu_gift,
+            getString(R.string.Gift2TitleSelf1)
+        ) {
+            AndroidUtilities.runOnUIThread {
+                val alert = GiftSheet(context, currentAccount, UserConfig.getInstance(currentAccount).clientUserId, null, null)
+                alert.show()
+            }
+        }
+    }
+
+    fun injectScanQR(io: ItemOptions, fragment: BaseFragment) {
+        io.add(
+            R.drawable.msg_qrcode,
+            getString(R.string.AuthAnotherClient)
+        ) {
+            val activity = fragment.parentActivity
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && activity.checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                activity.requestPermissions(
+                    arrayOf(Manifest.permission.CAMERA),
+                    ActionIntroActivity.CAMERA_PERMISSION_REQUEST_CODE
+                )
+                return@add
+            }
+
+            if (activity is LaunchActivity) {
+                openCameraScanActivity(fragment, activity.actionBarLayout)
+
+                if (AndroidUtilities.isTablet()) {
+                    activity.actionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST)
+                    activity.rightActionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST)
+                }
+            }
+        }
+    }
+
+    fun injectProxySettings(io: ItemOptions, fragment: BaseFragment) {
+        var available = false
+
+        for (i in 0 until UserConfig.MAX_ACCOUNT_COUNT) {
+            val userConfig = AccountInstance.getInstance(i).userConfig
+            val phone = userConfig?.currentUser?.phone ?: continue
+
+            if (
+                phone.startsWith("7") || // RU, KZ
+                phone.startsWith("98") || // Iran
+                phone.startsWith("964") // Iraq
+            ) {
+                available = true
+                break
+            }
+        }
+
+        io.addGapIf(available)
+        io.addIf(
+            available,
+            R.drawable.shield_network_filled_solar,
+            getString(R.string.ProxySettings)
+        ) {
+            fragment.presentFragment(ProxyListActivity())
+        }
+    }
+
+    private fun openCameraScanActivity(fragment: BaseFragment, actionBarLayout: INavigationLayout) {
+        CameraScanActivity.showAsSheet(fragment, false, CameraScanActivity.TYPE_QR_LOGIN, object : CameraScanActivity.CameraScanActivityDelegate {
+            override fun processQr(link: String, onLoadEnd: Runnable): Boolean {
+                AndroidUtilities.runOnUIThread({
+                    try {
+                        val code = link.removePrefix("tg://login?token=")
+                            .replace("/", "_")
+                            .replace("+", "-")
+
+                        val token = Base64.decode(code, Base64.URL_SAFE)
+
+                        val req = TLRPC.TL_auth_acceptLoginToken().apply {
+                            this.token = token
+                        }
+
+                        ConnectionsManager.getInstance(UserConfig.selectedAccount)
+                            .sendRequest(req) { _, _ ->
+                                AndroidUtilities.runOnUIThread(onLoadEnd)
+                            }
+                    } catch (e: Exception) {
+                        FileLog.e("Failed to pass qr code auth", e)
+
+                        val fragmentStack = actionBarLayout.fragmentStack
+                        if (fragmentStack.isNotEmpty()) {
+                            val fragment = fragmentStack[0]
+                            AndroidUtilities.runOnUIThread {
+                                AlertsCreator.showSimpleAlert(
+                                    fragment,
+                                    getString(R.string.AuthAnotherClient),
+                                    getString(R.string.ErrorOccurred)
+                                )
+                            }
+                        }
+                        onLoadEnd.run()
+                    }
+                }, 750)
+                return true
+            }
+        })
+    }
+
+    fun openArchivedChats(fragment: BaseFragment) {
+        val args = Bundle().apply {
+            putInt("folderId", 1)
+        }
+        fragment.presentFragment(DialogsActivity(args))
+    }
+    /** Dialogs Activity finish */
 
 }

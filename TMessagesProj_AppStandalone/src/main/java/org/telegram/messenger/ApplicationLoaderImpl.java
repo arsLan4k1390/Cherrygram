@@ -22,20 +22,17 @@ import org.telegram.tgnet.TL_smsjobs;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.Adapters.DrawerLayoutAdapter;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.BulletinFactory;
+import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.UpdateAppAlertDialog;
-import org.telegram.ui.Components.UpdateButton;
 import org.telegram.ui.Components.UpdateLayout;
-import org.telegram.ui.IUpdateButton;
 import org.telegram.ui.IUpdateLayout;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.SMSStatsActivity;
 import org.telegram.ui.SMSSubscribeSheet;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.updater.UpdaterBottomSheet;
@@ -118,18 +115,9 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
     }
 
     @Override
-    public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenu, ViewGroup sideMenuContainer) {
+    public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenuContainer) {
         if (CherrygramCoreConfig.INSTANCE.getUpdatesNewUI()) {
-            return new UpdateLayout(activity, sideMenu, sideMenuContainer);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public IUpdateButton takeUpdateButton(Context context) {
-        if (CherrygramCoreConfig.INSTANCE.getUpdatesNewUI()) {
-            return new UpdateButton(context);
+            return new UpdateLayout(activity, sideMenuContainer);
         } else {
             return null;
         }
@@ -151,13 +139,14 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
     }
 
     @Override
-    public boolean extendDrawer(ArrayList<DrawerLayoutAdapter.Item> items) {
+    public void addItemOptions(ItemOptions itemOptions) {
         if (SMSJobController.getInstance(UserConfig.selectedAccount).isAvailable()) {
             CharSequence text = LocaleController.getString(R.string.SmsJobsMenu);
             if (MessagesController.getGlobalMainSettings().getBoolean("newppsms", true)) {
                 text = applyNewSpan(text.toString());
             }
-            DrawerLayoutAdapter.Item item = new DrawerLayoutAdapter.Item(93, text, R.drawable.left_sms).onClick(v -> {
+            boolean withError = isInAirplaneMode(LaunchActivity.instance) || SMSJobController.getInstance(UserConfig.selectedAccount).hasError();
+            itemOptions.add(R.drawable.left_sms, text, withError, () -> {
                 MessagesController.getGlobalMainSettings().edit().putBoolean("newppsms", false).apply();
                 SMSJobController controller = (SMSJobController) SMSJobController.getInstance(UserConfig.selectedAccount);
                 final int state = controller.currentState;
@@ -209,12 +198,7 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
                     lastFragment.presentFragment(new SMSStatsActivity());
                 }
             });
-            if (isInAirplaneMode(LaunchActivity.instance) || SMSJobController.getInstance(UserConfig.selectedAccount).hasError()) {
-                item.withError();
-            }
-            items.add(item);
         }
-        return true;
     }
 
     @Override

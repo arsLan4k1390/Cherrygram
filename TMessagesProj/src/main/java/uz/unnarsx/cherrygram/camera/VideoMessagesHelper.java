@@ -40,9 +40,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 public class VideoMessagesHelper {
 
     public CameraXController cameraXController;
-    private CameraXController.CameraLifecycle camLifecycle = new CameraXController.CameraLifecycle();
-
-    private WindowBlurHelper windowBlurHelper = new WindowBlurHelper();
+    private final CameraXController.CameraLifecycle camLifecycle = new CameraXController.CameraLifecycle();
 
     public void createCameraX(InstantCameraView instantCameraView, final SurfaceTexture surfaceTexture) {
         AndroidUtilities.runOnUIThread(() -> {
@@ -53,7 +51,7 @@ public class VideoMessagesHelper {
             if (instantCameraView.zoomControlView != null) instantCameraView.zoomControlView.setSliderValue(getZoomForSlider(instantCameraView), false);
             if (instantCameraView.evControlView != null) instantCameraView.evControlView.setValue(0.5f);
             if (instantCameraView.flashViews != null) instantCameraView.flashViews.setForCameraX(true);
-            windowBlurHelper.hideStatusBar(instantCameraView.delegate.getParentActivity().getWindow(), true);
+            WindowBlurHelper.hideStatusBar(instantCameraView.delegate.getParentActivity().getWindow(), true);
 
             if (BuildVars.LOGS_ENABLED) {
                 FileLog.d("InstantCamera create camera session");
@@ -105,17 +103,17 @@ public class VideoMessagesHelper {
 
             cameraXController.stopVideoRecording(true);
             cameraXController.closeCamera();
-            windowBlurHelper.hideStatusBar(instantCameraView.delegate.getParentActivity().getWindow(), false);
+            WindowBlurHelper.hideStatusBar(instantCameraView.delegate.getParentActivity().getWindow(), false);
         }  catch (Exception ignored) {}
     }
 
-    public void toggleTorch(InstantCameraView instantCameraView) {
+    public boolean toggleTorch(InstantCameraView instantCameraView) {
         if (instantCameraView.flashing) {
             if (instantCameraView.isFrontface) {
                 setMaxBrightness(instantCameraView);
             } else {
-                if (!instantCameraView.cameraReady || !cameraXController.isInitied() || instantCameraView.cameraThread == null){
-                    return;
+                if (!instantCameraView.cameraReady || !cameraXController.isInitiated() || instantCameraView.cameraThread == null) {
+                    return false;
                 }
                 CameraXController.setTorchEnabled(true);
             }
@@ -123,27 +121,32 @@ public class VideoMessagesHelper {
             if (instantCameraView.isFrontface) {
                 setOldBrightness(instantCameraView);
             } else {
-                if (!instantCameraView.cameraReady || !cameraXController.isInitied() || instantCameraView.cameraThread == null){
-                    return;
+                if (!instantCameraView.cameraReady || !cameraXController.isInitiated() || instantCameraView.cameraThread == null) {
+                    return false;
                 }
                 CameraXController.setTorchEnabled(false);
             }
         }
+        return true;
     }
 
-    public void setMaxBrightness(InstantCameraView instantCameraView) {
+    private void setMaxBrightness(InstantCameraView instantCameraView) {
         instantCameraView.flashViews.flashIn(null);
         instantCameraView.zoomControlView.invertColors(1F);
     }
 
-    public void setOldBrightness(InstantCameraView instantCameraView) {
+    private void setOldBrightness(InstantCameraView instantCameraView) {
         instantCameraView.flashViews.flashOut();
         instantCameraView.zoomControlView.invertColors(0F);
     }
 
     private Boolean wasFlashing;
     public void updateCameraXFlash(InstantCameraView instantCameraView) {
-        toggleTorch(instantCameraView);
+        boolean success = toggleTorch(instantCameraView);
+
+        if (!success) {
+            return;
+        }
 
         if (instantCameraView.flashButton == null || (wasFlashing != null && wasFlashing == instantCameraView.flashing)) return;
 
@@ -167,12 +170,12 @@ public class VideoMessagesHelper {
         wasFlashing = instantCameraView.flashing;
     }
 
-    public float getZoomForSlider(InstantCameraView instantCameraView) {
+    private float getZoomForSlider(InstantCameraView instantCameraView) {
         float value = 0;
         if (
                 !instantCameraView.isFrontface
                 && !CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam()
-                && cameraXController != null && !cameraXController.isAvailableWideMode() /* Wide camera check to prevent wrong slider value on non-supported devices */
+                && cameraXController != null && !cameraXController.isAvailableWideMode()
         ) {
             value = 0.5f;
         }

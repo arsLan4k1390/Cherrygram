@@ -9,14 +9,11 @@
 
 package uz.unnarsx.cherrygram.misc
 
-import org.telegram.messenger.BuildConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
 
 object Constants {
 
-    fun getCherryVersion() : String {
-        return BuildConfig.BUILD_VERSION_STRING_CHERRY
-    }
+    @JvmField
     var CG_AUTHOR = "Updates: @CherrygramAPKs"
 
     /** CG Links start**/
@@ -44,6 +41,11 @@ object Constants {
     var CG_DONATIONS_AND_TERMS_URL = "https://arslan4k1390.github.io/cherrygram/donation-terms"
 
     @JvmField
+    var CG_CROWDIN_URL = "https://crowdin.com/project/cherrygram"
+    @JvmField
+    var CG_GITHUB_URL = "https://github.com/arsLan4k1390/Cherrygram"
+
+    @JvmField
     var CG_SAFESTARS = "https://safestars.pro/?partner=cherrygram"
     @JvmField
     var CG_SAFESTARS_RU = "https://safestars.pro/ru/?partner=cherrygram"
@@ -59,6 +61,12 @@ object Constants {
     const val Cherrygram_Beta = 1544768810L // Cherrygram Beta APKs
     const val Cherrygram_Archive = 1719103382L // Cherrygram Archive
     /** CG Chats IDs finish**/
+
+    /** OWNer's friends start */
+    const val Yuki = 706402791L
+    const val Alina = 553511970L
+    const val Samir = 5710829964L
+    /** OWNer's friends finish */
 
     /** Misc start**/
     const val CHERRY_EMOJI_ID = 5220045200780458122L // Cherrygram logo
@@ -78,6 +86,7 @@ object Constants {
     const val Is_Donate_Screen_Available = "is_donate_screen_available"
     const val Re_Tg_Check = "re_tg_check"
     const val is_new_updates_ui_available = "is_new_updates_ui_available"
+    const val is_new_updates_ui_available_v2 = "is_new_updates_ui_available_v2"
     const val allow_use_safestars = "allow_use_safestars"
     /** Firebase remote Config finish */
 

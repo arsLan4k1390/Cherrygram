@@ -109,14 +109,14 @@ public class Browser {
                 @Override
                 public void onServiceConnected(CustomTabsClient client) {
                     customTabsClient = client;
-                    if (SharedConfig.customTabs) {
-                        if (customTabsClient != null) {
+                    if (SharedConfig.customTabs && customTabsClient != null) {
+                        Utilities.globalQueue.postRunnable(() -> {
                             try {
                                 customTabsClient.warmup(0);
                             } catch (Exception e) {
                                 FileLog.e(e);
                             }
-                        }
+                        });
                     }
                 }
 

@@ -5,6 +5,7 @@
     <string name="CG_FollowChannelInfo">加入频道，随时了解Cherrygram的所有新闻和功能更新！</string>
     <string name="CG_DoNotRemindAgain">不再提醒</string>
     <!--Telegram screens-->
+    <string name="CG_SwitchedToAccount">Switched to **%1$s**</string>
     <string name="CG_JoinedDate">您加入了 **%1$s** **%2$s**</string>
     <string name="CG_CreatedDate">**%1$s** 已创建 **%2$s**</string>
     <string name="CG_RegistrationDate">注册日期：</string>
@@ -32,7 +33,6 @@
     <string name="CG_AndMoreTypingGroup_other">%1$s及另外%2$d个</string>
     <!--Typing status-->
     <!--Telegram Folders Settings-->
-    <string name="CG_FoldersType_Header">Tab 图标类型</string>
     <string name="CG_FoldersTypeTitles">仅显示文本</string>
     <string name="CG_FoldersTypeIcons">仅显示图标</string>
     <string name="CG_FoldersTypeIconsTitles">带文本的图标</string>
@@ -84,6 +84,9 @@
     <!--Search filter-->
     <!--Chats screen-->
     <!--Misc-->
+    <string name="CG_SafeStars_buy">购买星星（多链 &amp; 无 KYC）</string>
+    <string name="CG_SafeStars_buy_Telegram">通过 Telegram 购买星星</string>
+    <string name="CG_Stats_TOS">继续下一步操作，即表示您同意 **Telegram 条款与细则** 以及 **Cherrygram 服务条款**。</string>
     <string name="CG_SortByDate">按日期排序</string>
     <string name="CG_SortByUnread">按未读排序</string>
     <string name="CG_UnknownCherrySettingsOption">没有这样的 Cherry 设置选项</string>
@@ -148,19 +151,15 @@
     <string name="AP_ChangeIcon_White">白色</string>
     <string name="AP_ChangeIcon_Laguna">Laguna</string>
     <string name="AP_ChangeIcon_Green">绿色</string>
-    <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
+    <string name="AP_ChangeIcon_Lavanda">薰衣草色</string>
     <string name="AP_ChangeIcon_Sunset">日落</string>
     <string name="AP_ChangeIcon_Sunrise">日出</string>
-    <string name="AP_IconReplacement_VKUI">VKUI 图标</string>
     <string name="AP_IconReplacement_Solar">Solar 图标</string>
     <string name="AP_IconReplacement_Default">默认</string>
-    <string name="AP_MD3_Containers">MD3风格设置栏</string>
-    <string name="AP_MD3_Containers_Desc">将设置栏主题调整为 Materal Design 3 圆角矩形风格</string>
     <string name="AP_OneUI_Switch_Style">OneUI 开关风格</string>
     <string name="AP_SystemEmoji">使用系统 Emoji</string>
     <string name="AP_ShowPencilIcon">将消息底部的“已编辑”替换为铅笔图标</string>
     <string name="AP_CenterTitle">标题居中</string>
-    <string name="AP_iosSearchPanel">iOS 风格的搜索面板</string>
     <string name="AP_DisableDividers">禁用分隔线</string>
     <string name="AP_ToolBarShadow">禁用工具栏阴影</string>
     <string name="AP_SystemFonts">使用系统字体</string>
@@ -200,20 +199,15 @@
     <string name="AP_FolderNameInHeader_Desc">这会将操作栏中的“Cherrygram”更改为文件夹名称 (开启仅显示图标时效果最佳)</string>
     <string name="CP_NewTabs_RemoveAllChats">隐藏所有聊天Tab</string>
     <string name="AP_Tab_Style">Tab 样式</string>
-    <string name="AP_Tab_Style_Default">默认</string>
-    <string name="AP_Tab_Style_Rounded">圆形</string>
-    <string name="AP_Tab_Style_Text">文本</string>
-    <string name="AP_Tab_Style_Pills">药丸</string>
     <string name="AP_Tab_Style_Stroke">添加描边</string>
-    <string name="AP_DrawerCategory">侧边栏</string>
-    <string name="AP_DrawerAvatar">侧边栏背景使用个人资料图片</string>
-    <string name="AP_DrawerShowAvatar">显示头像</string>
-    <string name="AP_DrawerDarken">暗色背景</string>
-    <string name="AP_ShadeBackground">渐变背景</string>
-    <string name="AP_DrawerBlur">背景模糊</string>
-    <string name="AP_DrawerBlurIntensity">模糊程度</string>
-    <string name="AP_DrawerIconPack_Header">侧边栏图标设置</string>
-    <string name="AP_DrawerButtonsCategory">侧边栏按钮</string>
+    <string name="CP_MainTabs_Header">Bottom tabs organizer</string>
+    <string name="CP_MainTabs_Layout">Tabs</string>
+    <string name="CP_MainTabs_ShowTabs">Show tabs</string>
+    <string name="CP_MainTabs_OpenSettings">Open settings by swipe</string>
+    <string name="CP_MainTabs_OpenSettings_Desc">Swipe from left to right on the tabs to open the settings, similar to a drawer when tabs are disabled.</string>
+    <string name="CP_MainTabs_Layout_Desc">Tap to enable/disable, hold and drag to reorder.</string>
+    <string name="CP_MainTabs_DoubleTap_Desc">Double-tap a chat tab to open \"Saved Messages\". Double-tap the profile tab (or Settings if the profile tab is hidden) to switch accounts.</string>
+    <string name="CP_MainTabs_ShowTabsTitle">Show tabs titles</string>
     <string name="AP_HideUserPhone_Show">点击显示</string>
     <string name="AP_HideUserPhone_Copy">长按复制</string>
     <string name="AP_MutualContacts_Description">该帐号为双向联系人</string>
@@ -319,8 +313,6 @@
     <string name="CP_Slider_MediaAmplifier_Hint">不适用于相册（分组媒体）</string>
     <string name="CP_LargeVoiceMessages">自适应语音消息长度</string>
     <string name="CP_LargeVoiceMessages_Desc">音频消息气泡的长度取决于录音时长，并将自动调整以适应屏幕宽度。</string>
-    <string name="CP_VoiceEnhancements">语音增强</string>
-    <string name="CP_VoiceEnhancements_Desc">降噪与人声增强</string>
     <string name="CP_PlayVideo">按下音量键播放视频</string>
     <string name="CP_PlayVideo_Desc">按下音量键时，播放当前界面任意视频</string>
     <string name="CP_AutoPauseVideo">自动暂停视频</string>
@@ -368,7 +360,6 @@
     <string name="EP_NavigationAnimationBezier">经典</string>
     <string name="EP_NavigationAnimationCrossfading">淡入淡出效果</string>
     <string name="EP_PhotosSize">发送大号照片（2560 像素）</string>
-    <string name="EP_CustomAppTitle">应用标题</string>
     <string name="EP_CustomChat">自定义已保存消息的聊天</string>
     <string name="EP_CustomChat_Desc">设置来自另一个聊天/群组/频道的 ID 转发消息(动作栏中的按钮，消息菜单或双击)</string>
     <string name="EP_CustomChat_Selected_Title">代替</string>
@@ -440,10 +431,10 @@
     <string name="DP_Donate_MessageMenu_Desc">4. “**iOS 风格**” 的消息菜单。</string>
     <string name="DP_Donate_Cheque">将付款确认书发送到 **@arsLan** 以获取奖励。</string>
     <string name="DP_Donate_Terms">捐赠前，请阅读 **捐赠条款**。所有捐赠条目均为自愿执行且不可退款。</string>
-    <string name="DP_Donate_Counter_one">**%1$d** person has already supported the project and received bonuses</string>
-    <string name="DP_Donate_Counter_few">**%1$d** people have already supported the project and received bonuses</string>
-    <string name="DP_Donate_Counter_many">**%1$d** people have already supported the project and received bonuses</string>
-    <string name="DP_Donate_Counter_other">**%1$d** people have already supported the project and received bonuses</string>
+    <string name="DP_Donate_Counter_one">**%1$d** 人已支持此项目并获得奖励</string>
+    <string name="DP_Donate_Counter_few">**%1$d** 人已支持此项目并获得奖励</string>
+    <string name="DP_Donate_Counter_many">**%1$d** 人已支持此项目并获得奖励</string>
+    <string name="DP_Donate_Counter_other">**%1$d** 人已支持此项目并获得奖励</string>
     <string name="DP_Donate_Bulletin">**%s** 支持了 **Cherrygram** 的开发！</string>
     <string name="DP_Support">喜欢 Cherrygram？请支持！</string>
     <string name="DP_SupportOptions">支持选项</string>

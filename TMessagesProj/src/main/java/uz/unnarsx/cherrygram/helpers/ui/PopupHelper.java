@@ -24,13 +24,12 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.RadioColorCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Components.Bulletin;
-import org.telegram.ui.Components.BulletinFactory;
 
 import java.util.ArrayList;
 
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.preferences.ChatsPreferencesEntry;
-import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
 public class PopupHelper {
 
@@ -138,20 +137,7 @@ public class PopupHelper {
                     Bulletin.BulletinWindow.BulletinWindowLayout window = Bulletin.BulletinWindow.make(fragment.getParentActivity());
                     window.setTouchable(true);
 
-                    BulletinFactory.of(window, fragment.getResourceProvider()).createSimpleBulletin(
-                            R.raw.cg_star_reaction, // stars_topup // star_premium_2
-                            getString(R.string.DP_Donate_Exclusive),
-                            getString(R.string.DP_Donate_ExclusiveDesc),
-                            getString(R.string.MoreInfo),
-                            () -> {
-                                fragment.dismissCurrentDialog();
-                                if (fragment.getConnectionsManager().isTestBackend()) {
-                                    CherrygramPreferencesNavigator.INSTANCE.createDonate(fragment);
-                                } else {
-                                    CherrygramPreferencesNavigator.INSTANCE.createDonateForce(fragment);
-                                }
-                            }
-                    ).show();
+                    CGBulletinCreator.INSTANCE.createRequireDonateBulletin(fragment);
                 } else {
                     boolean newValue = !prefCheck.get(finalA);
                     prefCheck.set(finalA, newValue);
@@ -173,45 +159,6 @@ public class PopupHelper {
         if (dismissRunnable != null) builder.setOnDismissListener(v -> dismissRunnable.run());
         fragment.showDialog(builder.create());
     }
-
-    /*public static void showSwitchAlert2(
-            String title,
-            BaseFragment fragment,
-            ArrayList<String> prefTitle,
-            ArrayList<String> prefDesc,
-            ArrayList<Boolean> prefCheck,
-            ArrayList<Boolean> prefDivider,
-            ArrayList<Runnable> clickListener,
-            Runnable dismissRunnable
-    ) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getContext(), fragment.getResourceProvider());
-        builder.setTitle(title);
-        final LinearLayout linearLayout = new LinearLayout(fragment.getContext());
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-
-        for (int a = 0; a < prefTitle.size(); a++) {
-            TextCheckCell textCheckCell = new TextCheckCell(fragment.getContext(), fragment.getResourceProvider());
-            textCheckCell.setBackground(Theme.getSelectorDrawable(false));
-
-            textCheckCell.setTextAndValueAndCheck(prefTitle.get(a), prefDesc.get(a), prefCheck.get(a), true, prefDivider.get(a));
-            textCheckCell.setTag(a);
-
-            linearLayout.addView(textCheckCell);
-            int finalA = a;
-            textCheckCell.setOnClickListener(v -> {
-                boolean newValue = !prefCheck.get(finalA);
-                prefCheck.set(finalA, newValue);
-                textCheckCell.setChecked(newValue);
-                clickListener.get(finalA).run();
-            });
-        }
-
-        builder.setView(linearLayout);
-
-        builder.setPositiveButton(getString(R.string.Close), dismissRunnable != null ? (dialogInterface, i) -> dismissRunnable.run() : null);
-        if (dismissRunnable != null) builder.setOnDismissListener(v -> dismissRunnable.run());
-        fragment.showDialog(builder.create());
-    }*/
 
 }
 

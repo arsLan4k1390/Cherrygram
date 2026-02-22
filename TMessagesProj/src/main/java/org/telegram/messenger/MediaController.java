@@ -4691,7 +4691,6 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 recordQuickReplyShortcut = quick_shortcut;
                 recordQuickReplyShortcutId = quick_shortcut_id;
                 fileBuffer.rewind();
-                AudioEnhance.INSTANCE.initVoiceEnhancements(audioRecorder);
 
                 audioRecorder.startRecording();
             } catch (Exception e) {
@@ -4702,7 +4701,6 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
                 recordingAudioFile.delete();
                 recordingAudioFile = null;
                 try {
-                    AudioEnhance.INSTANCE.releaseVoiceEnhancements();
                     audioRecorder.release();
                     audioRecorder = null;
                 } catch (Exception e2) {
@@ -4857,7 +4855,6 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         }
         try {
             if (audioRecorder != null) {
-                AudioEnhance.INSTANCE.releaseVoiceEnhancements();
                 audioRecorder.release();
                 audioRecorder = null;
             }

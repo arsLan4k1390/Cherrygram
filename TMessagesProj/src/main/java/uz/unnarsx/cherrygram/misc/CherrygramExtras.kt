@@ -16,40 +16,49 @@ import android.os.Build
 import android.provider.Settings
 import android.view.View
 import android.view.WindowInsets
+import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
+import androidx.core.content.edit
 import androidx.core.graphics.ColorUtils
 import com.google.android.play.core.review.ReviewManagerFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import org.telegram.messenger.*
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.KotlinFragmentsManager
 import org.telegram.messenger.LocaleController.getString
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.MessagesStorage
+import org.telegram.messenger.R
+import org.telegram.messenger.UserConfig
 import org.telegram.messenger.browser.Browser
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLObject
 import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.AlertDialog
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.CallLogActivity
-import org.telegram.ui.ChatActivity
-import org.telegram.ui.Components.MediaActivity
-import org.telegram.ui.ContactsActivity
-import org.telegram.ui.GroupCreateActivity
-import org.telegram.ui.ProfileActivity
-import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.preferences.ExperimentalPreferencesEntry
-import uz.unnarsx.cherrygram.preferences.tgkit.TGKitSettingsFragment
-import androidx.core.content.edit
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
+import java.util.concurrent.CompletableFuture
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 object CherrygramExtras : CoroutineScope by MainScope() {
 
     fun pause(seconds: Double) {
         try {
             Thread.sleep((seconds * 1000).toLong())
-        } catch (ignored: InterruptedException) { }
+        } catch (_: InterruptedException) { }
     }
 
     private val channelUsername = Constants.CG_CHANNEL_USERNAME
@@ -96,6 +105,65 @@ object CherrygramExtras : CoroutineScope by MainScope() {
 
     }
 
+    private suspend fun getChat(fragment: BaseFragment): TLRPC.Chat = withContext(Dispatchers.IO) {
+        val cached = fragment.messagesController.getUserOrChat(channelUsername)
+        if (cached is TLRPC.Chat) return@withContext cached
+
+        suspendCancellableCoroutine { cont ->
+            fragment.connectionsManager.sendRequest(
+                TLRPC.TL_contacts_resolveUsername().apply { username = channelUsername }
+            ) { response, error ->
+
+                if (error != null || response !is TLRPC.TL_contacts_resolvedPeer) {
+                    cont.resumeWithException(Exception("Failed to resolve channel: $channelUsername"))
+                    return@sendRequest
+                }
+
+                val chat = response.chats.firstOrNull { it.username == channelUsername }
+
+                if (chat != null) {
+                    fragment.messagesController.putChats(response.chats, false)
+                    fragment.messagesStorage.putUsersAndChats(response.users, response.chats, false, true)
+                    cont.resume(chat)
+                } else {
+                    cont.resumeWithException(Exception("Channel not found: $channelUsername"))
+                }
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun getChatJava(fragment: BaseFragment): CompletableFuture<TLRPC.Chat> {
+        val future = CompletableFuture<TLRPC.Chat>()
+        val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
+        scope.launch {
+            try {
+                val chat = getChat(fragment)
+                future.complete(chat)
+            } catch (e: Exception) {
+                future.completeExceptionally(e)
+            }
+        }
+
+        return future
+    }
+
+    fun shouldCheckFollow(fragment: BaseFragment): Boolean {
+        val lastShownEpoch = fragment.messagesController.mainSettings.getLong("last_follow_suggestion", 0)
+        val today = LocalDate.now()
+
+        if (lastShownEpoch == 0L) return true
+
+        val lastShownDate = Instant.ofEpochMilli(lastShownEpoch)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+
+        val timeout = ChronoUnit.WEEKS.between(lastShownDate, today) >= 30
+
+        return timeout
+    }
+
     private fun checkChannelFollow(activity: Activity, currentAccount: Int, channel: TLRPC.Chat) {
 
         launch(Dispatchers.IO) {
@@ -137,7 +205,7 @@ object CherrygramExtras : CoroutineScope by MainScope() {
 
             try {
                 builder.show()
-            } catch (ignored: Exception) {}
+            } catch (_: Exception) {}
 
         }
 
@@ -154,7 +222,7 @@ object CherrygramExtras : CoroutineScope by MainScope() {
 
                     val flow = reviewManager.launchReviewFlow(fragment.parentActivity, reviewInfo)
                     flow.addOnCompleteListener {
-                        AppRestartHelper.createDebugSuccessBulletin(fragment)
+                        CGBulletinCreator.createDebugSuccessBulletin(fragment)
                         fragment.messagesController.mainSettings.edit {
                             putBoolean("is_cherrygram_rated", true)
                         }
@@ -171,18 +239,6 @@ object CherrygramExtras : CoroutineScope by MainScope() {
     private fun reviewInGooglePlay() {
         val context = ApplicationLoader.applicationContext
         Browser.openUrl(context, "market://details?id=${context.packageName}")
-    }
-
-    fun needToAnimateFragment(fragment: BaseFragment) : Boolean {
-        return fragment is CallLogActivity
-                || fragment is ContactsActivity
-                || fragment is ChatActivity
-                || fragment is GroupCreateActivity
-                || fragment is MediaActivity
-                || fragment is ProfileActivity
-
-                || fragment is TGKitSettingsFragment
-                || fragment is ExperimentalPreferencesEntry
     }
 
     fun getTransparentColor(color: Int, opacity: Float): Int {
@@ -202,6 +258,24 @@ object CherrygramExtras : CoroutineScope by MainScope() {
         val hsl = FloatArray(3)
         ColorUtils.RGBToHSL(red, green, blue, hsl)
         return hsl[2] >= 0.5f
+    }
+
+    fun isWhiteOrNearWhite(@ColorInt color: Int): Boolean {
+        val r = Color.red(color)
+        val g = Color.green(color)
+        val b = Color.blue(color)
+
+        if (r < 240 || g < 240 || b < 240) {
+            return false
+        }
+
+        val hsl = FloatArray(3)
+        ColorUtils.RGBToHSL(r, g, b, hsl)
+
+        val saturation = hsl[1]
+        val lightness = hsl[2]
+
+        return saturation <= 0.1f && lightness >= 0.9f
     }
 
     private var isEdgeToEdgeCached: Boolean? = null
@@ -236,7 +310,7 @@ object CherrygramExtras : CoroutineScope by MainScope() {
                 "navigation_mode"
             )
             mode == 2 // GESTURES (pill)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }

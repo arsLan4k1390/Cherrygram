@@ -16,12 +16,10 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 object CGFeatureHooks {
 
     fun switchNoAuthor(b: Boolean) {
-        // ...
         CherrygramChatsConfig.noAuthorship = b
     }
 
     fun switchNoCaptions(b: Boolean) {
-        // ...
         CherrygramChatsConfig.noCaptions = b
     }
 

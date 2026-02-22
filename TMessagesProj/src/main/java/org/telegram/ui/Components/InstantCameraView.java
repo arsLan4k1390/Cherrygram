@@ -49,6 +49,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -405,7 +406,7 @@ public class InstantCameraView extends FrameLayout implements NotificationCenter
                     switchCamera();
                 }
             } else {
-                if (!cameraReady || !videoMessagesHelper.cameraXController.isInitied() || cameraThread == null){
+                if (!cameraReady || !videoMessagesHelper.cameraXController.isInitiated() || cameraThread == null){
                     return;
                 }
                 flashing = false;

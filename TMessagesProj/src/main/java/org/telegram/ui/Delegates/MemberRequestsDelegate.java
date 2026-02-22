@@ -189,8 +189,8 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
     public StickerEmptyView getEmptyView() {
         if (emptyView == null) {
             emptyView = new StickerEmptyView(fragment.getParentActivity(), null, StickerEmptyView.STICKER_TYPE_DONE, fragment.getResourceProvider());
-            emptyView.title.setText(isChannel ? LocaleController.getString(R.string.NoSubscribeRequests) : LocaleController.getString(R.string.NoMemberRequests));
-            emptyView.subtitle.setText(isChannel ? LocaleController.getString(R.string.NoSubscribeRequestsDescription) : LocaleController.getString(R.string.NoMemberRequestsDescription));
+            emptyView.title.setText(isChannel ? getString(R.string.NoSubscribeRequests) : getString(R.string.NoMemberRequests));
+            emptyView.subtitle.setText(isChannel ? getString(R.string.NoSubscribeRequestsDescription) : getString(R.string.NoMemberRequestsDescription));
             emptyView.setAnimateLayoutChange(true);
             emptyView.setVisibility(GONE);
         }
@@ -203,8 +203,8 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
             if (isShowLastItemDivider) {
                 searchEmptyView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite, fragment.getResourceProvider()));
             }
-            searchEmptyView.title.setText(LocaleController.getString(R.string.NoResult));
-            searchEmptyView.subtitle.setText(LocaleController.getString(R.string.SearchEmptyViewFilteredSubtitle2));
+            searchEmptyView.title.setText(getString(R.string.NoResult));
+            searchEmptyView.subtitle.setText(getString(R.string.SearchEmptyViewFilteredSubtitle2));
             searchEmptyView.setAnimateLayoutChange(true);
             searchEmptyView.setVisibility(GONE);
         }
@@ -325,9 +325,9 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
         }
     }
 
-    public boolean onBackPressed() {
+    public boolean onBackPressed(boolean invoked) {
         if (previewDialog != null) {
-            previewDialog.dismiss();
+            if (invoked) previewDialog.dismiss();
             return false;
         } else {
             return true;
@@ -556,7 +556,7 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                     onImportersChanged(query, false, true);
                     if (isApproved) {
                         Bulletin.MultiLineLayout layout = new Bulletin.MultiLineLayout(fragment.getParentActivity(), fragment.getResourceProvider());
-                        layout.imageView.setRoundRadius(AndroidUtilities.dp(15));
+                        layout.imageView.setRoundRadius(dp(15));
                         layout.imageView.setForUserOrChat(user, new AvatarDrawable(user));
                         String userName = UserObject.getFirstName(user);
                         String message = isChannel
@@ -649,7 +649,7 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                     view = new View(parent.getContext()) {
                         @Override
                         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                            super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(52), MeasureSpec.EXACTLY));
+                            super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(dp(52), MeasureSpec.EXACTLY));
                         }
                     };
                     break;
@@ -662,7 +662,7 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                             setMeasuredDimension(
                                     MeasureSpec.getSize(widthMeasureSpec),
-                                    AndroidUtilities.dp(2 * 52)
+                                    dp(2 * 52)
                             );
                         }
                     };
@@ -1033,11 +1033,11 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
 
         private int getContentHeight() {
             int height = viewPager.getMeasuredHeight();
-            height += AndroidUtilities.dp(12) + nameText.getMeasuredHeight();
+            height += dp(12) + nameText.getMeasuredHeight();
             if (bioText.getVisibility() != GONE) {
-                height += AndroidUtilities.dp(4) + bioText.getMeasuredHeight();
+                height += dp(4) + bioText.getMeasuredHeight();
             }
-            height += AndroidUtilities.dp(12) + popupLayout.getMeasuredHeight();
+            height += dp(12) + popupLayout.getMeasuredHeight();
             return height;
         }
 
@@ -1078,11 +1078,11 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                 setWillNotDraw(false);
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
                 int minSize = Math.min(getMeasuredWidth(), getMeasuredHeight());
-                int pagerSize = Math.min(minSize, (int)(getMeasuredHeight() * 0.66)) - AndroidUtilities.dp(12) * 2;
+                int pagerSize = Math.min(minSize, (int)(getMeasuredHeight() * 0.66)) - dp(12) * 2;
                 int pagerSpec = MeasureSpec.makeMeasureSpec(pagerSize, MeasureSpec.AT_MOST);
                 viewPager.measure(pagerSpec, pagerSpec);
                 pagerIndicator.measure(pagerSpec, pagerSpec);
-                int textWidthSpec = MeasureSpec.makeMeasureSpec(pagerSize - AndroidUtilities.dp(16) * 2, MeasureSpec.EXACTLY);
+                int textWidthSpec = MeasureSpec.makeMeasureSpec(pagerSize - dp(16) * 2, MeasureSpec.EXACTLY);
                 nameText.measure(textWidthSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
                 bioText.measure(textWidthSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
                 popupLayout.measure(View.MeasureSpec.makeMeasureSpec(viewPager.getMeasuredWidth() + shadowPaddingLeft * 2, MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
@@ -1094,15 +1094,15 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                 int left = (getWidth() - viewPager.getMeasuredWidth()) / 2;
                 viewPager.layout(left, top, left + viewPager.getMeasuredWidth(), top + viewPager.getMeasuredHeight());
                 pagerIndicator.layout(viewPager.getLeft(), viewPager.getTop(), viewPager.getRight(), viewPager.getTop() + pagerIndicator.getMeasuredHeight());
-                top += viewPager.getMeasuredHeight() + AndroidUtilities.dp(12);
-                nameText.layout(viewPager.getLeft() + AndroidUtilities.dp(16), top, viewPager.getRight() - AndroidUtilities.dp(16), top + nameText.getMeasuredHeight());
+                top += viewPager.getMeasuredHeight() + dp(12);
+                nameText.layout(viewPager.getLeft() + dp(16), top, viewPager.getRight() - dp(16), top + nameText.getMeasuredHeight());
                 top += nameText.getMeasuredHeight();
                 if (bioText.getVisibility() != GONE) {
-                    top += AndroidUtilities.dp(4);
+                    top += dp(4);
                     bioText.layout(nameText.getLeft(), top, nameText.getRight(), top + bioText.getMeasuredHeight());
                     top += bioText.getMeasuredHeight();
                 }
-                top += AndroidUtilities.dp(12);
+                top += dp(12);
                 pagerShadowDrawable.setBounds(
                         viewPager.getLeft() - shadowPaddingLeft,
                         viewPager.getTop() - shadowPaddingTop,
@@ -1114,7 +1114,7 @@ public class MemberRequestsDelegate implements MemberRequestCell.OnClickListener
                 popupLayout.layout(left, top, viewPager.getRight() + shadowPaddingLeft, top + popupLayout.getMeasuredHeight());
                 popupLayout.setVisibility(popupLayout.getBottom() < b ? VISIBLE : GONE);
 
-                int radius = AndroidUtilities.dp(6);
+                int radius = dp(6);
                 rectF.set(viewPager.getLeft(), viewPager.getTop(), viewPager.getRight(), viewPager.getTop() + radius * 2);
                 clipPath.reset();
                 clipPath.addRoundRect(rectF, radius, radius, Path.Direction.CW);

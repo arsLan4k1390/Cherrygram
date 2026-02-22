@@ -26,7 +26,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
@@ -65,11 +64,10 @@ import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.Forum.ForumUtilities;
 import org.telegram.ui.Components.blur3.drawable.BlurredBackgroundDrawable;
 import org.telegram.ui.GradientClip;
+import org.telegram.ui.TopicCreateFragment;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 import me.vkryl.android.animator.BoolAnimator;
 
@@ -83,8 +81,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
     private final BaseFragment fragment;
     private final boolean canShowProgress;
 
-    private final BlurredFrameLayout topTabsContainer;
-    private final View topTabsShadowView;
+    private final FrameLayout topTabsContainer;
     private final UniversalRecyclerView topTabs;
     private final @Nullable VerticalTabView botCreateTopicButtonVertical;
     private final @Nullable HorizontalTabView botCreateTopicButtonHorizontal;
@@ -98,7 +95,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
     private long lastSelectedTopicId;
     private long animateFromSelectedTopicId;
 
-    public TopicsTabsView(Context context, BaseFragment fragment, SizeNotifierFrameLayout sizeNotifierFrameLayout, int currentAccount, long dialogId, Theme.ResourcesProvider resourcesProvider) {
+    public TopicsTabsView(Context context, BaseFragment fragment, int currentAccount, long dialogId, Theme.ResourcesProvider resourcesProvider) {
         super(context);
 
         this.fragment = fragment;
@@ -107,19 +104,15 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
         this.resourcesProvider = resourcesProvider;
 
         mono = ChatObject.isMonoForum(MessagesController.getInstance(currentAccount).getChat(-dialogId));
-        bot = UserObject.isBotForum(MessagesController.getInstance(currentAccount).getUser(dialogId));
+        bot = UserObject.isBotForumWithEditableTopics(MessagesController.getInstance(currentAccount).getUser(dialogId));
         canShowProgress = !UserConfig.getInstance(currentAccount).getPreferences().getBoolean("topics_end_reached_" + -dialogId, false);
 
         setClipChildren(true);
         setClipToPadding(true);
         setWillNotDraw(false);
 
-        topTabsShadowView = new View(context);
-        topTabsShadowView.setBackgroundResource(R.drawable.header_shadow);
-        addView(topTabsShadowView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 3, Gravity.TOP | Gravity.FILL_HORIZONTAL, 0, 48, 0, 0));
-        topTabsContainer = new BlurredFrameLayout(context, sizeNotifierFrameLayout);
-        topTabsContainer.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
-        addView(topTabsContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.TOP | Gravity.FILL_HORIZONTAL));
+        topTabsContainer = new FrameLayout(context);
+        addView(topTabsContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.TOP | Gravity.FILL_HORIZONTAL, 7, 7, 7, 7));
 
         sideTabsContainer = new FrameLayout(context);
         addView(sideTabsContainer, LayoutHelper.createFrame(64, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.FILL_VERTICAL, 7, 7, 7, 7));
@@ -149,6 +142,8 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                     View child = getChildAt(i);
                     if (child instanceof HorizontalTabView) {
                         HorizontalTabView tab = (HorizontalTabView) child;
+                        if (tab.isAdd)
+                            continue;
                         if (tab.getTopicId() == currentTopicId) {
                             selectedTab = tab;
                         }
@@ -158,77 +153,13 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                     }
                 }
                 if (selectedTab != null) {
-                    if (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_TEXT) return;
-
-                    int height = getHeight();
-                    float x = selectedTab.getX();
-                    float width = selectedTab.getWidth();
-                    float leftOffset = (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI || tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS) ? dp(2) : 0;
-                    float extraWidth = (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) ? dp(4) : 0;
-
-                    float rawLeft = x - leftOffset;
-                    float left = Math.max(0, rawLeft);
-                    float right = x + width + leftOffset;
-                    float top = (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) ? height / 2f - dp(15) : height - dp(4);
-                    float bottom = (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) ? height / 2f + dp(15) : height;
-
-                    lineRect.set(left, top, right, bottom);
-
-                    int tabLineColorKey = Theme.key_actionBarTabLine;
-                    int activeTextColorKey = Theme.key_actionBarTabActiveText;
-
-                    linePaint.setColor(ColorUtils.setAlphaComponent(
-                            processColor(Theme.getColor(tabLineColorKey, resourcesProvider)),
-                            tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 0x2F : 0xFF
-                    ));
-
-                    if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
-                        float intendedLeft = left - extraWidth / 2f;
-                        float actualLeft = Math.max(0, intendedLeft);
-                        float shift = actualLeft - intendedLeft;
-                        float actualRight = right + extraWidth / 2f - shift;
-
-                        RectF ellipseRect = new RectF(actualLeft, top, actualRight, bottom);
-
-                        if (fromSelectedTab != null) {
-                            float fromX = fromSelectedTab.getX();
-                            float fromW = fromSelectedTab.getWidth();
-                            float fromLeft = Math.max(0, fromX - leftOffset);
-                            float fromRight = fromX + fromW + leftOffset;
-
-                            float fromIntendedLeft = fromLeft - extraWidth / 2f;
-                            float fromActualLeft = Math.max(0, fromIntendedLeft);
-                            float fromShift = fromActualLeft - fromIntendedLeft;
-                            float fromActualRight = fromRight + extraWidth / 2f - fromShift;
-
-                            AndroidUtilities.rectTmp.set(fromActualLeft, top, fromActualRight, bottom);
-                            lerp(AndroidUtilities.rectTmp, ellipseRect, animateTab.set(1.0f), ellipseRect);
-                        }
-
-                        float radius = tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? dp(6) : ellipseRect.height() / 2f;
-
-                        if (CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke()) {
-                            Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                            strokePaint.setStyle(Paint.Style.STROKE);
-                            strokePaint.setStrokeWidth(dp(1));
-                            strokePaint.setColor(processColor(Theme.getColor(activeTextColorKey, resourcesProvider)));
-
-                            linePaint.setStyle(Paint.Style.FILL);
-
-                            canvas.drawRoundRect(ellipseRect, radius, radius, strokePaint);
-                        }
-                        canvas.drawRoundRect(ellipseRect, radius, radius, linePaint);
-                    } else {
-                        if (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_DEFAULT) {
-                            lineRect.set(selectedTab.getX() + dp(6), getHeight() - dp(3), selectedTab.getX() + selectedTab.getWidth() - dp(6), selectedTab.getY() + getHeight() + dp(3));
-                        }
-
-                        if (fromSelectedTab != null) {
-                            AndroidUtilities.rectTmp.set(fromSelectedTab.getX() + dp(6), getHeight() - dp(3), fromSelectedTab.getX() + fromSelectedTab.getWidth() - dp(6), fromSelectedTab.getY() + getHeight() + dp(3));
-                            lerp(AndroidUtilities.rectTmp, lineRect, animateTab.set(1.0f), lineRect);
-                        }
-                        canvas.drawRoundRect(lineRect, dp(2), dp(2), linePaint);
+                    lineRect.set(selectedTab.getX() + dp(6), getHeight() - dp(3), selectedTab.getX() + selectedTab.getWidth() - dp(6), selectedTab.getY() + getHeight() + dp(3));
+                    if (fromSelectedTab != null) {
+                        AndroidUtilities.rectTmp.set(fromSelectedTab.getX() + dp(6), getHeight() - dp(3), fromSelectedTab.getX() + fromSelectedTab.getWidth() - dp(6), fromSelectedTab.getY() + getHeight() + dp(3));
+                        lerp(AndroidUtilities.rectTmp, lineRect, animateTab.set(1.0f), lineRect);
                     }
+                    linePaint.setColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
+                    canvas.drawRoundRect(lineRect, dp(2), dp(2), linePaint);
                 }
                 if (clipAlpha > 0) {
                     canvas.save();
@@ -237,10 +168,6 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                     canvas.restore();
                     canvas.restore();
                 }
-            }
-
-            private int processColor(int color) {
-                return color;
             }
 
             private Drawable pinIcon;
@@ -265,14 +192,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                     }
                 }
                 if (r > l) {
-                    int overlay = Theme.getColor(Theme.key_chats_pinnedOverlay, resourcesProvider);
-                    int offset = tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? dp(2.66f) : 0;
-                    if (Theme.isCurrentThemeDark()) {
-                        pinnedBackgroundPaint.setColor(tabStyle < CherrygramAppearanceConfig.TAB_STYLE_VKUI ? overlay : 0);
-                    } else {
-                        pinnedBackgroundPaint.setColor(tabStyle < CherrygramAppearanceConfig.TAB_STYLE_VKUI ? Theme.blendOver(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider), overlay) : 0);
-                    }
-
+                    pinnedBackgroundPaint.setColor(Theme.getColor(Theme.key_chats_pinnedOverlay, resourcesProvider));
                     AndroidUtilities.rectTmp.set(l, (getHeight() - dp(38)) / 2f, r, (getHeight() + dp(38)) / 2f);
                     canvas.drawRoundRect(AndroidUtilities.rectTmp, dp(6), dp(6), pinnedBackgroundPaint);
 
@@ -283,7 +203,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                     if (pinIconColor != pinColor) {
                         pinIcon.setColorFilter(new PorterDuffColorFilter(pinIconColor = pinColor, PorterDuff.Mode.SRC_IN));
                     }
-                    pinIcon.setBounds((int) (l + dp(4)), (int) (AndroidUtilities.rectTmp.top + dp(2.66f) + offset), (int) (l + dp(4 + 9.66f)), (int) (AndroidUtilities.rectTmp.top + dp(2.66f + 9.66f) + offset));
+                    pinIcon.setBounds((int) (l + dp(4)), (int) (AndroidUtilities.rectTmp.top + dp(2.66f)), (int) (l + dp(4 + 9.66f)), (int) (AndroidUtilities.rectTmp.top + dp(2.66f + 9.66f)));
                     pinIcon.draw(canvas);
                 }
             }
@@ -486,6 +406,12 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                     (int) (getMeasuredHeight() - sideMenuBackgroundMarginBottom));
             sideMenuBackgroundDrawable.draw(canvas);
         }
+        if (topTabsContainer.getVisibility() == VISIBLE) {
+            topMenuBackgroundDrawable.setBounds(
+                    0, (int) topTabsContainer.getTranslationY(),
+                    getMeasuredWidth(), (int) (topTabsContainer.getTranslationY() + dp(48 + 7 + 7)));
+            topMenuBackgroundDrawable.draw(canvas);
+        }
 
         canvas.save();
         canvas.clipRect(0, 0, getWidth(), getHeight());
@@ -496,21 +422,20 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
 
     @Override
     protected boolean drawChild(@NonNull Canvas canvas, View child, long drawingTime) {
-        final boolean needClip = child == sideTabsContainer;
-        if (needClip) {
-            canvas.save();
-            if (child == sideTabsContainer) {
-                canvas.clipPath(sideMenuBackgroundDrawable.getPath());
-            }
+        canvas.save();
+        if (child == sideTabsContainer) {
+            canvas.clipPath(sideMenuBackgroundDrawable.getPath());
+        }
+        if (child == topTabsContainer) {
+            canvas.clipPath(topMenuBackgroundDrawable.getPath());
         }
         final boolean result = super.drawChild(canvas, child, drawingTime);
-        if (needClip) {
-            canvas.restore();
-        }
+        canvas.restore();
         return result;
     }
 
     private BlurredBackgroundDrawable sideMenuBackgroundDrawable;
+    private BlurredBackgroundDrawable topMenuBackgroundDrawable;
     private float sideMenuBackgroundMarginBottom;
     private float sideMenuBackgroundMarginTop;
 
@@ -519,6 +444,14 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
         this.sideMenuBackgroundDrawable.setRadius(dp(16));
         this.sideMenuBackgroundDrawable.setPadding(dp(7));
     }
+
+    public void setTopMenuBackgroundDrawable(BlurredBackgroundDrawable sideMenuBackgroundDrawable) {
+        this.topMenuBackgroundDrawable = sideMenuBackgroundDrawable;
+        this.topMenuBackgroundDrawable.setRadius(dp(16));
+        this.topMenuBackgroundDrawable.setPadding(dp(7));
+    }
+
+
 
     public void setSideMenuBackgroundMarginBottom(float margin) {
         sideMenuBackgroundMarginBottom = margin;
@@ -562,12 +495,9 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
     public float sidemenuT = 0.0f;
     public boolean sidemenuAnimating;
     public void updateSidemenuPosition() {
-        topTabsContainer.setTranslationY(-dp(48) * sidemenuT);
+        topTabsContainer.setTranslationY(-dp(48 + 7) * sidemenuT);
         topTabsContainer.setAlpha(lerp(1.0f, 0.85f, sidemenuT));
         topTabsContainer.setVisibility(sidemenuT >= 1.0f ? View.GONE : View.VISIBLE);
-        topTabsShadowView.setTranslationY(-dp(48 + 3) * sidemenuT);
-        topTabsShadowView.setAlpha(1.0f - sidemenuT);
-        topTabsShadowView.setVisibility(sidemenuT >= 1.0f ? View.GONE : View.VISIBLE);
 
         sideTabsContainer.setTranslationX(-dp(64 + 7 + 7) * (1.0f - sidemenuT));
         sideTabsContainer.setVisibility(sidemenuT <= 0.0f ? View.GONE : View.VISIBLE);
@@ -721,6 +651,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
 
     private void fillVerticalTabs(ArrayList<UItem> items, UniversalAdapter adapter) {
         final TLRPC.Chat currentChat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
+        final TLRPC.User currentUser = MessagesController.getInstance(currentAccount).getUser(dialogId);
         final TopicsController controller = MessagesController.getInstance(currentAccount).getTopicsController();
         final ArrayList<TLRPC.TL_forumTopic> topics = controller.getTopics(-dialogId);
         if (!bot) {
@@ -749,13 +680,14 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
             items.add(VerticalTabView.Factory.asLoading(-3));
             items.add(VerticalTabView.Factory.asLoading(-4));
         }
-        if (!bot && !mono && ChatObject.canCreateTopic(currentChat)) {
+        if (!bot && !mono && (currentChat != null && ChatObject.canCreateTopic(currentChat) || UserObject.isBotForumWithEditableTopics(currentUser))) {
             items.add(VerticalTabView.Factory.asAdd(false));
         }
     }
 
     private void fillHorizontalTabs(ArrayList<UItem> items, UniversalAdapter adapter) {
         final TLRPC.Chat currentChat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
+        final TLRPC.User currentUser = MessagesController.getInstance(currentAccount).getUser(dialogId);
         final TopicsController controller = MessagesController.getInstance(currentAccount).getTopicsController();
         final ArrayList<TLRPC.TL_forumTopic> topics = controller.getTopics(-dialogId);
         if (!bot) {
@@ -784,7 +716,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
             items.add(HorizontalTabView.Factory.asLoading(-3));
             items.add(HorizontalTabView.Factory.asLoading(-4));
         }
-        if (!bot && !mono && ChatObject.canCreateTopic(currentChat)) {
+        if (!bot && !mono && (currentChat != null && ChatObject.canCreateTopic(currentChat) || UserObject.isBotForumWithEditableTopics(currentUser))) {
             items.add(HorizontalTabView.Factory.asAdd());
         }
     }
@@ -904,7 +836,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                     });
                 }
             } else {
-                if (ChatObject.canManageTopics(currentChat) || UserObject.isBotForum(currentUser)) {
+                if (ChatObject.canManageTopics(currentChat) || UserObject.isBotForumWithEditableTopics(currentUser)) {
                     options.add(
                             topic.pinned ? R.drawable.msg_unpin : R.drawable.msg_pin,
                             getString(topic.pinned ? R.string.DialogUnpin : R.string.DialogPin),
@@ -928,6 +860,13 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                                 }
                         );
                     }
+                }
+
+                if (ChatObject.canManageTopics(currentChat) || UserObject.isBotForumWithEditableTopics(currentUser)) {
+                    options.add(R.drawable.outline_profile_edit_24, getString(R.string.EditTopic), () -> {
+                        options.dismiss();
+                        fragment.presentFragment(TopicCreateFragment.create(-dialogId, topic.id));
+                    });
                 }
 
                 final ItemOptions muteOptions = ChatNotificationsPopupWrapper.addAsItemOptions(fragment, options, dialogId, topic.id);
@@ -967,13 +906,11 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                     });
                 }
             }
-            if (tabStyle < CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
-                if (view instanceof HorizontalTabView) {
-                    options.setScrimViewBackground(Theme.createRoundRectDrawable(dp(5), dp(5), 0, 0, Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider)));
-                    options.translate(dp(16), 0);
-                } else {
-                    options.setScrimViewBackground(Theme.createRoundRectDrawable(0, dp(5), dp(5), 0, Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider)));
-                }
+            if (view instanceof HorizontalTabView) {
+                options.setScrimViewBackground(Theme.createRoundRectDrawable(dp(5), dp(5), 0, 0, Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider)));
+                options.translate(dp(16), 0);
+            } else {
+                options.setScrimViewBackground(Theme.createRoundRectDrawable(0, dp(5), dp(5), 0, Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider)));
             }
             options.show();
             return true;
@@ -1186,7 +1123,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                 counterBackgroundColorKey = Theme.key_dialogReactionMentionBackground;
                 if (reactionString == null) {
                     final SpannableStringBuilder sb = new SpannableStringBuilder("❤️");
-                    final ColoredImageSpan span = new ColoredImageSpan(R.drawable.reactionchatslist);
+                    final ColoredImageSpan span = new ColoredImageSpan(R.drawable.mini_like_filled);
                     span.setScale(0.8f, 0.8f);
                     span.spaceScaleX = 0.5f;
                     span.translate(-dp(3), 0);
@@ -1198,7 +1135,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                 counterBackgroundColorKey = muted ? Theme.key_chats_unreadCounterMuted : Theme.key_chats_unreadCounter;
                 if (mentionString == null) {
                     final SpannableStringBuilder sb = new SpannableStringBuilder("@");
-                    final ColoredImageSpan span = new ColoredImageSpan(R.drawable.mentionchatslist);
+                    final ColoredImageSpan span = new ColoredImageSpan(R.drawable.mini_mention_filled_16);
                     span.setScale(0.8f, 0.8f);
                     span.spaceScaleX = 0.5f;
                     span.translate(-dp(3), 0);
@@ -1462,7 +1399,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
             static { setup(new Factory()); }
 
             @Override
-            public VerticalTabView createView(Context context, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
+            public VerticalTabView createView(Context context, RecyclerListView listView, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
                 return new VerticalTabView(context, currentAccount, resourcesProvider);
             }
 
@@ -1846,7 +1783,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                 counterBackgroundColorKey = Theme.key_dialogReactionMentionBackground;
                 if (reactionString == null) {
                     final SpannableStringBuilder sb = new SpannableStringBuilder("❤️");
-                    final ColoredImageSpan span = new ColoredImageSpan(R.drawable.reactionchatslist);
+                    final ColoredImageSpan span = new ColoredImageSpan(R.drawable.mini_like_filled);
                     span.setScale(0.8f, 0.8f);
                     span.spaceScaleX = 0.5f;
                     span.translate(-dp(3), 0);
@@ -1858,7 +1795,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
                 counterBackgroundColorKey = muted ? Theme.key_chats_unreadCounterMuted : Theme.key_chats_unreadCounter;
                 if (mentionString == null) {
                     final SpannableStringBuilder sb = new SpannableStringBuilder("@");
-                    final ColoredImageSpan span = new ColoredImageSpan(R.drawable.mentionchatslist);
+                    final ColoredImageSpan span = new ColoredImageSpan(R.drawable.mini_mention_filled_16);
                     span.setScale(0.8f, 0.8f);
                     span.spaceScaleX = 0.5f;
                     span.translate(-dp(3), 0);
@@ -1929,7 +1866,7 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
             static { setup(new Factory()); }
 
             @Override
-            public HorizontalTabView createView(Context context, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
+            public HorizontalTabView createView(Context context, RecyclerListView listView, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
                 return new HorizontalTabView(context, currentAccount, resourcesProvider);
             }
 
@@ -2077,9 +2014,4 @@ public class TopicsTabsView extends FrameLayout implements NotificationCenter.No
             return PixelFormat.UNKNOWN;
         }
     }
-
-    /** Cherrygram start*/
-    int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
-    /** Cherrygram finish */
-
 }

@@ -89,12 +89,10 @@ public class CameraXView extends BaseCameraView {
 
         @Override
         public void onDisplayChanged(int displayId) {
-            if (getRootView().getDisplay() != null) {
-                if (getRootView().getDisplay().getDisplayId() == displayId) {
-                    displayOrientation = getRootView().getDisplay().getRotation();
-                    if (controller != null) {
-                        controller.setTargetOrientation(displayOrientation);
-                    }
+            if (getRootView().getDisplay() != null && getRootView().getDisplay().getDisplayId() == displayId) {
+                displayOrientation = getRootView().getDisplay().getRotation();
+                if (controller != null) {
+                    controller.setTargetOrientation(displayOrientation);
                 }
             }
         }
@@ -103,19 +101,24 @@ public class CameraXView extends BaseCameraView {
     private final OrientationEventListener worldOrientationListener = new OrientationEventListener(getContext()) {
         @Override
         public void onOrientationChanged(int orientation) {
-            if (orientation == OrientationEventListener.ORIENTATION_UNKNOWN) {
-                return;
-            }
-            int rotation = 0;
+            if (orientation == ORIENTATION_UNKNOWN) return;
+
+            int rotation;
+
             if (orientation >= 45 && orientation < 135) {
                 rotation = Surface.ROTATION_270;
             } else if (orientation >= 135 && orientation < 225) {
                 rotation = Surface.ROTATION_180;
             } else if (orientation >= 225 && orientation < 315) {
                 rotation = Surface.ROTATION_90;
+            } else {
+                rotation = Surface.ROTATION_0;
             }
+
             worldOrientation = rotation;
+
             if (controller != null) {
+                controller.setTargetOrientation(rotation);
                 controller.setWorldCaptureOrientation(rotation);
             }
         }
@@ -133,7 +136,7 @@ public class CameraXView extends BaseCameraView {
         previewView.setAlpha(0);
         placeholderView = new ImageView(context);
         placeholderView.setVisibility(View.GONE);
-        placeholderView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        placeholderView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         previewView.setImplementationMode(PreviewView.ImplementationMode.COMPATIBLE);
         previewView.setFocusableInTouchMode(false);
         previewView.setBackgroundColor(Color.BLACK);
@@ -362,6 +365,8 @@ public class CameraXView extends BaseCameraView {
         if (textureInited) {
             return;
         }
+        setBackgroundColor(Color.BLACK);
+        previewView.setScaleType(PreviewView.ScaleType.FIT_CENTER);
         addView(previewView, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER));
         lifecycle = new CameraXController.CameraLifecycle();
         controller = new CameraXController(lifecycle, previewView.getMeteringPointFactory(), previewView.getSurfaceProvider());
@@ -591,7 +596,7 @@ public class CameraXView extends BaseCameraView {
                 frameWidth = previewSize.getHeight();
                 frameHeight = previewSize.getWidth();
             }
-            float s = Math.max(MeasureSpec.getSize(widthMeasureSpec) / (float) frameWidth, MeasureSpec.getSize(heightMeasureSpec) / (float) frameHeight);
+            float s = Math.min(MeasureSpec.getSize(widthMeasureSpec) / (float) frameWidth, MeasureSpec.getSize(heightMeasureSpec) / (float) frameHeight);
             blurredStubView.getLayoutParams().width = (int) (s * frameWidth);
             blurredStubView.getLayoutParams().height = (int) (s * frameHeight);
         }

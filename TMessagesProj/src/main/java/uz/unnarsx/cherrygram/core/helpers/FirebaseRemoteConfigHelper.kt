@@ -56,7 +56,7 @@ object FirebaseRemoteConfigHelper {
                     setRoundVideoResolution(it.getLong(Constants.Videomessages_Resolution))
                 }
                 toggleReTgCheck(it.getBoolean(Constants.Re_Tg_Check))
-                toggleNewUpdatesUI(it.getBoolean(Constants.is_new_updates_ui_available))
+                toggleNewUpdatesUI(it.getBoolean(Constants.is_new_updates_ui_available_v2))
                 toggleSafeStars(it.getBoolean(Constants.allow_use_safestars))
 
                 if (CherrygramCoreConfig.isDevBuild() || CherrygramDebugConfig.showRPCErrors) {

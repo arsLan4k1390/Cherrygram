@@ -32,8 +32,11 @@ import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.graphics.ColorUtils;
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
@@ -54,8 +57,8 @@ import org.telegram.messenger.SecretChatHelper;
 import org.telegram.messenger.SendMessagesHelper;
 import org.telegram.messenger.UserConfig;
 import org.telegram.tgnet.ConnectionsManager;
-import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import org.telegram.ui.ArticleViewer;
+import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.Stories.StoryViewer;
@@ -68,13 +71,11 @@ import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.chats.helpers.MessageHelper;
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.helpers.ProfileActivityHelper;
-import uz.unnarsx.cherrygram.misc.CherrygramExtras;
 
 public abstract class BaseFragment {
 
-    protected boolean isFinished;
+    public boolean isFinished;
     protected boolean finishing;
     public Dialog visibleDialog;
     protected int currentAccount = UserConfig.selectedAccount;
@@ -123,6 +124,10 @@ public abstract class BaseFragment {
         public void setOnDismissListener(Runnable onDismiss);
 
         default void setLastVisible(boolean lastVisible) {};
+
+        default public BulletinFactory getBulletinFactory() {
+            return null;
+        }
     }
 
     public static interface AttachedSheetWindow {}
@@ -393,7 +398,7 @@ public abstract class BaseFragment {
 
     public ActionBar createActionBar(Context context) {
         ActionBar actionBar = new ActionBar(context, getResourceProvider());
-        actionBar.setBackgroundColor(getThemedColor(MD3ListAdapter.canTryToIgnoreHeaderBackground(this) ? Theme.key_windowBackgroundGray : Theme.key_actionBarDefault));
+        actionBar.setBackgroundColor(getThemedColor(Theme.key_actionBarDefault));
         actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarDefaultSelector), false);
         actionBar.setItemsBackgroundColor(getThemedColor(Theme.key_actionBarActionModeDefaultSelector), true);
         actionBar.setItemsColor(getThemedColor(Theme.key_actionBarDefaultIcon), false);
@@ -560,8 +565,9 @@ public abstract class BaseFragment {
 
     }
 
-    public boolean onBackPressed() {
-        if (closeSheet()) {
+    public boolean onBackPressed(boolean invoked) {
+        if (hasShownSheet()) {
+            if (invoked) closeSheet();
             return false;
         }
         return true;
@@ -695,10 +701,6 @@ public abstract class BaseFragment {
     }
 
     public void onSlideProgress(boolean isOpen, float progress) {
-
-    }
-
-    public void onSlideProgressFront(boolean isOpen, float progress) {
 
     }
 
@@ -934,7 +936,7 @@ public abstract class BaseFragment {
 
     }
 
-    protected Animator getCustomSlideTransition(boolean topFragment, boolean backAnimation, float distanceToMove) {
+    public Animator getCustomSlideTransition(boolean topFragment, boolean backAnimation, float distanceToMove) {
         return null;
     }
 
@@ -943,10 +945,6 @@ public abstract class BaseFragment {
     }
 
     public void prepareFragmentToSlide(boolean topFragment, boolean beginSlide) {
-
-    }
-
-    public void setProgressToDrawerOpened(float v) {
 
     }
 
@@ -1087,7 +1085,7 @@ public abstract class BaseFragment {
     }
 
     public int getNavigationBarColor() {
-        int color = Theme.getColor(CherrygramAppearanceConfig.INSTANCE.getFlatNavbar() ? Theme.key_chat_messagePanelBackground : Theme.key_windowBackgroundGray, getResourceProvider());
+        int color = Theme.getColor(Theme.key_windowBackgroundGray, getResourceProvider());
         if (sheetsStack != null) {
             for (int i = 0; i < sheetsStack.size(); ++i) {
                 AttachedSheet sheet = sheetsStack.get(i);
@@ -1168,10 +1166,6 @@ public abstract class BaseFragment {
             color = Theme.getColor(key, null, true);
         }
         return ColorUtils.calculateLuminance(color) > 0.7f;
-    }
-
-    public void drawOverlay(Canvas canvas, View parent) {
-
     }
 
     public void setPreviewOpenedProgress(float progress) {
@@ -1311,6 +1305,19 @@ public abstract class BaseFragment {
         return storyViewer;
     }
 
+
+    public void setTitleOverlayTextIfActionBarAttached(String title, int titleId, Runnable action) {
+        if (actionBar != null && actionBar.shouldAddToContainer()) {
+            setTitleOverlayText(title, titleId, action);
+        }
+    }
+
+    public void setTitleOverlayText(String title, int titleId, Runnable action) {
+        if (actionBar != null) {
+            actionBar.setTitleOverlayText(title, titleId, action);
+        }
+    }
+
     public void removeSheet(BaseFragment.AttachedSheet sheet) {
         if (sheetsStack == null) return;
         sheetsStack.remove(sheet);
@@ -1408,6 +1415,25 @@ public abstract class BaseFragment {
 
     public boolean isSupportEdgeToEdge() {
         // warn: overridden method must return a constant
-        return CherrygramExtras.isEdgeToEdgeSupported(); // false
+        return false; // CherrygramExtras.isEdgeToEdgeSupported()
+    }
+
+    public boolean drawEdgeNavigationBar() {
+        return isSupportEdgeToEdge();
+    }
+
+    public WindowInsetsCompat onInsetsInternal(@NonNull View view, @NonNull WindowInsetsCompat windowInsets) {
+        final Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars() | WindowInsetsCompat.Type.statusBars());
+        onInsets(insets.left, insets.top, insets.right, bottomInset = insets.bottom);
+        return WindowInsetsCompat.CONSUMED;
+    }
+
+    private int bottomInset;
+    public int getBottomInset() {
+        return bottomInset;
+    }
+
+    public void onInsets(int left, int top, int right, int bottom) {
+
     }
 }

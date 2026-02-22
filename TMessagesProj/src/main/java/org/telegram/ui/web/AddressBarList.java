@@ -2,6 +2,7 @@ package org.telegram.ui.web;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.lerp;
+import static org.telegram.messenger.LocaleController.formatString;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.app.Activity;
@@ -60,6 +61,7 @@ import org.telegram.ui.Components.CheckBox2;
 import org.telegram.ui.Components.CombinedDrawable;
 import org.telegram.ui.Components.FlickerLoadingView;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.ScaleStateListAnimator;
 import org.telegram.ui.Components.Text;
 import org.telegram.ui.Components.UItem;
@@ -596,7 +598,7 @@ public class AddressBarList extends FrameLayout {
         public static class Factory extends UItem.UItemFactory<Address2View> {
             static { setup(new Factory()); }
             @Override
-            public Address2View createView(Context context, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
+            public Address2View createView(Context context, RecyclerListView listView, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
                 return new Address2View(context);
             }
 
@@ -901,7 +903,7 @@ public class AddressBarList extends FrameLayout {
         public static class Factory extends UItem.UItemFactory<BookmarkView> {
             static { setup(new Factory()); }
             @Override
-            public BookmarkView createView(Context context, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
+            public BookmarkView createView(Context context, RecyclerListView listView, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
                 return new BookmarkView(context, resourcesProvider);
             }
 

@@ -11,19 +11,11 @@ package uz.unnarsx.cherrygram.core.configs
 
 import android.app.Activity
 import android.content.SharedPreferences
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.telegram.messenger.ApplicationLoader
-import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.preferences.boolean
-import uz.unnarsx.cherrygram.preferences.long
 
-object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
-    context = SupervisorJob() + Dispatchers.Default
-) {
+object CherrygramPrivacyConfig {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
@@ -47,15 +39,8 @@ object CherrygramPrivacyConfig: CoroutineScope by CoroutineScope(
     /** Misc **/
 
     fun init() {
-        launch {
-            if (googleAnalytics && ApplicationLoader.checkPlayServices()) {
-                FirebaseAnalyticsHelper.start(ApplicationLoader.applicationContext)
-            }
-            FirebaseAnalyticsHelper.trackEventWithEmptyBundle("cg_start")
-
-            /*delay(5000)
-            FirebaseAnalyticsHelper.trackAllCherrygramSettings()*/
-        }
+        FirebaseAnalyticsHelper.init(ApplicationLoader.applicationContext)
+        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("cg_start")
     }
 
 }

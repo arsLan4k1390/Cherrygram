@@ -33,14 +33,13 @@ import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.TextCheckCell;
-import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
 import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 
 public class MessageMenuPreferencesEntry extends BaseFragment {
@@ -133,19 +132,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
             if (requireDonate && position != messageMenuItemsRow) {
                 AndroidUtilities.shakeViewSpring(view);
                 BotWebViewVibrationEffect.APP_ERROR.vibrate();
-                BulletinFactory.of(this).createSimpleBulletin(
-                        R.raw.cg_star_reaction, // stars_topup // star_premium_2
-                        getString(R.string.DP_Donate_Exclusive),
-                        getString(R.string.DP_Donate_ExclusiveDesc),
-                        getString(R.string.MoreInfo),
-                        () -> {
-                            if (getConnectionsManager().isTestBackend()) {
-                                CherrygramPreferencesNavigator.INSTANCE.createDonate(this);
-                            } else {
-                                CherrygramPreferencesNavigator.INSTANCE.createDonateForce(this);
-                            }
-                        }
-                ).show();
+                CGBulletinCreator.INSTANCE.createRequireDonateBulletin(this);
                 return;
             }
             if (position == enableNewMessageMenuRow) {
@@ -224,12 +211,15 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
             }
         });
 
-        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("message_menu_preferences_screen");
+        FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("message_menu_preferences_screen");
+
+        listView.setSections(true);
+        actionBar.setAdaptiveBackground(listView);
 
         return fragmentView;
     }
 
-    private class ListAdapter extends MD3ListAdapter {
+    private class ListAdapter extends RecyclerListView.SelectionAdapter {
 
         private final Context mContext;
 

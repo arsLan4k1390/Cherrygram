@@ -14,6 +14,7 @@ import android.content.Context;
 import org.telegram.ui.ActionBar.BottomSheet;
 
 public class OnceBottomSheetHelper extends BottomSheet {
+
     private static boolean shown = false;
 
     public OnceBottomSheetHelper(Context context, boolean needFocus) {
@@ -28,4 +29,5 @@ public class OnceBottomSheetHelper extends BottomSheet {
         shown = true;
         super.show();
     }
+
 }

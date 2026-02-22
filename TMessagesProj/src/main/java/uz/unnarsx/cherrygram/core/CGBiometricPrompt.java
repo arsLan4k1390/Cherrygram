@@ -46,10 +46,6 @@ public class CGBiometricPrompt {
         builder.setDeviceCredentialAllowed(CherrygramPrivacyConfig.INSTANCE.getAllowSystemPasscode());
         builder.setConfirmationRequired(false);
 
-        /*return new BiometricPrompt.PromptInfo.Builder()
-                .setTitle(getString(R.string.CG_AppName))
-                .setConfirmationRequired(false)
-                .build();*/
         return builder.build();
     }
 

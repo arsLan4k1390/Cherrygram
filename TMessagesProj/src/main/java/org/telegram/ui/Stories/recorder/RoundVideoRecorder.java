@@ -50,7 +50,7 @@ public class RoundVideoRecorder extends FrameLayout {
 
         file = StoryEntry.makeCacheFile(UserConfig.selectedAccount, true);
 
-        cameraView = new CameraView(context, true, false) {
+        cameraView = new CameraView(context, true, false, true) {
             private final Path circlePath = new Path();
             @Override
             protected void dispatchDraw(Canvas canvas) {

@@ -76,7 +76,6 @@ public class CameraTypeSelector extends LinearLayout {
 
     public CameraTypeSelector(Context context) {
         super(context);
-        setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
 
         pickerDividersPaint.setStyle(Paint.Style.STROKE);
         pickerDividersPaint.setStrokeCap(Paint.Cap.ROUND);
@@ -183,7 +182,7 @@ public class CameraTypeSelector extends LinearLayout {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
                     && context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-                LaunchActivity.makeRipple((preview.getLeft() | preview.getRight()) / 2f, /*preview.getTop() | preview.getBottom()*/ AndroidUtilities.dp(230), 5);
+                LaunchActivity.makeRipple((preview.getLeft() | preview.getRight()) / 2f, AndroidUtilities.dp(230), 5);
             }
 
             updateIcon(true);

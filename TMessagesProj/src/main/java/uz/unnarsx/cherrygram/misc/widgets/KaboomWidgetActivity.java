@@ -43,8 +43,8 @@ import java.util.ArrayList;
 public class KaboomWidgetActivity extends Activity implements INavigationLayout.INavigationLayoutDelegate {
 
     private boolean finished;
-    private static ArrayList<BaseFragment> mainFragmentsStack = new ArrayList<>();
-    private static ArrayList<BaseFragment> layerFragmentsStack = new ArrayList<>();
+    private static final ArrayList<BaseFragment> mainFragmentsStack = new ArrayList<>();
+    private static final ArrayList<BaseFragment> layerFragmentsStack = new ArrayList<>();
 
     protected INavigationLayout actionBarLayout;
     protected INavigationLayout layersActionBarLayout;
@@ -70,7 +70,6 @@ public class KaboomWidgetActivity extends Activity implements INavigationLayout.
         actionBarLayout = INavigationLayout.newLayout(this, false);
 
         drawerLayoutContainer = new DrawerLayoutContainer(this);
-        drawerLayoutContainer.setAllowOpenDrawer(false, false);
         setContentView(drawerLayoutContainer, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         if (AndroidUtilities.isTablet()) {

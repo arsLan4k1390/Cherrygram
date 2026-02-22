@@ -38,6 +38,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -588,7 +589,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                         boolean localFullyVisible = progressToOpen * (1f - progressToDismiss) == 1f;
                         if (fullyVisible != localFullyVisible) {
                             fullyVisible = localFullyVisible;
-                            if (fragment.getLayoutContainer() != null) {
+                            if (fragment != null && fragment.getLayoutContainer() != null) {
                                 fragment.getLayoutContainer().invalidate();
                             }
                         }
@@ -1125,7 +1126,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                 @Override
                 protected void onAttachedToWindow() {
                     super.onAttachedToWindow();
-                    if (ATTACH_TO_FRAGMENT && !ATTACHED_FRAGMENT_IS_EDGE_TO_EDGE) {
+                    if (ATTACH_TO_FRAGMENT && !ATTACHED_FRAGMENT_IS_EDGE_TO_EDGE && fragment != null) {
                         AndroidUtilities.requestAdjustResize(fragment.getParentActivity(), fragment.getClassGuid());
                     }
                     Bulletin.addDelegate(this, new Bulletin.Delegate() {
@@ -1771,7 +1772,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
             return WindowInsetsCompat.CONSUMED;
         });
 
-        if (ATTACH_TO_FRAGMENT) {
+        if (ATTACH_TO_FRAGMENT && fragment != null) {
             AndroidUtilities.removeFromParent(windowView);
             windowView.setTag(0xFF112233, new Object());
             fragment.getLayoutContainer().addView(windowView);
@@ -1784,6 +1785,22 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
             containerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
             AndroidUtilities.setPreferredMaxRefreshRate(windowManager, windowView, windowLayoutParams);
             windowManager.addView(windowView, windowLayoutParams);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                final OnBackInvokedDispatcher dispatcher = windowView.findOnBackInvokedDispatcher();
+                if (dispatcher != null) {
+                    dispatcher.registerOnBackInvokedCallback(
+                        OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                        () -> {
+                            if (LaunchActivity.instance != null) {
+                                LaunchActivity.instance.onBackPressed();
+                            } else {
+                                onAttachedBackPressed();
+                            }
+                        }
+                    );
+                }
+            }
         }
         windowView.requestLayout();
         runOpenAnimationAfterLayout = true;
@@ -1801,7 +1818,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
         if (!ATTACH_TO_FRAGMENT) {
             globalInstances.add(this);
         }
-        AndroidUtilities.hideKeyboard(fragment.getFragmentView());
+        if (fragment != null && fragment.getFragmentView() != null) AndroidUtilities.hideKeyboard(fragment.getFragmentView());
     }
 
     static int J = 0;
@@ -2170,7 +2187,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
 
     private void requestAdjust(boolean nothing) {
         if (ATTACH_TO_FRAGMENT) {
-            if (!ATTACHED_FRAGMENT_IS_EDGE_TO_EDGE) {
+            if (!ATTACHED_FRAGMENT_IS_EDGE_TO_EDGE && fragment != null) {
                 if (nothing) {
                     AndroidUtilities.requestAdjustNothing(fragment.getParentActivity(), fragment.getClassGuid());
                 } else {
@@ -2237,7 +2254,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
             return;
         }
         boolean pause = isPaused();
-        if (ATTACH_TO_FRAGMENT && (fragment.isPaused() || !fragment.isLastFragment())) {
+        if (ATTACH_TO_FRAGMENT && fragment != null && (fragment.isPaused() || !fragment.isLastFragment())) {
             pause = true;
         }
         if (ArticleViewer.getInstance().isVisible()) {
@@ -2624,9 +2641,9 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
         MessagesController.getInstance(currentAccount).getStoriesController().stopAllPollers();
         if (ATTACH_TO_FRAGMENT) {
             lockOrientation(false);
-            if (fragment != null) {
-                fragment.removeSheet(this);
-            }
+        }
+        if (fragment != null) {
+            fragment.removeSheet(this);
         }
 
         globalInstances.remove(this);
@@ -2768,7 +2785,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
     }
 
     public void startActivityForResult(Intent photoPickerIntent, int code) {
-        if (fragment.getParentActivity() == null) {
+        if (fragment == null || fragment.getParentActivity() == null) {
             return;
         }
         fragment.getParentActivity().startActivityForResult(photoPickerIntent, code);
@@ -2851,7 +2868,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
             if (liveView != null) {
                 liveView.setSecure(!allowScreenshots);
             }
-            if (ATTACH_TO_FRAGMENT) {
+            if (ATTACH_TO_FRAGMENT && fragment != null) {
                 if (fragment.getParentActivity() != null) {
                     if (allowScreenshots) {
                         fragment.getParentActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
@@ -3243,7 +3260,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
         if (pipLiveView != null) {
             pipLiveView.setOnFirstFrameCallback(firstFrameCallback);
         }
-        if (ATTACH_TO_FRAGMENT) {
+        if (ATTACH_TO_FRAGMENT && fragment != null) {
             AndroidUtilities.removeFromParent(windowView);
             fragment.getLayoutContainer().addView(windowView);
         } else {

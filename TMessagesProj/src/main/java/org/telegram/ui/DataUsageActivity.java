@@ -39,7 +39,6 @@ import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
-import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
@@ -609,7 +608,7 @@ public class DataUsageActivity extends BaseFragment {
         }
     }
 
-    private class ListAdapter extends MD3ListAdapter {
+    private class ListAdapter extends RecyclerListView.SelectionAdapter {
 
         private Context mContext;
 

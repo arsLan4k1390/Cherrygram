@@ -22,8 +22,8 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.Components.RecyclerListView
 import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
-import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.category
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.contract
@@ -33,13 +33,18 @@ import uz.unnarsx.cherrygram.preferences.tgkit.preference.switch
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.textIcon
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.tgKitScreen
 import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitTextIconRow
+import java.lang.ref.WeakReference
 
 class GeneralPreferencesEntry : BasePreferencesEntry {
 
-    private var listView: RecyclerListView? = null
+    private var listViewRef: WeakReference<RecyclerListView>? = null
 
     override fun setListView(rv: RecyclerListView) {
-        listView = rv
+        listViewRef = WeakReference(rv)
+    }
+
+    fun getListView(): RecyclerListView? {
+        return listViewRef?.get()
     }
 
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.AP_Header_General)) {
@@ -56,6 +61,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
             }
             switch {
                 title = getString(R.string.AP_SystemEmoji)
+
                 contract({
                     return@contract CherrygramCoreConfig.systemEmoji
                 }) {
@@ -69,27 +75,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramCoreConfig.systemFonts
                 }) {
                     CherrygramCoreConfig.systemFonts = it
-                    AppRestartHelper.createRestartBulletin(bf)
-                }
-            }
-            list {
-                title = "Edge-to-Edge"
-
-                contract({
-                    return@contract listOf(
-                        Pair(CherrygramCoreConfig.EDGE_MODE_AUTO, getString(R.string.QualityAuto)),
-                        Pair(CherrygramCoreConfig.EDGE_MODE_ENABLE, getString(R.string.EP_DownloadSpeedBoostAverage)),
-                        Pair(CherrygramCoreConfig.EDGE_MODE_DISABLE, getString(R.string.EP_DownloadSpeedBoostNone))
-                    )
-                }, {
-                    return@contract when (CherrygramCoreConfig.edgeToEdgeMode) {
-                        CherrygramCoreConfig.EDGE_MODE_ENABLE -> getString(R.string.EP_DownloadSpeedBoostAverage)
-                        CherrygramCoreConfig.EDGE_MODE_DISABLE -> getString(R.string.EP_DownloadSpeedBoostNone)
-                        else -> getString(R.string.QualityAuto)
-                    }
-                }) {
-                    CherrygramCoreConfig.edgeToEdgeMode = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
             list {
@@ -117,15 +103,17 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
             }
             switch {
                 title = getString(R.string.AP_Old_Notification_Icon)
+
                 contract({
                     return@contract CherrygramCoreConfig.oldNotificationIcon
                 }) {
                     CherrygramCoreConfig.oldNotificationIcon = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
             switch {
                 isAvailable = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM
+
                 title = getString(R.string.CG_ResidentNotification)
                 description = getString(R.string.NotificationsService)
 
@@ -140,7 +128,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                         )
                     )
                     ApplicationLoader.startPushService()
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
         }
@@ -155,15 +143,17 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                 }) {
                     CherrygramCoreConfig.hideStories = it
                     bf.notificationCenter.postNotificationName(NotificationCenter.storiesEnabledUpdate)
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
             textIcon {
                 title = getString(R.string.CP_ArchiveStories)
                 icon = R.drawable.msg_archive
+
                 listener = TGKitTextIconRow.TGTIListener {
                     showStoriesArchiveConfigurator(bf)
                 }
+
                 divider = true
             }
             hint(getString(R.string.CP_ArchiveStories_Desc))
@@ -184,7 +174,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramCoreConfig.disableAnimatedAvatars
                 }) {
                     CherrygramCoreConfig.disableAnimatedAvatars = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -195,7 +185,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramCoreConfig.disableReactionsOverlay
                 }) {
                     CherrygramCoreConfig.disableReactionsOverlay = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -206,7 +196,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramCoreConfig.disableReactionAnim
                 }) {
                     CherrygramCoreConfig.disableReactionAnim = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -217,7 +207,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramCoreConfig.disablePremStickAnim
                 }) {
                     CherrygramCoreConfig.disablePremStickAnim = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
             switch {
@@ -228,7 +218,7 @@ class GeneralPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramCoreConfig.disablePremStickAutoPlay
                 }) {
                     CherrygramCoreConfig.disablePremStickAutoPlay = it
-                    AppRestartHelper.createRestartBulletin(bf)
+                    CGBulletinCreator.createRestartBulletin(bf)
                 }
             }
             switch {

@@ -66,22 +66,27 @@ public class ButtonEffect extends RelativeLayout {
         int w = AndroidUtilities.dp(50);
         Bitmap bmp = Bitmap.createBitmap(w, w, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bmp);
+
         Drawable d = ResourcesCompat.getDrawable(getResources(), getIconRes(cameraType), getContext().getTheme());
-        d.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-        int s = (w * 60) / 100;
-        int x = (w >> 1) - (s >> 1);
-        int y = (w >> 1) - (s >> 1);
-        d.setBounds(x, y, x + s, y + s);
-        d.draw(canvas);
+        if (d != null) {
+            d.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+            int s = (w * 60) / 100;
+            int x = (w >> 1) - (s >> 1);
+            int y = (w >> 1) - (s >> 1);
+            d.setBounds(x, y, x + s, y + s);
+            d.draw(canvas);
+        }
+
         if (isSelected) {
-            Paint level_paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            level_paint.setColor(Color.WHITE);
-            level_paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
+            Paint levelPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            levelPaint.setColor(Color.WHITE);
+            levelPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OUT));
             int s2 = ((w * 80) / 100) >> 1;
             int x2 = (w >> 1);
             int y2 = (w >> 1);
-            canvas.drawCircle(x2, y2, s2, level_paint);
+            canvas.drawCircle(x2, y2, s2, levelPaint);
         }
+
         return bmp;
     }
 
@@ -91,6 +96,7 @@ public class ButtonEffect extends RelativeLayout {
             case CameraXController.CAMERA_NIGHT -> R.drawable.camera_moon_solar;
             case CameraXController.CAMERA_AUTO -> R.drawable.magic_stick_filled_solar;
             case CameraXController.CAMERA_WIDE -> R.drawable.camera_panorama_solar;
+            case CameraXController.CAMERA_ASPECT_RATIO_SELECTOR -> R.drawable.camera_aspect_ratio_solar;
             default -> R.drawable.instant_camera_attach_solar;
         };
     }

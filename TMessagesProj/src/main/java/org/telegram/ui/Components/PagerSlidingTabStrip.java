@@ -25,14 +25,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.core.graphics.ColorUtils;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.ui.ActionBar.Theme;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class PagerSlidingTabStrip extends HorizontalScrollView {
 
@@ -71,8 +70,6 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
     private final Theme.ResourcesProvider resourcesProvider;
     private int lastScrollX = 0;
-
-    int tabStyle = CherrygramAppearanceConfig.INSTANCE.getTabStyle();
 
     public PagerSlidingTabStrip(Context context, Theme.ResourcesProvider resourcesProvider) {
         super(context);
@@ -187,9 +184,10 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 //        if (Build.VERSION.SDK_INT >= 21) {
 //            RippleDrawable rippleDrawable = (RippleDrawable) Theme.createSelectorDrawable(getThemedColor(Theme.key_chat_emojiBottomPanelIcon), Theme.RIPPLE_MASK_CIRCLE_TO_BOUND_EDGE);
 //            Theme.setRippleDrawableForceSoftware(rippleDrawable);
-//            if (tabStyle < CherrygramAppearanceConfig.TAB_STYLE_VKUI) tab.setBackground(rippleDrawable);
+//            tab.setBackground(rippleDrawable);
 //        }
         tab.setText(text);
+        ScaleStateListAnimator.apply(tab, .025f, 1.2f);
         tab.setOnClickListener(v -> {
             if (pager.getAdapter() instanceof IconTabProvider) {
                 if (!((IconTabProvider) pager.getAdapter()).canScrollToTab(position)) {
@@ -198,7 +196,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
             }
             pager.setCurrentItem(position, true);
         });
-        tab.setPadding(AndroidUtilities.dp(18), 0, AndroidUtilities.dp(18), 0);
+        tab.setPadding(AndroidUtilities.dp(16), 0, AndroidUtilities.dp(16), 0);
         tabsContainer.addView(tab, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, 10, 0, 10, 0));
         tab.setSelected(position == currentPosition);
     }
@@ -252,7 +250,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
     private AnimatedFloat lineRightAnimated = new AnimatedFloat(this, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
 
         if (isInEditMode() || tabCount == 0) {
             super.onDraw(canvas);
@@ -296,19 +294,9 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
             if (indicatorHeight != 0) {
                 rectPaint.setColor(indicatorColor);
-                AndroidUtilities.rectTmp.set(lineLeft, height - indicatorHeight, lineRight, height);
-                if (tabStyle != CherrygramAppearanceConfig.TAB_STYLE_TEXT) {
-                    if (tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
-                        rectPaint.setAlpha(0x2F);
-                        int sideBound = (tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(10) : 0);
-                        AndroidUtilities.rectTmp.set(
-                                lineLeft - sideBound, tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 - AndroidUtilities.dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 14 : 15) : (height - indicatorHeight),
-                                lineRight + sideBound, tabStyle >= CherrygramAppearanceConfig.TAB_STYLE_VKUI ? height / 2 + AndroidUtilities.dp(tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? 14 : 15) : height
-                        );
-                    }
-                    float r = tabStyle == CherrygramAppearanceConfig.TAB_STYLE_VKUI ? AndroidUtilities.dp(8) : tabStyle == CherrygramAppearanceConfig.TAB_STYLE_PILLS ? AndroidUtilities.dp(30) : indicatorHeight / 2f;
-                    canvas.drawRoundRect(AndroidUtilities.rectTmp, r, r, rectPaint);
-                }
+                AndroidUtilities.rectTmp.set(lineLeft - AndroidUtilities.dp(11), getPaddingTop(), lineRight  + AndroidUtilities.dp(11), height - getPaddingBottom());
+                AndroidUtilities.rectTmp.offset(getPaddingLeft(), 0);
+                canvas.drawRoundRect(AndroidUtilities.rectTmp, AndroidUtilities.rectTmp.height() / 2f, AndroidUtilities.rectTmp.height() / 2f, rectPaint);
             }
         }
 

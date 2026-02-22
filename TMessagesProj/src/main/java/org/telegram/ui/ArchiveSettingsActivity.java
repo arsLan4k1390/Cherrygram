@@ -1,5 +1,7 @@
 package org.telegram.ui;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
+
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
@@ -34,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.ui.MD3AdapterWithDiffUtils;
 
 public class ArchiveSettingsActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
@@ -65,6 +66,8 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
         frameLayout.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundGray));
 
         listView = new RecyclerListView(context);
+        listView.setSections();
+        actionBar.setAdaptiveBackground(listView);
         listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false) {
             @Override
             public boolean supportsPredictiveItemAnimations() {
@@ -101,7 +104,7 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
                         presentFragment(new PremiumPreviewFragment("settings"));
                     }));
                     layout.textView.setSingleLine(false);
-                    layout.textView.setPadding(0, AndroidUtilities.dp(4), 0, AndroidUtilities.dp(4));
+                    layout.textView.setPadding(0, dp(4), 0, dp(4));
                     layout.imageView.setImageResource(R.drawable.msg_settings_premium);
                     Bulletin.make(this, layout, 3500).show();
 
@@ -186,17 +189,15 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
         }
     }
 
-    private class ListAdapter extends MD3AdapterWithDiffUtils {
+    private class ListAdapter extends AdapterWithDiffUtils {
         @NonNull
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view;
             if (viewType == VIEW_TYPE_HEADER) {
                 view = new HeaderCell(getContext());
-                view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
             } else if (viewType == VIEW_TYPE_CHECK) {
                 view = new TextCheckCell(getContext());
-                view.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
             } else {
                 view = new TextInfoPrivacyCell(getContext());
             }
@@ -220,11 +221,6 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
                 } else {
                     cell.setFixedSize(0);
                     cell.setText(item.text);
-                }
-                if (divider) {
-                    cell.setBackground(Theme.getThemedDrawableByKey(getContext(), R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
-                } else {
-                    cell.setBackground(Theme.getThemedDrawableByKey(getContext(), R.drawable.greydivider, Theme.key_windowBackgroundGrayShadow));
                 }
             } else if (holder.getItemViewType() == VIEW_TYPE_CHECK) {
                 TextCheckCell cell = (TextCheckCell) holder.itemView;
@@ -316,5 +312,16 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
         } else if (id == NotificationCenter.dialogFiltersUpdated) {
             updateItems(true);
         }
+    }
+
+    @Override
+    public boolean isSupportEdgeToEdge() {
+        return true;
+    }
+
+    @Override
+    public void onInsets(int left, int top, int right, int bottom) {
+        listView.setPadding(0, 0, 0, bottom);
+        listView.setClipToPadding(false);
     }
 }

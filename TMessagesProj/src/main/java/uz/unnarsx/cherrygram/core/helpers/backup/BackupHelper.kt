@@ -44,7 +44,7 @@ object BackupHelper {
 
     const val FILE_TYPE_CG_BACKUP = 1390
 
-    fun backupSettings(fragment: BaseFragment, context: Context) {
+    fun backupSettings(fragment: BaseFragment) {
         if (!PermissionsUtils.isStoragePermissionGranted()) {
             PermissionsUtils.requestStoragePermission(fragment.parentActivity)
             return
@@ -53,15 +53,15 @@ object BackupHelper {
         try {
             val formattedDate = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
             val fileName = "$formattedDate-settings.cherry"
-            val file = File(context.getExternalFilesDir(null), fileName)
-            writeUtf8String(backupSettingsJson(context), file)
-            shareFile(context, file)
+            val file = File(fragment.context.getExternalFilesDir(null), fileName)
+            writeUtf8String(backupSettingsJson(fragment.context), file)
+            shareFile(fragment.context, file)
         } catch (e: JSONException) {
-            handleError(context, e)
+            handleError(fragment.context, e)
         }
     }
 
-    fun importSettings(fragment: BaseFragment, context: Context) {
+    fun importSettings(fragment: BaseFragment) {
         if (!PermissionsUtils.isStoragePermissionGranted()) {
             PermissionsUtils.requestStoragePermission(fragment.parentActivity)
             return
@@ -78,7 +78,7 @@ object BackupHelper {
                     scheduleDate: Int
                 ) {
                     activity.finishFragment()
-                    importSettings(File(files.first()), context)
+                    importSettings(File(files.first()), fragment.context)
                 }
 
                 override fun didSelectPhotos(
@@ -117,7 +117,7 @@ object BackupHelper {
             dialog.setTitle(getString(R.string.CG_AppName))
             dialog.setMessage(getString(R.string.CG_RestartToApply))
             dialog.setPositiveButton(getString(R.string.BotUnblock)) { _, _ ->
-                AppRestartHelper.triggerRebirth(context, Intent(context, LaunchActivity::class.java))
+                AppRestartHelper.restartApp(context)
             }
             dialog.show()
         } catch (e: Exception) {
@@ -215,18 +215,12 @@ object BackupHelper {
             "CP_DisablePremStickAutoPlay", "CP_HideSendAsChannel",
 
             // Appearance
-            "AP_Icon_Replacements", "AP_OneUI_SwitchStyle", "AP_DisableDividers", "AP_CenterTitle", "AP_iosSearchPanel",
-            "AP_ToolBarShadow", "AP_FlatNavBar", "CP_ShowSeconds", "CP_DisablePremiumStatuses",
+            "AP_Icon_Replacements1", "AP_OneUI_SwitchStyle", "AP_DisableDividers", "AP_CenterTitle",
+            "AP_ToolBarShadow", "CP_ShowSeconds", "CP_DisablePremiumStatuses",
             "CP_ReplyBackground", "CP_ReplyCustomColors", "CP_ReplyBackgroundEmoji", "CP_ProfileChannelPreview",
             "AP_ShowID_DC_new", "CP_ProfileBirthDatePreview", "CP_ProfileBusinessPreview", "CP_ProfileBackgroundColor",
             "CP_ProfileBackgroundEmoji", "AP_FolderNameInHeader", "CP_NewTabs_RemoveAllChats", "CP_NewTabs_NoCounter",
-            "AP_TabMode", "AP_TabStyle", "AP_TabStyleAddStroke", "AP_DrawSnowInDrawer", "AP_DrawerAvatar",
-            "AP_DrawerSmallAvatar", "AP_DrawerDarken", "AP_DrawerGradient", "AP_DrawerBlur", "AP_DrawerBlur_Intensity",
-            "AP_ChangeStatusDrawerButton", /* "AP_MyStoriesDrawerButton", */ "AP_MyProfileDrawerButton",
-            "AP_CreateGroupDrawerButton", "AP_CreateChannelDrawerButton", "AP_ContactsDrawerButton",
-            "AP_CallsDrawerButton", "AP_SavedMessagesDrawerButton", "AP_ArchivedChatsDrawerButton",
-            "AP_ScanQRDrawerButton", "AP_CGPreferencesDrawerButton", "AP_DrawerEventType",
-            "AP_DrawSnowInActionBar", "AP_DrawSnowInChat",
+            "AP_TabMode", "AP_TabStyleAddStroke", "AP_DrawSnowInActionBar", "AP_DrawSnowInChat",
 
             // Chats
             "CP_Shortcut_JumpToBegin", "CP_Shortcut_DeleteAll", "CP_Shortcut_SavedMessages",
@@ -246,11 +240,11 @@ object BackupHelper {
             "CP_MsgFiltersHideAll", "CP_MsgFiltersCollapseAutomatically", "CP_MsgFilterTransparentMsg",
             "CP_AutoQuoteReplies", "CP_TimeOnStick", "CP_ForwardMsgDate", "AP_PencilIcon",
             "CP_LeftBottomButtonAction", "CP_DoubleTapAction", "CP_MessageSlideAction", "CP_DeleteForAll",
-            "CP_LargePhotos", "CP_VoicesAGC", "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration",
+            "CP_LargePhotos", "CP_PlayVideo", "CP_AutoPauseVideo", "CP_DisableVibration",
             "CP_VideoSeekDuration", "CP_Notification_Sound", "CP_VibrationInChats", "CP_SilenceNonContacts", "CG_UnarchiveOnSwipe",
 
             // Camera
-            "CP_CameraType", "CP_DisableCam", "CP_UseDualCamera", "CP_CameraAspectRatio",
+            "CP_CameraType", "CP_DisableAttachCam", "CP_UseDualCamera", "CP_CameraAspectRatio",
             "CP_StartFromUltraWideCam", /* "CP_CameraXFpsRange", */ "CP_CameraStabilisation",
             "CP_CenterCameraControlButtons", "CP_ExposureSlider", "CP_RearCam",
 

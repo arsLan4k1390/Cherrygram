@@ -134,7 +134,6 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         textView = new TextView(fragment.getContext());
         textView.setPadding(dp(22), dp(0), dp(22), dp(6));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, SharedConfig.fontSize);
-//        textView.setTypeface(AndroidUtilities.bold());
         textView.setTextColor(getThemedColor(Theme.key_dialogTextBlack));
         textView.setTextIsSelectable(!noforwardsOrPaidMedia);
 
@@ -208,7 +207,7 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         buttonShadowView.setAlpha(0);
         buttonView.addView(buttonShadowView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.getShadowHeight() / dpf2(1), Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
-        summarizeButton = new ButtonWithCounterView(fragment.getContext(), fragment.getResourceProvider());
+        summarizeButton = new ButtonWithCounterView(fragment.getContext(), fragment.getResourceProvider()).setRound();
         summarizeButton.setFilled(true);
         summarizeButton.setText(subtitle == 5 ? getString(R.string.Close) : getString(R.string.CP_GeminiAI_Summarize), false);
         summarizeButton.setOnClickListener(e -> {
@@ -227,7 +226,7 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         });
         buttonView.addView(summarizeButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
-        copyButton = new ButtonWithCounterView(fragment.getContext(), fragment.getResourceProvider());
+        copyButton = new ButtonWithCounterView(fragment.getContext(), fragment.getResourceProvider()).setRound();
         SpannableStringBuilder sb = new SpannableStringBuilder();
         sb.append("+");
         sb.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(fragment.getContext(), R.drawable.msg_copy_filled_solar)), 0, 1, 0);
@@ -830,7 +829,6 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
             simplifiedLocale = "no";
         }
 
-        // getting localized language name in accusative case
         if (accusative != null) {
             String localed = LocaleController.getString("TranslateLanguage" + simplifiedLocale.toUpperCase());
             if (accusative[0] = (localed != null && !localed.startsWith("LOC_ERR"))) {
@@ -838,7 +836,6 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
             }
         }
 
-        // getting language name from system
         String systemLangName = systemLanguageName(locale);
         if (systemLangName == null) {
             systemLangName = systemLanguageName(simplifiedLocale);
@@ -847,7 +844,6 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
             return systemLangName;
         }
 
-        // getting language name from lang packs
         if ("no".equals(locale)) {
             locale = "nb";
         }

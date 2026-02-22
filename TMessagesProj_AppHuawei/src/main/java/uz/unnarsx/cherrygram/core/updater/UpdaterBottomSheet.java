@@ -106,7 +106,7 @@ public class UpdaterBottomSheet extends BottomSheet {
         if (available) {
             version.setTextAndValueAndIcon(getString(R.string.UP_Version), update.version.replaceAll("v|-beta|-force", ""), R.drawable.msg_info, true);
         } else {
-            version.setTextAndValueAndIcon(getString(R.string.UP_CurrentVersion), Constants.INSTANCE.getCherryVersion(), R.drawable.msg_info, false);
+            version.setTextAndValueAndIcon(getString(R.string.UP_CurrentVersion), CGResourcesHelper.getCherryVersion(), R.drawable.msg_info, false);
         }
         version.setOnClickListener(v -> copyText(version.getTextView().getText() + ": " + version.getValueTextView().getText()));
         linearLayout.addView(version);
@@ -147,7 +147,7 @@ public class UpdaterBottomSheet extends BottomSheet {
 
             linearLayout.addView(divider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1)));
 
-            ButtonWithCounterView downloadButton = new ButtonWithCounterView(context, resourcesProvider);
+            ButtonWithCounterView downloadButton = new ButtonWithCounterView(context, resourcesProvider).setRound();
             downloadButton.setFilled(true);
             downloadButton.setText(getUpdateSizeString(update), false);
             downloadButton.setOnClickListener(v -> {
@@ -167,7 +167,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             }
             CherrygramCoreConfig.INSTANCE.setForceFound(update.isForce());
         } else {
-            final String bType = CGResourcesHelper.INSTANCE.getBuildType() + " | " + CGResourcesHelper.INSTANCE.getAbiCode();
+            final String bType = CGResourcesHelper.getBuildType() + " | " + CGResourcesHelper.getAbiCode();
 
             TextCell buildType = new TextCell(context, resourcesProvider);
             buildType.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, resourcesProvider), 100, 0));
@@ -212,13 +212,13 @@ public class UpdaterBottomSheet extends BottomSheet {
 
             linearLayout.addView(divider, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.dp(1)));
 
-            checkUpdatesButton = new ButtonWithCounterView(context, resourcesProvider);
+            checkUpdatesButton = new ButtonWithCounterView(context, resourcesProvider).setRound();
             checkUpdatesButton.text.setAnimationProperties(.7f, 0, 500, CubicBezierInterpolator.EASE_OUT_QUINT);
             checkUpdatesButton.setText(getString(R.string.UP_CheckForUpdates), true);
             checkUpdatesButton.setOnClickListener(v -> {
                 SpannableStringBuilder sb = new SpannableStringBuilder();
                 sb.append("+ ");
-                sb.setSpan(new ColoredImageSpan(Objects.requireNonNull(ContextCompat.getDrawable(getContext(), R.drawable.sync_outline_28))), 0, 1, 0);
+                sb.setSpan(new ColoredImageSpan(Objects.requireNonNull(ContextCompat.getDrawable(getContext(), R.drawable.msg_retry_solar))), 0, 1, 0);
                 checkUpdatesButton.setText(sb, true);
 
                 UpdaterUtils.checkUpdates(fragment, true, () -> {
@@ -229,7 +229,7 @@ public class UpdaterBottomSheet extends BottomSheet {
             buttonsView.addView(checkUpdatesButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
         }
 
-        ButtonWithCounterView apkButton = new ButtonWithCounterView(context, resourcesProvider);
+        ButtonWithCounterView apkButton = new ButtonWithCounterView(context, resourcesProvider).setRound();
         SpannableStringBuilder sb = new SpannableStringBuilder();
         sb.append("+");
         sb.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), isForce ? R.drawable.github_logo_white : R.drawable.msg_folders_channels_solar)), 0, 1, 0);
@@ -245,7 +245,7 @@ public class UpdaterBottomSheet extends BottomSheet {
         linearLayout.addView(buttonsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
 
         if (available && !isForce) {
-            ButtonWithCounterView scheduleButton = new ButtonWithCounterView(context, resourcesProvider);
+            ButtonWithCounterView scheduleButton = new ButtonWithCounterView(context, resourcesProvider).setRound();
             scheduleButton.setFilled(true);
             scheduleButton.setText(getString(R.string.AppUpdateRemindMeLater), false);
             scheduleButton.setOnClickListener(v -> {
@@ -268,9 +268,9 @@ public class UpdaterBottomSheet extends BottomSheet {
     private void openGithubReleases() {
         String githubLink;
         if (CherrygramCoreConfig.isStandaloneBetaBuild()) {
-            githubLink = "https://github.com/arsLan4k1390/CherrygramBeta-APKs/releases/latest";
+            githubLink = Constants.CG_GITHUB_URL + "Beta-APKs/releases/latest";
         } else {
-            githubLink = "https://github.com/arsLan4k1390/Cherrygram/releases/latest";
+            githubLink = Constants.CG_GITHUB_URL + "/releases/latest";
         }
         Browser.openUrl(fragment.getContext(), githubLink);
     }

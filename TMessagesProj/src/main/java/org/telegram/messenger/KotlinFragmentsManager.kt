@@ -9,7 +9,6 @@
 
 package org.telegram.messenger
 
-import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import kotlinx.coroutines.CoroutineScope
@@ -17,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.withContext
 import org.telegram.tgnet.ConnectionManagerDelegate
-import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.Extra
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
 import uz.unnarsx.cherrygram.misc.Constants
@@ -187,13 +185,7 @@ object KotlinFragmentsManager: CoroutineScope by MainScope() {
 
     fun nfweioufwehr117() {
 //        exitProcess(0)
-        val context = ApplicationLoader.applicationContext
-        AppRestartHelper.triggerRebirth(
-            context, Intent(
-                context,
-                LaunchActivity::class.java
-            )
-        )
+        AppRestartHelper.restartApp(ApplicationLoader.applicationContext)
     }
 
 }

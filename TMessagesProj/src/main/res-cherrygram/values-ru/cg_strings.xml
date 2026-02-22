@@ -6,6 +6,8 @@
     <string name="CG_DoNotRemindAgain">Не напоминать</string>
 
     <!--Telegram screens-->
+    <string name="CG_SwitchedToAccount">Вы переключились на **%1$s**</string>
+
     <string name="CG_JoinedDate">Вы присоединились к **%1$s** **%2$s**</string>
     <string name="CG_CreatedDate">**%1$s** был создан **%2$s**</string>
     <string name="CG_RegistrationDate">**%1$s** присоединился(ась) к Telegram **%2$s**</string>
@@ -38,7 +40,6 @@
     <!--Typing status-->
 
     <!--Telegram Folders Settings-->
-    <string name="CG_FoldersType_Header">Тип иконок</string>
     <string name="CG_FoldersTypeTitles">Только названия</string>
     <string name="CG_FoldersTypeIcons">Только иконки</string>
     <string name="CG_FoldersTypeIconsTitles">Иконки с названиями</string>
@@ -177,16 +178,12 @@
     <string name="AP_ChangeIcon_Lavanda">Лаванда</string>
     <string name="AP_ChangeIcon_Sunset">Закат</string>
     <string name="AP_ChangeIcon_Sunrise">Восход</string>
-    <string name="AP_IconReplacement_VKUI">Иконки VKUI</string>
     <string name="AP_IconReplacement_Solar">Иконки Solar от @Design480</string>
     <string name="AP_IconReplacement_Default">Стандартные иконки</string>
-    <string name="AP_MD3_Containers">Дизайн списков в стиле MD3</string>
-    <string name="AP_MD3_Containers_Desc">Списки в стиле Material Design 3 с контейнерами и скруглёнными углами</string>
     <string name="AP_OneUI_Switch_Style">Переключатели в стиле OneUI</string>
     <string name="AP_SystemEmoji">Использовать системные эмодзи</string>
     <string name="AP_ShowPencilIcon">Иконка карандаша для изменённых сообщений</string>
     <string name="AP_CenterTitle">Центрирование заголовка</string>
-    <string name="AP_iosSearchPanel">Панель поиска в стиле iOS</string>
     <string name="AP_DisableDividers">Отключить разделители</string>
     <string name="AP_ToolBarShadow">Отключить тень у тулбара</string>
     <string name="AP_SystemFonts">Использовать системный шрифт</string>
@@ -227,23 +224,18 @@
     <string name="CP_Filters_Header">Папки</string>
     <string name="AP_FolderNameInHeader">Название папки вместо \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Это изменит \"Cherrygram\" в заголовке сверху на название Вашей папки (удобно при отображении иконок вместо названий папок)</string>
-    <string name="CP_NewTabs_RemoveAllChats">Скрыть вкладку \"Все чаты\"</string>
+    <string name="CP_NewTabs_RemoveAllChats">Скрыть папку \"Все чаты\"</string>
     <string name="AP_Tab_Style">Стиль папок</string>
-    <string name="AP_Tab_Style_Default">По умолчанию</string>
-    <string name="AP_Tab_Style_Rounded">Овал</string>
-    <string name="AP_Tab_Style_Text">Текст</string>
-    <string name="AP_Tab_Style_Pills">Таблетки</string>
     <string name="AP_Tab_Style_Stroke">Добавить обводку</string>
 
-    <string name="AP_DrawerCategory">Боковое меню</string>
-    <string name="AP_DrawerAvatar">Аватар как фон меню</string>
-    <string name="AP_DrawerShowAvatar">Показывать аватар</string>
-    <string name="AP_DrawerDarken">Затемнить фон меню</string>
-    <string name="AP_ShadeBackground">Градиентный фон</string>
-    <string name="AP_DrawerBlur">Размыть фон меню</string>
-    <string name="AP_DrawerBlurIntensity">Интенсивность размытия</string>
-    <string name="AP_DrawerIconPack_Header">Набор иконок меню</string>
-    <string name="AP_DrawerButtonsCategory">Элементы бокового меню</string>
+    <string name="CP_MainTabs_Header">Органайзер нижних вкладок</string>
+    <string name="CP_MainTabs_Layout">Вкладки</string>
+    <string name="CP_MainTabs_ShowTabs">Показывать вкладки</string>
+    <string name="CP_MainTabs_OpenSettings">Открывать настройки свайпом</string>
+    <string name="CP_MainTabs_OpenSettings_Desc">Свайп слева направо по вкладкам открывает настройки, как боковое меню, когда вкладки отключены.</string>
+    <string name="CP_MainTabs_Layout_Desc">Нажмите, чтобы включить/отключить, удерживайте и перетаскивайте, чтобы изменить порядок.</string>
+    <string name="CP_MainTabs_DoubleTap_Desc">Двойное нажатие на вкладку чатов открывает "Избранное". Двойное нажатие на вкладку профиля (или на Настройки, если вкладка профиля скрыта) переключает аккаунт.</string>
+    <string name="CP_MainTabs_ShowTabsTitle">Показывать названия вкладок</string>
 
     <string name="AP_HideUserPhone_Show">Нажмите, чтобы показать</string>
     <string name="AP_HideUserPhone_Copy">Зажмите, чтобы скопировать</string>
@@ -358,8 +350,6 @@
     <string name="CP_LargeVoiceMessages">Адаптивная длина аудиосообщений</string>
     <string name="CP_LargeVoiceMessages_Desc">Длина пузыря аудиосообщения будет зависеть от продолжительности записи и автоматически подстраиваться под ширину экрана.</string>
 
-    <string name="CP_VoiceEnhancements">Улучшения звука</string>
-    <string name="CP_VoiceEnhancements_Desc">Включает шумоподавление и нормализацию голоса</string>
     <string name="CP_PlayVideo">Воспроизводить видео по нажатию на кнопку громкости</string>
     <string name="CP_PlayVideo_Desc">При нажатии на кнопку громкости будет включено видео на экране в диалоге</string>
     <string name="CP_AutoPauseVideo">Останавливать видео</string>
@@ -411,8 +401,8 @@
     <string name="EP_NavigationAnimation">Анимация навигации</string>
     <string name="EP_NavigationAnimationBezier">Обычная</string>
     <string name="EP_NavigationAnimationCrossfading">Эффект плавного затухания</string>
+    <string name="CG_PredictiveBackAnimation">Predictive-Back навигация</string>
     <string name="EP_PhotosSize">Отправлять большие фото (2560px)</string>
-    <string name="EP_CustomAppTitle">Название приложения</string>
     <string name="EP_CustomChat">Пользовательский чат для Избранного</string>
     <string name="EP_CustomChat_Desc">Вы можете выбрать любой чат/группу/канал, чтобы пересылать туда сообщения (через кнопку в панели действий, в меню сообщения, при двойном тапе или при свайпе по сообщению)</string>
     <string name="EP_CustomChat_Selected_Title">вместо</string>

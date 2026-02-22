@@ -20,12 +20,15 @@ import android.view.WindowInsets;
 import android.widget.LinearLayout;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.camera.CameraView;
 import org.telegram.ui.Components.LayoutHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
+import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
 
 public class EffectSelectorView extends LinearLayout {
 
@@ -59,25 +62,32 @@ public class EffectSelectorView extends LinearLayout {
 
 //    private static final String[] GOOGLE_FUCKUPS = {"raven", "bluejay", "panther", "cheetah", "lynx"};
 
-    public void loadEffects(CameraXView cameraXView) {
+    public void loadEffects(BaseCameraView baseCameraView) {
         if (getChildCount() == 0) {
             boolean fuckup = false /*Arrays.asList(GOOGLE_FUCKUPS).contains(Build.DEVICE)*/;
             ArrayList<Integer> list_effect = new ArrayList<>();
-            if (!fuckup && cameraXView.isNightModeSupported()) {
-                list_effect.add(CameraXController.CAMERA_NIGHT);
+
+            if ( CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2) {
+                list_effect.add(CameraXController.CAMERA_ASPECT_RATIO_SELECTOR);
             }
-            if (!fuckup && cameraXView.isAutoModeSupported()) {
-                list_effect.add(CameraXController.CAMERA_AUTO);
-            }
-            list_effect.add(CameraXController.CAMERA_NONE);
-            if (cameraXView.isWideModeSupported()) {
-                list_effect.add(CameraXController.CAMERA_WIDE);
-            }
-            if (!fuckup && cameraXView.isHdrModeSupported()) {
-                list_effect.add(CameraXController.CAMERA_HDR);
-            }
-            if (list_effect.size() == 1) {
-                return;
+
+            if (CameraXUtils.isCurrentCameraCameraX() && baseCameraView instanceof CameraXView cameraXView) {
+                if (!fuckup && cameraXView.isNightModeSupported()) {
+                    list_effect.add(CameraXController.CAMERA_NIGHT);
+                }
+                if (!fuckup && cameraXView.isAutoModeSupported()) {
+                    list_effect.add(CameraXController.CAMERA_AUTO);
+                }
+                list_effect.add(CameraXController.CAMERA_NONE);
+                if (cameraXView.isWideModeSupported()) {
+                    list_effect.add(CameraXController.CAMERA_WIDE);
+                }
+                if (!fuckup && cameraXView.isHdrModeSupported()) {
+                    list_effect.add(CameraXController.CAMERA_HDR);
+                }
+                if (list_effect.size() == 1) {
+                    return;
+                }
             }
             for (int i = 0; i < list_effect.size(); i++) {
                 int effect = list_effect.get(i);
@@ -87,14 +97,24 @@ public class EffectSelectorView extends LinearLayout {
                 ButtonEffect buttonEffect = new ButtonEffect(getContext(), effect) {
                     @Override
                     protected void onItemClick(ButtonEffect buttonEffect, int camera_type) {
-                        if (isEnabledButtons) {
-                            super.onItemClick(buttonEffect, camera_type);
-                            if (oldSelection != null) {
-                                oldSelection.toggleButton(false, true);
+                        if (effect == CameraXController.CAMERA_ASPECT_RATIO_SELECTOR) {
+                            CameraPreferencesEntry.showAspectRatioSelector(getContext(), () -> {
+                                if (baseCameraView instanceof CameraXView cameraXView) {
+                                    cameraXView.rebind();
+                                } else if (baseCameraView instanceof CameraView cameraView) {
+                                    cameraView.resetCamera();
+                                }
+                            });
+                        } else {
+                            if (isEnabledButtons) {
+                                super.onItemClick(buttonEffect, camera_type);
+                                if (oldSelection != null) {
+                                    oldSelection.toggleButton(false, true);
+                                }
+                                buttonEffect.toggleButton(true, true);
+                                oldSelection = buttonEffect;
+                                onEffectSelected(camera_type);
                             }
-                            buttonEffect.toggleButton(true, true);
-                            oldSelection = buttonEffect;
-                            onEffectSelected(camera_type);
                         }
                     }
                 };

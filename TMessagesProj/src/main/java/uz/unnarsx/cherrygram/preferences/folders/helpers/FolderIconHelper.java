@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 
 public class FolderIconHelper {
+
     public static LinkedHashMap<String, Integer> folderIcons = new LinkedHashMap<>();
 
     static {
@@ -114,7 +115,7 @@ public class FolderIconHelper {
 
     public static int getPadding() {
         if (CherrygramAppearanceConfig.INSTANCE.getTabMode() == CherrygramAppearanceConfig.TAB_TYPE_MIX) {
-            return AndroidUtilities.dp(6);
+            return AndroidUtilities.dp(3);
         }
         return 0;
     }
@@ -127,12 +128,16 @@ public class FolderIconHelper {
         return result;
     }
 
-    public static int getPaddingTab() {
-        if (CherrygramAppearanceConfig.INSTANCE.getTabStyle() >= CherrygramAppearanceConfig.TAB_STYLE_VKUI) {
-            return AndroidUtilities.dp(26);
-        } else {
-            return AndroidUtilities.dp(24);
+    public static int getPaddingTabWidth() {
+        return 24;
+    }
+
+    public static int getInternalPaddingTab() {
+        /*if (CherrygramAppearanceConfig.INSTANCE.getTabMode() != CherrygramAppearanceConfig.TAB_TYPE_ICON) {
+            return AndroidUtilities.dp(12.5f);
         }
+        return AndroidUtilities.dp(6.25f);*/
+        return (int) 12.5f;
     }
 
     public static int getTabIcon(String emoji) {
@@ -144,4 +149,5 @@ public class FolderIconHelper {
         }
         return R.drawable.filter_custom_solar;
     }
+
 }

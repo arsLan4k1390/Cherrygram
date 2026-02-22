@@ -18,30 +18,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Process;
 
-import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.R;
-import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.Components.Bulletin;
-import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.LaunchActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public final class AppRestartHelper extends Activity {
+
     private static final String KEY_RESTART_INTENTS = "cherrygram_restart_intents";
     private static final String KEY_MAIN_PROCESS_PID = "cherrygram_main_process_pid";
 
-    public static void triggerRebirth(Context context, Intent... nextIntents) {
-        nextIntents[0].addFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK);
-        Intent intent = new Intent(context, AppRestartHelper.class);
-        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
-        intent.putParcelableArrayListExtra(KEY_RESTART_INTENTS, new ArrayList<>(Arrays.asList(nextIntents)));
-        intent.putExtra(KEY_MAIN_PROCESS_PID, Process.myPid());
-        context.startActivity(intent);
-    }
-
-    @Override protected void onCreate(Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Process.killProcess(getIntent().getIntExtra(KEY_MAIN_PROCESS_PID, -1));
         ArrayList<Intent> intents = getIntent().getParcelableArrayListExtra(KEY_RESTART_INTENTS);
@@ -50,19 +38,21 @@ public final class AppRestartHelper extends Activity {
         Runtime.getRuntime().exit(0);
     }
 
-    public static void createRestartBulletin(BaseFragment fragment) {
-        BulletinFactory.of(fragment).createSimpleBulletin(
-                R.raw.chats_infotip,
-                LocaleController.getString(R.string.CG_RestartToApply),
-                LocaleController.getString(R.string.BotUnblock),
-                () -> triggerRebirth(fragment.getContext(), new Intent(fragment.getContext(), LaunchActivity.class))).show();
+    private static void triggerRebirth(Context context, Intent... nextIntents) {
+        nextIntents[0].addFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK);
+        Intent intent = new Intent(context, AppRestartHelper.class);
+        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        intent.putParcelableArrayListExtra(KEY_RESTART_INTENTS, new ArrayList<>(Arrays.asList(nextIntents)));
+        intent.putExtra(KEY_MAIN_PROCESS_PID, Process.myPid());
+        context.startActivity(intent);
     }
 
-    public static void createDebugSuccessBulletin(BaseFragment fragment) {
-        BulletinFactory.of(fragment)
-                .createSuccessBulletin(LocaleController.getString(R.string.OK))
-                .setDuration(Bulletin.DURATION_LONG)
-                .show();
+    public static void restartApp(Context context) {
+        triggerRebirth(context, new Intent(context, LaunchActivity.class));
+    }
+
+    public static void killApp() {
+        System.exit(0);
     }
 
 }

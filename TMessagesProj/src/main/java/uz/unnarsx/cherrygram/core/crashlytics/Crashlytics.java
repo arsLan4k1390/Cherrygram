@@ -9,15 +9,21 @@
 
 package uz.unnarsx.cherrygram.core.crashlytics;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLoader;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.SharedConfig;
+import org.telegram.ui.LaunchActivity;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -30,9 +36,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
-import uz.unnarsx.cherrygram.misc.Constants;
+import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
 
 public class Crashlytics implements Thread.UncaughtExceptionHandler {
+
     private final Thread.UncaughtExceptionHandler defaultUEH;
 
     public Crashlytics() {
@@ -71,7 +78,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
         return getLogFile().exists();
     }
 
-    public static File shareLogs() throws IOException {
+    private static File shareLogs() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(getLogFile()));
         StringBuilder builder = new StringBuilder();
         String line;
@@ -97,7 +104,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
         };
     }
 
-    public static String getCrashReportMessage() {
+    private static String getCrashReportMessage() {
         return getReportMessage() + "\n\n" +
                 "Crash Date: " + LocaleController.getInstance().getFormatterStats().format(System.currentTimeMillis()) +
                 "\n\n#crash";
@@ -107,12 +114,12 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
         return  "Steps to reproduce:\n" +
                 "Write here the steps to reproduce\n\n" +
                 "Details:\n"+
-                "• Cherrygram Version: " + Constants.INSTANCE.getCherryVersion() + " (" + CGResourcesHelper.INSTANCE.getAbiCode() + ")\n" +
+                "• Cherrygram Version: " + CGResourcesHelper.getCherryVersion() + " (" + CGResourcesHelper.getAbiCode() + ")\n" +
                 "• Telegram Version: " + BuildVars.BUILD_VERSION_STRING + "\n" +
-                "• Build Type: " + CGResourcesHelper.INSTANCE.getBuildType() + "\n" +
+                "• Build Type: " + CGResourcesHelper.getBuildType() + "\n" +
                 "• Device: " + CGResourcesHelper.INSTANCE.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + "\n" +
-                "• OS Version: " + Build.VERSION.RELEASE + "\n" +
-                "• Camera: " + CGResourcesHelper.INSTANCE.getCameraName() + "\n" +
+                "• OS Version: " + Build.VERSION.RELEASE + " • SDK: " + Build.VERSION.SDK_INT + "\n" +
+                "• Camera: " + CameraPreferencesEntry.getCameraName() + "\n" +
                 "• Performance Class: " + getPerformanceClassString() + "\n" +
                 "• Google Play Services: " + ApplicationLoader.hasPlayServices + "\n" +
                 "• Locale: " + LocaleController.getSystemLocaleStringIso639();
@@ -125,4 +132,30 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
             file.delete();
         }
     }
+
+    public static void sendCrashLogs(Activity activity, CrashReportBottomSheet bottomSheet) {
+        try {
+            File cacheFile = Crashlytics.shareLogs();
+            Uri uri;
+
+            Intent i = new Intent(Intent.ACTION_SEND);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                uri = FileProvider.getUriForFile(activity, ApplicationLoader.getApplicationId() + ".provider", cacheFile);
+                i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } else {
+                uri = Uri.fromFile(cacheFile);
+            }
+            i.setType("message/rfc822");
+            i.putExtra(Intent.EXTRA_SUBJECT, Crashlytics.getCrashReportMessage());
+            i.putExtra(Intent.EXTRA_STREAM, uri);
+            i.setClass(activity, LaunchActivity.class);
+
+            activity.startActivity(i);
+
+            bottomSheet.dismiss();
+        } catch (IOException e) {
+            FileLog.e(e);
+        }
+    }
+
 }

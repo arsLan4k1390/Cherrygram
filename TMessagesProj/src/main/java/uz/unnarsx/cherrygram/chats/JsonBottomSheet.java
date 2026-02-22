@@ -192,13 +192,13 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
         buttonShadowView.setAlpha(0);
         buttonView.addView(buttonShadowView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, AndroidUtilities.getShadowHeight() / dpf2(1), Gravity.TOP | Gravity.FILL_HORIZONTAL));
 
-        buttonTextView = new ButtonWithCounterView(context, getResourcesProvider());
+        buttonTextView = new ButtonWithCounterView(context, getResourcesProvider()).setRound();
         buttonTextView.setFilled(true);
         buttonTextView.setText(getString(R.string.Close), false);
         buttonTextView.setOnClickListener(e -> dismiss());
         buttonView.addView(buttonTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL, 16, 16, 72, 16));
 
-        copyButton = new ButtonWithCounterView(context, getResourcesProvider());
+        copyButton = new ButtonWithCounterView(context, getResourcesProvider()).setRound();
         SpannableStringBuilder sb = new SpannableStringBuilder();
         sb.append("+");
         sb.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(getContext(), R.drawable.msg_copy_filled_solar)), 0, 1, 0);

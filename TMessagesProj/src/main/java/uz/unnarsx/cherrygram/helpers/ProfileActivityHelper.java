@@ -11,15 +11,26 @@ package uz.unnarsx.cherrygram.helpers;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.lerp;
+import static org.telegram.messenger.LocaleController.formatString;
+import static org.telegram.messenger.LocaleController.getString;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
+import android.util.TypedValue;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import androidx.core.graphics.ColorUtils;
 
+import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BaseController;
+import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
@@ -29,6 +40,8 @@ import org.telegram.messenger.UserObject;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
+import org.telegram.ui.ActionBar.ActionBarMenuItem;
+import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
@@ -37,7 +50,9 @@ import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.EmojiPacksAlert;
+import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
+import org.telegram.ui.Components.TypefaceSpan;
 import org.telegram.ui.PeerColorActivity;
 import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.Stories.ChannelBoostUtilities;
@@ -46,6 +61,7 @@ import org.telegram.ui.Stories.recorder.HintView2;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
+import uz.unnarsx.cherrygram.donates.BadgeHelper;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
@@ -76,12 +92,86 @@ public class ProfileActivityHelper extends BaseController {
     public final static int OPTION_BOOST_CHANNEL = 1001;
     public final static int OPTION_GET_PROFILE_BACKGROUND = 1002;
     public final static int OPTION_APPLY_PROFILE_BACKGROUND = 1003;
+    public final static int OPTION_USER_INFO = 1004;
+
+    public void injectCherryFeats(ActionBarMenuItem otherItem, TLRPC.User user, TLRPC.EncryptedChat currentEncryptedChat, boolean isBot) {
+        otherItem.addColoredGap();
+
+        long emojiDocumentId = UserObject.getProfileEmojiId(user);
+        if (!UserObject.isUserSelf(user) && currentEncryptedChat == null && !isBot) {
+            if (emojiDocumentId != 0
+                    && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji()
+            ) {
+                otherItem.addSubItem(ProfileActivityHelper.OPTION_GET_PROFILE_BACKGROUND, R.drawable.msg_emoji_stickers, getString(R.string.CG_GetEmojiPack));
+            }
+            if (getUserConfig().isPremium() &&
+                    UserObject.getProfileEmojiId(getUserConfig().getCurrentUser()) != emojiDocumentId
+                    && CherrygramAppearanceConfig.INSTANCE.getProfileBackgroundEmoji()
+            ) {
+                otherItem.addSubItem(ProfileActivityHelper.OPTION_APPLY_PROFILE_BACKGROUND, R.drawable.msg_emoji_stickers, getString(R.string.CG_ProfileBackground));
+            }
+        }
+
+        otherItem.addSubItem(ProfileActivityHelper.OPTION_USER_INFO, R.drawable.icon_json_solar, getString(R.string.Info));
+    }
+
+    public void injectPhoneNumber(
+            BaseFragment fragment,
+            ItemOptions itemOptions,
+            String phone
+    ) {
+        itemOptions.addGap();
+
+        TextView phoneInfoView = new TextView(fragment.getContext());
+        phoneInfoView.setPadding(AndroidUtilities.dp(13), AndroidUtilities.dp(8), AndroidUtilities.dp(13), AndroidUtilities.dp(8));
+        phoneInfoView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+        phoneInfoView.setTextColor(Theme.getColor(Theme.key_actionBarDefaultSubmenuItem, fragment.getResourceProvider()));
+        phoneInfoView.setLinkTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteValueText, fragment.getResourceProvider()));
+        phoneInfoView.setBackground(Theme.createRadSelectorDrawable(Theme.getColor(Theme.key_dialogButtonSelector, fragment.getResourceProvider()), 0,6));
+
+        boolean isFragmentPhoneNumber = phone != null && phone.matches("888\\d{8}");
+
+        String phoneInfoString = LocaleController.getString(isFragmentPhoneNumber ? R.string.AnonymousNumber : R.string.PhoneMobile) +
+                ": " +
+                "*" +
+                PhoneFormat.getInstance().format("+" + phone) +
+                "*";
+
+        SpannableStringBuilder spanned = new SpannableStringBuilder(AndroidUtilities.replaceTags(phoneInfoString));
+
+        int startIndex = TextUtils.indexOf(spanned, '*');
+        int lastIndex = TextUtils.lastIndexOf(spanned, '*');
+        if (startIndex != -1 && lastIndex != -1 && startIndex != lastIndex) {
+            spanned.replace(lastIndex, lastIndex + 1, "");
+            spanned.replace(startIndex, startIndex + 1, "");
+            spanned.setSpan(new TypefaceSpan(AndroidUtilities.bold()), startIndex, lastIndex - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spanned.setSpan(new ForegroundColorSpan(phoneInfoView.getLinkTextColors().getDefaultColor()), startIndex, lastIndex - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        phoneInfoView.setText(spanned);
+        phoneInfoView.setOnClickListener(v -> {
+            try {
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:+" + phone));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                fragment.getParentActivity().startActivityForResult(intent, 500);
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+            itemOptions.dismiss();
+        });
+
+        itemOptions.addView(phoneInfoView);
+    }
 
     public void boostChannel(Context context, long dialogID) {
         Browser.openUrl(context, ChannelBoostUtilities.createLink(currentAccount, dialogID));
     }
 
     public void getProfileBackground(BaseFragment fragment, long dialogID) {
+        if (fragment == null || fragment.getContext() == null || fragment.getResourceProvider() == null) {
+            return;
+        }
+
         long emojiDocumentId = UserObject.getProfileEmojiId(getMessagesController().getUser(dialogID));
 
         AnimatedEmojiDrawable.getDocumentFetcher(currentAccount).fetchDocument(emojiDocumentId, document -> AndroidUtilities.runOnUIThread(() -> {
@@ -139,6 +229,34 @@ public class ProfileActivityHelper extends BaseController {
             }
         });
     }
+
+    public void showCherryUserInfo(BaseFragment baseFragment, long userID) {
+        boolean isPremium = false; // cgPremium
+        boolean isDonated = DonatesManager.INSTANCE.didUserDonate2(userID);
+        boolean isDonatedForMarketplace = DonatesManager.INSTANCE.didUserDonateForMarketplace(userID);
+        boolean hasCustomEmojiColor = BadgeHelper.Companion.hasCustomUserColor(userID);
+        String customColor = BadgeHelper.Companion.getUserColorString(userID);
+
+        boolean isBlocked = DonatesManager.INSTANCE.isUserBlocked(userID);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("isCherryPremium: ").append(isPremium)
+                .append("\nisDonated: ").append(isDonated)
+                .append("\nisDonatedForMarketplace: ").append(isDonatedForMarketplace)
+                .append("\n\nhasCustomEmojiColor: ").append(hasCustomEmojiColor);
+
+        if (customColor != null && hasCustomEmojiColor) {
+            sb.append("\ncustomColor: ").append(customColor);
+        }
+
+        sb.append("\n\nisBlocked: ").append(isBlocked);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(baseFragment.getParentActivity(), baseFragment.getResourceProvider());
+        builder.setTitle(getString(R.string.Info));
+        builder.setMessage(sb);
+        builder.setPositiveButton(getString(R.string.OK), null);
+        baseFragment.showDialog(builder.create());
+    }
     /** Options finish */
 
     /** Badges start */
@@ -180,12 +298,12 @@ public class ProfileActivityHelper extends BaseController {
 
             nameTextView[a].setRightDrawable2OnClick(v -> {
                 TLRPC.Document document = AnimatedEmojiDrawable.findDocument(currentAccount, emojiDocumentId);
-                SpannableStringBuilder stringBuilder = new SpannableStringBuilder(AndroidUtilities.replaceTags(LocaleController.formatString(R.string.DP_Donate_Bulletin, UserObject.getUserName(user))));
+                SpannableStringBuilder stringBuilder = new SpannableStringBuilder(AndroidUtilities.replaceTags(formatString(R.string.DP_Donate_Bulletin, UserObject.getUserName(user))));
 
                 BulletinFactory.of(profileActivity).createDonatesBulletin(
                         document,
                         stringBuilder,
-                        LocaleController.getString(R.string.LearnMore),
+                        getString(R.string.LearnMore),
                         Bulletin.DURATION_PROLONG,
                         () -> CherrygramPreferencesNavigator.INSTANCE.createDonate(profileActivity)
                 ).show();
@@ -221,7 +339,7 @@ public class ProfileActivityHelper extends BaseController {
 
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder(
                 AndroidUtilities.replaceTags(
-                        LocaleController.formatString(R.string.DP_Donate_Bulletin, UserObject.getUserName(user))
+                        formatString(R.string.DP_Donate_Bulletin, UserObject.getUserName(user))
                 )
         );
 

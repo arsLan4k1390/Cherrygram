@@ -30,7 +30,7 @@ object CherrygramCameraConfig {
     /** Camera type finish */
 
     /** Camera start */
-    var disableAttachCamera by sharedPreferences.boolean("CP_DisableCam", true)
+    var disableAttachCamera by sharedPreferences.boolean("CP_DisableAttachCam", true)
     var useDualCamera by sharedPreferences.boolean("CP_UseDualCamera", false)
 
     const val Camera16to9 = 0
@@ -58,9 +58,9 @@ object CherrygramCameraConfig {
     var centerCameraControlButtons by sharedPreferences.boolean("CP_CenterCameraControlButtons", true)
 
     const val EXPOSURE_SLIDER_NONE = 0
-//    const val EXPOSURE_SLIDER_BOTTOM = 1
+    const val EXPOSURE_SLIDER_BOTTOM = 1
     const val EXPOSURE_SLIDER_RIGHT = 2
-//    const val EXPOSURE_SLIDER_LEFT = 3
+    const val EXPOSURE_SLIDER_LEFT = 3
     var exposureSlider by sharedPreferences.int("CP_ExposureSlider", EXPOSURE_SLIDER_RIGHT)
 
     var rearCam by sharedPreferences.boolean("CP_RearCam", false)

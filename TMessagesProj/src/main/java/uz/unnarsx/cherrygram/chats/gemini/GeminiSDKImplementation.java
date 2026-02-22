@@ -179,8 +179,8 @@ public class GeminiSDKImplementation {
                                 .setDuration(Bulletin.DURATION_SHORT)
                                 .show();
 
-                        if (chatActivity != null && chatActivity.getChatActivityEnterView() != null && chatActivity.getChatActivityEnterView().messageEditText != null) {
-                            chatActivity.getChatActivityEnterView().messageEditText.setText(resultText);
+                        if (chatActivity != null && chatActivity.getChatActivityEnterView() != null && chatActivity.getChatActivityEnterView().getEditField() != null) {
+                            chatActivity.getChatActivityEnterView().getEditField().setText(resultText);
                         }
                     }
                 }

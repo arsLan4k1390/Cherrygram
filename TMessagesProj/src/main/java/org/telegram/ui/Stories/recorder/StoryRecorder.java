@@ -77,6 +77,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -503,6 +504,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         if (windowManager != null && windowView != null && windowView.getParent() == null) {
             AndroidUtilities.setPreferredMaxRefreshRate(windowManager, windowView, windowLayoutParams);
             windowManager.addView(windowView, windowLayoutParams);
+            setupBackDispatcher();
         }
 
         outputEntry = entry;
@@ -569,6 +571,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         if (windowManager != null && windowView != null && windowView.getParent() == null) {
             AndroidUtilities.setPreferredMaxRefreshRate(windowManager, windowView, windowLayoutParams);
             windowManager.addView(windowView, windowLayoutParams);
+            setupBackDispatcher();
         }
 
         collageLayoutView.setCameraThumb(getCameraThumb());
@@ -631,6 +634,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         if (windowManager != null && windowView != null && windowView.getParent() == null) {
             AndroidUtilities.setPreferredMaxRefreshRate(windowManager, windowView, windowLayoutParams);
             windowManager.addView(windowView, windowLayoutParams);
+            setupBackDispatcher();
         }
 
         outputEntry = entry;
@@ -695,6 +699,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         if (windowManager != null && windowView != null && windowView.getParent() == null) {
             AndroidUtilities.setPreferredMaxRefreshRate(windowManager, windowView, windowLayoutParams);
             windowManager.addView(windowView, windowLayoutParams);
+            setupBackDispatcher();
         }
 
         outputEntry = entry;
@@ -760,6 +765,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         if (windowManager != null && windowView != null && windowView.getParent() == null) {
             AndroidUtilities.setPreferredMaxRefreshRate(windowManager, windowView, windowLayoutParams);
             windowManager.addView(windowView, windowLayoutParams);
+            setupBackDispatcher();
         }
 
         outputEntry = entry;
@@ -812,6 +818,16 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         botId = 0;
         botLang = "";
         botEdit = null;
+    }
+
+    private void setupBackDispatcher() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return;
+        final OnBackInvokedDispatcher dispatcher = windowView.findOnBackInvokedDispatcher();
+        if (dispatcher == null) return;
+        dispatcher.registerOnBackInvokedCallback(
+            OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+            this::onBackPressed
+        );
     }
 
     private boolean fastClose;
@@ -1980,9 +1996,10 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
 
     private boolean videoError;
 
-    private static final int MODE_LIVE = -1;
-    private static final int MODE_PHOTO = 0;
-    private static final int MODE_VIDEO = 1;
+    public static final int MODE_LIVE = -1;
+    public static final int MODE_PHOTO = 0;
+    public static final int MODE_VIDEO = 1;
+
     private int mode = MODE_PHOTO;
     private boolean takingPhoto = false;
     private boolean takingVideo = false;
@@ -4637,6 +4654,21 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         containerViewBackAnimator.start();
     }
 
+    public StoryRecorder setMode(int mode) {
+        if (this.mode == mode)
+            return this;
+        this.mode = mode;
+        if (modeSwitcherView != null) {
+            modeSwitcherView.switchMode(mode);
+        }
+        showVideoTimer(mode == MODE_VIDEO, true);
+        if (collageListView != null) {
+            collageListView.setVisible(false, true);
+        }
+        updateActionBarButtons(false);
+        return this;
+    }
+
     private void openThemeSheet() {
         if (themeSheet == null) {
             themeSheet = new StoryThemeSheet(getContext(), currentAccount, resourcesProvider, () -> {
@@ -6864,7 +6896,7 @@ public class StoryRecorder implements NotificationCenter.NotificationCenterDeleg
         if (cameraView != null || getContext() == null) {
             return;
         }
-        cameraView = new DualCameraView(getContext(), getCameraFace(), false) {
+        cameraView = new DualCameraView(getContext(), getCameraFace(), false, true) {
             @Override
             public void onEntityDraggedTop(boolean value) {
                 previewHighlight.show(true, value, actionBarContainer);

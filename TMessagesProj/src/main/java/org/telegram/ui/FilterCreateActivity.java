@@ -106,7 +106,6 @@ import org.telegram.ui.Components.spoilers.SpoilersTextView;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import uz.unnarsx.cherrygram.core.ui.MD3AdapterWithDiffUtils;
 import uz.unnarsx.cherrygram.preferences.folders.helpers.FolderIconHelper;
 import uz.unnarsx.cherrygram.preferences.folders.IconSelectorAlert;
 
@@ -430,7 +429,7 @@ public class FilterCreateActivity extends BaseFragment {
             @Override
             public void onItemClick(int id) {
                 if (id == -1) {
-                    if (checkDiscard()) {
+                    if (checkDiscard(true)) {
                         finishFragment();
                     }
                 } else if (id == done_button) {
@@ -547,6 +546,8 @@ public class FilterCreateActivity extends BaseFragment {
                 return false;
             }
         };
+        listView.setSections();
+        actionBar.setAdaptiveBackground(listView);
         listView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         listView.setVerticalScrollBarEnabled(false);
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
@@ -639,6 +640,7 @@ public class FilterCreateActivity extends BaseFragment {
         }
         if (undoView == null) {
             ((FrameLayout) fragmentView).addView(undoView = new UndoView(getContext()), LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.LEFT, 8, 0, 8, 8));
+            undoView.setTranslationY(-getBottomInset());
         }
         return undoView;
     }
@@ -930,12 +932,12 @@ public class FilterCreateActivity extends BaseFragment {
     }
 
     @Override
-    public boolean onBackPressed() {
+    public boolean onBackPressed(boolean invoked) {
         if (nameEditTextCell != null && nameEditTextCell.editTextEmoji != null && nameEditTextCell.editTextEmoji.isPopupShowing()) {
-            nameEditTextCell.editTextEmoji.hidePopup(true);
+            if (invoked) nameEditTextCell.editTextEmoji.hidePopup(true);
             return false;
         }
-        return checkDiscard();
+        return checkDiscard(invoked);
     }
 
     private void fillFilterName() {
@@ -960,20 +962,22 @@ public class FilterCreateActivity extends BaseFragment {
         }
     }
 
-    private boolean checkDiscard() {
+    private boolean checkDiscard(boolean invoked) {
         if (doneItem.getAlpha() == 1.0f) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-            if (creatingNew) {
-                builder.setTitle(LocaleController.getString(R.string.FilterDiscardNewTitle));
-                builder.setMessage(LocaleController.getString(R.string.FilterDiscardNewAlert));
-                builder.setPositiveButton(LocaleController.getString(R.string.FilterDiscardNewSave), (dialogInterface, i) -> processDone());
-            } else {
-                builder.setTitle(LocaleController.getString(R.string.FilterDiscardTitle));
-                builder.setMessage(LocaleController.getString(R.string.FilterDiscardAlert));
-                builder.setPositiveButton(LocaleController.getString(R.string.ApplyTheme), (dialogInterface, i) -> processDone());
+            if (invoked) {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                if (creatingNew) {
+                    builder.setTitle(LocaleController.getString(R.string.FilterDiscardNewTitle));
+                    builder.setMessage(LocaleController.getString(R.string.FilterDiscardNewAlert));
+                    builder.setPositiveButton(LocaleController.getString(R.string.FilterDiscardNewSave), (dialogInterface, i) -> processDone());
+                } else {
+                    builder.setTitle(LocaleController.getString(R.string.FilterDiscardTitle));
+                    builder.setMessage(LocaleController.getString(R.string.FilterDiscardAlert));
+                    builder.setPositiveButton(LocaleController.getString(R.string.ApplyTheme), (dialogInterface, i) -> processDone());
+                }
+                builder.setNegativeButton(LocaleController.getString(R.string.PassportDiscard), (dialog, which) -> finishFragment());
+                showDialog(builder.create());
             }
-            builder.setNegativeButton(LocaleController.getString(R.string.PassportDiscard), (dialog, which) -> finishFragment());
-            showDialog(builder.create());
             return false;
         }
         return true;
@@ -1221,7 +1225,7 @@ public class FilterCreateActivity extends BaseFragment {
 
     @Override
     public boolean canBeginSlide() {
-        return checkDiscard();
+        return checkDiscard(true);
     }
 
     private boolean hasChanges() {
@@ -1431,7 +1435,7 @@ public class FilterCreateActivity extends BaseFragment {
         }
     }
 
-    private class ListAdapter extends MD3AdapterWithDiffUtils {
+    private class ListAdapter extends AdapterWithDiffUtils {
 
         private Context mContext;
 
@@ -1463,16 +1467,13 @@ public class FilterCreateActivity extends BaseFragment {
             switch (viewType) {
                 case VIEW_TYPE_HEADER:
                     view = new HeaderCell(mContext, 22);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_HEADER_ANIMATED:
                     view = new HeaderCellWithRight(mContext, resourceProvider);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_CHAT: {
                     UserCell cell = new UserCell(mContext, 6, 0, false);
                     cell.setSelfAsSavedMessages(true);
-                    cell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     view = cell;
                     break;
                 }
@@ -1526,7 +1527,6 @@ public class FilterCreateActivity extends BaseFragment {
                         }
                     });
                     editText.setPadding(dp(23 - 16), editText.getPaddingTop(), editText.getPaddingRight(), editText.getPaddingBottom());
-                    cell.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     cell.editTextEmoji.getEditText().setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
                     view = cell;
                     break;
@@ -1536,7 +1536,6 @@ public class FilterCreateActivity extends BaseFragment {
                     break;
                 case VIEW_TYPE_BUTTON:
                     view = new ButtonCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_HINT:
                     view = new HintInnerCell(mContext);
@@ -1556,15 +1555,12 @@ public class FilterCreateActivity extends BaseFragment {
                     break;
                 case VIEW_TYPE_CREATE_LINK:
                     view = new CreateLinkCell(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_HEADER_COLOR_PREVIEW:
                     view = new HeaderCellColorPreview(mContext);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_COLOR:
                     view = new PeerColorActivity.PeerColorGrid(getContext(), PeerColorActivity.PeerColorGrid.TYPE_FOLDER_TAG, currentAccount, resourceProvider);
-                    view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
                     break;
                 case VIEW_TYPE_SHADOW_TEXT:
                 default:
@@ -1667,7 +1663,6 @@ public class FilterCreateActivity extends BaseFragment {
                     break;
                 }
                 case VIEW_TYPE_SHADOW: {
-                    holder.itemView.setBackground(Theme.getThemedDrawableByKey(mContext, divider ? R.drawable.greydivider : R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                     break;
                 }
                 case VIEW_TYPE_BUTTON: {
@@ -1679,7 +1674,6 @@ public class FilterCreateActivity extends BaseFragment {
                 case VIEW_TYPE_SHADOW_TEXT: {
                     TextInfoPrivacyCell cell = (TextInfoPrivacyCell) holder.itemView;
                     cell.setText(item.text);
-                    holder.itemView.setBackground(Theme.getThemedDrawableByKey(mContext, divider ? R.drawable.greydivider : R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                     break;
                 }
                 case VIEW_TYPE_LINK: {
@@ -1748,7 +1742,7 @@ public class FilterCreateActivity extends BaseFragment {
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CELLBACKGROUNDCOLOR, new Class[]{HeaderCell.class, TextCell.class, UserCell.class}, null, null, null, Theme.key_windowBackgroundWhite));
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundGray));
 
-        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
+//        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_LISTGLOWCOLOR, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
@@ -1765,9 +1759,6 @@ public class FilterCreateActivity extends BaseFragment {
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CHECKTAG, new Class[]{TextCell.class}, new String[]{"textView"}, null, null, null, Theme.key_windowBackgroundWhiteBlueText4));
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_CHECKTAG, new Class[]{TextCell.class}, new String[]{"ImageView"}, null, null, null, Theme.key_switchTrackChecked));
 
-        themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_BACKGROUNDFILTER, new Class[]{ShadowSectionCell.class}, null, null, null, Theme.key_windowBackgroundGrayShadow));
-
-        themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_BACKGROUNDFILTER, new Class[]{TextInfoPrivacyCell.class}, null, null, null, Theme.key_windowBackgroundGrayShadow));
         themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{TextInfoPrivacyCell.class}, new String[]{"textView"}, null, null, null, Theme.key_windowBackgroundWhiteGrayText4));
 
         themeDescriptions.add(new ThemeDescription(listView, ThemeDescription.FLAG_TEXTCOLOR, new Class[]{UserCell.class}, new String[]{"adminTextView"}, null, null, null, Theme.key_profile_creatorIcon));
@@ -1945,8 +1936,6 @@ public class FilterCreateActivity extends BaseFragment {
 
             setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
 
-            setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-
             titleTextView = new AnimatedTextView(context, true, true, false);
             titleTextView.setTextSize(AndroidUtilities.dp(15.66f));
             titleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
@@ -2071,10 +2060,12 @@ public class FilterCreateActivity extends BaseFragment {
         }
 
         public void options() {
-            if (fragment == null) {
+            if (!(fragment instanceof FilterCreateActivity)) {
                 return;
             }
+            final RecyclerListView listView = ((FilterCreateActivity) fragment).listView;
             ItemOptions options = ItemOptions.makeOptions(fragment, this);
+            options.setScrimViewBackground(listView.getClipBackground(this));
             options.add(R.drawable.msg_qrcode, LocaleController.getString(R.string.GetQRCode), this::qrcode);
             options.add(R.drawable.msg_delete, LocaleController.getString(R.string.DeleteLink), true, this::deleteLink);
             if (LocaleController.isRTL) {
@@ -2645,7 +2636,6 @@ public class FilterCreateActivity extends BaseFragment {
                             cell.setFixedSize(12);
                             cell.setText("");
                         }
-                        cell.setForeground(Theme.getThemedDrawableByKey(getContext(), divider ? R.drawable.greydivider : R.drawable.greydivider_bottom, Theme.key_windowBackgroundGrayShadow));
                     } else if (viewType == VIEW_TYPE_HEADER) {
 //                        HeaderView headerV = (HeaderView) holder.itemView;
 //                        textView.setText(item.text);
@@ -2900,6 +2890,19 @@ public class FilterCreateActivity extends BaseFragment {
             rightTextView.setTextSize(dpf2(15));
             addView(rightTextView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 18, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.TOP, 22, 17, 22, 0));
             ScaleStateListAnimator.apply(rightTextView, 0.04f, 1.2f);
+        }
+    }
+
+    @Override
+    public boolean isSupportEdgeToEdge() {
+        return true;
+    }
+    @Override
+    public void onInsets(int left, int top, int right, int bottom) {
+        listView.setPadding(0, 0, 0, bottom);
+        listView.setClipToPadding(false);
+        if (undoView != null) {
+            undoView.setTranslationY(-bottom);
         }
     }
 }

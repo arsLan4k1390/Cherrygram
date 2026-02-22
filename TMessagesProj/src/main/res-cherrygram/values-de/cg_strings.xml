@@ -26,7 +26,6 @@
     <string name="CG_LastSeenHours_other">Vor %1$d Stunden gesehen</string>
     <!--Last seen status-->
     <!--Telegram Folders Settings-->
-    <string name="CG_FoldersType_Header">Tab-Symboltyp</string>
     <string name="CG_FoldersTypeTitles">Nur Titel</string>
     <string name="CG_FoldersTypeIcons">Nur Titel</string>
     <string name="CG_FoldersTypeIconsTitles">Symbole mit Titeln</string>
@@ -121,7 +120,6 @@
     <string name="AP_ChangeIcon_Lavanda">Lavanda</string>
     <string name="AP_ChangeIcon_Sunset">Sonnenuntergang</string>
     <string name="AP_ChangeIcon_Sunrise">Sonnenaufgang</string>
-    <string name="AP_IconReplacement_VKUI">VKUI Icons</string>
     <string name="AP_IconReplacement_Solar">Solar-Icons von @Design480</string>
     <string name="AP_IconReplacement_Default">Default</string>
     <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
@@ -164,20 +162,7 @@
     <string name="AP_FolderNameInHeader_Desc">Dies ändert \"Cherrygram\" in der Aktionsleiste auf den Namen Ihres Ordners (nützlich, wenn Sie nur Symbole statt Ordnernamen haben)</string>
     <string name="CP_NewTabs_RemoveAllChats">\"Alle Chat\"-Tab ausblenden</string>
     <string name="AP_Tab_Style">Tab style</string>
-    <string name="AP_Tab_Style_Default">Standard</string>
-    <string name="AP_Tab_Style_Rounded">Abgerundet</string>
-    <string name="AP_Tab_Style_Text">Text</string>
-    <string name="AP_Tab_Style_Pills">Pillen</string>
     <string name="AP_Tab_Style_Stroke">Add stroke</string>
-    <string name="AP_DrawerCategory">Drawer</string>
-    <string name="AP_DrawerAvatar">Profilfoto als Drawer Hintergrund</string>
-    <string name="AP_DrawerShowAvatar">Avatar anzeigen</string>
-    <string name="AP_DrawerDarken">Hintergrund abdunkeln</string>
-    <string name="AP_ShadeBackground">Hintergrund mit Farbverlauf</string>
-    <string name="AP_DrawerBlur">Hintergrund weichzeichnen</string>
-    <string name="AP_DrawerBlurIntensity">Stärke der Unschärfe</string>
-    <string name="AP_DrawerIconPack_Header">Drawer-Symbole</string>
-    <string name="AP_DrawerButtonsCategory">Drawer-Schaltflächen</string>
     <string name="AP_HideUserPhone_Show">Tippe zum Ansehen</string>
     <string name="AP_HideUserPhone_Copy">Zum Kopieren halten</string>
     <string name="AP_MutualContacts_Description">Das ist ein gemeinsamer Kontakt.</string>
@@ -208,8 +193,6 @@
     <string name="CP_HideSendAsChannel">\"Als Kanal senden\" ausblenden</string>
     <string name="CP_HideSendAsChannelDesc">Du kannst das Menü durch langes Klicken auf Emoji/Sticker/GIFs öffnen</string>
     <string name="CP_Header_Record">Medien</string>
-    <string name="CP_VoiceEnhancements">Sprachverbesserungen</string>
-    <string name="CP_VoiceEnhancements_Desc">Rauschunterdrückung und Sprachnormalisierung</string>
     <string name="CP_PlayVideo">Video über Lautstärketaste abspielen</string>
     <string name="CP_PlayVideo_Desc">Wenn Sie die Lautstärketaste drücken, wird jedes Video auf dem Bildschirm im Chat abgespielt</string>
     <string name="CP_AutoPauseVideo">Video automatisch pausieren</string>
@@ -254,7 +237,6 @@
     <string name="EP_NavigationAnimationBezier">Klassisch</string>
     <string name="EP_NavigationAnimationCrossfading">Crossfading Effekt</string>
     <string name="EP_PhotosSize">Sende große Fotos (2560px)</string>
-    <string name="EP_CustomAppTitle">App-Titel</string>
     <string name="EP_CustomChat">Benutzerdefinierter Chat für gespeicherte Nachrichten</string>
     <string name="EP_CustomChat_Desc">Setze eine ID aus einem anderen Chat/Gruppe/Kanal um Nachrichten weiterzuleiten (Schaltfläche in Aktionsleiste, Nachrichtenmenü oder Doppeltipp)</string>
     <string name="EP_Network">Netzwerk</string>

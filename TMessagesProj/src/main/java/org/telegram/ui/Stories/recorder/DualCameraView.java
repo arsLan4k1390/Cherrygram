@@ -41,8 +41,8 @@ public class DualCameraView extends CameraView {
 
     private boolean dualAvailable;
 
-    public DualCameraView(Context context, boolean frontface, boolean lazy) {
-        super(context, frontface, lazy);
+    public DualCameraView(Context context, boolean frontface, boolean lazy, boolean story) {
+        super(context, frontface, lazy, story);
         dualAvailable = dualAvailableStatic(context);
     }
 

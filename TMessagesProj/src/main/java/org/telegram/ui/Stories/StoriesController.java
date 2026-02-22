@@ -498,7 +498,6 @@ public class StoriesController {
                     }
                     if (CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromUsers() && !user.stories_hidden) {
                         toggleHidden(dialogId, true, true, true);
-                        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("добавил в архив истории от юзера: " + dialogId);
                     }
                     if (user.stories_hidden) {
                         addUserToHiddenList(userStories);
@@ -513,7 +512,6 @@ public class StoriesController {
                     }
                     if (CherrygramCoreConfig.INSTANCE.getArchiveStoriesFromChannels() && !chat.stories_hidden) {
                         toggleHidden(dialogId, true, true, true);
-                        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("добавил в архив истории от чата/канала: " + dialogId);
                     }
                     if (chat.stories_hidden) {
                         addUserToHiddenList(userStories);

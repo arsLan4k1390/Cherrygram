@@ -60,7 +60,6 @@ import org.telegram.ui.Cells.ProfileChannelCell;
 import org.telegram.ui.Cells.ShadowSectionCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextDetailCell;
-import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Cells.ThemePreviewMessagesCell;
 import org.telegram.ui.Components.AnimatedColor;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
@@ -87,12 +86,9 @@ import java.util.Locale;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.Extra;
-import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper;
-import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
-import uz.unnarsx.cherrygram.misc.CherrygramExtras;
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
-import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
 public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
@@ -114,7 +110,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         private ProfilePreview profilePreview;
 
         private RecyclerListView listView;
-        private MD3ListAdapter listAdapter;
+        private RecyclerView.Adapter listAdapter;
 
         private int selectedColor;
         private long selectedEmoji;
@@ -201,7 +197,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             };
             ((DefaultItemAnimator) listView.getItemAnimator()).setSupportsChangeAnimations(false);
             listView.setLayoutManager(new LinearLayoutManager(getContext()));
-            listView.setAdapter(listAdapter = new MD3ListAdapter() {
+            listView.setAdapter(listAdapter = new RecyclerListView.SelectionAdapter() {
                 @Override
                 public boolean isEnabled(RecyclerView.ViewHolder holder) {
                     return holder.getItemViewType() == VIEW_TYPE_SWITCH /*|| holder.getItemViewType() == VIEW_TYPE_TEXT_SETTING*/
@@ -586,7 +582,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         private int actionBarHeight;
 
         @Override
-        protected void dispatchDraw(Canvas canvas) {
+        protected void dispatchDraw(@NonNull Canvas canvas) {
             super.dispatchDraw(canvas);
             if (getParentLayout() != null) {
                 getParentLayout().drawHeaderShadow(canvas, actionBarHeight);
@@ -601,7 +597,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             } else {
                 actionBarHeight = dp(230) + AndroidUtilities.statusBarHeight;
                 ((MarginLayoutParams) listView.getLayoutParams()).topMargin = actionBarHeight;
-                ((MarginLayoutParams) profilePreview.getLayoutParams()).height = actionBarHeight;
+                profilePreview.getLayoutParams().height = actionBarHeight;
             }
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
@@ -730,15 +726,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 profileBackgroundSwitchRow = rowCount++;
                 profileEmojiSwitchRow = rowCount++;
             }
-
-            if (listView != null) {
-                listView.post(() -> {
-                    RecyclerView.Adapter adapter = listView.getAdapter();
-                    if (adapter instanceof MD3ListAdapter md3) {
-                        md3.reapplyVisible();
-                    }
-                });
-            }
         }
 
         private void updateMessages() {
@@ -786,14 +773,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
                 AndroidUtilities.forEachViews(listView, view -> {
                     if (view instanceof ProfileChannelCell) {
                         ((ProfileChannelCell) view).updateColors();
-                    }
-                });
-            }
-            if (listView != null) {
-                listView.post(() -> {
-                    RecyclerView.Adapter adapter = listView.getAdapter();
-                    if (adapter instanceof MD3ListAdapter md3) {
-                        md3.reapplyVisible();
                     }
                 });
             }
@@ -893,7 +872,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 if (actionBarContainer != null) {
-                    ((MarginLayoutParams) actionBarContainer.getLayoutParams()).height = ActionBar.getCurrentActionBarHeight();
+                    actionBarContainer.getLayoutParams().height = ActionBar.getCurrentActionBarHeight();
                     ((MarginLayoutParams) actionBarContainer.getLayoutParams()).topMargin = AndroidUtilities.statusBarHeight;
                 }
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -991,7 +970,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         backButton.setImageResource(R.drawable.ic_ab_back);
         backButton.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN));
         backButton.setOnClickListener(v -> {
-            if (onBackPressed()) {
+            if (onBackPressed(true)) {
                 finishFragment();
             }
         });
@@ -1001,7 +980,7 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
 
         fragmentView = contentView = frameLayout;
 
-        FirebaseAnalyticsHelper.trackEventWithEmptyBundle("msgs_and_profiles_preferences_screen");
+        FirebaseAnalyticsHelper.INSTANCE.trackEventWithEmptyBundle("msgs_and_profiles_prefs");
 
         return contentView;
     }
@@ -1172,7 +1151,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
     private class ProfilePreview extends FrameLayout {
 
         private final Theme.ResourcesProvider resourcesProvider;
-        private final int currentAccount;
 
         protected final ImageReceiver imageReceiver = new ImageReceiver(this);
         protected final AvatarDrawable avatarDrawable = new AvatarDrawable();
@@ -1185,7 +1163,6 @@ public class MessagesAndProfilesPreferencesEntry extends BaseFragment {
         public ProfilePreview(Context context, int currentAccount, Theme.ResourcesProvider resourcesProvider) {
             super(context);
 
-            this.currentAccount = currentAccount;
             this.resourcesProvider = resourcesProvider;
 
             titleView = new SimpleTextView(context) {

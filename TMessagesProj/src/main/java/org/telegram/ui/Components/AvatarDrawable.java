@@ -202,7 +202,7 @@ public class AvatarDrawable extends Drawable {
     }
 
     public static int getProfileBackColorForId(long id, Theme.ResourcesProvider resourcesProvider) {
-        return Theme.getColor(Theme.key_avatar_backgroundActionBarBlue, resourcesProvider);
+        return Theme.getColor(Theme.key_windowBackgroundGray, resourcesProvider);
     }
 
     public static String colorName(int color) {

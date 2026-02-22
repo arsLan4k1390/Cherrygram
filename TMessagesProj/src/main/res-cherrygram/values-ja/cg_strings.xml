@@ -32,7 +32,6 @@
     <string name="CG_AndMoreTypingGroup_other">%1$s と %2$d 以上</string>
     <!--Typing status-->
     <!--Telegram Folders Settings-->
-    <string name="CG_FoldersType_Header">タブアイコンの種類</string>
     <string name="CG_FoldersTypeTitles">タイトルのみ</string>
     <string name="CG_FoldersTypeIcons">アイコンのみ</string>
     <string name="CG_FoldersTypeIconsTitles">タイトルとアイコン</string>
@@ -151,16 +150,12 @@
     <string name="AP_ChangeIcon_Lavanda">ラベンダー</string>
     <string name="AP_ChangeIcon_Sunset">サンセット</string>
     <string name="AP_ChangeIcon_Sunrise">サンライズ</string>
-    <string name="AP_IconReplacement_VKUI">VKUI</string>
     <string name="AP_IconReplacement_Solar">Solar - @Design480</string>
     <string name="AP_IconReplacement_Default">デフォルト</string>
-    <string name="AP_MD3_Containers">MD3 リストデザイン</string>
-    <string name="AP_MD3_Containers_Desc">Material Design 3 style list containers with rounded corners</string>
     <string name="AP_OneUI_Switch_Style">OneUIの切り替えスタイル</string>
     <string name="AP_SystemEmoji">システムの絵文字を使用する</string>
     <string name="AP_ShowPencilIcon">編集されたメッセージの鉛筆アイコン</string>
     <string name="AP_CenterTitle">アクションバーのタイトルを中央に表示</string>
-    <string name="AP_iosSearchPanel">iOSスタイルの検索パネル</string>
     <string name="AP_DisableDividers">区切り線を無効化</string>
     <string name="AP_ToolBarShadow">ツールバーの影を無効化</string>
     <string name="AP_SystemFonts">システムフォントを使用する</string>
@@ -200,20 +195,7 @@
     <string name="AP_FolderNameInHeader_Desc">これにより、アクションバーの「Cherrygram」がフォルダの名前に変更されます (フォルダ名ではなくアイコンのみがある場合に便利です)</string>
     <string name="CP_NewTabs_RemoveAllChats">「すべてのチャット」タブを非表示</string>
     <string name="AP_Tab_Style">タブのスタイル</string>
-    <string name="AP_Tab_Style_Default">デフォルト</string>
-    <string name="AP_Tab_Style_Rounded">丸い角</string>
-    <string name="AP_Tab_Style_Text">テキスト</string>
-    <string name="AP_Tab_Style_Pills">ピル</string>
     <string name="AP_Tab_Style_Stroke">ストロークを追加</string>
-    <string name="AP_DrawerCategory">ドロワー</string>
-    <string name="AP_DrawerAvatar">写真をドロワーの背景にする</string>
-    <string name="AP_DrawerShowAvatar">アバターを表示</string>
-    <string name="AP_DrawerDarken">背景を暗くする</string>
-    <string name="AP_ShadeBackground">グラデーションの背景</string>
-    <string name="AP_DrawerBlur">背景をぼかす</string>
-    <string name="AP_DrawerBlurIntensity">ぼかしの強さ</string>
-    <string name="AP_DrawerIconPack_Header">ドロワーアイコンを設定</string>
-    <string name="AP_DrawerButtonsCategory">ドロワーの項目</string>
     <string name="AP_HideUserPhone_Show">タップで表示</string>
     <string name="AP_HideUserPhone_Copy">長押しでコピー</string>
     <string name="AP_MutualContacts_Description">相互の連絡先です。</string>
@@ -315,8 +297,6 @@
     <string name="CP_Slider_MediaAmplifier_Hint">アルバムでは動作しません (グループされたメディア)</string>
     <string name="CP_LargeVoiceMessages">Adaptive audio message length</string>
     <string name="CP_LargeVoiceMessages_Desc">The audio message bubble length will depend on the recording duration and automatically adjust to the screen width.</string>
-    <string name="CP_VoiceEnhancements">音声の強化</string>
-    <string name="CP_VoiceEnhancements_Desc">ノイズの抑制と音声のノーマライズがされます。</string>
     <string name="CP_PlayVideo">音量ボタンを押してビデオを再生</string>
     <string name="CP_PlayVideo_Desc">音量ボタンをタップするとチャット内の動画が再生されます。</string>
     <string name="CP_AutoPauseVideo">ビデオを自動で一時停止</string>
@@ -364,7 +344,6 @@
     <string name="EP_NavigationAnimationBezier">クラシック</string>
     <string name="EP_NavigationAnimationCrossfading">クロスフェード効果</string>
     <string name="EP_PhotosSize">大きな写真を送信 (2560px)</string>
-    <string name="EP_CustomAppTitle">アプリのタイトル</string>
     <string name="EP_CustomChat">保存されたメッセージのチャット</string>
     <string name="EP_CustomChat_Desc">他のチャット、グループ、チャンネルでIDを設定してメッセージを転送します (アクションバーのボタン、メッセージメニューまたはダブルタップ)。</string>
     <string name="EP_CustomChat_Selected_Title">代わり</string>

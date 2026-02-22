@@ -126,8 +126,7 @@ public final class JpegImageUtils {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         boolean success = flipped.compress(Bitmap.CompressFormat.JPEG, 100, out);
         if (!success) {
-            throw new CodecFailedException("Encode bitmap failed.",
-                    CodecFailedException.FailureType.ENCODE_FAILED);
+            throw new CodecFailedException("Encode bitmap failed.");
         }
         flipped.recycle();
 
@@ -151,23 +150,19 @@ public final class JpegImageUtils {
             bitmap = decoder.decodeRegion(cropRect, new BitmapFactory.Options());
             decoder.recycle();
         } catch (IllegalArgumentException e) {
-            throw new CodecFailedException("Decode byte array failed with illegal argument." + e,
-                    CodecFailedException.FailureType.DECODE_FAILED);
+            throw new CodecFailedException("Decode byte array failed with illegal argument." + e);
         } catch (IOException e) {
-            throw new CodecFailedException("Decode byte array failed.",
-                    CodecFailedException.FailureType.DECODE_FAILED);
+            throw new CodecFailedException("Decode byte array failed.");
         }
 
         if (bitmap == null) {
-            throw new CodecFailedException("Decode byte array failed.",
-                    CodecFailedException.FailureType.DECODE_FAILED);
+            throw new CodecFailedException("Decode byte array failed.");
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         boolean success = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
         if (!success) {
-            throw new CodecFailedException("Encode bitmap failed.",
-                    CodecFailedException.FailureType.ENCODE_FAILED);
+            throw new CodecFailedException("Encode bitmap failed.");
         }
         bitmap.recycle();
 
@@ -182,8 +177,7 @@ public final class JpegImageUtils {
                 yuv.compressToJpeg(
                         cropRect == null ? new Rect(0, 0, width, height) : cropRect, 100, out);
         if (!success) {
-            throw new CodecFailedException("YuvImage failed to encode jpeg.",
-                    CodecFailedException.FailureType.ENCODE_FAILED);
+            throw new CodecFailedException("YuvImage failed to encode jpeg.");
         }
         byte[] data = out.toByteArray();
         if (flipState != FLIP_NORMAL) {
@@ -227,22 +221,8 @@ public final class JpegImageUtils {
      * Exception for error during transcoding image.
      */
     public static final class CodecFailedException extends Exception {
-        public enum FailureType {
-            ENCODE_FAILED,
-            DECODE_FAILED,
-            UNKNOWN
-        }
-
-        private final FailureType mFailureType;
-
-        CodecFailedException(String message, FailureType failureType) {
+        CodecFailedException(String message) {
             super(message);
-            mFailureType = failureType;
-        }
-
-        @NonNull
-        public FailureType getFailureType() {
-            return mFailureType;
         }
     }
 }

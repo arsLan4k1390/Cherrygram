@@ -16,9 +16,9 @@ import org.telegram.messenger.SharedConfig
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.BaseIconReplace
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.NoIconReplace
 import uz.unnarsx.cherrygram.core.icons.icon_replaces.SolarIconReplace
-import uz.unnarsx.cherrygram.core.icons.icon_replaces.VkIconReplace
 import uz.unnarsx.cherrygram.preferences.boolean
 import uz.unnarsx.cherrygram.preferences.int
+import uz.unnarsx.cherrygram.preferences.string
 
 object CherrygramAppearanceConfig {
 
@@ -26,26 +26,28 @@ object CherrygramAppearanceConfig {
 
     /** Redesign start */
     const val ICON_REPLACE_NONE = 0
-    const val ICON_REPLACE_VKUI = 1
-    const val ICON_REPLACE_SOLAR = 2
+    const val ICON_REPLACE_SOLAR = 1
 
-    var iconReplacement by sharedPreferences.int("AP_Icon_Replacements", ICON_REPLACE_SOLAR)
+    var iconReplacement by sharedPreferences.int("AP_Icon_Replacements1", ICON_REPLACE_SOLAR)
     fun getCurrentIconPack(): BaseIconReplace {
         return when (iconReplacement) {
-            ICON_REPLACE_VKUI -> VkIconReplace()
             ICON_REPLACE_SOLAR -> SolarIconReplace()
             else -> NoIconReplace()
         }
     }
 
-    var md3Containers by sharedPreferences.boolean("AP_MD3_Containers", true)
     var oneUI_SwitchStyle by sharedPreferences.boolean("AP_OneUI_SwitchStyle", true)
     var disableDividers by sharedPreferences.boolean("AP_DisableDividers", true)
     var centerTitle by sharedPreferences.boolean("AP_CenterTitle", true)
-    var iosSearchPanel by sharedPreferences.boolean("AP_iosSearchPanel", false)
     var disableToolBarShadow by sharedPreferences.boolean("AP_ToolBarShadow", true)
-    var flatNavbar by sharedPreferences.boolean("AP_FlatNavBar", true)
     /** Redesign finish */
+
+    /** Main tabs start */
+    var showMainTabs by sharedPreferences.boolean("AP_ShowMainTabs", true)
+    var openSettingsBySwipe by sharedPreferences.boolean("AP_OpenSettingsBySwipe", false)
+    var mainTabsOrder by sharedPreferences.string("AP_MainTabsPosition", "SETTINGS,CHATS,!CONTACTS,!CALLS,!PROFILE,SEARCH")
+    var showMainTabsTitle by sharedPreferences.boolean("AP_ShowMainTabsTitle", true)
+    /** Main tabs finish */
 
     /** Messages and profiles start */
     var showSeconds by sharedPreferences.boolean("CP_ShowSeconds", false)
@@ -74,48 +76,19 @@ object CherrygramAppearanceConfig {
     const val TAB_TYPE_MIX = 0
     const val TAB_TYPE_TEXT = 1
     const val TAB_TYPE_ICON = 2
-    var tabMode by sharedPreferences.int("AP_TabMode", 1)
-
-    const val TAB_STYLE_DEFAULT = 0
-    const val TAB_STYLE_ROUNDED = 1
-    const val TAB_STYLE_TEXT = 2
-    const val TAB_STYLE_VKUI = 3
-    const val TAB_STYLE_PILLS = 4
-    var tabStyle by sharedPreferences.int("AP_TabStyle", TAB_STYLE_ROUNDED)
+    var tabMode by sharedPreferences.int("AP_TabMode", TAB_TYPE_MIX)
 
     var tabStyleStroke by sharedPreferences.boolean("AP_TabStyleAddStroke", false)
     /** Folders finish */
 
-    /** Drawer start */
-    var drawSnowInDrawer by sharedPreferences.boolean("AP_DrawSnowInDrawer", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
-    var drawerAvatar by sharedPreferences.boolean("AP_DrawerAvatar", true)
-    var drawerSmallAvatar by sharedPreferences.boolean("AP_DrawerSmallAvatar", false)
-    var drawerDarken by sharedPreferences.boolean("AP_DrawerDarken", true)
-    var drawerGradient by sharedPreferences.boolean("AP_DrawerGradient", false)
-    var drawerBlur by sharedPreferences.boolean("AP_DrawerBlur", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
-    var drawerBlurIntensity by sharedPreferences.int("AP_DrawerBlur_Intensity", 50)
-
     /** Drawer items start */
-    var changeStatusDrawerButton by sharedPreferences.boolean("AP_ChangeStatusDrawerButton", true)
-    var marketPlaceDrawerButton by sharedPreferences.boolean("AP_MarketplaceDrawerButton", false)
-    /*var myStoriesDrawerButton by sharedPreferences.boolean("AP_MyStoriesDrawerButton", true)*/
-    var myProfileDrawerButton by sharedPreferences.boolean("AP_MyProfileDrawerButton", true)
-    var createGroupDrawerButton by sharedPreferences.boolean("AP_CreateGroupDrawerButton", false)
-    var createChannelDrawerButton by sharedPreferences.boolean("AP_CreateChannelDrawerButton", false)
-    var contactsDrawerButton by sharedPreferences.boolean("AP_ContactsDrawerButton", false)
-    var callsDrawerButton by sharedPreferences.boolean("AP_CallsDrawerButton", true)
-    var savedMessagesDrawerButton by sharedPreferences.boolean("AP_SavedMessagesDrawerButton", true)
-    var archivedChatsDrawerButton by sharedPreferences.boolean("AP_ArchivedChatsDrawerButton", true)
-    var scanQRDrawerButton by sharedPreferences.boolean("AP_ScanQRDrawerButton", true)
-    var cGPreferencesDrawerButton by sharedPreferences.boolean("AP_CGPreferencesDrawerButton", true)
+    var showAccounts by sharedPreferences.boolean("AP_ShowAccounts", true)
+    var marketPlaceDrawerButton by sharedPreferences.boolean("AP_MarketplaceDrawerButton", true)
     /** Drawer items finish */
 
-    var eventType by sharedPreferences.int("AP_DrawerEventType", 0)
-    /** Drawer finish */
-
     /** Snowflakes start */
-    var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
-    var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
+    var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
+    var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     /** Snowflakes finish */
 
 }

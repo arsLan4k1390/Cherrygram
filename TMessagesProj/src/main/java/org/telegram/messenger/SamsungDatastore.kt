@@ -9,14 +9,12 @@
 
 package org.telegram.messenger
 
-import android.content.Intent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.telegram.tgnet.ConnectionManagerDelegate
-import org.telegram.ui.LaunchActivity
 import uz.unnarsx.cherrygram.Extra
+import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper
-import uz.unnarsx.cherrygram.core.helpers.FirebaseAnalyticsHelper
 import java.io.File
 
 object SamsungDatastore {
@@ -160,13 +158,7 @@ object SamsungDatastore {
         FirebaseAnalyticsHelper.trackEventWithEmptyBundle("found_module")
 //        delay(5000)
 //        exitProcess(0)
-        val context = ApplicationLoader.applicationContext
-        AppRestartHelper.triggerRebirth(
-            context, Intent(
-                context,
-                LaunchActivity::class.java
-            )
-        )
+        AppRestartHelper.restartApp(ApplicationLoader.applicationContext)
     }
 
 }

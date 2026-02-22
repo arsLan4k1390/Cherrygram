@@ -9,7 +9,6 @@
 
 package org.telegram.ui
 
-import android.content.Intent
 import android.os.Handler
 import android.os.Looper
 import com.aheaditec.talsec_security.security.api.SuspiciousAppInfo
@@ -157,15 +156,8 @@ class HuaweiApplicationLoaderlmpl : HuaweiApplicationLoader(), ThreatListener.Th
     /** SDK Integration finish */
 
     private fun uh() {
-        val context = ApplicationLoader.applicationContext
-
         Handler(Looper.getMainLooper()).postDelayed({
-            AppRestartHelper.triggerRebirth(
-                context, Intent(
-                    context,
-                    LaunchActivity::class.java
-                )
-            )
+            AppRestartHelper.restartApp(ApplicationLoader.applicationContext)
         }, 15_000)
     }
 
