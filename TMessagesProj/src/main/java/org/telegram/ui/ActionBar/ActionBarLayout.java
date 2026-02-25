@@ -92,7 +92,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.VibrateUtil;
 import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
@@ -619,7 +618,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
 
         if (layerShadowDrawable == null) {
             layerShadowDrawable = getResources().getDrawable(R.drawable.layer_shadow);
-            headerShadowDrawable = CherrygramAppearanceConfig.INSTANCE.getDisableToolBarShadow() ? null : getResources().getDrawable(R.drawable.header_shadow).mutate();
+            headerShadowDrawable = getResources().getDrawable(R.drawable.header_shadow).mutate();
             scrimPaint = new Paint();
         }
 
@@ -863,11 +862,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             headerShadowDrawable.setBounds(0, y, getMeasuredWidth(), y + headerShadowDrawable.getIntrinsicHeight());
             headerShadowDrawable.draw(canvas);
         }
-    }
-
-    @Override
-    public void setHeaderShadow(Drawable drawable) {
-        headerShadowDrawable = drawable;
     }
 
     @Keep
@@ -1646,10 +1640,10 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
                 }
 
                 if (!backAnimation) {
-                    getLastFragment().onTransitionAnimationProgress(false, progress);
-                    getBackgroundFragment().onTransitionAnimationProgress(true, progress);
+                    if (getLastFragment() != null) getLastFragment().onTransitionAnimationProgress(false, progress);
+                    if (getBackgroundFragment() != null) getBackgroundFragment().onTransitionAnimationProgress(true, progress);
                 } else {
-                    getBackgroundFragment().onTransitionAnimationProgress(true, 1f - progress);
+                    if (getBackgroundFragment() != null) getBackgroundFragment().onTransitionAnimationProgress(true, 1f - progress);
                 }
 
                 updateTransitionProgress(progress * containerView.getMeasuredWidth(), progress, backAnimation);
@@ -1798,9 +1792,13 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         containerView.setAlpha(1.0f);
         containerView.setScaleX(1.0f);
         containerView.setScaleY(1.0f);
+        containerView.setTranslationX(0);
+        containerView.setTranslationY(0);
         containerViewBack.setAlpha(1.0f);
         containerViewBack.setScaleX(1.0f);
         containerViewBack.setScaleY(1.0f);
+        containerViewBack.setTranslationX(0);
+        containerViewBack.setTranslationY(0);
         if (USE_ACTIONBAR_CROSSFADE) {
             invalidateActionBars();
         }

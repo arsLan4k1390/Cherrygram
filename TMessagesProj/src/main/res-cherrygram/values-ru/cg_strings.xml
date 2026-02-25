@@ -165,12 +165,11 @@
 
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Внешний вид</string>
-    <string name="AP_RedesignCategory">Редизайн</string>
-    <string name="AP_IconReplacements">Замена иконок</string>
+    <string name="AP_Header">Заголовок</string>
+    <string name="AP_IconReplacements">Пакет иконок</string>
     <string name="AP_Old_Notification_Icon">Стандартная иконка уведомлений (Telegram)</string>
     <string name="AP_Tablet_Mode">Режим планшета</string>
     <string name="AP_ChangeIcon_Cherry_NY">Новогодняя</string>
-    <string name="AP_ChangeIcon_Default">По умолчанию</string>
     <string name="AP_ChangeIcon_Dark">Тёмная</string>
     <string name="AP_ChangeIcon_White">Белая</string>
     <string name="AP_ChangeIcon_Laguna">Лагуна</string>
@@ -179,17 +178,14 @@
     <string name="AP_ChangeIcon_Sunset">Закат</string>
     <string name="AP_ChangeIcon_Sunrise">Восход</string>
     <string name="AP_IconReplacement_Solar">Иконки Solar от @Design480</string>
-    <string name="AP_IconReplacement_Default">Стандартные иконки</string>
     <string name="AP_OneUI_Switch_Style">Переключатели в стиле OneUI</string>
     <string name="AP_SystemEmoji">Использовать системные эмодзи</string>
     <string name="AP_ShowPencilIcon">Иконка карандаша для изменённых сообщений</string>
     <string name="AP_CenterTitle">Центрирование заголовка</string>
     <string name="AP_DisableDividers">Отключить разделители</string>
-    <string name="AP_ToolBarShadow">Отключить тень у тулбара</string>
     <string name="AP_SystemFonts">Использовать системный шрифт</string>
 
     <string name="CP_Snowflakes_Header">Снежинки</string>
-    <string name="CP_Snowflakes_AH">Заголовок приложения</string>
 
     <string name="CP_PremAndAnim_Header">Анимации и Premium функции</string>
     <string name="CP_ProfileReplyBackground">Сообщения и профили</string>
@@ -222,6 +218,7 @@
     <string name="CP_DisablePremStickAutoPlay_Desc">Premium анимация стикеров не будет воспроизведена автоматически (функция не будет работать если Вы выключили нажатия на Premium стикеры)</string>
 
     <string name="CP_Filters_Header">Папки</string>
+    <string name="AP_FoldersAtBottom">Показывать папки снизу</string>
     <string name="AP_FolderNameInHeader">Название папки вместо \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">Это изменит \"Cherrygram\" в заголовке сверху на название Вашей папки (удобно при отображении иконок вместо названий папок)</string>
     <string name="CP_NewTabs_RemoveAllChats">Скрыть папку \"Все чаты\"</string>
@@ -271,7 +268,6 @@
     <string name="CP_MessageMenuCompactLayout_Desc">Отображает основные действия сообщения в компактном виде в нижней части меню.</string>
     <string name="CP_MessageMenuCompactLayout_Dot">Точка рядом с кнопкой указывает, что у неё есть действие по зажатию.</string>
 
-    <string name="AP_CenterChatsTitle">Центрирование заголовка в чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Показать счетчик непрочитанных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включить счетчик непрочитанных чатов на кнопке «Назад» в открытом чате</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Количество недавних эмодзи и стикеров</string>
@@ -480,6 +476,7 @@
 
     <string name="DP_Donate_Badge_desc">1. **Значок Cherrygram** рядом с вашим ником.</string>
     <string name="DP_Donate_MsgMenuCompactView_Desc">2. Компактный вид элементов **меню сообщения**.</string>
+    <string name="DP_Donate_FoldersAtBottom_Desc">3. **Панель папок** внизу экрана.</string>
     <string name="DP_Donate_EpicBadge_desc">1. **Эпический значок Cherrygram** рядом с вашим ником.</string>
     <string name="DP_Donate_GiftMarket_Desc">2. Кнопку \"**Маркетплейс подарков**\" в боковом меню.</string>
     <string name="DP_Donate_MessageFilter_Desc">3. Функцию \"**Фильтр сообщений**\"</string>

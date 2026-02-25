@@ -216,10 +216,10 @@ object BackupHelper {
 
             // Appearance
             "AP_Icon_Replacements1", "AP_OneUI_SwitchStyle", "AP_DisableDividers", "AP_CenterTitle",
-            "AP_ToolBarShadow", "CP_ShowSeconds", "CP_DisablePremiumStatuses",
+            "CP_ShowSeconds", "CP_DisablePremiumStatuses",
             "CP_ReplyBackground", "CP_ReplyCustomColors", "CP_ReplyBackgroundEmoji", "CP_ProfileChannelPreview",
             "AP_ShowID_DC_new", "CP_ProfileBirthDatePreview", "CP_ProfileBusinessPreview", "CP_ProfileBackgroundColor",
-            "CP_ProfileBackgroundEmoji", "AP_FolderNameInHeader", "CP_NewTabs_RemoveAllChats", "CP_NewTabs_NoCounter",
+            "CP_ProfileBackgroundEmoji", "AP_FoldersAtBottom", "AP_FolderNameInHeader", "CP_NewTabs_RemoveAllChats", "CP_NewTabs_NoCounter",
             "AP_TabMode", "AP_TabStyleAddStroke", "AP_DrawSnowInActionBar", "AP_DrawSnowInChat",
 
             // Chats

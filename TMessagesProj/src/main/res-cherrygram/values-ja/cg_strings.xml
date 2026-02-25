@@ -137,12 +137,10 @@
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">外観</string>
-    <string name="AP_RedesignCategory">再設計</string>
     <string name="AP_IconReplacements">アイコンの置換</string>
     <string name="AP_Old_Notification_Icon">デフォルトの通知アイコン (Telegram)</string>
     <string name="AP_Tablet_Mode">タブレットモード</string>
     <string name="AP_ChangeIcon_Cherry_NY">新年</string>
-    <string name="AP_ChangeIcon_Default">デフォルト</string>
     <string name="AP_ChangeIcon_Dark">ダーク</string>
     <string name="AP_ChangeIcon_White">ホワイト</string>
     <string name="AP_ChangeIcon_Laguna">ラグナ</string>
@@ -151,16 +149,13 @@
     <string name="AP_ChangeIcon_Sunset">サンセット</string>
     <string name="AP_ChangeIcon_Sunrise">サンライズ</string>
     <string name="AP_IconReplacement_Solar">Solar - @Design480</string>
-    <string name="AP_IconReplacement_Default">デフォルト</string>
     <string name="AP_OneUI_Switch_Style">OneUIの切り替えスタイル</string>
     <string name="AP_SystemEmoji">システムの絵文字を使用する</string>
     <string name="AP_ShowPencilIcon">編集されたメッセージの鉛筆アイコン</string>
     <string name="AP_CenterTitle">アクションバーのタイトルを中央に表示</string>
     <string name="AP_DisableDividers">区切り線を無効化</string>
-    <string name="AP_ToolBarShadow">ツールバーの影を無効化</string>
     <string name="AP_SystemFonts">システムフォントを使用する</string>
     <string name="CP_Snowflakes_Header">スノーフレーク</string>
-    <string name="CP_Snowflakes_AH">アプリヘッダー</string>
     <string name="CP_PremAndAnim_Header">アニメーションとプレミアム機能</string>
     <string name="CP_ProfileReplyBackground">メッセージとプロフィール</string>
     <string name="CP_CustomizeProfile">プロフィールをカスタマイズ</string>
@@ -223,7 +218,6 @@
     <string name="CP_BlurMessageMenuItems_Desc">Blurs the menu items for a more authentic iOS look.</string>
     <string name="CP_MessageMenuNativeBlur">ネイティブなぼかし</string>
     <string name="CP_MessageMenuNativeBlur_Desc">Android\'s built-in blur system will be used for the message menu background: smooth, live, and with minimal impact on performance..</string>
-    <string name="AP_CenterChatsTitle">チャットのタイトルを中央に表示する</string>
     <string name="CP_UnreadBadgeOnBackButton">チャットの未読カウンターを表示</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">開いているチャット上の戻るボタンで未読のチャットカウンターが有効化します。</string>
     <string name="CP_Slider_RecentEmojisAndStickers">最近の絵文字とステッカーのカウンター</string>

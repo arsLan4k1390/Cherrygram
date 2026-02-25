@@ -162,7 +162,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 
@@ -3571,12 +3570,10 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
         }
 
         shadowLine = new View(context);
-        if (!CherrygramAppearanceConfig.INSTANCE.getDisableToolBarShadow()) {
-            shadowLine.setBackgroundColor(getThemedColor(Theme.key_divider));
-            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1);
-            layoutParams.topMargin = customTabs() ? 0 : dp(48) - 1;
-            addView(shadowLine, layoutParams);
-        }
+        shadowLine.setBackgroundColor(getThemedColor(Theme.key_divider));
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1);
+        layoutParams.topMargin = customTabs() ? 0 : dp(48) - 1;
+        addView(shadowLine, layoutParams);
 
         updateTabs(false);
         switchToCurrentSelectedMode(false);

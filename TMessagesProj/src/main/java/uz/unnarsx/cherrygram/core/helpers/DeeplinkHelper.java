@@ -52,7 +52,10 @@ public class DeeplinkHelper {
                     CherrygramPreferencesNavigator.INSTANCE.createAbout(fragment);
                     return;
                 }
-                case DeepLinksRepo.CG_Appearance -> fragment = CherrygramPreferencesNavigator.INSTANCE.createAppearance();
+                case DeepLinksRepo.CG_Appearance -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createAppearance(fragment);
+                    return;
+                }
                 case DeepLinksRepo.CG_Camera -> {
                     CherrygramPreferencesNavigator.INSTANCE.createCamera(fragment);
                     return;

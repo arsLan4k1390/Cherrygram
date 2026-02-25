@@ -166,12 +166,11 @@
 
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Appearance</string>
-    <string name="AP_RedesignCategory">Redesign</string>
-    <string name="AP_IconReplacements">Icon replacements</string>
+    <string name="AP_Header">Header</string>
+    <string name="AP_IconReplacements">Icon pack</string>
     <string name="AP_Old_Notification_Icon">Default notification icon (Telegram)</string>
     <string name="AP_Tablet_Mode">Tablet mode</string>
     <string name="AP_ChangeIcon_Cherry_NY">New Year</string>
-    <string name="AP_ChangeIcon_Default">Default</string>
     <string name="AP_ChangeIcon_Dark">Dark</string>
     <string name="AP_ChangeIcon_White">White</string>
     <string name="AP_ChangeIcon_Bra" translatable="false">Bra</string>
@@ -182,17 +181,14 @@
     <string name="AP_ChangeIcon_Sunset">Sunset</string>
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
     <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
-    <string name="AP_IconReplacement_Default">Default</string>
     <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
     <string name="AP_SystemEmoji">Use system emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
-    <string name="AP_CenterTitle">Center title in action bar</string>
+    <string name="AP_CenterTitle">Center title</string>
     <string name="AP_DisableDividers">Disable dividers</string>
-    <string name="AP_ToolBarShadow">Disable toolbar shadow</string>
     <string name="AP_SystemFonts">Use system fonts</string>
 
     <string name="CP_Snowflakes_Header">Snowflakes</string>
-    <string name="CP_Snowflakes_AH">App header</string>
 
     <string name="CP_PremAndAnim_Header">Animations and Premium Features</string>
     <string name="CP_ProfileReplyBackground">Messages and profiles</string>
@@ -225,6 +221,7 @@
     <string name="CP_DisablePremStickAutoPlay_Desc">Premium stickers animation will not be played automatically (feature will not work if you disabled taps on premium stickers)</string>
 
     <string name="CP_Filters_Header">Folders</string>
+    <string name="AP_FoldersAtBottom">Show folders at the bottom</string>
     <string name="AP_FolderNameInHeader">Folder name instead of \"Cherrygram\"</string>
     <string name="AP_FolderNameInHeader_Desc">This will change \"Cherrygram\" in action bar to your folder\'s name (useful if you have only icons instead of folder names)</string>
     <string name="CP_NewTabs_RemoveAllChats">Hide \"All chats\" tab</string>
@@ -274,7 +271,6 @@
     <string name="CP_MessageMenuCompactLayout_Desc">Displays primary message actions in a compact layout at the bottom of the menu.</string>
     <string name="CP_MessageMenuCompactLayout_Dot">A dot next to the button indicates it has a long-press action.</string>
 
-    <string name="AP_CenterChatsTitle">Center title in chats</string>
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Recent emojis and stickers counter</string>
@@ -490,6 +486,7 @@
 
     <string name="DP_Donate_Badge_desc">1. **Cherrygram badge** next to your name.</string>
     <string name="DP_Donate_MsgMenuCompactView_Desc">2. Compact view of **message menu** items.</string>
+    <string name="DP_Donate_FoldersAtBottom_Desc">3. **Folders panel** at the bottom of the screen.</string>
     <string name="DP_Donate_EpicBadge_desc">1. An **epic Cherrygram badge** next to your name.</string>
     <string name="DP_Donate_GiftMarket_Desc">2. \"**Gift Market**\" button in the side menu.</string>
     <string name="DP_Donate_MessageFilter_Desc">3. \"**Message filter**\" feature.</string>

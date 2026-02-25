@@ -84,12 +84,14 @@ public class ExperimentalPreferencesEntry extends UniversalFragment {
             );
         }
 
-        items.add(
-                UItem.asCheck(
-                        predictiveBackRow,
-                        getString(R.string.CG_PredictiveBackAnimation)
-                ).setChecked(CherrygramExperimentalConfig.INSTANCE.getPredictiveBack())
-        );
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            items.add(
+                    UItem.asCheck(
+                            predictiveBackRow,
+                            getString(R.string.CG_PredictiveBackAnimation)
+                    ).setChecked(CherrygramExperimentalConfig.INSTANCE.getPredictiveBack())
+            );
+        }
 
         items.add(UItem.asShadow(null));
 

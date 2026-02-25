@@ -137,12 +137,10 @@
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Apariencia</string>
-    <string name="AP_RedesignCategory">Rediseño</string>
     <string name="AP_IconReplacements">Reemplazo de icono</string>
     <string name="AP_Old_Notification_Icon">Icono de notificación por defecto (Telegram)</string>
     <string name="AP_Tablet_Mode">Modo tablet</string>
     <string name="AP_ChangeIcon_Cherry_NY">Año Nuevo</string>
-    <string name="AP_ChangeIcon_Default">Por defecto</string>
     <string name="AP_ChangeIcon_Dark">Oscuro</string>
     <string name="AP_ChangeIcon_White">Blanco</string>
     <string name="AP_ChangeIcon_Laguna">Laguna</string>
@@ -151,16 +149,13 @@
     <string name="AP_ChangeIcon_Sunset">Atardecer</string>
     <string name="AP_ChangeIcon_Sunrise">Amanecer</string>
     <string name="AP_IconReplacement_Solar">Iconos solares por @Design480</string>
-    <string name="AP_IconReplacement_Default">Por defecto</string>
     <string name="AP_OneUI_Switch_Style">Estilo de interruptor OneUI</string>
     <string name="AP_SystemEmoji">Usar emojis del sistema</string>
     <string name="AP_ShowPencilIcon">Ícono de lápiz para los mensajes editados</string>
     <string name="AP_CenterTitle">Centrar título en la barra de acción</string>
     <string name="AP_DisableDividers">Deshabilitar divisores</string>
-    <string name="AP_ToolBarShadow">Desactivar la sombra de la barra de estado</string>
     <string name="AP_SystemFonts">Usar fuentes del sistema</string>
     <string name="CP_Snowflakes_Header">Copos de nieve</string>
-    <string name="CP_Snowflakes_AH">Cabecera</string>
     <string name="CP_PremAndAnim_Header">Animaciones y funciones Premium</string>
     <string name="CP_ProfileReplyBackground">Mensajes y perfiles</string>
     <string name="CP_CustomizeProfile">Personalizar perfil</string>
@@ -223,7 +218,6 @@
     <string name="CP_BlurMessageMenuItems_Desc">Desenfoca los elementos del menú para una mirada más auténtica de iOS.</string>
     <string name="CP_MessageMenuNativeBlur">Desenfoque nativo</string>
     <string name="CP_MessageMenuNativeBlur_Desc">El sistema de desenfoque integrado de Android se utilizará para el fondo del menú de mensajes: suave, en vivo y con un impacto mínimo en el rendimiento..</string>
-    <string name="AP_CenterChatsTitle">Centrar título en los chats</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de chats no leídos</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Activar contador de chats no leídos en el botón atrás en el chat abierto</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Contador de emojis y stickers recientes</string>

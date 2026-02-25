@@ -254,7 +254,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                     headerCell.setEnabled(false);
 
                     if (position == redesignHeaderRow) {
-                        headerCell.setText(getString(R.string.AP_RedesignCategory));
+                        headerCell.setText(getString(R.string.AP_Header_Appearance));
                     } else if (position == miscellaneousHeaderRow) {
                         headerCell.setText(getString(R.string.LocalMiscellaneousCache));
                     }

@@ -49,16 +49,16 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
     }
 
     override fun getPreferences(bf: BaseFragment) = tgKitScreen(getString(R.string.CP_Header_Chats)) {
-        category(getString(R.string.CP_Header_Chats)) {
-            textIcon {
-                title = getString(R.string.CP_ChatMenuShortcuts)
-                icon = R.drawable.msg_list
+        category(getString(R.string.AP_Header_Appearance)) {
+            switch {
+                title = getString(R.string.AP_CenterTitle)
 
-                listener = TGKitTextIconRow.TGTIListener {
-                    showChatMenuItemsConfigurator(bf)
+                contract({
+                    return@contract CherrygramChatsConfig.centerChatTitle
+                }) {
+                    CherrygramChatsConfig.centerChatTitle = it
+                    bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
-
-                divider = true
             }
             switch {
                 title = getString(R.string.CP_UnreadBadgeOnBackButton)
@@ -71,14 +71,35 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                 }
             }
             switch {
-                title = getString(R.string.AP_CenterChatsTitle)
-
+                title = getString(R.string.CP_Snowflakes_Header)
                 contract({
-                    return@contract CherrygramChatsConfig.centerChatTitle
+                    return@contract CherrygramChatsConfig.drawSnowInChat
                 }) {
-                    CherrygramChatsConfig.centerChatTitle = it
+                    CherrygramChatsConfig.drawSnowInChat = it
                     bf.parentLayout.rebuildAllFragmentViews(false, false)
                 }
+            }
+            switch {
+                title = getString(R.string.CP_HideMuteUnmuteButton)
+
+                contract({
+                    return@contract CherrygramChatsConfig.hideMuteUnmuteButton
+                }) {
+                    CherrygramChatsConfig.hideMuteUnmuteButton = it
+                }
+            }
+        }
+
+        category(getString(R.string.CP_Header_Chats)) {
+            textIcon {
+                title = getString(R.string.CP_ChatMenuShortcuts)
+                icon = R.drawable.msg_list
+
+                listener = TGKitTextIconRow.TGTIListener {
+                    showChatMenuItemsConfigurator(bf)
+                }
+
+                divider = true
             }
             textIcon {
                 title = getString(R.string.CP_Slider_RecentEmojisAndStickers)
@@ -97,15 +118,6 @@ object ChatsPreferencesEntry : BasePreferencesEntry {
                     return@contract CherrygramChatsConfig.disableSwipeToNext
                 }) {
                     CherrygramChatsConfig.disableSwipeToNext = it
-                }
-            }
-            switch {
-                title = getString(R.string.CP_HideMuteUnmuteButton)
-
-                contract({
-                    return@contract CherrygramChatsConfig.hideMuteUnmuteButton
-                }) {
-                    CherrygramChatsConfig.hideMuteUnmuteButton = it
                 }
             }
         }

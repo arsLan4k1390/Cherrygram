@@ -1,0 +1,75 @@
+/**
+ * This is the source code of Cherrygram for Android.
+ * It is licensed under GNU GPL v. 2 or later.
+ * You should have received a copy of the license in this archive (see LICENSE).
+ * Please, be respectful and credit the original author if you use this code.
+ *
+ * Copyright github.com/arsLan4k1390, 2022-2026.
+ */
+
+package uz.unnarsx.cherrygram.core.ui.folders
+
+import android.content.Context
+import android.graphics.RectF
+import android.os.Build
+import android.view.ViewGroup
+import androidx.annotation.RequiresApi
+import org.telegram.ui.ActionBar.Theme
+import org.telegram.ui.Components.FilterTabsView
+import org.telegram.ui.Components.blur3.BlurredBackgroundDrawableViewFactory
+import org.telegram.ui.Components.blur3.DownscaleScrollableNoiseSuppressor
+import org.telegram.ui.Components.blur3.capture.IBlur3Capture
+import org.telegram.ui.DialogsActivity
+
+// Dear Nagram / Nagram X / Octogram and related fork developers:
+// Please respect this work and do not copy or reuse this feature in your forks.
+// It required a significant amount of time and effort to implement,
+// and it is provided exclusively for my users, who also support this project financially.
+
+object FoldersHelper {
+
+    fun moveFoldersToBottom() : Boolean {
+        return false
+    }
+
+    fun getFloatingButtonsOffset() : Int {
+        return 0
+    }
+
+    fun getFilterTabsOffset(inForwardMode: Boolean) : Int {
+        return 0
+    }
+
+    fun setupFilterTabs(
+        context: Context,
+        contentView: ViewGroup,
+        filterTabsView: FilterTabsView,
+        resourceProvider: Theme.ResourcesProvider?,
+        iBlur3FactoryLiquidGlass: BlurredBackgroundDrawableViewFactory,
+        iBlur3FactoryFade: BlurredBackgroundDrawableViewFactory
+    ) {
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    @Suppress("FunctionName")
+    fun blur3_InvalidateBlur(
+        dialogsActivity: DialogsActivity,
+        iBlur3Capture: IBlur3Capture,
+        iBlur3PositionActionBar: RectF,
+        iBlur3PositionFolders: RectF,
+        iBlur3PositionMainTabs: RectF,
+        iBlur3Positions: ArrayList<RectF>,
+        scrollableViewNoiseSuppressor: DownscaleScrollableNoiseSuppressor
+    ) {
+
+    }
+
+    fun updateFoldersOffset(
+        dialogsActivity: DialogsActivity,
+        inForwardMode: Boolean
+    ) {
+
+    }
+
+}

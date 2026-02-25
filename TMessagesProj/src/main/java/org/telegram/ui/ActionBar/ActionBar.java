@@ -134,7 +134,7 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
     private Runnable lastRunnable;
     private boolean titleOverlayShown;
     private Runnable titleActionRunnable;
-    private boolean castShadows = !CherrygramAppearanceConfig.INSTANCE.getDisableToolBarShadow();
+    private boolean castShadows = true;
     private int shadowAlpha = 0xFF;
 
     protected boolean isSearchFieldVisible;
@@ -1726,8 +1726,6 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
     }
 
     public void setCastShadows(boolean value) {
-        if (CherrygramAppearanceConfig.INSTANCE.getDisableToolBarShadow()) return;
-
         if (castShadows != value && getParent() instanceof View) {
             ((View) getParent()).invalidate();
             invalidate();

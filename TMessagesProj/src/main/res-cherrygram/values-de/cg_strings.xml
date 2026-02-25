@@ -108,11 +108,9 @@
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Erscheinungsbild</string>
-    <string name="AP_RedesignCategory">Redesign</string>
     <string name="AP_IconReplacements">Icon-Ersetzungen</string>
     <string name="AP_Old_Notification_Icon">Standard-Benachrichtigungssymbol (Telegram)</string>
     <string name="AP_ChangeIcon_Cherry_NY">Neujahr</string>
-    <string name="AP_ChangeIcon_Default">Default</string>
     <string name="AP_ChangeIcon_Dark">Dunkel</string>
     <string name="AP_ChangeIcon_White">Weiß</string>
     <string name="AP_ChangeIcon_Laguna">Laguna</string>
@@ -121,16 +119,13 @@
     <string name="AP_ChangeIcon_Sunset">Sonnenuntergang</string>
     <string name="AP_ChangeIcon_Sunrise">Sonnenaufgang</string>
     <string name="AP_IconReplacement_Solar">Solar-Icons von @Design480</string>
-    <string name="AP_IconReplacement_Default">Default</string>
     <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
     <string name="AP_SystemEmoji">System-Emojis verwenden</string>
     <string name="AP_ShowPencilIcon">Stift-Symbol für bearbeitete Nachrichten</string>
     <string name="AP_CenterTitle">Titel in Aktionsleiste zentrieren</string>
     <string name="AP_DisableDividers">Trennlinien ausblenden</string>
-    <string name="AP_ToolBarShadow">Schatten der Toolbar deaktivieren</string>
     <string name="AP_SystemFonts">Systemschriftart verwenden</string>
     <string name="CP_Snowflakes_Header">Schneeflocken</string>
-    <string name="CP_Snowflakes_AH">App Header</string>
     <string name="CP_PremAndAnim_Header">Animationen und Premium-Funktionen</string>
     <string name="CP_ProfileReplyBackground">Nachrichten und Profile</string>
     <string name="CP_CustomizeProfile">Profil anpassen</string>
@@ -175,7 +170,6 @@
     <string name="CP_ChatMenuShortcuts">Chat-Menü-Shortcuts</string>
     <string name="CP_AdminActions">Admin-Shortcuts</string>
     <string name="CP_MessageMenu">Nachrichtenmenü</string>
-    <string name="AP_CenterChatsTitle">Titel in Chats zentrieren</string>
     <string name="CP_UnreadBadgeOnBackButton">Zeige Ungelesen-Chat-Counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Aktiviere Ungelesen-Chat-Counter auf Zurück-Taste im geöffneten Chat</string>
     <string name="CP_NoRounding">Zahlen nicht runden</string>

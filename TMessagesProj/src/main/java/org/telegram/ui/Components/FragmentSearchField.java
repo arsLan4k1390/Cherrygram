@@ -103,7 +103,8 @@ public class FragmentSearchField extends FrameLayout implements FactorAnimator.T
         };
         editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
         editText.setCursorWidth(1.5f);
-        editText.setInputType(InputType.TYPE_TEXT_VARIATION_FILTER | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+//        editText.setInputType(InputType.TYPE_TEXT_VARIATION_FILTER | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         editText.setSingleLine(true);
         editText.setBackground(null);
         editText.setVerticalScrollBarEnabled(false);

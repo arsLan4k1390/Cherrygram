@@ -163,7 +163,7 @@ public class CGPreferencesEntry extends UniversalFragment {
         if (item.id == generalRow) {
             presentFragment(CherrygramPreferencesNavigator.INSTANCE.createGeneral());
         } else if (item.id == appearanceRow) {
-            presentFragment(CherrygramPreferencesNavigator.INSTANCE.createAppearance());
+            CherrygramPreferencesNavigator.INSTANCE.createAppearance(this);
         } else if (item.id == chatsRow) {
             presentFragment(CherrygramPreferencesNavigator.INSTANCE.createChats());
         } else if (item.id == cameraRow) {

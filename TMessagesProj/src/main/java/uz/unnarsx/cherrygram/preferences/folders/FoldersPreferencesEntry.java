@@ -16,6 +16,8 @@ import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.Cells.NotificationsCheckCell;
@@ -29,6 +31,8 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
+import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.folders.cells.FoldersPreviewCell;
 
@@ -36,12 +40,13 @@ public class FoldersPreferencesEntry extends UniversalFragment {
 
     protected FoldersPreviewCell foldersPreviewCell;
 
-    private final int folderNameAppHeaderRow = 1;
-    private final int hideAllChatsTabRow = 2;
+    private final int foldersAtBottomRow = 1;
+    private final int folderNameAppHeaderRow = 2;
+    private final int hideAllChatsTabRow = 3;
 
-    private final int hideCounterRow = 3;
-    private final int tabIconTypeRow = 4;
-    private final int addStrokeRow = 5;
+    private final int hideCounterRow = 4;
+    private final int tabIconTypeRow = 5;
+    private final int addStrokeRow = 6;
 
 
     @Override
@@ -62,14 +67,6 @@ public class FoldersPreferencesEntry extends UniversalFragment {
         foldersPreviewCell.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
         items.add(UItem.asCustomWithBackground(foldersPreviewCell));
         items.add(UItem.asShadow(null));
-
-        items.add(
-                UItem.asButtonCheck(
-                        folderNameAppHeaderRow,
-                        getString(R.string.AP_FolderNameInHeader),
-                        getString(R.string.AP_FolderNameInHeader_Desc)
-                ).setChecked(CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader())
-        );
 
         items.add(
                 UItem.asCheck(
@@ -100,11 +97,40 @@ public class FoldersPreferencesEntry extends UniversalFragment {
                 ).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke())
         );
 
+        items.add(UItem.asShadow(null));
+
+        items.add(
+                UItem.asButtonCheck(
+                        folderNameAppHeaderRow,
+                        getString(R.string.AP_FolderNameInHeader),
+                        getString(R.string.AP_FolderNameInHeader_Desc)
+                ).setChecked(CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader())
+        );
+
+        items.add(
+                UItem.asCheck(
+                        foldersAtBottomRow,
+                        getString(R.string.AP_FoldersAtBottom)
+                ).setChecked(CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()).setLocked(!DonatesManager.INSTANCE.didUserDonateForFeature())
+        );
+
     }
 
     @Override
     protected void onClick(UItem item, View view, int position, float x, float y) {
-        if (item.id == folderNameAppHeaderRow) {
+        if (item.id == foldersAtBottomRow) {
+            if (!DonatesManager.INSTANCE.didUserDonateForFeature()) {
+                AndroidUtilities.shakeViewSpring(view);
+                BotWebViewVibrationEffect.APP_ERROR.vibrate();
+                CGBulletinCreator.INSTANCE.createRequireDonateBulletin(this);
+                return;
+            }
+
+            CherrygramAppearanceConfig.INSTANCE.setFoldersAtBottom(!CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom());
+            ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom());
+
+            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+        } else if (item.id == folderNameAppHeaderRow) {
             CherrygramAppearanceConfig.INSTANCE.setFolderNameInHeader(!CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader());
             ((NotificationsCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader());
 

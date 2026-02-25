@@ -3856,6 +3856,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
             actionsView.setOnActionClickListener((key, x, y) -> {
                 switch (key) {
+                    case ProfileActionsView.KEY_QR_BUTTON:
+                        Bundle args1 = new Bundle();
+                        args1.putLong("chat_id", chatId);
+                        args1.putLong("user_id", userId);
+                        presentFragment(new QrActivity(args1));
+                        break;
                     case ProfileActionsView.KEY_GIFT:
                         onGiftPermiumClicked();
                         break;
@@ -5672,6 +5678,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (actionsView != null) {
                     actionsView.beginApplyingActions();
                     actionsView.addCameraAction();
+                    if (!MainTabsManager.INSTANCE.hasTab(MainTabsManager.TabType.PROFILE)) actionsView.addQRButton();
                     actionsView.addEditInfo();
                     if (!MainTabsManager.INSTANCE.hasTab(MainTabsManager.TabType.SETTINGS)) actionsView.addSettings();
                     actionsView.commitActions();

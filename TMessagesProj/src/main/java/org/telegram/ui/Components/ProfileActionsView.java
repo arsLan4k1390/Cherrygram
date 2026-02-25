@@ -1232,7 +1232,8 @@ public class ProfileActionsView extends View {
         EDIT_USERNAME(R.string.ProfileActionsEditUsername, R.drawable.filled_profile_edit_24, R.drawable.outline_profile_edit_24),
         EDIT_INFO(R.string.ProfileActionsEditInfo, R.drawable.filled_profile_edit_24, R.drawable.outline_profile_edit_24),
         SETTINGS(R.string.Settings, R.drawable.filled_profile_settings, R.drawable.outline_profile_settings),
-        OPEN_CHANNEL(R.string.ProfileChannel, R.drawable.msg_folders_channels_solar, R.drawable.msg_folders_channels_solar);
+        OPEN_CHANNEL(R.string.ProfileChannel, R.drawable.msg_folders_channels, R.drawable.msg_folders_channels),
+        QR_BUTTON(R.string.QrCode, R.drawable.msg_qrcode, R.drawable.msg_qrcode);
 
         final @StringRes int title;
         final @DrawableRes int filledIcon;
@@ -1247,6 +1248,13 @@ public class ProfileActionsView extends View {
 
     /** Cherrygram start */
     public static final int KEY_OPEN_CHANNEL = 1390;
+    public static final int KEY_QR_BUTTON = 1391;
+
+    public void addQRButton() {
+        final Action action = new Action(ActionButton.QR_BUTTON);
+        action.key = KEY_QR_BUTTON;
+        actions.add(action);
+    }
     /** Cherrygram finish */
 
 }

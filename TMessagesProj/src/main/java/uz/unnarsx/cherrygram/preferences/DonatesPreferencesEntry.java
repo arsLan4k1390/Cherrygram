@@ -814,16 +814,25 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
                             .show();
                 }
         );
+
         CharSequence compactMessageMenuText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_MsgMenuCompactView_Desc),
                 Theme.key_windowBackgroundWhiteLinkText,
                 AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
                 () -> CherrygramPreferencesNavigator.INSTANCE.createMessageMenu(DonatesPreferencesEntry.this)
         );
 
+        CharSequence foldersAtTheBottomText = AndroidUtilities.replaceSingleTag(getString(R.string.DP_Donate_FoldersAtBottom_Desc),
+                Theme.key_windowBackgroundWhiteLinkText,
+                AndroidUtilities.REPLACING_TAG_TYPE_LINKBOLD,
+                () -> CherrygramPreferencesNavigator.INSTANCE.createFoldersPrefs(DonatesPreferencesEntry.this)
+        );
+
         SpannableStringBuilder sb = new SpannableStringBuilder();
         sb.append(badgeTitle);
         sb.append("\n");
         sb.append(compactMessageMenuText);
+        sb.append("\n");
+        sb.append(foldersAtTheBottomText);
 
         return sb;
     }

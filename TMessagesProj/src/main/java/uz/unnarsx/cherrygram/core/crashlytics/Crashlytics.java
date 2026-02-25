@@ -17,6 +17,7 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
 
+import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLoader;
@@ -115,10 +116,11 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
                 "Write here the steps to reproduce\n\n" +
                 "Details:\n"+
                 "• Cherrygram Version: " + CGResourcesHelper.getCherryVersion() + " (" + CGResourcesHelper.getAbiCode() + ")\n" +
-                "• Telegram Version: " + BuildVars.BUILD_VERSION_STRING + "\n" +
+                "• Telegram Version: " + BuildVars.BUILD_VERSION_STRING + " (" + CGResourcesHelper.getSourceCodeVersion() + ")\n" +
                 "• Build Type: " + CGResourcesHelper.getBuildType() + "\n" +
                 "• Device: " + CGResourcesHelper.INSTANCE.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + "\n" +
                 "• OS Version: " + Build.VERSION.RELEASE + " • SDK: " + Build.VERSION.SDK_INT + "\n" +
+                "• Screen: " + AndroidUtilities.displaySize.x + "x" + AndroidUtilities.displaySize.y + " • DPI: " + AndroidUtilities.densityDpi + "\n" +
                 "• Camera: " + CameraPreferencesEntry.getCameraName() + "\n" +
                 "• Performance Class: " + getPerformanceClassString() + "\n" +
                 "• Google Play Services: " + ApplicationLoader.hasPlayServices + "\n" +

@@ -24,7 +24,12 @@ object CherrygramAppearanceConfig {
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
-    /** Redesign start */
+    /** Header start */
+    var centerTitle by sharedPreferences.boolean("AP_CenterTitle", true)
+    var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
+    /** Header finish */
+
+    /** Appearance start */
     const val ICON_REPLACE_NONE = 0
     const val ICON_REPLACE_SOLAR = 1
 
@@ -38,9 +43,21 @@ object CherrygramAppearanceConfig {
 
     var oneUI_SwitchStyle by sharedPreferences.boolean("AP_OneUI_SwitchStyle", true)
     var disableDividers by sharedPreferences.boolean("AP_DisableDividers", true)
-    var centerTitle by sharedPreferences.boolean("AP_CenterTitle", true)
-    var disableToolBarShadow by sharedPreferences.boolean("AP_ToolBarShadow", true)
-    /** Redesign finish */
+    /** Appearance finish */
+
+    /** Folders start */
+    var foldersAtBottom by sharedPreferences.boolean("AP_FoldersAtBottom", false)
+    var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
+    var tabsHideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
+    var tabsNoUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
+
+    const val TAB_TYPE_MIX = 0
+    const val TAB_TYPE_TEXT = 1
+    const val TAB_TYPE_ICON = 2
+    var tabMode by sharedPreferences.int("AP_TabMode", TAB_TYPE_MIX)
+
+    var tabStyleStroke by sharedPreferences.boolean("AP_TabStyleAddStroke", false)
+    /** Folders finish */
 
     /** Main tabs start */
     var showMainTabs by sharedPreferences.boolean("AP_ShowMainTabs", true)
@@ -68,27 +85,9 @@ object CherrygramAppearanceConfig {
     var profileBackgroundEmoji by sharedPreferences.boolean("CP_ProfileBackgroundEmoji", SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     /** Messages and profiles finish */
 
-    /** Folders start */
-    var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
-    var tabsHideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
-    var tabsNoUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
-
-    const val TAB_TYPE_MIX = 0
-    const val TAB_TYPE_TEXT = 1
-    const val TAB_TYPE_ICON = 2
-    var tabMode by sharedPreferences.int("AP_TabMode", TAB_TYPE_MIX)
-
-    var tabStyleStroke by sharedPreferences.boolean("AP_TabStyleAddStroke", false)
-    /** Folders finish */
-
     /** Drawer items start */
     var showAccounts by sharedPreferences.boolean("AP_ShowAccounts", true)
     var marketPlaceDrawerButton by sharedPreferences.boolean("AP_MarketplaceDrawerButton", true)
     /** Drawer items finish */
-
-    /** Snowflakes start */
-    var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
-    var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
-    /** Snowflakes finish */
 
 }

@@ -141,12 +141,10 @@
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">主題</string>
-    <string name="AP_RedesignCategory">介面</string>
     <string name="AP_IconReplacements">替換圖示</string>
     <string name="AP_Old_Notification_Icon">預設通知圖示 (Telegram)</string>
     <string name="AP_Tablet_Mode">平板模式</string>
     <string name="AP_ChangeIcon_Cherry_NY">新年</string>
-    <string name="AP_ChangeIcon_Default">預設</string>
     <string name="AP_ChangeIcon_Dark">深色</string>
     <string name="AP_ChangeIcon_White">白色</string>
     <string name="AP_ChangeIcon_Laguna">Laguna</string>
@@ -155,16 +153,13 @@
     <string name="AP_ChangeIcon_Sunset">日落</string>
     <string name="AP_ChangeIcon_Sunrise">日出</string>
     <string name="AP_IconReplacement_Solar">由 @Design480 設計的 Solar 圖示</string>
-    <string name="AP_IconReplacement_Default">預設</string>
     <string name="AP_OneUI_Switch_Style">OneUI 開關風格</string>
     <string name="AP_SystemEmoji">使用系統 Emoji</string>
     <string name="AP_ShowPencilIcon">將訊息底部的「已編輯」替換為鉛筆圖示</string>
     <string name="AP_CenterTitle">在操作列中置中標題</string>
     <string name="AP_DisableDividers">停用分隔線</string>
-    <string name="AP_ToolBarShadow">停用工具列陰影</string>
     <string name="AP_SystemFonts">使用系統字型</string>
     <string name="CP_Snowflakes_Header">雪花效果</string>
-    <string name="CP_Snowflakes_AH">應用程式標題</string>
     <string name="CP_PremAndAnim_Header">動畫和進階功能</string>
     <string name="CP_ProfileReplyBackground">訊息和個人檔案</string>
     <string name="CP_CustomizeProfile">自訂個人檔案</string>
@@ -238,7 +233,6 @@
     <string name="CP_MessageMenuCompactLayout">緊湊型訊息選單</string>
     <string name="CP_MessageMenuCompactLayout_Desc">在訊息選單底部以更緊湊的佈局顯示主要的訊息操作。</string>
     <string name="CP_MessageMenuCompactLayout_Dot">對於具有長按功能的按鈕在其旁邊顯示圓點標記。</string>
-    <string name="AP_CenterChatsTitle">對話標題列置中</string>
     <string name="CP_UnreadBadgeOnBackButton">顯示未讀對話數量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已開啟的對話中顯示未讀訊息數量</string>
     <string name="CP_Slider_RecentEmojisAndStickers">最近使用的表情符號和貼圖計數器</string>

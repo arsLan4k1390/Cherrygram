@@ -79,7 +79,7 @@ object CGResourcesHelper {
     }
 
     @JvmStatic
-    private fun getSourceCodeVersion() : String {
+    fun getSourceCodeVersion() : String {
         return BuildConfig.BUILD_SOURCE_CODE_VERSION
     }
 

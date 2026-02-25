@@ -141,12 +141,10 @@
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Зовнішній вигляд</string>
-    <string name="AP_RedesignCategory">Редизайн</string>
     <string name="AP_IconReplacements">Заміна іконок</string>
     <string name="AP_Old_Notification_Icon">Стандартна іконка повідомлень (Telegram)</string>
     <string name="AP_Tablet_Mode">Режим планшета</string>
     <string name="AP_ChangeIcon_Cherry_NY">Новий Рік</string>
-    <string name="AP_ChangeIcon_Default">По замовчуванню</string>
     <string name="AP_ChangeIcon_Dark">Темнота</string>
     <string name="AP_ChangeIcon_White">Біла іконка</string>
     <string name="AP_ChangeIcon_Laguna">Лагуна</string>
@@ -155,16 +153,13 @@
     <string name="AP_ChangeIcon_Sunset">Вечiрня</string>
     <string name="AP_ChangeIcon_Sunrise">Світанок</string>
     <string name="AP_IconReplacement_Solar">Solar Icons від @Design480</string>
-    <string name="AP_IconReplacement_Default">Стандартні іконки</string>
     <string name="AP_OneUI_Switch_Style">Вигляд інтерфейсу OneUI</string>
     <string name="AP_SystemEmoji">Використовувати системні емодзі</string>
     <string name="AP_ShowPencilIcon">Значок олівця для відредагованих повідомлень</string>
     <string name="AP_CenterTitle">Центрувати заголовок в панелі дій</string>
     <string name="AP_DisableDividers">Вимкнути роздільники</string>
-    <string name="AP_ToolBarShadow">Відключити тінь у тулбару</string>
     <string name="AP_SystemFonts">Використовувати системний шрифт</string>
     <string name="CP_Snowflakes_Header">Сніжинки</string>
-    <string name="CP_Snowflakes_AH">Заголовок додатка</string>
     <string name="CP_PremAndAnim_Header">Анімації та Преміум можливості</string>
     <string name="CP_ProfileReplyBackground">Повідомлення та профіль</string>
     <string name="CP_CustomizeProfile">Кастомізувати профіль</string>
@@ -239,7 +234,6 @@
     <string name="CP_MessageMenuCompactLayout">Компактне меню</string>
     <string name="CP_MessageMenuCompactLayout_Desc">Відображає основні дії з повідомленням у компактному вигляді внизу меню.</string>
     <string name="CP_MessageMenuCompactLayout_Dot">Крапка поруч із кнопкою означає наявність дії за довгим натисканням.</string>
-    <string name="AP_CenterChatsTitle">Центрувати заголовок у чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Показувати лічильник непрочитаних</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включити лічильник непрочитаних чатів на кнопці «Назад» в відкритому чаті</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Кількість останніх емоджі та наліпок</string>

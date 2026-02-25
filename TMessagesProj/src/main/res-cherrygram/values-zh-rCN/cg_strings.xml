@@ -141,12 +141,10 @@
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">主题</string>
-    <string name="AP_RedesignCategory">应用界面</string>
     <string name="AP_IconReplacements">替换图标</string>
     <string name="AP_Old_Notification_Icon">默认通知图标 (Telegram)</string>
     <string name="AP_Tablet_Mode">平板模式</string>
     <string name="AP_ChangeIcon_Cherry_NY">新年</string>
-    <string name="AP_ChangeIcon_Default">默认</string>
     <string name="AP_ChangeIcon_Dark">深色</string>
     <string name="AP_ChangeIcon_White">白色</string>
     <string name="AP_ChangeIcon_Laguna">Laguna</string>
@@ -155,16 +153,13 @@
     <string name="AP_ChangeIcon_Sunset">日落</string>
     <string name="AP_ChangeIcon_Sunrise">日出</string>
     <string name="AP_IconReplacement_Solar">Solar 图标</string>
-    <string name="AP_IconReplacement_Default">默认</string>
     <string name="AP_OneUI_Switch_Style">OneUI 开关风格</string>
     <string name="AP_SystemEmoji">使用系统 Emoji</string>
     <string name="AP_ShowPencilIcon">将消息底部的“已编辑”替换为铅笔图标</string>
     <string name="AP_CenterTitle">标题居中</string>
     <string name="AP_DisableDividers">禁用分隔线</string>
-    <string name="AP_ToolBarShadow">禁用工具栏阴影</string>
     <string name="AP_SystemFonts">使用系统字体</string>
     <string name="CP_Snowflakes_Header">雪花效果</string>
-    <string name="CP_Snowflakes_AH">应用标题栏</string>
     <string name="CP_PremAndAnim_Header">动画和高级功能</string>
     <string name="CP_ProfileReplyBackground">消息和个人资料</string>
     <string name="CP_CustomizeProfile">自定义个人资料</string>
@@ -238,7 +233,6 @@
     <string name="CP_MessageMenuCompactLayout">紧凑型消息菜单</string>
     <string name="CP_MessageMenuCompactLayout_Desc">在消息菜单底部以更紧凑的布局显示主要的指令操作。</string>
     <string name="CP_MessageMenuCompactLayout_Dot">对于具有长按功能的按钮在其旁边显示圆点标记。</string>
-    <string name="AP_CenterChatsTitle">聊天中标题栏居中</string>
     <string name="CP_UnreadBadgeOnBackButton">显示未读聊天数量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已打开的聊天中显示未读消息数</string>
     <string name="CP_Slider_RecentEmojisAndStickers">最近使用的 Emoji 表情和贴纸数量</string>

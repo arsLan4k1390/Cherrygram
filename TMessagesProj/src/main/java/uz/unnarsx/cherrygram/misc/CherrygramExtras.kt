@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.KotlinFragmentsManager
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
@@ -211,11 +210,15 @@ object CherrygramExtras : CoroutineScope by MainScope() {
 
     }
 
-    fun requestReviewFlow(fragment: BaseFragment) {
-        val reviewManager = ReviewManagerFactory.create(fragment.parentActivity)
+    fun requestReviewFlow(fragment: BaseFragment?) {
+        val activity = fragment?.parentActivity ?: return
 
-        val requestReviewFlow = reviewManager.requestReviewFlow()
-        requestReviewFlow.addOnCompleteListener { request ->
+        val reviewManager = ReviewManagerFactory.create(activity)
+        val requestTask = reviewManager.requestReviewFlow()
+
+        requestTask.addOnCompleteListener { request ->
+            if (fragment.parentActivity == null) return@addOnCompleteListener
+
             if (!fragment.messagesController.mainSettings.getBoolean("is_cherrygram_rated", false)) {
                 if (request.isSuccessful) {
                     val reviewInfo = request.result
@@ -228,16 +231,16 @@ object CherrygramExtras : CoroutineScope by MainScope() {
                         }
                     }
                 } else {
-                    reviewInGooglePlay()
+                    reviewInGooglePlay(fragment)
                 }
             } else {
-                reviewInGooglePlay()
+                reviewInGooglePlay(fragment)
             }
         }
     }
 
-    private fun reviewInGooglePlay() {
-        val context = ApplicationLoader.applicationContext
+    private fun reviewInGooglePlay(fragment: BaseFragment) {
+        val context = fragment.context ?: return
         Browser.openUrl(context, "market://details?id=${context.packageName}")
     }
 

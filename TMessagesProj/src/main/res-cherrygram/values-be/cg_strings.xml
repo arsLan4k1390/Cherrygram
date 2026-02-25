@@ -112,11 +112,9 @@
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Знешні выгляд</string>
-    <string name="AP_RedesignCategory">Рэдызайн</string>
     <string name="AP_IconReplacements">Змена іконак</string>
     <string name="AP_Old_Notification_Icon">Стандартна іконка паведамленняў (Telegram)</string>
     <string name="AP_ChangeIcon_Cherry_NY">Навагодняя</string>
-    <string name="AP_ChangeIcon_Default">Па ўмаўчанні</string>
     <string name="AP_ChangeIcon_Dark">Цёмны</string>
     <string name="AP_ChangeIcon_White">Белая</string>
     <string name="AP_ChangeIcon_Laguna">Лагуна</string>
@@ -125,16 +123,13 @@
     <string name="AP_ChangeIcon_Sunset">Заход</string>
     <string name="AP_ChangeIcon_Sunrise">Узыход</string>
     <string name="AP_IconReplacement_Solar">Іконкі Solar ад @Design480</string>
-    <string name="AP_IconReplacement_Default">Стандартны</string>
     <string name="AP_OneUI_Switch_Style">Перамыкачы ў стылі OneUI</string>
     <string name="AP_SystemEmoji">Выкарыстоўваць сістэмныя эмодзі</string>
     <string name="AP_ShowPencilIcon">Іконка алоўка для рэдагавання паведамленняў</string>
     <string name="AP_CenterTitle">Цэнтральны загаловак на панэлі дзеянняў</string>
     <string name="AP_DisableDividers">Адключыць падзельнікі</string>
-    <string name="AP_ToolBarShadow">Адключыць цень у тулбара</string>
     <string name="AP_SystemFonts">Выкарыстоўваць сістэмны шрыфт</string>
     <string name="CP_Snowflakes_Header">Сняжынкі</string>
-    <string name="CP_Snowflakes_AH">Загаловак дадатку</string>
     <string name="CP_PremAndAnim_Header">Анімацыі і Premium функцыі</string>
     <string name="CP_ProfileReplyBackground">Паведамленні і профілі</string>
     <string name="CP_CustomizeProfile">Налада профілю</string>
@@ -179,7 +174,6 @@
     <string name="CP_ChatMenuShortcuts">Ярлыкі дзеянняў ў меню чата</string>
     <string name="CP_AdminActions">Дзеянні для кіраўнікоў</string>
     <string name="CP_MessageMenu">Меню паведамленняў</string>
-    <string name="AP_CenterChatsTitle">Цэнтраваць назву ў чатах</string>
     <string name="CP_UnreadBadgeOnBackButton">Паказаць лічыльнік непрачытаных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Уключыць лічыльнік непрачытаных чатаў на кнопцы «Назад» у адкрытым чаце</string>
     <string name="CP_NoRounding">Адключыць акругленне лічб</string>

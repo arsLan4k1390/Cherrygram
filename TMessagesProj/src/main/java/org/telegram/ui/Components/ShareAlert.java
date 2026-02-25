@@ -4307,6 +4307,8 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
 
         @Override
         protected void onDraw(Canvas canvas) {
+            if (!hasFolders()) return;
+
             float w = foldersView.getMeasuredWidth();
             float h = foldersView.getMeasuredHeight();
 

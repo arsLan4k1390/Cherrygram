@@ -132,7 +132,7 @@ public class DebugPreferencesEntry extends UniversalFragment {
         items.add(UItem.asShadow(null));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            items.add(UItem.asHeader(getString(R.string.AP_RedesignCategory)));
+            items.add(UItem.asHeader(getString(R.string.AP_Header_Appearance)));
 
             items.add(
                     UItem.asCheck(

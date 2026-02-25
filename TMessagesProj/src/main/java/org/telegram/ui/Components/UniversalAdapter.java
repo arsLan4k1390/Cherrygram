@@ -698,6 +698,7 @@ public class UniversalAdapter extends AdapterWithDiffUtils {
                 }
                 checkCell.setEnabled(item.enabled, null);
                 checkCell.setTextAndCheck(item.text, item.checked, divider);
+                checkCell.setCheckBoxIcon(item.locked ? R.drawable.permission_locked : 0);
                 checkCell.itemId = item.id;
                 if (viewType == VIEW_TYPE_CHECKRIPPLE) {
                     holder.itemView.setBackgroundColor(Theme.getColor(item.checked ? Theme.key_windowBackgroundChecked : Theme.key_windowBackgroundUnchecked));

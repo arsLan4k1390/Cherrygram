@@ -247,6 +247,10 @@ object DonatesManager {
             return verifiedUserIds.contains(userId)
         }
     }
+
+    fun didUserDonateForFeature() : Boolean {
+        return checkAllDonatedAccounts() || checkAllDonatedAccountsForMarketplace()
+    }
     /** Donates finish */
 
     /** Stars start */

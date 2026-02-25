@@ -38,6 +38,7 @@ import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
+import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager;
 
 public class MainTabsPreferencesEntry extends UniversalFragment {
@@ -178,6 +179,8 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
                 CherrygramAppearanceConfig.INSTANCE.setMainTabsOrder("SETTINGS,CHATS,CONTACTS,!CALLS,!PROFILE,SEARCH");
             }
             listView.adapter.update(true);
+
+            if (CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()) CGBulletinCreator.INSTANCE.createRestartBulletin(this);
         } else if (item.id == tabsPreviewRow) {
             /*if (MainTabsManager.getEnabledTabs().size() > 5) {
                 CherrygramAppearanceConfig.INSTANCE.setShowMainTabsTitle(false);
@@ -194,6 +197,8 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
 
             tabsView.removeAllViews();
             tabsView.setTabs(tabs, getContext(), getResourceProvider(), currentAccount, true);
+
+            postUpdateTabsNotification();
         }
     }
 
@@ -214,10 +219,15 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
 //        if (MainTabsManager.getEnabledTabs().size() > 5) CherrygramAppearanceConfig.INSTANCE.setShowMainTabsTitle(false);
 
         if (!tabs.equals(initialTabs)) {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cgTabsUpdated);
-            }, 200);
+            postUpdateTabsNotification();
         }
+    }
+
+    private void postUpdateTabsNotification() {
+        new Handler(Looper.getMainLooper()).postDelayed(() ->
+                NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cgTabsUpdated),
+                200
+        );
     }
 
 }

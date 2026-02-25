@@ -18,7 +18,7 @@ object CherrygramPreferencesNavigator {
 
     fun createCherrySettings(fragment: BaseFragment) = fragment.presentFragment(CGPreferencesEntry())
     fun createGeneral() = TGKitSettingsFragment(GeneralPreferencesEntry())
-    fun createAppearance() = TGKitSettingsFragment(AppearancePreferencesEntry())
+    fun createAppearance(fragment: BaseFragment) = fragment.presentFragment(AppearancePreferencesEntry())
     fun createFoldersPrefs(fragment: BaseFragment) = fragment.presentFragment(FoldersPreferencesEntry())
     fun createTabs(fragment: BaseFragment) = fragment.presentFragment(MainTabsPreferencesEntry())
     fun createMessagesAndProfiles(fragment: BaseFragment) = fragment.presentFragment(MessagesAndProfilesPreferencesEntry())

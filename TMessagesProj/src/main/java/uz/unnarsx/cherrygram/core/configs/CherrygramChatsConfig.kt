@@ -32,6 +32,13 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
 
     private val sharedPreferences: SharedPreferences = ApplicationLoader.applicationContext.getSharedPreferences("mainconfig", Activity.MODE_PRIVATE)
 
+    /** Appearance start */
+    var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle", true)
+    var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
+    var drawSnowInChat by sharedPreferences.boolean("AP_DrawSnowInChat", false && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
+    var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
+    /** Appearance finish */
+
     /** Chats start */
     /** Chat shortcuts start */
     var shortcut_JumpToBegin by sharedPreferences.boolean("CP_Shortcut_JumpToBegin", true)
@@ -49,10 +56,10 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     var admins_RecentActions by sharedPreferences.boolean("CP_Admins_RecentActions", false)
     /** Admin shortcuts finish */
 
-    var unreadBadgeOnBackButton by sharedPreferences.boolean("CP_UnreadBadgeOnBackButton", false)
-    var centerChatTitle by sharedPreferences.boolean("AP_CenterChatTitle", true)
+    var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
+    var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
+
     var disableSwipeToNext by sharedPreferences.boolean("CP_DisableSwipeToNext", false)
-    var hideMuteUnmuteButton by sharedPreferences.boolean("CP_HideMuteUnmuteButton", false)
     var hideKeyboardOnScrollIntensity by sharedPreferences.int("CP_HideKeyboardOnScrollIntensity", 5)
 
     /** Gemini AI start */
@@ -65,9 +72,6 @@ object CherrygramChatsConfig: CoroutineScope by CoroutineScope(
     const val TRANSCRIPTION_PROVIDER_GEMINI = 1
     var voiceTranscriptionProvider by sharedPreferences.int("CP_VoiceTranscriptionProvider", TRANSCRIPTION_PROVIDER_TELEGRAM)
     /** Gemini AI finish */
-
-    var slider_RecentEmojisAmplifier by sharedPreferences.int("CP_Slider_RecentEmojisAmplifier", 45)
-    var slider_RecentStickersAmplifier by sharedPreferences.int("CP_Slider_RecentStickersAmplifier", 20)
     /** Chats finish */
 
     /** Messages start */

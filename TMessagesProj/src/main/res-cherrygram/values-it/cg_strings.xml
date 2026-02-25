@@ -137,12 +137,10 @@
     <!--General Preferences-->
     <!--Appearance Preferences-->
     <string name="AP_Header_Appearance">Aspetto</string>
-    <string name="AP_RedesignCategory">Ridisegna</string>
     <string name="AP_IconReplacements">Sostituzioni icone</string>
     <string name="AP_Old_Notification_Icon">Icona di notifica predefinita (Telegram)</string>
     <string name="AP_Tablet_Mode">Modalità tablet</string>
     <string name="AP_ChangeIcon_Cherry_NY">Anno Nuovo</string>
-    <string name="AP_ChangeIcon_Default">Predefinito</string>
     <string name="AP_ChangeIcon_Dark">Scuro</string>
     <string name="AP_ChangeIcon_White">Bianco</string>
     <string name="AP_ChangeIcon_Laguna">Laguna</string>
@@ -151,16 +149,13 @@
     <string name="AP_ChangeIcon_Sunset">Tramonto</string>
     <string name="AP_ChangeIcon_Sunrise">Alba</string>
     <string name="AP_IconReplacement_Solar">Icone solari di @Design480</string>
-    <string name="AP_IconReplacement_Default">Predefinito</string>
     <string name="AP_OneUI_Switch_Style">Stile Switch OneUI</string>
     <string name="AP_SystemEmoji">Usa le emoji di sistema</string>
     <string name="AP_ShowPencilIcon">Icona della matita per i messaggi modificati</string>
     <string name="AP_CenterTitle">Centra titolo nella barra delle azioni</string>
     <string name="AP_DisableDividers">Disabilita divisori</string>
-    <string name="AP_ToolBarShadow">Disabilita ombra barra strumenti</string>
     <string name="AP_SystemFonts">Usa il font di sistema</string>
     <string name="CP_Snowflakes_Header">Fiocchi di neve</string>
-    <string name="CP_Snowflakes_AH">Intestazione app</string>
     <string name="CP_PremAndAnim_Header">Animazioni e Funzionalità Premium</string>
     <string name="CP_ProfileReplyBackground">Messaggi e profili</string>
     <string name="CP_CustomizeProfile">Personalizza il profilo</string>
@@ -226,7 +221,6 @@
     <string name="CP_MessageMenuCompactLayout">Layout compatto del menu</string>
     <string name="CP_MessageMenuCompactLayout_Desc">Visualizza le azioni principali in un layout compatto in fondo al menu.</string>
     <string name="CP_MessageMenuCompactLayout_Dot">Un punto accanto al pulsante indica che prevede un\'azione a pressione prolungata.</string>
-    <string name="AP_CenterChatsTitle">Centra il titolo nelle chat</string>
     <string name="CP_UnreadBadgeOnBackButton">Mostra contatore chat non lette</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Abilita il contatore delle chat non lette sul pulsante indietro nella chat aperta</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Contatore delle emoji e degli sticker recenti</string>
