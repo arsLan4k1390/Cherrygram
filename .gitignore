@@ -11,6 +11,7 @@ obj/
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuMessageCells.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuRoundVideoPlayer.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuScrollView.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/ui/folders/FoldersHelper.kt
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/ui/mainTabs/SearchTriggerFragment.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/tabs/MainTabsPreviewCell.java
 *.iml
