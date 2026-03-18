@@ -69,7 +69,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.helpers.ErrorDatabaseHelper;
 
 import javax.net.ssl.SSLException;
@@ -601,7 +600,7 @@ public class ConnectionsManager extends BaseController {
             FileLog.d("selected ip strategy " + selectedStrategy);
         }
         native_setIpStrategy(currentAccount, selectedStrategy);
-        native_setNetworkAvailable(currentAccount, ApplicationLoader.isNetworkOnline(), ApplicationLoader.getCurrentNetworkType(), CherrygramExperimentalConfig.INSTANCE.getSlowNetworkMode());
+        native_setNetworkAvailable(currentAccount, ApplicationLoader.isNetworkOnline(), ApplicationLoader.getCurrentNetworkType(), CherrygramCoreConfig.INSTANCE.getSlowNetworkMode());
     }
 
     public void setPushConnectionEnabled(boolean value) {

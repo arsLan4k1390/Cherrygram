@@ -31,7 +31,7 @@ import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation
 import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper
 import uz.unnarsx.cherrygram.chats.ui.MessageMenuCompactView
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator
 
@@ -248,12 +248,12 @@ object CGMessageMenuInjector {
         options: ArrayList<Int?>,
         icons: ArrayList<Int?>
     ) {
-        if (CherrygramChatsConfig.showCopyPhoto) {
+        if (CherrygramMessagesConfig.showCopyPhoto) {
             items.add(getString(R.string.CG_CopyPhoto))
             options.add(ChatActivityHelper.OPTION_COPY_PHOTO)
             icons.add(R.drawable.msg_copy)
         }
-        if (CherrygramChatsConfig.showCopyPhotoAsSticker) {
+        if (CherrygramMessagesConfig.showCopyPhotoAsSticker) {
             items.add(getString(R.string.CG_CopyPhotoAsSticker))
             options.add(ChatActivityHelper.OPTION_COPY_PHOTO_AS_STICKER)
             icons.add(R.drawable.msg_sticker)
@@ -265,7 +265,7 @@ object CGMessageMenuInjector {
         options: ArrayList<Int?>,
         icons: ArrayList<Int?>
     ) {
-        if (CherrygramChatsConfig.showClearFromCache) {
+        if (CherrygramMessagesConfig.showClearFromCache) {
             items.add(getString(R.string.CG_ClearFromCache))
             options.add(ChatActivityHelper.OPTION_CLEAR_FROM_CACHE)
             icons.add(R.drawable.msg_clear)
@@ -299,7 +299,7 @@ object CGMessageMenuInjector {
         options: ArrayList<Int?>,
         icons: ArrayList<Int?>
     ) {
-        if (CherrygramChatsConfig.showViewHistory) {
+        if (CherrygramMessagesConfig.showViewHistory) {
             items.add(getString(R.string.AvatarPreviewSearchMessages))
             options.add(ChatActivityHelper.OPTION_VIEW_HISTORY)
             icons.add(R.drawable.msg_search)
@@ -314,7 +314,7 @@ object CGMessageMenuInjector {
         options: ArrayList<Int?>,
         icons: ArrayList<Int?>
     ) {
-        if (CherrygramChatsConfig.showSaveMessage && chatMode != ChatActivity.MODE_SCHEDULED && !UserObject.isUserSelf(
+        if (CherrygramMessagesConfig.showSaveMessage && chatMode != ChatActivity.MODE_SCHEDULED && !UserObject.isUserSelf(
                 currentUser
             ) && !message.isSponsored
         ) {
@@ -373,7 +373,7 @@ object CGMessageMenuInjector {
         icons: ArrayList<Int?>
     ) {
 
-        val show = force || (chatActivity != null && CherrygramChatsConfig.showJSON &&
+        val show = force || (chatActivity != null && CherrygramMessagesConfig.showJSON &&
                 !(chatActivity.messageMenuHelper.allowNewMessageMenu() && MessageMenuCompactView.allowCompactStyle()))
 
         if (show) {
@@ -405,23 +405,23 @@ object CGMessageMenuInjector {
             val remove = when (option) {
                 ChatActivity.OPTION_REPLY -> MessageMenuCompactView.allowCompactStyle()
 
-                ChatActivity.OPTION_SAVE_TO_GALLERY, ChatActivity.OPTION_SAVE_TO_GALLERY2 -> noforwardsOrPaidMedia || !CherrygramChatsConfig.showSaveToGallery
-                ChatActivity.OPTION_SAVE_TO_DOWNLOADS_OR_MUSIC -> noforwardsOrPaidMedia || !CherrygramChatsConfig.showSaveToDownloads
-                ChatActivity.OPTION_SHARE -> noforwardsOrPaidMedia || !CherrygramChatsConfig.showShare
+                ChatActivity.OPTION_SAVE_TO_GALLERY, ChatActivity.OPTION_SAVE_TO_GALLERY2 -> noforwardsOrPaidMedia || !CherrygramMessagesConfig.showSaveToGallery
+                ChatActivity.OPTION_SAVE_TO_DOWNLOADS_OR_MUSIC -> noforwardsOrPaidMedia || !CherrygramMessagesConfig.showSaveToDownloads
+                ChatActivity.OPTION_SHARE -> noforwardsOrPaidMedia || !CherrygramMessagesConfig.showShare
 
                 ChatActivity.OPTION_COPY -> noforwardsOrPaidMedia || MessageMenuCompactView.allowCompactStyle()
                 ChatActivity.OPTION_COPY_LINK -> MessageMenuCompactView.allowCompactStyle()
 
                 ChatActivityHelper.OPTION_COPY_PHOTO ->
-                    noforwardsOrPaidMedia || !CherrygramChatsConfig.showCopyPhoto || (MessageMenuCompactView.allowCompactStyle() && primaryMessageText == null)
+                    noforwardsOrPaidMedia || !CherrygramMessagesConfig.showCopyPhoto || (MessageMenuCompactView.allowCompactStyle() && primaryMessageText == null)
                 ChatActivityHelper.OPTION_COPY_PHOTO_AS_STICKER ->
-                    noforwardsOrPaidMedia || !CherrygramChatsConfig.showCopyPhotoAsSticker || (MessageMenuCompactView.allowCompactStyle() && primaryMessageText == null)
+                    noforwardsOrPaidMedia || !CherrygramMessagesConfig.showCopyPhotoAsSticker || (MessageMenuCompactView.allowCompactStyle() && primaryMessageText == null)
 
                 ChatActivity.OPTION_FORWARD ->
-                    noforwardsOrPaidMedia || !CherrygramChatsConfig.showForward || MessageMenuCompactView.allowCompactStyle()
+                    noforwardsOrPaidMedia || !CherrygramMessagesConfig.showForward || MessageMenuCompactView.allowCompactStyle()
 
                 ChatActivityHelper.OPTION_FORWARD_WO_AUTHOR ->
-                    noforwardsOrPaidMedia || !CherrygramChatsConfig.showForwardWoAuthorship || MessageMenuCompactView.allowCompactStyle()
+                    noforwardsOrPaidMedia || !CherrygramMessagesConfig.showForwardWoAuthorship || MessageMenuCompactView.allowCompactStyle()
 
                 ChatActivity.OPTION_DELETE -> MessageMenuCompactView.allowCompactStyle() && !allowEdit
                 ChatActivity.OPTION_EDIT -> MessageMenuCompactView.allowCompactStyle() && allowEdit
@@ -444,94 +444,94 @@ object CGMessageMenuInjector {
             MenuItemConfig(
                 getString(R.string.SaveForNotifications),
                 R.drawable.msg_tone_add,
-                { CherrygramChatsConfig.showSaveForNotifications },
-                { CherrygramChatsConfig.showSaveForNotifications = !CherrygramChatsConfig.showSaveForNotifications },
+                { CherrygramMessagesConfig.showSaveForNotifications },
+                { CherrygramMessagesConfig.showSaveForNotifications = !CherrygramMessagesConfig.showSaveForNotifications },
                 true
             ),
             MenuItemConfig(
                 getString(R.string.CP_GeminiAI_Header),
                 R.drawable.magic_stick_solar,
-                { CherrygramChatsConfig.showGemini },
-                { CherrygramChatsConfig.showGemini = !CherrygramChatsConfig.showGemini },
+                { CherrygramMessagesConfig.showGemini },
+                { CherrygramMessagesConfig.showGemini = !CherrygramMessagesConfig.showGemini },
                 true
             ),
             MenuItemConfig(
                 getString(R.string.Reply),
                 R.drawable.menu_reply,
-                { CherrygramChatsConfig.showReply },
-                { CherrygramChatsConfig.showReply = !CherrygramChatsConfig.showReply }
+                { CherrygramMessagesConfig.showReply },
+                { CherrygramMessagesConfig.showReply = !CherrygramMessagesConfig.showReply }
             ),
             MenuItemConfig(
                 getString(R.string.SaveToGallery),
                 R.drawable.msg_gallery,
-                { CherrygramChatsConfig.showSaveToGallery },
-                { CherrygramChatsConfig.showSaveToGallery = !CherrygramChatsConfig.showSaveToGallery }
+                { CherrygramMessagesConfig.showSaveToGallery },
+                { CherrygramMessagesConfig.showSaveToGallery = !CherrygramMessagesConfig.showSaveToGallery }
             ),
             MenuItemConfig(
                 getString(R.string.CG_CopyPhoto),
                 R.drawable.msg_copy,
-                { CherrygramChatsConfig.showCopyPhoto },
-                { CherrygramChatsConfig.showCopyPhoto = !CherrygramChatsConfig.showCopyPhoto }
+                { CherrygramMessagesConfig.showCopyPhoto },
+                { CherrygramMessagesConfig.showCopyPhoto = !CherrygramMessagesConfig.showCopyPhoto }
             ),
             MenuItemConfig(
                 getString(R.string.CG_CopyPhotoAsSticker),
                 R.drawable.msg_copy,
-                { CherrygramChatsConfig.showCopyPhotoAsSticker },
-                { CherrygramChatsConfig.showCopyPhotoAsSticker = !CherrygramChatsConfig.showCopyPhotoAsSticker }
+                { CherrygramMessagesConfig.showCopyPhotoAsSticker },
+                { CherrygramMessagesConfig.showCopyPhotoAsSticker = !CherrygramMessagesConfig.showCopyPhotoAsSticker }
             ),
             MenuItemConfig(
                 getString(R.string.SaveToDownloads),
                 R.drawable.msg_download,
-                { CherrygramChatsConfig.showSaveToDownloads },
-                { CherrygramChatsConfig.showSaveToDownloads = !CherrygramChatsConfig.showSaveToDownloads }
+                { CherrygramMessagesConfig.showSaveToDownloads },
+                { CherrygramMessagesConfig.showSaveToDownloads = !CherrygramMessagesConfig.showSaveToDownloads }
             ),
             MenuItemConfig(
                 getString(R.string.ShareFile),
                 R.drawable.msg_shareout,
-                { CherrygramChatsConfig.showShare },
-                { CherrygramChatsConfig.showShare = !CherrygramChatsConfig.showShare }
+                { CherrygramMessagesConfig.showShare },
+                { CherrygramMessagesConfig.showShare = !CherrygramMessagesConfig.showShare }
             ),
             MenuItemConfig(
                 getString(R.string.CG_ClearFromCache),
                 R.drawable.msg_clear,
-                { CherrygramChatsConfig.showClearFromCache },
-                { CherrygramChatsConfig.showClearFromCache = !CherrygramChatsConfig.showClearFromCache }
+                { CherrygramMessagesConfig.showClearFromCache },
+                { CherrygramMessagesConfig.showClearFromCache = !CherrygramMessagesConfig.showClearFromCache }
             ),
             MenuItemConfig(
                 getString(R.string.Forward),
                 R.drawable.msg_forward,
-                { CherrygramChatsConfig.showForward },
-                { CherrygramChatsConfig.showForward = !CherrygramChatsConfig.showForward }
+                { CherrygramMessagesConfig.showForward },
+                { CherrygramMessagesConfig.showForward = !CherrygramMessagesConfig.showForward }
             ),
             MenuItemConfig(
                 getString(R.string.Forward) + " " + getString(R.string.CG_Without_Authorship),
                 R.drawable.msg_forward,
-                { CherrygramChatsConfig.showForwardWoAuthorship },
-                { CherrygramChatsConfig.showForwardWoAuthorship = !CherrygramChatsConfig.showForwardWoAuthorship }
+                { CherrygramMessagesConfig.showForwardWoAuthorship },
+                { CherrygramMessagesConfig.showForwardWoAuthorship = !CherrygramMessagesConfig.showForwardWoAuthorship }
             ),
             MenuItemConfig(
                 getString(R.string.AvatarPreviewSearchMessages),
                 R.drawable.msg_search,
-                { CherrygramChatsConfig.showViewHistory },
-                { CherrygramChatsConfig.showViewHistory = !CherrygramChatsConfig.showViewHistory }
+                { CherrygramMessagesConfig.showViewHistory },
+                { CherrygramMessagesConfig.showViewHistory = !CherrygramMessagesConfig.showViewHistory }
             ),
             MenuItemConfig(
                 getString(R.string.CG_ToSaved),
                 R.drawable.msg_saved,
-                { CherrygramChatsConfig.showSaveMessage },
-                { CherrygramChatsConfig.showSaveMessage = !CherrygramChatsConfig.showSaveMessage }
+                { CherrygramMessagesConfig.showSaveMessage },
+                { CherrygramMessagesConfig.showSaveMessage = !CherrygramMessagesConfig.showSaveMessage }
             ),
             MenuItemConfig(
                 getString(R.string.ReportChat),
                 R.drawable.msg_report,
-                { CherrygramChatsConfig.showReport },
-                { CherrygramChatsConfig.showReport = !CherrygramChatsConfig.showReport }
+                { CherrygramMessagesConfig.showReport },
+                { CherrygramMessagesConfig.showReport = !CherrygramMessagesConfig.showReport }
             ),
             MenuItemConfig(
                 "JSON",
                 R.drawable.msg_info,
-                { CherrygramChatsConfig.showJSON },
-                { CherrygramChatsConfig.showJSON = !CherrygramChatsConfig.showJSON }
+                { CherrygramMessagesConfig.showJSON },
+                { CherrygramMessagesConfig.showJSON = !CherrygramMessagesConfig.showJSON }
             )
         )
 

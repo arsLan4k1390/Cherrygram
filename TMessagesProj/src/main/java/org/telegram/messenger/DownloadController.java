@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 
 public class DownloadController extends BaseController implements NotificationCenter.NotificationCenterDelegate {
 
@@ -882,7 +882,7 @@ public class DownloadController extends BaseController implements NotificationCe
             return canPreloadStories() ? 2 : 0;
         }
 
-        if (CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
+        if (CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters()) {
             MessageObject messageObject = new MessageObject(currentAccount, message, false, false);
             if (messageObject.shouldBlockMessage()) {
                 return 0;
@@ -1842,8 +1842,7 @@ public class DownloadController extends BaseController implements NotificationCe
 
     /** Cherrygram start */
     private boolean checkCanDownloadMedia(TLRPC.Message message, MessageObject messageObject) {
-
-        if (CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
+        if (CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters()) {
             if (messageObject == null) {
                 messageObject = new MessageObject(currentAccount, message, false, false);
             }

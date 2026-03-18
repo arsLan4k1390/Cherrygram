@@ -34,6 +34,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
 
 import org.json.JSONObject;
 import org.telegram.messenger.browser.Browser;
@@ -55,7 +56,6 @@ import kotlin.coroutines.CoroutineContext;
 import kotlin.coroutines.EmptyCoroutineContext;
 import uz.unnarsx.cherrygram.camera.CameraXUtils;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 
 public class ApplicationLoader extends Application {
 
@@ -221,7 +221,7 @@ public class ApplicationLoader extends Application {
 
                     }
 
-                    boolean isSlow = CherrygramExperimentalConfig.INSTANCE.getSlowNetworkMode();
+                    boolean isSlow = CherrygramCoreConfig.INSTANCE.getSlowNetworkMode();
                     for (int a = 0; a < UserConfig.MAX_ACCOUNT_COUNT; a++) {
                         ConnectionsManager.getInstance(a).checkConnection();
                         FileLoader.getInstance(a).onNetworkChanged(isSlow);
@@ -349,7 +349,8 @@ public class ApplicationLoader extends Application {
         try {
             ConnectionsManager.native_setJava(false);
         } catch (UnsatisfiedLinkError error) {
-            throw new RuntimeException("can't load native libraries " +  Build.CPU_ABI + " lookup folder " + NativeLoader.getAbiFolder());
+            FirebaseCrashlytics.getInstance().recordException(error);
+//            throw new RuntimeException("can't load native libraries " +  Build.CPU_ABI + " lookup folder " + NativeLoader.getAbiFolder());
         }
         new ForegroundDetector(this) {
             @Override

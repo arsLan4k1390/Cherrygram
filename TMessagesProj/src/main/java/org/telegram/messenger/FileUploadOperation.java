@@ -26,7 +26,7 @@ import java.io.RandomAccessFile;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 public class FileUploadOperation {
 
@@ -120,7 +120,7 @@ public class FileUploadOperation {
         AutoDeleteMediaTask.lockFile(uploadingFilePath);
         Utilities.stageQueue.postRunnable(() -> {
             preferences = ApplicationLoader.applicationContext.getSharedPreferences("uploadinfo", Activity.MODE_PRIVATE);
-            slowNetwork = CherrygramExperimentalConfig.INSTANCE.getSlowNetworkMode();
+            slowNetwork = CherrygramCoreConfig.INSTANCE.getSlowNetworkMode();
             if (BuildVars.LOGS_ENABLED) {
                 FileLog.d("start upload on slow network = " + slowNetwork);
             }
@@ -312,7 +312,7 @@ public class FileUploadOperation {
                 if (AccountInstance.getInstance(currentAccount).getUserConfig().isPremium() && totalFileSize > FileLoader.DEFAULT_MAX_FILE_SIZE) {
                     maxUploadParts = MessagesController.getInstance(currentAccount).uploadMaxFilePartsPremium;
                 }
-                uploadChunkSize = (int) Math.max(slowNetwork ? minUploadChunkSlowNetworkSize : CherrygramExperimentalConfig.INSTANCE.getUploadSpeedBoost() ? minUploadChunkSizeBoost : minUploadChunkSize, (totalFileSize + 1024L * maxUploadParts - 1) / (1024L * maxUploadParts));
+                uploadChunkSize = (int) Math.max(slowNetwork ? minUploadChunkSlowNetworkSize : CherrygramCoreConfig.INSTANCE.getUploadSpeedBoost() ? minUploadChunkSizeBoost : minUploadChunkSize, (totalFileSize + 1024L * maxUploadParts - 1) / (1024L * maxUploadParts));
                 if (1024 % uploadChunkSize != 0) {
                     int chunkSize = 64;
                     while (uploadChunkSize > chunkSize) {

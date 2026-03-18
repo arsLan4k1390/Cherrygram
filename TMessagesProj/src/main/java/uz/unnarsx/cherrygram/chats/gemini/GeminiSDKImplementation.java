@@ -54,7 +54,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 public class GeminiSDKImplementation {
@@ -70,7 +70,7 @@ public class GeminiSDKImplementation {
         if (baseFragment == null || baseFragment.getParentActivity() == null || baseFragment.getContext() == null) return;
 
         GenerationConfig.Builder configBuilder = new GenerationConfig.Builder();
-        configBuilder.temperature = (float) CherrygramChatsConfig.INSTANCE.getGeminiTemperatureValue() / 10;
+        configBuilder.temperature = (float) CherrygramMessagesConfig.INSTANCE.getGeminiTemperatureValue() / 10;
         configBuilder.topK = 10;
         configBuilder.topP = 0.5f;
         configBuilder.maxOutputTokens = 4096;
@@ -104,8 +104,8 @@ public class GeminiSDKImplementation {
     ) {
 
         GenerativeModel gm = new GenerativeModel(
-                CherrygramChatsConfig.INSTANCE.getGeminiModelName(),
-                CherrygramChatsConfig.INSTANCE.getGeminiApiKey(),
+                CherrygramMessagesConfig.INSTANCE.getGeminiModelName(),
+                CherrygramMessagesConfig.INSTANCE.getGeminiApiKey(),
                 configBuilder.build(),
                 safetySettings
         );
@@ -259,7 +259,7 @@ public class GeminiSDKImplementation {
 
             if (CherrygramCoreConfig.isDevBuild()) FileLog.e("промпт: " + imagePrompt);
         } else if (translateText) { // Message translation
-            String lang = capitalFirst(languageName(CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()));
+            String lang = capitalFirst(languageName(CherrygramMessagesConfig.INSTANCE.getTranslationTargetGemini()));
             String translationPrompt = "You are a professional translator. Translate all input text into " +
                     lang + " accurately and naturally, preserving the original meaning, tone, and context. " +
                     "Do not add explanations or comments. Just return the translated text without any introduction or closing phrases. " +
@@ -298,7 +298,7 @@ public class GeminiSDKImplementation {
                         "Return only the summary as plain text. The text to summarize:";
                 textPrompt = summarizeString + inputText.toString();
             } else {
-                String systemPrompt = CherrygramChatsConfig.INSTANCE.getGeminiSystemPrompt();
+                String systemPrompt = CherrygramMessagesConfig.INSTANCE.getGeminiSystemPrompt();
                 textPrompt = systemPrompt + " " + inputText;
             }
 

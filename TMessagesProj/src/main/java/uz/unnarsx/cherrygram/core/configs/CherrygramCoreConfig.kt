@@ -32,6 +32,7 @@ import uz.unnarsx.cherrygram.preferences.int
 import uz.unnarsx.cherrygram.preferences.long
 import uz.unnarsx.cherrygram.preferences.string
 import androidx.core.content.edit
+import org.telegram.ui.web.RestrictedDomainsList
 
 object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     context = SupervisorJob() + Dispatchers.Default
@@ -54,7 +55,29 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     }
 
     /** General start */
-    var noRounding by sharedPreferences.boolean("CP_NoRounding", false)
+    /** Animations start */
+    const val ANIMATION_SPRING = 0
+    const val ANIMATION_CLASSIC = 1
+    var springAnimation by sharedPreferences.int("CG_SpringAnimation", ANIMATION_SPRING)
+
+    var actionbarCrossfade by sharedPreferences.boolean("CG_ActionbarCrossfade", true)
+    var predictiveBack by sharedPreferences.boolean("CG_PredictiveBack", false)
+    /** Animations finish */
+
+    /** Notifications start */
+    var silenceNonContacts by sharedPreferences.boolean("CP_SilenceNonContacts", false)
+    var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
+    var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && !ApplicationLoader.checkPlayServices())
+    /** Notifications finish */
+
+    /** Stories start */
+    var hideStories by sharedPreferences.boolean("CP_HideStories", false)
+    var archiveStoriesFromUsers by sharedPreferences.boolean("CP_ArchiveStoriesFromUsers", false)
+    var archiveStoriesFromChannels by sharedPreferences.boolean("CP_ArchiveStoriesFromChannels", false)
+    /** Stories finish */
+
+    /** Miscellaneous start */
+    var noRounding by sharedPreferences.boolean("CP_NoRounding1", true)
     var systemEmoji by sharedPreferences.boolean("AP_SystemEmoji", false)
     var systemFonts by sharedPreferences.boolean("AP_SystemFonts", true)
 
@@ -67,23 +90,17 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     const val TABLET_MODE_DISABLE = 1
     const val TABLET_MODE_AUTO = 2
     var tabletMode by sharedPreferences.int("AP_Tablet_Mode", TABLET_MODE_AUTO)
+    /** Miscellaneous finish */
 
-    var oldNotificationIcon by sharedPreferences.boolean("AP_Old_Notification_Icon", false)
-    var residentNotification by sharedPreferences.boolean("CG_ResidentNotification", Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM && !ApplicationLoader.checkPlayServices())
-    /** General finish */
+    /** Network start */
+    const val BOOST_NONE = 0
+    const val BOOST_AVERAGE = 1
+    const val BOOST_EXTREME = 2
+    var downloadSpeedBoost by sharedPreferences.int("EP_DownloadSpeedBoost", BOOST_NONE)
 
-    /** Animations and Premium Features start */
-    var hideStories by sharedPreferences.boolean("CP_HideStories", false)
-    var archiveStoriesFromUsers by sharedPreferences.boolean("CP_ArchiveStoriesFromUsers", false)
-    var archiveStoriesFromChannels by sharedPreferences.boolean("CP_ArchiveStoriesFromChannels", false)
-    var customWallpapers by sharedPreferences.boolean("CP_CustomWallpapers", true)
-    var disableAnimatedAvatars by sharedPreferences.boolean("CP_DisableAnimAvatars", false)
-    var disableReactionsOverlay by sharedPreferences.boolean("CP_DisableReactionsOverlay", false)
-    var disableReactionAnim by sharedPreferences.boolean("CP_DisableReactionAnim", false)
-    var disablePremStickAnim by sharedPreferences.boolean("CP_DisablePremStickAnim", false)
-    var disablePremStickAutoPlay by sharedPreferences.boolean("CP_DisablePremStickAutoPlay", false)
-    var hideSendAsChannel by sharedPreferences.boolean("CP_HideSendAsChannel", false)
-    /** Animations and Premium Features finish */
+    var uploadSpeedBoost by sharedPreferences.boolean("EP_UploadSpeedBoost", false)
+    var slowNetworkMode by sharedPreferences.boolean("EP_SlowNetworkMode", false)
+    /** Network finish */
 
     /** OTA start */
     var installBetas by sharedPreferences.boolean("CG_Install_Beta_Ver", isStandaloneBetaBuild())
@@ -104,7 +121,7 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
     var cgBrandedScreenshots by sharedPreferences.boolean("DP_BrandedScreenshots", false)
     var sleepTimer by sharedPreferences.boolean("CG_Sleep_Timer", false)
     var showNotifications by sharedPreferences.boolean("CG_ShowNotifications", true)
-    var allowSafeStars by sharedPreferences.boolean("CG_AllowSafeStarsUI", true)
+    var allowSafeStars by sharedPreferences.boolean("CG_AllowSafeStarsUI1", true)
     /** Misc finish */
 
     /** Cherrygram build types start */
@@ -170,6 +187,12 @@ object CherrygramCoreConfig: CoroutineScope by CoroutineScope(
             }
 
             migratePreferences()
+
+            if (allowSafeStars) {
+                if (!RestrictedDomainsList.getInstance().isRestricted("safestars.pro")) {
+                    RestrictedDomainsList.getInstance().setRestricted(true, "safestars.pro")
+                }
+            }
         }
     }
 

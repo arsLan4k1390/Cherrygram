@@ -21,8 +21,8 @@ import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.R
 import org.telegram.ui.Components.URLSpanNoUnderline
 import org.telegram.ui.LauncherIconController
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig
 import uz.unnarsx.cherrygram.misc.Constants
 import java.util.Calendar
 import java.util.Date
@@ -97,11 +97,11 @@ object CGResourcesHelper {
     fun getLeftButtonText(noForwards: Boolean): String {
         if (noForwards) return getString(R.string.Reply)
 
-        return when (CherrygramChatsConfig.leftBottomButton) {
-            CherrygramChatsConfig.LEFT_BUTTON_REPLY -> getString(R.string.Reply)
-            CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE -> getString(R.string.CG_ToSaved)
-            CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE -> getString(R.string.DirectShare)
-            CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP -> capitalize(getString(R.string.CG_Without_Authorship))
+        return when (CherrygramMessagesConfig.leftBottomButton) {
+            CherrygramMessagesConfig.LEFT_BUTTON_REPLY -> getString(R.string.Reply)
+            CherrygramMessagesConfig.LEFT_BUTTON_SAVE_MESSAGE -> getString(R.string.CG_ToSaved)
+            CherrygramMessagesConfig.LEFT_BUTTON_DIRECT_SHARE -> getString(R.string.DirectShare)
+            CherrygramMessagesConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP -> capitalize(getString(R.string.CG_Without_Authorship))
             else -> capitalize(getString(R.string.CG_Without_Caption))
         }
     }
@@ -109,20 +109,20 @@ object CGResourcesHelper {
     fun getLeftButtonDrawable(noForwards: Boolean): Int {
         if (noForwards) return R.drawable.input_reply
 
-        return when (CherrygramChatsConfig.leftBottomButton) {
-            CherrygramChatsConfig.LEFT_BUTTON_REPLY -> R.drawable.input_reply
-            CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE -> R.drawable.msg_saved
-            CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE -> R.drawable.msg_share
+        return when (CherrygramMessagesConfig.leftBottomButton) {
+            CherrygramMessagesConfig.LEFT_BUTTON_REPLY -> R.drawable.input_reply
+            CherrygramMessagesConfig.LEFT_BUTTON_SAVE_MESSAGE -> R.drawable.msg_saved
+            CherrygramMessagesConfig.LEFT_BUTTON_DIRECT_SHARE -> R.drawable.msg_share
             else -> R.drawable.input_reply
         }
     }
 
     fun getReplyIconDrawable(): Int {
-        return when (CherrygramChatsConfig.messageSlideAction) {
-            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE -> R.drawable.msg_saved_filled_solar
-            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> R.drawable.msg_share_filled
-            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> R.drawable.msg_translate_filled_solar
-            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI -> R.drawable.msg_translate_filled_solar
+        return when (CherrygramMessagesConfig.messageSlideAction) {
+            CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_SAVE -> R.drawable.msg_saved_filled_solar
+            CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> R.drawable.msg_share_filled
+            CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> R.drawable.msg_translate_filled_solar
+            CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI -> R.drawable.msg_translate_filled_solar
             else -> R.drawable.filled_button_reply
         }
     }

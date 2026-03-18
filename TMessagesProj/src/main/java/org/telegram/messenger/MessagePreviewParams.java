@@ -20,6 +20,7 @@ import org.telegram.ui.Components.MessagePreviewView;
 import java.util.ArrayList;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 
 public class MessagePreviewParams {
 
@@ -499,7 +500,7 @@ public class MessagePreviewParams {
             }
             if (header != null) {
                 message.fwd_from = header;
-                if (CherrygramChatsConfig.INSTANCE.getMsgForwardDate() && !messageObject.isForwarded()) {
+                if (CherrygramMessagesConfig.INSTANCE.getMsgForwardDate() && !messageObject.isForwarded()) {
                     message.fwd_from.date = messageObject.messageOwner.date;
                 }
                 message.flags |= TLRPC.MESSAGE_FLAG_FWD;

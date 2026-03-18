@@ -67,7 +67,7 @@ public class EffectSelectorView extends LinearLayout {
             boolean fuckup = false /*Arrays.asList(GOOGLE_FUCKUPS).contains(Build.DEVICE)*/;
             ArrayList<Integer> list_effect = new ArrayList<>();
 
-            if ( CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2) {
+            if (CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2) {
                 list_effect.add(CameraXController.CAMERA_ASPECT_RATIO_SELECTOR);
             }
 

@@ -71,6 +71,9 @@ import uz.unnarsx.cherrygram.chats.helpers.ChatActivityHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper;
 import uz.unnarsx.cherrygram.chats.helpers.ChatsPasswordHelper;
 import uz.unnarsx.cherrygram.chats.helpers.MessageHelper;
+import uz.unnarsx.cherrygram.core.VibrateUtil;
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.helpers.ProfileActivityHelper;
 
 public abstract class BaseFragment {
@@ -285,10 +288,13 @@ public abstract class BaseFragment {
     }
 
     public boolean isActionBarCrossfadeEnabled() {
-        if (getLastStoryViewer() != null && getLastStoryViewer().attachedToParent()) {
-            return false;
+        if (CherrygramCoreConfig.INSTANCE.getSpringAnimation() == CherrygramCoreConfig.ANIMATION_SPRING) {
+            if (getLastStoryViewer() != null && getLastStoryViewer().attachedToParent()) {
+                return false;
+            }
+            return actionBar != null && !actionBar.isActionModeShowed();
         }
-        return actionBar != null && !actionBar.isActionModeShowed();
+        return actionBar != null;
     }
 
     public INavigationLayout.BackButtonState getBackButtonState() {
@@ -350,6 +356,9 @@ public abstract class BaseFragment {
     public void setParentFragment(BaseFragment fragment) {
         setParentLayout(fragment.parentLayout);
         fragmentView = createView(parentLayout.getView().getContext());
+        if (fragmentView != null && CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
+            VibrateUtil.INSTANCE.disableHapticFeedback(fragmentView);
+        }
     }
 
     public void setParentLayout(INavigationLayout layout) {
@@ -928,7 +937,7 @@ public abstract class BaseFragment {
 
     public void setFragmentPanTranslationOffset(int offset) {
         if (parentLayout != null) {
-            parentLayout.setFragmentPanTranslationOffset(offset, this);
+            parentLayout.setFragmentPanTranslationOffset(offset);
         }
     }
 
@@ -1314,7 +1323,7 @@ public abstract class BaseFragment {
 
     public void setTitleOverlayText(String title, int titleId, Runnable action) {
         if (actionBar != null) {
-            actionBar.setTitleOverlayText(title, titleId, action);
+            actionBar.setTitleOverlayText(title, titleId, true, action);
         }
     }
 

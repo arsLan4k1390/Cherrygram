@@ -93,7 +93,7 @@ public class CGBiometricPrompt {
         CGBiometricPrompt.callBiometricPrompt(activity, new CGBiometricPrompt.CGBiometricListener() {
             @Override
             public void onSuccess(BiometricPrompt.AuthenticationResult result) {
-                successCallback.run();
+                if (successCallback != null) successCallback.run();
                 if (CherrygramDebugConfig.INSTANCE.getShowRPCErrors())
                     Toast.makeText(activity, "Success", Toast.LENGTH_SHORT).show();
             }

@@ -10,6 +10,8 @@
 package uz.unnarsx.cherrygram.core.ui.mainTabs
 
 import android.content.Context
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
 import org.telegram.messenger.R
 import org.telegram.ui.ActionBar.Theme
 import org.telegram.ui.Components.glass.GlassTabView
@@ -38,8 +40,14 @@ object MainTabsManager {
         var enabled: Boolean
     )
 
-    fun getEnabledTabs(): List<Tab> {
-        return loadTabs().filter { it.enabled }
+    @JvmOverloads
+    fun getEnabledTabs(includeSearch: Boolean = false): List<Tab> {
+        val enabled = loadTabs().filter { it.enabled }
+        return if (includeSearch) {
+            enabled
+        } else {
+            enabled.filterNot { it.type == TabType.SEARCH }
+        }
     }
 
     fun getAllTabs(): List<Tab> {
@@ -55,7 +63,7 @@ object MainTabsManager {
         if (value == null) {
             result.add(Tab(TabType.SETTINGS, true))
             result.add(Tab(TabType.CHATS, true))
-            result.add(Tab(TabType.SEARCH, true))
+            result.add(Tab(TabType.PROFILE, true))
         } else {
             val parts = value.split(",")
 
@@ -84,7 +92,8 @@ object MainTabsManager {
         resourceProvider: Theme.ResourcesProvider?,
         currentAccount: Int,
         type: TabType,
-        fromSettings: Boolean
+        fromSettings: Boolean,
+        showSearch: Boolean
     ): GlassTabView {
         return when (type) {
             TabType.CHATS -> GlassTabView.createMainTab(
@@ -133,12 +142,22 @@ object MainTabsManager {
                 R.string.MainTabsProfile
             )
 
-            TabType.SEARCH -> GlassTabView.createStaticTab(
-                context,
-                resourceProvider,
-                R.drawable.ic_ab_search,
-                R.string.Search
-            )
+            TabType.SEARCH -> {
+                if (showSearch) {
+                    GlassTabView.createStaticTab(
+                        context,
+                        resourceProvider,
+                        R.drawable.ic_ab_search,
+                        R.string.Search,
+                        false
+                    )
+                } else {
+                    GlassTabView(context).apply {
+                        visibility = View.GONE
+                        layoutParams = RecyclerView.LayoutParams(0, 0)
+                    }
+                }
+            }
         }
     }
 

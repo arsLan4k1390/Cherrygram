@@ -46,7 +46,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 
 public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCenterDelegate {
 
@@ -425,7 +425,7 @@ public class EmojiAnimationsOverlay implements NotificationCenter.NotificationCe
     }
 
     public boolean onTapItem(ChatMessageCell view, ChatActivity chatActivity, boolean userTapped) {
-        if (CherrygramCoreConfig.INSTANCE.getDisablePremStickAnim()) {
+        if (CherrygramMessagesConfig.INSTANCE.getDisablePremStickAnim()) {
             return false;
         }
         if (chatActivity.isSecretChat() || view.getMessageObject() == null || view.getMessageObject().getId() < 0) {

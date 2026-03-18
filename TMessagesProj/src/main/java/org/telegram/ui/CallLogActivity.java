@@ -1555,7 +1555,7 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 
 	@Override
 	public boolean onBackPressed(boolean invoked) {
-		if (actionBar.isActionModeShowed()) {
+		if (actionBar != null && actionBar.isActionModeShowed()) {
 			if (invoked) hideActionMode(true);
 			return false;
 		}

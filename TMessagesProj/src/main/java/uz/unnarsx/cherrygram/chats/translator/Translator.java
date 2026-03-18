@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 
@@ -52,11 +52,11 @@ public class Translator {
         targetLanguages.add(0, "app");
         names.add(0, getString(R.string.Default));
 
-        PopupHelper.show(names, getString(R.string.CG_TranslationLanguage), targetLanguages.indexOf(isKeyboard ? CherrygramChatsConfig.INSTANCE.getTranslationKeyboardTarget() : CherrygramChatsConfig.INSTANCE.getTranslationTarget()), context, i -> {
+        PopupHelper.show(names, getString(R.string.CG_TranslationLanguage), targetLanguages.indexOf(isKeyboard ? CherrygramMessagesConfig.INSTANCE.getTranslationKeyboardTarget() : CherrygramMessagesConfig.INSTANCE.getTranslationTarget()), context, i -> {
             if (isKeyboard) {
-                CherrygramChatsConfig.INSTANCE.setTranslationKeyboardTarget(targetLanguages.get(i));
+                CherrygramMessagesConfig.INSTANCE.setTranslationKeyboardTarget(targetLanguages.get(i));
             } else {
-                CherrygramChatsConfig.INSTANCE.setTranslationTarget(targetLanguages.get(i));
+                CherrygramMessagesConfig.INSTANCE.setTranslationTarget(targetLanguages.get(i));
             }
             callback.run();
         }, resourcesProvider);

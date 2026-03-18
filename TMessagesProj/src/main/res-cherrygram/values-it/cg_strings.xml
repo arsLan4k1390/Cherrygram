@@ -156,7 +156,6 @@
     <string name="AP_DisableDividers">Disabilita divisori</string>
     <string name="AP_SystemFonts">Usa il font di sistema</string>
     <string name="CP_Snowflakes_Header">Fiocchi di neve</string>
-    <string name="CP_PremAndAnim_Header">Animazioni e Funzionalità Premium</string>
     <string name="CP_ProfileReplyBackground">Messaggi e profili</string>
     <string name="CP_CustomizeProfile">Personalizza il profilo</string>
     <string name="CP_ProfileChannelPreview">Canale personale</string>
@@ -174,7 +173,6 @@
     <string name="CP_ArchiveStories_Desc">Le storie saranno automaticamente e spostate nel tuo archivio.</string>
     <string name="CP_CustomWallpapers">Sfondo personalizzato nelle chat</string>
     <string name="CP_CustomWallpapers_Desc">Configura la visualizzazione degli sfondi personalizzati di utenti premium o canali potenziati</string>
-    <string name="CP_DisableAnimAvatars">Disabilita avatar animati</string>
     <string name="CP_DisableReactionsOverlay">Disabilita sovrapposizione delle reazioni</string>
     <string name="CP_DisableReactionsOverlay_Desc">Questo disabiliterà la sovrapposizione popup con le reazioni disponibili</string>
     <string name="CP_DisableReactionAnim">Disabilita l\'animazione della reazione</string>
@@ -197,8 +195,6 @@
     <string name="AP_ShowID">Mostra ID e DC nel profilo</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
-    <string name="CP_Header_Chats">Chat</string>
-    <string name="CP_Header_Messages">Messaggi</string>
     <string name="CP_AutoQuoteReplies">Risposte con citazione</string>
     <string name="CP_AutoQuoteReplies_Desc">Cita sempre l\'intero messaggio nelle risposte.</string>
     <string name="CP_TimeOnStick">Nascondi orario su sticker in chat</string>
@@ -224,7 +220,6 @@
     <string name="CP_UnreadBadgeOnBackButton">Mostra contatore chat non lette</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Abilita il contatore delle chat non lette sul pulsante indietro nella chat aperta</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Contatore delle emoji e degli sticker recenti</string>
-    <string name="CP_NoRounding">Disattiva l\'arrotondamento dei numeri</string>
     <string name="CP_DeleteForAll">Usa \"Elimina per tutti\" per impostazione predefinita</string>
     <string name="CP_DeleteForAll_Desc">La casella di controllo verrà selezionata automaticamente durante l\'eliminazione dei messaggi.</string>
     <string name="CP_ForwardMsgDate">Mostra la data del messaggio inoltrato</string>
@@ -300,8 +295,6 @@
     <string name="CP_AutoPauseVideo_Desc">Quando si blocca lo schermo o si riproduce in background</string>
     <string name="CP_DisableVibration">Disabilita vibrazione</string>
     <string name="CP_VideoSeekDuration">Doppio tap per avanzamento video (secondi)</string>
-    <string name="CP_Header_Notification">Notifiche</string>
-    <string name="CP_NotificationSound">Suono di notifica</string>
     <string name="CP_VibrateInChats">Vibrazione in-chat</string>
     <string name="CP_VibrateInChats_Desc">Vibra leggermente ogni volta che ricevi un nuovo messaggio</string>
     <string name="CP_SilenceNonContacts">Silenzia i non contatti</string>
@@ -346,14 +339,11 @@
     <string name="EP_CustomChat_Selected_Title">invece di</string>
     <string name="EP_Network">Rete</string>
     <string name="EP_DownloadSpeedBoost">Aumenta velocità di download</string>
-    <string name="EP_DownloadSpeedBoostNone">Spegni</string>
-    <string name="EP_DownloadSpeedBoostAverage">Attiva</string>
     <string name="EP_DownloadSpeedBoostExtreme">Estremo</string>
     <string name="EP_UploadloadSpeedBoost">Aumenta velocità di upload</string>
     <string name="EP_SlowNetworkMode">Modalità rete lenta</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_PrivacyAndSecurity">Privacy e sicurezza</string>
     <string name="SP_Header_Privacy">Privacy</string>
     <string name="SP_NoProxyPromo">Non mostrare sponsor proxy</string>
     <string name="SP_GoogleAnalytics_Desc">Abilitando questo, tutti i crash dell\'applicazione e le statistiche verranno segnalati a \"console.firebase.google.com\" per futuri controlli dello sviluppatore.</string>

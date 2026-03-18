@@ -35,10 +35,11 @@ import java.util.Locale;
 
 import uz.unnarsx.cherrygram.chats.gemini.network.ApiClient;
 import uz.unnarsx.cherrygram.chats.gemini.network.ModelInfo;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
+import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class GeminiPreferencesEntry extends UniversalFragment {
 
@@ -75,13 +76,13 @@ public class GeminiPreferencesEntry extends UniversalFragment {
         geminiApiKeyField.setHint("\uD83D\uDD11");
         geminiApiKeyField.getEditText().setSingleLine(false);
         geminiApiKeyField.getEditText().setFilters(getInputFilter());
-        if (!TextUtils.isEmpty(CherrygramChatsConfig.INSTANCE.getGeminiApiKey())) {
-            geminiApiKeyField.getEditText().setText(CherrygramChatsConfig.INSTANCE.getGeminiApiKey());
+        if (!TextUtils.isEmpty(CherrygramMessagesConfig.INSTANCE.getGeminiApiKey())) {
+            geminiApiKeyField.getEditText().setText(CherrygramMessagesConfig.INSTANCE.getGeminiApiKey());
         }
         geminiApiKeyField.setMinimumHeight(200);
         geminiApiKeyField.setPadding(dp(16), dp(12), dp(16), dp(12));
         geminiApiKeyField.getEditText().setPadding(dp(16), dp(12), dp(16), dp(12));
-        items.add(UItem.asCustomWithBackground(geminiApiKeyField));
+        items.add(SettingsHelper.asCustomWithBackground(geminiApiKeyField));
         items.add(UItem.asShadow(getGeminiApiKeyAdvice()));
 
         items.add(UItem.asHeader(getString(R.string.CP_GeminiAI_Model)));
@@ -98,14 +99,14 @@ public class GeminiPreferencesEntry extends UniversalFragment {
         geminiModelNameField.getEditText().setSingleLine(true);
         geminiModelNameField.getEditText().setFilters(getInputFilter());
         geminiModelNameField.getEditText().setHint(getString(R.string.CP_GeminiAI_Sample) + " gemini-1.5-flash");
-        geminiModelNameField.getEditText().setText(CherrygramChatsConfig.INSTANCE.getGeminiModelName());
+        geminiModelNameField.getEditText().setText(CherrygramMessagesConfig.INSTANCE.getGeminiModelName());
         geminiModelNameField.setMinimumHeight(200);
         geminiModelNameField.setPadding(dp(16), dp(12), dp(16), dp(12));
         geminiModelNameField.getEditText().setPadding(dp(16), dp(12), dp(16), dp(12));
-        items.add(UItem.asCustomWithBackground(geminiModelNameField));
+        items.add(SettingsHelper.asCustomWithBackground(geminiModelNameField));
 
         items.add(
-                UItem.asTextDetail(
+                SettingsHelper.asTextDetail(
                         geminiModelsListButton,
                         R.drawable.msg_list,
                         getString(R.string.CP_GeminiAI_Model_Selector),
@@ -127,11 +128,11 @@ public class GeminiPreferencesEntry extends UniversalFragment {
         geminiSystemPromptField.setHint("⚙️");
         geminiSystemPromptField.getEditText().setSingleLine(false);
         geminiModelNameField.getEditText().setHint(getString(R.string.CP_GeminiAI_System_Prompt));
-        geminiSystemPromptField.getEditText().setText(CherrygramChatsConfig.INSTANCE.getGeminiSystemPrompt());
+        geminiSystemPromptField.getEditText().setText(CherrygramMessagesConfig.INSTANCE.getGeminiSystemPrompt());
         geminiSystemPromptField.setMinimumHeight(200);
         geminiSystemPromptField.setPadding(dp(16), dp(12), dp(16), dp(12));
         geminiSystemPromptField.getEditText().setPadding(dp(16), dp(12), dp(16), dp(12));
-        items.add(UItem.asCustomWithBackground(geminiSystemPromptField));
+        items.add(SettingsHelper.asCustomWithBackground(geminiSystemPromptField));
         items.add(UItem.asShadow(getString(R.string.CP_GeminiAI_System_Prompt_Desc)));
 
         items.add(UItem.asHeader(getString(R.string.CP_GeminiAI_Temperature)));
@@ -139,10 +140,10 @@ public class GeminiPreferencesEntry extends UniversalFragment {
                 UItem.asIntSlideView(
                         1,
                         1,
-                        CherrygramChatsConfig.INSTANCE.getGeminiTemperatureValue(),
+                        CherrygramMessagesConfig.INSTANCE.getGeminiTemperatureValue(),
                         10,
                         val -> String.format(Locale.US, "%.1f", val / 10f),
-                        CherrygramChatsConfig.INSTANCE::setGeminiTemperatureValue
+                        CherrygramMessagesConfig.INSTANCE::setGeminiTemperatureValue
                 )
         );
         items.add(UItem.asShadow(getString(R.string.CP_GeminiAI_Temperature_Desc)));
@@ -154,7 +155,7 @@ public class GeminiPreferencesEntry extends UniversalFragment {
             ApiClient.fetchModels(
                     getContext(),
                     getResourceProvider(),
-                    CherrygramChatsConfig.INSTANCE.getGeminiApiKey(),
+                    CherrygramMessagesConfig.INSTANCE.getGeminiApiKey(),
                     models -> AndroidUtilities.runOnUIThread(() -> {
                         if (models.isEmpty()) return;
 
@@ -168,8 +169,8 @@ public class GeminiPreferencesEntry extends UniversalFragment {
                             modelDescriptionArray.add(model.description);
                         }
 
-                        PopupHelper.show(getString(R.string.CP_GeminiAI_Model), modelFullTitleArray, modelDescriptionArray, modelShortTitleArray.indexOf(CherrygramChatsConfig.INSTANCE.getGeminiModelName()), getContext(), i -> {
-                            CherrygramChatsConfig.INSTANCE.setGeminiModelName(modelShortTitleArray.get(i));
+                        PopupHelper.show(getString(R.string.CP_GeminiAI_Model), modelFullTitleArray, modelDescriptionArray, modelShortTitleArray.indexOf(CherrygramMessagesConfig.INSTANCE.getGeminiModelName()), getContext(), i -> {
+                            CherrygramMessagesConfig.INSTANCE.setGeminiModelName(modelShortTitleArray.get(i));
                             geminiModelNameField.getEditText().setText(modelShortTitleArray.get(i));
                         }, getResourceProvider());
                     })
@@ -203,7 +204,7 @@ public class GeminiPreferencesEntry extends UniversalFragment {
             AndroidUtilities.shakeView(geminiApiKeyField);
             return;
         }*/
-        CherrygramChatsConfig.INSTANCE.setGeminiApiKey(
+        CherrygramMessagesConfig.INSTANCE.setGeminiApiKey(
                 geminiApiKeyField.getEditText().getText().toString()
         );
 
@@ -215,11 +216,11 @@ public class GeminiPreferencesEntry extends UniversalFragment {
             AndroidUtilities.shakeView(geminiModelNameField);
             return;
         }*/
-        CherrygramChatsConfig.INSTANCE.setGeminiModelName(
+        CherrygramMessagesConfig.INSTANCE.setGeminiModelName(
                 geminiModelNameField.getEditText().getText().toString()
         );
 
-        CherrygramChatsConfig.INSTANCE.setGeminiSystemPrompt(
+        CherrygramMessagesConfig.INSTANCE.setGeminiSystemPrompt(
                 geminiSystemPromptField.getEditText().getText().toString()
         );
     }

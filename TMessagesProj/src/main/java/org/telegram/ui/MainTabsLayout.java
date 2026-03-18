@@ -28,7 +28,8 @@ public class MainTabsLayout extends AnimatedLinearLayout {
         measureTabTexts();
 
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
-        int absoluteMaxLimit = /*editMode*/ false ? 0 : screenWidth - dp(5 * 2);
+        int searchOffset = dp(DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS);
+        int absoluteMaxLimit = screenWidth - searchOffset - dp(DialogsActivity.MAIN_TABS_MARGIN * 2);
 
         final int maxTotalWidthForTabs = Math.max(width, absoluteMaxLimit) - getPaddingLeft() - getPaddingRight();
         final int minTotalWidthForTabs = Math.min(dp(320) / 2, maxTotalWidthForTabs);

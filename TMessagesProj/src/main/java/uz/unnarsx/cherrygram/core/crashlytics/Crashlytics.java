@@ -36,6 +36,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramCameraConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.preferences.CameraPreferencesEntry;
 
@@ -121,7 +122,7 @@ public class Crashlytics implements Thread.UncaughtExceptionHandler {
                 "• Device: " + CGResourcesHelper.INSTANCE.capitalize(Build.MANUFACTURER) + " " + Build.MODEL + "\n" +
                 "• OS Version: " + Build.VERSION.RELEASE + " • SDK: " + Build.VERSION.SDK_INT + "\n" +
                 "• Screen: " + AndroidUtilities.displaySize.x + "x" + AndroidUtilities.displaySize.y + " • DPI: " + AndroidUtilities.densityDpi + "\n" +
-                "• Camera: " + CameraPreferencesEntry.getCameraName() + "\n" +
+                "• Camera: " + CameraPreferencesEntry.getCameraName() + "Dual: " + CherrygramCameraConfig.INSTANCE.getUseDualCamera() + "\n" +
                 "• Performance Class: " + getPerformanceClassString() + "\n" +
                 "• Google Play Services: " + ApplicationLoader.hasPlayServices + "\n" +
                 "• Locale: " + LocaleController.getSystemLocaleStringIso639();

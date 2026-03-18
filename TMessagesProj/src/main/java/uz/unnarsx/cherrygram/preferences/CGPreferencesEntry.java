@@ -58,120 +58,40 @@ public class CGPreferencesEntry extends UniversalFragment {
     @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(getString(R.string.AP_Header_General)));
-
-        items.add(
-                UItem.asButton(
-                        generalRow,
-                        R.drawable.msg_settings_solar,
-                        getString(R.string.AP_Header_General)
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        appearanceRow,
-                        R.drawable.msg_theme_solar,
-                        getString(R.string.AP_Header_Appearance)
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        chatsRow,
-                        R.drawable.msg_msgbubble3_solar,
-                        getString(R.string.CP_Header_Chats)
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        cameraRow,
-                        R.drawable.camera_solar,
-                        getString(R.string.CP_Category_Camera)
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        experimentalRow,
-                        R.drawable.msg_fave_solar,
-                        getString(R.string.EP_Category_Experimental)
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        privacyRow,
-                        R.drawable.msg_secret_solar,
-                        getString(R.string.SP_Category_PrivacyAndSecurity)
-                )
-        );
-
+        items.add(UItem.asButton(generalRow, R.drawable.msg_settings_solar, getString(R.string.AP_Header_General)));
+        items.add(UItem.asButton(appearanceRow, R.drawable.msg_theme_solar, getString(R.string.AP_Header_Appearance)));
+        items.add(UItem.asButton(chatsRow, R.drawable.msg_msgbubble3_solar, getString(R.string.FilterChats)));
+        items.add(UItem.asButton(cameraRow, R.drawable.camera_solar, getString(R.string.CP_Category_Camera)));
+//        items.add(UItem.asButton(experimentalRow, R.drawable.msg_fave_solar, getString(R.string.EP_Category_Experimental)));
+        items.add(UItem.asButton(privacyRow, R.drawable.msg_secret_solar, getString(R.string.SettingsPrivacySecurity)));
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.LocalOther)));
-
-        items.add(
-                UItem.asButton(
-                        supportRow,
-                        R.drawable.heart_angle_solar,
-                        getString(R.string.DP_Support)
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        exportRow,
-                        R.drawable.msg_instant_link_solar,
-                        getString(R.string.CG_ExportSettings)
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        importRow,
-                        R.drawable.msg_photo_settings_solar,
-                        getString(R.string.CG_ImportSettings)
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        restartRow,
-                        R.drawable.msg_retry_solar,
-                        getString(R.string.CG_Restart)
-                )
-        );
-
+        items.add(UItem.asButton(supportRow, R.drawable.heart_angle_solar, getString(R.string.DP_Support)));
+        items.add(UItem.asButton(exportRow, R.drawable.msg_instant_link_solar, getString(R.string.CG_ExportSettings)));
+        items.add(UItem.asButton(importRow, R.drawable.msg_photo_settings_solar, getString(R.string.CG_ImportSettings)));
+        items.add(UItem.asButton(restartRow, R.drawable.msg_retry_solar, getString(R.string.CG_Restart)));
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.CGP_Header_About)));
-
-        items.add(
-                UItem.asButton(
-                        aboutRow,
-                        R.drawable.msg_info_solar,
-                        getString(R.string.CGP_Header_About_Desc)
-                )
-        );
-
+        items.add(UItem.asButton(aboutRow, R.drawable.msg_info_solar, getString(R.string.CGP_Header_About_Desc)));
         items.add(UItem.asShadow(null));
     }
 
     @Override
     protected void onClick(UItem item, View view, int position, float x, float y) {
         if (item.id == generalRow) {
-            presentFragment(CherrygramPreferencesNavigator.INSTANCE.createGeneral());
+            CherrygramPreferencesNavigator.INSTANCE.createGeneral(this);
         } else if (item.id == appearanceRow) {
             CherrygramPreferencesNavigator.INSTANCE.createAppearance(this);
         } else if (item.id == chatsRow) {
-            presentFragment(CherrygramPreferencesNavigator.INSTANCE.createChats());
+            CherrygramPreferencesNavigator.INSTANCE.createChats(this);
         } else if (item.id == cameraRow) {
             CherrygramPreferencesNavigator.INSTANCE.createCamera(this);
         } else if (item.id == experimentalRow) {
             CherrygramPreferencesNavigator.INSTANCE.createExperimental(this);
         } else if (item.id == privacyRow) {
-            presentFragment(CherrygramPreferencesNavigator.INSTANCE.createPrivacyAndSecurity());
+            CherrygramPreferencesNavigator.INSTANCE.createPrivacy(this);
         } else if (item.id == supportRow) {
             CherrygramPreferencesNavigator.INSTANCE.createDonate(this);
         } else if (item.id == exportRow) {

@@ -140,6 +140,9 @@ public class LinkManager {
         if ("invoice".equalsIgnoreCase(first))
             return handleInvoiceSlug(second);
 
+        if ("oauth".equalsIgnoreCase(first))
+            return handleOAuth(uri, uri.getQueryParameter("startapp"));
+
         return false;
     }
 
@@ -1294,6 +1297,7 @@ public class LinkManager {
     }
 
     private boolean handleOAuth(Uri uri, String token) {
+        if (!isExternalIntent) return true;
         if (isEmpty(token)) return false;
 
         init();
@@ -1305,7 +1309,13 @@ public class LinkManager {
         getConnectionsManager().sendRequestTyped(req, AndroidUtilities::runOnUIThread, (res, err) -> {
             done();
             if (err != null) {
-                getBulletinFactory().showForError(err);
+                if ("URL_EXPIRED".equalsIgnoreCase(err.text)) {
+                    getBulletinFactory()
+                        .createSimpleBulletin(R.raw.error, getString(R.string.BotAuthLoggedInFailTitle), getString(R.string.BotAuthLoggedInFailNoDomain))
+                        .show();
+                } else {
+                    getBulletinFactory().showForError(err);
+                }
                 return;
             }
             OAuthSheet.handle(isExternalIntent, currentAccount, req, res);

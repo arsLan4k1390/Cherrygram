@@ -9,7 +9,10 @@
 package org.telegram.ui;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
+import static org.telegram.messenger.AndroidUtilities.replaceSingleLinkBold;
 import static org.telegram.messenger.LocaleController.formatPluralString;
+import static org.telegram.messenger.LocaleController.formatString;
+import static org.telegram.messenger.LocaleController.getString;
 import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_BOOSTS_FOR_USERS;
 
 import android.Manifest;
@@ -246,11 +249,9 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.misc.CherrygramExtras;
@@ -733,7 +734,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         BackupAgent.requestBackup(this);
 
         RestrictedLanguagesSelectActivity.checkRestrictedLanguages(false);
-        if (Build.VERSION.SDK_INT >= 34 && CherrygramExperimentalConfig.INSTANCE.getPredictiveBack()) {
+        if (Build.VERSION.SDK_INT >= 34 && CherrygramCoreConfig.INSTANCE.getPredictiveBack()) {
             if (onBackAnimationCallback == null) {
                 onBackAnimationCallback =  new OnBackAnimationCallback() {
                     private boolean started = false;
@@ -1144,6 +1145,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     mode = chatActivity.isShouldHaveLightNavigationBarIcons() ? 2 : 1;
                 }
 
+                if (getBottomSheetTabs() != null && getBottomSheetTabs().getHeight(false) > 0) {
+                    mode = 0;
+                }
+
                 if (actionBarLayout.getSheetFragment(false) != null) {
                     BaseFragment sheetFragment = actionBarLayout.getSheetFragment(false);
                     if (sheetFragment.sheetsStack != null) {
@@ -1180,6 +1185,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
     public void switchToAccount(int account, boolean removeAll, GenericProvider<Void, MainTabsActivity> dialogsActivityProvider) {
         if (account == UserConfig.selectedAccount || !UserConfig.isValidAccount(account)) {
+            return;
+        }
+        if (AndroidUtilities.isTablet() && (layersActionBarLayout == null || rightActionBarLayout == null)) {
             return;
         }
         switchingAccount = true;
@@ -2884,7 +2892,33 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     int encId = intent.getIntExtra("encId", 0);
                     int widgetId = intent.getIntExtra("appWidgetId", 0);
                     long topicId = intent.getLongExtra("topicId", 0);
-                    if (widgetId != 0) {
+                    final String oauth_url = intent.getStringExtra("oauth_url");
+                    if (oauth_url != null) {
+                        final TLRPC.TL_messages_requestUrlAuth req = new TLRPC.TL_messages_requestUrlAuth();
+                        req.url = oauth_url;
+                        req.flags |= 4;
+                        ConnectionsManager.getInstance(intentAccount[0]).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                            final BaseFragment fragment = getSafeLastFragment();
+                            if (response != null) {
+                                if (response instanceof TLRPC.TL_urlAuthResultRequest) {
+                                    OAuthSheet.handle(false, currentAccount, req, (TLRPC.TL_urlAuthResultRequest) response);
+                                } else if (response instanceof TLRPC.TL_urlAuthResultAccepted) {
+                                    OAuthSheet.handle(false, currentAccount, req, (TLRPC.TL_urlAuthResultAccepted) response);
+                                } else if (response instanceof TLRPC.TL_urlAuthResultDefault) {
+                                    AlertsCreator.showOpenUrlAlert(fragment, oauth_url, false, true);
+                                }
+                            } else if (error != null) {
+                                if ("URL_EXPIRED".equalsIgnoreCase(error.text)) {
+                                    OAuthSheet.getBulletinFactory()
+                                        .createSimpleBulletin(R.raw.error, getString(R.string.BotAuthLoggedInFailTitle), getString(R.string.BotAuthLoggedInFailNoDomain))
+                                        .show();
+                                } else {
+                                    OAuthSheet.getBulletinFactory().showForError(error);
+                                }
+                            }
+                        }), ConnectionsManager.RequestFlagFailOnServerErrors);
+                        pushOpened.set(true);
+                    } else if (widgetId != 0) {
                         open_settings = 6;
                         open_widget_edit = widgetId;
                         open_widget_edit_type = intent.getIntExtra("appWidgetType", 0);
@@ -2977,7 +3011,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     }
                     if (mainFragmentsStack.isEmpty() || MessagesController.getInstance(intentAccount[0]).checkCanOpenChat(args, mainFragmentsStack.get(mainFragmentsStack.size() - 1))) {
                         ChatActivity fragment = new ChatActivity(args);
-                        BaseFragment bf = mainFragmentsStack.get(mainFragmentsStack.size() - 1);
+                        BaseFragment bf = mainFragmentsStack.isEmpty() ? null : mainFragmentsStack.get(mainFragmentsStack.size() - 1);
                         if (bf != null && bf.getParentActivity() != null
                                 && bf.getChatsPasswordHelper().isChatLocked(push_user_id)
                                 && bf.getChatsPasswordHelper().shouldRequireBiometricsToOpenChats()
@@ -3026,7 +3060,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                         }
                     }
 
-                    BaseFragment bf = mainFragmentsStack.get(mainFragmentsStack.size() - 1);
+                    BaseFragment bf = mainFragmentsStack.isEmpty() ? null : mainFragmentsStack.get(mainFragmentsStack.size() - 1);
                     if (bf != null && bf.getParentActivity() != null
                             && push_chat_id != 0
                             && bf.getChatsPasswordHelper().isChatLocked(push_chat_id)
@@ -3050,7 +3084,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 args.putInt("enc_id", push_enc_id);
                 if (mainFragmentsStack.isEmpty() || MessagesController.getInstance(intentAccount[0]).checkCanOpenChat(args, mainFragmentsStack.get(mainFragmentsStack.size() - 1))) {
                     ChatActivity fragment = new ChatActivity(args);
-                    BaseFragment bf = mainFragmentsStack.get(mainFragmentsStack.size() - 1);
+                    BaseFragment bf = mainFragmentsStack.isEmpty() ? null : mainFragmentsStack.get(mainFragmentsStack.size() - 1);
                     if (bf != null && bf.getParentActivity() != null
                             && push_enc_id != 0
                             && bf.getChatsPasswordHelper().isEncryptedChat(push_enc_id)

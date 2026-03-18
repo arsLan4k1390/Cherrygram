@@ -160,7 +160,6 @@
     <string name="AP_DisableDividers">Вимкнути роздільники</string>
     <string name="AP_SystemFonts">Використовувати системний шрифт</string>
     <string name="CP_Snowflakes_Header">Сніжинки</string>
-    <string name="CP_PremAndAnim_Header">Анімації та Преміум можливості</string>
     <string name="CP_ProfileReplyBackground">Повідомлення та профіль</string>
     <string name="CP_CustomizeProfile">Кастомізувати профіль</string>
     <string name="CP_ProfileChannelPreview">Особистий канал</string>
@@ -178,7 +177,6 @@
     <string name="CP_ArchiveStories_Desc">Історії будуть автоматично заархівовані та переміщені у ваш архів.</string>
     <string name="CP_CustomWallpapers">Користувацький задній план у чатах</string>
     <string name="CP_CustomWallpapers_Desc">Налаштуйте власні шпалери в чатах/групах/каналах, встановлених преміум-користувачами/прокачаними каналами</string>
-    <string name="CP_DisableAnimAvatars">Вимкнути анімовані аватарки</string>
     <string name="CP_DisableReactionsOverlay">Вимкнути накладання реакцій</string>
     <string name="CP_DisableReactionsOverlay_Desc">Це вимкне накладання що спливає з доступними реакціями</string>
     <string name="CP_DisableReactionAnim">Вимкнути анімацію реакцій</string>
@@ -210,8 +208,6 @@
     <string name="AP_ShowID">Показати ID та DC у профілі</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
-    <string name="CP_Header_Chats">Діалоги</string>
-    <string name="CP_Header_Messages">Повідомлення</string>
     <string name="CP_AutoQuoteReplies">Цитувати відповіді</string>
     <string name="CP_AutoQuoteReplies_Desc">Відправити цитату з текстом всього повідомлення замість звичайної відповіді.</string>
     <string name="CP_TimeOnStick">Приховати час надсилання на наліпках</string>
@@ -237,7 +233,6 @@
     <string name="CP_UnreadBadgeOnBackButton">Показувати лічильник непрочитаних</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Включити лічильник непрочитаних чатів на кнопці «Назад» в відкритому чаті</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Кількість останніх емоджі та наліпок</string>
-    <string name="CP_NoRounding">Вимкнути округлення чисел</string>
     <string name="CP_DeleteForAll">Використовувати \"Видалити для всіх\" за замовчуванням</string>
     <string name="CP_DeleteForAll_Desc">Відмітка буде автоматично перевірятися при видаленні повідомлень.</string>
     <string name="CP_ForwardMsgDate">Показувати дату пересланого повідомлення</string>
@@ -306,8 +301,6 @@
     <string name="CP_AutoPauseVideo_Desc">При блокуванні екрана або перемиканні в фоновий режим</string>
     <string name="CP_DisableVibration">Вимкнути вібрацію</string>
     <string name="CP_VideoSeekDuration">Подвійний тап для перемотування відео (секунди)</string>
-    <string name="CP_Header_Notification">Сповіщення</string>
-    <string name="CP_NotificationSound">Звук сповіщення</string>
     <string name="CP_VibrateInChats">Вібрація в чаті</string>
     <string name="CP_VibrateInChats_Desc">Коротка вібрація при отриманні повідомлення в чатах</string>
     <string name="CP_SilenceNonContacts">Заглушити не-контакти</string>
@@ -352,14 +345,11 @@
     <string name="EP_CustomChat_Selected_Title">замість</string>
     <string name="EP_Network">Мережа</string>
     <string name="EP_DownloadSpeedBoost">Збільшення швидкості завантаження</string>
-    <string name="EP_DownloadSpeedBoostNone">Вимкнено</string>
-    <string name="EP_DownloadSpeedBoostAverage">Увімкнено</string>
     <string name="EP_DownloadSpeedBoostExtreme">Екстра</string>
     <string name="EP_UploadloadSpeedBoost">Збільшення швидкості вивантаження</string>
     <string name="EP_SlowNetworkMode">Режим повільної мережі</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_PrivacyAndSecurity">Конфіденційність і безпека</string>
     <string name="SP_Header_Privacy">Приватність</string>
     <string name="SP_NoProxyPromo">Не показувати спонсора проксі</string>
     <string name="SP_GoogleAnalytics_Desc">Якщо ввімкнути це, усі збої програми та статистичні дані надсилатимуться на \"console.firebase.google.com\" для подальшого перегляду розробником.</string>

@@ -71,8 +71,6 @@ class SolarIconReplace : BaseIconReplace() {
         R.drawable.input_calendar2 to R.drawable.input_calendar2_solar,
         R.drawable.input_forward to R.drawable.input_forward_solar,
         R.drawable.input_keyboard to R.drawable.input_keyboard_solar,
-        R.drawable.input_mic to R.drawable.input_mic_solar,
-        R.drawable.input_mic_pressed to R.drawable.input_mic_pressed_solar,
         R.drawable.input_notify_off to R.drawable.msg_bell_mute_solar,
         R.drawable.input_notify_on to R.drawable.msg_notifications_solar,
         R.drawable.input_reply to R.drawable.input_reply_solar,

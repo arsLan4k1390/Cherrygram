@@ -9,9 +9,6 @@
 
 package uz.unnarsx.cherrygram.camera;
 
-import static android.hardware.camera2.CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS;
-import static android.hardware.camera2.CameraMetadata.LENS_FACING_BACK;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.camera2.CameraCharacteristics;
@@ -176,7 +173,7 @@ public class CameraXUtils {
                 if (cameraCharacteristics == null) continue;
 
                 Integer lensFacing = cameraCharacteristics.get(CameraCharacteristics.LENS_FACING);
-                if (lensFacing == null || lensFacing != LENS_FACING_BACK) continue;
+                if (lensFacing == null || lensFacing != CameraCharacteristics.LENS_FACING_BACK) continue;
 
                 availableBackCamera++;
                 ZoomState zoomState = cameraInfo.getZoomState().getValue();
@@ -185,7 +182,7 @@ public class CameraXUtils {
                     foundWideAngleOnPrimaryCamera = true;
                 }
 
-                float[] listLensAngle = cameraCharacteristics.get(LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
+                float[] listLensAngle = cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS);
                 if (listLensAngle != null && listLensAngle.length > 0 && listLensAngle[0] < 3.0f && listLensAngle[0] < lowestAngledCamera) {
                     lowestAngledCamera = listLensAngle[0];
                     cameraId = camera2Info.getCameraId();

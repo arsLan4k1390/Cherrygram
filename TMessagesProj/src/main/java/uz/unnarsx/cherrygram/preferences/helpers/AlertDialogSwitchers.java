@@ -27,8 +27,8 @@ import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Components.LayoutHelper;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.preferences.cells.StickerSliderCell;
-import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSliderPreference;
 
 public class AlertDialogSwitchers {
 
@@ -45,9 +45,9 @@ public class AlertDialogSwitchers {
 
         TextCheckCell largerVoiceMessagesLayout = new TextCheckCell(context, 23, false, fragment.getResourceProvider());
         largerVoiceMessagesLayout.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector, fragment.getResourceProvider()), 100, 0));
-        largerVoiceMessagesLayout.setTextAndValueAndCheck(getString(R.string.CP_LargeVoiceMessages), getString(R.string.CP_LargeVoiceMessages_Desc), CherrygramChatsConfig.INSTANCE.getLargerVoiceMessagesLayout(), true, true);
+        largerVoiceMessagesLayout.setTextAndValueAndCheck(getString(R.string.CP_LargeVoiceMessages), getString(R.string.CP_LargeVoiceMessages_Desc), CherrygramMessagesConfig.INSTANCE.getLargerVoiceMessagesLayout(), true, true);
         largerVoiceMessagesLayout.setOnClickListener(v -> {
-            CherrygramChatsConfig.INSTANCE.setLargerVoiceMessagesLayout(!CherrygramChatsConfig.INSTANCE.getLargerVoiceMessagesLayout());
+            CherrygramMessagesConfig.INSTANCE.setLargerVoiceMessagesLayout(!CherrygramMessagesConfig.INSTANCE.getLargerVoiceMessagesLayout());
             largerVoiceMessagesLayout.setChecked(!largerVoiceMessagesLayout.isChecked());
         });
         linearLayout.addView(largerVoiceMessagesLayout);
@@ -61,19 +61,19 @@ public class AlertDialogSwitchers {
             HeaderCell headerCell = new HeaderCell(fragment.getContext(), fragment.getResourceProvider());
             TextInfoPrivacyCell textInfoPrivacyCell = new TextInfoPrivacyCell(fragment.getContext());
             StickerSliderCell stickerSliderCell = new StickerSliderCell(fragment.getContext(), fragment.getResourceProvider());
-            TGKitSliderPreference.TGSLContract contract;
+            StickerSliderCell.TGSLContract contract;
             switch (a) {
                 case 0: {
                     headerCell.setText(getString(R.string.CP_Slider_MediaAmplifier), false);
-                    contract = new TGKitSliderPreference.TGSLContract() {
+                    contract = new StickerSliderCell.TGSLContract() {
                         @Override
                         public void setValue(int value) {
-                            CherrygramChatsConfig.INSTANCE.setSlider_mediaAmplifier(value);
+                            CherrygramMessagesConfig.INSTANCE.setSlider_mediaAmplifier(value);
                         }
 
                         @Override
                         public int getPreferenceValue() {
-                            return CherrygramChatsConfig.INSTANCE.getSlider_mediaAmplifier();
+                            return CherrygramMessagesConfig.INSTANCE.getSlider_mediaAmplifier();
                         }
 
                         @Override
@@ -86,7 +86,7 @@ public class AlertDialogSwitchers {
                             return 100;
                         }
                     };
-                    contract.setValue(CherrygramChatsConfig.INSTANCE.getSlider_mediaAmplifier());
+                    contract.setValue(CherrygramMessagesConfig.INSTANCE.getSlider_mediaAmplifier());
                     textInfoPrivacyCell.setText(getString(R.string.CP_Slider_MediaAmplifier_Hint));
                     stickerSliderCell.setContract(contract);
 
@@ -97,15 +97,15 @@ public class AlertDialogSwitchers {
                 }
                 case 1: {
                     headerCell.setText(getString(R.string.AccDescrStickers), false);
-                    contract = new TGKitSliderPreference.TGSLContract() {
+                    contract = new StickerSliderCell.TGSLContract() {
                         @Override
                         public void setValue(int value) {
-                            CherrygramChatsConfig.INSTANCE.setSlider_stickerAmplifier(value);
+                            CherrygramMessagesConfig.INSTANCE.setSlider_stickerAmplifier(value);
                         }
 
                         @Override
                         public int getPreferenceValue() {
-                            return CherrygramChatsConfig.INSTANCE.getSlider_stickerAmplifier();
+                            return CherrygramMessagesConfig.INSTANCE.getSlider_stickerAmplifier();
                         }
 
                         @Override
@@ -118,21 +118,21 @@ public class AlertDialogSwitchers {
                             return 100;
                         }
                     };
-                    contract.setValue(CherrygramChatsConfig.INSTANCE.getSlider_stickerAmplifier());
+                    contract.setValue(CherrygramMessagesConfig.INSTANCE.getSlider_stickerAmplifier());
                     stickerSliderCell.setContract(contract);
                     break;
                 }
                 case 2: {
                     headerCell.setText(getString(R.string.AccDescrGIFs), false);
-                    contract = new TGKitSliderPreference.TGSLContract() {
+                    contract = new StickerSliderCell.TGSLContract() {
                         @Override
                         public void setValue(int value) {
-                            CherrygramChatsConfig.INSTANCE.setSlider_gifsAmplifier(value);
+                            CherrygramMessagesConfig.INSTANCE.setSlider_gifsAmplifier(value);
                         }
 
                         @Override
                         public int getPreferenceValue() {
-                            return CherrygramChatsConfig.INSTANCE.getSlider_gifsAmplifier();
+                            return CherrygramMessagesConfig.INSTANCE.getSlider_gifsAmplifier();
                         }
 
                         @Override
@@ -145,7 +145,7 @@ public class AlertDialogSwitchers {
                             return 100;
                         }
                     };
-                    contract.setValue(CherrygramChatsConfig.INSTANCE.getSlider_gifsAmplifier());
+                    contract.setValue(CherrygramMessagesConfig.INSTANCE.getSlider_gifsAmplifier());
                     stickerSliderCell.setContract(contract);
                     break;
                 }
@@ -182,11 +182,11 @@ public class AlertDialogSwitchers {
         for (int a = 0; a < count; a++) {
             HeaderCell headerCell = new HeaderCell(fragment.getContext(), fragment.getResourceProvider());
             StickerSliderCell stickerSliderCell = new StickerSliderCell(fragment.getContext(), fragment.getResourceProvider());
-            TGKitSliderPreference.TGSLContract contract;
+            StickerSliderCell.TGSLContract contract;
             switch (a) {
                 case 0: {
                     headerCell.setText(getString(R.string.Emoji), false);
-                    contract = new TGKitSliderPreference.TGSLContract() {
+                    contract = new StickerSliderCell.TGSLContract() {
                         @Override
                         public void setValue(int value) {
                             CherrygramChatsConfig.INSTANCE.setSlider_RecentEmojisAmplifier(value);
@@ -213,7 +213,7 @@ public class AlertDialogSwitchers {
                 }
                 case 1: {
                     headerCell.setText(getString(R.string.AccDescrStickers), false);
-                    contract = new TGKitSliderPreference.TGSLContract() {
+                    contract = new StickerSliderCell.TGSLContract() {
                         @Override
                         public void setValue(int value) {
                             CherrygramChatsConfig.INSTANCE.setSlider_RecentStickersAmplifier(value);

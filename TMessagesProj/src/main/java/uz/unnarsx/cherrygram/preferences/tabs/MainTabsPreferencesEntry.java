@@ -27,8 +27,6 @@ import androidx.core.graphics.ColorUtils;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.Cells.NotificationsCheckCell;
-import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
@@ -40,6 +38,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.core.ui.mainTabs.MainTabsManager;
+import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class MainTabsPreferencesEntry extends UniversalFragment {
 
@@ -47,6 +46,7 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
     private final int tabsPreviewRow = 2;
     private final int openSettingsBySwipeRow = 3;
     private final int showTabTitleRow = 4;
+    private final int forceOpenChats = 5;
 
     private MainTabsPreviewCell tabsView;
     private ArrayList<MainTabsManager.Tab> tabs;
@@ -85,9 +85,8 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
     @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(getString(R.string.CP_MainTabs_Layout)));
-
         if (CherrygramAppearanceConfig.INSTANCE.getShowMainTabs()) {
-            UItem enableTabs = UItem.asButtonCheck(
+            UItem enableTabs = SettingsHelper.asSwitchCG(
                     enableTabsRow,
                     getString(R.string.CP_MainTabs_ShowTabs),
                     getString(R.string.CP_MainTabs_DoubleTap_Desc)
@@ -95,19 +94,11 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
             enableTabs.hideDivider = true;
             items.add(enableTabs);
         } else {
-            items.add(
-                    UItem.asCheck(
-                            enableTabsRow,
-                            getString(R.string.CP_MainTabs_ShowTabs)
-                    ).setChecked(CherrygramAppearanceConfig.INSTANCE.getShowMainTabs())
+            items.add(SettingsHelper.asSwitchCG(enableTabsRow, getString(R.string.CP_MainTabs_ShowTabs))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getShowMainTabs())
             );
-
-            items.add(
-                    UItem.asButtonCheck(
-                            openSettingsBySwipeRow,
-                            getString(R.string.CP_MainTabs_OpenSettings),
-                            getString(R.string.CP_MainTabs_OpenSettings_Desc)
-                    ).setChecked(CherrygramAppearanceConfig.INSTANCE.getOpenSettingsBySwipe())
+            items.add(SettingsHelper.asSwitchCG(openSettingsBySwipeRow, getString(R.string.CP_MainTabs_OpenSettings), getString(R.string.CP_MainTabs_OpenSettings_Desc))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getOpenSettingsBySwipe())
             );
         }
 
@@ -115,23 +106,26 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
 
         tabsView = new MainTabsPreviewCell(getContext());
         tabsView.setEditMode(true);
-        tabsView.setTabs(tabs, getContext(), getResourceProvider(), currentAccount, true);
+        tabsView.setTabs(tabs, getContext(), getResourceProvider(), currentAccount, true, true);
 
         previewContainer.addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.CENTER, dp(5), 0, dp(5), 0));
 
         if (CherrygramAppearanceConfig.INSTANCE.getShowMainTabs()) {
-            items.add(UItem.asCustomWithBackground(tabsPreviewRow, previewContainer, 58));
-            UItem space = UItem.asSpaceCG(dp(12));
+            items.add(UItem.asShadow(null));
+            items.add(UItem.asHeader(getString(R.string.AP_Header_Appearance)));
+            UItem space = SettingsHelper.asSpaceCG(dp(8));
             space.id = -1;
             space.transparent = true;
             items.add(space);
+            items.add(SettingsHelper.asCustomWithBackground(tabsPreviewRow, previewContainer, 58));
+            items.add(SettingsHelper.asSwitchCG(showTabTitleRow, getString(R.string.CP_MainTabs_ShowTabsTitle))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle())
+            );
             items.add(UItem.asShadow(getString(R.string.CP_MainTabs_Layout_Desc)));
 
-            items.add(
-                    UItem.asCheck(
-                            showTabTitleRow,
-                            getString(R.string.CP_MainTabs_ShowTabsTitle)
-                    ).setChecked(CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle())
+            items.add(UItem.asHeader(getString(R.string.ActionsChartTitle)));
+            items.add(SettingsHelper.asSwitchCG(forceOpenChats, getString(R.string.CP_MainTabs_ForceOpenChats), getString(R.string.CP_MainTabs_ForceOpenChats_Desc))
+                    .setChecked(CherrygramAppearanceConfig.INSTANCE.getMainTabsForceOpenChats())
             );
         }
     }
@@ -172,11 +166,10 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
     protected void onClick(UItem item, View view, int position, float x, float y) {
         if (item.id == enableTabsRow) {
             CherrygramAppearanceConfig.INSTANCE.setShowMainTabs(!CherrygramAppearanceConfig.INSTANCE.getShowMainTabs());
-            if (view instanceof NotificationsCheckCell) ((NotificationsCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getShowMainTabs());
-            if (view instanceof TextCheckCell) ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getShowMainTabs());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getShowMainTabs());
 
             if (!CherrygramAppearanceConfig.INSTANCE.getShowMainTabs()) {
-                CherrygramAppearanceConfig.INSTANCE.setMainTabsOrder("SETTINGS,CHATS,CONTACTS,!CALLS,!PROFILE,SEARCH");
+                resetMainTabsOrder();
             }
             listView.adapter.update(true);
 
@@ -188,17 +181,20 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
             }*/
         } else if (item.id == openSettingsBySwipeRow) {
             CherrygramAppearanceConfig.INSTANCE.setOpenSettingsBySwipe(!CherrygramAppearanceConfig.INSTANCE.getOpenSettingsBySwipe());
-            ((NotificationsCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getOpenSettingsBySwipe());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getOpenSettingsBySwipe());
 
-            CherrygramAppearanceConfig.INSTANCE.setMainTabsOrder("SETTINGS,CHATS,CONTACTS,!CALLS,!PROFILE,SEARCH");
+            resetMainTabsOrder();
         } else if (item.id == showTabTitleRow) {
             CherrygramAppearanceConfig.INSTANCE.setShowMainTabsTitle(!CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle());
-            ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle());
 
             tabsView.removeAllViews();
-            tabsView.setTabs(tabs, getContext(), getResourceProvider(), currentAccount, true);
+            tabsView.setTabs(tabs, getContext(), getResourceProvider(), currentAccount, true, true);
 
             postUpdateTabsNotification();
+        } else if (item.id == forceOpenChats) {
+            CherrygramAppearanceConfig.INSTANCE.setMainTabsForceOpenChats(!CherrygramAppearanceConfig.INSTANCE.getMainTabsForceOpenChats());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getMainTabsForceOpenChats());
         }
     }
 
@@ -223,11 +219,20 @@ public class MainTabsPreferencesEntry extends UniversalFragment {
         }
     }
 
+    private void resetMainTabsOrder() {
+        CherrygramAppearanceConfig.INSTANCE.setMainTabsOrder("SETTINGS,CHATS,!PROFILE,!CONTACTS,!CALLS,SEARCH");
+        CherrygramAppearanceConfig.INSTANCE.setShowSearchInTabs(true);
+        tabs.clear();
+        tabs.addAll(MainTabsManager.INSTANCE.getAllTabs());
+        postUpdateTabsNotification();
+    }
+
     private void postUpdateTabsNotification() {
         new Handler(Looper.getMainLooper()).postDelayed(() ->
                 NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cgTabsUpdated),
                 200
         );
+        getParentLayout().rebuildAllFragmentViews(false, false);
     }
 
 }

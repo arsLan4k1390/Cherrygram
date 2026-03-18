@@ -60,7 +60,14 @@ public class DeeplinkHelper {
                     CherrygramPreferencesNavigator.INSTANCE.createCamera(fragment);
                     return;
                 }
-                case DeepLinksRepo.CG_Chats -> fragment = CherrygramPreferencesNavigator.INSTANCE.createChats();
+                case DeepLinksRepo.CG_Chats -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createChats(fragment);
+                    return;
+                }
+                case DeepLinksRepo.CG_Messages -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createMessages(fragment);
+                    return;
+                }
                 case DeepLinksRepo.CG_Message_Menu, "cg_messages_menu", "cg_ios_menu" -> {
                     CherrygramPreferencesNavigator.INSTANCE.createMessageMenu(fragment);
                     return;
@@ -74,7 +81,7 @@ public class DeeplinkHelper {
                     return;
                 }
                 case DeepLinksRepo.CG_Support_Force, "cg_donate_force", "cg_donates_force", "cg_support_f", "cg_badge_force" -> {
-                    CherrygramPreferencesNavigator.INSTANCE.createDonateForce(fragment);
+                    CherrygramPreferencesNavigator.INSTANCE.createDonate(fragment, true);
                     return;
                 }
                 case DeepLinksRepo.CG_Stars -> {
@@ -105,7 +112,10 @@ public class DeeplinkHelper {
                     CherrygramPreferencesNavigator.INSTANCE.createGemini(fragment);
                     return;
                 }
-                case DeepLinksRepo.CG_General -> fragment = CherrygramPreferencesNavigator.INSTANCE.createGeneral();
+                case DeepLinksRepo.CG_General -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createGeneral(fragment);
+                    return;
+                }
                 case DeepLinksRepo.CG_Messages_And_Profiles -> {
                     CherrygramPreferencesNavigator.INSTANCE.createMessagesAndProfiles(fragment);
                     return;
@@ -115,7 +125,10 @@ public class DeeplinkHelper {
                     unknown.run();
                     return;
                 }
-                case DeepLinksRepo.CG_Privacy, "cg_security" -> fragment = CherrygramPreferencesNavigator.INSTANCE.createPrivacyAndSecurity();
+                case DeepLinksRepo.CG_Privacy, "cg_security" -> {
+                    CherrygramPreferencesNavigator.INSTANCE.createPrivacy(fragment);
+                    return;
+                }
                 case DeepLinksRepo.CG_Restart, "cg_reboot", "restart", "reboot" -> {
                     CGBulletinCreator.INSTANCE.createRestartBulletin(fragment);
                     return;
@@ -184,6 +197,7 @@ public class DeeplinkHelper {
 
         public static final String CG_Chats = "cg_chats";
         public static final String CG_Gemini = "cg_gemini";
+        public static final String CG_Messages = "cg_messages";
         public static final String CG_Message_Menu = "cg_message_menu";
         public static final String CG_Message_Filters = "cg_filters";
 

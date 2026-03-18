@@ -94,7 +94,7 @@ import java.util.List;
 
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.core.VibrateUtil;
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 public class ActionBarLayout extends FrameLayout implements INavigationLayout, FloatingDebugProvider {
 
@@ -954,7 +954,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        return animationInProgress || previewOpenAnimationInProgress || checkTransitionAnimation() || onTouchEvent(ev);
+        return animationInProgress || checkTransitionAnimation() || onTouchEvent(ev);
     }
 
     @Override
@@ -1008,7 +1008,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             bottomSheetTabsClip.clip(canvas, withShadow, isKeyboardVisible, getWidth(), (int) getY() + getHeight(), 1.0f);
             withShadow = false;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isSheet && !isTransitionAnimationInProgress() && !animationInProgress && (translationX != 0 || overrideWidthOffset != -1)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isSheet && (!USE_SPRING_ANIMATION || !isTransitionAnimationInProgress() && !animationInProgress) && (translationX != 0 || overrideWidthOffset != -1)) {
             if (child == containerView) {
                 final WindowInsets insets = getRootWindowInsets();
                 if (insets != null) {
@@ -1060,7 +1060,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         }
 
         final int restoreCount = canvas.save();
-        if (!isTransitionAnimationInProgress() && !inPreviewMode && !previewOpenAnimationInProgress) {
+        if (!isTransitionAnimationInProgress() && !inPreviewMode) {
             canvas.clipRect(clipLeft, 0, clipRight, getHeight());
         }
         if ((inPreviewMode || transitionAnimationPreviewMode) && child == containerView) {
@@ -1131,11 +1131,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
 
         if (translationX != 0 || overrideWidthOffset != -1) {
             int widthOffset = overrideWidthOffset != -1 ? overrideWidthOffset : width - translationX;
-            int top = 0;
-            if (isActionBarInCrossfade()) {
-                top += getPaddingTop();
-                top += AndroidUtilities.lerp(getBackgroundFragment().getActionBar().getHeight(), getLastFragment().getActionBar().getHeight(), 1f - widthOffset / (float) width);
-            }
+            int top = getTop(widthOffset, (float) width);
             if (child == containerView) {
                 final int alpha = USE_SPRING_ANIMATION ? MathUtils.clamp(255 * widthOffset / width, 0, 255) : MathUtils.clamp(255 * widthOffset / dp(20), 0, 255);
                 if (alpha > 0) {
@@ -1369,6 +1365,7 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
         BaseFragment currentFragment = fragmentsStack.get(fragmentsStack.size() - 1);
         currentFragment.prepareFragmentToSlide(true, true);
         lastFragment.prepareFragmentToSlide(false, true);
+
         if (USE_ACTIONBAR_CROSSFADE) {
             swipeProgress = 0f;
             invalidateActionBars();
@@ -1650,12 +1647,6 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             });
             currentSpringAnimation.addEndListener((animation, canceled, value, velocity) -> {
                 predictiveBackInProgress = false;
-                containerView.setAlpha(1.0f);
-
-                if (containerViewBack != null) {
-                    containerViewBack.setScaleX(1.0f);
-                    containerViewBack.setScaleY(1.0f);
-                }
                 onSlideAnimationEnd(backAnimation);
             });
             currentSpringAnimation.start();
@@ -3523,14 +3514,9 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
     }
 
     @Override
-    public void setFragmentPanTranslationOffset(int offset, BaseFragment fragment) {
-        var view = fragment.getFragmentView();
-        if (view == null) {
-            return;
-        }
-        var holderView = view.getParent();
-        if (holderView instanceof LayoutContainer) {
-            ((LayoutContainer) holderView).setFragmentPanTranslationOffset(offset);
+    public void setFragmentPanTranslationOffset(int offset) {
+        if (containerView != null) {
+            containerView.setFragmentPanTranslationOffset(offset);
         }
     }
 
@@ -3799,38 +3785,46 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
     /** Cherrygram start */
     private SpringAnimation currentSpringAnimation;
 
-    private final boolean USE_SPRING_ANIMATION = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING;
+    private final boolean USE_SPRING_ANIMATION = CherrygramCoreConfig.INSTANCE.getSpringAnimation() == CherrygramCoreConfig.ANIMATION_SPRING;
     private final float SPRING_STIFFNESS = 700f;
     private final float SPRING_STIFFNESS_PREVIEW = 650f;
     private final float SPRING_STIFFNESS_PREVIEW_OUT = 800f;
     private final float SPRING_STIFFNESS_PREVIEW_EXPAND = 750f;
     private final float SPRING_MULTIPLIER = 1000f;
-    private final boolean USE_ACTIONBAR_CROSSFADE = CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING && CherrygramExperimentalConfig.INSTANCE.getActionbarCrossfade();
+    private final boolean USE_ACTIONBAR_CROSSFADE = USE_SPRING_ANIMATION && CherrygramCoreConfig.INSTANCE.getActionbarCrossfade();
 
     private float swipeProgress;
     private MenuDrawable menuDrawable;
 
     private int getOpenDelay() {
-        return CherrygramExperimentalConfig.INSTANCE.getSpringAnimation() == CherrygramExperimentalConfig.ANIMATION_SPRING || CherrygramChatsConfig.INSTANCE.getCenterChatTitle() ? 100 : 250;
-    }
-
-    @Override
-    public boolean isActionBarInCrossfade() {
-        boolean crossfadeNoFragments = SharedConfig.animationsEnabled() && USE_ACTIONBAR_CROSSFADE && !isInPreviewMode() && (isSwipeInProgress() || isTransitionAnimationInProgress()) && currentAnimation == null;
-        return crossfadeNoFragments && getLastFragment() != null && getLastFragment().isActionBarCrossfadeEnabled() && getBackgroundFragment() != null && getBackgroundFragment().isActionBarCrossfadeEnabled();
+        return CherrygramCoreConfig.INSTANCE.getSpringAnimation() == CherrygramCoreConfig.ANIMATION_SPRING || CherrygramChatsConfig.INSTANCE.getCenterChatTitle() ? 100 : 250;
     }
 
     private void invalidateActionBars() {
-        if (getLastFragment() != null && getLastFragment().getActionBar() != null) {
-            getLastFragment().getActionBar().invalidate();
+        BaseFragment foregroundFragment = getLastFragment();
+        if (foregroundFragment != null && foregroundFragment.getActionBar() != null) {
+            foregroundFragment.getActionBar().invalidate();
         }
-        if (getBackgroundFragment() != null && getBackgroundFragment().getActionBar() != null) {
-            getBackgroundFragment().getActionBar().invalidate();
+        BaseFragment backgroundFragment = getBackgroundFragment();
+        if (backgroundFragment != null && backgroundFragment.getActionBar() != null) {
+            backgroundFragment.getActionBar().invalidate();
         }
     }
 
+    public boolean isActionBarInCrossfade() {
+        if (!USE_ACTIONBAR_CROSSFADE) {
+            return false;
+        }
+        boolean crossfadeNoFragments = SharedConfig.animationsEnabled() && !isInPreviewMode() && (isSwipeInProgress() || isTransitionAnimationInProgress()) && currentAnimation == null;
+        BaseFragment foregroundFragment = getLastFragment();
+        BaseFragment backgroundFragment = getBackgroundFragment();
+        return crossfadeNoFragments &&
+                foregroundFragment != null && foregroundFragment.isActionBarCrossfadeEnabled() &&
+                backgroundFragment != null && backgroundFragment.isActionBarCrossfadeEnabled();
+    }
+
     @Override
-    public void draw(Canvas canvas) {
+    public void draw(@NonNull Canvas canvas) {
         super.draw(canvas);
 
         if (isActionBarInCrossfade()) {
@@ -3855,17 +3849,23 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             boolean useBackDrawable = false;
             boolean backDrawableReverse = false;
             Float backDrawableForcedProgress = null;
+            BackButtonState bgBackButtonState = backgroundFragment.getBackButtonState();
+            BackButtonState fgBackButtonState = foregroundFragment.getBackButtonState();
+            boolean bgCanDrawMenu = bgBackButtonState == BackButtonState.MENU;
+            boolean fgCanDrawMenu = fgBackButtonState == BackButtonState.MENU;
+            boolean bgCanDrawBack = bgBackButtonState == BackButtonState.BACK;
+            boolean fgCanDrawBack = fgBackButtonState == BackButtonState.BACK ;
 
             if (!AndroidUtilities.isTablet()) {
-                if (backgroundFragment.getBackButtonState() == BackButtonState.MENU && foregroundFragment.getBackButtonState() == BackButtonState.BACK) {
+                if (bgCanDrawMenu && fgCanDrawBack) {
                     useBackDrawable = true;
-                } else if (backgroundFragment.getBackButtonState() == BackButtonState.BACK && foregroundFragment.getBackButtonState() == BackButtonState.MENU) {
+                } else if (bgCanDrawBack && fgCanDrawMenu) {
                     useBackDrawable = true;
                     backDrawableReverse = true;
-                } else if (backgroundFragment.getBackButtonState() == BackButtonState.BACK && foregroundFragment.getBackButtonState() == BackButtonState.BACK) {
+                } else if (bgCanDrawBack && fgCanDrawBack) {
                     useBackDrawable = true;
                     backDrawableForcedProgress = 0f;
-                } else if (backgroundFragment.getBackButtonState() == BackButtonState.MENU && foregroundFragment.getBackButtonState() == BackButtonState.MENU) {
+                } else if (bgCanDrawMenu && fgCanDrawMenu) {
                     useBackDrawable = true;
                     backDrawableForcedProgress = 1f;
                 }
@@ -3908,6 +3908,29 @@ public class ActionBarLayout extends FrameLayout implements INavigationLayout, F
             fgActionBar.onDrawCrossfadeContent(canvas, true, useBackDrawable, swipeProgress);
             canvas.restore();
         }
+    }
+
+    private int getTop(int widthOffset, float width) {
+        int top = 0;
+        if (isActionBarInCrossfade()) {
+            BaseFragment backgroundFragment = getBackgroundFragment();
+            BaseFragment foregroundFragment = getLastFragment();
+            ActionBar bgActionBar = backgroundFragment != null ? backgroundFragment.getActionBar() : null;
+            ActionBar fgActionBar = foregroundFragment != null ? foregroundFragment.getActionBar() : null;
+            if (bgActionBar != null && fgActionBar != null) {
+                top += getPaddingTop();
+                top += AndroidUtilities.lerp(bgActionBar.getHeight(), fgActionBar.getHeight(), 1f - widthOffset / width);
+            }
+        }
+        return top;
+    }
+
+    public BaseFragment getBackgroundFragmentIncludeMainTabs() {
+        BaseFragment backgroundFragment = getBackgroundFragment();
+        if (backgroundFragment instanceof MainTabsActivity) {
+            return ((MainTabsActivity) backgroundFragment).getCurrentVisibleFragment();
+        }
+        return backgroundFragment;
     }
     /** Cherrygram finish */
 

@@ -209,9 +209,9 @@ object BackupHelper {
         val json = JSONObject()
         val keys = setOf(
             // General
-            "CP_NoRounding", "AP_SystemEmoji", "AP_SystemFonts", "AP_Tablet_Mode", "AP_Old_Notification_Icon", "CG_ResidentNotification",
+            "AP_SystemEmoji", "AP_SystemFonts", "AP_Tablet_Mode", "AP_Old_Notification_Icon", "CG_ResidentNotification",
             "CP_HideStories", "CP_ArchiveStoriesFromUsers", "CP_ArchiveStoriesFromChannels", "CP_CustomWallpapers",
-            "CP_DisableAnimAvatars", "CP_DisableReactionsOverlay", "CP_DisableReactionAnim", "CP_DisablePremStickAnim",
+            "CP_DisableReactionsOverlay", "CP_DisableReactionAnim", "CP_DisablePremStickAnim",
             "CP_DisablePremStickAutoPlay", "CP_HideSendAsChannel",
 
             // Appearance
@@ -253,7 +253,7 @@ object BackupHelper {
             // "SP_AskBiometricsToOpenArchive", "SP_AskBiometricsToOpenChat", "SP_AskPinBeforeDelete", "SP_AllowSystemPasscode",
 
             // Experimental
-            "EP_SpringAnimation", "EP_ActionbarCrossfade", "CP_CustomChatForSavedMessages",
+            "CG_SpringAnimation", "CG_ActionbarCrossfade", "CP_CustomChatForSavedMessages",
             "CP_CustomChatIDSM", "EP_DownloadSpeedBoost", "EP_UploadSpeedBoost", "EP_SlowNetworkMode"
         )
 

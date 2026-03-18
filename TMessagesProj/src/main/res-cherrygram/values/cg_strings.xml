@@ -49,6 +49,14 @@
     <string name="CG_SwipeToUnarchive">Swipe left to unarchive</string>
     <!--Telegram Folders Settings-->
 
+    <!--Telegram Passkeys Settings-->
+    <string name="CG_PasskeyLogin">Passkey Login</string>
+    <string name="CG_PasskeyInfo2">This feature only works with password managers that allow the user to manage trust settings for privileged apps, such as **Bitwarden** and **KeePassDX**.</string>
+    <string name="CG_PasskeyUnsupportedTitle">Unsupported password manager</string>
+    <string name="CG_PasskeyUnsupportedMessage">Try other password managers like **Bitwarden** or **KeePassDX**.</string>
+    <string name="CG_PasskeyNoCredentialAvailable">No viable credential is available.</string>
+    <!--Telegram Passkeys Settings-->
+
     <!--Chats screen-->
     <string name="CG_JumpToBeginning">To the beginning</string>
     <string name="CG_DeleteAllFromSelf">Delete own messages</string>
@@ -101,7 +109,9 @@
     <!--Chats screen-->
 
     <!--Misc-->
-    <string name="CG_SafeStars_buy">Buy Stars (Multi-chain &amp; No KYC)</string>
+    <string name="CG_SafeStars_buy">Buy via SafeStars</string>
+    <string name="CG_SafeStars_Desc">Multi-chain &amp; No KYC</string>
+    <string name="CG_SafeStars_BuyPremiumButton">Check on the website</string>
     <string name="CG_SafeStars_buy_Telegram">Buy Stars via Telegram</string>
     <string name="CG_Stats_TOS">By proceeding, you automatically agree to the **Telegram Terms and Conditions** and the **Cherrygram Terms of Service**.</string>
 
@@ -182,15 +192,15 @@
     <string name="AP_ChangeIcon_Sunrise">Sunrise</string>
     <string name="AP_IconReplacement_Solar">Solar Icons by @Design480</string>
     <string name="AP_OneUI_Switch_Style">OneUI Switch Style</string>
-    <string name="AP_SystemEmoji">Use system emoji</string>
+    <string name="AP_SystemEmoji">System emoji</string>
     <string name="AP_ShowPencilIcon">Pencil Icon for Edited Messages</string>
     <string name="AP_CenterTitle">Center title</string>
+    <string name="AP_HideSearchBar">Hide search bar in chats</string>
     <string name="AP_DisableDividers">Disable dividers</string>
-    <string name="AP_SystemFonts">Use system fonts</string>
+    <string name="AP_SystemFonts">System fonts</string>
 
     <string name="CP_Snowflakes_Header">Snowflakes</string>
 
-    <string name="CP_PremAndAnim_Header">Animations and Premium Features</string>
     <string name="CP_ProfileReplyBackground">Messages and profiles</string>
     <string name="CP_CustomizeProfile">Customize profile</string>
     <string name="CP_ProfileChannelPreview">Personal channel</string>
@@ -208,7 +218,6 @@
     <string name="CP_ArchiveStories_Desc">Stories will be automatically archived and moved to your archive.</string>
     <string name="CP_CustomWallpapers">Custom background in chats</string>
     <string name="CP_CustomWallpapers_Desc">Configure custom wallpapers in chats/groups/channels set by premium users/boosted channels</string>
-    <string name="CP_DisableAnimAvatars">Disable animated avatars</string>
     <string name="CP_DisableReactionsOverlay">Disable reactions overlay</string>
     <string name="CP_DisableReactionsOverlay_Desc">This will disable popup overlay with available reactions</string>
     <string name="CP_DisableReactionAnim">Disable reaction animation</string>
@@ -236,6 +245,8 @@
     <string name="CP_MainTabs_Layout_Desc">Tap to enable/disable, hold and drag to reorder.</string>
     <string name="CP_MainTabs_DoubleTap_Desc">Double-tap a chat tab to open "Saved Messages". Double-tap the profile tab (or Settings if the profile tab is hidden) to switch accounts.</string>
     <string name="CP_MainTabs_ShowTabsTitle">Show tabs titles</string>
+    <string name="CP_MainTabs_ForceOpenChats">Always search in chats</string>
+    <string name="CP_MainTabs_ForceOpenChats_Desc">When enabled, the search button always opens chat search. When disabled, it opens context search for the current screen (e.g., Settings or Contacts).</string>
 
     <string name="AP_HideUserPhone_Show">Tap to show</string>
     <string name="AP_HideUserPhone_Copy">Hold to copy</string>
@@ -244,8 +255,6 @@
     <!--Appearance Preferences-->
 
     <!--Chats Preferences-->
-    <string name="CP_Header_Chats">Chats</string>
-    <string name="CP_Header_Messages">Messages</string>
     <string name="CP_AutoQuoteReplies">Quote replies</string>
     <string name="CP_AutoQuoteReplies_Desc">Send a quote with the text of the entire message instead of a normal reply. Does not work in topics.</string>
     <string name="CP_TimeOnStick">Hide time on stickers in chat</string>
@@ -274,8 +283,6 @@
     <string name="CP_UnreadBadgeOnBackButton">Show unread chats counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Enable unread chats counter on back button in opened chat</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Recent emojis and stickers counter</string>
-    <string name="CP_NoRounding">Disable number rounding</string>
-    <string name="CP_NoRoundingSummary" translatable="false">1.2K -> 1,234</string>
     <string name="CP_DeleteForAll">Use \"Delete for all\" by default</string>
     <string name="CP_DeleteForAll_Desc">Checkbox will be automatically checked while deleting messages.</string>
     <string name="CP_ForwardMsgDate">Show forwarded message date</string>
@@ -340,6 +347,7 @@
         If a match is found inside the link, the entire message will be automatically hidden under a spoiler, regardless of whether the keyword appears in the visible text or not.
         \n\nThis helps protect against disguised spam, hidden advertising, or phishing domains that could otherwise bypass regular text-based filtering.
     </string>
+    <string name="CP_Message_Filtering_FilterBlocked">Filter messages from blocked users</string>
     <string name="CP_Message_Filtering_HideBlocked">Hide messages from blocked users</string>
     <string name="CP_Message_Filtering_HideBlockedDesc">When enabled, all messages and forwarded messages from blocked users will automatically be hidden under a spoiler.</string>
     <string name="CP_Message_Filtering_HideAll">Entire message spoiler</string>
@@ -361,8 +369,6 @@
     <string name="CP_DisableVibration">Disable vibration</string>
     <string name="CP_VideoSeekDuration">Double-tap to seek video (seconds)</string>
 
-    <string name="CP_Header_Notification">Notifications</string>
-    <string name="CP_NotificationSound">Notification sound</string>
     <string name="CP_VibrateInChats">In-chat vibration</string>
     <string name="CP_VibrateInChats_Desc">Make a short vibration when you receive a message in chats</string>
     <string name="CP_SilenceNonContacts">Silence non-contacts</string>
@@ -398,6 +404,9 @@
     <string name="CP_ZoomSliderPosition_Right">Right</string>
     <string name="CP_ZoomSliderPosition_Left">Left</string>
     <string name="CP_Exposure">Exposure</string>
+    <string name="CP_Brightness">Brightness</string>
+    <string name="CP_Flash_Hint">Hold the flash button to adjust the color and brightness of the flash.</string>
+    <string name="CP_Flash_Hint_Rear">Hold the flash button to adjust the brightness of the flash.</string>
     <!--Camera Preferences-->
 
     <!--Experimental Preferences-->
@@ -413,15 +422,12 @@
     <string name="EP_CustomChat_Selected_Title">instead of</string>
     <string name="EP_Network">Network</string>
     <string name="EP_DownloadSpeedBoost">Download speed boost</string>
-    <string name="EP_DownloadSpeedBoostNone">Off</string>
-    <string name="EP_DownloadSpeedBoostAverage">On</string>
     <string name="EP_DownloadSpeedBoostExtreme">Extreme</string>
     <string name="EP_UploadloadSpeedBoost">Upload speed boost</string>
     <string name="EP_SlowNetworkMode">Slow network mode</string>
     <!--Experimental Preferences-->
 
     <!--Security Preferences-->
-    <string name="SP_Category_PrivacyAndSecurity">Privacy and Security</string>
     <string name="SP_Header_Privacy">Privacy</string>
     <string name="SP_NoProxyPromo">Don\'t show proxy sponsor</string>
     <string name="SP_GoogleAnalytics" translatable="false">Google Analytics</string>

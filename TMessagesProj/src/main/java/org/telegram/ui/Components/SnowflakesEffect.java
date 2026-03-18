@@ -176,7 +176,10 @@ public class SnowflakesEffect {
                 final float h = particle.type == 0 ? (texSize / 2f) : (texSize / 2f * particle.scale);
                 final float tx = particle.type == 0 ? texSize : 0;
 
-                batchParticlesBuffer.setParticleColor(a, ColorUtils.setAlphaComponent(color, (int) (255 * particle.alpha)));
+                int alpha = (int) (255f * particle.alpha);
+                alpha = Math.max(0, Math.min(255, alpha));
+
+                batchParticlesBuffer.setParticleColor(a, ColorUtils.setAlphaComponent(color, alpha));
                 batchParticlesBuffer.setParticleVertexCords(a, x - h, y - h, x + h, y + h);
                 batchParticlesBuffer.setParticleTextureCords(a, tx, 0, tx + texSize, texSize);
             }

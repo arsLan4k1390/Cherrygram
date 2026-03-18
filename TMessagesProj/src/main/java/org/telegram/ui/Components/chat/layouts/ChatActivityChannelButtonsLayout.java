@@ -35,7 +35,9 @@ public class ChatActivityChannelButtonsLayout extends FrameLayout implements Fac
     public static final int BUTTON_GIFT = 1;
     public static final int BUTTON_DIRECT = 2;
     public static final int BUTTON_GIGA_GROUP_INFO = 3;
-    private static final int BUTTONS_COUNT = 4;
+    public static final int BUTTON_MUTE = 4;
+    public static final int BUTTON_UNMUTE = 5;
+    private static final int BUTTONS_COUNT = 6;
 
     private final ButtonHolder[] buttonHolders = new ButtonHolder[BUTTONS_COUNT];
     private final OnClickListener[] onClickListeners = new OnClickListener[BUTTONS_COUNT];
@@ -47,12 +49,15 @@ public class ChatActivityChannelButtonsLayout extends FrameLayout implements Fac
         R.drawable.msg_search,
         R.drawable.input_gift_s,
         R.drawable.input_message,
-        R.drawable.msg_help
+        R.drawable.msg_help,
+        R.drawable.msg_mute,
+        R.drawable.msg_unmute
     };
     private static final int[] buttonsOrderLeft = new int[] {
         BUTTON_GIFT,
         BUTTON_DIRECT,
-        BUTTON_GIGA_GROUP_INFO
+        BUTTON_GIGA_GROUP_INFO,
+        BUTTON_MUTE, BUTTON_UNMUTE
     };
     private static final int[] buttonsOrderRight = new int[] {
         BUTTON_SEARCH

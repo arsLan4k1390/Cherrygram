@@ -12,6 +12,7 @@ package uz.unnarsx.cherrygram.chats.ui;
 import android.app.Activity;
 import android.graphics.RenderEffect;
 import android.graphics.Shader;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.view.View;
 import android.view.Window;
@@ -31,21 +32,30 @@ public class WindowBlurHelper {
             Activity activity,
             boolean enable,
             boolean hideStatusBar,
-            float windowBlurRadius
+            float windowBlurRadius,
+            float windowDimAlpha
     ) {
         if (activity == null) return;
 
         Window window = activity.getWindow();
+        View root = window.getDecorView();
 
         hideStatusBar(window, hideStatusBar);
 
-        View root = window.getDecorView();
         if (enable) {
             root.setRenderEffect(
                     RenderEffect.createBlurEffect(windowBlurRadius, windowBlurRadius, Shader.TileMode.DECAL)
             );
+
+            // --------------------------
+            // Dim (затемнение)
+            // --------------------------
+            int alpha = (int) (Math.max(0f, Math.min(1f, windowDimAlpha)) * 255);
+            root.setForeground(new ColorDrawable(alpha << 24));
+
         } else {
             root.setRenderEffect(null);
+            root.setForeground(null);
         }
     }
 

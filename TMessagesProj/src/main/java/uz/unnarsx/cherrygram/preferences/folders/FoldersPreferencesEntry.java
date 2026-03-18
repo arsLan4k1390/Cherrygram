@@ -20,9 +20,6 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
-import org.telegram.ui.Cells.NotificationsCheckCell;
-import org.telegram.ui.Cells.TextCell;
-import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
@@ -35,19 +32,20 @@ import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
 import uz.unnarsx.cherrygram.preferences.folders.cells.FoldersPreviewCell;
+import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class FoldersPreferencesEntry extends UniversalFragment {
 
     protected FoldersPreviewCell foldersPreviewCell;
 
-    private final int foldersAtBottomRow = 1;
-    private final int folderNameAppHeaderRow = 2;
-    private final int hideAllChatsTabRow = 3;
+    private final int hideAllChatsTabRow = 1;
 
-    private final int hideCounterRow = 4;
-    private final int tabIconTypeRow = 5;
-    private final int addStrokeRow = 6;
+    private final int hideCounterRow = 2;
+    private final int tabIconTypeRow = 3;
+    private final int addStrokeRow = 4;
 
+    private final int folderNameAppHeaderRow = 5;
+    private final int foldersAtBottomRow = 6;
 
     @Override
     public View createView(Context context) {
@@ -65,81 +63,35 @@ public class FoldersPreferencesEntry extends UniversalFragment {
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         foldersPreviewCell = new FoldersPreviewCell(getContext());
         foldersPreviewCell.setLayoutParams(new RecyclerView.LayoutParams(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.WRAP_CONTENT));
-        items.add(UItem.asCustomWithBackground(foldersPreviewCell));
+        items.add(SettingsHelper.asCustomWithBackground(foldersPreviewCell));
         items.add(UItem.asShadow(null));
 
-        items.add(
-                UItem.asCheck(
-                        hideAllChatsTabRow,
-                        getString(R.string.CP_NewTabs_RemoveAllChats)
-                ).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats())
+        items.add(SettingsHelper.asSwitchCG(hideAllChatsTabRow, getString(R.string.CP_NewTabs_RemoveAllChats))
+                .setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats())
         );
-
-        items.add(
-                UItem.asCheck(
-                        hideCounterRow,
-                        getString(R.string.CP_NewTabs_NoCounter)
-                ).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread())
+        items.add(SettingsHelper.asSwitchCG(hideCounterRow, getString(R.string.CP_NewTabs_NoCounter))
+                .setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread())
         );
-
-        items.add(
-                UItem.asButton(
-                        tabIconTypeRow,
-                        getString(R.string.AP_Tab_Style),
-                        getTabModeValue()
-                )
+        items.add(UItem.asButton(tabIconTypeRow, getString(R.string.AP_Tab_Style), getTabModeValue()));
+        items.add(SettingsHelper.asSwitchCG(addStrokeRow, getString(R.string.AP_Tab_Style_Stroke))
+                .setChecked(CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke())
         );
-
-        items.add(
-                UItem.asCheck(
-                        addStrokeRow,
-                        getString(R.string.AP_Tab_Style_Stroke)
-                ).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke())
-        );
-
         items.add(UItem.asShadow(null));
 
-        items.add(
-                UItem.asButtonCheck(
-                        folderNameAppHeaderRow,
-                        getString(R.string.AP_FolderNameInHeader),
-                        getString(R.string.AP_FolderNameInHeader_Desc)
-                ).setChecked(CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader())
+        items.add(SettingsHelper.asSwitchCG(folderNameAppHeaderRow, getString(R.string.AP_FolderNameInHeader), getString(R.string.AP_FolderNameInHeader_Desc))
+                .setChecked(CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader())
         );
-
-        items.add(
-                UItem.asCheck(
-                        foldersAtBottomRow,
-                        getString(R.string.AP_FoldersAtBottom)
-                ).setChecked(CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()).setLocked(!DonatesManager.INSTANCE.didUserDonateForFeature())
+        items.add(SettingsHelper.asSwitchCG(foldersAtBottomRow, getString(R.string.AP_FoldersAtBottom))
+                .setChecked(CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom()).setLocked(!DonatesManager.INSTANCE.didUserDonateForFeature())
         );
-
+        items.add(UItem.asShadow(null));
     }
 
     @Override
     protected void onClick(UItem item, View view, int position, float x, float y) {
-        if (item.id == foldersAtBottomRow) {
-            if (!DonatesManager.INSTANCE.didUserDonateForFeature()) {
-                AndroidUtilities.shakeViewSpring(view);
-                BotWebViewVibrationEffect.APP_ERROR.vibrate();
-                CGBulletinCreator.INSTANCE.createRequireDonateBulletin(this);
-                return;
-            }
-
-            CherrygramAppearanceConfig.INSTANCE.setFoldersAtBottom(!CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom());
-            ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom());
-
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
-        } else if (item.id == folderNameAppHeaderRow) {
-            CherrygramAppearanceConfig.INSTANCE.setFolderNameInHeader(!CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader());
-            ((NotificationsCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader());
-
-            parentLayout.rebuildAllFragmentViews(false, false);
-
-            getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
-        } else if (item.id == hideAllChatsTabRow) {
+        if (item.id == hideAllChatsTabRow) {
             CherrygramAppearanceConfig.INSTANCE.setTabsHideAllChats(!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats());
-            ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats());
 
             foldersPreviewCell.updateAllChatsTabName(true);
 
@@ -149,7 +101,7 @@ public class FoldersPreferencesEntry extends UniversalFragment {
             getNotificationCenter().postNotificationName(NotificationCenter.mainUserInfoChanged);
         } else if (item.id == hideCounterRow) {
             CherrygramAppearanceConfig.INSTANCE.setTabsNoUnread(!CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread());
-            ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getTabsNoUnread());
 
             foldersPreviewCell.updateTabCounter(true);
 
@@ -171,7 +123,7 @@ public class FoldersPreferencesEntry extends UniversalFragment {
 
             PopupHelper.show(configStringKeys, getString(R.string.AP_Tab_Style), configValues.indexOf(CherrygramAppearanceConfig.INSTANCE.getTabMode()), getContext(), i -> {
                 CherrygramAppearanceConfig.INSTANCE.setTabMode(configValues.get(i));
-                ((TextCell) view).setValue(getTabModeValue(), true);
+                SettingsHelper.updateButtonValue(view, getTabModeValue());
 
                 foldersPreviewCell.updateTabIcons(true);
                 foldersPreviewCell.updateTabTitle(true);
@@ -182,10 +134,29 @@ public class FoldersPreferencesEntry extends UniversalFragment {
             });
         } else if (item.id == addStrokeRow) {
             CherrygramAppearanceConfig.INSTANCE.setTabStyleStroke(!CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke());
-            ((TextCheckCell) view).setChecked(CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getTabStyleStroke());
 
             foldersPreviewCell.invalidate();
             parentLayout.rebuildAllFragmentViews(false, false);
+        } else if (item.id == folderNameAppHeaderRow) {
+            CherrygramAppearanceConfig.INSTANCE.setFolderNameInHeader(!CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getFolderNameInHeader());
+
+            parentLayout.rebuildAllFragmentViews(false, false);
+
+            getNotificationCenter().postNotificationName(NotificationCenter.dialogFiltersUpdated);
+        } else if (item.id == foldersAtBottomRow) {
+            if (!DonatesManager.INSTANCE.didUserDonateForFeature()) {
+                AndroidUtilities.shakeViewSpring(view);
+                BotWebViewVibrationEffect.APP_ERROR.vibrate();
+                CGBulletinCreator.INSTANCE.createRequireDonateBulletin(this);
+                return;
+            }
+
+            CherrygramAppearanceConfig.INSTANCE.setFoldersAtBottom(!CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom());
+            SettingsHelper.updateCheckState(view, CherrygramAppearanceConfig.INSTANCE.getFoldersAtBottom());
+
+            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
         }
     }
 

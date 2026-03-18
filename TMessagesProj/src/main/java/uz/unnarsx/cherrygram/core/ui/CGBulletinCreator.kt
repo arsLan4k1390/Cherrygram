@@ -49,11 +49,7 @@ object CGBulletinCreator {
             getString(R.string.DP_Donate_ExclusiveDesc),
             getString(R.string.MoreInfo)
         ) {
-            if (fragment.connectionsManager.isTestBackend) {
-                CherrygramPreferencesNavigator.createDonate(fragment)
-            } else {
-                CherrygramPreferencesNavigator.createDonateForce(fragment)
-            }
+            CherrygramPreferencesNavigator.createDonate(fragment, !fragment.connectionsManager.isTestBackend)
         }.show()
     }
 

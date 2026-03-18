@@ -277,7 +277,7 @@ class TelegramSettingsHelper(
 
     }
 
-    fun injectAccounts(items: MutableList<UItem>, accountNumbers: ArrayList<Int>, user: TLRPC.User) {
+    fun injectAccounts(items: MutableList<UItem>, accountNumbers: ArrayList<Int>, user: TLRPC.User?) {
         items.add(UItem.asHeader(getString(R.string.SettingsAccounts)))
 
         val addAccountItem = SettingsActivity.SettingCell.Factory.of(
@@ -305,7 +305,7 @@ class TelegramSettingsHelper(
         var colorTop = 0xFF1CA5ED.toInt()
         var colorBottom = 0xFF1488E1.toInt()
 
-        if (showMyProfile()) {
+        if (showMyProfile() && user != null) {
             if (user.color is TL_peerColorCollectible) {
                 val p = user.color as TL_peerColorCollectible
                 val dark = Theme.isCurrentThemeDark()
@@ -320,8 +320,15 @@ class TelegramSettingsHelper(
             } else {
                 val colorId = UserObject.getColorId(user)
                 if (colorId < 7) {
-                    colorTop = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
-                    colorBottom = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
+                    val color = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
+                    val isWhite = CherrygramExtras.isWhiteOrNearWhite(color)
+                    if (isWhite) {
+                        colorTop = 0xFF1CA5ED.toInt()
+                        colorBottom = 0xFF1488E1.toInt()
+                    } else {
+                        colorTop = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
+                        colorBottom = Theme.getColor(Theme.keys_avatar_nameInMessage[colorId])
+                    }
                 } else {
                     val peerColors = MessagesController.getInstance(UserConfig.selectedAccount).peerColors
                     val peerColor = if (peerColors == null) null else peerColors.getColor(colorId)

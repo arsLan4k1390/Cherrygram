@@ -126,7 +126,6 @@
     <string name="AP_DisableDividers">Trennlinien ausblenden</string>
     <string name="AP_SystemFonts">Systemschriftart verwenden</string>
     <string name="CP_Snowflakes_Header">Schneeflocken</string>
-    <string name="CP_PremAndAnim_Header">Animationen und Premium-Funktionen</string>
     <string name="CP_ProfileReplyBackground">Nachrichten und Profile</string>
     <string name="CP_CustomizeProfile">Profil anpassen</string>
     <string name="CP_ProfileChannelPreview">Persönlicher Kanal</string>
@@ -141,7 +140,6 @@
     <string name="CP_HideStories">Stories verbergen</string>
     <string name="CP_CustomWallpapers">Eigener Hintergrund in Chats</string>
     <string name="CP_CustomWallpapers_Desc">Konfigurieren Sie benutzerdefinierte Hintergrundbilder in Chats/Gruppen/Kanälen von Premium-Nutzern/geboosteten Kanälen</string>
-    <string name="CP_DisableAnimAvatars">Animierte Avatare deaktivieren</string>
     <string name="CP_DisableReactionsOverlay">Reaktions-Overlay deaktivieren</string>
     <string name="CP_DisableReactionsOverlay_Desc">Dadurch wird das Popup-Overlay mit verfügbaren Reaktionen deaktiviert</string>
     <string name="CP_DisableReactionAnim">Reaktions-Animation deaktivieren</string>
@@ -164,15 +162,12 @@
     <string name="AP_ShowID">ID/DC im Profil anzeigen</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
-    <string name="CP_Header_Chats">Chats</string>
-    <string name="CP_Header_Messages">Nachrichten</string>
     <string name="CP_TimeOnStick">Zeit auf Stickern im Chat verbergen</string>
     <string name="CP_ChatMenuShortcuts">Chat-Menü-Shortcuts</string>
     <string name="CP_AdminActions">Admin-Shortcuts</string>
     <string name="CP_MessageMenu">Nachrichtenmenü</string>
     <string name="CP_UnreadBadgeOnBackButton">Zeige Ungelesen-Chat-Counter</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Aktiviere Ungelesen-Chat-Counter auf Zurück-Taste im geöffneten Chat</string>
-    <string name="CP_NoRounding">Zahlen nicht runden</string>
     <string name="CP_DeleteForAll">Standardmäßig \"Für alle löschen\" verwenden</string>
     <string name="CP_DeleteForAll_Desc">Beim Löschen der Nachrichten wird das Kontrollkästchen automatisch ausgewählt.</string>
     <string name="CP_ForwardMsgDate">Datum der weitergeleiteten Nachricht anzeigen</string>
@@ -193,8 +188,6 @@
     <string name="CP_AutoPauseVideo_Desc">Beim Sperrbildschirm/Wechseln in den Hintergrund</string>
     <string name="CP_DisableVibration">Vibration deaktivieren</string>
     <string name="CP_VideoSeekDuration">Doppeltippen um im Video zu suchen (Sekunden)</string>
-    <string name="CP_Header_Notification">Benachrichtigungen</string>
-    <string name="CP_NotificationSound">Benachrichtigungston</string>
     <string name="CP_VibrateInChats">In-Chat Vibration</string>
     <string name="CP_VibrateInChats_Desc">Kurze Vibration, wenn du eine Nachricht in Chats erhältst</string>
     <string name="CP_SilenceNonContacts">Nicht-Kontakte stummschalten</string>
@@ -235,14 +228,11 @@
     <string name="EP_CustomChat_Desc">Setze eine ID aus einem anderen Chat/Gruppe/Kanal um Nachrichten weiterzuleiten (Schaltfläche in Aktionsleiste, Nachrichtenmenü oder Doppeltipp)</string>
     <string name="EP_Network">Netzwerk</string>
     <string name="EP_DownloadSpeedBoost">Download-Speed-Boost</string>
-    <string name="EP_DownloadSpeedBoostNone">Aus</string>
-    <string name="EP_DownloadSpeedBoostAverage">An</string>
     <string name="EP_DownloadSpeedBoostExtreme">Extrem</string>
     <string name="EP_UploadloadSpeedBoost">Upload-Speed-Boost</string>
     <string name="EP_SlowNetworkMode">Langsamer Netzmodus</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_PrivacyAndSecurity">Privatsphäre und Sicherheit</string>
     <string name="SP_Header_Privacy">Privatsphäre</string>
     <string name="SP_NoProxyPromo">Proxy-Sponsor nicht anzeigen</string>
     <string name="SP_GoogleAnalytics_Desc">Wenn Sie dies aktivieren, werden alle Anwendungsabstürze und -statistiken an \"console.firebase.google.com\" gemeldet, um eine weitere Überprüfung durch den Entwickler zu erhalten.</string>

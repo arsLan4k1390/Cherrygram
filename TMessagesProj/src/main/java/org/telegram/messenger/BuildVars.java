@@ -45,7 +45,7 @@ public class BuildVars {
     public static boolean IS_BILLING_UNAVAILABLE = CherrygramCoreConfig.isPlayStoreBuild();
 
     // works only on official app ids, disable on your forks
-    public static boolean SUPPORTS_PASSKEYS = true;
+    public static boolean SUPPORTS_PASSKEYS = Build.VERSION.SDK_INT >= 34;
 
     static {
         APP_ID = Extra.APP_ID;

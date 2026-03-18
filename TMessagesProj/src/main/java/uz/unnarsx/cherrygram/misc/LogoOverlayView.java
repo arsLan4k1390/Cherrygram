@@ -12,6 +12,7 @@ package uz.unnarsx.cherrygram.misc;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
@@ -55,7 +56,7 @@ public class LogoOverlayView extends FrameLayout {
     public WindowInsets onApplyWindowInsets(WindowInsets insets) {
         notchInfo = NotchInfoUtils.getInfo(getContext());
 
-        if (notchInfo != null) { // TODO hide if cutout is not in center
+        if (notchInfo != null && notchInfo.gravity == Gravity.CENTER) {
             float width = 0.8f * notchInfo.bounds.width();
             float height = 0.8f * notchInfo.bounds.height();
 

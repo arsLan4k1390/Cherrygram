@@ -285,6 +285,8 @@ public class NotificationCenter {
     public static final int musicListLoaded = totalEvents++;
     public static final int musicIdsLoaded = totalEvents++;
     public static final int profileMusicUpdated = totalEvents++;
+    public static final int updatedChatRanks = totalEvents++;
+    public static final int joinedGroup = totalEvents++;
 
     //global
     public static final int pushMessagesUpdated = totalEvents++;
@@ -375,6 +377,7 @@ public class NotificationCenter {
     public static final int botForumDraftDelete = totalEvents++;
     public static final int tlSchemeParseException = totalEvents++;
     public static final int callTabsVisibleToggled = totalEvents++;
+    public static final int contactsPermissionBadgeCheck = totalEvents++;
 
     public static boolean alreadyLogged;
 
@@ -991,7 +994,8 @@ public class NotificationCenter {
     public static final int onUpdateLoginToken = totalEvents++;
     public static final int cgDonatesLoaded = totalEvents++;
     public static final int cgTabsUpdated = totalEvents++;
-    public static final int cgTabsOpenSearch = totalEvents++;
+    public static final int cgDestroyCameraX = totalEvents++;
+    public static final int cgUpdateSearchFiledVisibility = totalEvents++;
     /** Cherrygram finish */
 
 }

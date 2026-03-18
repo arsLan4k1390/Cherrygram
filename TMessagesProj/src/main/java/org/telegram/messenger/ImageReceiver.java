@@ -48,8 +48,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
-
 public class ImageReceiver implements NotificationCenter.NotificationCenterDelegate {
 
     List<ImageReceiver> preloadReceivers;
@@ -444,7 +442,7 @@ public class ImageReceiver implements NotificationCenter.NotificationCenterDeleg
                         }
                     }
                 }
-                if (!CherrygramCoreConfig.INSTANCE.getDisableAnimatedAvatars() && vectorImageMarkup == null && animationEnabled && MessagesController.getInstance(currentAccount).isPremiumUser(user) && user.photo.has_video && LiteMode.isEnabled(LiteMode.FLAG_AUTOPLAY_VIDEOS)) {
+                if (vectorImageMarkup == null && animationEnabled && MessagesController.getInstance(currentAccount).isPremiumUser(user) && user.photo.has_video && LiteMode.isEnabled(LiteMode.FLAG_AUTOPLAY_VIDEOS)) {
                     final TLRPC.UserFull userFull = MessagesController.getInstance(currentAccount).getUserFull(user.id);
                     if (userFull == null) {
                         MessagesController.getInstance(currentAccount).loadFullUser(user, currentGuid, false);

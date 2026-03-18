@@ -160,7 +160,6 @@
     <string name="AP_DisableDividers">停用分隔線</string>
     <string name="AP_SystemFonts">使用系統字型</string>
     <string name="CP_Snowflakes_Header">雪花效果</string>
-    <string name="CP_PremAndAnim_Header">動畫和進階功能</string>
     <string name="CP_ProfileReplyBackground">訊息和個人檔案</string>
     <string name="CP_CustomizeProfile">自訂個人檔案</string>
     <string name="CP_ProfileChannelPreview">個人頻道</string>
@@ -178,7 +177,6 @@
     <string name="CP_ArchiveStories_Desc">限時動態將自動封存並移至您的存檔中。</string>
     <string name="CP_CustomWallpapers">自訂對話背景</string>
     <string name="CP_CustomWallpapers_Desc">設定由Premium使用者/助力頻道所製作的對話/群組/頻道頁面中的自訂背景</string>
-    <string name="CP_DisableAnimAvatars">停用動畫大頭貼</string>
     <string name="CP_DisableReactionsOverlay">停用 Emoji 回應選項</string>
     <string name="CP_DisableReactionsOverlay_Desc">此功能將停用 Emoji 回應選項</string>
     <string name="CP_DisableReactionAnim">關閉回應動畫</string>
@@ -209,8 +207,6 @@
     <string name="AP_ShowID">在個人檔案中顯示 ID 和 DC</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
-    <string name="CP_Header_Chats">對話</string>
-    <string name="CP_Header_Messages">訊息</string>
     <string name="CP_AutoQuoteReplies">引用回覆</string>
     <string name="CP_AutoQuoteReplies_Desc">發送包括整則訊息內容的引用，而不是普通的回覆。此功能不適用於主題討論。</string>
     <string name="CP_TimeOnStick">隱藏貼圖時間</string>
@@ -236,7 +232,6 @@
     <string name="CP_UnreadBadgeOnBackButton">顯示未讀對話數量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已開啟的對話中顯示未讀訊息數量</string>
     <string name="CP_Slider_RecentEmojisAndStickers">最近使用的表情符號和貼圖計數器</string>
-    <string name="CP_NoRounding">停用數字四捨五入</string>
     <string name="CP_DeleteForAll">預設選擇「全部刪除」</string>
     <string name="CP_DeleteForAll_Desc">刪除訊息時預設選擇全部刪除</string>
     <string name="CP_ForwardMsgDate">顯示轉寄日期時間</string>
@@ -311,8 +306,6 @@
     <string name="CP_AutoPauseVideo_Desc">鎖定螢幕或切換至背景時</string>
     <string name="CP_DisableVibration">停用全局震動</string>
     <string name="CP_VideoSeekDuration">雙擊尋找視頻（秒）</string>
-    <string name="CP_Header_Notification">通知</string>
-    <string name="CP_NotificationSound">通知音效</string>
     <string name="CP_VibrateInChats">對話震動功能</string>
     <string name="CP_VibrateInChats_Desc">收到訊息時發出短暫震動</string>
     <string name="CP_SilenceNonContacts">將非聯絡人訊息設為靜音</string>
@@ -357,14 +350,11 @@
     <string name="EP_CustomChat_Selected_Title">代替</string>
     <string name="EP_Network">網路</string>
     <string name="EP_DownloadSpeedBoost">下載加速</string>
-    <string name="EP_DownloadSpeedBoostNone">關閉</string>
-    <string name="EP_DownloadSpeedBoostAverage">開啟</string>
     <string name="EP_DownloadSpeedBoostExtreme">最快</string>
     <string name="EP_UploadloadSpeedBoost">上載加速</string>
     <string name="EP_SlowNetworkMode">緩慢網路模式</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_PrivacyAndSecurity">隱私與安全</string>
     <string name="SP_Header_Privacy">隱私權</string>
     <string name="SP_NoProxyPromo">移除代理伺服器廣告</string>
     <string name="SP_GoogleAnalytics_Desc">啟用此功能後，所有的當機日誌和統計資料都會上傳至「console.firebase.google.com」，以供開發人員分析和改善應用程式。</string>

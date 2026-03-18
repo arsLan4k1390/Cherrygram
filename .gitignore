@@ -5,7 +5,9 @@ afat/
 build/
 obj/
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/helpers/MessagesFilterHelper.kt
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/CameraXController.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/VideoMessagesHelper.java
+/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/filters/MessagesFilterHelper.kt
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuCompactView.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuHelper.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuMessageCells.java

@@ -102,7 +102,7 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
         counter.setTypeface(AndroidUtilities.bold());
         counter.setCallback(this);
         counter.setGravity(Gravity.CENTER);
-        counter.setTextColor(Color.WHITE);
+        counter.setTextColor(Theme.getColor(Theme.key_actionBarDefault));
         counter.setTextSize(dp(10));
     }
 
@@ -387,22 +387,6 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
         }
     }
 
-    public static GlassTabView createGiftTab(Context context, Theme.ResourcesProvider resourcesProvider, TabAnimation tabAnimation, @StringRes int stringRes, Runnable onClick) {
-        GlassTabView tab = new GlassTabView(context);
-        tab.resourcesProvider = resourcesProvider;
-        tab.tabAnimation = tabAnimation;
-        tab.textView.setText(LocaleController.getString(stringRes));
-        tab.checkPlayAnimation(false);
-        tab.imageView.setLayoutParams(LayoutHelper.createFrame(24, 24, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 6, 0, 0));
-        tab.colorDefault = ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_glass_defaultIcon, resourcesProvider), 153);
-        tab.colorSelected = ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_glass_defaultIcon, resourcesProvider), 255);
-        tab.colorSelectedText = ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_glass_defaultIcon, resourcesProvider), 255);
-        tab.setOnClickListener(v -> onClick.run());
-        tab.updateColors();
-        ScaleStateListAnimator.apply(tab);
-        return tab;
-    }
-
     public static GlassTabView createMainTab(Context context, Theme.ResourcesProvider resourcesProvider, TabAnimation tabAnimation, @StringRes int stringRes) {
         GlassTabView tab = new GlassTabView(context);
         tab.resourcesProvider = resourcesProvider;
@@ -659,6 +643,37 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
         tab.imageView.setImageResource(iconRes);
 
         if (CherrygramAppearanceConfig.INSTANCE.getShowMainTabsTitle()) {
+            tab.textView.setText(LocaleController.getString(stringRes));
+            tab.textView.setVisibility(View.VISIBLE);
+            tab.imageView.setLayoutParams(LayoutHelper.createFrame(24, 24, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 4, 0, 0));
+        } else {
+            tab.textView.setVisibility(View.GONE);
+            tab.imageView.setLayoutParams(LayoutHelper.createFrame(24, 24, Gravity.CENTER, 0, 0, 0, 0));
+        }
+
+        tab.colorDefault = Theme.getColor(Theme.key_glass_tabUnselected, resourcesProvider);
+        tab.colorSelected = Theme.getColor(Theme.key_glass_tabSelected, resourcesProvider);
+        tab.colorSelectedText = Theme.getColor(Theme.key_glass_tabSelectedText, resourcesProvider);
+
+        tab.imageView.setColorFilter(new PorterDuffColorFilter(tab.colorDefault, PorterDuff.Mode.SRC_IN));
+
+        tab.updateColors();
+        return tab;
+    }
+
+    public static GlassTabView createStaticTab(
+            Context context,
+            Theme.ResourcesProvider resourcesProvider,
+            @DrawableRes int iconRes,
+            @StringRes int stringRes,
+            boolean showTitle
+    ) {
+        GlassTabView tab = new GlassTabView(context);
+        tab.resourcesProvider = resourcesProvider;
+
+        tab.imageView.setImageResource(iconRes);
+
+        if (showTitle) {
             tab.textView.setText(LocaleController.getString(stringRes));
             tab.textView.setVisibility(View.VISIBLE);
             tab.imageView.setLayoutParams(LayoutHelper.createFrame(24, 24, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 4, 0, 0));

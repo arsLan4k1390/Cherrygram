@@ -90,6 +90,8 @@ import java.util.Set;
 
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.helpers.AppRestartHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
@@ -194,7 +196,7 @@ public class ChatsHelper extends BaseController {
                 .append(hasForwards && !isMusic ? String.format("%d", messageObject.messageOwner.forwards) : "")
                 .append(isMusic ? "" : " ")
                 .append(hasForwards && !isMusic ? "• " : "")
-                .append(CherrygramChatsConfig.INSTANCE.getShowPencilIcon() ? editedSpan : getString(R.string.EditedMessage))
+                .append(CherrygramMessagesConfig.INSTANCE.getShowPencilIcon() ? editedSpan : getString(R.string.EditedMessage))
                 .append(hasForwards && !isMusic ? " • " : " ")
                 .append(LocaleController.getInstance().getFormatterDay().format((long) (messageObject.messageOwner.date) * 1000));
         return spannableStringBuilder;
@@ -432,7 +434,7 @@ public class ChatsHelper extends BaseController {
                 && getUserConfig().getCurrentUser() != null
                 && getUserConfig().getCurrentUser().phone != null
                 && getUserConfig().getCurrentUser().phone.startsWith("998")
-                /*CherrygramChatsConfig.INSTANCE.isDev() && (card.startsWith("9860") || card.startsWith("555536")
+                /*CherrygramCoreConfig.isDevBuild() && (card.startsWith("9860") || card.startsWith("555536")
                     || card.startsWith("429434") || card.startsWith("418783") || card.startsWith("400847") || card.startsWith("472887") || card.startsWith("406228") || card.startsWith("419813") || card.startsWith("407342")
                     || card.startsWith("8600") || card.startsWith("561468") || card.startsWith("5440") || card.startsWith("6262") || card.startsWith("6264"))*/
         ) {
@@ -479,22 +481,22 @@ public class ChatsHelper extends BaseController {
     public void makeReplyButtonClick(ChatActivity chatActivity, MessageObject selectedObject, boolean noForwards) {
         if (noForwards || chatActivity.isInScheduleMode()) createReplyAction(chatActivity, selectedObject);
 
-        switch (CherrygramChatsConfig.INSTANCE.getLeftBottomButton()) {
-            case CherrygramChatsConfig.LEFT_BUTTON_REPLY:
+        switch (CherrygramMessagesConfig.INSTANCE.getLeftBottomButton()) {
+            case CherrygramMessagesConfig.LEFT_BUTTON_REPLY:
                 createReplyAction(chatActivity, selectedObject);
                 break;
-            case CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE:
+            case CherrygramMessagesConfig.LEFT_BUTTON_SAVE_MESSAGE:
                 createCGSaveMessagesSelected(chatActivity);
                 break;
-            case CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE:
+            case CherrygramMessagesConfig.LEFT_BUTTON_DIRECT_SHARE:
                 createCGShareAlertSelected(chatActivity);
                 break;
-            case CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP:
+            case CherrygramMessagesConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP:
                 CGFeatureHooks.INSTANCE.switchNoAuthor(true);
                 CGFeatureHooks.INSTANCE.switchNoCaptions(false);
                 chatActivity.openForward(false);
                 break;
-            case CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_CAPTION:
+            case CherrygramMessagesConfig.LEFT_BUTTON_FORWARD_WO_CAPTION:
                 CGFeatureHooks.INSTANCE.switchNoAuthor(true);
                 CGFeatureHooks.INSTANCE.switchNoCaptions(true);
                 chatActivity.openForward(false);
@@ -507,22 +509,22 @@ public class ChatsHelper extends BaseController {
         ArrayList<Integer> configValues = new ArrayList<>();
 
         configStringKeys.add(getString(R.string.Forward) + " " + getString(R.string.CG_Without_Authorship));
-        configValues.add(CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP);
+        configValues.add(CherrygramMessagesConfig.LEFT_BUTTON_FORWARD_WO_AUTHORSHIP);
 
         configStringKeys.add(getString(R.string.Forward) + " " + getString(R.string.CG_Without_Caption));
-        configValues.add(CherrygramChatsConfig.LEFT_BUTTON_FORWARD_WO_CAPTION);
+        configValues.add(CherrygramMessagesConfig.LEFT_BUTTON_FORWARD_WO_CAPTION);
 
         configStringKeys.add(getString(R.string.Reply));
-        configValues.add(CherrygramChatsConfig.LEFT_BUTTON_REPLY);
+        configValues.add(CherrygramMessagesConfig.LEFT_BUTTON_REPLY);
 
         configStringKeys.add(getString(R.string.CG_ToSaved));
-        configValues.add(CherrygramChatsConfig.LEFT_BUTTON_SAVE_MESSAGE);
+        configValues.add(CherrygramMessagesConfig.LEFT_BUTTON_SAVE_MESSAGE);
 
         configStringKeys.add(getString(R.string.DirectShare));
-        configValues.add(CherrygramChatsConfig.LEFT_BUTTON_DIRECT_SHARE);
+        configValues.add(CherrygramMessagesConfig.LEFT_BUTTON_DIRECT_SHARE);
 
-        PopupHelper.show(configStringKeys, getString(R.string.CP_LeftBottomButtonAction), configValues.indexOf(CherrygramChatsConfig.INSTANCE.getLeftBottomButton()), chatActivity.getContext(), i -> {
-            CherrygramChatsConfig.INSTANCE.setLeftBottomButton(configValues.get(i));
+        PopupHelper.show(configStringKeys, getString(R.string.CP_LeftBottomButtonAction), configValues.indexOf(CherrygramMessagesConfig.INSTANCE.getLeftBottomButton()), chatActivity.getContext(), i -> {
+            CherrygramMessagesConfig.INSTANCE.setLeftBottomButton(configValues.get(i));
 
             if (chatActivity.actionsButtonsLayout.getReplyButton() == null) return;
 
@@ -537,8 +539,8 @@ public class ChatsHelper extends BaseController {
                 LaunchActivity.makeRipple(centerX, centerY, 5);
             }
 
-            chatActivity.actionsButtonsLayout.updateReplyButtonUI(CGResourcesHelper.INSTANCE.getLeftButtonText(noForwards), CGResourcesHelper.INSTANCE.getLeftButtonDrawable(noForwards), CherrygramChatsConfig.INSTANCE.getLeftBottomButton() != CherrygramChatsConfig.LEFT_BUTTON_REPLY);
-            chatActivity.actionsButtonsLayout.updateForwardButtonUI(getString(R.string.Forward), R.drawable.input_forward, CherrygramChatsConfig.INSTANCE.getLeftBottomButton() == CherrygramChatsConfig.LEFT_BUTTON_REPLY);
+            chatActivity.actionsButtonsLayout.updateReplyButtonUI(CGResourcesHelper.INSTANCE.getLeftButtonText(noForwards), CGResourcesHelper.INSTANCE.getLeftButtonDrawable(noForwards), CherrygramMessagesConfig.INSTANCE.getLeftBottomButton() != CherrygramMessagesConfig.LEFT_BUTTON_REPLY);
+            chatActivity.actionsButtonsLayout.updateForwardButtonUI(getString(R.string.Forward), R.drawable.input_forward, CherrygramMessagesConfig.INSTANCE.getLeftBottomButton() == CherrygramMessagesConfig.LEFT_BUTTON_REPLY);
 
         }, resourcesProvider);
     }
@@ -750,7 +752,7 @@ public class ChatsHelper extends BaseController {
 
     public CharSequence getMessageText(MessageObject selectedObject, MessageObject.GroupedMessages selectedObjectGroup) {
         CharSequence messageTextToTranslate = null;
-        if (selectedObject.type != MessageObject.TYPE_EMOJIS && selectedObject.type != MessageObject.TYPE_ANIMATED_STICKER && selectedObject.type != MessageObject.TYPE_STICKER) {
+        if (selectedObject != null && selectedObject.type != MessageObject.TYPE_EMOJIS && selectedObject.type != MessageObject.TYPE_ANIMATED_STICKER && selectedObject.type != MessageObject.TYPE_STICKER) {
             messageTextToTranslate = getMessageCaption(selectedObject, selectedObjectGroup);
             if (messageTextToTranslate == null && selectedObject.isPoll()) {
                 try {
@@ -769,7 +771,7 @@ public class ChatsHelper extends BaseController {
                 messageTextToTranslate = null;
             }
         }
-        return messageTextToTranslate;
+        return messageTextToTranslate == null ? " " : messageTextToTranslate;
     }
 
     public CharSequence getMessageCaption(MessageObject messageObject, MessageObject.GroupedMessages group) {

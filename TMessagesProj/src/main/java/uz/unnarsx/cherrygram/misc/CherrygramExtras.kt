@@ -326,4 +326,8 @@ object CherrygramExtras : CoroutineScope by MainScope() {
         return navInsets.bottom == 0
     }
 
+    fun checkDeviceBrand(brand: String) : Boolean {
+        return Build.MANUFACTURER.contains(brand, ignoreCase = true) || Build.BRAND.contains(brand, ignoreCase = true)
+    }
+
 }

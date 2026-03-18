@@ -469,7 +469,8 @@ public abstract class MD3ListAdapter extends RecyclerListView.SelectionAdapter {
     }
 
     public static boolean shouldUseCustomColors() {
-        return Theme.getActiveTheme().isMonetLight() || Theme.getActiveTheme().isMonetDark() || Theme.getCurrentTheme().isMonetAmoled() || Theme.getActiveTheme().isAmoled();
+//        return false;
+        return /*Theme.getActiveTheme().isMonetLight() || Theme.getActiveTheme().isMonetDark() ||*/ Theme.getCurrentTheme().isMonetAmoled() || Theme.getActiveTheme().isAmoled();
     }
 
     private static void registerAdapterInstance(MD3ListAdapter adapter) {

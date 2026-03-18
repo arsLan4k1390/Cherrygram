@@ -53,8 +53,10 @@ import org.telegram.messenger.CodeHighlighting;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
+import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
+import org.telegram.messenger.UserConfig;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
@@ -71,7 +73,7 @@ import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
 
 import uz.unnarsx.cherrygram.chats.helpers.ChatsHelper2;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 
 public class JsonBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
 
@@ -100,7 +102,8 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
 
         fixNavigationBar();
 
-        boolean isNoForwards = currentChat != null && (currentChat.noforwards || messageObject.messageOwner.noforwards);
+        MessagesController mc = MessagesController.getInstance(UserConfig.selectedAccount);
+        boolean isNoForwards = mc.isPeerNoForwards(Math.abs(messageObject.getDialogId())) || currentChat != null && currentChat.noforwards || messageObject.messageOwner.noforwards;
 
         containerView = new ContainerView(context);
         sheetTopAnimated = new AnimatedFloat(containerView, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
@@ -252,7 +255,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
                 jsonString = gson.toJson(messageObject.messageOwner);
             } catch (Exception e) {
                 FileLog.e(e);
-                CherrygramChatsConfig.INSTANCE.setJacksonJSON_Provider(true);
+                CherrygramMessagesConfig.INSTANCE.setJacksonJSON_Provider(true);
                 jsonString = getString(R.string.SafetyNetErrorOccurred);
             }
         } else {
@@ -262,7 +265,7 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
                 jsonString = mapper.writeValueAsString(messageObject.messageOwner);
             } catch (Exception e) {
                 FileLog.e(e);
-                CherrygramChatsConfig.INSTANCE.setJacksonJSON_Provider(false);
+                CherrygramMessagesConfig.INSTANCE.setJacksonJSON_Provider(false);
                 jsonString = getString(R.string.SafetyNetErrorOccurred);
             }
         }
@@ -652,10 +655,10 @@ public class JsonBottomSheet extends BottomSheet implements NotificationCenter.N
     }
 
     public boolean isJacksonSupportedAndEnabled() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && CherrygramChatsConfig.INSTANCE.getJacksonJSON_Provider()) {
-            CherrygramChatsConfig.INSTANCE.setJacksonJSON_Provider(false);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O && CherrygramMessagesConfig.INSTANCE.getJacksonJSON_Provider()) {
+            CherrygramMessagesConfig.INSTANCE.setJacksonJSON_Provider(false);
         }
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && CherrygramChatsConfig.INSTANCE.getJacksonJSON_Provider();
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && CherrygramMessagesConfig.INSTANCE.getJacksonJSON_Provider();
     }
 
     public static JsonBottomSheet showAlert(Context context, Theme.ResourcesProvider resourcesProvider, BaseFragment fragment, MessageObject messageObject, TLRPC.Chat currentChat) {

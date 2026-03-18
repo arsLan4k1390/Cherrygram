@@ -38,12 +38,17 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
         }
     }
 
-    fun getPasscodeArray(): String {
-        return "locked_chats_list"
-    }
+    private var lockedChatsCache: HashSet<String>? = null
+
+    fun getPasscodeArray(): String = "locked_chats_list"
 
     fun saveArrayList(list: ArrayList<String>, key: String) {
         if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил saveArrayList")
+
+        if (key == getPasscodeArray()) {
+            lockedChatsCache = HashSet(list)
+        }
+
         messagesController.mainSettings
             .edit {
                 putString(key, Gson().toJson(list))
@@ -51,18 +56,36 @@ class ChatsPasswordHelper private constructor(num: Int) : BaseController(num) {
     }
 
     fun getArrayList(key: String): ArrayList<String> {
-        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил getArrayList")
+        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил кешированный getArrayList для паролей")
+
+        if (key == getPasscodeArray() && lockedChatsCache != null) {
+            return ArrayList(lockedChatsCache!!)
+        }
+
+        if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил getArrayList для паролей")
+
         val json = messagesController.mainSettings.getString(key, null)
         if (CherrygramCoreConfig.isDevBuild()) FileLog.d("getArrayList: $json")
+        val list: ArrayList<String> = Gson().fromJson(json, object : TypeToken<ArrayList<String>>() {}.type)
+            ?: arrayListOf(userConfig.clientUserId.toString())
 
-        return Gson().fromJson(json, object : TypeToken<ArrayList<String>>() {}.type) ?: arrayListOf(userConfig.clientUserId.toString())
+        if (key == getPasscodeArray()) {
+            lockedChatsCache = HashSet(list)
+        }
+
+        return list
     }
 
     fun isChatLocked(chatId: Long): Boolean {
         if (CherrygramCoreConfig.isDevBuild()) FileLog.d("запросил isChatLocked")
-        val lockedChats = getArrayList(getPasscodeArray())
+        if (chatId == 0L || !CherrygramPrivacyConfig.askBiometricsToOpenChat) return false
 
-        return CherrygramPrivacyConfig.askBiometricsToOpenChat && chatId != 0L && (lockedChats.contains(chatId.toString()) || lockedChats.contains("-$chatId"))
+        if (lockedChatsCache == null) {
+            getArrayList(getPasscodeArray())
+        }
+
+        val idStr = chatId.toString()
+        return lockedChatsCache?.contains(idStr) == true || lockedChatsCache?.contains("-$idStr") == true
     }
 
     fun isChatLocked(messageObject: MessageObject): Boolean {

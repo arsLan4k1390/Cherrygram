@@ -75,6 +75,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 
 import me.vkryl.android.animator.ReplaceAnimator;
+import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
 
 public class ActionBar extends FrameLayout implements Theme.Colorable {
 
@@ -423,7 +424,7 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
         }
     }
 
-    private void createTitleTextView(int i) {
+    private void createTitleTextView(int i, boolean gilroy) {
         if (titleTextView[i] != null) {
             return;
         }
@@ -435,7 +436,11 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
             titleTextView[i].setTextColor(getThemedColor(Theme.key_actionBarDefaultTitle));
         }
         titleTextView[i].setEmojiColor(titleTextView[i].getTextColor());
-        titleTextView[i].setTypeface(AndroidUtilities.bold());
+        if (gilroy) {
+            titleTextView[i].setTypeface(FontHelper.createTypeface2(FontHelper.TYPEFACE_GILROY_EXTRABOLD));
+        } else {
+            titleTextView[i].setTypeface(AndroidUtilities.bold());
+        }
         titleTextView[i].setDrawablePadding(dp(4));
         titleTextView[i].setPadding(0, dp(8), 0, dp(8));
         titleTextView[i].setRightDrawableTopPadding(-dp(1));
@@ -468,8 +473,12 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
     }
 
     public void setTitle(CharSequence value, Drawable rightDrawable) {
+        setTitle(value, rightDrawable, false);
+    }
+
+    public void setTitle(CharSequence value, Drawable rightDrawable, boolean gilroy) {
         if (value != null && titleTextView[0] == null) {
-            createTitleTextView(0);
+            createTitleTextView(0, gilroy);
         }
         if (titleTextView[0] != null) {
             titleTextView[0].setVisibility(value != null && !isSearchFieldVisible ? VISIBLE : INVISIBLE);
@@ -499,8 +508,12 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
     }
 
     public void setTitleColor(int color) {
+        setTitleColor(color, false);
+    }
+
+    public void setTitleColor(int color, boolean gilroy) {
         if (titleTextView[0] == null) {
-            createTitleTextView(0);
+            createTitleTextView(0, gilroy);
         }
         titleColorToSet = color;
         titleTextView[0].setTextColor(color);
@@ -1543,7 +1556,7 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
 
     boolean overlayTitleAnimationInProgress;
 
-    public void setTitleOverlayText(String title, int titleId, Runnable action) {
+    public void setTitleOverlayText(String title, int titleId, boolean gilroy, Runnable action) {
         if (!allowOverlayTitle || parentFragment.parentLayout == null) {
             return;
         }
@@ -1583,7 +1596,7 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
         }
         titleOverlayShown = title != null;
         if ((textToSet != null && titleTextView[0] == null) || getMeasuredWidth() == 0 || (titleTextView[0] != null && titleTextView[0].getVisibility() != View.VISIBLE)) {
-            createTitleTextView(0);
+            createTitleTextView(0, gilroy);
             if (supportsHolidayImage) {
                 titleTextView[0].invalidate();
                 invalidate();
@@ -1606,7 +1619,7 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
                 titleTextView[1].animate().cancel();
             }
             if (titleTextView[1] == null) {
-                createTitleTextView(1);
+                createTitleTextView(1, gilroy);
             }
             titleTextView[1].setText(textToSet);
             titleTextView[1].setDrawablePadding(dp(4));
@@ -1647,7 +1660,7 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
                     ellipsizeSpanAnimator.removeView(titleTextView[1]);
                     titleTextView[1] = null;
                     overlayTitleAnimationInProgress = false;
-                    setTitleOverlayText((String) overlayTitleToSet[0], (int) overlayTitleToSet[1], (Runnable) overlayTitleToSet[2]);
+                    setTitleOverlayText((String) overlayTitleToSet[0], (int) overlayTitleToSet[1], gilroy, (Runnable) overlayTitleToSet[2]);
                 }
             }).start();
         }
@@ -1834,9 +1847,9 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
         requestLayout();
     }
 
-    public void setTitleAnimatedX(CharSequence title, Drawable rightDrawable, boolean forward, long duration) {
+    public void setTitleAnimatedX(CharSequence title, Drawable rightDrawable, boolean forward, long duration, boolean gilroy) {
         if (titleTextView[0] == null || title == null) {
-            setTitle(title, rightDrawable);
+            setTitle(title, rightDrawable, gilroy);
             return;
         }
         if (titleTextView[1] != null) {
@@ -1848,7 +1861,7 @@ public class ActionBar extends FrameLayout implements Theme.Colorable {
         }
         titleTextView[1] = titleTextView[0];
         titleTextView[0] = null;
-        setTitle(title, rightDrawable);
+        setTitle(title, rightDrawable, gilroy);
         titleTextView[0].setAlpha(0);
         titleTextView[0].setTranslationX(forward ? AndroidUtilities.dp(20) : -AndroidUtilities.dp(20));
         titleTextView[0].animate().alpha(1f).translationX(0).setDuration(duration).start();

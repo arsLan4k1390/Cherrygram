@@ -21,12 +21,10 @@ import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.SeekBarView;
 
-import uz.unnarsx.cherrygram.preferences.tgkit.preference.types.TGKitSliderPreference;
-
 public class StickerSliderCell extends FrameLayout {
     private final SeekBarView sizeBar;
     private final TextPaint textPaint;
-    private TGKitSliderPreference.TGSLContract contract;
+    private TGSLContract contract;
     private int startRadius;
     private int endRadius;
 
@@ -58,7 +56,7 @@ public class StickerSliderCell extends FrameLayout {
         addView(sizeBar, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 38, Gravity.START | Gravity.TOP, 5, 5, 39, 0));
     }
 
-    public StickerSliderCell setContract(TGKitSliderPreference.TGSLContract contract) {
+    public StickerSliderCell setContract(TGSLContract contract) {
         this.contract = contract;
         this.startRadius = contract.getMin();
         this.endRadius = contract.getMax();
@@ -82,4 +80,15 @@ public class StickerSliderCell extends FrameLayout {
         super.invalidate();
         sizeBar.invalidate();
     }
+
+    public interface TGSLContract {
+        void setValue(int value);
+
+        int getPreferenceValue();
+
+        int getMin();
+
+        int getMax();
+    }
+
 }

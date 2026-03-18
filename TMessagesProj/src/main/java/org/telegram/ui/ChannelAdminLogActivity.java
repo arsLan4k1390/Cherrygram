@@ -3152,6 +3152,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                     public void didPressReplyMessage(ChatMessageCell cell, int id, float x, float y, boolean longpress) {
                         MessageObject messageObject = cell.getMessageObject();
                         MessageObject reply = messageObject.replyMessageObject;
+                        if (reply == null) return;
                         if (reply.getDialogId() == -currentChat.id) {
                             for (int i = 0; i < filteredMessages.size(); ++i) {
                                 MessageObject msg = filteredMessages.get(i);

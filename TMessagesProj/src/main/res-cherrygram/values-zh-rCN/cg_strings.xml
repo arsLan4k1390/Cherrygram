@@ -160,7 +160,6 @@
     <string name="AP_DisableDividers">禁用分隔线</string>
     <string name="AP_SystemFonts">使用系统字体</string>
     <string name="CP_Snowflakes_Header">雪花效果</string>
-    <string name="CP_PremAndAnim_Header">动画和高级功能</string>
     <string name="CP_ProfileReplyBackground">消息和个人资料</string>
     <string name="CP_CustomizeProfile">自定义个人资料</string>
     <string name="CP_ProfileChannelPreview">个人频道</string>
@@ -178,7 +177,6 @@
     <string name="CP_ArchiveStories_Desc">动态将自动归档并移动到您的归档动态。</string>
     <string name="CP_CustomWallpapers">自定义聊天背景</string>
     <string name="CP_CustomWallpapers_Desc">配置高级用户/增强频道设置的聊天/群组/频道中的自定义壁纸</string>
-    <string name="CP_DisableAnimAvatars">禁用动态头像</string>
     <string name="CP_DisableReactionsOverlay">禁用表态弹窗</string>
     <string name="CP_DisableReactionsOverlay_Desc">禁用可使用表态的弹出窗口</string>
     <string name="CP_DisableReactionAnim">禁用表态动画</string>
@@ -209,8 +207,6 @@
     <string name="AP_ShowID">在个人资料中显示 ID 和 DC</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
-    <string name="CP_Header_Chats">聊天</string>
-    <string name="CP_Header_Messages">信息</string>
     <string name="CP_AutoQuoteReplies">引用回复</string>
     <string name="CP_AutoQuoteReplies_Desc">发送包含整条消息内容的引用，而不是普通的回复。此功能在主题讨论中不可用。</string>
     <string name="CP_TimeOnStick">隐藏贴纸时间</string>
@@ -236,7 +232,6 @@
     <string name="CP_UnreadBadgeOnBackButton">显示未读聊天数量</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">在已打开的聊天中显示未读消息数</string>
     <string name="CP_Slider_RecentEmojisAndStickers">最近使用的 Emoji 表情和贴纸数量</string>
-    <string name="CP_NoRounding">禁用数字舍入</string>
     <string name="CP_DeleteForAll">默认勾选\"全部删除\"</string>
     <string name="CP_DeleteForAll_Desc">删除消息时默认勾选全部删除</string>
     <string name="CP_ForwardMsgDate">显示转发日期时间</string>
@@ -313,8 +308,6 @@
     <string name="CP_AutoPauseVideo_Desc">锁屏或切换到后台时</string>
     <string name="CP_DisableVibration">禁用全局震动</string>
     <string name="CP_VideoSeekDuration">双击搜索视频 (秒)</string>
-    <string name="CP_Header_Notification">通知</string>
-    <string name="CP_NotificationSound">通知声音</string>
     <string name="CP_VibrateInChats">聊天振动功能</string>
     <string name="CP_VibrateInChats_Desc">收到消息时发出短暂振动</string>
     <string name="CP_SilenceNonContacts">静音非联系人消息</string>
@@ -359,14 +352,11 @@
     <string name="EP_CustomChat_Selected_Title">代替</string>
     <string name="EP_Network">网络</string>
     <string name="EP_DownloadSpeedBoost">下载加速</string>
-    <string name="EP_DownloadSpeedBoostNone">关闭</string>
-    <string name="EP_DownloadSpeedBoostAverage">开启</string>
     <string name="EP_DownloadSpeedBoostExtreme">最快</string>
     <string name="EP_UploadloadSpeedBoost">上传加速</string>
     <string name="EP_SlowNetworkMode">优化网络连接</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_PrivacyAndSecurity">安全</string>
     <string name="SP_Header_Privacy">隐私</string>
     <string name="SP_NoProxyPromo">移除代理赞助商</string>
     <string name="SP_GoogleAnalytics_Desc">开启此功能后，所有的崩溃日志和统计数据都会上传至 “console.firebase.google.com”，供给开发者分析和优化本应用</string>

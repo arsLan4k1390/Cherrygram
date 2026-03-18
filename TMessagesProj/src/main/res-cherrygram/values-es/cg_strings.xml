@@ -156,7 +156,6 @@
     <string name="AP_DisableDividers">Deshabilitar divisores</string>
     <string name="AP_SystemFonts">Usar fuentes del sistema</string>
     <string name="CP_Snowflakes_Header">Copos de nieve</string>
-    <string name="CP_PremAndAnim_Header">Animaciones y funciones Premium</string>
     <string name="CP_ProfileReplyBackground">Mensajes y perfiles</string>
     <string name="CP_CustomizeProfile">Personalizar perfil</string>
     <string name="CP_ProfileChannelPreview">Canal personal</string>
@@ -174,7 +173,6 @@
     <string name="CP_ArchiveStories_Desc">Las historias se archivarán automáticamente y se moverán a su archivo.</string>
     <string name="CP_CustomWallpapers">Fondo personalizado en los chats</string>
     <string name="CP_CustomWallpapers_Desc">Configurar fondos de pantalla personalizados en chats/grupos/canales establecidos por usuarios premium/canales optimizados</string>
-    <string name="CP_DisableAnimAvatars">Deshabilitar avatares animados</string>
     <string name="CP_DisableReactionsOverlay">Desactivar la capa de reacciones</string>
     <string name="CP_DisableReactionsOverlay_Desc">Esto desactivará la capa emergente con las reacciones disponibles</string>
     <string name="CP_DisableReactionAnim">Desactivar animación de reacción</string>
@@ -197,8 +195,6 @@
     <string name="AP_ShowID">Mostrar ID y DC en el perfil</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
-    <string name="CP_Header_Chats">Chats</string>
-    <string name="CP_Header_Messages">Mensajes</string>
     <string name="CP_AutoQuoteReplies">Citar respuestas</string>
     <string name="CP_AutoQuoteReplies_Desc">Enviar una cita con el texto de todo el mensaje en lugar de una respuesta normal. No funciona en temas.</string>
     <string name="CP_TimeOnStick">Ocultar tiempo en los stickers del chat</string>
@@ -221,7 +217,6 @@
     <string name="CP_UnreadBadgeOnBackButton">Mostrar contador de chats no leídos</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Activar contador de chats no leídos en el botón atrás en el chat abierto</string>
     <string name="CP_Slider_RecentEmojisAndStickers">Contador de emojis y stickers recientes</string>
-    <string name="CP_NoRounding">Desactivar redondeo numérico</string>
     <string name="CP_DeleteForAll">Usar \"Eliminar para todos\" por defecto</string>
     <string name="CP_DeleteForAll_Desc">La casilla de verificación se marcará automáticamente al eliminar mensajes.</string>
     <string name="CP_ForwardMsgDate">Mostrar fecha del mensaje reenviado</string>
@@ -293,8 +288,6 @@ Si se encuentra una coincidencia dentro del enlace, el mensaje completo se ocult
     <string name="CP_AutoPauseVideo_Desc">Al bloquear la pantalla o cambiar al fondo</string>
     <string name="CP_DisableVibration">Deshabilitar vibración</string>
     <string name="CP_VideoSeekDuration">Doble toque para buscar en vídeo (segundos)</string>
-    <string name="CP_Header_Notification">Notificaciones</string>
-    <string name="CP_NotificationSound">Sonido de notificaciones</string>
     <string name="CP_VibrateInChats">Vibración en chat</string>
     <string name="CP_VibrateInChats_Desc">Hacer una pequeña vibración cuando recibas un mensaje en los chats</string>
     <string name="CP_SilenceNonContacts">Silenciar a los no contactos</string>
@@ -339,14 +332,11 @@ Si se encuentra una coincidencia dentro del enlace, el mensaje completo se ocult
     <string name="EP_CustomChat_Selected_Title">en lugar de</string>
     <string name="EP_Network">Red</string>
     <string name="EP_DownloadSpeedBoost">Aumento de velocidad de descarga</string>
-    <string name="EP_DownloadSpeedBoostNone">Desactivado</string>
-    <string name="EP_DownloadSpeedBoostAverage">Activado</string>
     <string name="EP_DownloadSpeedBoostExtreme">Extrema</string>
     <string name="EP_UploadloadSpeedBoost">Aumento de velocidad de subida</string>
     <string name="EP_SlowNetworkMode">Modo de red lenta</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_PrivacyAndSecurity">Privacidad y Seguridad</string>
     <string name="SP_Header_Privacy">Privacidad</string>
     <string name="SP_NoProxyPromo">No mostrar patrocinador del proxy</string>
     <string name="SP_GoogleAnalytics_Desc">Al habilitar esto, todas las fallas y estadísticas de la aplicación se informarán a \"console.firebase.google.com\" para que el desarrollador las revise.</string>

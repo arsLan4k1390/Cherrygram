@@ -37,8 +37,6 @@ public class SliderView extends View {
     public static final int TYPE_INTENSITY = 2;
     public static final int TYPE_DIMMING = 3;
 
-    public static final int TYPE_EXPOSURE = 10;
-
     private final int currentType;
 
     private float minVolume = 0;
@@ -87,15 +85,17 @@ public class SliderView extends View {
             text2.setAnimationProperties(.3f, 0, 40, CubicBezierInterpolator.EASE_OUT_QUINT);
             text2.setCallback(this);
             text2.setTextColor(0xffffffff);
-            if (currentType == TYPE_WARMTH) {
+            if (currentType == TYPE_WARMTH || currentType == TYPE_WARMTH_CG) {
                 text2.setText(LocaleController.getString(R.string.FlashWarmth));
             } else if (currentType == TYPE_INTENSITY) {
                 text2.setText(LocaleController.getString(R.string.FlashIntensity));
             } else if (currentType == TYPE_DIMMING) {
                 text2.setText(LocaleController.getString(R.string.WallpaperDimming));
-            } else if (currentType == TYPE_EXPOSURE) {
+            } else if (currentType == TYPE_EXPOSURE_CG) {
                 text2.setTextSize(dp(12));
                 text2.setText(LocaleController.getString(R.string.CP_Exposure));
+            } else if (currentType == TYPE_BRIGHTNESS_CG) {
+                text2.setText(LocaleController.getString(R.string.CP_Brightness));
             }
         }
         text.setText("");
@@ -243,23 +243,16 @@ public class SliderView extends View {
             text.setText(string);
         }
 
-        if (currentType == TYPE_WARMTH) {
+        if (currentType == TYPE_WARMTH || currentType == TYPE_WARMTH_CG) {
             final int warmthColor = FlashViews.getColor(value);
 //            text.setTextColor(warmthColor);
 //            text2.setTextColor(warmthColor);
             whitePaint.setColor(warmthColor);
-        } else if (currentType == TYPE_EXPOSURE) {
+        } else if (currentType == TYPE_EXPOSURE_CG) {
             final int warmthColor = getColorForExposure(value);
             whitePaint.setColor(warmthColor);
         }
         invalidate();
-    }
-
-    public static int getColorForExposure(float warmth) {
-        if (warmth < .5f) {
-            return ColorUtils.blendARGB(0xFF303030, 0xFF999999, Utilities.clamp(warmth / .5f, 1, 0));
-        }
-        return ColorUtils.blendARGB(0xFF999999, 0xffffffff, Utilities.clamp((warmth - .5f) / .5f, 1, 0));
     }
 
     private float r;
@@ -273,7 +266,11 @@ public class SliderView extends View {
         if (currentType == TYPE_DIMMING) {
             r = dpf2(8);
         } else {
-            r = dpf2(6.33f);
+            if (currentType == TYPE_WARMTH_CG || currentType == TYPE_BRIGHTNESS_CG) {
+                r = dp(50);
+            } else {
+                r = dpf2(6.33f);
+            }
         }
         textPaint.setTextSize(dp(16));
         text.setTextSize(dp(15));
@@ -284,7 +281,7 @@ public class SliderView extends View {
             // TODO: fix this nonsense
             w = (int) Math.min(textPaint.measureText(LocaleController.getString(R.string.StoryAudioRemove)) + dp(88), MeasureSpec.getSize(widthMeasureSpec));
             h = dp(48);
-        } else if (currentType == TYPE_EXPOSURE) {
+        } else if (currentType == TYPE_EXPOSURE_CG) {
             w = dp(200);
             h = dp(30);
         } else {
@@ -328,4 +325,18 @@ public class SliderView extends View {
     protected boolean verifyDrawable(@NonNull Drawable who) {
         return who == text || who == text2 || super.verifyDrawable(who);
     }
+
+    /** Cherrygram start */
+    public static final int TYPE_EXPOSURE_CG = 10;
+    public static final int TYPE_WARMTH_CG = 11;
+    public static final int TYPE_BRIGHTNESS_CG = 12;
+
+    public static int getColorForExposure(float warmth) {
+        if (warmth < .5f) {
+            return ColorUtils.blendARGB(0xFF303030, 0xFF999999, Utilities.clamp(warmth / .5f, 1, 0));
+        }
+        return ColorUtils.blendARGB(0xFF999999, 0xffffffff, Utilities.clamp((warmth - .5f) / .5f, 1, 0));
+    }
+    /** Cherrygram finish */
+
 }

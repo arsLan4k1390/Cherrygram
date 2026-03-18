@@ -135,8 +135,8 @@ public class DonatesPreferencesEntry extends BaseFragment implements Notificatio
     private final boolean isTestBackend = getConnectionsManager().isTestBackend();
     private boolean didDonate = DonatesManager.INSTANCE.checkAllDonatedAccounts() || DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace();
     private boolean showDonates = !isTestBackend && (ApplicationLoader.isStandaloneBuild() || didDonate);
-    public DonatesPreferencesEntry forceShowDonates() {
-        this.showDonates = !isTestBackend;
+    public DonatesPreferencesEntry forceShowDonates(boolean force) {
+        if (force) this.showDonates = !isTestBackend;
         return this;
     }
 

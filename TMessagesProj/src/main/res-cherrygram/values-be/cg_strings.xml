@@ -130,7 +130,6 @@
     <string name="AP_DisableDividers">Адключыць падзельнікі</string>
     <string name="AP_SystemFonts">Выкарыстоўваць сістэмны шрыфт</string>
     <string name="CP_Snowflakes_Header">Сняжынкі</string>
-    <string name="CP_PremAndAnim_Header">Анімацыі і Premium функцыі</string>
     <string name="CP_ProfileReplyBackground">Паведамленні і профілі</string>
     <string name="CP_CustomizeProfile">Налада профілю</string>
     <string name="CP_ProfileChannelPreview">Асабісты канал</string>
@@ -145,7 +144,6 @@
     <string name="CP_HideStories">Схаваць гісторыі</string>
     <string name="CP_CustomWallpapers">Уласны фон у чатах</string>
     <string name="CP_CustomWallpapers_Desc">Наладзьце ўласныя шпалеры ў чатах/групах/каналах</string>
-    <string name="CP_DisableAnimAvatars">Адключыць анімаваныя аватары</string>
     <string name="CP_DisableReactionsOverlay">Адключыць рэакцыі</string>
     <string name="CP_DisableReactionsOverlay_Desc">Гэта адключыць усплыўны спіс даступных рэакцый</string>
     <string name="CP_DisableReactionAnim">Адключыць анімацыю рэакцыі</string>
@@ -168,15 +166,12 @@
     <string name="AP_ShowID">Паказаць ID і DC у профілях</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
-    <string name="CP_Header_Chats">Чаты</string>
-    <string name="CP_Header_Messages">Паведамленні</string>
     <string name="CP_TimeOnStick">Схаваць час на стыкерах у чаце</string>
     <string name="CP_ChatMenuShortcuts">Ярлыкі дзеянняў ў меню чата</string>
     <string name="CP_AdminActions">Дзеянні для кіраўнікоў</string>
     <string name="CP_MessageMenu">Меню паведамленняў</string>
     <string name="CP_UnreadBadgeOnBackButton">Паказаць лічыльнік непрачытаных</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">Уключыць лічыльнік непрачытаных чатаў на кнопцы «Назад» у адкрытым чаце</string>
-    <string name="CP_NoRounding">Адключыць акругленне лічб</string>
     <string name="CP_DeleteForAll">Выкарыстоўваць \"Выдаліць для ўсіх\" па ўмаўчанні</string>
     <string name="CP_DeleteForAll_Desc">Пры выдаленні паведамленняў галачка будзе ставіцца аўтаматычна.</string>
     <string name="CP_ForwardMsgDate">Паказваць дату перасланага паведамлення</string>
@@ -197,8 +192,6 @@
     <string name="CP_AutoPauseVideo_Desc">Пры блакаванні экрана ці згортванні дадатку</string>
     <string name="CP_DisableVibration">Адключыць вібрацыю</string>
     <string name="CP_VideoSeekDuration">Naciśnicie dvojčy, kab znajści videa (dva razy)</string>
-    <string name="CP_Header_Notification">Апавяшчэнні</string>
-    <string name="CP_NotificationSound">Гук паведамлення</string>
     <string name="CP_VibrateInChats">Вібрацыя чату</string>
     <string name="CP_VibrateInChats_Desc">Выдаваць кароткую вібрацыю пры атрыманні паведамлення ў чатах</string>
     <string name="CP_SilenceNonContacts">Заглушыць не-кантакты</string>
@@ -240,14 +233,11 @@
     <string name="EP_CustomChat_Desc">Усталюйце ID іншага чату/групы/канала, каб перасылаць туды паведамленні (праз кнопку ў панэлі дзеянняў, у меню паведамлення ці пры падвойным націску)</string>
     <string name="EP_Network">Сетка</string>
     <string name="EP_DownloadSpeedBoost">Павышэнне хуткасці загрузкі</string>
-    <string name="EP_DownloadSpeedBoostNone">Выкл</string>
-    <string name="EP_DownloadSpeedBoostAverage">Укл</string>
     <string name="EP_DownloadSpeedBoostExtreme">Экстра</string>
     <string name="EP_UploadloadSpeedBoost">Павелічэнне хуткасці аддачы</string>
     <string name="EP_SlowNetworkMode">Рэжым павольнай сеткі</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_PrivacyAndSecurity">Прыватнасць і бяспека</string>
     <string name="SP_Header_Privacy">Прыватнасць</string>
     <string name="SP_NoProxyPromo">Не паказваць спонсара проксі</string>
     <string name="SP_GoogleAnalytics_Desc">Уключыўшы гэта, усе збоі дадаткаў (вылеты) і статыстыка будуць адпраўлены ў \"console.firebase.google.com\" для далейшага вывучэння распрацоўнікам.</string>

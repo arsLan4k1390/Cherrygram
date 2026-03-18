@@ -313,7 +313,7 @@ object CGChatMenuInjector {
             if (activity is LaunchActivity) {
                 openCameraScanActivity(fragment, activity.actionBarLayout)
 
-                if (AndroidUtilities.isTablet()) {
+                if (AndroidUtilities.isTablet() && activity.actionBarLayout != null && activity.rightActionBarLayout != null) {
                     activity.actionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST)
                     activity.rightActionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST)
                 }

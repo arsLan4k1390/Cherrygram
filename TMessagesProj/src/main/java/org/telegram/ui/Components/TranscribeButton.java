@@ -57,7 +57,7 @@ import java.util.Objects;
 import uz.unnarsx.cherrygram.chats.gemini.GeminiButtonsLayout;
 import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet;
 import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 
 public class TranscribeButton {
 
@@ -887,7 +887,7 @@ public class TranscribeButton {
 
     /** Cherrygram start */
     public static boolean useGeminiTranscription() {
-        return GeminiButtonsLayout.geminiButtonsVisible() && CherrygramChatsConfig.INSTANCE.getVoiceTranscriptionProvider() == CherrygramChatsConfig.TRANSCRIPTION_PROVIDER_GEMINI;
+        return GeminiButtonsLayout.geminiButtonsVisible() && CherrygramMessagesConfig.INSTANCE.getVoiceTranscriptionProvider() == CherrygramMessagesConfig.TRANSCRIPTION_PROVIDER_GEMINI;
     }
     /** Cherrygram finish */
 }

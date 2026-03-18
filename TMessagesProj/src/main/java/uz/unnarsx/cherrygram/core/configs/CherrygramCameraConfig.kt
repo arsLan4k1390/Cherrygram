@@ -15,7 +15,9 @@ import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.SharedConfig
 import uz.unnarsx.cherrygram.camera.CameraXUtils
 import uz.unnarsx.cherrygram.preferences.boolean
+import uz.unnarsx.cherrygram.preferences.float
 import uz.unnarsx.cherrygram.preferences.int
+import java.util.Calendar
 
 object CherrygramCameraConfig {
 
@@ -31,13 +33,13 @@ object CherrygramCameraConfig {
 
     /** Camera start */
     var disableAttachCamera by sharedPreferences.boolean("CP_DisableAttachCam", true)
-    var useDualCamera by sharedPreferences.boolean("CP_UseDualCamera", false)
+    var useDualCamera by sharedPreferences.boolean("CP_UseDualCameraX", false)
 
     const val Camera16to9 = 0
     const val Camera4to3 = 1
     const val Camera1to1 = 2
     const val CameraAspectDefault = 3
-    var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", CameraAspectDefault)
+    var cameraAspectRatio by sharedPreferences.int("CP_CameraAspectRatio", Camera4to3)
     /** Camera finish */
 
     /** Videomessages start */
@@ -66,6 +68,21 @@ object CherrygramCameraConfig {
     var rearCam by sharedPreferences.boolean("CP_RearCam", false)
 
     var videoMessagesResolution by sharedPreferences.int("CG_Round_Video_Resolution", 512)
+    var videoMessagesFlashWarmthIntensity by sharedPreferences.float("CG_Round_Flash_Warmth_Intensity", 0.50f)
+    var videoMessagesFlashIntensity by sharedPreferences.float("CG_Round_Flash_Intensity", 1f)
+    var videoMessagesRearFlashIntensity by sharedPreferences.float("CG_Round_Rear_Flash_Intensity", 1f)
+    var videoMessagesHintCount by sharedPreferences.int("CG_Round_Flash_Hint_Count", 0)
+
+    fun checkVideoMessagesHint() {
+        try {
+            val calendar = Calendar.getInstance()
+            val dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
+
+            if (dayOfMonth == 1) {
+                videoMessagesHintCount = 0
+            }
+        } catch (_: Exception) {}
+    }
     /** Videomessages finish */
 
 }

@@ -152,7 +152,7 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
     private boolean searching;
     private boolean onlyUsers;
     private boolean needPhonebook;
-    private boolean hasMainTabs;
+    public boolean hasMainTabs;
     private boolean destroyAfterSelect;
     private boolean returnAsResult;
     private boolean createSecretChat;
@@ -1241,11 +1241,11 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
 
     @Override
     public boolean onBackPressed(boolean invoked) {
-        if (actionBar.isActionModeShowed()) {
+        if (actionBar != null && actionBar.isActionModeShowed()) {
             if (invoked) hideActionMode();
             return false;
         } else if (animatorSearchHasQuery.getValue()) {
-            if (invoked) {
+            if (invoked && searchField != null) {
                 searchField.editText.getText().clear();
             }
             return false;
@@ -1308,6 +1308,8 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
         }
         if (alert && askAboutContacts) {
             AlertDialog.Builder builder = AlertsCreator.createContactsPermissionDialog(activity, param -> {
+                MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askAboutContacts2", false).commit();
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.contactsPermissionBadgeCheck);
                 askAboutContacts = param != 0;
                 if (param == 0) {
                     return;
@@ -1341,7 +1343,10 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
                     if (grantResults[a] == PackageManager.PERMISSION_GRANTED) {
                         ContactsController.getInstance(currentAccount).forceImportContacts();
                     } else {
-                        MessagesController.getGlobalNotificationsSettings().edit().putBoolean("askAboutContacts", askAboutContacts = false).apply();
+                        MessagesController.getGlobalNotificationsSettings().edit()
+                                .putBoolean("askAboutContacts", askAboutContacts = false)
+                                .putBoolean("askAboutContacts2", false)
+                                .apply();
                         if (SystemClock.elapsedRealtime() - permissionRequestTime < 200) {
                             try {
                                 Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
@@ -1740,4 +1745,11 @@ public class ContactsActivity extends BaseFragment implements FactorAnimator.Tar
 //        animatorSearchFieldHeight.animateTo(dp(DialogsActivity.SEARCH_FIELD_HEIGHT));
         animatorSearchFieldVisible.setValue(true, true);
     }
+
+    /** Cherrygram start */
+    public FragmentSearchField getFragmentSearchField() {
+        return searchField;
+    }
+    /** Cherrygram finish */
+
 }

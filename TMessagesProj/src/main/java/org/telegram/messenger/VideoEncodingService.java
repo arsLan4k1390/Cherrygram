@@ -16,6 +16,8 @@ import android.text.TextUtils;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+
 import org.telegram.tgnet.TLRPC;
 
 public class VideoEncodingService extends Service implements NotificationCenter.NotificationCenterDelegate {
@@ -37,6 +39,7 @@ public class VideoEncodingService extends Service implements NotificationCenter.
                 Intent intent = new Intent(ApplicationLoader.applicationContext, VideoEncodingService.class);
                 ApplicationLoader.applicationContext.startService(intent);
             } catch (Exception e) {
+                FirebaseCrashlytics.getInstance().recordException(e);
                 FileLog.e(e);
             }
         } else if (cancelled) {
@@ -67,8 +70,8 @@ public class VideoEncodingService extends Service implements NotificationCenter.
         instance = null;
         try {
             stopForeground(true);
-        } catch (Throwable ignore) {
-
+        } catch (Throwable e) {
+            FirebaseCrashlytics.getInstance().recordException(e);
         }
         NotificationManagerCompat.from(ApplicationLoader.applicationContext).cancel(4);
         NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.fileUploadProgressChanged);
@@ -116,6 +119,7 @@ public class VideoEncodingService extends Service implements NotificationCenter.
             }
             NotificationManagerCompat.from(ApplicationLoader.applicationContext).notify(4, builder.build());
         } catch (Throwable e) {
+            FirebaseCrashlytics.getInstance().recordException(e);
             FileLog.e(e);
         }
     }
@@ -142,6 +146,7 @@ public class VideoEncodingService extends Service implements NotificationCenter.
         try {
             startForeground(4, builder.build());
         } catch (Throwable e) {
+            FirebaseCrashlytics.getInstance().recordException(e);
             //ignore ForegroundServiceStartNotAllowedException
             FileLog.e(e);
         }

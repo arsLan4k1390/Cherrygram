@@ -11,6 +11,8 @@ import static org.telegram.ui.Stars.StarsController.findAttribute;
 import static org.telegram.ui.Stars.StarsIntroActivity.StarsTransactionView.getPlatformDrawable;
 import static org.telegram.ui.bots.AffiliateProgramFragment.percents;
 
+import static uz.unnarsx.cherrygram.preferences.StarsIntroActivityCG.allowSafeStars;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -164,7 +166,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.preferences.CherrygramPreferencesNavigator;
 
 public class StarsIntroActivity extends GradientHeaderActivity implements NotificationCenter.NotificationCenterDelegate {
@@ -369,7 +370,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
                 AccountFrozenAlert.show(currentAccount);
                 return;
             }
-            if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
+            if (allowSafeStars()) {
                 createSafeStars(null, null, -1);
             } else {
                 new StarsOptionsSheet(context, resourceProvider).show();
@@ -393,7 +394,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         ssb.append(getString(R.string.StarsTopUp));
         topupButton.setText(ssb, false);
         topupButton.setOnClickListener(v -> {
-            if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
+            if (allowSafeStars()) {
                 createSafeStars(null, null, -1);
             } else {
                 new StarsOptionsSheet(context, resourceProvider).show();
@@ -2491,7 +2492,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         ) {
             super(context, null, false, false, false, resourcesProvider);
 
-            if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars() && !fromSafeStars) {
+            if (allowSafeStars() && !fromSafeStars) {
                 createSafeStars(null, null, -1);
                 return;
             }
@@ -2701,7 +2702,7 @@ public class StarsIntroActivity extends GradientHeaderActivity implements Notifi
         ) {
             super(context, null, false, false, false, resourcesProvider);
 
-            if (CherrygramCoreConfig.INSTANCE.getAllowSafeStars()) {
+            if (allowSafeStars()) {
                 long balance = StarsController.getInstance(currentAccount).getBalance().amount;
                 createSafeStars(
                         formatPluralString("StarsNeededTitle", (int) Math.max(0, starsNeeded - balance)),

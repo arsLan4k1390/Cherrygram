@@ -126,6 +126,7 @@ import java.util.concurrent.CountDownLatch;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
 import uz.unnarsx.cherrygram.chats.AudioEnhance;
 import uz.unnarsx.cherrygram.core.PermissionsUtils;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 
 public class MediaController implements AudioManager.OnAudioFocusChangeListener, NotificationCenter.NotificationCenterDelegate, SensorEventListener {
 
@@ -495,7 +496,7 @@ public class MediaController implements AudioManager.OnAudioFocusChangeListener,
         public boolean isCropped;
         public int ttl;
         public long effectId;
-        public boolean highQuality = CherrygramChatsConfig.INSTANCE.getLargePhotos() && !CherrygramChatsConfig.INSTANCE.getPhotoAsSticker();
+        public boolean highQuality = CherrygramChatsConfig.INSTANCE.getLargePhotos() && !CherrygramMessagesConfig.INSTANCE.getPhotoAsSticker();
 
         public CropState cropState;
 

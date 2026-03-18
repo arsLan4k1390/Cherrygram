@@ -156,7 +156,6 @@
     <string name="AP_DisableDividers">区切り線を無効化</string>
     <string name="AP_SystemFonts">システムフォントを使用する</string>
     <string name="CP_Snowflakes_Header">スノーフレーク</string>
-    <string name="CP_PremAndAnim_Header">アニメーションとプレミアム機能</string>
     <string name="CP_ProfileReplyBackground">メッセージとプロフィール</string>
     <string name="CP_CustomizeProfile">プロフィールをカスタマイズ</string>
     <string name="CP_ProfileChannelPreview">個人チャンネル</string>
@@ -174,7 +173,6 @@
     <string name="CP_ArchiveStories_Desc">ストーリーは自動的アーカイブ化され、アーカイブに移動されます。</string>
     <string name="CP_CustomWallpapers">チャットのカスタム背景</string>
     <string name="CP_CustomWallpapers_Desc">プレミアムユーザー、ブーストされたチャンネル、チャット、グループ、チャンネルにカスタム壁紙を設定します。</string>
-    <string name="CP_DisableAnimAvatars">アニメーションアバターを無効化</string>
     <string name="CP_DisableReactionsOverlay">リアクションのオーバーレイを無効化</string>
     <string name="CP_DisableReactionsOverlay_Desc">利用可能なアクションを含むポップアップオーバーレイを無効化します。</string>
     <string name="CP_DisableReactionAnim">リアクションアニメーションを無効化</string>
@@ -197,8 +195,6 @@
     <string name="AP_ShowID">プロフィールにIDとDCを表示</string>
     <!--Appearance Preferences-->
     <!--Chats Preferences-->
-    <string name="CP_Header_Chats">チャット</string>
-    <string name="CP_Header_Messages">メッセージ</string>
     <string name="CP_AutoQuoteReplies">返信を引用</string>
     <string name="CP_AutoQuoteReplies_Desc">通常の返信ではなく、メッセージ全体を引用して送信します。トピックでは機能しません。</string>
     <string name="CP_TimeOnStick">ステッカーの時間表示を無効化</string>
@@ -221,7 +217,6 @@
     <string name="CP_UnreadBadgeOnBackButton">チャットの未読カウンターを表示</string>
     <string name="CP_UnreadBadgeOnBackButton_Desc">開いているチャット上の戻るボタンで未読のチャットカウンターが有効化します。</string>
     <string name="CP_Slider_RecentEmojisAndStickers">最近の絵文字とステッカーのカウンター</string>
-    <string name="CP_NoRounding">四捨五入の表示を無効化</string>
     <string name="CP_DeleteForAll">デフォルトで｢すべて削除｣を使用する</string>
     <string name="CP_DeleteForAll_Desc">メッセージの削除時にチェックボックスが自動的に選択されます。</string>
     <string name="CP_ForwardMsgDate">転送されたメッセージの日付を表示</string>
@@ -297,8 +292,6 @@
     <string name="CP_AutoPauseVideo_Desc">画面をロック、背景に遷移する場合</string>
     <string name="CP_DisableVibration">バイブレーションを無効化</string>
     <string name="CP_VideoSeekDuration">ダブルタップで動画をシーク (秒単位)</string>
-    <string name="CP_Header_Notification">通知</string>
-    <string name="CP_NotificationSound">通知の音</string>
     <string name="CP_VibrateInChats">チャット内のバイブレーション</string>
     <string name="CP_VibrateInChats_Desc">Make a short vibration when you receive a message in chats</string>
     <string name="CP_SilenceNonContacts">連絡先にない場合はサイレントにする</string>
@@ -343,14 +336,11 @@
     <string name="EP_CustomChat_Selected_Title">代わり</string>
     <string name="EP_Network">ネットワーク</string>
     <string name="EP_DownloadSpeedBoost">ダウンロード速度の高速化</string>
-    <string name="EP_DownloadSpeedBoostNone">OFF</string>
-    <string name="EP_DownloadSpeedBoostAverage">ON</string>
     <string name="EP_DownloadSpeedBoostExtreme">エクストリーム</string>
     <string name="EP_UploadloadSpeedBoost">アップロード速度の高速化</string>
     <string name="EP_SlowNetworkMode">低速ネットワークモード</string>
     <!--Experimental Preferences-->
     <!--Security Preferences-->
-    <string name="SP_Category_PrivacyAndSecurity">プライバシーとセキュリティ</string>
     <string name="SP_Header_Privacy">プライバシー</string>
     <string name="SP_NoProxyPromo">プロキシスポンサーを表示しない</string>
     <string name="SP_GoogleAnalytics_Desc">これを有効化することですべてのアプリのクラッシュや統計情報が、｢console.firebase.google.com｣に送信されます。開発者が問題の修正などを効率良く行えるようになります。</string>

@@ -26,9 +26,6 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.ActionBar.AlertDialog;
-import org.telegram.ui.Cells.NotificationsCheckCell;
-import org.telegram.ui.Cells.TextCell;
-import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Components.Paint.PersistColorPalette;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
@@ -42,6 +39,7 @@ import uz.unnarsx.cherrygram.core.configs.CherrygramDebugConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
+import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class DebugPreferencesEntry extends UniversalFragment {
 
@@ -53,7 +51,6 @@ public class DebugPreferencesEntry extends UniversalFragment {
 
     private final int newBlurRow = 6;
 
-    private final int chatPreviewFixRow = 21;
     private final int forceForumTabsRow = 7;
     private final int replacePunctuationRow = 8;
     private final int editTextFixRow = 9;
@@ -84,143 +81,63 @@ public class DebugPreferencesEntry extends UniversalFragment {
     @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader("Misc"));
-
         if (!CherrygramCoreConfig.isStandaloneStableBuild() && !CherrygramCoreConfig.isPlayStoreBuild()) {
-            items.add(
-                    UItem.asButtonCheck(
-                            toastRpcRow,
-                            "Toast all RPC errors *",
-                            "You'll see RPC errors from Telegram's backend as toast messages."
-                    ).setChecked(CherrygramDebugConfig.INSTANCE.getShowRPCErrors())
+            items.add(SettingsHelper.asSwitchCG(toastRpcRow, "Toast all RPC errors *", "You'll see RPC errors from Telegram's backend as toast messages.")
+                    .setChecked(CherrygramDebugConfig.INSTANCE.getShowRPCErrors())
             );
         }
-
-        items.add(
-                UItem.asButtonCheck(
-                        oldTimeStyleRow,
-                        "Default time style in chats *",
-                        "Unlike iOS and TDesktop"
-                ).setChecked(CherrygramDebugConfig.INSTANCE.getOldTimeStyle())
+        items.add(SettingsHelper.asSwitchCG(oldTimeStyleRow, "Default time style in chats *", "Unlike iOS and TDesktop")
+                .setChecked(CherrygramDebugConfig.INSTANCE.getOldTimeStyle())
         );
-
-        items.add(
-                UItem.asCheck(
-                        safeStarsRow,
-                        "Use SafeStars *"
-                ).setChecked(CherrygramCoreConfig.INSTANCE.getAllowSafeStars())
+        items.add(SettingsHelper.asSwitchCG(safeStarsRow, "Use SafeStars *")
+                .setChecked(CherrygramCoreConfig.INSTANCE.getAllowSafeStars())
         );
-
-        items.add(
-                UItem.asButton(
-                        performanceClassRow,
-                        "Force performance class",
-                        SharedConfig.performanceClassName(
-                                SharedConfig.getDevicePerformanceClass()
-                        )
-                )
-        );
-
+        items.add(UItem.asButton(performanceClassRow, "Force performance class", SharedConfig.performanceClassName(SharedConfig.getDevicePerformanceClass())));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            items.add(
-                    UItem.asButton(
-                            fixCallsNotifRow,
-                            "Fix calls notification *"
-                    )
-            );
+            items.add(UItem.asButton(fixCallsNotifRow, "Fix calls notification *"));
         }
-
         items.add(UItem.asShadow(null));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             items.add(UItem.asHeader(getString(R.string.AP_Header_Appearance)));
-
-            items.add(
-                    UItem.asCheck(
-                            newBlurRow,
-                            "New blur (GPU)"
-                    ).setChecked(SharedConfig.useNewBlur)
+            items.add(SettingsHelper.asSwitchCG(newBlurRow, "New blur (GPU)")
+                    .setChecked(SharedConfig.useNewBlur)
             );
-
             items.add(UItem.asShadow(null));
         }
 
-        items.add(UItem.asHeader(getString(R.string.CP_Header_Chats)));
-
-        items.add(
-                UItem.asCheck(
-                        chatPreviewFixRow,
-                        "Chat preview fix *"
-                ).setChecked(CherrygramDebugConfig.INSTANCE.getChatPreviewFix())
+        items.add(UItem.asHeader(getString(R.string.FilterChats)));
+        items.add(SettingsHelper.asSwitchCG(forceForumTabsRow, "Force Forum Tabs")
+                .setChecked(SharedConfig.forceForumTabs)
         );
-
-        items.add(
-                UItem.asCheck(
-                        forceForumTabsRow,
-                        "Force Forum Tabs"
-                ).setChecked(SharedConfig.forceForumTabs)
+        items.add(SettingsHelper.asSwitchCG(replacePunctuationRow, "Replace punctuation marks *", "Replace quotation marks and dashes like on TDesktop")
+                .setChecked(CherrygramDebugConfig.INSTANCE.getReplacePunctuationMarks())
         );
-
-        items.add(
-                UItem.asButtonCheck(
-                        replacePunctuationRow,
-                        "Replace punctuation marks *",
-                        "Replace quotation marks and dashes like on TDesktop"
-                ).setChecked(CherrygramDebugConfig.INSTANCE.getReplacePunctuationMarks())
+        items.add(SettingsHelper.asSwitchCG(editTextFixRow, "EditTextSugestionsFix *", "Emojis/formatting disappear when Samsung puts suggestions in edit")
+                .setChecked(CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix())
         );
-
-        items.add(
-                UItem.asButtonCheck(
-                        editTextFixRow,
-                        "EditTextSugestionsFix *",
-                        "Emojis/formatting disappear when Samsung puts suggestions in edit"
-                ).setChecked(CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix())
-        );
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            items.add(
-                    UItem.asButton(
-                            audioSourceRow,
-                            "Microphone Audio Source *",
-                            getAudioSourceValue()
-                    )
-            );
+            items.add(UItem.asButton(audioSourceRow, "Microphone Audio Source *", getAudioSourceValue()));
         }
-
-        items.add(
-                UItem.asButtonCheck(
-                        sendMaxQualityRow,
-                        "Send videos at max quality *",
-                        "Max quality will be automatically selected when you send a video"
-                ).setChecked(CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality())
+        items.add(SettingsHelper.asSwitchCG(sendMaxQualityRow, "Send videos at max quality *", "Max quality will be automatically selected when you send a video")
+                .setChecked(CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality())
         );
-
-        items.add(
-                UItem.asCheck(
-                        playGifAsVideoRow,
-                        "Play GIFs as Videos *"
-                ).setChecked(CherrygramDebugConfig.INSTANCE.getPlayGIFsAsVideos())
+        items.add(SettingsHelper.asSwitchCG(playGifAsVideoRow, "Play GIFs as Videos *")
+                .setChecked(CherrygramDebugConfig.INSTANCE.getPlayGIFsAsVideos())
         );
-
-        items.add(
-                UItem.asButtonCheck(
-                        hideTimestampRow,
-                        "Hide video timestamp *",
-                        "Saved progress for videos. Return exactly where you left off."
-                ).setChecked(CherrygramDebugConfig.INSTANCE.getHideVideoTimestamp())
+        items.add(SettingsHelper.asSwitchCG(hideTimestampRow, "Hide video timestamp *", "Saved progress for videos. Return exactly where you left off.")
+                .setChecked(CherrygramDebugConfig.INSTANCE.getHideVideoTimestamp())
         );
 
         items.add(UItem.asButton(resetDialogsRow, 0, getString(R.string.DebugMenuResetDialogs)));
         items.add(UItem.asButton(clearMediaCacheRow, 0, getString(R.string.DebugMenuClearMediaCache)));
         items.add(UItem.asButton(readAllDialogsRow, 0, getString(R.string.DebugMenuReadAllDialogs)));
-
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.Contacts)));
-
         items.add(UItem.asButton(importContactsRow, 0, getString(R.string.DebugMenuImportContacts)));
         items.add(UItem.asButton(reloadContactsRow, 0, getString(R.string.DebugMenuReloadContacts)));
         items.add(UItem.asButton(resetContactsRow, 0, getString(R.string.DebugMenuResetContacts)));
-
         items.add(UItem.asShadow("* Cherrygram's feature."));
         items.add(UItem.asShadow(null));
     }
@@ -229,51 +146,46 @@ public class DebugPreferencesEntry extends UniversalFragment {
     protected void onClick(UItem item, View view, int position, float x, float y) {
         if (item.id == toastRpcRow) {
             CherrygramDebugConfig.INSTANCE.setShowRPCErrors(!CherrygramDebugConfig.INSTANCE.getShowRPCErrors());
-            ((NotificationsCheckCell) view).setChecked(CherrygramDebugConfig.INSTANCE.getShowRPCErrors());
+            SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getShowRPCErrors());
 
             CGBulletinCreator.INSTANCE.createRestartBulletin(this);
         } else if (item.id == oldTimeStyleRow) {
             CherrygramDebugConfig.INSTANCE.setOldTimeStyle(!CherrygramDebugConfig.INSTANCE.getOldTimeStyle());
-            ((NotificationsCheckCell) view).setChecked(CherrygramDebugConfig.INSTANCE.getOldTimeStyle());
+            SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getOldTimeStyle());
         } else if (item.id == safeStarsRow) {
             CherrygramCoreConfig.INSTANCE.setAllowSafeStars(!CherrygramCoreConfig.INSTANCE.getAllowSafeStars());
-            ((TextCheckCell) view).setChecked(CherrygramCoreConfig.INSTANCE.getAllowSafeStars());
+            SettingsHelper.updateCheckState(view, CherrygramCoreConfig.INSTANCE.getAllowSafeStars());
         } else if (item.id == performanceClassRow) {
             showPerformanceClassDialog(view);
         } else if (item.id == fixCallsNotifRow) {
             openFullScreenIntentSettings();
         } else if (item.id == newBlurRow) {
             SharedConfig.toggleUseNewBlur();
-            ((TextCheckCell) view).setChecked(SharedConfig.useNewBlur);
-        } else if (item.id == chatPreviewFixRow) {
-            CherrygramDebugConfig.INSTANCE.setChatPreviewFix(!CherrygramDebugConfig.INSTANCE.getChatPreviewFix());
-            ((TextCheckCell) view).setChecked(CherrygramDebugConfig.INSTANCE.getChatPreviewFix());
-
-            CGBulletinCreator.INSTANCE.createRestartBulletin(this);
+            SettingsHelper.updateCheckState(view, SharedConfig.useNewBlur);
         } else if (item.id == forceForumTabsRow) {
             SharedConfig.toggleForceForumTabs();
-            ((TextCheckCell) view).setChecked(SharedConfig.forceForumTabs);
+            SettingsHelper.updateCheckState(view, SharedConfig.forceForumTabs);
         } else if (item.id == replacePunctuationRow) {
             CherrygramDebugConfig.INSTANCE.setReplacePunctuationMarks(!CherrygramDebugConfig.INSTANCE.getReplacePunctuationMarks());
-            ((NotificationsCheckCell) view).setChecked(CherrygramDebugConfig.INSTANCE.getReplacePunctuationMarks());
+            SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getReplacePunctuationMarks());
 
             CGBulletinCreator.INSTANCE.createRestartBulletin(this);
         } else if (item.id == editTextFixRow) {
             CherrygramDebugConfig.INSTANCE.setEditTextSuggestionsFix(!CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix());
-            ((NotificationsCheckCell) view).setChecked(CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix());
+            SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getEditTextSuggestionsFix());
 
             CGBulletinCreator.INSTANCE.createRestartBulletin(this);
         } else if (item.id == audioSourceRow) {
-            showAudioSourceDialog(view);
+            showAudioSourceDialog(() -> SettingsHelper.updateButtonValue(view, getAudioSourceValue()));
         } else if (item.id == sendMaxQualityRow) {
             CherrygramDebugConfig.INSTANCE.setSendVideosAtMaxQuality(!CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality());
-            ((NotificationsCheckCell) view).setChecked(CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality());
+            SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getSendVideosAtMaxQuality());
         } else if (item.id == playGifAsVideoRow) {
             CherrygramDebugConfig.INSTANCE.setPlayGIFsAsVideos(!CherrygramDebugConfig.INSTANCE.getPlayGIFsAsVideos());
-            ((TextCheckCell) view).setChecked(CherrygramDebugConfig.INSTANCE.getPlayGIFsAsVideos());
+            SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getPlayGIFsAsVideos());
         } else if (item.id == hideTimestampRow) {
             CherrygramDebugConfig.INSTANCE.setHideVideoTimestamp(!CherrygramDebugConfig.INSTANCE.getHideVideoTimestamp());
-            ((NotificationsCheckCell) view).setChecked(CherrygramDebugConfig.INSTANCE.getHideVideoTimestamp());
+            SettingsHelper.updateCheckState(view, CherrygramDebugConfig.INSTANCE.getHideVideoTimestamp());
         } else if (item.id == resetDialogsRow) {
             getMessagesController().forceResetDialogs();
 
@@ -323,7 +235,7 @@ public class DebugPreferencesEntry extends UniversalFragment {
                 SharedConfig.overrideDevicePerformanceClass(newClass);
             }
 
-            ((TextCell) view).setValue(SharedConfig.performanceClassName(SharedConfig.getDevicePerformanceClass()), true);
+            SettingsHelper.updateButtonValue(view, SharedConfig.performanceClassName(SharedConfig.getDevicePerformanceClass()));
 
             CGBulletinCreator.INSTANCE.createRestartBulletin(this);
         });
@@ -337,7 +249,7 @@ public class DebugPreferencesEntry extends UniversalFragment {
         getParentActivity().startActivity(intent);
     }
 
-    private void showAudioSourceDialog(View view) {
+    private void showAudioSourceDialog(Runnable runnable) {
         ArrayList<String> configStringKeys = new ArrayList<>();
         ArrayList<Integer> configValues = new ArrayList<>();
 
@@ -374,12 +286,10 @@ public class DebugPreferencesEntry extends UniversalFragment {
         configStringKeys.add("VOICE_UPLINK");
         configValues.add(CherrygramDebugConfig.AUDIO_SOURCE_VOICE_UPLINK);
 
-        PopupHelper.show(configStringKeys, "Microphone Audio Source *", configValues.indexOf(CherrygramDebugConfig.INSTANCE.getAudioSource()), getContext(),
-                i -> {
-                    CherrygramDebugConfig.INSTANCE.setAudioSource(configValues.get(i));
-                    ((TextCell) view).setValue(getAudioSourceValue(), true);
-                }
-        );
+        PopupHelper.show(configStringKeys, "Microphone Audio Source *", configValues.indexOf(CherrygramDebugConfig.INSTANCE.getAudioSource()), getContext(), i -> {
+            CherrygramDebugConfig.INSTANCE.setAudioSource(configValues.get(i));
+            if (runnable != null) runnable.run();
+        });
     }
 
     private String getAudioSourceValue() {

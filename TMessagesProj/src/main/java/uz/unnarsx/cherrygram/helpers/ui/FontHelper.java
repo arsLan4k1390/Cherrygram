@@ -32,6 +32,8 @@ import java.util.Set;
 
 public class FontHelper {
 
+    public final static String TYPEFACE_GILROY_EXTRABOLD = "fonts/gilroy_extrabold.ttf";
+
     private static final String TEST_TEXT;
     private static final int CANVAS_SIZE = 40;
     private static final Paint PAINT = new Paint() {{
@@ -97,6 +99,49 @@ public class FontHelper {
             return builder.build();
         } else {
             return Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), assetPath);
+        }
+    }
+
+    public static Typeface createTypeface2(String assetPath) {
+        if (assetPath == null || assetPath.isEmpty()) {
+            return Typeface.DEFAULT;
+        }
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Typeface.Builder builder = new Typeface.Builder(ApplicationLoader.applicationContext.getAssets(), assetPath);
+
+                String lower = assetPath.toLowerCase();
+
+                if (lower.contains("thin")) {
+                    builder.setWeight(100);
+                } else if (lower.contains("extralight")) {
+                    builder.setWeight(200);
+                } else if (lower.contains("light")) {
+                    builder.setWeight(300);
+                } else if (lower.contains("regular") || lower.contains("book")) {
+                    builder.setWeight(400);
+                } else if (lower.contains("medium")) {
+                    builder.setWeight(500);
+                } else if (lower.contains("semibold")) {
+                    builder.setWeight(600);
+                } else if (lower.contains("bold") && !lower.contains("extrabold")) {
+                    builder.setWeight(700);
+                } else if (lower.contains("extrabold") || lower.contains("black")) {
+                    builder.setWeight(800);
+                } else {
+                    builder.setWeight(400);
+                }
+
+                builder.setItalic(lower.contains("italic"));
+
+                return builder.build();
+            } else {
+                return Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), assetPath);
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+            return Typeface.DEFAULT;
         }
     }
 

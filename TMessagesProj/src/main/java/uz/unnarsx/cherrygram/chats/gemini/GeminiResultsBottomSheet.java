@@ -79,7 +79,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 
 public class GeminiResultsBottomSheet extends BottomSheet implements NotificationCenter.NotificationCenterDelegate {
@@ -115,8 +115,8 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         fixNavigationBar();
 
         MessagesController mc = MessagesController.getInstance(UserConfig.selectedAccount);
-        boolean noforwards = mc.isChatNoForwards(selectedObject.getChatId()) || selectedObject.messageOwner.noforwards || selectedObject.getDialogId() == UserObject.VERIFY;
-        boolean noforwardsOrPaidMedia = noforwards || selectedObject.type == MessageObject.TYPE_PAID_MEDIA;
+        boolean isNoForwards = mc.isPeerNoForwards(Math.abs(selectedObject.getChatId())) || selectedObject.messageOwner.noforwards || selectedObject.getDialogId() == UserObject.VERIFY;
+        boolean isNoForwardsOrPaidMedia = isNoForwards || selectedObject.type == MessageObject.TYPE_PAID_MEDIA;
 
         containerView = new ContainerView(fragment.getContext());
         sheetTopAnimated = new AnimatedFloat(containerView, 320, CubicBezierInterpolator.EASE_OUT_QUINT);
@@ -135,7 +135,7 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         textView.setPadding(dp(22), dp(0), dp(22), dp(6));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, SharedConfig.fontSize);
         textView.setTextColor(getThemedColor(Theme.key_dialogTextBlack));
-        textView.setTextIsSelectable(!noforwardsOrPaidMedia);
+        textView.setTextIsSelectable(!isNoForwardsOrPaidMedia);
 
         textViewContainer.addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
@@ -232,7 +232,7 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
         sb.setSpan(new ColoredImageSpan(ContextCompat.getDrawable(fragment.getContext(), R.drawable.msg_copy_filled_solar)), 0, 1, 0);
         copyButton.setText(sb, false);
         copyButton.setOnClickListener(v -> {
-            if (noforwardsOrPaidMedia) {
+            if (isNoForwardsOrPaidMedia) {
                 if (ChatObject.isChannel(currentChat) && !currentChat.megagroup) {
                     BulletinFactory.of(getContainer(), getResourcesProvider()).createErrorBulletin(getString(R.string.ForwardsRestrictedInfoChannel))
                             .setDuration(Bulletin.DURATION_LONG)
@@ -568,7 +568,7 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
 
             String subtitleText = "";
             if (subtitle == GEMINI_TYPE_TRANSLATE) {
-                subtitleText = capitalFirst(languageName(CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()));
+                subtitleText = capitalFirst(languageName(CherrygramMessagesConfig.INSTANCE.getTranslationTargetGemini()));
             } else if (subtitle == GEMINI_TYPE_TRANSCRIBE) {
                 subtitleText = getString(R.string.PremiumPreviewVoiceToText);
             } else if (subtitle == GEMINI_TYPE_EXPLANATION) {
@@ -586,7 +586,7 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
                 toLanguageTextView.setOnClickListener(e -> {
                     openLanguagesSelect(() -> {
                         dismiss();
-                        chatActivity.processGeminiWithText(selectedObject, null, true, false);
+                        chatActivity.getChatActivityHelper().processGeminiWithText(chatActivity, selectedObject, null, true, false);
                     });
                 });
             }
@@ -675,12 +675,12 @@ public class GeminiResultsBottomSheet extends BottomSheet implements Notificatio
                 button.setText(names.get(i));
                 button.setChecked(TextUtils.equals(
                         targetLanguages.get(i),
-                        CherrygramChatsConfig.INSTANCE.getTranslationTargetGemini()
+                        CherrygramMessagesConfig.INSTANCE.getTranslationTargetGemini()
                 ));
                 int finalI = i;
                 button.setOnClickListener(e -> {
                     adapter.updateMainView(loadingTextView);
-                    CherrygramChatsConfig.INSTANCE.setTranslationTargetGemini(targetLanguages.get(finalI));
+                    CherrygramMessagesConfig.INSTANCE.setTranslationTargetGemini(targetLanguages.get(finalI));
                     callback.run();
                 });
                 layout.addView(button);

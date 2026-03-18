@@ -532,6 +532,7 @@ public class Browser {
 
     private static Pattern domainPattern;
     public static boolean isTonsitePunycode(String url) {
+        if (url == null) return false;
         if (domainPattern == null) domainPattern = Pattern.compile("^[a-zA-Z0-9\\-\\_\\.]+\\.[a-zA-Z0-9\\-\\_]+$");
         String domain = AndroidUtilities.getHostAuthority(url, true);
         if (domain != null && (domain.endsWith(".ton") || domain.endsWith(".adnl"))) {

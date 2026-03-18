@@ -27,9 +27,13 @@ import android.widget.TextView;
 
 import androidx.core.graphics.ColorUtils;
 
+import com.google.gson.Gson;
+
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BaseController;
+import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessageObject;
@@ -111,6 +115,12 @@ public class ProfileActivityHelper extends BaseController {
                 otherItem.addSubItem(ProfileActivityHelper.OPTION_APPLY_PROFILE_BACKGROUND, R.drawable.msg_emoji_stickers, getString(R.string.CG_ProfileBackground));
             }
         }
+
+        injectCherryInfo(otherItem);
+    }
+
+    public void injectCherryInfo(ActionBarMenuItem otherItem) {
+        otherItem.addColoredGap();
 
         otherItem.addSubItem(ProfileActivityHelper.OPTION_USER_INFO, R.drawable.icon_json_solar, getString(R.string.Info));
     }
@@ -256,6 +266,42 @@ public class ProfileActivityHelper extends BaseController {
         builder.setMessage(sb);
         builder.setPositiveButton(getString(R.string.OK), null);
         baseFragment.showDialog(builder.create());
+    }
+
+    public void showRestrictionReason(BaseFragment baseFragment, TLRPC.Chat chat) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                baseFragment.getParentActivity(),
+                baseFragment.getResourceProvider()
+        );
+        builder.setTitle(getString(R.string.Info));
+
+        if (getRestrictionReasons(chat.restriction_reason) != null && getRestrictionReasons(chat.restriction_reason).length() > 0) {
+            builder.setMessage(getRestrictionReasons(chat.restriction_reason));
+        } else {
+            builder.setMessage("Chat or channel is not restricted.");
+        }
+
+        builder.setPositiveButton(getString(R.string.OK), null);
+
+        baseFragment.showDialog(builder.create());
+    }
+
+    public static String getRestrictionReasons(ArrayList<TLRPC.RestrictionReason> reasons) {
+        if (reasons == null || reasons.isEmpty()) {
+            return null;
+        }
+        FileLog.d("причины: " + new Gson().toJson(reasons));
+
+        StringBuilder sb = new StringBuilder();
+
+        for (TLRPC.RestrictionReason reason : reasons) {
+            sb.append("Platform: ").append(reason.platform)
+                    .append("\nReason: ").append(reason.reason)
+                    .append("\nText: ").append(reason.text)
+                    .append("\n\n");
+        }
+
+        return sb.toString().trim();
     }
     /** Options finish */
 

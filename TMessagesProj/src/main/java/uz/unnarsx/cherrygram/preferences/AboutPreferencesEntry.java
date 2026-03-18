@@ -36,6 +36,7 @@ import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.helpers.DeeplinkHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
+import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class AboutPreferencesEntry extends UniversalFragment {
 
@@ -65,60 +66,22 @@ public class AboutPreferencesEntry extends UniversalFragment {
     @Override
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         items.add(UItem.asHeader(getString(R.string.Info)));
-
         items.add(
-                UItem.asTextDetail(
+                SettingsHelper.asTextDetail(
                         readmeRow,
                         0,
                         CGResourcesHelper.getAppName() + " " + CGResourcesHelper.getCherryVersion() + " | " + "Telegram " + BuildVars.BUILD_VERSION_STRING,
                         getString(R.string.CGP_About_Desc)
                 )
         );
-
-        items.add(
-                UItem.asTextDetail(
-                        updatesRow,
-                        R.drawable.msg_retry_solar,
-                        getString(R.string.UP_Category_Updates),
-                        getLastCheckUpdateTime()
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        bugReportRow,
-                        R.drawable.bug_solar,
-                        getString(R.string.CG_CopyReportDetails)
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        debugPrefsRow,
-                        R.drawable.test_tube_solar,
-                        "Debug // WIP"
-                )
-        );
-
+        items.add(SettingsHelper.asTextDetail(updatesRow, R.drawable.msg_retry_solar, getString(R.string.UP_Category_Updates), getLastCheckUpdateTime()));
+        items.add(UItem.asButton(bugReportRow, R.drawable.bug_solar, getString(R.string.CG_CopyReportDetails)));
+        items.add(UItem.asButton(debugPrefsRow, R.drawable.test_tube_solar, "Debug // WIP"));
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.CGP_Links)));
-
-        items.add(
-                UItem.asButton(
-                        channelRow,
-                        R.drawable.msg_channel_solar,
-                        getString(R.string.CGP_ToChannel)
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        chatRow,
-                        R.drawable.msg_discuss_solar,
-                        getString(R.string.CGP_ToChat)
-                )
-        );
+        items.add(UItem.asButton(channelRow, R.drawable.msg_channel_solar, getString(R.string.CGP_ToChannel)));
+        items.add(UItem.asButton(chatRow, R.drawable.msg_discuss_solar, getString(R.string.CGP_ToChat)));
 
         if (!CherrygramCoreConfig.isStandalonePremiumBuild()) {
             String value;
@@ -127,34 +90,11 @@ public class AboutPreferencesEntry extends UniversalFragment {
             } else {
                 value = "commit " + BuildConfig.GIT_COMMIT_HASH.substring(0, 8);
             }
-
-            items.add(
-                    UItem.asButton(
-                            githubRow,
-                            R.drawable.github_logo_white,
-                            getString(R.string.CGP_Source),
-                            value
-                    )
-            );
+            items.add(UItem.asButton(githubRow, R.drawable.github_logo_white, getString(R.string.CGP_Source), value));
         }
 
-        items.add(
-                UItem.asButton(
-                        crowdinRow,
-                        R.drawable.msg_translate_solar,
-                        getString(R.string.CGP_Crowdin),
-                        "Crowdin"
-                )
-        );
-
-        items.add(
-                UItem.asButton(
-                        policyRow,
-                        R.drawable.msg_policy_solar,
-                        getString(R.string.PrivacyPolicy)
-                )
-        );
-
+        items.add(UItem.asButton(crowdinRow, R.drawable.msg_translate_solar, getString(R.string.CGP_Crowdin), "Crowdin"));
+        items.add(UItem.asButton(policyRow, R.drawable.msg_policy_solar, getString(R.string.PrivacyPolicy)));
         items.add(UItem.asShadow(null));
     }
 

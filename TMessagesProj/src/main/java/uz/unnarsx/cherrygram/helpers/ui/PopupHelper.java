@@ -151,7 +151,7 @@ public class PopupHelper {
 
         if (title.equals(getString(R.string.CP_AdminActions))) {
             builder.setNegativeButton(getString(R.string.Back),
-                    ((dialog, which) -> ChatsPreferencesEntry.INSTANCE.showChatMenuItemsConfigurator(fragment))
+                    ((dialog, which) -> ChatsPreferencesEntry.showChatMenuItemsConfigurator(fragment))
             );
         }
 

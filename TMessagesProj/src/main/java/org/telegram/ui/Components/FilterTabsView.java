@@ -320,12 +320,7 @@ public class FilterTabsView extends FrameLayout {
         @SuppressLint("DrawAllocation")
         @Override
         protected void onDraw(@NonNull Canvas canvas) {
-            if (currentTab.counter > 0) {
-                setContentDescription(currentTab.title + " ("+ currentTab.counter + ")");
-            } else {
-                setContentDescription(currentTab.title);
-            }
-            boolean reorderEnabled = (!currentTab.isDefault || UserConfig.getInstance(UserConfig.selectedAccount).isPremium());
+            boolean reorderEnabled = true;
             boolean showRemove = !currentTab.isDefault && reorderEnabled;
             if (reorderEnabled && editingAnimationProgress != 0) {
                 canvas.save();
@@ -1661,29 +1656,31 @@ public class FilterTabsView extends FrameLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (!tabs.isEmpty()) {
             final int width = MeasureSpec.getSize(widthMeasureSpec) - listViewPaddingH * 2;
-            int trueTabsWidth;
             Tab firstTab = findDefaultTab();
-            if (firstTab != null && !CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats())  {
-                firstTab.setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
-                int tabWidth = firstTab.getWidth(false);
-                firstTab.setTitle(allTabsWidth > width ? LocaleController.getString(R.string.FilterAllChatsShort) : LocaleController.getString(R.string.FilterAllChats), null, false);
-                trueTabsWidth = allTabsWidth - tabWidth;
-                trueTabsWidth += firstTab.getWidth(false);
-            } else {
-                trueTabsWidth = allTabsWidth;
+            if (firstTab != null || CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats()) {
+                int trueTabsWidth;
+                if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats()) {
+                    firstTab.setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
+                    int tabWidth = firstTab.getWidth(false);
+                    firstTab.setTitle(allTabsWidth > width ? LocaleController.getString(R.string.FilterAllChatsShort) : LocaleController.getString(R.string.FilterAllChats), null, false);
+                    trueTabsWidth = allTabsWidth - tabWidth;
+                    trueTabsWidth += firstTab.getWidth(false);
+                } else {
+                    trueTabsWidth = allTabsWidth;
+                }
+                int prevWidth = additionalTabWidth;
+                additionalTabWidth = trueTabsWidth < width ? (width - trueTabsWidth) / tabs.size() : 0;
+                if (prevWidth != additionalTabWidth) {
+                    ignoreLayout = true;
+                    RecyclerView.ItemAnimator animator = listView.getItemAnimator();
+                    listView.setItemAnimator(null);
+                    adapter.notifyDataSetChanged();
+                    listView.setItemAnimator(animator);
+                    ignoreLayout = false;
+                }
+                updateTabsWidths();
+                invalidated = false;
             }
-            int prevWidth = additionalTabWidth;
-            additionalTabWidth = trueTabsWidth < width ? (width - trueTabsWidth) / tabs.size() : 0;
-            if (prevWidth != additionalTabWidth) {
-                ignoreLayout = true;
-                RecyclerView.ItemAnimator animator = listView.getItemAnimator();
-                listView.setItemAnimator(null);
-                adapter.notifyDataSetChanged();
-                listView.setItemAnimator(animator);
-                ignoreLayout = false;
-            }
-            updateTabsWidths();
-            invalidated = false;
         }
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
@@ -1845,8 +1842,12 @@ public class FilterTabsView extends FrameLayout {
                 invalidated = true;
                 requestLayout();
                 allTabsWidth = 0;
-                if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats())
-                    findDefaultTab().setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
+                if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats()) {
+                    final Tab defaultTab = findDefaultTab();
+                    if (defaultTab != null) {
+                        defaultTab.setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
+                    }
+                }
                 for (int b = 0; b < N; b++) {
                     allTabsWidth += tabs.get(b).getWidth(true) + dp(TAB_PADDING_WIDTH);
                 }
@@ -1877,8 +1878,12 @@ public class FilterTabsView extends FrameLayout {
             listView.setItemAnimator(itemAnimator);
             adapter.notifyDataSetChanged();
             allTabsWidth = 0;
-            if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats())
-                findDefaultTab().setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
+            if (!CherrygramAppearanceConfig.INSTANCE.getTabsHideAllChats()) {
+                final Tab defaultTab = findDefaultTab();
+                if (defaultTab != null) {
+                    defaultTab.setTitle(LocaleController.getString(R.string.FilterAllChats), null, false);
+                }
+            }
             for (int b = 0, N = tabs.size(); b < N; b++) {
                 allTabsWidth += tabs.get(b).getWidth(true) + dp(TAB_PADDING_WIDTH);
             }

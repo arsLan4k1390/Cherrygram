@@ -26,7 +26,7 @@ import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.PopupSwipeBackLayout;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 
 public class GeminiButtonsLayout {
 
@@ -89,7 +89,7 @@ public class GeminiButtonsLayout {
     }
 
     public static boolean geminiButtonsVisible() {
-        return CherrygramChatsConfig.INSTANCE.getGeminiApiKey().length() > 10 && CherrygramChatsConfig.INSTANCE.getGeminiModelName().length() > 5;
+        return CherrygramMessagesConfig.INSTANCE.getGeminiApiKey().length() > 10 && CherrygramMessagesConfig.INSTANCE.getGeminiModelName().length() > 5;
     }
 
 }

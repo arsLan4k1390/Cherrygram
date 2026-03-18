@@ -34,11 +34,12 @@ import org.telegram.ui.Components.TranslateAlert2
 import org.telegram.ui.Components.UndoView
 import uz.unnarsx.cherrygram.chats.JsonBottomSheet
 import uz.unnarsx.cherrygram.chats.gemini.GeminiResultsBottomSheet
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
-import uz.unnarsx.cherrygram.core.configs.CherrygramExperimentalConfig
 import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper
 import androidx.core.view.isVisible
 import org.telegram.messenger.AndroidUtilities.dp
+import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig
+import uz.unnarsx.cherrygram.helpers.ProfileActivityHelper
 
 object ChatsHelper2 {
 
@@ -224,7 +225,7 @@ object ChatsHelper2 {
             preferences.getString("CP_CustomChatIDSM", UserConfig.getInstance(UserConfig.selectedAccount).clientUserId.toString())
         val chatID = savedMessagesChatID!!.replace("-100", "-").toLong()
 
-        return if (CherrygramExperimentalConfig.customChatForSavedMessages) chatID
+        return if (CherrygramChatsConfig.customChatForSavedMessages) chatID
         else UserConfig.getInstance(UserConfig.selectedAccount).clientUserId
     }
     /** Custom chat id for Saved Messages finish */
@@ -266,7 +267,7 @@ object ChatsHelper2 {
                 if (sa.isJacksonSupportedAndEnabled) "Switch to GSON" else "Switch to Jackson"
             ) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    CherrygramChatsConfig.jacksonJSON_Provider = !CherrygramChatsConfig.jacksonJSON_Provider
+                    CherrygramMessagesConfig.jacksonJSON_Provider = !CherrygramMessagesConfig.jacksonJSON_Provider
                     sa.dismiss()
                     JsonBottomSheet.showAlert(sa.context, sa.resourcesProvider, sa.fragment, messageObject, null)
                 } else {
@@ -318,6 +319,13 @@ object ChatsHelper2 {
                 }
             ) {}
 
+            .addGapIf(messageObject.messageOwner != null && messageObject.messageOwner.restriction_reason != null && !ProfileActivityHelper.getRestrictionReasons(messageObject.messageOwner.restriction_reason).isNullOrEmpty())
+            .addTextIf(
+                messageObject.messageOwner != null && messageObject.messageOwner.restriction_reason != null && !ProfileActivityHelper.getRestrictionReasons(messageObject.messageOwner.restriction_reason).isNullOrEmpty(),
+                ProfileActivityHelper.getRestrictionReasons(messageObject.messageOwner.restriction_reason),
+                13
+            )
+
             .setDimAlpha(100)
             .translate(-AndroidUtilities.dp(15f).toFloat(), 0f)
             .show()
@@ -326,11 +334,11 @@ object ChatsHelper2 {
 
     /** Message slide action start */
     fun injectChatActivityMsgSlideAction(cf: ChatActivity, msg: MessageObject, isChannel: Boolean, classGuid: Int) {
-        when (CherrygramChatsConfig.messageSlideAction) {
-            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_REPLY -> {
+        when (CherrygramMessagesConfig.messageSlideAction) {
+            CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_REPLY -> {
                 cf.showFieldPanelForReply(msg)
             }
-            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_SAVE -> {
+            CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_SAVE -> {
                 val chatID = getCustomChatID()
 
                 cf.sendMessagesHelper.sendMessage(arrayListOf(msg), chatID, false, false, true, 0, 0)
@@ -343,7 +351,7 @@ object ChatsHelper2 {
                     cf.undoView!!.showWithAction(chatID, UndoView.ACTION_FWD_MESSAGES, arrayListOf(msg).size)
                 }
             }
-            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> {
+            CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_TRANSLATE -> {
                 val languageAndTextToTranslate: String = msg.messageOwner.message
                 val toLang = TranslateAlert2.getToLanguage()
                 val alert = TranslateAlert2.showAlert(
@@ -360,16 +368,16 @@ object ChatsHelper2 {
                 alert.setDimBehindAlpha(100)
                 alert.setDimBehind(true)
             }
-            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI -> {
+            CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_TRANSLATE_GEMINI -> {
                 if (msg == null && msg.messageOwner == null && msg.messageOwner.message == null) {
                     return
                 }
 
                 GeminiResultsBottomSheet.setMessageObject(msg)
                 GeminiResultsBottomSheet.setCurrentChat(cf.currentChat)
-                cf.processGeminiWithText(msg, null, true, false)
+                cf.chatActivityHelper.processGeminiWithText(cf, msg, null, true, false)
             }
-            CherrygramChatsConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> {
+            CherrygramMessagesConfig.MESSAGE_SLIDE_ACTION_DIRECT_SHARE -> {
                 cf.showDialog(object : ShareAlert(cf.parentActivity, arrayListOf(msg), null, isChannel, null, false) {
                     override fun dismissInternal() {
                         super.dismissInternal()

@@ -94,6 +94,7 @@ import java.util.Objects;
 import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
 import me.vkryl.android.animator.ReplaceAnimator;
+import uz.unnarsx.cherrygram.helpers.ui.FontHelper;
 
 @SuppressLint("ViewConstructor")
 public class DialogStoriesCell extends FrameLayout implements NotificationCenter.NotificationCenterDelegate, FactorAnimator.Target {
@@ -319,7 +320,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         titleView.setGravity(Gravity.LEFT);
         titleView.setTextColor(getTextLogoColor());
         titleView.setEllipsizeByGradient(true);
-        titleView.setTypeface(AndroidUtilities.bold());
+        titleView.setTypeface(FontHelper.createTypeface2(FontHelper.TYPEFACE_GILROY_EXTRABOLD)); // AndroidUtilities.bold()
         titleView.setPadding(0, dp(8), 0, dp(8));
         titleView.setTextSize(dp(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 20));
         addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
@@ -1112,7 +1113,6 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         if (subtitleOverlayContainer != null) {
             subtitleOverlayContainer.updateColors();
         }
-        telegramLogoView.setColorFilter(getTextLogoColor(), PorterDuff.Mode.MULTIPLY);
         telegramLogoView.setColorFilter(getTextLogoColor(), PorterDuff.Mode.MULTIPLY);
         AndroidUtilities.forEachViews(recyclerListView, view -> {
             StoryCell cell = (StoryCell) view;
@@ -2182,4 +2182,30 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             subtitleOverlayContainer.setVisibility(progress > 0 ? VISIBLE : GONE);
         }
     }
+
+    /** Cherrygram start */
+    public void setTitleOverlayText(CharSequence titleOverlayText, boolean showEmojiStatus) {
+        if (titleOverlayText != null) {
+            hasOverlayText = true;
+
+            titleView.setText(titleOverlayText, !LocaleController.isRTL);
+            ellipsizeSpanAnimator.addView(titleView);
+            ellipsizeSpanAnimator.addView(telegramLogoView);
+
+            if (emojiStatusView != null) {
+                emojiStatusView.setAlpha(showEmojiStatus && collapsed ? 1f : 0f);
+                emojiStatusView.setVisibility(showEmojiStatus && collapsed ? VISIBLE : GONE);
+            }
+        } else {
+            hasOverlayText = false;
+            overlayTextId = 0;
+
+            titleView.setText(currentTitle, !LocaleController.isRTL);
+            ellipsizeSpanAnimator.removeView(titleView);
+        }
+
+        animatorHasTitleText.setValue(hasOverlayText, true);
+    }
+    /** Cherrygram finish */
+
 }

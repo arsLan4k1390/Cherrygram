@@ -119,6 +119,7 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.AuthTokensHelper;
 import org.telegram.messenger.BillingController;
+import org.telegram.messenger.BuildConfig;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.CallReceiver;
 import org.telegram.messenger.ContactsController;
@@ -131,7 +132,7 @@ import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
-//import org.telegram.messenger.PasskeysController;
+import org.telegram.messenger.PasskeysController;
 import org.telegram.messenger.PushListenerController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SRPHelper;
@@ -2517,7 +2518,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 });
             }
 
-            /*final boolean allowTestBackend = (BuildVars.DEBUG_VERSION || TEST_BACKEND_IN_STORE) || getConnectionsManager().isTestBackend();
+            /*final boolean allowTestBackend = (BuildVars.DEBUG_VERSION || TEST_BACKEND_IN_STORE && !BuildConfig.BUNDLE) || getConnectionsManager().isTestBackend();
             if (allowTestBackend && activityMode == MODE_LOGIN) {
                 testBackendCheckBox = new CheckBoxCell(context, 2);
                 testBackendCheckBox.setText(getString(R.string.DebugTestBackend), "", testBackend = getConnectionsManager().isTestBackend(), false);
@@ -3080,7 +3081,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 builder.setMessage(getString("AllowReadCall", R.string.AllowReadCall));
                                 resId = R.raw.incoming_calls;
                             }*/
-                            builder.setMessage(LocaleController.getString("AllowReadCall", R.string.AllowReadCall));
+                            builder.setMessage(getString(R.string.AllowReadCall));
                             resId = R.raw.incoming_calls;
                             builder.setTopAnimation(resId, 46, false, Theme.getColor(Theme.key_dialogTopBackground));
                             permissionsDialog = showDialog(builder.create());
@@ -3101,7 +3102,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("ChooseCountry", R.string.ChooseCountry));
                 needHideProgress(false);
                 return;
-            } else if (countryState == COUNTRY_STATE_INVALID && !BuildVars.DEBUG_VERSION && !TEST_BACKEND_IN_STORE) {
+            } else if (countryState == COUNTRY_STATE_INVALID && !BuildVars.DEBUG_VERSION && !(TEST_BACKEND_IN_STORE && !BuildConfig.BUNDLE)) {
                 needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString(R.string.WrongCountry));
                 needHideProgress(false);
                 return;
@@ -3460,22 +3461,22 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         }
                     }
                 }
-                /*if (activityMode == MODE_LOGIN) {
+                if (activityMode == MODE_LOGIN) {
                     requestPasskey(false);
-                }*/
+                }
             }, SHOW_DELAY);
         }
 
         @Override
         public void onDestroyActivity() {
             super.onDestroyActivity();
-            /*if (cancelRequestingPasskey != null) {
+            if (cancelRequestingPasskey != null) {
                 cancelRequestingPasskey.run();
                 cancelRequestingPasskey = null;
-            }*/
+            }
         }
 
-        /*private boolean requestedPasskey = false;
+        private boolean requestedPasskey = false;
         private boolean requestingPasskey = false;
         private Runnable cancelRequestingPasskey;
         private void requestPasskey(boolean clickedButton) {
@@ -3493,6 +3494,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         subtitleView.setText(AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(getString(R.string.StartTextPasskey), () -> {
                             requestPasskey(true);
                         }), true));
+                    }
+                    if ("EMPTY".equals(err)) {
+                        BulletinFactory.of(LoginActivity.this).createSimpleBulletin(R.raw.info, getString(R.string.CG_PasskeyNoCredentialAvailable)).show();
                     }
                     return;
                 }
@@ -3533,7 +3537,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         }
                     }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
                 } else if (err != null) {
-                    if (BuildVars.DEBUG_VERSION)
+                    // if (BuildVars.DEBUG_VERSION)
                         BulletinFactory.of(LoginActivity.this).showForError(err);
                     return;
                 }
@@ -3541,7 +3545,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     onAuthSuccess((TLRPC.TL_auth_authorization) authObject);
                 }
             });
-        }*/
+        }
 
         @Override
         public String getHeaderName() {
@@ -6170,7 +6174,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
         @Override
         public boolean needBackButton() {
-            return !emailChangeIsSuggestion;
+            return true;
         }
 
         @Override
@@ -6279,7 +6283,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             signInWithGoogleView.setMaxLines(2);
 
             SpannableStringBuilder str = new SpannableStringBuilder("d ");
-            Drawable dr = ContextCompat.getDrawable(context, com.google.android.gms.auth.api.R.drawable.googleg_standard_color_18);
+            Drawable dr = ContextCompat.getDrawable(context, R.drawable.googleg_standard_color_18);
             dr.setBounds(0, AndroidUtilities.dp(9), AndroidUtilities.dp(18), AndroidUtilities.dp(18 + 9));
             str.setSpan(new ImageSpan(dr, ImageSpan.ALIGN_BOTTOM), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             str.setSpan(new ReplacementSpan() {
@@ -6353,7 +6357,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
         @Override
         public boolean needBackButton() {
-            return true;
+            return !emailChangeIsSuggestion;
         }
 
         @Override
@@ -6625,7 +6629,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             signInWithGoogleView.setMaxLines(2);
 
             SpannableStringBuilder str = new SpannableStringBuilder("d ");
-            Drawable dr = ContextCompat.getDrawable(context, R.drawable.camera_icon_system);
+            Drawable dr = ContextCompat.getDrawable(context, R.drawable.googleg_standard_color_18);
             dr.setBounds(0, AndroidUtilities.dp(9), AndroidUtilities.dp(18), AndroidUtilities.dp(18 + 9));
             str.setSpan(new ImageSpan(dr, ImageSpan.ALIGN_BOTTOM), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             str.setSpan(new ReplacementSpan() {

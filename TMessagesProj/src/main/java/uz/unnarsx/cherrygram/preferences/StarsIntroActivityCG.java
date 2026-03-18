@@ -18,6 +18,7 @@ import android.graphics.Color;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.TypedValue;
@@ -38,7 +39,9 @@ import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
+import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.browser.Browser;
+import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.ui.AccountFrozenAlert;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.HeaderCell;
@@ -70,6 +73,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.misc.Constants;
 
@@ -228,13 +232,13 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
 
         ButtonWithCounterView buyViaSafeStarsButton = new ButtonWithCounterView(getContext(), resourceProvider);
         buyViaSafeStarsButton.setRound();
-        buyViaSafeStarsButton.setText(getString(R.string.CG_SafeStars_buy), false);
+        buyViaSafeStarsButton.setText(getString(R.string.CG_SafeStars_buy) + " (" + getString(R.string.CG_SafeStars_Desc) + ")", false);
         buyViaSafeStarsButton.setOnClickListener(v -> {
             if (MessagesController.getInstance(currentAccount).isFrozen()) {
                 AccountFrozenAlert.show(currentAccount);
                 return;
             }
-            openSafeStars(context);
+            openSafeStars(context, false, "");
         });
         oneButtonsLayout.addView(buyViaSafeStarsButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48, 0, 0, 0, 8));
 
@@ -253,24 +257,6 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
         oneButtonsLayout.addView(buyViaTelegramButton, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 48));
 
         balanceLayout.addView(buttonsLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 20, 17, 20, 0));
-    }
-
-    private void openSafeStars(Context context) {
-        Set<String> cyrillicLangs = new HashSet<>(Arrays.asList(
-                "ru", // Русский
-                "uk", // Украинский
-                "be", // Белорусский
-                "bg", // Болгарский
-                "sr", // Сербский
-                "kk", // Казахский
-                "ky", // Киргизский
-                "tg", // Таджикский
-                "uz"  // Узбекский
-        ));
-
-        String lang = LocaleController.getInstance().getCurrentLocaleInfo().shortName;
-
-        Browser.openUrl(context, cyrillicLangs.contains(lang) ? Constants.CG_SAFESTARS_RU : Constants.CG_SAFESTARS);
     }
 
     private void createTermsView(Context context) {
@@ -442,6 +428,37 @@ public class StarsIntroActivityCG extends GradientHeaderActivity implements Noti
         }
 
         return str;
+    }
+
+    public static void openSafeStars(Context context, boolean premium, String userName) {
+        Set<String> cyrillicLangs = new HashSet<>(Arrays.asList(
+                "ru", // Русский
+                "uk", // Украинский
+                "be", // Белорусский
+                "bg", // Болгарский
+                "sr", // Сербский
+                "kk", // Казахский
+                "ky", // Киргизский
+                "tg", // Таджикский
+                "uz"  // Узбекский
+        ));
+
+        String lang = LocaleController.getInstance().getCurrentLocaleInfo().shortName;
+        String baseUrl = cyrillicLangs.contains(lang) ? Constants.CG_SAFESTARS_RU : Constants.CG_SAFESTARS;
+
+        StringBuilder url = new StringBuilder(baseUrl);
+
+        if (premium) {
+            url.append("&premium");
+            if (!TextUtils.isEmpty(userName)) {
+                url.append("&username=").append(userName);
+            }
+        }
+        Browser.openUrl(context, url.toString());
+    }
+
+    public static boolean allowSafeStars() {
+        return CherrygramCoreConfig.INSTANCE.getAllowSafeStars() && !ConnectionsManager.getInstance(UserConfig.selectedAccount).isTestBackend();
     }
 
 }

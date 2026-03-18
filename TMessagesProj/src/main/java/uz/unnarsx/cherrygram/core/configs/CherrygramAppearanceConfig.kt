@@ -26,6 +26,7 @@ object CherrygramAppearanceConfig {
 
     /** Header start */
     var centerTitle by sharedPreferences.boolean("AP_CenterTitle", true)
+    var hideSearchFiled by sharedPreferences.boolean("AP_HideSearchField", true)
     var drawSnowInActionBar by sharedPreferences.boolean("AP_DrawSnowInActionBar", false && SharedConfig.getDevicePerformanceClass() >= SharedConfig.PERFORMANCE_CLASS_AVERAGE)
     /** Header finish */
 
@@ -46,8 +47,6 @@ object CherrygramAppearanceConfig {
     /** Appearance finish */
 
     /** Folders start */
-    var foldersAtBottom by sharedPreferences.boolean("AP_FoldersAtBottom", false)
-    var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
     var tabsHideAllChats by sharedPreferences.boolean("CP_NewTabs_RemoveAllChats", false)
     var tabsNoUnread by sharedPreferences.boolean("CP_NewTabs_NoCounter", false)
 
@@ -57,13 +56,17 @@ object CherrygramAppearanceConfig {
     var tabMode by sharedPreferences.int("AP_TabMode", TAB_TYPE_MIX)
 
     var tabStyleStroke by sharedPreferences.boolean("AP_TabStyleAddStroke", false)
+    var folderNameInHeader by sharedPreferences.boolean("AP_FolderNameInHeader", false)
+    var foldersAtBottom by sharedPreferences.boolean("AP_FoldersAtBottom", false)
     /** Folders finish */
 
     /** Main tabs start */
     var showMainTabs by sharedPreferences.boolean("AP_ShowMainTabs", true)
     var openSettingsBySwipe by sharedPreferences.boolean("AP_OpenSettingsBySwipe", false)
-    var mainTabsOrder by sharedPreferences.string("AP_MainTabsPosition", "SETTINGS,CHATS,!CONTACTS,!CALLS,!PROFILE,SEARCH")
+    var mainTabsOrder by sharedPreferences.string("AP_MainTabsPosition_New", "SETTINGS,CHATS,!PROFILE,!CONTACTS,!CALLS,SEARCH")
+    var showSearchInTabs by sharedPreferences.boolean("AP_ShowSearchInTabs_New", true)
     var showMainTabsTitle by sharedPreferences.boolean("AP_ShowMainTabsTitle", true)
+    var mainTabsForceOpenChats by sharedPreferences.boolean("AP_MainTabsForceOpenChats", false)
     /** Main tabs finish */
 
     /** Messages and profiles start */

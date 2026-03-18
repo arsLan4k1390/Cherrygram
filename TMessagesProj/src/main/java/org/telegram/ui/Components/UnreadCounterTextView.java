@@ -276,4 +276,5 @@ public class UnreadCounterTextView extends View {
         return lastText;
     }
     /** Cherrygram finish */
+
 }

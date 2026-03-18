@@ -102,8 +102,17 @@ public class AnimatedTextView extends View {
             }
 
             public void draw(Canvas canvas, float alpha) {
+                canvas.save();
+
+                Paint.FontMetricsInt fm = textPaint.getFontMetricsInt();
+                float lineHeight = fm.descent - fm.ascent;
+                float layoutHeight = layout.getLineBottom(0) - layout.getLineTop(0);
+                float baselineShift = (lineHeight - layoutHeight) / 2f;
+
+                canvas.translate(0, baselineShift);
                 layout.draw(canvas);
                 AnimatedEmojiSpan.drawAnimatedEmojis(canvas, layout, emoji, 0, null, 0, 0, 0, alpha, emojiColorFilter);
+                canvas.restore();
             }
         }
 
@@ -119,7 +128,7 @@ public class AnimatedTextView extends View {
         private boolean toSetTextMoveDown;
 
         private long animateDelay = 0;
-        private long animateDuration = 320;
+        private long animateDuration = 350;
         private TimeInterpolator animateInterpolator = CubicBezierInterpolator.EASE_OUT_QUINT;
         private float animateWave = -1;
         private float moveAmplitude = .3f;

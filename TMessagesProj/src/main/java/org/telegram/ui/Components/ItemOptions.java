@@ -61,12 +61,17 @@ import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenuSubItem;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
 import org.telegram.ui.ActionBar.BaseFragment;
+import org.telegram.ui.ActionBar.INavigationLayout;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.SharedPhotoVideoCell2;
 import org.telegram.ui.Cells.TextCell;
 import org.telegram.ui.Cells.UserCell;
+import org.telegram.ui.ContactsActivity;
+import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.Gifts.GiftSheet;
+import org.telegram.ui.MainTabsActivity;
 import org.telegram.ui.ProfileActivity;
+import org.telegram.ui.SettingsActivity;
 import org.telegram.ui.Stories.StoriesController;
 import org.telegram.ui.Stories.recorder.HintView2;
 
@@ -103,6 +108,9 @@ public class ItemOptions {
     }
     public static ItemOptions makeOptions(@NonNull ViewGroup container, @Nullable Theme.ResourcesProvider resourcesProvider, @NonNull View scrimView, boolean swipeback, boolean shownFromBottom) {
         return new ItemOptions(container, resourcesProvider, scrimView, swipeback, shownFromBottom);
+    }
+    public static ItemOptions makeOptions(@NonNull ViewGroup container, @Nullable Theme.ResourcesProvider resourcesProvider, @NonNull View scrimView, boolean swipeback, boolean shownFromBottom, boolean useScrollView) {
+        return new ItemOptions(container, resourcesProvider, scrimView, swipeback, shownFromBottom, useScrollView);
     }
 
     private ViewGroup container;
@@ -161,10 +169,29 @@ public class ItemOptions {
 
     public boolean swipeback, shownFromBottom, useScrollView;
 
+    private static BaseFragment downFragment(BaseFragment fragment) {
+        if (
+            fragment instanceof ProfileActivity && ((ProfileActivity) fragment).hasMainTabs ||
+            fragment instanceof DialogsActivity && ((DialogsActivity) fragment).hasMainTabs ||
+            fragment instanceof ContactsActivity && ((ContactsActivity) fragment).hasMainTabs ||
+            fragment instanceof SettingsActivity && ((SettingsActivity) fragment).hasMainTabs
+        ) {
+            final INavigationLayout layout = fragment.getParentLayout();
+            if (layout != null) {
+                final BaseFragment lastFragment = layout.getSafeLastFragment();
+                if (lastFragment instanceof MainTabsActivity) {
+                    return lastFragment;
+                }
+            }
+        }
+        return fragment;
+    }
+
     private ItemOptions(BaseFragment fragment, View scrimView, boolean swipeback, boolean useScrollView, boolean shownFromBottom) {
         if (fragment == null && fragment.getContext() == null) {
             return;
         }
+        fragment = downFragment(fragment);
 
         this.fragment = fragment;
         this.resourcesProvider = fragment.getResourceProvider();
@@ -179,6 +206,14 @@ public class ItemOptions {
     }
 
     private ItemOptions(ViewGroup container, Theme.ResourcesProvider resourcesProvider, View scrimView, boolean swipeback, boolean shownFromBottom) {
+        this(container, resourcesProvider, scrimView, swipeback, shownFromBottom, false);
+    }
+
+    private ItemOptions(ViewGroup container, Theme.ResourcesProvider resourcesProvider, View scrimView, boolean swipeback, boolean shownFromBottom, boolean useScrollView) {
+        this(container, resourcesProvider, scrimView, swipeback, shownFromBottom, useScrollView, false);
+    }
+
+    private ItemOptions(ViewGroup container, Theme.ResourcesProvider resourcesProvider, View scrimView, boolean swipeback, boolean shownFromBottom, boolean useScrollView, boolean fullyRounded) {
         if (container == null || container.getContext() == null) {
             return;
         }
@@ -190,6 +225,8 @@ public class ItemOptions {
         this.dimAlpha = AndroidUtilities.computePerceivedBrightness(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider)) > .705 ? 0x66 : 0x33;
         this.swipeback = swipeback;
         this.shownFromBottom = shownFromBottom;
+        this.useScrollView = useScrollView;
+        this.fullyRounded = fullyRounded;
 
         init();
     }
@@ -208,7 +245,7 @@ public class ItemOptions {
     }
 
     private void init() {
-        lastLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, R.drawable.popup_fixed_alert4, resourcesProvider, (swipeback ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_USE_SWIPEBACK : 0) | (shownFromBottom ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_SHOWN_FROM_BOTTOM : 0) | (!useScrollView ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_DONT_USE_SCROLLVIEW : 0)) {
+        lastLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, R.drawable.popup_fixed_alert4, resourcesProvider, (swipeback ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_USE_SWIPEBACK : 0) | (shownFromBottom ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_SHOWN_FROM_BOTTOM : 0) | (!useScrollView ? ActionBarPopupWindow.ActionBarPopupWindowLayout.FLAG_DONT_USE_SCROLLVIEW : 0), fullyRounded, fullyRounded ? 50 : 0) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 if (this == layout && maxHeight > 0) {
@@ -1741,6 +1778,7 @@ public class ItemOptions {
                     if (scrimView instanceof ScrimView) {
                         ((ScrimView) scrimView).drawScrim(canvas, dimProgress);
                     } else {
+                        canvas.translate(-scrimView.getScrollX(), -scrimView.getScrollY());
                         scrimView.draw(canvas);
                     }
                     canvas.restore();
@@ -1831,6 +1869,12 @@ public class ItemOptions {
     }
 
     /** Cherrygram start */
+    private boolean fullyRounded = false;
+
+    public static ItemOptions makeOptions(@NonNull ViewGroup container, @Nullable Theme.ResourcesProvider resourcesProvider, @NonNull View scrimView, boolean swipeback, boolean shownFromBottom, boolean useScrollView, boolean fullyRounded) {
+        return new ItemOptions(container, resourcesProvider, scrimView, swipeback, shownFromBottom, useScrollView, fullyRounded);
+    }
+
     public ItemOptions add(int iconResId, CharSequence text, boolean isRed, Runnable onLongClickListener, Runnable onClickListener) {
         return add(iconResId, text, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItemIcon, isRed ? Theme.key_text_RedRegular : Theme.key_actionBarDefaultSubmenuItem, onLongClickListener, onClickListener);
     }
@@ -1843,7 +1887,33 @@ public class ItemOptions {
         if (!condition) {
             return this;
         }
-        return addText(text, textSizeDp, -1);
+        return this.addText(text, textSizeDp, -1);
+    }
+
+    public ItemOptions addViewIf(boolean condition, View view) {
+        if (!condition) return this;
+        return this.addView(view);
+    }
+
+    public ItemOptions addSpaceGapCGIf(boolean condition, int cornerRadius) {
+        if (!condition) return this;
+        return this.addSpaceGapCG(cornerRadius);
+    }
+
+    public ItemOptions addSpaceGapCG(int cornerRadius) {
+        if (!(layout instanceof LinearLayout)) {
+            layout = new LinearLayout(context);
+            ((LinearLayout) layout).setOrientation(LinearLayout.VERTICAL);
+            layout.addView(lastLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+        }
+        lastLayout = new ActionBarPopupWindow.ActionBarPopupWindowLayout(context, R.drawable.popup_fixed_alert2, resourcesProvider, 0, true, cornerRadius);
+        lastLayout.setDispatchKeyEventListener(keyEvent -> {
+            if (keyEvent.getKeyCode() == KeyEvent.KEYCODE_BACK && keyEvent.getRepeatCount() == 0 && actionBarPopupWindow != null && actionBarPopupWindow.isShowing()) {
+                dismiss();
+            }
+        });
+        layout.addView(lastLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, -8, 0, 0));
+        return this;
     }
 
     public ItemOptions addEmojiStatus(TLRPC.User user, long documentID, boolean particles) {

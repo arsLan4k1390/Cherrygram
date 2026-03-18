@@ -93,6 +93,7 @@ public class CameraXView extends BaseCameraView {
                 displayOrientation = getRootView().getDisplay().getRotation();
                 if (controller != null) {
                     controller.setTargetOrientation(displayOrientation);
+                    controller.setWorldCaptureOrientation(displayOrientation);
                 }
             }
         }

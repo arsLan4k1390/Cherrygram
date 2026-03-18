@@ -9,17 +9,34 @@
 
 package uz.unnarsx.cherrygram.chats.helpers;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.Manifest;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.SparseArray;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+
+import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BaseController;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
@@ -36,6 +53,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.AccountFrozenAlert;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
 import org.telegram.ui.ActionBar.AlertDialog;
+import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ChatMessageCell;
 import org.telegram.ui.ChannelAdminLogActivity;
 import org.telegram.ui.ChatActivity;
@@ -44,6 +62,8 @@ import org.telegram.ui.ChatUsersActivity;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
+import org.telegram.ui.Components.ChatActivityEnterView;
+import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.EmojiPacksAlert;
 import org.telegram.ui.Components.Reactions.ChatCustomReactionsEditActivity;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
@@ -66,9 +86,11 @@ import uz.unnarsx.cherrygram.chats.gemini.GeminiSDKImplementation;
 import uz.unnarsx.cherrygram.core.CGBiometricPrompt;
 import uz.unnarsx.cherrygram.core.CGFeatureHooks;
 import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 import uz.unnarsx.cherrygram.core.helpers.backup.BackupHelper;
 import uz.unnarsx.cherrygram.helpers.network.StickersManager;
+import uz.unnarsx.cherrygram.preferences.helpers.TextFieldAlert;
 
 public class ChatActivityHelper extends BaseController {
 
@@ -138,7 +160,7 @@ public class ChatActivityHelper extends BaseController {
             TLRPC.TL_forumTopic forumTopic, TLRPC.Chat currentChat
     ) {
         if (id == OPTION_ADVANCED_SEARCH) {
-            chatActivity.createSearchWithIDAlert();
+            createSearchWithIDAlert(chatActivity);
         } else if (id == OPTION_JUMP_TO_BEGINNING) {
             chatActivity.jumpToDate(2);
         } else if (id == OPTION_DELETE_ALL_FROM_SELF) {
@@ -384,7 +406,7 @@ public class ChatActivityHelper extends BaseController {
 
                 GeminiResultsBottomSheet.setMessageObject(selectedObject);
                 GeminiResultsBottomSheet.setCurrentChat(currentChat);
-                chatActivity.processGeminiWithText(selectedObject, null, false, false);
+                processGeminiWithText(chatActivity, selectedObject, null, false, false);
                 break;
             }
             case OPTION_TRANSLATE_GEMINI: {
@@ -394,7 +416,7 @@ public class ChatActivityHelper extends BaseController {
 
                 GeminiResultsBottomSheet.setMessageObject(selectedObject);
                 GeminiResultsBottomSheet.setCurrentChat(currentChat);
-                chatActivity.processGeminiWithText(selectedObject, null, true, false);
+                processGeminiWithText(chatActivity, selectedObject, null, true, false);
 
                 break;
             }
@@ -405,7 +427,7 @@ public class ChatActivityHelper extends BaseController {
 
                 GeminiResultsBottomSheet.setMessageObject(selectedObject);
                 GeminiResultsBottomSheet.setCurrentChat(currentChat);
-                chatActivity.processGeminiWithText(selectedObject, null, false, true);
+                processGeminiWithText(chatActivity, selectedObject, null, false, true);
 
                 break;
             }
@@ -592,24 +614,271 @@ public class ChatActivityHelper extends BaseController {
 
     /** Cherrygram chat functions start */
     public void checkDoubleTapOptions(ChatActivity chatActivity) {
-        switch (CherrygramChatsConfig.INSTANCE.getDoubleTapAction()) {
-            case CherrygramChatsConfig.DOUBLE_TAP_ACTION_TRANSLATE:
+        switch (CherrygramMessagesConfig.INSTANCE.getDoubleTapAction()) {
+            case CherrygramMessagesConfig.DOUBLE_TAP_ACTION_TRANSLATE:
                 chatActivity.processSelectedOption(OPTION_TRANSLATE_DOUBLE_TAP);
                 break;
-            case CherrygramChatsConfig.DOUBLE_TAP_ACTION_TRANSLATE_GEMINI:
+            case CherrygramMessagesConfig.DOUBLE_TAP_ACTION_TRANSLATE_GEMINI:
                 chatActivity.processSelectedOption(OPTION_TRANSLATE_GEMINI);
                 break;
-            case CherrygramChatsConfig.DOUBLE_TAP_ACTION_REPLY:
+            case CherrygramMessagesConfig.DOUBLE_TAP_ACTION_REPLY:
                 chatActivity.processSelectedOption(ChatActivity.OPTION_REPLY);
                 break;
-            case CherrygramChatsConfig.DOUBLE_TAP_ACTION_SAVE:
+            case CherrygramMessagesConfig.DOUBLE_TAP_ACTION_SAVE:
                 chatActivity.processSelectedOption(OPTION_SAVE_MESSAGE_CHAT);
                 break;
-            case CherrygramChatsConfig.DOUBLE_TAP_ACTION_EDIT:
+            case CherrygramMessagesConfig.DOUBLE_TAP_ACTION_EDIT:
                 chatActivity.processSelectedOption(ChatActivity.OPTION_EDIT);
                 break;
         }
     }
     /** Cherrygram chat functions finish */
+
+    public void processGeminiWithText(ChatActivity chatActivity, MessageObject selectedObject, String geminiResult, boolean translateText, boolean summarize) {
+        String textToSummarize = selectedObject != null && selectedObject.messageOwner != null
+                && selectedObject.messageOwner.message != null && !TextUtils.isEmpty(selectedObject.messageOwner.message) ? selectedObject.messageOwner.message : geminiResult;
+
+        GeminiSDKImplementation.initGeminiConfig(
+                chatActivity,
+                chatActivity,
+                summarize ? textToSummarize : chatActivity.getChatsHelper().getMessageText(selectedObject, chatActivity.selectedObjectGroup), translateText, summarize,
+                null,
+                false, false
+        );
+    }
+
+    private void searchWithID(ChatActivity chatActivity, String inputID) {
+        if (inputID.length() > 20) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(chatActivity.getContext());
+            builder.setTitle(getString(R.string.AvatarPreviewSearchMessages));
+            builder.setMessage(LocaleController.getString(R.string.InvalidFormatError));
+            builder.setPositiveButton(getString(R.string.Close), null);
+            builder.show();
+            return;
+        }
+        long chatID = Long.parseLong(inputID);
+
+        TLRPC.User user = getMessagesController().getUser(chatID);
+        TLRPC.Chat chat = getMessagesController().getChat(chatID);
+
+        if (chat == null && inputID.startsWith("100") && inputID.length() > 10) {
+            chatID = Long.parseLong(inputID.substring(3));
+            chat = getMessagesController().getChat(chatID);
+        }
+
+        if (user != null) {
+            chatActivity.openSearchWithText("");
+            if (chatActivity.searchUserButton != null) {
+                chatActivity.searchUserButton.callOnClick();
+            }
+            chatActivity.searchUserMessages(user, null);
+        } else if (chat != null) {
+            chatActivity.openSearchWithText("");
+            if (chatActivity.searchUserButton != null) {
+                chatActivity.searchUserButton.callOnClick();
+            }
+            chatActivity.searchUserMessages(null, chat);
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(chatActivity.getContext());
+            builder.setTitle(getString(R.string.AvatarPreviewSearchMessages));
+            builder.setMessage(LocaleController.formatString(R.string.NoResultFoundFor, chatID));
+            builder.setPositiveButton(getString(R.string.Close), null);
+            builder.show();
+        }
+    }
+
+    private void createSearchWithIDAlert(ChatActivity chatActivity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(chatActivity.getContext());
+        builder.setTitle(getString(R.string.AvatarPreviewSearchMessages));
+
+        final EditTextBoldCursor editText = new EditTextBoldCursor(chatActivity.getContext());
+        editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
+        editText.setHintTextColor(chatActivity.getThemedColor(Theme.key_windowBackgroundWhiteHintText));
+        editText.setTextColor(chatActivity.getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+        editText.setBackground(Theme.createEditTextDrawable(chatActivity.getContext(), true));
+        editText.setPadding(0, 0, 0, 0);
+        editText.setSingleLine(true);
+        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        editText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        editText.setHint("ID");
+        editText.setCursorColor(chatActivity.getThemedColor(Theme.key_windowBackgroundWhiteBlueHeader));
+        editText.setCursorSize(AndroidUtilities.dp(20));
+        editText.setCursorWidth(1.5f);
+        editText.setFocusable(true);
+        editText.requestFocus();
+        builder.setView(editText);
+
+        builder.setNeutralButton(getString(R.string.Paste), (dialogInterface, i) -> {
+            AndroidUtilities.hideKeyboard(editText);
+
+            ClipboardManager clipboard = ContextCompat.getSystemService(chatActivity.getContext(), ClipboardManager.class);
+            if (clipboard == null) return;
+
+            ClipData clipData = clipboard.getPrimaryClip();
+            if (clipData == null) return;
+
+            ClipData.Item item = clipData.getItemAt(0);
+            String text = TextFieldAlert.INSTANCE.removeNonNumericChars(
+                    item.getText().toString(), false
+            );
+            if (!TextUtils.isEmpty(text)) {
+                editText.setText(text);
+                searchWithID(chatActivity, text);
+            }
+        });
+
+        builder.setPositiveButton(getString(R.string.Search), (dialogInterface, i) -> {
+            AndroidUtilities.hideKeyboard(editText);
+
+            Editable editable = editText.getText();
+            if (!TextUtils.isEmpty(editable)) {
+                searchWithID(
+                        chatActivity,
+                        TextFieldAlert.INSTANCE.removeNonNumericChars(editable.toString(), false)
+                );
+            }
+        });
+
+        builder.setNegativeButton(getString(R.string.Cancel), (dialog, which) -> AndroidUtilities.hideKeyboard(editText));
+
+        builder.show().setOnShowListener(dialog -> {
+            editText.requestFocus();
+            AndroidUtilities.showKeyboard(editText);
+        });
+
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) editText.getLayoutParams();
+        if (layoutParams != null) {
+            if (layoutParams instanceof FrameLayout.LayoutParams) {
+                ((FrameLayout.LayoutParams) layoutParams).gravity = Gravity.CENTER_HORIZONTAL;
+            }
+            layoutParams.rightMargin = layoutParams.leftMargin = AndroidUtilities.dp(24);
+            layoutParams.height = AndroidUtilities.dp(36);
+            layoutParams.bottomMargin = AndroidUtilities.dp(15);
+            editText.setLayoutParams(layoutParams);
+        }
+        editText.setSelection(0, editText.getText().length());
+    }
+
+    public static class KeyboardHiderOnFastScroll {
+
+        public static void attachTo(@NonNull RecyclerView recyclerView, @NonNull View contentView, ChatActivityEnterView chatActivityEnterView) {
+            if (recyclerView == null || contentView == null || chatActivityEnterView == null) return;
+            final int VELOCITY_THRESHOLD = dp(CherrygramChatsConfig.INSTANCE.getHideKeyboardOnScrollIntensity() * 1000); // px/second
+            final int invertedSensitivity = dp(10000) /*max*/ - VELOCITY_THRESHOLD + 1;
+
+            recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+                private VelocityTracker velocityTracker = null;
+
+                @Override
+                public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
+                    switch (e.getActionMasked()) {
+                        case MotionEvent.ACTION_DOWN:
+                            if (velocityTracker == null) {
+                                velocityTracker = VelocityTracker.obtain();
+                            } else {
+                                velocityTracker.clear();
+                            }
+                            velocityTracker.addMovement(e);
+                            break;
+
+                        case MotionEvent.ACTION_MOVE:
+                            if (velocityTracker != null) {
+                                velocityTracker.addMovement(e);
+                            }
+                            break;
+
+                        case MotionEvent.ACTION_UP:
+                            if (velocityTracker != null) {
+                                velocityTracker.addMovement(e);
+                                velocityTracker.computeCurrentVelocity(1000);
+                                float velocityY = velocityTracker.getYVelocity();
+
+                                if (Math.abs(velocityY) > invertedSensitivity && CherrygramChatsConfig.INSTANCE.getHideKeyboardOnScrollIntensity() > 0) {
+                                    chatActivityEnterView.hidePopup(true);
+                                    AndroidUtilities.hideKeyboard(contentView);
+                                }
+
+                                velocityTracker.recycle();
+                                velocityTracker = null;
+                            }
+                            break;
+
+                        case MotionEvent.ACTION_CANCEL:
+                            if (velocityTracker != null) {
+                                velocityTracker.recycle();
+                                velocityTracker = null;
+                            }
+                            break;
+                    }
+
+                    return false;
+                }
+
+                @Override
+                public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {}
+
+                @Override
+                public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
+            });
+        }
+    }
+
+    public void forwardWithPasscode(
+            DialogsActivity fragment,
+            ChatActivity chatActivityOrg,
+            ChatActivity chatActivityNew,
+            ChatActivity.ReplyQuote replyingQuote,
+            ChatActivityEnterView chatActivityEnterView,
+            ArrayList<MessageObject> fmessages,
+            MessageObject replyingMessageObject,
+            MessageObject replyingTopMessage,
+            MessageObject threadMessageObject,
+            MessageObject.GroupedMessages replyingQuoteGroup
+    ) {
+        if (chatActivityOrg.presentFragment(chatActivityNew, true)) {
+            if (fragment.isQuote && replyingMessageObject != null) {
+                if (chatActivityEnterView != null && chatActivityNew.getChatActivityEnterView() != null) {
+                    chatActivityNew.getChatActivityEnterView().setFieldText(
+                            chatActivityEnterView.getFieldText()
+                    );
+                }
+                if (replyingQuoteGroup != null) {
+                    chatActivityNew.replyingQuoteGroup = replyingQuoteGroup;
+                } else if (replyingMessageObject != null) {
+                    chatActivityNew.replyingQuoteGroup = chatActivityOrg.getGroup(replyingMessageObject.getGroupId());
+                }
+                if (replyingTopMessage != null) {
+                    chatActivityNew.replyingTopMessage = replyingTopMessage;
+                } else if (threadMessageObject != null) {
+                    chatActivityNew.replyingTopMessage = threadMessageObject;
+                }
+                chatActivityNew.onHideFieldPanelRunnable = () -> {
+                    if (chatActivityEnterView != null) {
+                        chatActivityEnterView.hideTopView(true);
+                    }
+                };
+                chatActivityNew.showFieldPanelForReplyQuote(replyingMessageObject, replyingQuote);
+            } else {
+                chatActivityNew.showFieldPanelForForward(true, fmessages);
+            }
+            if (chatActivityNew.getDialogId() == chatActivityOrg.getDialogId() && !AndroidUtilities.isTablet()) {
+                chatActivityOrg.removeSelfFromStack();
+            }
+        } else {
+            fragment.finishFragment();
+        }
+    }
+
+    public void openDiscussion(ChatActivity chatActivity) {
+        if (!chatActivity.showDiscussInsteadOfMute()) {
+            return;
+        }
+        Bundle args = new Bundle();
+        args.putLong("chat_id", chatActivity.chatInfo.linked_chat_id);
+        if (!getMessagesController().checkCanOpenChat(args, chatActivity)) {
+            return;
+        }
+        chatActivity.presentFragment(new ChatActivity(args));
+    }
 
 }

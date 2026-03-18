@@ -37,7 +37,7 @@ import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RecyclerListView;
 
 import uz.unnarsx.cherrygram.chats.CGMessageMenuInjector;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
@@ -136,9 +136,9 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                 return;
             }
             if (position == enableNewMessageMenuRow) {
-                CherrygramChatsConfig.INSTANCE.setBlurMessageMenuBackground(!CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground());
+                CherrygramMessagesConfig.INSTANCE.setBlurMessageMenuBackground(!CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground());
                 }
 
                 listAdapter.notifyItemChanged(unifiedScrollRow, false);
@@ -147,66 +147,66 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                 listAdapter.notifyItemChanged(blurMessageMenuItemsRow, false);
                 listAdapter.notifyItemChanged(useNativeBlurRow, false);
             } else if (position == unifiedScrollRow) {
-                CherrygramChatsConfig.INSTANCE.setMsgMenuUnifiedScroll(!CherrygramChatsConfig.INSTANCE.getMsgMenuUnifiedScroll());
+                CherrygramMessagesConfig.INSTANCE.setMsgMenuUnifiedScroll(!CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgMenuUnifiedScroll());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll());
 
-                    /*if (CherrygramChatsConfig.INSTANCE.getMsgMenuUnifiedScroll() && !CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground()) {
-                        CherrygramChatsConfig.INSTANCE.setBlurMessageMenuBackground(true);
+                    /*if (CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll() && !CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground()) {
+                        CherrygramMessagesConfig.INSTANCE.setBlurMessageMenuBackground(true);
                         listAdapter.notifyItemChanged(enableNewMessageMenuRow, false);
                     }
 
-                    CherrygramChatsConfig.INSTANCE.setMsgMenuFixedHeight(!CherrygramChatsConfig.INSTANCE.getMsgMenuUnifiedScroll() || !CherrygramChatsConfig.INSTANCE.getMsgMenuFixedHeight());*/
+                    CherrygramMessagesConfig.INSTANCE.setMsgMenuFixedHeight(!CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll() || !CherrygramMessagesConfig.INSTANCE.getMsgMenuFixedHeight());*/
 
                     listAdapter.notifyItemChanged(autoScrollMessagesRow, false);
                     listAdapter.notifyItemChanged(fixedMessageHeightRow, false);
                 }
             } else if (position == autoScrollMessagesRow) {
-                CherrygramChatsConfig.INSTANCE.setMsgMenuAutoScroll(!CherrygramChatsConfig.INSTANCE.getMsgMenuAutoScroll());
+                CherrygramMessagesConfig.INSTANCE.setMsgMenuAutoScroll(!CherrygramMessagesConfig.INSTANCE.getMsgMenuAutoScroll());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgMenuAutoScroll());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuAutoScroll());
 
-                    if (CherrygramChatsConfig.INSTANCE.getMsgMenuAutoScroll() && !CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground()) {
-                        CherrygramChatsConfig.INSTANCE.setBlurMessageMenuBackground(true);
+                    if (CherrygramMessagesConfig.INSTANCE.getMsgMenuAutoScroll() && !CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground()) {
+                        CherrygramMessagesConfig.INSTANCE.setBlurMessageMenuBackground(true);
                         listAdapter.notifyItemChanged(enableNewMessageMenuRow, false);
                     }
                 }
             } else if (position == fixedMessageHeightRow) {
-                CherrygramChatsConfig.INSTANCE.setMsgMenuFixedHeight(!CherrygramChatsConfig.INSTANCE.getMsgMenuFixedHeight());
+                CherrygramMessagesConfig.INSTANCE.setMsgMenuFixedHeight(!CherrygramMessagesConfig.INSTANCE.getMsgMenuFixedHeight());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgMenuFixedHeight());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuFixedHeight());
 
-                    if (CherrygramChatsConfig.INSTANCE.getMsgMenuFixedHeight() && !CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground()) {
-                        CherrygramChatsConfig.INSTANCE.setBlurMessageMenuBackground(true);
+                    if (CherrygramMessagesConfig.INSTANCE.getMsgMenuFixedHeight() && !CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground()) {
+                        CherrygramMessagesConfig.INSTANCE.setBlurMessageMenuBackground(true);
                         listAdapter.notifyItemChanged(enableNewMessageMenuRow, false);
                     }
                 }
             } else if (position == blurMessageMenuItemsRow) {
-                CherrygramChatsConfig.INSTANCE.setBlurMessageMenuItems(!CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems());
+                CherrygramMessagesConfig.INSTANCE.setBlurMessageMenuItems(!CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuItems());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuItems());
 
-                    if (CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems() && !CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground()) {
-                        CherrygramChatsConfig.INSTANCE.setBlurMessageMenuBackground(true);
+                    if (CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuItems() && !CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground()) {
+                        CherrygramMessagesConfig.INSTANCE.setBlurMessageMenuBackground(true);
                         listAdapter.notifyItemChanged(enableNewMessageMenuRow, false);
                     }
                 }
             } else if (position == useNativeBlurRow) {
-                CherrygramChatsConfig.INSTANCE.setMsgMenuNativeBlur(!CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur());
+                CherrygramMessagesConfig.INSTANCE.setMsgMenuNativeBlur(!CherrygramMessagesConfig.INSTANCE.getMsgMenuNativeBlur());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuNativeBlur());
 
-                    if (CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur() && !CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground()) {
-                        CherrygramChatsConfig.INSTANCE.setBlurMessageMenuBackground(true);
+                    if (CherrygramMessagesConfig.INSTANCE.getMsgMenuNativeBlur() && !CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground()) {
+                        CherrygramMessagesConfig.INSTANCE.setBlurMessageMenuBackground(true);
                         listAdapter.notifyItemChanged(enableNewMessageMenuRow, false);
                     }
                 }
             } else if (position == messageMenuItemsRow) {
                 CGMessageMenuInjector.INSTANCE.showMessageMenuItemsConfigurator(this);
             } else if (position == messageMenuItemsCompactView) {
-                CherrygramChatsConfig.INSTANCE.setMsgMenuItemsCompactView(!CherrygramChatsConfig.INSTANCE.getMsgMenuItemsCompactView());
+                CherrygramMessagesConfig.INSTANCE.setMsgMenuItemsCompactView(!CherrygramMessagesConfig.INSTANCE.getMsgMenuItemsCompactView());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgMenuItemsCompactView());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getMsgMenuItemsCompactView());
                 }
             }
         });
@@ -283,52 +283,52 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_BlurMessageMenu),
                                 getString(R.string.CP_BlurMessageMenu_Desc),
-                                CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground(),
+                                CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground(),
                                 true,
                                 true
                         );
                     } else if (position == unifiedScrollRow) {
-                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground(), null);
+                        textCheckCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground(), null);
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_MessageMenuUnifiedScroll),
                                 getString(R.string.CP_MessageMenuUnifiedScroll_Desc),
-                                CherrygramChatsConfig.INSTANCE.getMsgMenuUnifiedScroll(),
+                                CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll(),
                                 true,
                                 true
                         );
                     } else if (position == autoScrollMessagesRow) {
-                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground() && !CherrygramChatsConfig.INSTANCE.getMsgMenuUnifiedScroll(), null);
+                        textCheckCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground() && !CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll(), null);
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_MessageMenuAutoscroll),
                                 getString(R.string.CP_MessageMenuAutoscroll_Desc),
-                                CherrygramChatsConfig.INSTANCE.getMsgMenuAutoScroll(),
+                                CherrygramMessagesConfig.INSTANCE.getMsgMenuAutoScroll(),
                                 true,
                                 true
                         );
                     } else if (position == fixedMessageHeightRow) {
-                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground() && !CherrygramChatsConfig.INSTANCE.getMsgMenuUnifiedScroll(), null);
+                        textCheckCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground() && !CherrygramMessagesConfig.INSTANCE.getMsgMenuUnifiedScroll(), null);
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_MessageMenuFixedHeight),
                                 getString(R.string.CP_MessageMenuFixedHeight_Desc),
-                                CherrygramChatsConfig.INSTANCE.getMsgMenuFixedHeight(),
+                                CherrygramMessagesConfig.INSTANCE.getMsgMenuFixedHeight(),
                                 true,
                                 true
                         );
                     } else if (position == blurMessageMenuItemsRow) {
-                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground(), null);
+                        textCheckCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground(), null);
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_BlurMessageMenuItems),
                                 getString(R.string.CP_BlurMessageMenuItems_Desc),
-                                CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems(),
+                                CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuItems(),
                                 true,
                                 true
                         );
                     } else if (position == useNativeBlurRow) {
-                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground(), null);
+                        textCheckCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getBlurMessageMenuBackground(), null);
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_MessageMenuNativeBlur),
                                 getString(R.string.CP_MessageMenuNativeBlur_Desc),
-                                CherrygramChatsConfig.INSTANCE.getMsgMenuNativeBlur(),
+                                CherrygramMessagesConfig.INSTANCE.getMsgMenuNativeBlur(),
                                 true,
                                 false
                         );
@@ -337,7 +337,7 @@ public class MessageMenuPreferencesEntry extends BaseFragment {
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_MessageMenuCompactLayout),
                                 getString(R.string.CP_MessageMenuCompactLayout_Desc) + "\n\n" + getString(R.string.CP_MessageMenuCompactLayout_Dot),
-                                CherrygramChatsConfig.INSTANCE.getMsgMenuItemsCompactView(),
+                                CherrygramMessagesConfig.INSTANCE.getMsgMenuItemsCompactView(),
                                 true,
                                 false
                         );

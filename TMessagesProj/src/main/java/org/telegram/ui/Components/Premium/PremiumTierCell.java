@@ -265,23 +265,36 @@ public class PremiumTierCell extends ViewGroup {
             case 1:
                 titleView.setText(LocaleController.getString(R.string.PremiumTierMonthly));
                 break;
+            case 1390:
+                titleView.setText(LocaleController.getString(R.string.CG_SafeStars_buy));
+                break;
         }
 
         isDrawingGradient = !BuildVars.useInvoiceBilling() && (!BillingController.getInstance().isReady() || tier.getOfferDetails() == null);
         if (!isDrawingGradient) {
-            if (tier.getDiscount() <= 0) {
+            if (tier.getDiscount() <= 0 && !tier.isSafeStars) {
                 discountView.setVisibility(GONE);
                 pricePerYearStrikeView.setVisibility(GONE);
                 pricePerYearView.setVisibility(GONE);
             } else {
-                discountView.setText(LocaleController.formatString(R.string.GiftPremiumOptionDiscount, tier.getDiscount()));
+                if (tier.isSafeStars) {
+                    discountView.setText("RUB & Crypto");
+                } else {
+                    discountView.setText(LocaleController.formatString(R.string.GiftPremiumOptionDiscount, tier.getDiscount()));
+                }
                 discountView.setVisibility(VISIBLE);
                 pricePerYearStrikeView.setVisibility(VISIBLE);
                 pricePerYearView.setVisibility(VISIBLE);
             }
-            pricePerYearStrikeView.setText(tier.getFormattedPricePerYearRegular());
-            pricePerYearView.setText(LocaleController.formatString(R.string.PricePerYear, tier.getFormattedPricePerYear()));
-            pricePerMonthView.setText(LocaleController.formatString(R.string.PricePerMonthMe, tier.getFormattedPricePerMonth()));
+            if (tier.isSafeStars) {
+                pricePerYearView.setText(LocaleController.getString(R.string.CG_SafeStars_Desc));
+                pricePerYearStrikeView.setVisibility(GONE);
+                pricePerMonthView.setVisibility(GONE);
+            } else {
+                pricePerYearStrikeView.setText(tier.getFormattedPricePerYearRegular());
+                pricePerYearView.setText(LocaleController.formatString(R.string.PricePerYear, tier.getFormattedPricePerYear()));
+                pricePerMonthView.setText(LocaleController.formatString(R.string.PricePerMonthMe, tier.getFormattedPricePerMonth()));
+            }
 
             if (tier.subscriptionOption.current) {
                 pricePerYearView.setVisibility(VISIBLE);

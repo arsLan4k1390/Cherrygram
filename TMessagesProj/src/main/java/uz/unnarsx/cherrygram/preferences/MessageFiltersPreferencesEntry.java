@@ -50,9 +50,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import uz.unnarsx.cherrygram.chats.helpers.MessagesFilterHelper;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
+import uz.unnarsx.cherrygram.chats.filters.MessagesFilterHelper;
 import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
+import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
 import uz.unnarsx.cherrygram.core.crashlytics.FirebaseAnalyticsHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.core.ui.MD3ListAdapter;
@@ -75,7 +75,6 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
 
     private int miscellaneousHeaderRow;
     private int detectEntitiesRow;
-    private int hideFromBlockedRow;
     private int hideAllRow;
     private int collapseAutomaticallyRow;
     private int makeTransparentRow;
@@ -158,12 +157,12 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                 return;
             }
             if (position == enableFilterRow) {
-                CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(!CherrygramChatsConfig.INSTANCE.getEnableMsgFilters());
+                CherrygramMessagesConfig.INSTANCE.setEnableMsgFilters(!CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters());
                 }
 
-                if (!CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
+                if (!CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters()) {
                     AndroidUtilities.runOnUIThread(() -> AndroidUtilities.hideKeyboard(listView), 50);
                 }
 
@@ -173,27 +172,26 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                 listAdapter.notifyItemChanged(exclusionsRow, false);
                 listAdapter.notifyItemChanged(miscellaneousHeaderRow, false);
                 listAdapter.notifyItemChanged(detectEntitiesRow, false);
-                if (CherrygramCoreConfig.isDevBuild() || CherrygramCoreConfig.isStandalonePremiumBuild()) listAdapter.notifyItemChanged(hideFromBlockedRow, false);
                 listAdapter.notifyItemChanged(hideAllRow, false);
                 listAdapter.notifyItemChanged(collapseAutomaticallyRow, false);
                 listAdapter.notifyItemChanged(makeTransparentRow, false);
             } else if (position == detectTranslitRow) {
-                CherrygramChatsConfig.INSTANCE.setMsgFiltersDetectTranslit(!CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectTranslit());
+                CherrygramMessagesConfig.INSTANCE.setMsgFiltersDetectTranslit(!CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectTranslit());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectTranslit());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectTranslit());
 
-                    if (CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectTranslit() && !CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
-                        CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(true);
+                    if (CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectTranslit() && !CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters()) {
+                        CherrygramMessagesConfig.INSTANCE.setEnableMsgFilters(true);
                         listAdapter.notifyItemChanged(enableFilterRow, false);
                     }
                 }
             } else if (position == exactWordMatchRow) {
-                CherrygramChatsConfig.INSTANCE.setMsgFiltersMatchExactWord(!CherrygramChatsConfig.INSTANCE.getMsgFiltersMatchExactWord());
+                CherrygramMessagesConfig.INSTANCE.setMsgFiltersMatchExactWord(!CherrygramMessagesConfig.INSTANCE.getMsgFiltersMatchExactWord());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgFiltersMatchExactWord());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFiltersMatchExactWord());
 
-                    if (CherrygramChatsConfig.INSTANCE.getMsgFiltersMatchExactWord() && !CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
-                        CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(true);
+                    if (CherrygramMessagesConfig.INSTANCE.getMsgFiltersMatchExactWord() && !CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters()) {
+                        CherrygramMessagesConfig.INSTANCE.setEnableMsgFilters(true);
                         listAdapter.notifyItemChanged(enableFilterRow, false);
                     }
                 }
@@ -225,54 +223,43 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                     presentFragment(activity);
                 }, 300);
             } else if (position == detectEntitiesRow) {
-                CherrygramChatsConfig.INSTANCE.setMsgFiltersDetectEntities(!CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectEntities());
+                CherrygramMessagesConfig.INSTANCE.setMsgFiltersDetectEntities(!CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectEntities());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectEntities());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectEntities());
 
-                    if (CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectEntities() && !CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
-                        CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(true);
+                    if (CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectEntities() && !CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters()) {
+                        CherrygramMessagesConfig.INSTANCE.setEnableMsgFilters(true);
                         listAdapter.notifyItemChanged(enableFilterRow, false);
                     }
-                }
-            } else if (position == hideFromBlockedRow) {
-                CherrygramChatsConfig.INSTANCE.setMsgFiltersHideFromBlocked(!CherrygramChatsConfig.INSTANCE.getMsgFiltersHideFromBlocked());
-                if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgFiltersHideFromBlocked());
-
-                    if (CherrygramChatsConfig.INSTANCE.getMsgFiltersHideFromBlocked() && !CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
-                        CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(true);
-                        listAdapter.notifyItemChanged(enableFilterRow, false);
-                    }
-                    listAdapter.notifyItemChanged(collapseAutomaticallyRow, false);
                 }
             } else if (position == hideAllRow) {
-                CherrygramChatsConfig.INSTANCE.setMsgFiltersHideAll(!CherrygramChatsConfig.INSTANCE.getMsgFiltersHideAll());
+                CherrygramMessagesConfig.INSTANCE.setMsgFiltersHideAll(!CherrygramMessagesConfig.INSTANCE.getMsgFiltersHideAll());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgFiltersHideAll());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFiltersHideAll());
 
-                    if (CherrygramChatsConfig.INSTANCE.getMsgFiltersHideAll() && !CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
-                        CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(true);
+                    if (CherrygramMessagesConfig.INSTANCE.getMsgFiltersHideAll() && !CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters()) {
+                        CherrygramMessagesConfig.INSTANCE.setEnableMsgFilters(true);
                         listAdapter.notifyItemChanged(enableFilterRow, false);
                     }
                     listAdapter.notifyItemChanged(collapseAutomaticallyRow, false);
                 }
             } else if (position == collapseAutomaticallyRow) {
-                CherrygramChatsConfig.INSTANCE.setMsgFiltersCollapseAutomatically(!CherrygramChatsConfig.INSTANCE.getMsgFiltersCollapseAutomatically());
+                CherrygramMessagesConfig.INSTANCE.setMsgFiltersCollapseAutomatically(!CherrygramMessagesConfig.INSTANCE.getMsgFiltersCollapseAutomatically());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgFiltersCollapseAutomatically());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFiltersCollapseAutomatically());
 
-                    if (CherrygramChatsConfig.INSTANCE.getMsgFiltersCollapseAutomatically() && !CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
-                        CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(true);
+                    if (CherrygramMessagesConfig.INSTANCE.getMsgFiltersCollapseAutomatically() && !CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters()) {
+                        CherrygramMessagesConfig.INSTANCE.setEnableMsgFilters(true);
                         listAdapter.notifyItemChanged(enableFilterRow, false);
                     }
                 }
             } else if (position == makeTransparentRow) {
-                CherrygramChatsConfig.INSTANCE.setMsgFilterTransparentMsg(!CherrygramChatsConfig.INSTANCE.getMsgFilterTransparentMsg());
+                CherrygramMessagesConfig.INSTANCE.setMsgFilterTransparentMsg(!CherrygramMessagesConfig.INSTANCE.getMsgFilterTransparentMsg());
                 if (view instanceof TextCheckCell) {
-                    ((TextCheckCell) view).setChecked(CherrygramChatsConfig.INSTANCE.getMsgFilterTransparentMsg());
+                    ((TextCheckCell) view).setChecked(CherrygramMessagesConfig.INSTANCE.getMsgFilterTransparentMsg());
 
-                    if (CherrygramChatsConfig.INSTANCE.getMsgFilterTransparentMsg() && !CherrygramChatsConfig.INSTANCE.getEnableMsgFilters()) {
-                        CherrygramChatsConfig.INSTANCE.setEnableMsgFilters(true);
+                    if (CherrygramMessagesConfig.INSTANCE.getMsgFilterTransparentMsg() && !CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters()) {
+                        CherrygramMessagesConfig.INSTANCE.setEnableMsgFilters(true);
                         listAdapter.notifyItemChanged(enableFilterRow, false);
                     }
                 }
@@ -325,7 +312,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                         headerCell.setEnabled(true, null);
                         headerCell.setText(getString(R.string.General));
                     } else if (position == miscellaneousHeaderRow) {
-                        headerCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
+                        headerCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters(), null);
                         headerCell.setText(getString(R.string.LocalMiscellaneousCache));
                     }
                     break;
@@ -334,7 +321,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                     textCell.setEnabled(false);
 
                     if (position == exclusionsRow) {
-                        textCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
+                        textCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters(), null);
                         textCell.setTextAndValueAndIcon(
                                 getString(R.string.CP_Message_Filtering_Exclusions),
                                 String.valueOf(MessagesFilterHelper.INSTANCE.getExcludedChatsCount()),
@@ -345,7 +332,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                     break;
                 case VIEW_TYPE_TEXT_CHECK:
                     TextCheckCell textCheckCell = (TextCheckCell) holder.itemView;
-                    textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
+                    textCheckCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters(), null);
 
                     if (requireDonate) textCheckCell.setCheckBoxIcon(R.drawable.permission_locked);
 
@@ -354,73 +341,64 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_Message_Filtering_Filter),
                                 getString(R.string.CP_Message_Filtering_Filter_Desc),
-                                CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(),
+                                CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters(),
                                 true,
                                 true
                         );
                     } else if (position == detectTranslitRow) {
-                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
+                        textCheckCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters(), null);
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_Message_Filtering_Translit),
                                 getString(R.string.CP_Message_Filtering_Translit_Desc),
-                                CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectTranslit(),
+                                CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectTranslit(),
                                 true,
                                 true
                         );
                     } else if (position == exactWordMatchRow) {
-                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
+                        textCheckCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters(), null);
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_Message_Filtering_Exact_Words),
                                 getString(R.string.CP_Message_Filtering_Exact_Words_Desc),
-                                CherrygramChatsConfig.INSTANCE.getMsgFiltersMatchExactWord(),
+                                CherrygramMessagesConfig.INSTANCE.getMsgFiltersMatchExactWord(),
                                 true,
                                 true
                         );
                     } else if (position == detectEntitiesRow) {
-                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
+                        textCheckCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters(), null);
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_Message_Filtering_Entities),
                                 getString(R.string.CP_Message_Filtering_EntitiesDesc),
-                                CherrygramChatsConfig.INSTANCE.getMsgFiltersDetectEntities(),
-                                true,
-                                true
-                        );
-                    } else if (position == hideFromBlockedRow) {
-                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
-                        textCheckCell.setTextAndValueAndCheck(
-                                getString(R.string.CP_Message_Filtering_HideBlocked),
-                                getString(R.string.CP_Message_Filtering_HideBlockedDesc),
-                                CherrygramChatsConfig.INSTANCE.getMsgFiltersHideFromBlocked(),
+                                CherrygramMessagesConfig.INSTANCE.getMsgFiltersDetectEntities(),
                                 true,
                                 true
                         );
                     } else if (position == hideAllRow) {
-                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
+                        textCheckCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters(), null);
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_Message_Filtering_HideAll),
                                 getString(R.string.CP_Message_Filtering_HideAllDesc),
-                                CherrygramChatsConfig.INSTANCE.getMsgFiltersHideAll(),
+                                CherrygramMessagesConfig.INSTANCE.getMsgFiltersHideAll(),
                                 true,
                                 true
                         );
                     } else if (position == collapseAutomaticallyRow) {
                         textCheckCell.setEnabled(
-                                CherrygramChatsConfig.INSTANCE.getEnableMsgFilters() && (CherrygramChatsConfig.INSTANCE.getMsgFiltersHideFromBlocked() || CherrygramChatsConfig.INSTANCE.getMsgFiltersHideAll()),
+                                CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters() && (CherrygramMessagesConfig.INSTANCE.getMsgFiltersHideFromBlocked() || CherrygramMessagesConfig.INSTANCE.getMsgFiltersHideAll()),
                                 null
                         );
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_Message_Filtering_Collapse),
                                 getString(R.string.CP_Message_Filtering_Collapse_Desc),
-                                CherrygramChatsConfig.INSTANCE.getMsgFiltersCollapseAutomatically(),
+                                CherrygramMessagesConfig.INSTANCE.getMsgFiltersCollapseAutomatically(),
                                 true,
                                 false
                         );
                     } else if (position == makeTransparentRow) {
-                        textCheckCell.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
+                        textCheckCell.setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters(), null);
                         textCheckCell.setTextAndValueAndCheck(
                                 getString(R.string.CP_Message_Filtering_Transparent),
                                 getString(R.string.CP_Message_Filtering_Transparent_Desc),
-                                CherrygramChatsConfig.INSTANCE.getMsgFilterTransparentMsg(),
+                                CherrygramMessagesConfig.INSTANCE.getMsgFilterTransparentMsg(),
                                 true,
                                 true
                         );
@@ -438,8 +416,8 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                     outlineEditText = (OutlineEditText) holder.itemView;
                     outlineEditText.setPadding(dp(16), dp(12), dp(16), dp(12));
                     if (position == filterWordsRow) {
-                        outlineEditText.setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters(), null);
-                        outlineEditText.getEditText().setEnabled(CherrygramChatsConfig.INSTANCE.getEnableMsgFilters());
+                        outlineEditText.setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters(), null);
+                        outlineEditText.getEditText().setEnabled(CherrygramMessagesConfig.INSTANCE.getEnableMsgFilters());
                         outlineEditText.getEditText().addTextChangedListener(new TextWatcher() {
                             @Override
                             public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -454,7 +432,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                         });
                         outlineEditText.getEditText().setSingleLine(false);
                         outlineEditText.setHint(getString(R.string.CP_Message_Filtering_Field));
-                        outlineEditText.getEditText().setText(CherrygramChatsConfig.INSTANCE.getMsgFiltersElements());
+                        outlineEditText.getEditText().setText(CherrygramMessagesConfig.INSTANCE.getMsgFiltersElements());
                         outlineEditText.setMinimumHeight(200);
                         outlineEditText.getEditText().setPadding(dp(16), dp(12), dp(16), dp(12));
                     }
@@ -509,7 +487,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
                 return VIEW_TYPE_HEADER;
             } else if (position == exclusionsRow) {
                 return VIEW_TYPE_TEXT_CELL;
-            } else if (position == enableFilterRow || position == detectTranslitRow || position == exactWordMatchRow || position == detectEntitiesRow || position == hideFromBlockedRow || position == hideAllRow  || position == collapseAutomaticallyRow || position == makeTransparentRow) {
+            } else if (position == enableFilterRow || position == detectTranslitRow || position == exactWordMatchRow || position == detectEntitiesRow || position == hideAllRow  || position == collapseAutomaticallyRow || position == makeTransparentRow) {
                 return VIEW_TYPE_TEXT_CHECK;
             } else if (position == filteredWordsAdviceRow) {
                 return VIEW_TYPE_TEXT_INFO_PRIVACY;
@@ -534,7 +512,6 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
 
         miscellaneousHeaderRow = rowCount++;
         detectEntitiesRow = rowCount++;
-        if (CherrygramCoreConfig.isDevBuild() || CherrygramCoreConfig.isStandalonePremiumBuild()) hideFromBlockedRow = rowCount++;
         hideAllRow = rowCount++;
         collapseAutomaticallyRow = rowCount++;
         makeTransparentRow = rowCount++;
@@ -547,7 +524,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
 
     private boolean hasChanges() {
         return (
-                !TextUtils.equals(CherrygramChatsConfig.INSTANCE.getMsgFiltersElements(), outlineEditText.getEditText().getText().toString())
+                !TextUtils.equals(CherrygramMessagesConfig.INSTANCE.getMsgFiltersElements(), outlineEditText.getEditText().getText().toString())
         );
     }
 
@@ -575,7 +552,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
             return;
         }
 
-        CherrygramChatsConfig.INSTANCE.setMsgFiltersElements(
+        CherrygramMessagesConfig.INSTANCE.setMsgFiltersElements(
                 outlineEditText.getEditText().getText().toString()
         );
 
@@ -583,7 +560,7 @@ public class MessageFiltersPreferencesEntry extends BaseFragment {
 
         outlineEditText.getEditText().clearFocus();
 
-        if (CherrygramChatsConfig.INSTANCE.getMsgFiltersHideFromBlocked()) {
+        if (CherrygramMessagesConfig.INSTANCE.getMsgFiltersHideFromBlocked()) {
             getMessagesController().getBlockedPeers(false);
         }
     }

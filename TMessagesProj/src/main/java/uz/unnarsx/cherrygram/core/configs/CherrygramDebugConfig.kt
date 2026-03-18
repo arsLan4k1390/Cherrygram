@@ -28,7 +28,6 @@ object CherrygramDebugConfig {
     /** Redesign finish */
 
     /** Chats start */
-    var chatPreviewFix by sharedPreferences.boolean("chatPreviewFix", true)
     var replacePunctuationMarks by sharedPreferences.boolean("replacePunctuationMarks", true)
     var editTextSuggestionsFix by sharedPreferences.boolean("editTextSuggestionsFix", false)
     /** Microphone Audio Source start */
@@ -47,7 +46,7 @@ object CherrygramDebugConfig {
     /** Microphone Audio Source finish */
 
     var sendVideosAtMaxQuality by sharedPreferences.boolean("sendVideosMaxQuality", true)
-    var playGIFsAsVideos by sharedPreferences.boolean("CP_PlayGIFsAsVideos", true)
+    var playGIFsAsVideos by sharedPreferences.boolean("CP_PlayGIFsAsVideos1", true)
     var hideVideoTimestamp by sharedPreferences.boolean("CP_HideVideoTimestamp", true)
     /** Chats finish */
 

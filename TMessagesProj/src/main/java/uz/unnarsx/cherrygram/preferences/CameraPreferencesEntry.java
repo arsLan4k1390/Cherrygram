@@ -22,9 +22,6 @@ import android.view.View;
 import androidx.camera.video.Quality;
 
 import org.telegram.messenger.R;
-import org.telegram.ui.Cells.NotificationsCheckCell;
-import org.telegram.ui.Cells.TextCell;
-import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
@@ -44,6 +41,7 @@ import uz.unnarsx.cherrygram.core.helpers.CGResourcesHelper;
 import uz.unnarsx.cherrygram.core.ui.CGBulletinCreator;
 import uz.unnarsx.cherrygram.donates.DonatesManager;
 import uz.unnarsx.cherrygram.helpers.ui.PopupHelper;
+import uz.unnarsx.cherrygram.preferences.helpers.SettingsHelper;
 
 public class CameraPreferencesEntry extends UniversalFragment {
 
@@ -52,14 +50,15 @@ public class CameraPreferencesEntry extends UniversalFragment {
     private final int disableAttachCameraRow = 1;
     private final int cameraAspectRatioRow = 2;
 
-    private final int cameraXQualityRow = 3;
-    private final int cameraUseDualCameraRow = 4;
+    private final int cameraUseDualCameraRow = 3;
+    private final int rearCamRow = 4;
     private final int startFromUltraWideRow = 5;
-    private final int cameraXFpsRangeRow = 6;
-    private final int cameraStabilisationRow = 7;
-    private final int exposureSliderRow = 8;
-    private final int cameraControlButtonsRow = 9;
-    private final int rearCamRow = 10;
+    private final int cameraStabilisationRow = 6;
+    private final int cameraXQualityRow = 7;
+    private final int cameraXFpsRangeRow = 8;
+
+    private final int exposureSliderRow = 9;
+    private final int cameraControlButtonsRow = 10;
 
     @Override
     protected CharSequence getTitle() {
@@ -77,8 +76,7 @@ public class CameraPreferencesEntry extends UniversalFragment {
     protected void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
         if (CameraXUtils.isCameraXSupported()) {
             items.add(UItem.asHeader(getString(R.string.CP_CameraType)));
-
-            items.add(UItem.asCustomWithBackground(new CameraTypeSelector(getContext()) {
+            items.add(SettingsHelper.asCustomWithBackground(new CameraTypeSelector(getContext()) {
                 @Override
                 protected void onSelectedCamera(int cameraSelected) {
                     super.onSelectedCamera(cameraSelected);
@@ -88,106 +86,50 @@ public class CameraPreferencesEntry extends UniversalFragment {
                     listView.adapter.update(true);
                 }
             }));
-
             items.add(UItem.asShadow(getCameraAdvise()));
         }
 
         items.add(UItem.asHeader(getString(R.string.CP_Category_Camera)));
-
         if (CherrygramCoreConfig.isDevBuild()) {
-            items.add(
-                    UItem.asButtonCheck(
-                            disableAttachCameraRow,
-                            getString(R.string.CP_DisableCam),
-                            getString(R.string.CP_DisableCam_Desc)
-                    ).setChecked(CherrygramCameraConfig.INSTANCE.getDisableAttachCamera())
+            items.add(SettingsHelper.asSwitchCG(disableAttachCameraRow, getString(R.string.CP_DisableCam), getString(R.string.CP_DisableCam_Desc))
+                    .setChecked(CherrygramCameraConfig.INSTANCE.getDisableAttachCamera())
             );
         }
-
         if (CherrygramCameraConfig.INSTANCE.getCameraType() != CherrygramCameraConfig.CAMERA_2) {
-            items.add(
-                    UItem.asButton(
-                        cameraAspectRatioRow,
-                        getString(R.string.CP_CameraAspectRatio),
-                        getCameraAspectRatio()
-                    )
-            );
+            items.add(UItem.asButton(cameraAspectRatioRow, getString(R.string.CP_CameraAspectRatio), getCameraAspectRatio()));
         }
         items.add(UItem.asShadow(null));
 
         items.add(UItem.asHeader(getString(R.string.CP_Header_Videomessages)));
-
-        if (CameraXUtils.isCurrentCameraCameraX()) {
-            items.add(
-                    UItem.asButton(
-                        cameraXQualityRow,
-                        getString(R.string.CP_CameraQuality),
-                        CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p"
-                    )
+        if (CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2 || CameraXUtils.isCurrentCameraCameraX()) {
+            items.add(SettingsHelper.asSwitchCG(cameraUseDualCameraRow, getString(R.string.CP_CameraDualCamera), getString(R.string.CP_CameraDualCamera_Desc))
+                    .setChecked(CherrygramCameraConfig.INSTANCE.getUseDualCamera())
             );
         }
-
-        if (CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2) {
-            items.add(
-                    UItem.asButtonCheck(
-                        cameraUseDualCameraRow,
-                        getString(R.string.CP_CameraDualCamera),
-                        getString(R.string.CP_CameraDualCamera_Desc)
-                    ).setChecked(CherrygramCameraConfig.INSTANCE.getUseDualCamera())
-            );
-        }
-
-        if (CameraXUtils.isCurrentCameraCameraX()) {
-            items.add(
-                    UItem.asButtonCheck(
-                            startFromUltraWideRow,
-                            getString(R.string.CP_CameraUW),
-                            getString(R.string.CP_CameraUW_Desc)
-                    ).setChecked(CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam())
-            );
-
-            items.add(
-                    UItem.asButton(
-                        cameraXFpsRangeRow,
-                        "FPS",
-                        getCameraXFpsRange()
-                    )
-            );
-
-            items.add(
-                    UItem.asCheck(
-                        cameraStabilisationRow,
-                        getString(R.string.CP_CameraStabilisation)
-                    ).setChecked(CherrygramCameraConfig.INSTANCE.getCameraStabilisation())
-            );
-
-            items.add(
-                    UItem.asButton(
-                        exposureSliderRow,
-                        getString(R.string.CP_ExposureSliderPosition),
-                        getExposureSliderPosition()
-                    )
-            );
-        }
-
-        items.add(
-                UItem.asButtonCheck(
-                    cameraControlButtonsRow,
-                    getString(R.string.CP_CenterCameraControlButtons),
-                    getString(R.string.CP_CenterCameraControlButtons_Desc)
-                ).setChecked(CherrygramCameraConfig.INSTANCE.getCenterCameraControlButtons())
-        );
-
         if (!(CherrygramCameraConfig.INSTANCE.getCameraType() == CherrygramCameraConfig.CAMERA_2 && CherrygramCameraConfig.INSTANCE.getUseDualCamera())) {
-            items.add(
-                    UItem.asButtonCheck(
-                        rearCamRow,
-                        getString(R.string.CP_RearCam),
-                        getString(R.string.CP_RearCam_Desc)
-                    ).setChecked(CherrygramCameraConfig.INSTANCE.getRearCam())
+            items.add(SettingsHelper.asSwitchCG(rearCamRow, getString(R.string.CP_RearCam), getString(R.string.CP_RearCam_Desc))
+                    .setChecked(CherrygramCameraConfig.INSTANCE.getRearCam())
             );
         }
+        if (CameraXUtils.isCurrentCameraCameraX()) {
 
+            items.add(SettingsHelper.asSwitchCG(startFromUltraWideRow, getString(R.string.CP_CameraUW), getString(R.string.CP_CameraUW_Desc))
+                    .setChecked(CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam())
+            );
+
+            items.add(SettingsHelper.asSwitchCG(cameraStabilisationRow, getString(R.string.CP_CameraStabilisation))
+                    .setChecked(CherrygramCameraConfig.INSTANCE.getCameraStabilisation())
+            );
+            items.add(UItem.asButton(cameraXQualityRow, getString(R.string.CP_CameraQuality), CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p"));
+            items.add(UItem.asButton(cameraXFpsRangeRow, "FPS", getCameraXFpsRange()));
+        }
+        items.add(UItem.asShadow(null));
+        if (CameraXUtils.isCurrentCameraCameraX()) {
+            items.add(UItem.asButton(exposureSliderRow, getString(R.string.CP_ExposureSliderPosition), getExposureSliderPosition()));
+        }
+        items.add(SettingsHelper.asSwitchCG(cameraControlButtonsRow, getString(R.string.CP_CenterCameraControlButtons), getString(R.string.CP_CenterCameraControlButtons_Desc))
+                .setChecked(CherrygramCameraConfig.INSTANCE.getCenterCameraControlButtons())
+        );
         items.add(UItem.asShadow(null));
     }
 
@@ -195,29 +137,30 @@ public class CameraPreferencesEntry extends UniversalFragment {
     protected void onClick(UItem item, View view, int position, float x, float y) {
         if (item.id == disableAttachCameraRow) {
             CherrygramCameraConfig.INSTANCE.setDisableAttachCamera(!CherrygramCameraConfig.INSTANCE.getDisableAttachCamera());
-            ((NotificationsCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getDisableAttachCamera());
+            SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getDisableAttachCamera());
 
             CGBulletinCreator.INSTANCE.createRestartBulletin(this);
         } else if (item.id == cameraAspectRatioRow) {
-            showAspectRatioSelector(getContext(), () -> ((TextCell) view).setValue(getCameraAspectRatio(), true));
-        } else if (item.id == cameraXQualityRow) {
-            Map<Quality, Size> availableSizes = CameraXUtils.getAvailableVideoSizes();
-            Stream<Integer> tmp = availableSizes.values().stream().sorted(Comparator.comparingInt(Size::getWidth).reversed()).map(Size::getHeight);
-            ArrayList<Integer> types = tmp.collect(Collectors.toCollection(ArrayList::new));
-            ArrayList<String> arrayList = types.stream().map(p -> p + "p").collect(Collectors.toCollection(ArrayList::new));
-
-            PopupHelper.show(arrayList, getString(R.string.CP_CameraQuality), types.indexOf(CherrygramCameraConfig.INSTANCE.getCameraResolution()), getContext(), i -> {
-                CherrygramCameraConfig.INSTANCE.setCameraResolution(types.get(i));
-                ((TextCell) view).setValue(CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p", true);
-            });
+            showAspectRatioSelector(getContext(), () -> SettingsHelper.updateButtonValue(view, getCameraAspectRatio()));
         } else if (item.id == cameraUseDualCameraRow) {
             CherrygramCameraConfig.INSTANCE.setUseDualCamera(!CherrygramCameraConfig.INSTANCE.getUseDualCamera());
-            ((NotificationsCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getUseDualCamera());
+            SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getUseDualCamera());
 
-            listView.adapter.update(true);
+            if (CameraXUtils.isCurrentCameraCameraX() && CherrygramCameraConfig.INSTANCE.getUseDualCamera()) {
+                CherrygramCameraConfig.INSTANCE.setCameraAspectRatio(CherrygramCameraConfig.Camera4to3);
+                listView.adapter.update(true);
+            }
+
+            if (CameraXUtils.isCurrentCameraNotCameraX()) listView.adapter.update(true);
+        } else if (item.id == rearCamRow) {
+            CherrygramCameraConfig.INSTANCE.setRearCam(!CherrygramCameraConfig.INSTANCE.getRearCam());
+            SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getRearCam());
         } else if (item.id == startFromUltraWideRow) {
             CherrygramCameraConfig.INSTANCE.setStartFromUltraWideCam(!CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
-            ((NotificationsCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
+            SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getStartFromUltraWideCam());
+        } else if (item.id == cameraStabilisationRow) {
+            CherrygramCameraConfig.INSTANCE.setCameraStabilisation(!CherrygramCameraConfig.INSTANCE.getCameraStabilisation());
+            SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getCameraStabilisation());
         } else if (item.id == cameraXFpsRangeRow) {
             ArrayList<String> configStringKeys = new ArrayList<>();
             ArrayList<Integer> configValues = new ArrayList<>();
@@ -241,11 +184,18 @@ public class CameraPreferencesEntry extends UniversalFragment {
 
             PopupHelper.show(configStringKeys, "FPS", configValues.indexOf(CherrygramCameraConfig.INSTANCE.getCameraXFpsRange()), getContext(), i -> {
                 CherrygramCameraConfig.INSTANCE.setCameraXFpsRange(configValues.get(i));
-                ((TextCell) view).setValue(getCameraXFpsRange(), true);
+                SettingsHelper.updateButtonValue(view, getCameraXFpsRange());
             });
-        } else if (item.id == cameraStabilisationRow) {
-            CherrygramCameraConfig.INSTANCE.setCameraStabilisation(!CherrygramCameraConfig.INSTANCE.getCameraStabilisation());
-            ((TextCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getCameraStabilisation());
+        } else if (item.id == cameraXQualityRow) {
+            Map<Quality, Size> availableSizes = CameraXUtils.getAvailableVideoSizes();
+            Stream<Integer> tmp = availableSizes.values().stream().sorted(Comparator.comparingInt(Size::getWidth).reversed()).map(Size::getHeight);
+            ArrayList<Integer> types = tmp.collect(Collectors.toCollection(ArrayList::new));
+            ArrayList<String> arrayList = types.stream().map(p -> p + "p").collect(Collectors.toCollection(ArrayList::new));
+
+            PopupHelper.show(arrayList, getString(R.string.CP_CameraQuality), types.indexOf(CherrygramCameraConfig.INSTANCE.getCameraResolution()), getContext(), i -> {
+                CherrygramCameraConfig.INSTANCE.setCameraResolution(types.get(i));
+                SettingsHelper.updateButtonValue(view, CherrygramCameraConfig.INSTANCE.getCameraResolution() + "p");
+            });
         } else if (item.id == exposureSliderRow) {
             ArrayList<String> configStringKeys = new ArrayList<>();
             ArrayList<Integer> configValues = new ArrayList<>();
@@ -264,14 +214,11 @@ public class CameraPreferencesEntry extends UniversalFragment {
 
             PopupHelper.show(configStringKeys, getString(R.string.CP_ExposureSliderPosition), configValues.indexOf(CherrygramCameraConfig.INSTANCE.getExposureSlider()), getContext(), i -> {
                 CherrygramCameraConfig.INSTANCE.setExposureSlider(configValues.get(i));
-                ((TextCell) view).setValue(getExposureSliderPosition(), true);
+                SettingsHelper.updateButtonValue(view, getExposureSliderPosition());
             });
         } else if (item.id == cameraControlButtonsRow) {
             CherrygramCameraConfig.INSTANCE.setCenterCameraControlButtons(!CherrygramCameraConfig.INSTANCE.getCenterCameraControlButtons());
-            ((NotificationsCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getCenterCameraControlButtons());
-        } else if (item.id == rearCamRow) {
-            CherrygramCameraConfig.INSTANCE.setRearCam(!CherrygramCameraConfig.INSTANCE.getRearCam());
-            ((NotificationsCheckCell) view).setChecked(CherrygramCameraConfig.INSTANCE.getRearCam());
+            SettingsHelper.updateCheckState(view, CherrygramCameraConfig.INSTANCE.getCenterCameraControlButtons());
         }
     }
 
@@ -293,8 +240,10 @@ public class CameraPreferencesEntry extends UniversalFragment {
         configStringKeys.add("16:9");
         configValues.add(CherrygramCameraConfig.Camera16to9);
 
-        configStringKeys.add(getString(R.string.Default));
-        configValues.add(CherrygramCameraConfig.CameraAspectDefault);
+        if (!CherrygramCameraConfig.INSTANCE.getUseDualCamera() && CameraXUtils.isCurrentCameraCameraX()) {
+            configStringKeys.add(getString(R.string.Default));
+            configValues.add(CherrygramCameraConfig.CameraAspectDefault);
+        }
 
         PopupHelper.show(configStringKeys, getString(R.string.CP_CameraAspectRatio), configValues.indexOf(CherrygramCameraConfig.INSTANCE.getCameraAspectRatio()), context, i -> {
             CherrygramCameraConfig.INSTANCE.setCameraAspectRatio(configValues.get(i));

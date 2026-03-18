@@ -88,6 +88,8 @@
     <uses-permission android:name="android.permission.READ_CALENDAR"> </uses-permission>
     <uses-permission android:name="android.permission.WRITE_CALENDAR"> </uses-permission>
 
+    <uses-permission android:name="android.permission.CREDENTIAL_MANAGER_SET_ORIGIN" />
+
     <uses-sdk tools:overrideLibrary=
         "androidx.camera.video,
         androidx.camera.view,
@@ -470,6 +472,9 @@
                 <data android:host="telegram.dog" android:scheme="https" />
                 <data android:host="t.me" android:scheme="http" />
                 <data android:host="t.me" android:scheme="https" />
+
+                <data android:host="www.keepassdx.com" android:scheme="http" />
+                <data android:host="www.keepassdx.com" android:scheme="https" />
             </intent-filter>
             <intent-filter android:icon="@mipmap/icon_launcher_cherry" android:roundIcon="@mipmap/icon_launcher_cherry" android:priority="1">
                 <action android:name="android.intent.action.VIEW"/>
@@ -648,7 +653,7 @@
         <receiver
             android:name=".AutoMessageReplyReceiver"
             android:exported="false">
-e            <intent-filter>
+            <intent-filter>
                 <action android:name="org.telegram.messenger.ACTION_MESSAGE_REPLY"/>
             </intent-filter>
         </receiver>
