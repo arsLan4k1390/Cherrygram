@@ -4,18 +4,6 @@
 afat/
 build/
 obj/
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/CameraXController.java
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/VideoMessagesHelper.java
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/filters/MessagesFilterHelper.kt
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuCompactView.java
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuHelper.java
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuMessageCells.java
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuRoundVideoPlayer.java
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/chats/ui/MessageMenuScrollView.java
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/ui/folders/FoldersHelper.kt
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/core/ui/mainTabs/SearchTriggerFragment.java
-/TMessagesProj/src/main/java/uz/unnarsx/cherrygram/preferences/tabs/MainTabsPreviewCell.java
 *.iml
 local.properties
 TMessagesProj/.cxx/
@@ -31,4 +19,3 @@ Keytool.zip
 Cherrygram.jks
 mykey.jks
 actions-runner
-secrets_for_ci.env
