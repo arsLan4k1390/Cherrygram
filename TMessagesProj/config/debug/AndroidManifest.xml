@@ -22,7 +22,7 @@
     <application
         android:icon="@mipmap/icon_launcher_cherry"
         android:roundIcon="@mipmap/icon_launcher_cherry"
-        android:label="@string/CG_AppNameBeta"
+        android:label="@string/CG_AppName"
         android:theme="@style/Theme.TMessages.Start"
         android:hardwareAccelerated="true"
         android:largeHeap="true"
