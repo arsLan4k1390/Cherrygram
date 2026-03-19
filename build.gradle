@@ -4,7 +4,6 @@ buildscript {
         google()
         mavenCentral()
         maven { url 'https://developer.huawei.com/repo/' }
-        maven { url "https://europe-west3-maven.pkg.dev/talsec-artifact-repository/freerasp" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:8.11.1'
@@ -22,7 +21,6 @@ allprojects {
         mavenCentral()
         maven { url 'https://developer.huawei.com/repo/' }
         maven { url "https://jitpack.io" }
-        maven { url "https://europe-west3-maven.pkg.dev/talsec-artifact-repository/freerasp" }
     }
 }
 

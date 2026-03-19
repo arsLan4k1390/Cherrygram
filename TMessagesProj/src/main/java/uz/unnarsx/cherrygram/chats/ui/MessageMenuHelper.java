@@ -18,15 +18,10 @@ import android.widget.LinearLayout;
 import org.telegram.messenger.BaseController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.UserConfig;
-import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.ActionBarPopupWindow;
-import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.ChatScrimPopupContainerLayout;
 import org.telegram.ui.Components.ReactionsContainerLayout;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.donates.DonatesManager;
 
 // Dear Nagram / Nagram X / Octogram and related fork developers:
 // Please respect this work and do not copy or reuse this feature in your forks.
@@ -54,6 +49,7 @@ public class MessageMenuHelper extends BaseController {
         return localInstance;
     }
 
+    public View hiddenMessageView;
     public void createMenu(
             ChatActivity chatActivity,
             View view,
@@ -67,7 +63,14 @@ public class MessageMenuHelper extends BaseController {
     }
 
     public void checkBlur(Activity activity, boolean enable, boolean hideStatusBar, float windowBlurRadius) {
+        checkBlur(activity, enable, hideStatusBar, windowBlurRadius, 0);
+    }
 
+    public void checkBlur(Activity activity, boolean enable, boolean hideStatusBar, float windowBlurRadius, float windowDimAlpha) {
+        if (activity == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
+
+        WindowBlurHelper blurHelper = new WindowBlurHelper();
+        blurHelper.setWindowBlur(activity, enable, hideStatusBar, windowBlurRadius, windowDimAlpha);
     }
 
     public void hideMessageView(
@@ -88,57 +91,45 @@ public class MessageMenuHelper extends BaseController {
         }
 
         public void setMaxHeight(int maxHeight) {
-
+            requestLayout();
         }
 
         public void setMaxWidth(int maxWidth) {
-
+            requestLayout();
         }
 
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
     }
 
     public int getMessageMenuAlpha(boolean divider) {
-        if (CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems()) {
-            if (Theme.isCurrentThemeDay()) {
-                return divider ? 90 : 200;
-            } else {
-                return divider ? 90 : 180;
-            }
-        } else {
-            return 255;
-        }
-    }
-
-    public int getMenuCornersRadius() {
-        if (allowNewMessageMenu()) {
-            return 15;
-        } else {
-            return 6;
-        }
+        return 255;
     }
 
     public boolean showDivider() {
-        return !Theme.getActiveTheme().isMonet() && !Theme.getActiveTheme().isAmoled() && !(Theme.isCurrentThemeDay() && CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems());
+        return true;
     }
 
-    public boolean showCustomDivider() {
-        return allowNewMessageMenu() && CherrygramChatsConfig.INSTANCE.getBlurMessageMenuItems();
+    public boolean showCustomDivider(boolean verifyDonates) {
+        return true;
     }
 
-    public boolean allowUnifiedScroll() {
-        return allowNewMessageMenu() && CherrygramChatsConfig.INSTANCE.getMsgMenuUnifiedScroll();
+    public boolean allowUnifiedScroll(boolean verifyDonates) {
+        return false;
     }
 
     public boolean allowNewMessageMenu() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && DonatesManager.INSTANCE.checkAllDonatedAccountsForMarketplace() && CherrygramChatsConfig.INSTANCE.getBlurMessageMenuBackground();
+        return false;
     }
 
     public boolean allowNewMessageMenu(MessageObject messageObject) {
-        if (messageObject != null && messageObject.messageOwner.action instanceof TLRPC.TL_messageActionSetMessagesTTL) {
-            return false;
-        } else {
-            return allowNewMessageMenu();
-        }
+        return false;
+    }
+
+    public boolean allowNewMessageMenu(boolean verifyDonates) {
+        return false;
     }
 
 }

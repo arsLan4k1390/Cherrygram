@@ -32,11 +32,7 @@ object FoldersHelper {
         return false
     }
 
-    fun getFloatingButtonsOffset() : Int {
-        return 0
-    }
-
-    fun getFilterTabsOffset(inForwardMode: Boolean) : Int {
+    fun getFloatingButtonsOffset(filterTabsView: FilterTabsView?) : Int {
         return 0
     }
 
@@ -46,7 +42,8 @@ object FoldersHelper {
         filterTabsView: FilterTabsView,
         resourceProvider: Theme.ResourcesProvider?,
         iBlur3FactoryLiquidGlass: BlurredBackgroundDrawableViewFactory,
-        iBlur3FactoryFade: BlurredBackgroundDrawableViewFactory
+        iBlur3FactoryFade: BlurredBackgroundDrawableViewFactory,
+        inForwardMode: Boolean
     ) {
 
     }
@@ -67,7 +64,7 @@ object FoldersHelper {
 
     fun updateFoldersOffset(
         dialogsActivity: DialogsActivity,
-        inForwardMode: Boolean
+        inForwardMode: Boolean,
     ) {
 
     }

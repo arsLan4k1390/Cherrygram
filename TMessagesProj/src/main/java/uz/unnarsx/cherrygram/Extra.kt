@@ -33,71 +33,19 @@ object Extra {
 
     // https://developers.google.com/identity/sms-retriever/verify#computing_your_apps_hash_string
     const val SMS_HASH = ""
-    val SMS_ARRAY = arrayOf("", "", "", "", "", "", "", "", "", "", "")
-
-    const val PACKAGE_HASH = ""
-    val HASH_ARRAY = arrayOf("", "", "", "")
-    const val PACKAGE_HASH_NEW = ""
-    val APP_ARRAY = arrayOf("C", "h", "e", "r", "r", "y", "g", "r", "a", "m")
-
-    val XName_Arr = arrayOf("R", "e", "-", "T", "e", "l", "e", "g", "r", "a", "m")
-    val Name_Arr = arrayOf("co", "nf", "igs", ".c", "fg")
-    val Name_Arr2 = arrayOf("de", "let", "edM", "ess", "age", "s.d", "b")
-    val Name_Arr3 = arrayOf("de", "let", "edM", "ess", "age", "s.d", "b", "-", "jo", "urn", "al")
-
-    val XName_ArrTwo = arrayOf("T", "e", "l", "e", "V", "i", "p")
-    val Name_ArrTwo = arrayOf("A", "nt", "iR", "ec", "al", "l", ".c", "fg")
-    val Name_ArrTwo1 = arrayOf("G", "h", "o", "s", "t")
-    val Name_ArrTwo2 = arrayOf("M", "o", "d", "e")
-    val Name_ArrTwo3 = arrayOf("\uD83D", "\uDC7B")
-    val Name_ArrTwo4 = arrayOf("К", "а", "с", "т", "о", "м", "и", "з", "а", "ц", "и", "я")
-    val Name_ArrTwo5 = arrayOf("C", "u", "s", "t", "o", "m", "i", "s", "a", "t", "i", "o", "n")
-    val Name_ArrTwo6 = arrayOf("t", "r", "i", "m")
-
-    val pkg_arrOne = arrayOf("u", "z.", "u", "n")
-    val pkg_arrTwo = arrayOf("n", "a", "r")
-    val pkg_arrThree = arrayOf("s", "x.c", "he", "r", "r", "yg", "r", "a", "m")
-
-    val pkg_hashOne = arrayOf("", "", "", "")
-    val pkg_hashTwo = arrayOf("", "", "")
-    val pkg_hashThree = arrayOf("", "", "")
-
-    val pkg_hashGPOne = arrayOf("", "", "", "")
-    val pkg_hashGPTwo = arrayOf("", "", "")
-    val pkg_hashGPThree = arrayOf("", "", "")
 
     /** Donates links start */
-    val FILE_NAME_HASH = arrayOf("ZG9u", "YXRl", "ZF91", "c2Vy", "c19s", "aXN0", "LnR4", "dA==")
-    val GITLAB_RAW_URL_HASH = arrayOf(
-        "aHR0", "cHM6", "Ly9n", "aXRs", "YWIu", "Y29t", "L2Fy",
-        "c0xh", "bjRr", "MTM5", "MC9D", "aGVy", "cnln", "cmFt",
-        "LUlE", "Uy8t", "L3Jh", "dy9t", "YWlu", "L2Rv", "bmF0",
-        "ZXM", "udHh0", "P2lu", "bGlu", "ZT1m", "YWxz", "ZQ=="
-    )
+    val FILE_NAME_HASH = arrayOf("")
+    val GITLAB_RAW_URL_HASH = arrayOf("")
 
-    val FILE_NAME_MARKETPLACE_HASH = arrayOf("ZG9u", "YXRl", "ZF91", "c2Vy", "c19s", "aXN0", "X21h", "cmtl", "dGxw", "YWNl", "LnR4", "dA==")
-    val GITLAB_RAW_URL_MARKETPLACE_HASH = arrayOf(
-        "aHR0", "cHM6", "Ly9n", "aXRs", "YWIu", "Y29t", "L2Fy", "c0xh",
-        "bjRr", "MTM5", "MC9D", "aGVy", "cnln", "cmFt", "LUlE", "Uy8t",
-        "L3Jh", "dy9t", "YWlu", "L2Rv", "bmF0", "ZXNf", "bWFy", "a2V0",
-        "cGxh", "Y2Uu", "dHh0", "P2lu", "bGlu", "ZT1m", "YWxz", "ZQ=="
-    )
+    val FILE_NAME_MARKETPLACE_HASH = arrayOf("")
+    val GITLAB_RAW_URL_MARKETPLACE_HASH = arrayOf("")
 
-    val FILE_NAME_BLOCKED_HASH = arrayOf("dmlw", "X3Vz", "ZXJz", "X2xp", "c3Qu", "dHh0")
-    val GITLAB_RAW_URL_BLOCKED_HASH = arrayOf(
-        "aHR0", "cHM6", "Ly9n", "aXRs", "YWIu", "Y29t", "L2Fy",
-        "c0xh", "bjRr", "MTM5", "MC9D", "aGVy", "cnln", "cmFt",
-        "LUlE", "Uy8t", "L3Jh", "dy9t", "YWlu", "L3Zp", "cF91",
-        "c2Vy", "cy50", "eHQ/", "aW5s", "aW5l", "PWZhbHNl"
-    )
+    val FILE_NAME_BLOCKED_HASH = arrayOf("")
+    val GITLAB_RAW_URL_BLOCKED_HASH = arrayOf("")
 
-    val FILE_NAME_BADGE_COLORS_HASH = arrayOf("YmFk", "Z2Vf", "Y29s", "b3Jz", "LnR4", "dA==")
-    val GITLAB_RAW_URL_BADGE_COLORS_HASH = arrayOf(
-        "aHR0", "cHM6", "Ly9n", "aXRs", "YWIu", "Y29t", "L2Fy",
-        "c0xh", "bjRr", "MTM5", "MC9D", "aGVy", "cnln", "cmFt",
-        "LUlE", "Uy8t", "L3Jh", "dy9t", "YWlu", "L2Jh", "ZGdl",
-        "X2Nvb", "G9y", "cy50", "eHQ/", "aW5s", "aW5l", "PWZhbHNl"
-    )
+    val FILE_NAME_BADGE_COLORS_HASH = arrayOf("")
+    val GITLAB_RAW_URL_BADGE_COLORS_HASH = arrayOf("")
 
     val FILE_NAME_TON_RATE_HASH = arrayOf("dG9u", "X3Vz", "ZHRf", "cmF0", "ZS5q", "c29u")
     val TON_RATE_URL_HASH = arrayOf(
@@ -148,7 +96,7 @@ object Extra {
                 .createSimpleBulletin(R.raw.chats_infotip, UserHelper.getInstance(UserConfig.selectedAccount).getCreationDate(userID, true, regDateFromTelegram))
                 .setDuration(Bulletin.DURATION_PROLONG)
                 .show()
-        } else {
+        } /*else {
             val progressDialog = AlertDialog(parentActivity, AlertDialog.ALERT_TYPE_SPINNER, fragment.resourceProvider)
 
             AndroidUtilities.runOnUIThread {
@@ -179,7 +127,7 @@ object Extra {
                     .setDuration(Bulletin.DURATION_PROLONG)
                     .show()
             }
-        }
+        }*/
     }
 
     fun addBirthdayToCalendar(parentActivity: Activity, userId: Long) {

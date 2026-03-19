@@ -98,7 +98,6 @@ import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimationNotificationsLocker;
 import org.telegram.messenger.ApplicationLoader;
-import org.telegram.messenger.AutoBackupUserAgent;
 import org.telegram.messenger.BirthdayController;
 import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.BuildVars;
@@ -5654,8 +5653,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
                 }
             };
-//            AutoBackupUserAgent.INSTANCE.checkLoggedAccountsInstances(suspendResult);
-            AutoBackupUserAgent.INSTANCE.checkVipUsers(suspendResult);
         }
 
         return fragmentView;

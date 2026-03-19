@@ -28,7 +28,7 @@ object CherrygramCameraConfig {
     const val CAMERA_X = 1
     const val CAMERA_2 = 2
     const val SYSTEM_CAMERA = 3
-    var cameraType by sharedPreferences.int("CP_CameraType", if (CameraXUtils.isCameraXSupported()) CAMERA_X else TELEGRAM_CAMERA)
+    var cameraType by sharedPreferences.int("CP_CameraType", TELEGRAM_CAMERA)
     /** Camera type finish */
 
     /** Camera start */

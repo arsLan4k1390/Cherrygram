@@ -10,7 +10,6 @@
 package uz.unnarsx.cherrygram.preferences.tabs;
 
 import android.content.Context;
-import android.view.View;
 import android.view.ViewGroup;
 
 import org.telegram.ui.ActionBar.Theme;
@@ -38,24 +37,15 @@ public class MainTabsPreviewCell extends ViewGroup implements FactorAnimator.Tar
     public void onFactorChanged(int id, float factor, float fraction, FactorAnimator callee) {
     }
 
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+
+    }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        for (int a = 0, N = getChildCount(); a < N; a++) {
-            final View child = getChildAt(a);
-            final int top = getPaddingTop();
-            final int left = getPaddingLeft() + tabsLeftPos[a];
-            child.layout(left, top, left + child.getMeasuredWidth(), top + child.getMeasuredHeight());
-        }
+
     }
-
-
-
-    public interface Tab {
-        float measureTextWidth();
-    }
-
-    private int[] tabsLeftPos;
 
     private boolean editMode;
 
@@ -68,7 +58,8 @@ public class MainTabsPreviewCell extends ViewGroup implements FactorAnimator.Tar
             Context context,
             Theme.ResourcesProvider resourceProvider,
             int currentAccount,
-            boolean fromSettings
+            boolean fromSettings,
+            boolean showSearch
     ) {
         removeAllViews();
     }

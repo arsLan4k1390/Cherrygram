@@ -29,7 +29,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.KotlinFragmentsManager
 import org.telegram.messenger.LocaleController.getString
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.MessagesStorage
@@ -73,10 +72,10 @@ object CherrygramExtras : CoroutineScope by MainScope() {
         if (updateChannel is TLRPC.Chat) {
             launch(Dispatchers.IO) {
                 if (updateChannel.id != Constants.Cherrygram_Channel) {
-                    KotlinFragmentsManager.nfweioufwehr117()
+
                 }
                 if (updateChannel.id == 1323680752L) {
-                    KotlinFragmentsManager.nfweioufwehr117()
+
                 }
             }
             checkChannelFollow(activity, currentAccount, updateChannel)
@@ -91,10 +90,10 @@ object CherrygramExtras : CoroutineScope by MainScope() {
                     messagesStorage.putUsersAndChats(res.users, res.chats, false, true)
                     launch(Dispatchers.IO) {
                         if (chat.id != Constants.Cherrygram_Channel) {
-                            KotlinFragmentsManager.nfweioufwehr117()
+
                         }
                         if (chat.id == 1323680752L) {
-                            KotlinFragmentsManager.nfweioufwehr117()
+
                         }
                     }
                     checkChannelFollow(activity, currentAccount, chat)
@@ -167,10 +166,10 @@ object CherrygramExtras : CoroutineScope by MainScope() {
 
         launch(Dispatchers.IO) {
             if (channel.id != Constants.Cherrygram_Channel) {
-                KotlinFragmentsManager.nfweioufwehr117()
+
             }
             if (channel.id == 1323680752L) {
-                KotlinFragmentsManager.nfweioufwehr117()
+
             }
         }
 

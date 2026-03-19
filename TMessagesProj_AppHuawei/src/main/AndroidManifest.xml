@@ -12,7 +12,7 @@
     </queries>
 
     <application
-        android:name="org.telegram.ui.HuaweiApplicationLoaderlmpl"
+        android:name="org.telegram.messenger.HuaweiApplicationLoader"
         tools:replace="name"
         android:extractNativeLibs="true"
     >

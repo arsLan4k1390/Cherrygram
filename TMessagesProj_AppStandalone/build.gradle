@@ -31,8 +31,6 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.17.0'
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation files('../TMessagesProj/libs/libgsaverification-client.aar')
-
-    implementation 'com.aheaditec.talsec.security:TalsecSecurity-Community:17.0.0'
 }
 
 android {
