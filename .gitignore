@@ -4,6 +4,8 @@
 afat/
 build/
 obj/
+TMessagesProj/jni/colorado
+TMessagesProj/jni/security
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/CameraXController.java
 /TMessagesProj/src/main/java/uz/unnarsx/cherrygram/camera/VideoMessagesHelper.java

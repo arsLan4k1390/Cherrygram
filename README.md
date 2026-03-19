@@ -33,13 +33,7 @@ MTproto protocol manuals: https://core.telegram.org/mtproto
 ## Compilation Guide
 
 1. Download the Cherrygram source code (`git clone https://github.com/arslan4k1390/Cherrygram.git`)
-2. Fill out storeFile, storePassword, keyAlias, keyPassword in app's build.gradle to sign your app
-3. Go to https://console.firebase.google.com/, create two android apps with application IDs uz.unnarsx.cherrygram and uz.unnarsx.cherrygram.beta, turn on firebase messaging and download `google-services.json`, which should be copied into `TMessagesProj` folder.
-4. Open the project in the Studio (note that it should be opened, NOT imported).
-5. Locate all the files contains .`example` in their extension, then remove the .example extension from their filenames.
-6. Fill out values in `TMessagesProj/src/main/java/uz/unnarsx/cherrygram/Extra.kt` – there’s a link for each of the variables showing where and which data to obtain.
-7. In `TMessagesProj/jni/security/secure_validator.cpp`, update the `validate_signature` function with the values obtained from logs for you signing key (`cgSKey`). And not forget to disable other signature verification checks in `Extra.kt`.
-8. You are ready to compile and use Cherrygram.
+2. Switch to `main_Reproducible_Builds` branch and follow the instructions listed in `README.md`
 
 
 ## Thanks to:
