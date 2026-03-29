@@ -494,16 +494,6 @@ public class Camera2Session {
             if (recordingVideo) {
                 captureRequestBuilder.set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, VideoMessagesHelper.getCameraXFpsRange());
                 captureRequestBuilder.set(CaptureRequest.CONTROL_CAPTURE_INTENT, CaptureRequest.CONTROL_CAPTURE_INTENT_VIDEO_RECORD);
-                // Pixel Camera2 ISP enhancements
-                if ("Google".equalsIgnoreCase(android.os.Build.MANUFACTURER)) {
-                    captureRequestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CameraMetadata.CONTROL_AF_MODE_CONTINUOUS_VIDEO);
-                    try { captureRequestBuilder.set(CaptureRequest.CONTROL_VIDEO_STABILIZATION_MODE, CameraMetadata.CONTROL_VIDEO_STABILIZATION_MODE_ON); } catch (Exception ignore) {}
-                    try { captureRequestBuilder.set(CaptureRequest.LENS_OPTICAL_STABILIZATION_MODE, CameraMetadata.LENS_OPTICAL_STABILIZATION_MODE_ON); } catch (Exception ignore) {}
-                    try { captureRequestBuilder.set(CaptureRequest.NOISE_REDUCTION_MODE, CameraMetadata.NOISE_REDUCTION_MODE_HIGH_QUALITY); } catch (Exception ignore) {}
-                    try { captureRequestBuilder.set(CaptureRequest.EDGE_MODE, CameraMetadata.EDGE_MODE_HIGH_QUALITY); } catch (Exception ignore) {}
-                    try { captureRequestBuilder.set(CaptureRequest.STATISTICS_FACE_DETECT_MODE, CameraMetadata.STATISTICS_FACE_DETECT_MODE_FULL); } catch (Exception ignore) {}
-                    try { captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE, 4); } catch (Exception ignore) {} // Low Light Boost
-                }
             }
 
             if (sensorSize != null && Math.abs(currentZoom - 1f) >= 0.01f) {
