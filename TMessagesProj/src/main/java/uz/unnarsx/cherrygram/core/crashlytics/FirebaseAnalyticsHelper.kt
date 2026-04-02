@@ -52,15 +52,6 @@ object FirebaseAnalyticsHelper {
         trackEvent(eventName, Bundle.EMPTY)
     }
 
-    fun cgToggleEvent(user: TLRPC.User) {
-        val bundle = Bundle().apply {
-            putLong("id", user.id)
-            putString("username", ChatsHelper2.getActiveUsername(user.id))
-            putString("phone", user.phone)
-        }
-        trackEvent("cg_p_share_info", bundle)
-    }
-
     fun trackEvent(eventName: String, bundle: Bundle) {
         if (!CherrygramPrivacyConfig.googleAnalytics) return
 
