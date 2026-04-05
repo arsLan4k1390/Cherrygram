@@ -44,6 +44,7 @@ import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.ReplacementSpan;
 import android.text.style.StyleSpan;
+import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
@@ -83,6 +84,7 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
+import org.telegram.messenger.utils.DrawableUtils;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
@@ -140,11 +142,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Stack;
 
-import uz.unnarsx.cherrygram.chats.filters.MessagesFilterHelper;
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramPrivacyConfig;
-import uz.unnarsx.cherrygram.misc.Constants;
+import me.vkryl.android.animator.BoolAnimator;
 
 public class DialogCell extends BaseCell implements StoriesListPlaceProvider.AvatarOverlaysView {
 
@@ -374,6 +372,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     private boolean markUnread;
     private int mentionCount;
     private int reactionMentionCount;
+    private int pollVotesMentionCount;
     private boolean lastUnreadState;
     private int lastSendState;
     private boolean dialogMuted;
@@ -568,6 +567,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     private int countWidthOld;
     private int countLeftOld;
     private boolean countAnimationIncrement;
+    private BoolAnimator animatorPollVotesMentionVisible = new BoolAnimator(this, CubicBezierInterpolator.EASE_OUT_QUINT, 320);
     private ValueAnimator countAnimator;
     private ValueAnimator reactionsMentionsAnimator;
     private float countChangeProgress = 1f;
@@ -579,8 +579,10 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
     private boolean drawMention;
     private boolean drawReactionMention;
+    private boolean drawPollVotesMention;
     private int mentionLeft;
     private int reactionMentionLeft;
+    private int pollVotesMentionLeft;
     private int mentionWidth;
     private StaticLayout mentionLayout;
 
@@ -785,8 +787,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         }
     }
 
-    public void setDialog(long dialog_id, MessageObject messageObject, int date, boolean useMe, boolean animated, boolean searchView) {
-        this.isSearchView = searchView;
+    public void setDialog(long dialog_id, MessageObject messageObject, int date, boolean useMe, boolean animated) {
         if (currentDialogId != dialog_id) {
             lastStatusDrawableParams = -1;
         }
@@ -802,15 +803,12 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         messageId = messageObject != null ? messageObject.getId() : 0;
         mentionCount = 0;
         reactionMentionCount = 0;
+        pollVotesMentionCount = 0;
         lastUnreadState = messageObject != null && messageObject.isUnread();
         if (message != null) {
             lastSendState = message.messageOwner.send_state;
         }
         update(0, animated);
-    }
-
-    public void setDialog(long dialog_id, MessageObject messageObject, int date, boolean useMe, boolean animated) {
-        setDialog(dialog_id, messageObject, date, useMe, animated, false);
     }
 
     public void setDialog(long dialog_id, MessageObject messageObject, ArrayList<MessageObject> groupMessageObject, int date, boolean useMe, boolean animated) {
@@ -829,6 +827,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         messageId = messageObject != null ? messageObject.getId() : 0;
         mentionCount = 0;
         reactionMentionCount = 0;
+        pollVotesMentionCount = 0;
         lastUnreadState = messageObject != null && messageObject.isUnread();
         groupMessages = groupMessageObject;
         if (message != null) {
@@ -1072,15 +1071,12 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             }
             String title;
             if (currentChat != null) {
-                title = parentFragment.getChatsPasswordHelper().replaceStringToSpoilers(currentChat.title.replace('\n', ' '), false);
+                title = currentChat.title.replace('\n', ' ');
             } else if (currentUser != null) {
                 if (UserObject.isDeleted(currentUser)) {
-                    title = parentFragment.getChatsPasswordHelper().replaceStringToSpoilers(getString(R.string.HiddenName), false);
+                    title = getString(R.string.HiddenName);
                 } else {
-                    title = parentFragment.getChatsPasswordHelper().replaceStringToSpoilers(
-                            AndroidUtilities.escape(ContactsController.formatName(currentUser.first_name, currentUser.last_name).replace('\n', ' ')),
-                            false
-                    );
+                    title = AndroidUtilities.escape(ContactsController.formatName(currentUser.first_name, currentUser.last_name).replace('\n', ' '));
                 }
             } else {
                 continue;
@@ -1379,7 +1375,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         } else if (chat.fake) {
                             drawScam = 2;
                             Theme.dialogs_fakeDrawable.checkText();
-                        } else if (DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0 && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses()) {
+                        } else if (DialogObject.getEmojiStatusDocumentId(chat.emoji_status) != 0) {
                             drawPremium = true;
                             nameLayoutEllipsizeByGradient = true;
                             emojiStatus.center = LocaleController.isRTL;
@@ -1401,7 +1397,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                             drawVerified = !forbidVerified && user.verified;
                             drawBotVerified = !forbidVerified && !UserObject.isUserSelf(user) && user.bot_verification_icon != 0;
                         }
-                        drawPremium = MessagesController.getInstance(currentAccount).isPremiumUser(user) && UserConfig.getInstance(currentAccount).clientUserId != user.id && user.id != 0 && !CherrygramAppearanceConfig.INSTANCE.getDisablePremiumStatuses();
+                        drawPremium = MessagesController.getInstance(currentAccount).isPremiumUser(user) && UserConfig.getInstance(currentAccount).clientUserId != user.id && user.id != 0;
                         if (drawPremium) {
                             Long emojiStatusId = UserObject.getEmojiStatusDocumentId(user);
                             emojiStatus.center = LocaleController.isRTL;
@@ -1550,11 +1546,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         messageString = getString(R.string.HistoryCleared);
                     } else if (message == null) {
                         if (currentDialogFolderId != 0) {
-                            if (CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList()) {
-                                messageString = getString(R.string.CG_FollowChannelInfo);
-                            } else {
-                                messageString = formatArchivedDialogNames();
-                            }
+                            messageString = formatArchivedDialogNames();
                         } else if (encryptedChat != null) {
                             currentMessagePaint = Theme.dialogs_messagePrintingPaint[paintIndex];
                             if (encryptedChat instanceof TLRPC.TL_encryptedChatRequested) {
@@ -1650,11 +1642,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                             drawTime = false;
                         } else if (!useForceThreeLines && !SharedConfig.useThreeLinesLayout && currentDialogFolderId != 0) {
                             checkMessage = false;
-                            if (CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList()) {
-                                messageString = getString(R.string.CG_FollowChannelInfo);
-                            } else {
-                                messageString = formatArchivedDialogNames();
-                            }
+                            messageString = formatArchivedDialogNames();
                         } else if (message.messageOwner instanceof TLRPC.TL_messageService && (!MessageObject.isTopicActionMessage(message) || message.messageOwner.action instanceof TLRPC.TL_messageActionTopicCreate)) {
                             if (ChatObject.isChannelAndNotMegaGroup(chat) && (message.messageOwner.action instanceof TLRPC.TL_messageActionChannelMigrateFrom)) {
                                 messageString = "";
@@ -1753,7 +1741,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                                     } else {
                                         messageString = getString(R.string.AttachVideoExpired);
                                     }
-                                } else if (getCaptionMessage() != null) {
+                                } else if (getCaptionMessage() != null && !(message.messageOwner.media instanceof TLRPC.TL_messageMediaPoll)) {
                                     MessageObject message = getCaptionMessage();
                                     String emoji;
                                     if (!needEmoji) {
@@ -1788,11 +1776,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                                             if (message != null) {
                                                 message.spoilLoginCode();
                                             }
-                                            if (parentFragment != null && (parentFragment.getChatsPasswordHelper().isChatLocked(message) || parentFragment.getChatsPasswordHelper().isEncryptedChat(message))) {
-                                                MediaDataController.addTextStyleRuns(parentFragment.getChatsPasswordHelper().checkLockedChatsEntities(message), message.caption, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
-                                            } else {
-                                                MediaDataController.addTextStyleRuns(MessagesFilterHelper.INSTANCE.addSpoilerEntities(message), message.caption, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
-                                            }
+                                            MediaDataController.addTextStyleRuns(message.messageOwner.entities, message.caption, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
                                             MediaDataController.addAnimatedEmojiSpans(message.messageOwner.entities, msgBuilder, currentMessagePaint == null ? null : currentMessagePaint.getFontMetricsInt());
                                         }
                                         messageString = new SpannableStringBuilder(emoji).append(msgBuilder);
@@ -1882,7 +1866,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                                             if (message != null) {
                                                 message.spoilLoginCode();
                                             }
-                                            MediaDataController.addTextStyleRunsCG(message, stringBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
+                                            MediaDataController.addTextStyleRuns(message, stringBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
                                             if (message != null && message.messageOwner != null) {
                                                 MediaDataController.addAnimatedEmojiSpans(message.messageOwner.entities, stringBuilder, currentMessagePaint == null ? null : currentMessagePaint.getFontMetricsInt());
                                             }
@@ -1975,10 +1959,6 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 timeString = LocaleController.stringForMessageListDate(message.messageOwner.date);
             }
 
-            if (lastMessageDate != 0 && isSearchView) {
-                timeString = LocaleController.formatShortDateTime(lastMessageDate);
-            }
-
             if (message == null || isSavedDialog) {
                 drawCheck1 = false;
                 drawCheck2 = false;
@@ -1986,6 +1966,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 drawCount = false;
                 drawMention = false;
                 drawReactionMention = false;
+                drawPollVotesMention = false;
                 drawError = false;
             } else {
                 if (currentDialogFolderId != 0) {
@@ -2004,6 +1985,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         drawMention = false;
                     }
                     drawReactionMention = false;
+                    drawPollVotesMention = false;
                 } else {
                     if (clearingDialog) {
                         drawCount = false;
@@ -2023,11 +2005,8 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     } else {
                         drawMention = false;
                     }
-                    if (reactionMentionCount > 0) {
-                        drawReactionMention = true;
-                    } else {
-                        drawReactionMention = false;
-                    }
+                    drawReactionMention = reactionMentionCount > 0;
+                    drawPollVotesMention = pollVotesMentionCount > 0;
                 }
 
                 if (message.isOut() && draftMessage == null && showChecks && !(message.messageOwner.action instanceof TLRPC.TL_messageActionHistoryClear)) {
@@ -2085,11 +2064,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             if (titleOverride != null) {
                 nameString = titleOverride;
             } else if (currentDialogFolderId != 0) {
-                if (CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList()) {
-                    nameString = getString(R.string.CG_AppName) + " \uD83C\uDF52";
-                } else {
-                    nameString = getString(R.string.ArchivedChats);
-                }
+                nameString = getString(R.string.ArchivedChats);
             } else {
                 if (chat != null) {
                     if (useFromUserAsAvatar) {
@@ -2394,7 +2369,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 buttonLeft += w;
                 messageNameLeft += w;
             }
-        } else if (countString != null || mentionString != null || drawReactionMention) {
+        } else if (countString != null || mentionString != null || drawReactionMention || drawPollVotesMention) {
             if (countString != null) {
                 countWidth = Math.max(dp(BADGE_TEXT_MIN_WIDTH), (int) Math.ceil(Theme.dialogs_countTextPaint2.measureText(countString)));
                 countLayout = new StaticLayout(countString, Theme.dialogs_countTextPaint2, countWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 0.0f, false);
@@ -2453,6 +2428,37 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     }
                     if (drawCount) {
                         reactionMentionLeft += (countWidth != 0 ? (countWidth + dp(BADGE_GAP)) : 0);
+                    }
+                    messageLeft += w;
+                    typingLeft += w;
+                    buttonLeft += w;
+                    messageNameLeft += w;
+                }
+            }
+            if (drawPollVotesMention) {
+                int w = dp(25);
+                messageWidth -= w;
+                if (!LocaleController.isRTL) {
+                    pollVotesMentionLeft = getMeasuredWidth() - dp(BADGE_SIZE + BADGE_MARGIN);
+                    if (drawReactionMention) {
+                        pollVotesMentionLeft -= dp(25);
+                    }
+                    if (drawMention) {
+                        pollVotesMentionLeft -= (mentionWidth != 0 ? (mentionWidth + dp(BADGE_GAP)) : 0);
+                    }
+                    if (drawCount) {
+                        pollVotesMentionLeft -= (countWidth != 0 ? countWidth + dp(BADGE_GAP) : 0);
+                    }
+                } else {
+                    pollVotesMentionLeft = dp(BADGE_MARGIN);
+                    if (drawReactionMention) {
+                        pollVotesMentionLeft += dp(25);
+                    }
+                    if (drawMention) {
+                        pollVotesMentionLeft += (mentionWidth != 0 ? (mentionWidth + dp(BADGE_GAP)) : 0);
+                    }
+                    if (drawCount) {
+                        pollVotesMentionLeft += (countWidth != 0 ? (countWidth + dp(BADGE_GAP)) : 0);
                     }
                     messageLeft += w;
                     typingLeft += w;
@@ -2595,11 +2601,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 }
             }
             if ((useForceThreeLines || SharedConfig.useThreeLinesLayout) && !hasTags() && currentDialogFolderId != 0 && currentDialogFolderDialogsCount > 1) {
-                if (CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList()) {
-                    messageStringFinal = getString(R.string.CG_AppName) + " \uD83C\uDF52";
-                } else {
-                    messageStringFinal = messageNameString;
-                }
+                messageStringFinal = messageNameString;
                 messageNameString = null;
                 currentMessagePaint = Theme.dialogs_messagePaint[paintIndex];
             } else if (!useForceThreeLines && !SharedConfig.useThreeLinesLayout || hasTags() || messageNameString != null || ChatObject.isMonoForum(chat) && ChatObject.canManageMonoForum(currentAccount, chat)) {
@@ -2984,7 +2986,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     }
 
     public void animateArchiveAvatar() {
-        if (avatarDrawable.getAvatarType() != AvatarDrawable.AVATAR_TYPE_ARCHIVED || avatarDrawable.getAvatarType() != AvatarDrawable.AVATAR_TYPE_EBLAN) {
+        if (avatarDrawable.getAvatarType() != AvatarDrawable.AVATAR_TYPE_ARCHIVED) {
             return;
         }
         animatingArchiveAvatar = true;
@@ -3070,14 +3072,6 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 avatarImage.setImage(null, "50_50", avatarDrawable, null, 0);
             }
 
-            if (customDialog.id == 1390) {
-                chat = MessagesController.getInstance(currentAccount).getChat(Constants.Cherrygram_Channel);
-                avatarImage.setForUserOrChat(chat, avatarDrawable);
-            }
-            if (customDialog.id == 2003) {
-                user = MessagesController.getInstance(currentAccount).getUser(Constants.Cherrygram_Owner);
-                if (user != null && user.photo != null) avatarImage.setForUserOrChat(user, avatarDrawable, null, true, VectorAvatarThumbDrawable.TYPE_SMALL, false);
-            }
             for (int i = 0; i < thumbImage.length; ++i) {
                 thumbImage[i].setImageBitmap((BitmapDrawable) null);
             }
@@ -3108,14 +3102,17 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                             mentionCount = counts[1];
                             reactionMentionCount = counts[2];
                             hasUnmutedTopics = counts[3] != 0;
+                            pollVotesMentionCount = counts[4];
                         } else if (dialog instanceof TLRPC.TL_dialogFolder) {
                             unreadCount = MessagesStorage.getInstance(currentAccount).getArchiveUnreadCount();
                             mentionCount = 0;
                             reactionMentionCount = 0;
+                            pollVotesMentionCount = 0;
                         } else {
                             unreadCount = dialog.unread_count;
                             mentionCount = dialog.unread_mentions_count;
                             reactionMentionCount = dialog.unread_reactions_count;
+                            pollVotesMentionCount = dialog.unread_poll_votes_count;
                         }
                         if (ChatObject.isMonoForum(localChat)) {
                             mentionCount = 0;
@@ -3137,6 +3134,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     unreadCount = 0;
                     mentionCount = 0;
                     reactionMentionCount = 0;
+                    pollVotesMentionCount = 0;
                     currentEditDate = 0;
                     lastMessageDate = 0;
                     clearingDialog = false;
@@ -3149,6 +3147,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 unreadCount = forumTopic.unread_count;
                 mentionCount = forumTopic.unread_mentions_count;
                 reactionMentionCount = forumTopic.unread_reactions_count;
+                pollVotesMentionCount = forumTopic.unread_poll_votes_count;
             }
             if (dialogsType == DialogsActivity.DIALOGS_TYPE_ADD_USERS_TO) {
                 drawPin = false;
@@ -3267,6 +3266,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         int newCount;
                         int newMentionCount;
                         int newReactionCout = 0;
+                        int newPollVotesCount = 0;
 
                         TLRPC.Chat localChat = dialog == null ? null : MessagesController.getInstance(currentAccount).getChat(-dialog.id);
                         if (localChat != null && (localChat.forum || localChat.monoforum && ChatObject.canManageMonoForum(currentAccount, localChat))) {
@@ -3275,6 +3275,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                             newMentionCount = counts[1];
                             newReactionCout = counts[2];
                             hasUnmutedTopics = counts[3] != 0;
+                            newPollVotesCount = counts[4];
                         } else if (dialog instanceof TLRPC.TL_dialogFolder) {
                             newCount = MessagesStorage.getInstance(currentAccount).getArchiveUnreadCount();
                             newMentionCount = 0;
@@ -3282,6 +3283,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                             newCount = dialog.unread_count;
                             newMentionCount = dialog.unread_mentions_count;
                             newReactionCout = dialog.unread_reactions_count;
+                            newPollVotesCount = dialog.unread_poll_votes_count;
                         } else {
                             newCount = 0;
                             newMentionCount = 0;
@@ -3294,6 +3296,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                             mentionCount = newMentionCount;
                             markUnread = dialog.unread_mark;
                             reactionMentionCount = newReactionCout;
+                            pollVotesMentionCount = newPollVotesCount;
                             continueUpdate = true;
                         }
                     }
@@ -3319,19 +3322,13 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
 
             long dialogId;
             if (currentDialogFolderId != 0) {
-                if (CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList()) {
-                    dialogMuted = true;
-                    drawUnmute = false;
-                    dialogId = Constants.Cherrygram_Channel;
+                dialogMuted = false;
+                drawUnmute = false;
+                message = findFolderTopMessage();
+                if (message != null) {
+                    dialogId = message.getDialogId();
                 } else {
-                    dialogMuted = false;
-                    drawUnmute = false;
-                    message = findFolderTopMessage();
-                    if (message != null) {
-                        dialogId = message.getDialogId();
-                    } else {
-                        dialogId = 0;
-                    }
+                    dialogId = 0;
                 }
             } else {
                 drawUnmute = false;
@@ -3375,15 +3372,9 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             }
 
             if (currentDialogFolderId != 0) {
-                if (CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList()) {
-                    Theme.dialogs_archiveAvatarDrawable.setCallback(this);
-                    avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_EBLAN);
-                    avatarImage.setImage(null, null, avatarDrawable, null, user, 0);
-                } else {
-                    Theme.dialogs_archiveAvatarDrawable.setCallback(this);
-                    avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_ARCHIVED);
-                    avatarImage.setImage(null, null, avatarDrawable, null, user, 0);
-                }
+                Theme.dialogs_archiveAvatarDrawable.setCallback(this);
+                avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_ARCHIVED);
+                avatarImage.setImage(null, null, avatarDrawable, null, user, 0);
             } else {
                 if (useFromUserAsAvatar && message != null) {
                     avatarDrawable.setInfo(currentAccount, message.getFromPeerObject());
@@ -3477,6 +3468,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 countAnimator.start();
             }
 
+            animatorPollVotesMentionVisible.setValue(pollVotesMentionCount != 0, animated);
             boolean newHasReactionsMentions = reactionMentionCount != 0;
             if (animated && (newHasReactionsMentions != oldHasReactionsMentions)) {
                 if (reactionsMentionsAnimator != null) {
@@ -3573,7 +3565,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
         if (isSliding && !swipeCanceled) {
             boolean prevValue = drawRevealBackground;
             drawRevealBackground = Math.abs(translationX) >= getMeasuredWidth() * 0.45f;
-            if (prevValue != drawRevealBackground && archiveHidden == SharedConfig.archiveHidden && !CherrygramChatsConfig.INSTANCE.getDisableVibration()) {
+            if (prevValue != drawRevealBackground && archiveHidden == SharedConfig.archiveHidden) {
                 try {
                     performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                 } catch (Exception ignore) {}
@@ -4330,23 +4322,24 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 setDrawableBounds(Theme.dialogs_reorderDrawable, pinLeft, pinTop);
                 Theme.dialogs_reorderDrawable.draw(canvas);
             }
+            final float pollVotesMentionsVisibility = animatorPollVotesMentionVisible.getFloatValue();
             if (drawError) {
                 Theme.dialogs_errorDrawable.setAlpha((int) ((1.0f - reorderIconProgress) * 255));
                 rect.set(errorLeft, errorTop, errorLeft + dp(BADGE_SIZE), errorTop + dp(BADGE_SIZE));
                 canvas.drawRoundRect(rect, 10.5f * AndroidUtilities.density, 10.5f * AndroidUtilities.density, Theme.dialogs_errorPaint);
                 setDrawableBounds(Theme.dialogs_errorDrawable, errorLeft + dp(4.5f), errorTop + dp(5));
                 Theme.dialogs_errorDrawable.draw(canvas);
-            } else if ((drawCount || drawMention) && drawCount2 || countChangeProgress != 1f || drawReactionMention || reactionsMentionsChangeProgress != 1f) {
+            } else if ((drawCount || drawMention) && drawCount2 || countChangeProgress != 1f || drawReactionMention || reactionsMentionsChangeProgress != 1f || drawPollVotesMention || pollVotesMentionsVisibility > 0) {
                 final boolean drawCounterMuted = isCounterMuted();
                 drawCounter(canvas, drawCounterMuted, countTop, countLeft, countLeftOld, 1f, false);
                 if (drawMention) {
                     Theme.dialogs_countPaint.setAlpha((int) ((1.0f - reorderIconProgress) * 255));
 
-                    int x = mentionLeft;
-                    rect.set(x, countTop, x + mentionWidth + dp(BADGE_TEXT_PADDING * 2), countTop + dp(BADGE_SIZE));
-                    Paint paint = drawCounterMuted && folderId != 0 ? Theme.dialogs_countGrayPaint : Theme.dialogs_countPaint;
-                    canvas.drawRoundRect(rect, rect.height() / 2f, rect.height() / 2f, paint);
                     if (mentionLayout != null) {
+                        int x = mentionLeft;
+                        rect.set(x, countTop, x + mentionWidth + dp(BADGE_TEXT_PADDING * 2), countTop + dp(BADGE_SIZE));
+                        Paint paint = drawCounterMuted && folderId != 0 ? Theme.dialogs_countGrayPaint : Theme.dialogs_countPaint;
+                        canvas.drawRoundRect(rect, rect.height() / 2f, rect.height() / 2f, paint);
                         Theme.dialogs_countTextPaint2.setAlpha((int) ((1.0f - reorderIconProgress) * 255));
 
                         canvas.save();
@@ -4354,31 +4347,49 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         mentionLayout.draw(canvas);
                         canvas.restore();
                     } else {
-                        Theme.dialogs_mentionDrawable.setAlpha((int) ((1.0f - reorderIconProgress) * 255));
+                        final Drawable drawable = Theme.dialogs_mentionDrawable;
 
-                        setDrawableBounds(Theme.dialogs_mentionDrawable, mentionLeft + dp(BADGE_DRAWABLE_OFFSET), countTop + dp(BADGE_DRAWABLE_OFFSET), dp(BADGE_DRAWABLE_SIZE), dp(BADGE_DRAWABLE_SIZE));
-                        Theme.dialogs_mentionDrawable.draw(canvas);
+                        drawable.setAlpha((int) ((1.0f - reorderIconProgress) * 255));
+                        DrawableUtils.setBounds(drawable,
+                            mentionLeft + dp(BADGE_DRAWABLE_OFFSET + BADGE_DRAWABLE_SIZE / 2f),
+                            countTop + dp(BADGE_DRAWABLE_OFFSET + BADGE_DRAWABLE_SIZE / 2f),
+                            Gravity.CENTER);
+                        drawable.draw(canvas);
                     }
                 }
 
                 if (drawReactionMention || reactionsMentionsChangeProgress != 1f) {
-
-                    Theme.dialogs_reactionsCountPaint.setAlpha((int) ((1.0f - reorderIconProgress) * 255));
-
                     int x = reactionMentionLeft;
                     rect.set(x, countTop, x + dp(BADGE_SIZE), countTop + dp(BADGE_SIZE));
-                    Paint paint = Theme.dialogs_reactionsCountPaint;
 
-                    canvas.save();
+                    float s = 1;
                     if (reactionsMentionsChangeProgress != 1f) {
-                        float s = drawReactionMention ? reactionsMentionsChangeProgress : (1f - reactionsMentionsChangeProgress);
-                        canvas.scale(s, s, rect.centerX(),  rect.centerY());
+                        s = drawReactionMention ? reactionsMentionsChangeProgress : (1f - reactionsMentionsChangeProgress);
                     }
-                    canvas.drawRoundRect(rect, rect.height() / 2f, rect.height() / 2f, paint);
-                    Theme.dialogs_reactionsMentionDrawable.setAlpha((int) ((1.0f - reorderIconProgress) * 255));
-                    setDrawableBounds(Theme.dialogs_reactionsMentionDrawable, reactionMentionLeft + dp(BADGE_DRAWABLE_OFFSET), countTop + dp(BADGE_DRAWABLE_OFFSET), dp(BADGE_DRAWABLE_SIZE), dp(BADGE_DRAWABLE_SIZE));
-                    Theme.dialogs_reactionsMentionDrawable.draw(canvas);
-                    canvas.restore();
+
+                    final Drawable drawable = drawCounterMuted ?
+                        Theme.dialogs_reactionsMentionDrawableMuted :
+                        Theme.dialogs_reactionsMentionDrawable;
+
+                    drawable.setAlpha((int) ((1.0f - reorderIconProgress) * 255));
+                    DrawableUtils.setBounds(drawable,
+                        x + dp(BADGE_DRAWABLE_OFFSET + BADGE_DRAWABLE_SIZE / 2f),
+                        countTop + dp(BADGE_DRAWABLE_OFFSET + BADGE_DRAWABLE_SIZE / 2f), Gravity.CENTER);
+                    DrawableUtils.drawWithScale(canvas, drawable, s);
+                }
+                if ((drawPollVotesMention || pollVotesMentionsVisibility > 0) && pollVotesMentionsVisibility != 0) {
+                    int x = pollVotesMentionLeft;
+                    rect.set(x, countTop, x + dp(BADGE_SIZE), countTop + dp(BADGE_SIZE));
+
+                    final Drawable drawable = drawCounterMuted ?
+                        Theme.dialogs_pollMentionDrawableMuted :
+                        Theme.dialogs_pollMentionDrawable;
+
+                    drawable.setAlpha((int) ((1.0f - reorderIconProgress) * 255));
+                    DrawableUtils.setBounds(drawable,
+                        x + dp(BADGE_DRAWABLE_OFFSET + BADGE_DRAWABLE_SIZE / 2f),
+                        countTop + dp(BADGE_DRAWABLE_OFFSET + BADGE_DRAWABLE_SIZE / 2f), Gravity.CENTER);
+                    DrawableUtils.drawWithScale(canvas, drawable, pollVotesMentionsVisibility);
                 }
             } else if (openBot) {
                 canvas.save();
@@ -4492,9 +4503,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 avatarImage.draw(canvas);
                 canvas.restore();
             } else {
-                storyParams.drawHiddenStoriesAsSegments = (isShareToStoryCell || currentDialogFolderId != 0) &&
-                        !CherrygramPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive() &&
-                        !CherrygramPrivacyConfig.INSTANCE.getHideArchiveFromChatsList();
+                storyParams.drawHiddenStoriesAsSegments = isShareToStoryCell || currentDialogFolderId != 0;
                 int s = storyParams.forceState;
                 if (isShareToStoryCell) {
                     storyParams.forceState = StoriesUtilities.STATE_HAS_UNREAD;
@@ -4621,7 +4630,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 if (archiveBackgroundProgress < 0.0f) {
                     archiveBackgroundProgress = 0.0f;
                 }
-                if (avatarDrawable.getAvatarType() == AvatarDrawable.AVATAR_TYPE_ARCHIVED || avatarDrawable.getAvatarType() == AvatarDrawable.AVATAR_TYPE_EBLAN) {
+                if (avatarDrawable.getAvatarType() == AvatarDrawable.AVATAR_TYPE_ARCHIVED) {
                     avatarDrawable.setArchivedAvatarHiddenProgress(CubicBezierInterpolator.EASE_OUT_QUINT.getInterpolation(archiveBackgroundProgress));
                 }
                 needInvalidate = true;
@@ -4632,7 +4641,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 if (archiveBackgroundProgress > 1.0f) {
                     archiveBackgroundProgress = 1.0f;
                 }
-                if (avatarDrawable.getAvatarType() == AvatarDrawable.AVATAR_TYPE_ARCHIVED || avatarDrawable.getAvatarType() == AvatarDrawable.AVATAR_TYPE_EBLAN) {
+                if (avatarDrawable.getAvatarType() == AvatarDrawable.AVATAR_TYPE_ARCHIVED) {
                     avatarDrawable.setArchivedAvatarHiddenProgress(CubicBezierInterpolator.EASE_OUT_QUINT.getInterpolation(archiveBackgroundProgress));
                 }
                 needInvalidate = true;
@@ -4844,7 +4853,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                     }
 
                     Theme.dialogs_onlineCirclePaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhite, resourcesProvider));
-                    canvas.drawCircle(left, top, dp(9) * onlineProgress, Theme.dialogs_onlineCirclePaint);
+                    canvas.drawCircle(left, top, dp(7) * onlineProgress, Theme.dialogs_onlineCirclePaint);
                     Theme.dialogs_onlineCirclePaint.setColor(Theme.getColor(Theme.key_chats_onlineCircle, resourcesProvider));
                     canvas.drawCircle(left, top, dp(5) * onlineProgress, Theme.dialogs_onlineCirclePaint);
                     if (isOnline) {
@@ -5048,7 +5057,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         if (counterPath == null) {
                             counterPath = new Path();
                         }
-                        BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, dp(11.5f));
+                        BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, dp(10.33f));
                     }
                     canvas.drawPath(counterPath, paint);
                     if (outline) {
@@ -5100,7 +5109,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                         if (counterPath == null) {
                             counterPath = new Path();
                         }
-                        BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, dp(11.5f));
+                        BubbleCounterPath.addBubbleRect(counterPath, counterPathRect, dp(10.33f));
                     }
                     canvas.drawPath(counterPath, paint);
                     if (outline) {
@@ -5705,11 +5714,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
                 if (message != null) {
                     message.spoilLoginCode();
                 }
-                if (parentFragment != null && (parentFragment.getChatsPasswordHelper().isChatLocked(message) || parentFragment.getChatsPasswordHelper().isEncryptedChat(message))) {
-                    MediaDataController.addTextStyleRuns(parentFragment.getChatsPasswordHelper().checkLockedChatsEntities(message), mess, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
-                } else {
-                    MediaDataController.addTextStyleRuns(MessagesFilterHelper.INSTANCE.addSpoilerEntities(message), mess, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
-                }
+                MediaDataController.addTextStyleRuns(message.messageOwner.entities, mess, msgBuilder, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
                 if (message != null && message.messageOwner != null) {
                     MediaDataController.addAnimatedEmojiSpans(message.messageOwner.entities, msgBuilder, currentMessagePaint == null ? null : currentMessagePaint.getFontMetricsInt());
                 }
@@ -5811,7 +5816,7 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             if (message != null) {
                 message.spoilLoginCode();
             }
-            MediaDataController.addTextStyleRunsCG(message, (Spannable) mess, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
+            MediaDataController.addTextStyleRuns(message, (Spannable) mess, TextStyleSpan.FLAG_STYLE_SPOILER | TextStyleSpan.FLAG_STYLE_STRIKE);
             if (message != null && message.messageOwner != null) {
                 MediaDataController.addAnimatedEmojiSpans(message.messageOwner.entities, mess, currentMessagePaint == null ? null : currentMessagePaint.getFontMetricsInt());
             }
@@ -5952,11 +5957,16 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
             Integer printingType = null;
             long readHash = dialog.read_inbox_max_id + ((long) dialog.read_outbox_max_id << 8) + ((long) (dialog.unread_count + (dialog.unread_mark ? -1 : 0)) << 16) +
                     (dialog.unread_reactions_count > 0 ? (1 << 18) : 0) +
-                    (dialog.unread_mentions_count > 0 ? (1 << 19) : 0);
+                    (dialog.unread_mentions_count > 0 ? (1 << 19) : 0) +
+                    (dialog.unread_poll_votes_count > 0 ? (1 << 21) : 0);
 
             if (isForumCell()) {
-                if (MessagesController.getInstance(currentAccount).getTopicsController().getForumUnreadCount(-currentDialogId)[2] > 0) {
+                int[] f = MessagesController.getInstance(currentAccount).getTopicsController().getForumUnreadCount(-currentDialogId);
+                if (f[2] > 0) {
                     readHash |= (1 << 20);
+                }
+                if (f[4] > 0) {
+                    readHash |= (1 << 22);
                 }
             }
 
@@ -6255,9 +6265,4 @@ public class DialogCell extends BaseCell implements StoriesListPlaceProvider.Ava
     protected boolean allowCaching() {
         return rightFragmentOpenedProgress <= 0;
     }
-
-    /** Cherrygram start */
-    private boolean isSearchView = false;
-    /** Cherrygram finish */
-
 }

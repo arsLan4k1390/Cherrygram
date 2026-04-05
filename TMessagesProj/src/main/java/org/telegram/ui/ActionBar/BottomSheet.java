@@ -77,8 +77,6 @@ import org.telegram.ui.ViewPagerActivity;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.camera.CameraXView;
-
 public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
     private final static boolean AVOID_SYSTEM_CUTOUT_FULLSCREEN = false;
 
@@ -204,7 +202,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
         disableScroll = b;
     }
 
-    private ValueAnimator keyboardContentAnimator;
+    public ValueAnimator keyboardContentAnimator;
     public boolean smoothKeyboardAnimationEnabled;
     public boolean smoothKeyboardByBottom;
     private boolean openNoDelay;
@@ -808,7 +806,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
 
         @Override
         protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
-            if (child instanceof CameraView || child instanceof CameraXView) {
+            if (child instanceof CameraView) {
                 if (shouldOverlayCameraViewOverNavBar()) {
                     drawNavigationBar(canvas, 1f);
                 }
@@ -1109,7 +1107,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
     public BottomSheet(Context context, boolean needFocus) {
         this(context, needFocus, null);
     }
-
+    
     public BottomSheet(Context context, boolean needFocus, Theme.ResourcesProvider resourcesProvider) {
         this(context, needFocus, false, resourcesProvider);
     }
@@ -1258,8 +1256,7 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
 
         if (useLightStatusBar && Build.VERSION.SDK_INT >= 23) {
             int color = Theme.getColor(Theme.key_actionBarDefault, null, true);
-            final float brightness = AndroidUtilities.computePerceivedBrightness(color);
-            if (brightness >= 0.721f) {
+            if (color == 0xffffffff) {
                 int flags = container.getSystemUiVisibility();
                 flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
                 container.setSystemUiVisibility(flags);
@@ -1415,9 +1412,8 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
         useLightStatusBar = value;
         if (Build.VERSION.SDK_INT >= 23) {
             int color = Theme.getColor(Theme.key_actionBarDefault, null, true);
-            final float brightness = AndroidUtilities.computePerceivedBrightness(color);
             int flags = container.getSystemUiVisibility();
-            if (useLightStatusBar && brightness >= 0.721f) {
+            if (useLightStatusBar && color == 0xffffffff) {
                 flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
             } else {
                 flags &=~ View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
@@ -1590,14 +1586,15 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
     }
 
     protected boolean isTouchOutside(float x, float y) {
-        if (topBulletinContainer != null) {
-            float left = topBulletinContainer.getX();
-            float top = topBulletinContainer.getY();
-            float right = left + topBulletinContainer.getWidth();
-            float bottom = top + topBulletinContainer.getHeight();
-            if (x >= left && x <= right && y >= top && y <= bottom) {
+        if (topBulletinContainer != null && topBulletinContainer.getChildCount() > 0) {
+            View bulletinLayout = topBulletinContainer.getChildAt(0);
+            if (
+                y >= topBulletinContainer.getY() + bulletinLayout.getY() &&
+                y <= topBulletinContainer.getY() + bulletinLayout.getY() + bulletinLayout.getHeight() &&
+                x >= topBulletinContainer.getX() + bulletinLayout.getX() &&
+                x <= topBulletinContainer.getX() + bulletinLayout.getX() + bulletinLayout.getWidth()
+            )
                 return false;
-            }
         }
         return y < containerView.getTop() || x < containerView.getLeft() || x > containerView.getRight();
     }
@@ -1743,8 +1740,9 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
         return tag;
     }
 
-    public void setDimBehind(boolean value) {
+    public BottomSheet setDimBehind(boolean value) {
         dimBehind = value;
+        return this;
     }
 
     public void setDimBehindAlpha(int value) {

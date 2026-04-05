@@ -47,7 +47,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,9 +57,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import uz.unnarsx.cherrygram.core.configs.CherrygramAppearanceConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramCoreConfig;
 
 public class LocaleController {
 
@@ -86,11 +82,7 @@ public class LocaleController {
                         lang = "en";
                     }
                     lang = lang.toLowerCase();
-                    if (CherrygramAppearanceConfig.INSTANCE.getShowSeconds()) {
-                        formatterDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, is24HourFormat ? getStringInternal("formatterDay24HSec", R.string.CP_FormatterDay24HSec) : getStringInternal("formatterDay12HSec", R.string.CP_FormatterDay12HSec), is24HourFormat ? "HH:mm:ss" : "h:mm:ss a");
-                    } else {
-                        formatterDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, is24HourFormat ? getStringInternal("formatterDay24H", R.string.formatterDay24H) : getStringInternal("formatterDay12H", R.string.formatterDay12H), is24HourFormat ? "HH:mm" : "h:mm a");
-                    }
+                    formatterDay = createFormatter(lang.toLowerCase().equals("ar") || lang.toLowerCase().equals("ko") ? locale : Locale.US, is24HourFormat ? getStringInternal("formatterDay24H", R.string.formatterDay24H) : getStringInternal("formatterDay12H", R.string.formatterDay12H), is24HourFormat ? "HH:mm" : "h:mm a");
                 }
             }
         }
@@ -673,46 +665,22 @@ public class LocaleController {
         languagesDict.put(localeInfo.shortName, localeInfo);
 
         localeInfo = new LocaleInfo();
-        localeInfo.name = "日本語";
-        localeInfo.nameEnglish = "Japanese";
-        localeInfo.shortName = "ja_raw";
-        localeInfo.baseLangCode = null;
-        localeInfo.isRtl = false;
-        localeInfo.pathToFile = "unofficial";
-        localeInfo.pluralLangCode = "ja";
+        localeInfo.name = "Українська";
+        localeInfo.nameEnglish = "Ukrainian";
+        localeInfo.shortName = localeInfo.pluralLangCode = "uk";
+        localeInfo.pathToFile = null;
         localeInfo.builtIn = true;
         languages.add(localeInfo);
-        languagesDict.put(localeInfo.getKey(), localeInfo);
-        languagesDict.put("ja", localeInfo);
+        languagesDict.put(localeInfo.shortName, localeInfo);
 
         localeInfo = new LocaleInfo();
-        localeInfo.name = "简体中文";
-        localeInfo.nameEnglish = "Chinese (Simplified)";
-        localeInfo.shortName = "fengcs";
-        localeInfo.baseLangCode = "zh_hans_raw";
-        localeInfo.isRtl = false;
-        localeInfo.pathToFile = "unofficial";
-        localeInfo.pluralLangCode = "zh_cn";
+        localeInfo.name = "Русский";
+        localeInfo.nameEnglish = "Russian";
+        localeInfo.shortName = localeInfo.pluralLangCode = "ru";
+        localeInfo.pathToFile = null;
         localeInfo.builtIn = true;
         languages.add(localeInfo);
-        languagesDict.put(localeInfo.getKey(), localeInfo);
-        languagesDict.put("zh_cn", localeInfo);
-        languagesDict.put("zh_sg", localeInfo);
-
-        localeInfo = new LocaleInfo();
-        localeInfo.name = "正體中文";
-        localeInfo.nameEnglish = "Chinese (Traditional)";
-        localeInfo.shortName = "taiwan";
-        localeInfo.baseLangCode = "zh_hant_raw";
-        localeInfo.isRtl = false;
-        localeInfo.pathToFile = "unofficial";
-        localeInfo.pluralLangCode = "zh_tw";
-        localeInfo.builtIn = true;
-        languages.add(localeInfo);
-        languagesDict.put(localeInfo.getKey(), localeInfo);
-        languagesDict.put("zh_tw", localeInfo);
-        languagesDict.put("zh_hk", localeInfo);
-        languagesDict.put("zh_mo", localeInfo);
+        languagesDict.put(localeInfo.shortName, localeInfo);
 
         loadOtherLanguages();
         if (remoteLanguages.isEmpty()) {
@@ -1160,7 +1128,7 @@ public class LocaleController {
             }
         }
         editor.putString("unofficial", stringBuilder.toString());
-        editor.apply();
+        editor.commit();
     }
 
     public boolean deleteLanguage(LocaleInfo localeInfo, int currentAccount) {
@@ -1378,7 +1346,7 @@ public class LocaleController {
                 SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putString("language", localeInfo.getKey());
-                editor.apply();
+                editor.commit();
             }
             if (pathToFile == null) {
                 localeValues.clear();
@@ -2141,14 +2109,14 @@ public class LocaleController {
         final StringBuilder stringBuilder = new StringBuilder();
         if (hours > 0) {
             if (stringBuilder.length() > 0) stringBuilder.append(":");
-            stringBuilder.append(hours > 10 ? "" : "0");
+            stringBuilder.append(hours >= 10? "" : "0");
             stringBuilder.append(hours);
         }
         if (stringBuilder.length() > 0) stringBuilder.append(":");
-        stringBuilder.append(minutes > 10 ? "" : "0");
+        stringBuilder.append(minutes >= 10 ? "" : "0");
         stringBuilder.append(minutes);
         if (stringBuilder.length() > 0) stringBuilder.append(":");
-        stringBuilder.append(seconds > 10 ? "" : "0");
+        stringBuilder.append(seconds >= 10 ? "" : "0");
         stringBuilder.append(seconds);
         return stringBuilder.toString();
     }
@@ -2416,6 +2384,14 @@ public class LocaleController {
             FileLog.e(e);
         }
         return "LOC_ERR";
+    }
+
+    public static String formatPollEndTime(int seconds, boolean resultsHidden) {
+        final String s = seconds < 86400 ?
+                formatShortDuration(seconds) :
+            formatPluralString("Days", seconds / 86400);
+
+        return formatString(resultsHidden ? R.string.PollResultsIn : R.string.PollEndsIn, s);
     }
 
     public static String formatShortDuration2(int time) {
@@ -2938,14 +2914,6 @@ public class LocaleController {
     }
 
     public static String formatShortNumber(int number, int[] rounded) {
-        if (CherrygramCoreConfig.INSTANCE.getNoRounding()) {
-            if (rounded != null) {
-                rounded[0] = number;
-            }
-            DecimalFormat formatter = (DecimalFormat) NumberFormat.getInstance(Locale.US);
-            formatter.applyPattern("#,###");
-            return formatter.format(number);
-        }
         StringBuilder K = new StringBuilder();
         int lastDec = 0;
         int KCount = 0;
@@ -3125,14 +3093,14 @@ public class LocaleController {
                 }
             }
             FileLog.d("save locale file to " + finalFile);
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(finalFile))) {
-                writer.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-                writer.write("<resources>\n");
-                for (HashMap.Entry<String, String> entry : values.entrySet()) {
-                    writer.write(String.format("<string name=\"%1$s\">%2$s</string>\n", entry.getKey(), entry.getValue()));
-                }
-                writer.write("</resources>");
+            BufferedWriter writer = new BufferedWriter(new FileWriter(finalFile));
+            writer.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+            writer.write("<resources>\n");
+            for (HashMap.Entry<String, String> entry : values.entrySet()) {
+                writer.write(String.format("<string name=\"%1$s\">%2$s</string>\n", entry.getKey(), entry.getValue()));
             }
+            writer.write("</resources>");
+            writer.close();
             boolean hasBase = localeInfo.hasBaseLang();
             final HashMap<String, String> valuesToSet = getLocaleFileStrings(hasBase ? localeInfo.getPathToBaseFile() : localeInfo.getPathToFile());
             if (hasBase) {
@@ -3167,7 +3135,7 @@ public class LocaleController {
                         SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putString("language", localeInfo.getKey());
-                        editor.apply();
+                        editor.commit();
 
                         localeValues = valuesToSet;
                         currentLocale = newLocale;
@@ -4519,101 +4487,4 @@ public class LocaleController {
             return f.format(value, dir, unit);
         }
     }
-
-    /** Cherrygram start */
-    public static String formatDateOnlineIOS(long date, boolean[] madeShorter) {
-        try {
-            date *= 1000;
-            Calendar rightNow = Calendar.getInstance();
-            int day = rightNow.get(Calendar.DAY_OF_YEAR);
-            int year = rightNow.get(Calendar.YEAR);
-            int hour = rightNow.get(Calendar.HOUR_OF_DAY);
-            rightNow.setTimeInMillis(date);
-            int dateDay = rightNow.get(Calendar.DAY_OF_YEAR);
-            int dateYear = rightNow.get(Calendar.YEAR);
-            int dateHour = rightNow.get(Calendar.HOUR_OF_DAY);
-
-            if (dateDay == day && year == dateYear) {
-                int diff = (int) (ConnectionsManager.getInstance(UserConfig.selectedAccount).getCurrentTime() - date / 1000) / 60;
-                if (diff < 1) {
-                    return LocaleController.getString(R.string.CG_LastSeenNow);
-                } else if (diff < 60) {
-                    return LocaleController.formatPluralString("CG_LastSeenMinutes", diff);
-                } else {
-                    return LocaleController.formatPluralString("CG_LastSeenHours", (int) Math.floor(diff / 60.0f));
-                }
-            } else if (dateDay + 1 == day && year == dateYear) {
-                if (madeShorter != null) {
-                    madeShorter[0] = true;
-                    if (hour <= 6 && dateHour > 18 && is24HourFormat) {
-                        return LocaleController.formatString(R.string.LastSeenFormatted, getInstance().getFormatterDay().format(new Date(date)));
-                    }
-                    return LocaleController.formatString(R.string.YesterdayAtFormatted, getInstance().getFormatterDay().format(new Date(date)));
-                } else {
-                    return LocaleController.formatString(R.string.LastSeenFormatted, LocaleController.formatString(R.string.YesterdayAtFormatted, getInstance().getFormatterDay().format(new Date(date))));
-                }
-            } else if (Math.abs(System.currentTimeMillis() - date) < 31536000000L) {
-                String format = LocaleController.formatString(R.string.formatDateAtTime, getInstance().getFormatterDayMonth().format(new Date(date)), getInstance().getFormatterDay().format(new Date(date)));
-                return LocaleController.formatString(R.string.LastSeenDateFormatted, format);
-            } else {
-                String format = LocaleController.formatString(R.string.formatDateAtTime, getInstance().getFormatterDayMonth().format(new Date(date)), getInstance().getFormatterDay().format(new Date(date)));
-                return LocaleController.formatString(R.string.LastSeenDateFormatted, format);
-            }
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
-        return "LOC_ERR";
-    }
-
-    public static String formatUserStatusIOS(int currentAccount, TLRPC.User user) {
-        return formatUserStatusIOS(currentAccount, user, null);
-    }
-
-    public static String formatUserStatusIOS(int currentAccount, TLRPC.User user, boolean[] isOnline) {
-        return formatUserStatusIOS(currentAccount, user, isOnline, null);
-    }
-
-    public static String formatUserStatusIOS(int currentAccount, TLRPC.User user, boolean[] isOnline, boolean[] madeShorter) {
-        if (user != null && user.status != null && user.status.expires == 0) {
-            if (user.status instanceof TLRPC.TL_userStatusRecently) {
-                user.status.expires = user.status.by_me ? -1000 : -100;
-            } else if (user.status instanceof TLRPC.TL_userStatusLastWeek) {
-                user.status.expires = user.status.by_me ? -1001 : -101;
-            } else if (user.status instanceof TLRPC.TL_userStatusLastMonth) {
-                user.status.expires = user.status.by_me ? -1002 : -102;
-            }
-        }
-        if (user != null && user.status != null && user.status.expires <= 0) {
-            if (MessagesController.getInstance(currentAccount).onlinePrivacy.containsKey(user.id)) {
-                if (isOnline != null) {
-                    isOnline[0] = true;
-                }
-                return getString(R.string.Online);
-            }
-        }
-        if (user == null || user.status == null || user.status.expires == 0 || UserObject.isDeleted(user) || user instanceof TLRPC.TL_userEmpty) {
-            return getString(R.string.ALongTimeAgo);
-        } else {
-            int currentTime = ConnectionsManager.getInstance(currentAccount).getCurrentTime();
-            if (user.status.expires > currentTime) {
-                if (isOnline != null) {
-                    isOnline[0] = true;
-                }
-                return getString(R.string.Online);
-            } else {
-                if (user.status.expires == -1) {
-                    return getString(R.string.Invisible);
-                } else if (user.status.expires == -100 || user.status.expires == -1000) {
-                    return getString(R.string.Lately);
-                } else if (user.status.expires == -101 || user.status.expires == -1001) {
-                    return getString(R.string.WithinAWeek);
-                } else if (user.status.expires == -102 || user.status.expires == -1002) {
-                    return getString(R.string.WithinAMonth);
-                } else {
-                    return formatDateOnlineIOS(user.status.expires, madeShorter);
-                }
-            }
-        }
-    }
-    /** Cherrygram finish */
 }

@@ -19,9 +19,6 @@ import org.telegram.ui.Components.MessagePreviewView;
 
 import java.util.ArrayList;
 
-import uz.unnarsx.cherrygram.core.configs.CherrygramChatsConfig;
-import uz.unnarsx.cherrygram.core.configs.CherrygramMessagesConfig;
-
 public class MessagePreviewParams {
 
     private static ArrayList<MessageObject> singletonArrayList(MessageObject obj) {
@@ -39,7 +36,7 @@ public class MessagePreviewParams {
         public ArrayList<MessageObject> messages;
         public ArrayList<MessageObject> previewMessages = new ArrayList<>();
         public SparseBooleanArray selectedIds = new SparseBooleanArray();
-        public ArrayList<TLRPC.TL_pollAnswerVoters> pollChosenAnswers = new ArrayList<>();
+        public ArrayList<TLRPC.PollAnswerVoters> pollChosenAnswers = new ArrayList<>();
         public boolean hasSpoilers;
         public boolean hasText;
 
@@ -97,9 +94,9 @@ public class MessagePreviewParams {
 
                     if (messageObject.canUnvote()) {
                         for (int a = 0, N = mediaPoll.results.results.size(); a < N; a++) {
-                            TLRPC.TL_pollAnswerVoters answer = mediaPoll.results.results.get(a);
+                            TLRPC.PollAnswerVoters answer = mediaPoll.results.results.get(a);
                             if (answer.chosen) {
-                                TLRPC.TL_pollAnswerVoters newAnswer = new TLRPC.TL_pollAnswerVoters();
+                                TLRPC.PollAnswerVoters newAnswer = new TLRPC.PollAnswerVoters();
                                 newAnswer.chosen = answer.chosen;
                                 newAnswer.correct = answer.correct;
                                 newAnswer.flags = answer.flags;
@@ -180,8 +177,8 @@ public class MessagePreviewParams {
     public boolean isSecret;
     public boolean multipleUsers;
 
-    public boolean hideForwardSendersName = CherrygramChatsConfig.INSTANCE.getNoAuthorship();
-    public boolean hideCaption = CherrygramChatsConfig.INSTANCE.getNoCaptions();
+    public boolean hideForwardSendersName;
+    public boolean hideCaption;
     public boolean willSeeSenders;
 
     public boolean singleLink;
@@ -500,9 +497,6 @@ public class MessagePreviewParams {
             }
             if (header != null) {
                 message.fwd_from = header;
-                if (CherrygramMessagesConfig.INSTANCE.getMsgForwardDate() && !messageObject.isForwarded()) {
-                    message.fwd_from.date = messageObject.messageOwner.date;
-                }
                 message.flags |= TLRPC.MESSAGE_FLAG_FWD;
             }
         }
