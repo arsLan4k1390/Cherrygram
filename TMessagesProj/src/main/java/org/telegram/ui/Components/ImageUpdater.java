@@ -132,7 +132,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         }
         MessageObject avatarObject = null;
         Bitmap bitmap;
-        if (photoEntry.isVideo || photoEntry.editedInfo != null) {
+        if ((photoEntry.isVideo || photoEntry.editedInfo != null) && !photoEntry.isLivePhoto) {
             TLRPC.TL_message message = new TLRPC.TL_message();
             message.id = 0;
             message.message = "";
@@ -502,6 +502,9 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                                 info.coverPath = photoEntry.coverPath;
                                 info.videoEditedInfo = photoEntry.editedInfo;
                                 info.isVideo = photoEntry.isVideo;
+                                info.isLivePhoto = photoEntry.isLivePhoto;
+                                info.livePhotoVideoOffset = photoEntry.livePhotoVideoOffset;
+                                info.discardLivePhoto = true;
                                 info.caption = photoEntry.caption != null ? photoEntry.caption.toString() : null;
                                 info.entities = photoEntry.entities;
                                 info.masks = photoEntry.stickers;
@@ -592,7 +595,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
             SendMessagesHelper.SendingMediaInfo info = photos.get(0);
             Bitmap bitmap = null;
             MessageObject avatarObject = null;
-            if (info.isVideo || info.videoEditedInfo != null) {
+            if ((info.isVideo || info.videoEditedInfo != null) && !info.isLivePhoto) {
                 TLRPC.TL_message message = new TLRPC.TL_message();
                 message.id = 0;
                 message.message = "";
